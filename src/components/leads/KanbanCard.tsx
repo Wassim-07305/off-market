@@ -72,7 +72,7 @@ export function KanbanCard({ lead }: KanbanCardProps) {
 
           <div className="mt-2 flex items-center justify-between">
             {lead.assigned_profile ? (
-              <div className="flex h-5 w-5 items-center justify-center rounded-full bg-violet-100 text-[8px] font-semibold text-violet-700">
+              <div className="flex h-5 w-5 items-center justify-center rounded-full bg-red-100 text-[8px] font-semibold text-red-700">
                 {getInitials(lead.assigned_profile.full_name)}
               </div>
             ) : (

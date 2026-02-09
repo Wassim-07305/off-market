@@ -18,7 +18,7 @@ const typeIcons: Record<string, typeof Bell> = {
 }
 
 const typeColors: Record<string, string> = {
-  lead_status: 'bg-violet-50 text-violet-600',
+  lead_status: 'bg-red-50 text-red-600',
   new_call: 'bg-blue-50 text-blue-600',
   call_closed: 'bg-emerald-50 text-emerald-600',
   general: 'bg-slate-50 text-slate-600',

@@ -67,7 +67,7 @@ export function MiniLeaderboard() {
               <div className={cn('flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold', rankBgs[i], rankColors[i])}>
                 {i + 1}
               </div>
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-500/10 to-violet-400/5 text-[10px] font-semibold text-violet-600">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-red-500/10 to-red-400/5 text-[10px] font-semibold text-red-600">
                 {entry.avatarUrl ? (
                   <img src={entry.avatarUrl} alt={entry.name} className="h-8 w-8 rounded-full object-cover" />
                 ) : (

@@ -91,7 +91,7 @@ export default function DashboardPage() {
             icon={TrendingUp}
             trend={closingTrend}
             trendLabel="vs mois précédent"
-            accent="violet"
+            accent="red"
             index={2}
           />
           <StatsCard

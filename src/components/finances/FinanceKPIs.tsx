@@ -41,8 +41,8 @@ export function FinanceKPIs({ clientId }: FinanceKPIsProps) {
       label: 'MRR',
       value: formatCurrency(stats.récurrent),
       icon: <DollarSign className="h-5 w-5" />,
-      color: 'text-violet-600',
-      bgColor: 'bg-violet-500/10',
+      color: 'text-red-600',
+      bgColor: 'bg-red-500/10',
     },
     {
       label: 'Récurrent total',

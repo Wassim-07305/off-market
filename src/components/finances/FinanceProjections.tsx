@@ -53,8 +53,8 @@ export function FinanceProjections() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div className="rounded-2xl border border-border/40 bg-white p-5">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500/10 to-violet-500/5">
-              <DollarSign className="h-5 w-5 text-violet-600" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-red-500/10 to-red-500/5">
+              <DollarSign className="h-5 w-5 text-red-600" />
             </div>
             <div>
               <p className="text-sm text-muted-foreground">MRR</p>

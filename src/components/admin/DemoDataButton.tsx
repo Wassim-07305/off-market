@@ -73,7 +73,7 @@ export function DemoDataButton() {
     <button
       type="button"
       onClick={handleSeed}
-      className="fixed bottom-6 right-6 z-40 flex cursor-pointer items-center gap-2 rounded-full bg-gradient-to-r from-primary to-violet-500 px-5 py-3 text-sm font-medium text-white shadow-lg transition-all hover:shadow-xl hover:brightness-110"
+      className="fixed bottom-6 right-6 z-40 flex cursor-pointer items-center gap-2 rounded-full bg-gradient-to-r from-primary to-red-500 px-5 py-3 text-sm font-medium text-white shadow-lg transition-all hover:shadow-xl hover:brightness-110"
     >
       <Database className="h-4 w-4" />
       Remplir avec des données de démo

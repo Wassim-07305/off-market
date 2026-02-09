@@ -4,13 +4,13 @@ import { motion } from 'framer-motion'
 import { Card } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 
-type AccentColor = 'violet' | 'blue' | 'emerald' | 'amber'
+type AccentColor = 'red' | 'blue' | 'emerald' | 'amber'
 
 const accentConfig: Record<AccentColor, { gradient: string; iconBg: string; iconText: string }> = {
-  violet: {
-    gradient: 'from-violet-500 to-indigo-500',
-    iconBg: 'bg-gradient-to-br from-violet-500/10 to-violet-500/5',
-    iconText: 'text-violet-600',
+  red: {
+    gradient: 'from-red-500 to-rose-500',
+    iconBg: 'bg-gradient-to-br from-red-500/10 to-red-500/5',
+    iconText: 'text-red-600',
   },
   blue: {
     gradient: 'from-blue-500 to-cyan-500',
@@ -40,7 +40,7 @@ interface StatsCardProps {
   subtext?: string
 }
 
-export function StatsCard({ title, value, icon: Icon, trend, trendLabel, accent = 'violet', index = 0, subtext }: StatsCardProps) {
+export function StatsCard({ title, value, icon: Icon, trend, trendLabel, accent = 'red', index = 0, subtext }: StatsCardProps) {
   const isPositive = trend >= 0
   const config = accentConfig[accent]
 

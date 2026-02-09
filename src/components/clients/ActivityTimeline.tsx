@@ -20,7 +20,7 @@ interface ActivityItem {
 const TYPE_CONFIG: Record<string, { icon: React.ElementType; color: string; bg: string }> = {
   call: { icon: Phone, color: 'text-blue-600', bg: 'bg-blue-100' },
   lead: { icon: Users, color: 'text-emerald-600', bg: 'bg-emerald-100' },
-  finance: { icon: DollarSign, color: 'text-violet-600', bg: 'bg-violet-100' },
+  finance: { icon: DollarSign, color: 'text-red-600', bg: 'bg-red-100' },
   content: { icon: FileText, color: 'text-amber-600', bg: 'bg-amber-100' },
   setter: { icon: MessageSquare, color: 'text-pink-600', bg: 'bg-pink-100' },
 }

@@ -5,7 +5,7 @@ import { useNotificationStore } from '@/stores/notification-store'
 import { cn } from '@/lib/utils'
 
 const typeConfig: Record<string, { icon: typeof Activity; color: string }> = {
-  lead_status: { icon: Target, color: 'bg-violet-50 text-violet-600' },
+  lead_status: { icon: Target, color: 'bg-red-50 text-red-600' },
   new_call: { icon: Phone, color: 'bg-blue-50 text-blue-600' },
   call_closed: { icon: DollarSign, color: 'bg-emerald-50 text-emerald-600' },
   general: { icon: Send, color: 'bg-amber-50 text-amber-600' },

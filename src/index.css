@@ -12,10 +12,10 @@
   --color-card-foreground: hsl(222 47% 11%);
   --color-surface: hsl(0 0% 100%);
 
-  /* Primary — Violet/Indigo profond */
-  --color-primary: hsl(252 85% 60%);
+  /* Primary — Rouge */
+  --color-primary: hsl(0 84% 55%);
   --color-primary-foreground: hsl(0 0% 100%);
-  --color-primary-light: hsl(252 85% 96%);
+  --color-primary-light: hsl(0 84% 96%);
 
   /* Secondary */
   --color-secondary: hsl(220 14% 96%);
@@ -36,7 +36,7 @@
 
   /* Border & Ring */
   --color-border: hsl(220 13% 91%);
-  --color-ring: hsl(252 85% 60%);
+  --color-ring: hsl(0 84% 55%);
 
   /* Sidebar */
   --color-sidebar-from: #1a1f36;

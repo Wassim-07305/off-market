@@ -41,7 +41,7 @@ function TabsList({ tabs, value, onChange, className }: TabsListProps) {
               ? 'text-foreground'
               : 'text-muted-foreground hover:text-foreground',
             value === tab.value &&
-              'after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-gradient-to-r after:from-violet-500 after:to-indigo-500 after:content-[""] after:rounded-full'
+              'after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-gradient-to-r after:from-red-500 after:to-rose-500 after:content-[""] after:rounded-full'
           )}
         >
           {tab.label}

@@ -150,20 +150,20 @@ export function Sidebar() {
                         className={cn(
                           'group relative flex items-center rounded-xl px-3 py-2.5 text-[13px] font-medium transition-all duration-200',
                           isActive
-                            ? 'bg-violet-500/15 text-white'
+                            ? 'bg-red-500/15 text-white'
                             : 'text-slate-400 hover:bg-white/[0.06] hover:text-white',
                           isCollapsed && 'md:justify-center md:px-0'
                         )}
                       >
                         {/* Active indicator bar */}
                         {isActive && (
-                          <div className="absolute left-0 top-1/2 h-5 w-1 -translate-y-1/2 rounded-r-full bg-violet-400 shadow-[0_0_8px_rgba(139,92,246,0.5)]" />
+                          <div className="absolute left-0 top-1/2 h-5 w-1 -translate-y-1/2 rounded-r-full bg-red-400 shadow-[0_0_8px_rgba(239,68,68,0.5)]" />
                         )}
 
                         <Icon className={cn(
                           'h-[18px] w-[18px] shrink-0 transition-all duration-200',
                           isCollapsed ? '' : 'mr-3',
-                          isActive && 'drop-shadow-[0_0_6px_rgba(139,92,246,0.4)]'
+                          isActive && 'drop-shadow-[0_0_6px_rgba(239,68,68,0.4)]'
                         )} />
                         <span className={cn(
                           isCollapsed && 'md:hidden'
@@ -213,7 +213,7 @@ export function Sidebar() {
             )}
           >
             <div className="relative">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-500/20 to-violet-400/10 text-xs font-semibold text-violet-300 ring-2 ring-violet-500/10">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-red-500/20 to-red-400/10 text-xs font-semibold text-red-300 ring-2 ring-red-500/10">
                 {profile?.avatar_url ? (
                   <img
                     src={profile.avatar_url}
