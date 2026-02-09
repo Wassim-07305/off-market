@@ -10,7 +10,6 @@ import {
   Share2,
   DollarSign,
   Instagram,
-  UserCheck,
   Settings,
   BookOpen,
   PanelLeftClose,
@@ -60,7 +59,6 @@ const NAV_SECTIONS: NavSection[] = [
     label: 'Gestion',
     items: [
       { label: 'Finances', icon: DollarSign, path: '/finances', module: 'finances' },
-      { label: 'Entretiens', icon: UserCheck, path: '/interviews', module: 'interviews' },
       { label: 'Utilisateurs', icon: Settings, path: '/users', module: 'users' },
       { label: 'Documentation', icon: BookOpen, path: '/documentation', module: 'documentation' },
     ],

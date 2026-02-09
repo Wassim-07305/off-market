@@ -10,7 +10,6 @@ const ROUTE_LABELS: Record<string, string> = {
   'social-content': 'Contenus Social',
   finances: 'Finances',
   instagram: 'Instagram',
-  interviews: 'Entretiens',
   users: 'Utilisateurs',
   documentation: 'Documentation',
 }

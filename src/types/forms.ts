@@ -131,37 +131,6 @@ export const setterActivitySchema = z.object({
 })
 export type SetterActivityFormData = z.infer<typeof setterActivitySchema>
 
-// Interview forms
-export const interviewSchema = z.object({
-  coach_id: z.string().uuid('Sélectionnez un coach'),
-  member_id: z.string().uuid('Sélectionnez un membre'),
-  date: z.string().min(1, 'La date est requise'),
-  status: z.enum(['planifié', 'réalisé', 'annulé']).default('planifié'),
-  positive_points: z.string().optional().or(z.literal('')),
-  improvement_areas: z.string().optional().or(z.literal('')),
-  actions: z.string().optional().or(z.literal('')),
-  deadline: z.string().optional().or(z.literal('')),
-  notes: z.string().optional().or(z.literal('')),
-})
-export type InterviewFormData = z.infer<typeof interviewSchema>
-
-// Blockage forms
-export const blockageSchema = z.object({
-  interview_id: z.string().uuid().optional().nullable(),
-  member_id: z.string().uuid().optional().nullable(),
-  category: z.enum(['technique', 'motivation', 'organisation', 'communication', 'formation', 'autre']).optional(),
-  problem: z.string().min(1, 'Le problème est requis'),
-  why_1: z.string().optional().or(z.literal('')),
-  why_2: z.string().optional().or(z.literal('')),
-  why_3: z.string().optional().or(z.literal('')),
-  why_4: z.string().optional().or(z.literal('')),
-  why_5: z.string().optional().or(z.literal('')),
-  root_cause: z.string().optional().or(z.literal('')),
-  decided_action: z.string().optional().or(z.literal('')),
-  result: z.string().optional().or(z.literal('')),
-})
-export type BlockageFormData = z.infer<typeof blockageSchema>
-
 // Instagram forms
 export const instagramAccountSchema = z.object({
   client_id: z.string().uuid('Sélectionnez un client'),

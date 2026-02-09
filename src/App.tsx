@@ -20,7 +20,6 @@ import SetterActivityPage from '@/pages/SetterActivityPage'
 import SocialContentPage from '@/pages/SocialContentPage'
 import FinancesPage from '@/pages/FinancesPage'
 import InstagramPage from '@/pages/InstagramPage'
-import InterviewsPage from '@/pages/InterviewsPage'
 import UsersPage from '@/pages/UsersPage'
 import DocumentationPage from '@/pages/DocumentationPage'
 
@@ -59,7 +58,6 @@ function App() {
               <Route path="/social-content" element={<SocialContentPage />} />
               <Route path="/finances" element={<FinancesPage />} />
               <Route path="/instagram" element={<InstagramPage />} />
-              <Route path="/interviews" element={<InterviewsPage />} />
               <Route
                 path="/users"
                 element={

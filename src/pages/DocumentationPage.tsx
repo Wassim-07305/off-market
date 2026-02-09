@@ -7,7 +7,6 @@ import {
   Film,
   DollarSign,
   Instagram,
-  ClipboardList,
   BarChart3,
   Search,
   Shield,
@@ -67,12 +66,6 @@ const modules = [
     title: 'Instagram',
     description:
       'Connectez les comptes Instagram de vos clients et suivez les statistiques de leurs publications : likes, commentaires, partages, sauvegardes, portée et taux d\'engagement.',
-  },
-  {
-    icon: ClipboardList,
-    title: 'Entretiens',
-    description:
-      'Menez des entretiens structurés avec vos collaborateurs. Documentez les points positifs, axes d\'amélioration et actions décidées. Analysez les blocages avec la méthode des 5 Pourquoi.',
   },
   {
     icon: Shield,
@@ -165,7 +158,7 @@ export default function DocumentationPage() {
           {[
             { role: 'Admin', desc: 'Accès complet à tous les modules et à la gestion des utilisateurs.' },
             { role: 'Manager', desc: 'Vue d\'ensemble de l\'équipe, gestion des clients et des leads.' },
-            { role: 'Coach', desc: 'Suivi de ses clients assignés, entretiens et progression.' },
+            { role: 'Coach', desc: 'Suivi de ses clients assignés et de leur progression.' },
             { role: 'Setter', desc: 'Gestion de l\'activité de prospection et des messages envoyés.' },
             { role: 'Closer', desc: 'Gestion des appels de closing et suivi des conversions.' },
             { role: 'Monteur', desc: 'Gestion des contenus sociaux et du pipeline de création.' },

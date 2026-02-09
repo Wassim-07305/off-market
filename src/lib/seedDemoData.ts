@@ -12,8 +12,6 @@ interface DemoDataIds {
   paymentScheduleIds: string[]
   socialContentIds: string[]
   setterActivityIds: string[]
-  interviewIds: string[]
-  blockageIds: string[]
   instagramAccountIds: string[]
   instagramPostStatIds: string[]
   notificationIds: string[]
@@ -78,8 +76,6 @@ export async function seedDemoData(adminUserId: string): Promise<string> {
     paymentScheduleIds: [],
     socialContentIds: [],
     setterActivityIds: [],
-    interviewIds: [],
-    blockageIds: [],
     instagramAccountIds: [],
     instagramPostStatIds: [],
     notificationIds: [],
@@ -456,40 +452,7 @@ export async function seedDemoData(adminUserId: string): Promise<string> {
     if (igPostError) throw new Error(`Instagram posts: ${igPostError.message}`)
     ids.instagramPostStatIds = igPostData.map((p) => p.id)
 
-    // ── 12. Interviews (8) + blockages (4) ──
-    const interviewsToInsert = [
-      { coach_id: adminUserId, member_id: sarahId, date: isoTimestamp(2), status: 'réalisé', positive_points: 'Très bonne écoute, messages personnalisés', improvement_areas: 'Relance trop tardive sur certains leads', actions: 'Mettre un timer de 24h max pour les relances', deadline: daysFromNow(7), notes: 'Progrès notables ce mois-ci' },
-      { coach_id: adminUserId, member_id: lucasId, date: isoTimestamp(5), status: 'réalisé', positive_points: 'Volume de messages en hausse', improvement_areas: 'Qualité des messages — trop de copier-coller', actions: 'Créer 5 templates personnalisables', deadline: daysFromNow(14), notes: 'Focus sur la personnalisation' },
-      { coach_id: adminUserId, member_id: karimId, date: isoTimestamp(8), status: 'réalisé', positive_points: 'Excellent taux de closing (60%+)', improvement_areas: 'Debrief incomplets', actions: 'Remplir le debrief immédiatement après chaque call', deadline: daysFromNow(3), notes: 'Closeur le plus performant' },
-      { coach_id: emmaId, member_id: sarahId, date: isoTimestamp(15), status: 'réalisé', positive_points: 'Bonne gestion du pipeline', improvement_areas: 'Organisation du temps', actions: 'Utiliser la technique Pomodoro', deadline: daysAgo(1), notes: 'Suivi mensuel' },
-      { coach_id: adminUserId, member_id: thomasId, date: isoTimestamp(20), status: 'réalisé', positive_points: 'Montages de qualité, retours clients positifs', improvement_areas: 'Délais de livraison parfois longs', actions: 'Fixer un délai max de 48h par montage', deadline: daysAgo(5), notes: 'Bon travail global' },
-      { coach_id: adminUserId, member_id: lucasId, date: isoTimestamp(30), status: 'réalisé', positive_points: 'Bonne énergie', improvement_areas: 'Suivi des leads froids', actions: 'Relancer les leads froids 1x/semaine', deadline: daysAgo(15), notes: 'Entretien mensuel' },
-      { coach_id: adminUserId, member_id: sarahId, date: daysFromNow(3) + 'T14:00:00Z', status: 'planifié', positive_points: null, improvement_areas: null, actions: null, deadline: null, notes: 'Prochain entretien' },
-      { coach_id: adminUserId, member_id: karimId, date: daysFromNow(5) + 'T10:00:00Z', status: 'planifié', positive_points: null, improvement_areas: null, actions: null, deadline: null, notes: 'Prochain entretien bimensuel' },
-    ]
-
-    const { data: interviewData, error: interviewError } = await supabase
-      .from('interviews')
-      .insert(interviewsToInsert)
-      .select('id')
-    if (interviewError) throw new Error(`Interviews: ${interviewError.message}`)
-    ids.interviewIds = interviewData.map((i) => i.id)
-
-    const blockagesToInsert = [
-      { interview_id: interviewData[0].id, member_id: sarahId, category: 'organisation' as const, problem: 'Relances trop tardives', why_1: 'Pas de système de suivi', why_2: 'Pas de rappels automatiques', root_cause: 'Absence d\'outil de planification des relances', decided_action: 'Mettre en place un workflow de relance automatisé', result: 'En cours' },
-      { interview_id: interviewData[1].id, member_id: lucasId, category: 'communication' as const, problem: 'Messages trop génériques', why_1: 'Copier-coller systématique', why_2: 'Pas de recherche sur le prospect', root_cause: 'Manque de formation sur la personnalisation', decided_action: 'Workshop personnalisation la semaine prochaine', result: null },
-      { interview_id: interviewData[2].id, member_id: karimId, category: 'technique' as const, problem: 'Debriefs incomplets après les calls', why_1: 'Pas le temps entre deux calls', why_2: 'Pas de template de debrief', root_cause: 'Manque de structure post-call', decided_action: 'Créer un template de debrief rapide (2min)', result: 'Template créé et en test' },
-      { interview_id: interviewData[4].id, member_id: thomasId, category: 'organisation' as const, problem: 'Délais de livraison dépassés', why_1: 'Trop de projets en parallèle', why_2: 'Pas de priorisation claire', root_cause: 'Absence de système de gestion de projets', decided_action: 'Utiliser un kanban pour suivre les montages', result: 'Kanban mis en place' },
-    ]
-
-    const { data: blockageData, error: blockageError } = await supabase
-      .from('blockages')
-      .insert(blockagesToInsert)
-      .select('id')
-    if (blockageError) throw new Error(`Blockages: ${blockageError.message}`)
-    ids.blockageIds = blockageData.map((b) => b.id)
-
-    // ── 13. Notifications (15) — user_id = admin ──
+    // ── 12. Notifications (15) — user_id = admin ──
     const notificationsToInsert = [
       { user_id: adminUserId, type: 'general' as const, title: 'Bienvenue sur Off-Market', message: 'Votre espace est prêt. Explorez les fonctionnalités !', is_read: true, created_at: isoTimestamp(30) },
       { user_id: adminUserId, type: 'lead_status' as const, title: 'Lead Antoine Girard → booké', message: 'Le statut du lead a changé.', is_read: true, created_at: isoTimestamp(14) },
@@ -500,7 +463,7 @@ export async function seedDemoData(adminUserId: string): Promise<string> {
       { user_id: adminUserId, type: 'call_closed' as const, title: 'Call closé — 3 000 €', message: 'Karim a closé un call avec Invest Mastery.', is_read: false, created_at: isoTimestamp(4) },
       { user_id: adminUserId, type: 'new_call' as const, title: 'Nouveau call planifié le ' + daysFromNow(2), message: 'Un call a été ajouté au calendrier.', is_read: false, created_at: isoTimestamp(3) },
       { user_id: adminUserId, type: 'lead_status' as const, title: 'Lead Hugo Martin → pas_intéressé', message: 'Le statut du lead a changé.', is_read: false, created_at: isoTimestamp(2) },
-      { user_id: adminUserId, type: 'general' as const, title: 'Nouvel entretien planifié', message: 'Entretien avec Sarah Martin dans 3 jours.', is_read: false, created_at: isoTimestamp(1) },
+      { user_id: adminUserId, type: 'general' as const, title: 'Nouvelle action requise', message: 'Vérifiez les relances en attente.', is_read: false, created_at: isoTimestamp(1) },
       { user_id: adminUserId, type: 'call_closed' as const, title: 'Call closé — 4 500 €', message: 'Karim a closé un call avec Digital Academy.', is_read: false, created_at: isoTimestamp(1) },
       { user_id: adminUserId, type: 'lead_status' as const, title: 'Lead Léa Bernard → booké', message: 'Nouveau lead booké.', is_read: false, created_at: new Date().toISOString() },
       { user_id: adminUserId, type: 'new_call' as const, title: 'Nouveau call demain à 10h', message: 'Call avec E-Com Empire.', is_read: false, created_at: new Date().toISOString() },
@@ -529,7 +492,6 @@ export async function seedDemoData(adminUserId: string): Promise<string> {
       `${payData.length} échéanciers`,
       `20 contenus sociaux`,
       `2 comptes IG + 15 posts`,
-      `8 entretiens + 4 blocages`,
       `15 notifications`,
     ].join(', ')
 
@@ -555,8 +517,6 @@ export async function clearDemoData(): Promise<void> {
 
   // Delete in reverse FK order
   const deletions: Array<{ table: string; ids: string[] }> = [
-    { table: 'blockages', ids: stored.blockageIds },
-    { table: 'interviews', ids: stored.interviewIds },
     { table: 'notifications', ids: stored.notificationIds },
     { table: 'setter_activities', ids: stored.setterActivityIds },
     { table: 'instagram_post_stats', ids: stored.instagramPostStatIds },

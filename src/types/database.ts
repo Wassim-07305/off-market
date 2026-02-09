@@ -136,37 +136,6 @@ export interface SetterActivity {
   created_at: string
 }
 
-export interface Interview {
-  id: string
-  coach_id: string
-  member_id: string
-  date: string
-  status: 'planifié' | 'réalisé' | 'annulé'
-  positive_points: string | null
-  improvement_areas: string | null
-  actions: string | null
-  deadline: string | null
-  notes: string | null
-  created_at: string
-}
-
-export interface Blockage {
-  id: string
-  interview_id: string | null
-  member_id: string | null
-  category: 'technique' | 'motivation' | 'organisation' | 'communication' | 'formation' | 'autre' | null
-  problem: string
-  why_1: string | null
-  why_2: string | null
-  why_3: string | null
-  why_4: string | null
-  why_5: string | null
-  root_cause: string | null
-  decided_action: string | null
-  result: string | null
-  created_at: string
-}
-
 export interface InstagramAccount {
   id: string
   client_id: string | null
@@ -237,12 +206,6 @@ export interface ClientAssignmentWithRelations extends ClientAssignment {
   client?: Client
 }
 
-export interface InterviewWithRelations extends Interview {
-  coach?: Profile
-  member?: Profile
-  blockages?: Blockage[]
-}
-
 // Supabase Database type for typed client
 export interface Database {
   public: {
@@ -258,8 +221,6 @@ export interface Database {
       payment_schedules: { Row: PaymentSchedule; Insert: Partial<PaymentSchedule> & { amount: number; due_date: string }; Update: Partial<PaymentSchedule>; Relationships: [] }
       social_content: { Row: SocialContent; Insert: Partial<SocialContent> & { title: string }; Update: Partial<SocialContent>; Relationships: [] }
       setter_activities: { Row: SetterActivity; Insert: Partial<SetterActivity> & { user_id: string }; Update: Partial<SetterActivity>; Relationships: [] }
-      interviews: { Row: Interview; Insert: Partial<Interview> & { coach_id: string; member_id: string; date: string }; Update: Partial<Interview>; Relationships: [] }
-      blockages: { Row: Blockage; Insert: Partial<Blockage> & { problem: string }; Update: Partial<Blockage>; Relationships: [] }
       instagram_accounts: { Row: InstagramAccount; Insert: Partial<InstagramAccount> & { username: string }; Update: Partial<InstagramAccount>; Relationships: [] }
       instagram_post_stats: { Row: InstagramPostStat; Insert: Partial<InstagramPostStat>; Update: Partial<InstagramPostStat>; Relationships: [] }
       notifications: { Row: Notification; Insert: Partial<Notification> & { user_id: string; type: string; title: string }; Update: Partial<Notification>; Relationships: [] }

@@ -12,7 +12,6 @@ import {
   Share2,
   DollarSign,
   Instagram,
-  UserCheck,
   Plus,
   Phone,
   FileText,
@@ -110,7 +109,6 @@ export function CommandPalette() {
     { id: 'nav-social', label: 'Contenus Social', icon: Share2, action: () => go('/social-content'), group: 'Navigation', module: 'social-content' },
     { id: 'nav-finances', label: 'Finances', icon: DollarSign, action: () => go('/finances'), group: 'Navigation', module: 'finances' },
     { id: 'nav-instagram', label: 'Instagram', icon: Instagram, action: () => go('/instagram'), group: 'Navigation', module: 'instagram' },
-    { id: 'nav-interviews', label: 'Entretiens', icon: UserCheck, action: () => go('/interviews'), group: 'Navigation', module: 'interviews' },
   ]
 
   const quickActions: CommandItem[] = [

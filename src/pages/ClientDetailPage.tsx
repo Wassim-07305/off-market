@@ -13,7 +13,6 @@ import {
   MessageSquare,
   Film,
   Instagram,
-  ClipboardList,
 } from 'lucide-react'
 import { useClient, useDeleteClient } from '@/hooks/useClients'
 import { useRole } from '@/hooks/useRole'
@@ -27,7 +26,6 @@ import { ClientFinances } from '@/components/clients/ClientFinances'
 import { ClientSetterActivity } from '@/components/clients/ClientSetterActivity'
 import { ClientSocialContent } from '@/components/clients/ClientSocialContent'
 import { ClientInstagram } from '@/components/clients/ClientInstagram'
-import { ClientInterviews } from '@/components/clients/ClientInterviews'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { TabsList, TabsContent } from '@/components/ui/tabs'
@@ -47,7 +45,6 @@ const TABS: TabItem[] = [
   { value: 'setter', label: <span className="inline-flex items-center gap-1.5"><MessageSquare className="hidden h-4 w-4 sm:block" />Setter</span> },
   { value: 'social', label: <span className="inline-flex items-center gap-1.5"><Film className="hidden h-4 w-4 sm:block" />Social</span> },
   { value: 'instagram', label: <span className="inline-flex items-center gap-1.5"><Instagram className="hidden h-4 w-4 sm:block" />Instagram</span> },
-  { value: 'interviews', label: <span className="inline-flex items-center gap-1.5"><ClipboardList className="hidden h-4 w-4 sm:block" />Entretiens</span> },
 ]
 
 export default function ClientDetailPage() {
@@ -189,10 +186,6 @@ export default function ClientDetailPage() {
 
       <TabsContent value="instagram" activeValue={activeTab}>
         <ClientInstagram clientId={client.id} />
-      </TabsContent>
-
-      <TabsContent value="interviews" activeValue={activeTab}>
-        <ClientInterviews clientId={client.id} />
       </TabsContent>
 
       {/* Edit Modal */}

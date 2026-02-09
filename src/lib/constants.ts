@@ -126,17 +126,6 @@ export const SOCIAL_STATUS_LABELS: Record<SocialStatus, string> = {
 export const SOCIAL_FORMATS = ['réel', 'story', 'carrousel', 'post'] as const
 export const VIDEO_TYPES = ['réact', 'b-roll', 'vidéo_virale', 'preuve_sociale', 'facecam', 'talking_head', 'vlog'] as const
 
-export const INTERVIEW_STATUSES = ['planifié', 'réalisé', 'annulé'] as const
-export type InterviewStatus = (typeof INTERVIEW_STATUSES)[number]
-
-export const INTERVIEW_STATUS_COLORS: Record<InterviewStatus, string> = {
-  planifié: 'bg-blue-100 text-blue-700',
-  réalisé: 'bg-green-100 text-green-700',
-  annulé: 'bg-red-100 text-red-700',
-}
-
-export const BLOCKAGE_CATEGORIES = ['technique', 'motivation', 'organisation', 'communication', 'formation', 'autre'] as const
-
 export const NOTIFICATION_TYPES = ['lead_status', 'new_call', 'call_closed', 'general'] as const
 
 export const RITUAL_FREQUENCIES = ['quotidien', 'hebdomadaire', 'mensuel'] as const

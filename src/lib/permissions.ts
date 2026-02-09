@@ -10,7 +10,6 @@ export type Module =
   | 'social-content'
   | 'finances'
   | 'instagram'
-  | 'interviews'
   | 'users'
   | 'documentation'
   | 'notifications'
@@ -25,7 +24,6 @@ const PERMISSIONS: Record<Module, AppRole[]> = {
   'social-content': ['admin', 'manager', 'coach', 'monteur'],
   finances: ['admin', 'manager'],
   instagram: ['admin', 'manager', 'coach', 'monteur'],
-  interviews: ['admin', 'manager', 'coach'],
   users: ['admin'],
   documentation: ['admin', 'manager', 'coach', 'setter', 'closer', 'monteur'],
   notifications: ['admin', 'manager', 'coach', 'setter', 'closer', 'monteur'],
