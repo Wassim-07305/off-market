@@ -9,6 +9,8 @@ import {
   Calendar,
   PhoneCall,
   MessageSquare,
+  MessageCircle,
+  GraduationCap,
   Share2,
   DollarSign,
   Instagram,
@@ -101,7 +103,9 @@ export function CommandPalette() {
 
   const navigationItems: CommandItem[] = [
     { id: 'nav-dashboard', label: 'Dashboard', icon: LayoutDashboard, action: () => go('/'), group: 'Navigation', module: 'dashboard' },
-    { id: 'nav-clients', label: 'Clients', icon: Users, action: () => go('/clients'), group: 'Navigation', module: 'clients' },
+    { id: 'nav-messaging', label: 'Messagerie', icon: MessageCircle, action: () => go('/messaging'), group: 'Navigation', module: 'messaging' },
+    { id: 'nav-formations', label: 'Formations', icon: GraduationCap, action: () => go('/formations'), group: 'Navigation', module: 'formations' },
+    { id: 'nav-clients', label: 'Élèves', icon: Users, action: () => go('/clients'), group: 'Navigation', module: 'clients' },
     { id: 'nav-leads', label: 'Suivi Leads', icon: Target, action: () => go('/leads'), group: 'Navigation', module: 'leads' },
     { id: 'nav-calendar', label: 'Calendrier', icon: Calendar, action: () => go('/call-calendar'), group: 'Navigation', module: 'call-calendar' },
     { id: 'nav-calls', label: 'CA & Calls', icon: PhoneCall, action: () => go('/closer-calls'), group: 'Navigation', module: 'closer-calls' },
@@ -109,6 +113,7 @@ export function CommandPalette() {
     { id: 'nav-social', label: 'Contenus Social', icon: Share2, action: () => go('/social-content'), group: 'Navigation', module: 'social-content' },
     { id: 'nav-finances', label: 'Finances', icon: DollarSign, action: () => go('/finances'), group: 'Navigation', module: 'finances' },
     { id: 'nav-instagram', label: 'Instagram', icon: Instagram, action: () => go('/instagram'), group: 'Navigation', module: 'instagram' },
+    { id: 'nav-student-overview', label: 'Suivi Élèves', icon: Users, action: () => go('/student-overview'), group: 'Navigation', module: 'student-overview' },
   ]
 
   const quickActions: CommandItem[] = [

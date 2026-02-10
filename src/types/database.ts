@@ -1,4 +1,4 @@
-export type AppRole = 'admin' | 'manager' | 'coach' | 'setter' | 'closer' | 'monteur'
+export type AppRole = 'admin' | 'setter' | 'eleve'
 
 export interface Profile {
   id: string
@@ -7,6 +7,7 @@ export interface Profile {
   avatar_url: string | null
   coach_id: string | null
   phone: string | null
+  last_seen_at: string | null
   created_at: string
   updated_at: string
 }
@@ -183,6 +184,135 @@ export interface Ritual {
   created_at: string
 }
 
+// Messaging types
+export interface Channel {
+  id: string
+  name: string
+  type: 'direct' | 'group'
+  write_mode: 'all' | 'admin_only'
+  created_by: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface ChannelMember {
+  id: string
+  channel_id: string
+  user_id: string
+  joined_at: string
+}
+
+export interface Message {
+  id: string
+  channel_id: string
+  sender_id: string
+  content: string | null
+  file_url: string | null
+  file_name: string | null
+  is_edited: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface MessageRead {
+  id: string
+  channel_id: string
+  user_id: string
+  last_read_at: string
+}
+
+// Formation types
+export interface Formation {
+  id: string
+  title: string
+  description: string | null
+  thumbnail_url: string | null
+  is_published: boolean
+  sort_order: number
+  created_by: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface FormationModule {
+  id: string
+  formation_id: string
+  title: string
+  description: string | null
+  sort_order: number
+  created_at: string
+  updated_at: string
+}
+
+export interface ModuleItem {
+  id: string
+  module_id: string
+  title: string
+  type: 'video' | 'document'
+  url: string | null
+  duration: number | null
+  sort_order: number
+  created_at: string
+  updated_at: string
+}
+
+export interface ItemCompletion {
+  id: string
+  item_id: string
+  user_id: string
+  completed_at: string
+}
+
+// Channel with computed fields (from RPC)
+export interface ChannelWithDetails extends Channel {
+  last_message?: {
+    id: string
+    content: string | null
+    sender_id: string
+    sender_name: string
+    created_at: string
+  } | null
+  unread_count: number
+  member_count: number
+  other_member?: {
+    id: string
+    full_name: string
+    avatar_url: string | null
+  } | null
+}
+
+// Message with sender profile
+export interface MessageWithSender extends Message {
+  sender?: Profile
+}
+
+// Formation progress (from RPC)
+export interface FormationProgress {
+  formation_id: string
+  user_id: string
+  total_items: number
+  completed_items: number
+  percentage: number
+}
+
+// Student overview (from RPC)
+export interface StudentOverview {
+  user_id: string
+  full_name: string
+  email: string
+  avatar_url: string | null
+  last_seen_at: string | null
+  created_at: string
+  formations: Array<{
+    formation_id: string
+    title: string
+    progress: FormationProgress
+  }>
+  messages_count: number
+  last_message_at: string | null
+  total_completions?: number
+}
+
 // Extended types with relations
 export interface LeadWithRelations extends Lead {
   client?: Client
@@ -225,6 +355,14 @@ export interface Database {
       instagram_post_stats: { Row: InstagramPostStat; Insert: Partial<InstagramPostStat>; Update: Partial<InstagramPostStat>; Relationships: [] }
       notifications: { Row: Notification; Insert: Partial<Notification> & { user_id: string; type: string; title: string }; Update: Partial<Notification>; Relationships: [] }
       rituals: { Row: Ritual; Insert: Partial<Ritual> & { title: string }; Update: Partial<Ritual>; Relationships: [] }
+      channels: { Row: Channel; Insert: Partial<Channel> & { name: string }; Update: Partial<Channel>; Relationships: [] }
+      channel_members: { Row: ChannelMember; Insert: Partial<ChannelMember> & { channel_id: string; user_id: string }; Update: Partial<ChannelMember>; Relationships: [] }
+      messages: { Row: Message; Insert: Partial<Message> & { channel_id: string; sender_id: string }; Update: Partial<Message>; Relationships: [] }
+      message_reads: { Row: MessageRead; Insert: Partial<MessageRead> & { channel_id: string; user_id: string }; Update: Partial<MessageRead>; Relationships: [] }
+      formations: { Row: Formation; Insert: Partial<Formation> & { title: string }; Update: Partial<Formation>; Relationships: [] }
+      formation_modules: { Row: FormationModule; Insert: Partial<FormationModule> & { formation_id: string; title: string }; Update: Partial<FormationModule>; Relationships: [] }
+      module_items: { Row: ModuleItem; Insert: Partial<ModuleItem> & { module_id: string; title: string }; Update: Partial<ModuleItem>; Relationships: [] }
+      item_completions: { Row: ItemCompletion; Insert: Partial<ItemCompletion> & { item_id: string; user_id: string }; Update: Partial<ItemCompletion>; Relationships: [] }
     }
     Views: {
       [_ in never]: never
@@ -232,9 +370,14 @@ export interface Database {
     Functions: {
       has_role: { Args: { _role: AppRole }; Returns: boolean }
       is_assigned_to_client: { Args: { _client_id: string }; Returns: boolean }
-      is_coached_by: { Args: { _user_id: string }; Returns: boolean }
+      is_channel_member: { Args: { p_channel_id: string }; Returns: boolean }
       get_dashboard_stats: { Args: Record<string, never>; Returns: DashboardStats }
       global_search: { Args: { search_term: string }; Returns: GlobalSearchResult }
+      get_user_channels: { Args: Record<string, never>; Returns: ChannelWithDetails[] }
+      mark_channel_read: { Args: { p_channel_id: string }; Returns: void }
+      get_formation_progress: { Args: { p_formation_id: string; p_user_id?: string }; Returns: FormationProgress }
+      get_student_overview: { Args: { p_user_id: string }; Returns: StudentOverview }
+      get_students_overview: { Args: Record<string, never>; Returns: StudentOverview[] }
     }
     Enums: {
       app_role: AppRole

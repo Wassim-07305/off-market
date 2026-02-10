@@ -15,7 +15,6 @@ interface UserFormModalProps {
   open: boolean
   onClose: () => void
   user: UserWithRole | null
-  profiles: Pick<Profile, 'id' | 'full_name'>[]
 }
 
 const ROLE_OPTIONS = APP_ROLES.map((r) => ({
@@ -23,29 +22,17 @@ const ROLE_OPTIONS = APP_ROLES.map((r) => ({
   label: ROLE_LABELS[r],
 }))
 
-export function UserFormModal({ open, onClose, user, profiles }: UserFormModalProps) {
+export function UserFormModal({ open, onClose, user }: UserFormModalProps) {
   const updateProfile = useUpdateProfile()
   const updateUserRole = useUpdateUserRole()
 
   const [fullName, setFullName] = useState('')
-  const [role, setRole] = useState<AppRole>('setter')
-  const [coachId, setCoachId] = useState('')
-
-  const coachOptions = [
-    { value: '', label: 'Aucun coach' },
-    ...profiles
-      .filter((p) => p.id !== user?.id)
-      .map((p) => ({
-        value: p.id,
-        label: p.full_name,
-      })),
-  ]
+  const [role, setRole] = useState<AppRole>('eleve')
 
   useEffect(() => {
     if (open && user) {
       setFullName(user.full_name)
       setRole(user.role)
-      setCoachId(user.coach_id ?? '')
     }
   }, [open, user])
 
@@ -60,7 +47,6 @@ export function UserFormModal({ open, onClose, user, profiles }: UserFormModalPr
       updateProfile.mutateAsync({
         id: user.id,
         full_name: fullName,
-        coach_id: coachId || null,
       })
     )
 
@@ -106,14 +92,6 @@ export function UserFormModal({ open, onClose, user, profiles }: UserFormModalPr
           options={ROLE_OPTIONS}
           value={role}
           onChange={(val) => setRole(val as AppRole)}
-        />
-
-        <Select
-          label="Coach assigné"
-          options={coachOptions}
-          value={coachId}
-          onChange={setCoachId}
-          placeholder="Sélectionner un coach"
         />
 
         <div className="flex items-center justify-end gap-3 pt-2">

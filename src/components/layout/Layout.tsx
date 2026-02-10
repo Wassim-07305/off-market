@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useUIStore } from '@/stores/ui-store'
+import { usePresence } from '@/hooks/usePresence'
 import { Sidebar } from '@/components/layout/Sidebar'
 import { Header } from '@/components/layout/Header'
 import { CommandPalette } from '@/components/layout/CommandPalette'
@@ -11,6 +12,7 @@ import { DemoDataButton } from '@/components/admin/DemoDataButton'
 export function Layout() {
   const { setSidebarCollapsed, setMobileSidebarOpen } = useUIStore()
   const location = useLocation()
+  usePresence()
 
   // Auto-collapse sidebar on small screens, hide on mobile
   useEffect(() => {

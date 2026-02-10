@@ -19,9 +19,7 @@ export function useRole() {
     hasRole,
     canAccess: checkAccess,
     isAdmin: role === 'admin',
-    isManager: role === 'manager',
-    isCoach: role === 'coach',
     isSetter: role === 'setter',
-    isCloser: role === 'closer',
+    isEleve: role === 'eleve',
   }
 }

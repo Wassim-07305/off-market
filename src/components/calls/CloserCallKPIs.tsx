@@ -6,13 +6,11 @@ import { formatCurrency, formatPercent, cn } from '@/lib/utils'
 
 interface CloserCallKPIsProps {
   clientId?: string
-  closerId?: string
 }
 
-export function CloserCallKPIs({ clientId, closerId }: CloserCallKPIsProps) {
+export function CloserCallKPIs({ clientId }: CloserCallKPIsProps) {
   const { data: stats, isLoading } = useCloserCallStats({
     client_id: clientId,
-    closer_id: closerId,
   })
 
   if (isLoading) {
