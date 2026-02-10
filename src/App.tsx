@@ -22,6 +22,10 @@ import FinancesPage from '@/pages/FinancesPage'
 import InstagramPage from '@/pages/InstagramPage'
 import UsersPage from '@/pages/UsersPage'
 import DocumentationPage from '@/pages/DocumentationPage'
+import MessagingPage from '@/pages/MessagingPage'
+import FormationsPage from '@/pages/FormationsPage'
+import FormationDetailPage from '@/pages/FormationDetailPage'
+import StudentOverviewPage from '@/pages/StudentOverviewPage'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -58,6 +62,17 @@ function App() {
               <Route path="/social-content" element={<SocialContentPage />} />
               <Route path="/finances" element={<FinancesPage />} />
               <Route path="/instagram" element={<InstagramPage />} />
+              <Route path="/messaging" element={<MessagingPage />} />
+              <Route path="/formations" element={<FormationsPage />} />
+              <Route path="/formations/:id" element={<FormationDetailPage />} />
+              <Route
+                path="/student-overview"
+                element={
+                  <RoleGuard module="student-overview">
+                    <StudentOverviewPage />
+                  </RoleGuard>
+                }
+              />
               <Route
                 path="/users"
                 element={

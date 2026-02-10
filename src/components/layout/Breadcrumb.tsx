@@ -2,7 +2,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { ChevronRight, Home } from 'lucide-react'
 
 const ROUTE_LABELS: Record<string, string> = {
-  clients: 'Clients',
+  clients: 'Élèves',
   leads: 'Leads',
   'call-calendar': 'Calendrier',
   'closer-calls': 'Closer Calls',
@@ -12,6 +12,9 @@ const ROUTE_LABELS: Record<string, string> = {
   instagram: 'Instagram',
   users: 'Utilisateurs',
   documentation: 'Documentation',
+  messaging: 'Messagerie',
+  formations: 'Formations',
+  'student-overview': 'Suivi Élèves',
 }
 
 export function Breadcrumb() {

@@ -19,7 +19,7 @@ export function useUsers() {
 
       return (profiles as Profile[]).map((profile) => ({
         ...profile,
-        role: (roles as UserRole[]).find((r) => r.user_id === profile.id)?.role ?? 'setter' as AppRole,
+        role: (roles as UserRole[]).find((r) => r.user_id === profile.id)?.role ?? 'eleve' as AppRole,
       }))
     },
   })

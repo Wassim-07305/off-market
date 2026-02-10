@@ -154,3 +154,47 @@ export const instagramPostStatSchema = z.object({
   posted_at: z.string().optional().or(z.literal('')),
 })
 export type InstagramPostStatFormData = z.infer<typeof instagramPostStatSchema>
+
+// Channel forms
+export const channelSchema = z.object({
+  name: z.string().min(1, 'Le nom est requis'),
+  type: z.enum(['direct', 'group']).default('group'),
+  write_mode: z.enum(['all', 'admin_only']).default('all'),
+  member_ids: z.array(z.string().uuid()).min(1, 'Au moins un membre requis'),
+})
+export type ChannelFormData = z.infer<typeof channelSchema>
+
+// Message forms
+export const messageSchema = z.object({
+  content: z.string().min(1, 'Le message ne peut pas être vide'),
+  file_url: z.string().url().optional().or(z.literal('')),
+  file_name: z.string().optional().or(z.literal('')),
+})
+export type MessageFormData = z.infer<typeof messageSchema>
+
+// Formation forms
+export const formationSchema = z.object({
+  title: z.string().min(1, 'Le titre est requis'),
+  description: z.string().optional().or(z.literal('')),
+  thumbnail_url: z.string().url().optional().or(z.literal('')),
+  is_published: z.boolean().default(false),
+})
+export type FormationFormData = z.infer<typeof formationSchema>
+
+// Formation module forms
+export const formationModuleSchema = z.object({
+  formation_id: z.string().uuid(),
+  title: z.string().min(1, 'Le titre est requis'),
+  description: z.string().optional().or(z.literal('')),
+})
+export type FormationModuleFormData = z.infer<typeof formationModuleSchema>
+
+// Module item forms
+export const moduleItemSchema = z.object({
+  module_id: z.string().uuid(),
+  title: z.string().min(1, 'Le titre est requis'),
+  type: z.enum(['video', 'document']).default('video'),
+  url: z.string().url().optional().or(z.literal('')),
+  duration: z.coerce.number().int().min(0).optional(),
+})
+export type ModuleItemFormData = z.infer<typeof moduleItemSchema>

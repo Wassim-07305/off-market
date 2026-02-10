@@ -7,7 +7,6 @@ import type { CloserCallFormData } from '@/types/forms'
 import { useCreateCloserCall, useUpdateCloserCall } from '@/hooks/useCloserCalls'
 import { useClients } from '@/hooks/useClients'
 import { useLeadsByClient } from '@/hooks/useLeads'
-import { useProfiles } from '@/hooks/useUsers'
 import { Modal } from '@/components/ui/modal'
 import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
@@ -32,7 +31,6 @@ export function CloserCallFormModal({ open, onClose, call }: CloserCallFormModal
   const createCall = useCreateCloserCall()
   const updateCall = useUpdateCloserCall()
   const { data: clientsData } = useClients()
-  const { data: profiles } = useProfiles()
 
   const {
     register,
@@ -60,7 +58,6 @@ export function CloserCallFormModal({ open, onClose, call }: CloserCallFormModal
   const watchedClientId = watch('client_id')
   const watchedStatus = watch('status')
   const watchedLeadId = watch('lead_id')
-  const watchedCloserId = watch('closer_id')
 
   const { data: clientLeads } = useLeadsByClient(watchedClientId || undefined)
 
@@ -120,11 +117,6 @@ export function CloserCallFormModal({ open, onClose, call }: CloserCallFormModal
     ...(clientLeads ?? []).map((l) => ({ value: l.id, label: l.name })),
   ]
 
-  const closerOptions = [
-    { value: '', label: 'Aucun closer' },
-    ...(profiles ?? []).map((p) => ({ value: p.id, label: p.full_name })),
-  ]
-
   const statusOptions = CLOSER_CALL_STATUSES.map((s) => ({
     value: s,
     label: statusLabels[s],
@@ -159,22 +151,12 @@ export function CloserCallFormModal({ open, onClose, call }: CloserCallFormModal
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <Select
-            label="Closer"
-            options={closerOptions}
-            value={watchedCloserId ?? ''}
-            onChange={(val) => setValue('closer_id', val || null)}
-            error={errors.closer_id?.message}
-          />
           <Input
             label="Date"
             type="date"
             {...register('date')}
             error={errors.date?.message}
           />
-        </div>
-
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <Select
             label="Statut"
             options={statusOptions}
@@ -182,6 +164,9 @@ export function CloserCallFormModal({ open, onClose, call }: CloserCallFormModal
             onChange={(val) => setValue('status', val as CloserCallFormData['status'])}
             error={errors.status?.message}
           />
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Input
             label="Revenue"
             type="number"

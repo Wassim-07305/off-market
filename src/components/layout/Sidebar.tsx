@@ -7,6 +7,8 @@ import {
   Calendar,
   PhoneCall,
   MessageSquare,
+  MessageCircle,
+  GraduationCap,
   Share2,
   DollarSign,
   Instagram,
@@ -41,13 +43,15 @@ const NAV_SECTIONS: NavSection[] = [
   {
     items: [
       { label: 'Dashboard', icon: LayoutDashboard, path: '/', module: 'dashboard' },
-      { label: 'Clients', icon: Users, path: '/clients', module: 'clients' },
-      { label: 'Suivi Leads', icon: Target, path: '/leads', module: 'leads' },
+      { label: 'Messagerie', icon: MessageCircle, path: '/messaging', module: 'messaging' },
+      { label: 'Formations', icon: GraduationCap, path: '/formations', module: 'formations' },
+      { label: 'Élèves', icon: Users, path: '/clients', module: 'clients' },
     ],
   },
   {
     label: 'Opérations',
     items: [
+      { label: 'Suivi Leads', icon: Target, path: '/leads', module: 'leads' },
       { label: 'Calendrier', icon: Calendar, path: '/call-calendar', module: 'call-calendar' },
       { label: 'CA & Calls', icon: PhoneCall, path: '/closer-calls', module: 'closer-calls' },
       { label: 'Activité Setter', icon: MessageSquare, path: '/setter-activity', module: 'setter-activity' },
@@ -58,6 +62,7 @@ const NAV_SECTIONS: NavSection[] = [
   {
     label: 'Gestion',
     items: [
+      { label: 'Suivi Élèves', icon: Users, path: '/student-overview', module: 'student-overview' },
       { label: 'Finances', icon: DollarSign, path: '/finances', module: 'finances' },
       { label: 'Utilisateurs', icon: Settings, path: '/users', module: 'users' },
       { label: 'Documentation', icon: BookOpen, path: '/documentation', module: 'documentation' },

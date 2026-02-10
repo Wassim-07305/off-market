@@ -7,7 +7,6 @@ import { ITEMS_PER_PAGE } from '@/lib/constants'
 
 interface CloserCallFilters {
   client_id?: string
-  closer_id?: string
   status?: string
   date_from?: string
   date_to?: string
@@ -31,7 +30,6 @@ export function useCloserCalls(filters: CloserCallFilters = {}) {
         .range(from, to)
 
       if (rest.client_id) query = query.eq('client_id', rest.client_id)
-      if (rest.closer_id) query = query.eq('closer_id', rest.closer_id)
       if (rest.status) query = query.eq('status', rest.status)
       if (rest.date_from) query = query.gte('date', rest.date_from)
       if (rest.date_to) query = query.lte('date', rest.date_to)
@@ -81,13 +79,12 @@ export function useUpdateCloserCall() {
   })
 }
 
-export function useCloserCallStats(filters: { client_id?: string; closer_id?: string } = {}) {
+export function useCloserCallStats(filters: { client_id?: string } = {}) {
   return useQuery({
     queryKey: ['closer-call-stats', filters],
     queryFn: async () => {
       let query = supabase.from('closer_calls').select('status, revenue')
       if (filters.client_id) query = query.eq('client_id', filters.client_id)
-      if (filters.closer_id) query = query.eq('closer_id', filters.closer_id)
 
       const { data, error } = await query
       if (error) throw error

@@ -3,7 +3,6 @@ import { Plus, Download } from 'lucide-react'
 import type { CloserCallWithRelations } from '@/types/database'
 import { useCloserCalls } from '@/hooks/useCloserCalls'
 import { useClients } from '@/hooks/useClients'
-import { useProfiles } from '@/hooks/useUsers'
 import { CloserCallKPIs } from '@/components/calls/CloserCallKPIs'
 import { CloserCallsTable } from '@/components/calls/CloserCallsTable'
 import { CloserCallFormModal } from '@/components/calls/CloserCallFormModal'
@@ -21,7 +20,6 @@ const statusLabels: Record<CloserCallStatus, string> = {
 
 export default function CloserCallsPage() {
   const [clientId, setClientId] = useState('')
-  const [closerId, setCloserId] = useState('')
   const [status, setStatus] = useState('')
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
@@ -31,7 +29,6 @@ export default function CloserCallsPage() {
 
   const filters = {
     client_id: clientId || undefined,
-    closer_id: closerId || undefined,
     status: status || undefined,
     date_from: dateFrom || undefined,
     date_to: dateTo || undefined,
@@ -40,7 +37,6 @@ export default function CloserCallsPage() {
 
   const { data, isLoading } = useCloserCalls(filters)
   const { data: clientsData } = useClients()
-  const { data: profiles } = useProfiles()
 
   const totalPages = Math.ceil((data?.count ?? 0) / ITEMS_PER_PAGE)
 
@@ -83,11 +79,6 @@ export default function CloserCallsPage() {
     ...(clientsData?.data ?? []).map((c) => ({ value: c.id, label: c.name })),
   ]
 
-  const closerOptions = [
-    { value: '', label: 'Tous les closers' },
-    ...(profiles ?? []).map((p) => ({ value: p.id, label: p.full_name })),
-  ]
-
   const statusOptions = [
     { value: '', label: 'Tous les statuts' },
     ...CLOSER_CALL_STATUSES.map((s) => ({ value: s, label: statusLabels[s] })),
@@ -122,7 +113,7 @@ export default function CloserCallsPage() {
         </div>
       </div>
 
-      <CloserCallKPIs clientId={clientId || undefined} closerId={closerId || undefined} />
+      <CloserCallKPIs clientId={clientId || undefined} />
 
       <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-3">
         <Select
@@ -133,16 +124,6 @@ export default function CloserCallsPage() {
             setPage(1)
           }}
           placeholder="Client"
-          className="w-full sm:w-48"
-        />
-        <Select
-          options={closerOptions}
-          value={closerId}
-          onChange={(val) => {
-            setCloserId(val)
-            setPage(1)
-          }}
-          placeholder="Closer"
           className="w-full sm:w-48"
         />
         <Select

@@ -22,8 +22,8 @@ const statusFilterOptions = [
 ]
 
 export default function ClientsPage() {
-  const { isAdmin, isManager } = useRole()
-  const canCreate = isAdmin || isManager
+  const { isAdmin } = useRole()
+  const canCreate = isAdmin
 
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('')

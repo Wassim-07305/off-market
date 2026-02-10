@@ -13,20 +13,26 @@ export type Module =
   | 'users'
   | 'documentation'
   | 'notifications'
+  | 'messaging'
+  | 'formations'
+  | 'student-overview'
 
 const PERMISSIONS: Record<Module, AppRole[]> = {
-  dashboard: ['admin', 'manager', 'coach', 'setter', 'closer', 'monteur'],
-  clients: ['admin', 'manager', 'coach', 'setter', 'closer', 'monteur'],
-  leads: ['admin', 'manager', 'coach', 'setter', 'closer'],
-  'call-calendar': ['admin', 'manager', 'coach', 'setter', 'closer'],
-  'closer-calls': ['admin', 'manager', 'closer'],
-  'setter-activity': ['admin', 'manager', 'setter'],
-  'social-content': ['admin', 'manager', 'coach', 'monteur'],
-  finances: ['admin', 'manager'],
-  instagram: ['admin', 'manager', 'coach', 'monteur'],
+  dashboard: ['admin', 'setter', 'eleve'],
+  clients: ['admin', 'setter'],
+  leads: ['admin', 'setter'],
+  'call-calendar': ['admin', 'setter'],
+  'closer-calls': ['admin'],
+  'setter-activity': ['admin', 'setter'],
+  'social-content': ['admin'],
+  finances: ['admin'],
+  instagram: ['admin'],
   users: ['admin'],
-  documentation: ['admin', 'manager', 'coach', 'setter', 'closer', 'monteur'],
-  notifications: ['admin', 'manager', 'coach', 'setter', 'closer', 'monteur'],
+  documentation: ['admin', 'setter', 'eleve'],
+  notifications: ['admin', 'setter', 'eleve'],
+  messaging: ['admin', 'setter', 'eleve'],
+  formations: ['admin', 'eleve'],
+  'student-overview': ['admin'],
 }
 
 export function canAccess(role: AppRole | null, module: Module): boolean {

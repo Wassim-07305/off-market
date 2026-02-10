@@ -50,8 +50,8 @@ const TABS: TabItem[] = [
 export default function ClientDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { isAdmin, isManager } = useRole()
-  const canEdit = isAdmin || isManager
+  const { isAdmin } = useRole()
+  const canEdit = isAdmin
 
   const { data: client, isLoading } = useClient(id)
   const deleteClient = useDeleteClient()

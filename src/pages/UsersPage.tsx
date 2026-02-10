@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Users } from 'lucide-react'
-import { useUsers, useProfiles } from '@/hooks/useUsers'
+import { useUsers } from '@/hooks/useUsers'
 import type { Profile, AppRole } from '@/types/database'
 import { Skeleton } from '@/components/ui/skeleton'
 import { EmptyState } from '@/components/ui/empty-state'
@@ -13,7 +13,6 @@ interface UserWithRole extends Profile {
 
 export default function UsersPage() {
   const { data: users, isLoading } = useUsers()
-  const { data: profiles } = useProfiles()
   const [selectedUser, setSelectedUser] = useState<UserWithRole | null>(null)
   const [showModal, setShowModal] = useState(false)
 
@@ -33,7 +32,7 @@ export default function UsersPage() {
       <div>
         <h1 className="text-xl sm:text-2xl font-bold text-foreground">Gestion des Utilisateurs</h1>
         <p className="text-sm text-muted-foreground">
-          Gérez les utilisateurs, leurs rôles et les coachs assignés.
+          Gérez les utilisateurs et leurs rôles.
         </p>
       </div>
 
@@ -55,7 +54,6 @@ export default function UsersPage() {
       ) : (
         <UsersTable
           data={users as UserWithRole[]}
-          profiles={profiles ?? []}
           onRowClick={handleRowClick}
         />
       )}
@@ -65,7 +63,6 @@ export default function UsersPage() {
         open={showModal}
         onClose={handleCloseModal}
         user={selectedUser}
-        profiles={profiles ?? []}
       />
     </div>
   )

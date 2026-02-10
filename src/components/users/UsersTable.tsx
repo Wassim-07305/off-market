@@ -14,7 +14,6 @@ interface UserWithRole extends Profile {
 
 interface UsersTableProps {
   data: UserWithRole[]
-  profiles: Pick<Profile, 'id' | 'full_name'>[]
   onRowClick: (user: UserWithRole) => void
 }
 
@@ -23,16 +22,8 @@ const ROLE_OPTIONS = APP_ROLES.map((r) => ({
   label: ROLE_LABELS[r],
 }))
 
-export function UsersTable({ data, profiles, onRowClick }: UsersTableProps) {
+export function UsersTable({ data, onRowClick }: UsersTableProps) {
   const updateUserRole = useUpdateUserRole()
-
-  const coachMap = useMemo(() => {
-    const map = new Map<string, string>()
-    for (const p of profiles) {
-      map.set(p.id, p.full_name)
-    }
-    return map
-  }, [profiles])
 
   const columns = useMemo<ColumnDef<UserWithRole, unknown>[]>(
     () => [
@@ -85,20 +76,6 @@ export function UsersTable({ data, profiles, onRowClick }: UsersTableProps) {
         ),
       },
       {
-        id: 'coach',
-        header: 'Coach assigné',
-        cell: ({ row }) => {
-          const coachName = row.original.coach_id
-            ? coachMap.get(row.original.coach_id)
-            : null
-          return (
-            <span className="text-sm text-muted-foreground">
-              {coachName ?? '-'}
-            </span>
-          )
-        },
-      },
-      {
         accessorKey: 'created_at',
         header: 'Date inscription',
         cell: ({ row }) => (
@@ -108,7 +85,7 @@ export function UsersTable({ data, profiles, onRowClick }: UsersTableProps) {
         ),
       },
     ],
-    [coachMap, updateUserRole]
+    [updateUserRole]
   )
 
   return (

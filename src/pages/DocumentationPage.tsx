@@ -4,12 +4,14 @@ import {
   Phone,
   PhoneCall,
   MessageSquare,
+  MessageCircle,
   Film,
   DollarSign,
   Instagram,
   BarChart3,
   Search,
   Shield,
+  GraduationCap,
 } from 'lucide-react'
 
 const modules = [
@@ -20,16 +22,28 @@ const modules = [
       'Vue d\'ensemble de votre activité avec les indicateurs clés : chiffre d\'affaires, nombre d\'appels, taux de closing et messages envoyés. Les tendances sont calculées par rapport au mois précédent.',
   },
   {
-    icon: Users,
-    title: 'Gestion des clients',
+    icon: MessageCircle,
+    title: 'Messagerie',
     description:
-      'Centralisez toutes les informations de vos clients : coordonnées, statut (actif, inactif, archivé), notes et historique complet. Chaque client peut être assigné à un ou plusieurs membres de l\'équipe.',
+      'Communiquez en temps réel avec votre équipe et vos élèves. Canaux directs, groupes et canal général. L\'admin peut configurer les canaux en lecture seule si nécessaire.',
+  },
+  {
+    icon: GraduationCap,
+    title: 'Formations',
+    description:
+      'Créez et gérez vos formations avec des modules, vidéos et documents. Les élèves suivent leur progression et complètent les items au fur et à mesure de leur apprentissage.',
+  },
+  {
+    icon: Users,
+    title: 'Suivi des élèves',
+    description:
+      'Tableau de bord admin pour suivre la progression de tous les élèves : avancement des formations, dernière connexion, activité de messagerie et timeline complète.',
   },
   {
     icon: UserCheck,
     title: 'Gestion des leads',
     description:
-      'Suivez vos prospects du premier contact jusqu\'à la conversion. Gérez les statuts (à relancer, booké, no show, pas intéressé, en cours), les sources d\'acquisition et les commissions setter/closer.',
+      'Suivez vos prospects du premier contact jusqu\'à la conversion. Gérez les statuts (à relancer, booké, no show, pas intéressé, en cours), les sources d\'acquisition et les commissions.',
   },
   {
     icon: Phone,
@@ -71,7 +85,7 @@ const modules = [
     icon: Shield,
     title: 'Gestion des utilisateurs',
     description:
-      'Administrez les comptes et les rôles de votre équipe : admin, manager, coach, setter, closer et monteur. Chaque rôle dispose de permissions spécifiques adaptées à ses responsabilités.',
+      'Administrez les comptes et les rôles de votre équipe : admin, setter et élève. Chaque rôle dispose de permissions spécifiques adaptées à ses responsabilités.',
   },
   {
     icon: Search,
@@ -90,7 +104,7 @@ export default function DocumentationPage() {
         <p className="mt-2 max-w-2xl text-muted-foreground">
           Bienvenue dans la documentation de Off-Market. Retrouvez ci-dessous la description
           de chaque module disponible dans l'application. Cette plateforme a été conçue
-          pour centraliser la gestion de vos clients, leads, finances et contenus en un
+          pour centraliser la gestion de vos élèves, formations, leads et finances en un
           seul endroit.
         </p>
       </div>
@@ -101,15 +115,15 @@ export default function DocumentationPage() {
         <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
           <li className="flex items-start gap-2">
             <span className="mt-0.5 block h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-            Commencez par ajouter vos clients dans le module <strong>Clients</strong>.
+            Consultez la <strong>Messagerie</strong> pour communiquer avec vos élèves en temps réel.
           </li>
           <li className="flex items-start gap-2">
             <span className="mt-0.5 block h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-            Créez des leads et suivez leur progression dans le pipeline de vente.
+            Créez vos <strong>Formations</strong> avec des modules, vidéos et documents.
           </li>
           <li className="flex items-start gap-2">
             <span className="mt-0.5 block h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-            Planifiez vos appels via le <strong>Calendrier d'appels</strong> et enregistrez les résultats.
+            Suivez la progression de vos élèves via le <strong>Suivi des élèves</strong>.
           </li>
           <li className="flex items-start gap-2">
             <span className="mt-0.5 block h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
@@ -154,14 +168,11 @@ export default function DocumentationPage() {
         <p className="mt-2 text-sm text-muted-foreground">
           Off-Market dispose d'un système de rôles pour contrôler l'accès aux différents modules :
         </p>
-        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-4 grid gap-3 sm:grid-cols-3">
           {[
-            { role: 'Admin', desc: 'Accès complet à tous les modules et à la gestion des utilisateurs.' },
-            { role: 'Manager', desc: 'Vue d\'ensemble de l\'équipe, gestion des clients et des leads.' },
-            { role: 'Coach', desc: 'Suivi de ses clients assignés et de leur progression.' },
-            { role: 'Setter', desc: 'Gestion de l\'activité de prospection et des messages envoyés.' },
-            { role: 'Closer', desc: 'Gestion des appels de closing et suivi des conversions.' },
-            { role: 'Monteur', desc: 'Gestion des contenus sociaux et du pipeline de création.' },
+            { role: 'Admin', desc: 'Accès complet à tous les modules : gestion des utilisateurs, formations, messagerie, suivi des élèves, CRM et finances.' },
+            { role: 'Setter', desc: 'Gestion de l\'activité de prospection, des leads, du calendrier d\'appels et de la messagerie.' },
+            { role: 'Élève', desc: 'Accès aux formations, à la messagerie et au tableau de bord personnel.' },
           ].map((item) => (
             <div key={item.role} className="rounded-md border border-border bg-background p-3">
               <span className="text-sm font-medium text-foreground">{item.role}</span>
