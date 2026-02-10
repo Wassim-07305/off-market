@@ -11,11 +11,13 @@ import { ArrowRight, Users } from 'lucide-react'
 import type { BadgeVariant } from '@/components/ui/badge'
 
 const statusConfig: Record<Lead['status'], { label: string; variant: BadgeVariant }> = {
-  'à_relancer': { label: 'A relancer', variant: 'warning' },
-  'booké': { label: 'Booke', variant: 'default' },
-  'no_show': { label: 'No show', variant: 'destructive' },
-  'pas_intéressé': { label: 'Pas interesse', variant: 'secondary' },
-  'en_cours': { label: 'En cours', variant: 'success' },
+  'premier_message': { label: 'Premier message', variant: 'secondary' },
+  'en_discussion': { label: 'En discussion', variant: 'default' },
+  'qualifie': { label: 'Qualifié', variant: 'default' },
+  'loom_envoye': { label: 'Loom envoyé', variant: 'warning' },
+  'call_planifie': { label: 'Call planifié', variant: 'warning' },
+  'close': { label: 'Closé', variant: 'success' },
+  'perdu': { label: 'Perdu', variant: 'destructive' },
 }
 
 function useRecentLeads() {
@@ -43,7 +45,7 @@ export function RecentLeads() {
         <div className="flex items-center justify-between">
           <CardTitle>Leads recents</CardTitle>
           <Link
-            to="/leads"
+            to="/pipeline"
             className="flex items-center gap-1 text-sm font-medium text-primary hover:underline"
           >
             Voir tout
@@ -116,7 +118,7 @@ export function RecentLeads() {
       {leads && leads.length > 0 && (
         <CardFooter>
           <Link
-            to="/leads"
+            to="/pipeline"
             className="text-sm font-medium text-primary hover:underline"
           >
             Voir tous les leads

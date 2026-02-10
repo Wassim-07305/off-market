@@ -41,8 +41,7 @@ export const leadSchema = z.object({
   email: z.string().email('Email invalide').optional().or(z.literal('')),
   phone: z.string().optional().or(z.literal('')),
   source: z.enum(['instagram', 'linkedin', 'tiktok', 'referral', 'ads', 'autre']).optional(),
-  status: z.enum(['à_relancer', 'booké', 'no_show', 'pas_intéressé', 'en_cours']).default('à_relancer'),
-  client_status: z.enum(['contacté', 'qualifié', 'proposé', 'closé', 'perdu']).default('contacté'),
+  status: z.enum(['premier_message', 'en_discussion', 'qualifie', 'loom_envoye', 'call_planifie', 'close', 'perdu']).default('premier_message'),
   client_id: z.string().uuid().optional().nullable(),
   assigned_to: z.string().uuid().optional().nullable(),
   ca_contracté: z.coerce.number().min(0).default(0),
@@ -60,27 +59,12 @@ export const callCalendarSchema = z.object({
   assigned_to: z.string().uuid().optional().nullable(),
   date: z.string().min(1, 'La date est requise'),
   time: z.string().min(1, "L'heure est requise"),
-  type: z.enum(['manuel', 'iclosed', 'calendly', 'autre']).default('manuel'),
+  type: z.enum(['manuel', 'iclosed', 'calendly', 'coaching', 'closing', 'autre']).default('manuel'),
   status: z.enum(['planifié', 'réalisé', 'no_show', 'annulé', 'reporté']).default('planifié'),
   link: z.string().url().optional().or(z.literal('')),
   notes: z.string().optional().or(z.literal('')),
 })
 export type CallCalendarFormData = z.infer<typeof callCalendarSchema>
-
-// Closer call forms
-export const closerCallSchema = z.object({
-  client_id: z.string().uuid('Sélectionnez un client'),
-  lead_id: z.string().uuid().optional().nullable(),
-  closer_id: z.string().uuid().optional().nullable(),
-  date: z.string().min(1, 'La date est requise'),
-  status: z.enum(['closé', 'non_closé']).default('non_closé'),
-  revenue: z.coerce.number().min(0).default(0),
-  nombre_paiements: z.coerce.number().int().min(1).default(1),
-  link: z.string().url().optional().or(z.literal('')),
-  debrief: z.string().optional().or(z.literal('')),
-  notes: z.string().optional().or(z.literal('')),
-})
-export type CloserCallFormData = z.infer<typeof closerCallSchema>
 
 // Financial entry forms
 export const financialEntrySchema = z.object({
@@ -105,55 +89,16 @@ export const paymentScheduleSchema = z.object({
 })
 export type PaymentScheduleFormData = z.infer<typeof paymentScheduleSchema>
 
-// Social content forms
-export const socialContentSchema = z.object({
-  client_id: z.string().uuid('Sélectionnez un client'),
-  title: z.string().min(1, 'Le titre est requis'),
-  status: z.enum(['à_tourner', 'idée', 'en_cours', 'publié', 'reporté']).default('idée'),
-  format: z.enum(['réel', 'story', 'carrousel', 'post']).optional().nullable(),
-  video_type: z
-    .enum(['réact', 'b-roll', 'vidéo_virale', 'preuve_sociale', 'facecam', 'talking_head', 'vlog'])
-    .optional()
-    .nullable(),
-  link: z.string().url().optional().or(z.literal('')),
-  is_validated: z.boolean().default(false),
-  text_content: z.string().optional().or(z.literal('')),
-  planned_date: z.string().optional().or(z.literal('')),
-})
-export type SocialContentFormData = z.infer<typeof socialContentSchema>
-
-// Setter activity forms
+// Activity forms (prospection)
 export const setterActivitySchema = z.object({
-  client_id: z.string().uuid('Sélectionnez un client'),
+  client_id: z.string().uuid().optional().nullable(),
   date: z.string().min(1, 'La date est requise'),
   messages_sent: z.coerce.number().int().min(0).default(0),
+  calls_made: z.coerce.number().int().min(0).default(0),
+  looms_sent: z.coerce.number().int().min(0).default(0),
   notes: z.string().optional().or(z.literal('')),
 })
 export type SetterActivityFormData = z.infer<typeof setterActivitySchema>
-
-// Instagram forms
-export const instagramAccountSchema = z.object({
-  client_id: z.string().uuid('Sélectionnez un client'),
-  username: z.string().min(1, "Le nom d'utilisateur est requis"),
-  followers: z.coerce.number().int().min(0).default(0),
-  following: z.coerce.number().int().min(0).default(0),
-  media_count: z.coerce.number().int().min(0).default(0),
-})
-export type InstagramAccountFormData = z.infer<typeof instagramAccountSchema>
-
-export const instagramPostStatSchema = z.object({
-  account_id: z.string().uuid('Sélectionnez un compte'),
-  post_url: z.string().url().optional().or(z.literal('')),
-  likes: z.coerce.number().int().min(0).default(0),
-  comments: z.coerce.number().int().min(0).default(0),
-  shares: z.coerce.number().int().min(0).default(0),
-  saves: z.coerce.number().int().min(0).default(0),
-  reach: z.coerce.number().int().min(0).default(0),
-  impressions: z.coerce.number().int().min(0).default(0),
-  engagement_rate: z.coerce.number().min(0).default(0),
-  posted_at: z.string().optional().or(z.literal('')),
-})
-export type InstagramPostStatFormData = z.infer<typeof instagramPostStatSchema>
 
 // Channel forms
 export const channelSchema = z.object({

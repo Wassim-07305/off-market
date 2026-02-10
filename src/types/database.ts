@@ -47,8 +47,7 @@ export interface Lead {
   email: string | null
   phone: string | null
   source: 'instagram' | 'linkedin' | 'tiktok' | 'referral' | 'ads' | 'autre' | null
-  status: 'à_relancer' | 'booké' | 'no_show' | 'pas_intéressé' | 'en_cours'
-  client_status: 'contacté' | 'qualifié' | 'proposé' | 'closé' | 'perdu'
+  status: 'premier_message' | 'en_discussion' | 'qualifie' | 'loom_envoye' | 'call_planifie' | 'close' | 'perdu'
   ca_contracté: number
   ca_collecté: number
   commission_setter: number
@@ -65,24 +64,9 @@ export interface CallCalendar {
   assigned_to: string | null
   date: string
   time: string
-  type: 'manuel' | 'iclosed' | 'calendly' | 'autre'
+  type: 'manuel' | 'iclosed' | 'calendly' | 'coaching' | 'closing' | 'autre'
   status: 'planifié' | 'réalisé' | 'no_show' | 'annulé' | 'reporté'
   link: string | null
-  notes: string | null
-  created_at: string
-}
-
-export interface CloserCall {
-  id: string
-  client_id: string | null
-  lead_id: string | null
-  closer_id: string | null
-  date: string
-  status: 'closé' | 'non_closé'
-  revenue: number
-  nombre_paiements: number
-  link: string | null
-  debrief: string | null
   notes: string | null
   created_at: string
 }
@@ -111,55 +95,15 @@ export interface PaymentSchedule {
   created_at: string
 }
 
-export interface SocialContent {
-  id: string
-  client_id: string | null
-  title: string
-  status: 'à_tourner' | 'idée' | 'en_cours' | 'publié' | 'reporté'
-  format: 'réel' | 'story' | 'carrousel' | 'post' | null
-  video_type: 'réact' | 'b-roll' | 'vidéo_virale' | 'preuve_sociale' | 'facecam' | 'talking_head' | 'vlog' | null
-  link: string | null
-  is_validated: boolean
-  text_content: string | null
-  planned_date: string | null
-  sort_order: number
-  created_at: string
-  updated_at: string
-}
-
 export interface SetterActivity {
   id: string
   user_id: string
   client_id: string | null
   date: string
   messages_sent: number
+  calls_made: number
+  looms_sent: number
   notes: string | null
-  created_at: string
-}
-
-export interface InstagramAccount {
-  id: string
-  client_id: string | null
-  username: string
-  followers: number
-  following: number
-  media_count: number
-  last_synced_at: string | null
-  created_at: string
-}
-
-export interface InstagramPostStat {
-  id: string
-  account_id: string | null
-  post_url: string | null
-  likes: number
-  comments: number
-  shares: number
-  saves: number
-  reach: number
-  impressions: number
-  engagement_rate: number
-  posted_at: string | null
   created_at: string
 }
 
@@ -325,12 +269,6 @@ export interface CallCalendarWithRelations extends CallCalendar {
   assigned_profile?: Profile
 }
 
-export interface CloserCallWithRelations extends CloserCall {
-  client?: Client
-  lead?: Lead
-  closer?: Profile
-}
-
 export interface ClientAssignmentWithRelations extends ClientAssignment {
   profile?: Profile
   client?: Client
@@ -346,13 +284,9 @@ export interface Database {
       client_assignments: { Row: ClientAssignment; Insert: Partial<ClientAssignment> & { client_id: string; user_id: string; role: AppRole }; Update: Partial<ClientAssignment>; Relationships: [] }
       leads: { Row: Lead; Insert: Partial<Lead> & { name: string }; Update: Partial<Lead>; Relationships: [] }
       call_calendar: { Row: CallCalendar; Insert: Partial<CallCalendar> & { date: string; time: string }; Update: Partial<CallCalendar>; Relationships: [] }
-      closer_calls: { Row: CloserCall; Insert: Partial<CloserCall> & { date: string }; Update: Partial<CloserCall>; Relationships: [] }
       financial_entries: { Row: FinancialEntry; Insert: Partial<FinancialEntry> & { type: string; label: string; amount: number }; Update: Partial<FinancialEntry>; Relationships: [] }
       payment_schedules: { Row: PaymentSchedule; Insert: Partial<PaymentSchedule> & { amount: number; due_date: string }; Update: Partial<PaymentSchedule>; Relationships: [] }
-      social_content: { Row: SocialContent; Insert: Partial<SocialContent> & { title: string }; Update: Partial<SocialContent>; Relationships: [] }
       setter_activities: { Row: SetterActivity; Insert: Partial<SetterActivity> & { user_id: string }; Update: Partial<SetterActivity>; Relationships: [] }
-      instagram_accounts: { Row: InstagramAccount; Insert: Partial<InstagramAccount> & { username: string }; Update: Partial<InstagramAccount>; Relationships: [] }
-      instagram_post_stats: { Row: InstagramPostStat; Insert: Partial<InstagramPostStat>; Update: Partial<InstagramPostStat>; Relationships: [] }
       notifications: { Row: Notification; Insert: Partial<Notification> & { user_id: string; type: string; title: string }; Update: Partial<Notification>; Relationships: [] }
       rituals: { Row: Ritual; Insert: Partial<Ritual> & { title: string }; Update: Partial<Ritual>; Relationships: [] }
       channels: { Row: Channel; Insert: Partial<Channel> & { name: string }; Update: Partial<Channel>; Relationships: [] }
@@ -404,6 +338,5 @@ export interface DashboardStats {
 
 export interface GlobalSearchResult {
   clients: Array<{ id: string; name: string; email: string | null; status: string }>
-  leads: Array<{ id: string; name: string; email: string | null; status: string; client_status: string }>
-  social_content: Array<{ id: string; title: string; status: string }>
+  leads: Array<{ id: string; name: string; email: string | null; status: string }>
 }

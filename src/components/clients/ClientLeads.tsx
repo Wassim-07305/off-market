@@ -10,10 +10,8 @@ import { EmptyState } from '@/components/ui/empty-state'
 import {
   LEAD_STATUS_LABELS,
   LEAD_STATUS_COLORS,
-  CLIENT_SCOPE_STATUS_LABELS,
-  CLIENT_SCOPE_STATUS_COLORS,
 } from '@/lib/constants'
-import type { LeadStatus, ClientScopeStatus } from '@/lib/constants'
+import type { LeadStatus } from '@/lib/constants'
 import { cn, formatCurrency } from '@/lib/utils'
 
 interface ClientLeadsProps {
@@ -42,19 +40,6 @@ function ClientLeads({ clientId }: ClientLeadsProps) {
           return (
             <Badge className={cn(LEAD_STATUS_COLORS[status])}>
               {LEAD_STATUS_LABELS[status]}
-            </Badge>
-          )
-        },
-      },
-      {
-        accessorKey: 'client_status',
-        header: 'Statut Client',
-        enableSorting: true,
-        cell: ({ row }) => {
-          const status = row.original.client_status as ClientScopeStatus
-          return (
-            <Badge className={cn(CLIENT_SCOPE_STATUS_COLORS[status])}>
-              {CLIENT_SCOPE_STATUS_LABELS[status]}
             </Badge>
           )
         },

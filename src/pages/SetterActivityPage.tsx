@@ -17,13 +17,15 @@ export default function SetterActivityPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-xl sm:text-2xl font-bold text-foreground">Activité Setter</h1>
+        <h1 className="text-xl sm:text-2xl font-bold text-foreground">Activité Prospection</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Suivez et enregistrez votre activité de prospection quotidienne
+          {isAdmin
+            ? "Suivez l'activité de prospection de vos élèves"
+            : 'Enregistrez et suivez votre activité de prospection quotidienne'}
         </p>
       </div>
 
-      <SetterStats userId={userId} />
+      <SetterStats userId={!isAdmin ? userId : undefined} />
 
       <SetterForm />
 

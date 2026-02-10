@@ -25,8 +25,8 @@ export function SetterHistory({ data, isLoading }: SetterHistoryProps) {
   if (data.length === 0) {
     return (
       <EmptyState
-        title="Aucune activité"
-        description="Enregistrez votre première activité pour la voir apparaître ici."
+        title="Aucune activite"
+        description="Enregistrez votre premiere activite pour la voir apparaitre ici."
       />
     )
   }
@@ -40,10 +40,13 @@ export function SetterHistory({ data, isLoading }: SetterHistoryProps) {
               Date
             </th>
             <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-              Client
+              Messages
             </th>
             <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-              Messages envoyés
+              Calls
+            </th>
+            <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              Looms
             </th>
             <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
               Notes
@@ -59,12 +62,19 @@ export function SetterHistory({ data, isLoading }: SetterHistoryProps) {
               <td className="px-4 py-3 text-sm text-muted-foreground">
                 {formatDate(activity.date)}
               </td>
-              <td className="px-4 py-3 text-sm font-medium text-foreground">
-                {activity.client?.name ?? '-'}
-              </td>
               <td className="px-4 py-3">
                 <span className="inline-flex items-center justify-center rounded-full bg-primary/10 px-3 py-0.5 text-sm font-semibold text-primary">
                   {activity.messages_sent}
+                </span>
+              </td>
+              <td className="px-4 py-3">
+                <span className="inline-flex items-center justify-center rounded-full bg-blue-100 px-3 py-0.5 text-sm font-semibold text-blue-700">
+                  {activity.calls_made}
+                </span>
+              </td>
+              <td className="px-4 py-3">
+                <span className="inline-flex items-center justify-center rounded-full bg-purple-100 px-3 py-0.5 text-sm font-semibold text-purple-700">
+                  {activity.looms_sent}
                 </span>
               </td>
               <td className="max-w-[300px] px-4 py-3">

@@ -19,13 +19,10 @@ import { cn, formatDate } from '@/lib/utils'
 import {
   LEAD_STATUS_LABELS,
   LEAD_STATUS_COLORS,
-  CLIENT_SCOPE_STATUS_LABELS,
-  CLIENT_SCOPE_STATUS_COLORS,
   LEAD_SOURCE_LABELS,
   LEAD_STATUSES,
-  CLIENT_SCOPE_STATUSES,
 } from '@/lib/constants'
-import type { LeadStatus, ClientScopeStatus } from '@/lib/constants'
+import type { LeadStatus } from '@/lib/constants'
 
 interface LeadsTableProps {
   data: LeadWithRelations[]
@@ -120,35 +117,6 @@ export function LeadsTable({ data, isLoading, onEdit }: LeadsTableProps) {
               {LEAD_STATUSES.map((s) => (
                 <option key={s} value={s}>
                   {LEAD_STATUS_LABELS[s]}
-                </option>
-              ))}
-            </select>
-          )
-        },
-      }),
-      columnHelper.accessor('client_status', {
-        header: 'Statut Client',
-        cell: (info) => {
-          const lead = info.row.original
-          const status = info.getValue()
-          return (
-            <select
-              value={status}
-              onChange={(e) => {
-                updateLead.mutate({
-                  id: lead.id,
-                  client_status: e.target.value as ClientScopeStatus,
-                })
-              }}
-              className={cn(
-                'rounded-full px-2.5 py-0.5 text-xs font-medium border-0 cursor-pointer',
-                'focus:outline-none focus:ring-2 focus:ring-ring',
-                CLIENT_SCOPE_STATUS_COLORS[status]
-              )}
-            >
-              {CLIENT_SCOPE_STATUSES.map((s) => (
-                <option key={s} value={s}>
-                  {CLIENT_SCOPE_STATUS_LABELS[s]}
                 </option>
               ))}
             </select>

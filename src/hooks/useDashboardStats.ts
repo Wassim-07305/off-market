@@ -22,19 +22,19 @@ export function useRevenueChart() {
       sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6)
 
       const { data, error } = await supabase
-        .from('closer_calls')
-        .select('date, revenue, status')
-        .gte('date', sixMonthsAgo.toISOString().split('T')[0])
-        .eq('status', 'closé')
-        .order('date', { ascending: true })
+        .from('leads')
+        .select('*')
+        .eq('status', 'close')
+        .gte('updated_at', sixMonthsAgo.toISOString())
+        .order('updated_at', { ascending: true })
 
       if (error) throw error
 
-      // Group by month
+      // Group by month using leads ca_contracté
       const monthlyData: Record<string, number> = {}
-      for (const call of data) {
-        const month = call.date.substring(0, 7) // YYYY-MM
-        monthlyData[month] = (monthlyData[month] ?? 0) + Number(call.revenue)
+      for (const lead of data) {
+        const month = lead.updated_at.substring(0, 7) // YYYY-MM
+        monthlyData[month] = (monthlyData[month] ?? 0) + Number((lead as Record<string, unknown>)['ca_contracté'] ?? 0)
       }
 
       return Object.entries(monthlyData).map(([month, revenue]) => ({
@@ -61,16 +61,16 @@ export function useLeadsChart() {
       if (error) throw error
 
       // Group by week
-      const weeklyData: Record<string, { total: number; booké: number }> = {}
+      const weeklyData: Record<string, { total: number; close: number }> = {}
       for (const lead of data) {
         const date = new Date(lead.created_at)
         const weekStart = new Date(date)
         weekStart.setDate(date.getDate() - date.getDay() + 1)
         const weekKey = weekStart.toISOString().split('T')[0]
 
-        if (!weeklyData[weekKey]) weeklyData[weekKey] = { total: 0, booké: 0 }
+        if (!weeklyData[weekKey]) weeklyData[weekKey] = { total: 0, close: 0 }
         weeklyData[weekKey].total++
-        if (lead.status === 'booké') weeklyData[weekKey].booké++
+        if (lead.status === 'close') weeklyData[weekKey].close++
       }
 
       return Object.entries(weeklyData).map(([week, data]) => ({

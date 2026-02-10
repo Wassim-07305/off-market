@@ -15,17 +15,12 @@ import ClientsPage from '@/pages/ClientsPage'
 import ClientDetailPage from '@/pages/ClientDetailPage'
 import LeadsPage from '@/pages/LeadsPage'
 import CallCalendarPage from '@/pages/CallCalendarPage'
-import CloserCallsPage from '@/pages/CloserCallsPage'
 import SetterActivityPage from '@/pages/SetterActivityPage'
-import SocialContentPage from '@/pages/SocialContentPage'
 import FinancesPage from '@/pages/FinancesPage'
-import InstagramPage from '@/pages/InstagramPage'
 import UsersPage from '@/pages/UsersPage'
-import DocumentationPage from '@/pages/DocumentationPage'
 import MessagingPage from '@/pages/MessagingPage'
 import FormationsPage from '@/pages/FormationsPage'
 import FormationDetailPage from '@/pages/FormationDetailPage'
-import StudentOverviewPage from '@/pages/StudentOverviewPage'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -53,26 +48,15 @@ function App() {
           <Route element={<RouteGuard />}>
             <Route element={<Layout />}>
               <Route path="/" element={<DashboardPage />} />
-              <Route path="/clients" element={<ClientsPage />} />
-              <Route path="/clients/:id" element={<ClientDetailPage />} />
-              <Route path="/leads" element={<LeadsPage />} />
-              <Route path="/call-calendar" element={<CallCalendarPage />} />
-              <Route path="/closer-calls" element={<CloserCallsPage />} />
-              <Route path="/setter-activity" element={<SetterActivityPage />} />
-              <Route path="/social-content" element={<SocialContentPage />} />
+              <Route path="/eleves" element={<ClientsPage />} />
+              <Route path="/eleves/:id" element={<ClientDetailPage />} />
+              <Route path="/pipeline" element={<LeadsPage />} />
+              <Route path="/calendrier" element={<CallCalendarPage />} />
+              <Route path="/activite" element={<SetterActivityPage />} />
               <Route path="/finances" element={<FinancesPage />} />
-              <Route path="/instagram" element={<InstagramPage />} />
               <Route path="/messaging" element={<MessagingPage />} />
               <Route path="/formations" element={<FormationsPage />} />
               <Route path="/formations/:id" element={<FormationDetailPage />} />
-              <Route
-                path="/student-overview"
-                element={
-                  <RoleGuard module="student-overview">
-                    <StudentOverviewPage />
-                  </RoleGuard>
-                }
-              />
               <Route
                 path="/users"
                 element={
@@ -81,7 +65,6 @@ function App() {
                   </RoleGuard>
                 }
               />
-              <Route path="/documentation" element={<DocumentationPage />} />
             </Route>
           </Route>
         </Routes>

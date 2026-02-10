@@ -15,29 +15,15 @@ import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import {
   CALL_TYPES,
+  CALL_TYPE_LABELS,
   CALL_STATUSES,
+  CALL_STATUS_LABELS,
 } from '@/lib/constants'
-import type { CallType, CallStatus } from '@/lib/constants'
 
 interface CallFormModalProps {
   open: boolean
   onClose: () => void
   call?: CallCalendarWithRelations | null
-}
-
-const typeLabels: Record<CallType, string> = {
-  manuel: 'Manuel',
-  iclosed: 'iClosed',
-  calendly: 'Calendly',
-  autre: 'Autre',
-}
-
-const statusLabels: Record<CallStatus, string> = {
-  planifié: 'Planifié',
-  réalisé: 'Réalisé',
-  no_show: 'No show',
-  annulé: 'Annulé',
-  reporté: 'Reporté',
 }
 
 export function CallFormModal({ open, onClose, call }: CallFormModalProps) {
@@ -139,12 +125,12 @@ export function CallFormModal({ open, onClose, call }: CallFormModalProps) {
 
   const typeOptions = CALL_TYPES.map((t) => ({
     value: t,
-    label: typeLabels[t],
+    label: CALL_TYPE_LABELS[t],
   }))
 
   const statusOptions = CALL_STATUSES.map((s) => ({
     value: s,
-    label: statusLabels[s],
+    label: CALL_STATUS_LABELS[s],
   }))
 
   return (

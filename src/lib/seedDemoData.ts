@@ -7,13 +7,9 @@ interface DemoDataIds {
   clientIds: string[]
   leadIds: string[]
   callCalendarIds: string[]
-  closerCallIds: string[]
   financialEntryIds: string[]
   paymentScheduleIds: string[]
-  socialContentIds: string[]
   setterActivityIds: string[]
-  instagramAccountIds: string[]
-  instagramPostStatIds: string[]
   notificationIds: string[]
   clientAssignmentIds: string[]
   channelIds: string[]
@@ -83,13 +79,9 @@ export async function seedDemoData(adminUserId: string): Promise<string> {
     clientIds: [],
     leadIds: [],
     callCalendarIds: [],
-    closerCallIds: [],
     financialEntryIds: [],
     paymentScheduleIds: [],
-    socialContentIds: [],
     setterActivityIds: [],
-    instagramAccountIds: [],
-    instagramPostStatIds: [],
     notificationIds: [],
     clientAssignmentIds: [],
     channelIds: [],
@@ -167,8 +159,7 @@ export async function seedDemoData(adminUserId: string): Promise<string> {
 
     // ── 4. Leads (30) ──
     const sources = ['instagram', 'linkedin', 'tiktok', 'referral', 'ads', 'autre'] as const
-    const leadStatuses = ['à_relancer', 'booké', 'no_show', 'pas_intéressé', 'en_cours'] as const
-    const clientStatuses = ['contacté', 'qualifié', 'proposé', 'closé', 'perdu'] as const
+    const leadStatuses = ['premier_message', 'en_discussion', 'qualifie', 'loom_envoye', 'call_planifie', 'close', 'perdu'] as const
     const setters = [sarahId, lucasId, adminUserId]
     const clientPool = [fitcoachId, digitalId, investId, mindsetId, ecomId, scaleId]
 
@@ -192,9 +183,8 @@ export async function seedDemoData(adminUserId: string): Promise<string> {
       for (let j = 0; j < count; j++) {
         const dayInWeek = Math.floor(Math.random() * 5)
         const daysBack = weekOffset * 7 + dayInWeek
-        const statusIdx = leadIdx % 5
-        const clientStatusIdx = leadIdx % 5
-        const isBoosted = leadStatuses[statusIdx] === 'booké'
+        const statusIdx = leadIdx % 7
+        const isClosed = leadStatuses[statusIdx] === 'close'
 
         leadsToInsert.push({
           name: leadNames[leadIdx],
@@ -204,11 +194,10 @@ export async function seedDemoData(adminUserId: string): Promise<string> {
           assigned_to: setters[leadIdx % setters.length],
           source: sources[leadIdx % sources.length],
           status: leadStatuses[statusIdx],
-          client_status: clientStatuses[clientStatusIdx],
-          ca_contracté: isBoosted ? (1500 + leadIdx * 200) : 0,
-          ca_collecté: isBoosted ? (1000 + leadIdx * 100) : 0,
-          commission_setter: isBoosted ? 150 : 0,
-          commission_closer: isBoosted ? 300 : 0,
+          ca_contracté: isClosed ? (1500 + leadIdx * 200) : 0,
+          ca_collecté: isClosed ? (1000 + leadIdx * 100) : 0,
+          commission_setter: isClosed ? 150 : 0,
+          commission_closer: isClosed ? 300 : 0,
           notes: `Lead ${leadNames[leadIdx]} — source ${sources[leadIdx % sources.length]}`,
           created_at: new Date(new Date().getTime() - daysBack * 86400000).toISOString(),
         })
@@ -222,7 +211,7 @@ export async function seedDemoData(adminUserId: string): Promise<string> {
 
     // ── 5. Call calendar (25) ──
     const callTimes = ['09:00', '09:30', '10:00', '10:30', '11:00', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00']
-    const callTypes = ['manuel', 'iclosed', 'calendly', 'autre'] as const
+    const callTypes = ['manuel', 'iclosed', 'calendly', 'coaching', 'closing', 'autre'] as const
     const callStatuses = ['réalisé', 'réalisé', 'réalisé', 'réalisé', 'réalisé',
       'réalisé', 'réalisé', 'réalisé', 'réalisé', 'réalisé',
       'no_show', 'no_show', 'no_show', 'no_show', 'no_show',
@@ -251,48 +240,7 @@ export async function seedDemoData(adminUserId: string): Promise<string> {
     if (callsError) throw new Error(`Call calendar: ${callsError.message}`)
     ids.callCalendarIds = callsData.map((c) => c.id)
 
-    // ── 6. Closer calls (20) ──
-    const closerCallsArr = [
-      { date: monthsAgo(5), revenue: 2000, status: 'closé' as const },
-      { date: monthsAgo(5), revenue: 1500, status: 'closé' as const },
-      { date: monthsAgo(5), revenue: 0, status: 'non_closé' as const },
-      { date: monthsAgo(4), revenue: 3500, status: 'closé' as const },
-      { date: monthsAgo(4), revenue: 2500, status: 'closé' as const },
-      { date: monthsAgo(4), revenue: 1000, status: 'closé' as const },
-      { date: monthsAgo(4), revenue: 0, status: 'non_closé' as const },
-      { date: monthsAgo(3), revenue: 3000, status: 'closé' as const },
-      { date: monthsAgo(3), revenue: 2500, status: 'closé' as const },
-      { date: monthsAgo(3), revenue: 0, status: 'non_closé' as const },
-      { date: monthsAgo(2), revenue: 4000, status: 'closé' as const },
-      { date: monthsAgo(2), revenue: 3000, status: 'closé' as const },
-      { date: monthsAgo(2), revenue: 2000, status: 'closé' as const },
-      { date: monthsAgo(2), revenue: 0, status: 'non_closé' as const },
-      { date: monthsAgo(1), revenue: 5000, status: 'closé' as const },
-      { date: monthsAgo(1), revenue: 4500, status: 'closé' as const },
-      { date: monthsAgo(1), revenue: 3000, status: 'closé' as const },
-      { date: monthsAgo(1), revenue: 0, status: 'non_closé' as const },
-      { date: daysAgo(5), revenue: 5000, status: 'closé' as const },
-      { date: daysAgo(2), revenue: 3000, status: 'closé' as const },
-    ]
-
-    const closerCallsToInsert = closerCallsArr.map((cc, i) => ({
-      client_id: clientPool[i % clientPool.length],
-      lead_id: ids.leadIds[i % ids.leadIds.length],
-      closer_id: null,
-      date: cc.date,
-      status: cc.status,
-      revenue: cc.revenue,
-      nombre_paiements: cc.status === 'closé' ? (cc.revenue > 3000 ? 3 : 1) : 1,
-      link: 'https://meet.google.com/closer-demo',
-      debrief: cc.status === 'closé' ? 'Client convaincu, bonne énergie' : 'Pas de suite pour le moment',
-      notes: `Closer call #${i + 1}`,
-    }))
-
-    const { data: closerData, error: closerError } = await supabase.from('closer_calls').insert(closerCallsToInsert).select('id')
-    if (closerError) throw new Error(`Closer calls: ${closerError.message}`)
-    ids.closerCallIds = closerData.map((c) => c.id)
-
-    // ── 7. Setter activities ──
+    // ── 6. Setter activities ──
     const setterActivitiesToInsert: Array<Record<string, unknown>> = []
     for (let day = 0; day < 14; day++) {
       const date = daysAgo(day)
@@ -355,75 +303,20 @@ export async function seedDemoData(adminUserId: string): Promise<string> {
     if (payError) throw new Error(`Payment schedules: ${payError.message}`)
     ids.paymentScheduleIds = payData.map((p) => p.id)
 
-    // ── 10. Social content (20) ──
-    const socialStatuses = ['publié', 'en_cours', 'à_tourner', 'idée', 'reporté'] as const
-    const formats = ['réel', 'story', 'carrousel', 'post'] as const
-    const videoTypes = ['réact', 'b-roll', 'vidéo_virale', 'preuve_sociale', 'facecam', 'talking_head', 'vlog'] as const
-    const socialTitles = [
-      'Transformation client — avant/après', 'Les 5 erreurs du débutant',
-      'Q&A avec un membre', 'Coulisses du coaching', 'Témoignage client FitCoach',
-      'Story recap hebdo', 'Carrousel — Les 3 piliers du mindset',
-      'Réel tendance musique virale', 'B-roll bureau + setup',
-      'Facecam — Mon parcours', 'Preuve sociale — résultats clients',
-      'Vlog journée type', 'Post citation motivation', 'Réact commentaire hater',
-      'Talking head — Conseils investissement', 'Story behind the scenes montage',
-      'Carrousel — Checklist lancement', 'Réel transition avant/après',
-      'Post résumé du mois', 'Story sondage audience',
-    ]
-    const socialToInsert = socialTitles.map((title, i) => ({
-      client_id: clientPool[i % clientPool.length], title,
-      status: socialStatuses[i % socialStatuses.length],
-      format: formats[i % formats.length],
-      video_type: formats[i % formats.length] === 'réel' || formats[i % formats.length] === 'story' ? videoTypes[i % videoTypes.length] : null,
-      is_validated: socialStatuses[i % socialStatuses.length] === 'publié',
-      text_content: i % 3 === 0 ? 'Description du contenu à rédiger...' : null,
-      planned_date: i < 10 ? daysAgo(i * 2) : daysFromNow((i - 10) * 3),
-      sort_order: i,
-    }))
-
-    const { data: socialData, error: socialError } = await supabase.from('social_content').insert(socialToInsert).select('id')
-    if (socialError) throw new Error(`Social content: ${socialError.message}`)
-    ids.socialContentIds = socialData.map((s) => s.id)
-
-    // ── 11. Instagram accounts + posts ──
-    const igAccounts = [
-      { client_id: fitcoachId, username: 'fitcoach_pro_official', followers: 24500, following: 890, media_count: 342, last_synced_at: new Date().toISOString() },
-      { client_id: digitalId, username: 'digital_academy_fr', followers: 15200, following: 520, media_count: 187, last_synced_at: new Date().toISOString() },
-    ]
-    const { data: igData, error: igError } = await supabase.from('instagram_accounts').insert(igAccounts).select('id')
-    if (igError) throw new Error(`Instagram accounts: ${igError.message}`)
-    ids.instagramAccountIds = igData.map((a) => a.id)
-
-    const igPosts = Array.from({ length: 15 }, (_, i) => ({
-      account_id: igData[i % 2].id,
-      post_url: `https://instagram.com/p/demo-post-${i + 1}`,
-      likes: 200 + Math.floor(Math.random() * 800),
-      comments: 10 + Math.floor(Math.random() * 50),
-      shares: 5 + Math.floor(Math.random() * 30),
-      saves: 15 + Math.floor(Math.random() * 60),
-      reach: 2000 + Math.floor(Math.random() * 8000),
-      impressions: 3000 + Math.floor(Math.random() * 12000),
-      engagement_rate: Number((2 + Math.random() * 6).toFixed(2)),
-      posted_at: new Date(Date.now() - i * 2 * 86400000).toISOString(),
-    }))
-    const { data: igPostData, error: igPostError } = await supabase.from('instagram_post_stats').insert(igPosts).select('id')
-    if (igPostError) throw new Error(`Instagram posts: ${igPostError.message}`)
-    ids.instagramPostStatIds = igPostData.map((p) => p.id)
-
-    // ── 12. Notifications (15) ──
+    // ── 10. Notifications (15) ──
     const notificationsToInsert = [
       { user_id: adminUserId, type: 'general' as const, title: 'Bienvenue sur Off-Market', message: 'Votre espace est prêt.', is_read: true, created_at: isoTimestamp(30) },
-      { user_id: adminUserId, type: 'lead_status' as const, title: 'Lead Antoine Girard → booké', message: 'Le statut du lead a changé.', is_read: true, created_at: isoTimestamp(14) },
+      { user_id: adminUserId, type: 'lead_status' as const, title: 'Lead Antoine Girard → call planifié', message: 'Le statut du lead a changé.', is_read: true, created_at: isoTimestamp(14) },
       { user_id: adminUserId, type: 'new_call' as const, title: 'Nouveau call planifié', message: 'Un call a été ajouté au calendrier.', is_read: true, created_at: isoTimestamp(12) },
       { user_id: adminUserId, type: 'call_closed' as const, title: 'Call closé — 5 000 €', message: 'Un call a été closé.', is_read: true, created_at: isoTimestamp(8) },
-      { user_id: adminUserId, type: 'lead_status' as const, title: 'Lead Camille Roux → en_cours', message: 'Le statut du lead a changé.', is_read: true, created_at: isoTimestamp(7) },
+      { user_id: adminUserId, type: 'lead_status' as const, title: 'Lead Camille Roux → en discussion', message: 'Le statut du lead a changé.', is_read: true, created_at: isoTimestamp(7) },
       { user_id: adminUserId, type: 'general' as const, title: 'Rapport mensuel disponible', message: 'Le rapport de janvier est prêt.', is_read: true, created_at: isoTimestamp(6) },
       { user_id: adminUserId, type: 'call_closed' as const, title: 'Call closé — 3 000 €', message: 'Un call a été closé.', is_read: false, created_at: isoTimestamp(4) },
       { user_id: adminUserId, type: 'new_call' as const, title: 'Nouveau call planifié', message: 'Un call a été ajouté.', is_read: false, created_at: isoTimestamp(3) },
-      { user_id: adminUserId, type: 'lead_status' as const, title: 'Lead Hugo Martin → pas_intéressé', message: 'Le statut du lead a changé.', is_read: false, created_at: isoTimestamp(2) },
+      { user_id: adminUserId, type: 'lead_status' as const, title: 'Lead Hugo Martin → perdu', message: 'Le statut du lead a changé.', is_read: false, created_at: isoTimestamp(2) },
       { user_id: adminUserId, type: 'general' as const, title: 'Nouvelle action requise', message: 'Vérifiez les relances.', is_read: false, created_at: isoTimestamp(1) },
       { user_id: adminUserId, type: 'call_closed' as const, title: 'Call closé — 4 500 €', message: 'Un call a été closé.', is_read: false, created_at: isoTimestamp(1) },
-      { user_id: adminUserId, type: 'lead_status' as const, title: 'Lead Léa Bernard → booké', message: 'Nouveau lead booké.', is_read: false, created_at: new Date().toISOString() },
+      { user_id: adminUserId, type: 'lead_status' as const, title: 'Lead Léa Bernard → call planifié', message: 'Nouveau call planifié.', is_read: false, created_at: new Date().toISOString() },
       { user_id: adminUserId, type: 'new_call' as const, title: 'Nouveau call demain', message: 'Call avec E-Com Empire.', is_read: false, created_at: new Date().toISOString() },
       { user_id: adminUserId, type: 'general' as const, title: '3 paiements en attente', message: 'Vérifiez les échéanciers.', is_read: false, created_at: new Date().toISOString() },
       { user_id: adminUserId, type: 'general' as const, title: 'Objectif mensuel à 80%', message: 'Vous êtes proche de l\'objectif !', is_read: false, created_at: new Date().toISOString() },
@@ -582,10 +475,9 @@ export async function seedDemoData(adminUserId: string): Promise<string> {
     storeIds(ids)
 
     return [
-      '5 profils (2 setters, 3 élèves)', '8 clients', '30 leads', '25 calls', '20 closer calls',
+      '5 profils (2 setters, 3 élèves)', '8 clients', '30 leads', '25 calls',
       `${setterData.length} activités setter`, '15 entrées financières', `${payData.length} échéanciers`,
-      '20 contenus sociaux', '2 comptes IG + 15 posts', '15 notifications',
-      '4 canaux + ~30 messages', '2 formations (15+6 items)', '20 completions',
+      '15 notifications', '4 canaux + ~30 messages', '2 formations (15+6 items)', '20 completions',
     ].join(', ')
   } catch (error) {
     console.error('Seed error, attempting cleanup:', error)
@@ -609,12 +501,8 @@ export async function clearDemoData(): Promise<void> {
     { table: 'messages', ids: stored.messageIds ?? [] },
     { table: 'notifications', ids: stored.notificationIds },
     { table: 'setter_activities', ids: stored.setterActivityIds },
-    { table: 'instagram_post_stats', ids: stored.instagramPostStatIds },
-    { table: 'instagram_accounts', ids: stored.instagramAccountIds },
     { table: 'payment_schedules', ids: stored.paymentScheduleIds },
     { table: 'financial_entries', ids: stored.financialEntryIds },
-    { table: 'social_content', ids: stored.socialContentIds },
-    { table: 'closer_calls', ids: stored.closerCallIds },
     { table: 'call_calendar', ids: stored.callCalendarIds },
     { table: 'leads', ids: stored.leadIds },
     { table: 'client_assignments', ids: stored.clientAssignmentIds },

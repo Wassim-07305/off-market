@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react'
 import { Plus, Download, LayoutList, Columns } from 'lucide-react'
 import type { LeadWithRelations } from '@/types/database'
+import type { LeadStatus } from '@/lib/constants'
 import { useLeads, useAllLeads, useUpdateLead } from '@/hooks/useLeads'
 import { useClients } from '@/hooks/useClients'
 import { LeadKPIs } from '@/components/leads/LeadKPIs'
@@ -13,7 +14,6 @@ import { Button } from '@/components/ui/button'
 import { Pagination } from '@/components/ui/pagination'
 import { exportToCSV } from '@/lib/csv'
 import { cn } from '@/lib/utils'
-import type { ClientScopeStatus } from '@/lib/constants'
 import {
   LEAD_STATUSES,
   LEAD_STATUS_LABELS,
@@ -57,8 +57,8 @@ export default function LeadsPage() {
     setEditingLead(null)
   }, [])
 
-  const handleKanbanStatusChange = useCallback((leadId: string, newStatus: ClientScopeStatus) => {
-    updateLead.mutate({ id: leadId, client_status: newStatus })
+  const handleKanbanStatusChange = useCallback((leadId: string, newStatus: LeadStatus) => {
+    updateLead.mutate({ id: leadId, status: newStatus })
   }, [updateLead])
 
   const handleExport = useCallback(() => {
@@ -75,7 +75,6 @@ export default function LeadsPage() {
         { key: 'phone', label: 'Téléphone' },
         { key: 'source', label: 'Source' },
         { key: 'status', label: 'Statut' },
-        { key: 'client_status', label: 'Statut Client' },
         { key: 'client_name', label: 'Client' },
         { key: 'assigned_name', label: 'Assigné à' },
         { key: 'ca_contracté', label: 'CA Contracté' },
@@ -106,9 +105,9 @@ export default function LeadsPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-foreground">Suivi des Leads</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground">Pipeline de Prospection</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Gérez et suivez vos leads commerciaux
+            Gérez et suivez votre pipeline de prospection
           </p>
         </div>
         <div className="flex flex-shrink-0 items-center gap-2">

@@ -1,7 +1,6 @@
-import { Users, AlertTriangle, TrendingUp, Wallet } from 'lucide-react'
+import { Users, MessageSquare, Phone, Wallet } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Badge } from '@/components/ui/badge'
 import { useLeadStats } from '@/hooks/useLeads'
 import { formatCurrency } from '@/lib/utils'
 
@@ -36,23 +35,22 @@ export function LeadKPIs({ clientId }: LeadKPIsProps) {
       color: 'bg-primary/10 text-primary',
     },
     {
-      title: 'Leads à relancer',
-      value: String(stats?.à_relancer ?? 0),
-      icon: AlertTriangle,
-      color: 'bg-destructive/10 text-destructive',
-      badge: stats?.à_relancer && stats.à_relancer > 0,
+      title: 'En discussion',
+      value: String(stats?.en_discussion ?? 0),
+      icon: MessageSquare,
+      color: 'bg-blue-50 text-blue-600',
+    },
+    {
+      title: 'Calls planifiés',
+      value: String(stats?.call_planifie ?? 0),
+      icon: Phone,
+      color: 'bg-amber-50 text-amber-600',
     },
     {
       title: 'CA Contracté total',
       value: formatCurrency(stats?.ca_contracté ?? 0),
-      icon: TrendingUp,
-      color: 'bg-success/10 text-success',
-    },
-    {
-      title: 'CA Collecté total',
-      value: formatCurrency(stats?.ca_collecté ?? 0),
       icon: Wallet,
-      color: 'bg-warning/10 text-warning',
+      color: 'bg-success/10 text-success',
     },
   ]
 
@@ -65,11 +63,6 @@ export function LeadKPIs({ clientId }: LeadKPIsProps) {
               <div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${kpi.color}`}>
                 <kpi.icon className="h-6 w-6" />
               </div>
-              {kpi.badge && (
-                <Badge variant="destructive" className="text-xs">
-                  Action requise
-                </Badge>
-              )}
             </div>
             <div className="mt-4">
               <p className="text-sm font-medium text-muted-foreground">{kpi.title}</p>

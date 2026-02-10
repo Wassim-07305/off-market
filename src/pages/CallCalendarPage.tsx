@@ -15,24 +15,10 @@ import { Button } from '@/components/ui/button'
 import { exportToCSV } from '@/lib/csv'
 import {
   CALL_TYPES,
+  CALL_TYPE_LABELS,
   CALL_STATUSES,
+  CALL_STATUS_LABELS,
 } from '@/lib/constants'
-import type { CallType, CallStatus } from '@/lib/constants'
-
-const typeLabels: Record<CallType, string> = {
-  manuel: 'Manuel',
-  iclosed: 'iClosed',
-  calendly: 'Calendly',
-  autre: 'Autre',
-}
-
-const statusLabels: Record<CallStatus, string> = {
-  planifié: 'Planifié',
-  réalisé: 'Réalisé',
-  no_show: 'No show',
-  annulé: 'Annulé',
-  reporté: 'Reporté',
-}
 
 export default function CallCalendarPage() {
   const [currentWeek, setCurrentWeek] = useState(new Date())
@@ -102,12 +88,12 @@ export default function CallCalendarPage() {
 
   const typeOptions = [
     { value: '', label: 'Tous les types' },
-    ...CALL_TYPES.map((t) => ({ value: t, label: typeLabels[t] })),
+    ...CALL_TYPES.map((t) => ({ value: t, label: CALL_TYPE_LABELS[t] })),
   ]
 
   const statusOptions = [
     { value: '', label: 'Tous les statuts' },
-    ...CALL_STATUSES.map((s) => ({ value: s, label: statusLabels[s] })),
+    ...CALL_STATUSES.map((s) => ({ value: s, label: CALL_STATUS_LABELS[s] })),
   ]
 
   const tabs = [

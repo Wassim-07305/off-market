@@ -8,7 +8,6 @@ import { ITEMS_PER_PAGE } from '@/lib/constants'
 interface LeadFilters {
   search?: string
   status?: string
-  client_status?: string
   source?: string
   client_id?: string
   assigned_to?: string
@@ -16,7 +15,7 @@ interface LeadFilters {
 }
 
 export function useLeads(filters: LeadFilters = {}) {
-  const { search, status, client_status, source, client_id, assigned_to, page = 1 } = filters
+  const { search, status, source, client_id, assigned_to, page = 1 } = filters
   const from = (page - 1) * ITEMS_PER_PAGE
   const to = from + ITEMS_PER_PAGE - 1
 
@@ -35,7 +34,6 @@ export function useLeads(filters: LeadFilters = {}) {
         query = query.or(`name.ilike.%${search}%,email.ilike.%${search}%`)
       }
       if (status) query = query.eq('status', status)
-      if (client_status) query = query.eq('client_status', client_status)
       if (source) query = query.eq('source', source)
       if (client_id) query = query.eq('client_id', client_id)
       if (assigned_to) query = query.eq('assigned_to', assigned_to)
@@ -140,17 +138,18 @@ export function useLeadStats(clientId?: string) {
   return useQuery({
     queryKey: ['lead-stats', clientId],
     queryFn: async () => {
-      let query = supabase.from('leads').select('status, client_status, ca_contracté, ca_collecté')
+      let query = supabase.from('leads').select('*')
       if (clientId) query = query.eq('client_id', clientId)
 
       const { data, error } = await query
       if (error) throw error
 
-      const leads = data as unknown as Pick<Lead, 'status' | 'client_status' | 'ca_contracté' | 'ca_collecté'>[]
+      const leads = data as Lead[]
       return {
         total: leads.length,
-        à_relancer: leads.filter((l) => l.status === 'à_relancer').length,
-        booké: leads.filter((l) => l.status === 'booké').length,
+        en_discussion: leads.filter((l) => l.status === 'en_discussion').length,
+        call_planifie: leads.filter((l) => l.status === 'call_planifie').length,
+        close: leads.filter((l) => l.status === 'close').length,
         ca_contracté: leads.reduce((sum, l) => sum + Number(l.ca_contracté), 0),
         ca_collecté: leads.reduce((sum, l) => sum + Number(l.ca_collecté), 0),
       }

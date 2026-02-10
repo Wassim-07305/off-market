@@ -2,37 +2,27 @@ import type { AppRole } from '@/types/database'
 
 export type Module =
   | 'dashboard'
-  | 'clients'
-  | 'leads'
-  | 'call-calendar'
-  | 'closer-calls'
-  | 'setter-activity'
-  | 'social-content'
-  | 'finances'
-  | 'instagram'
-  | 'users'
-  | 'documentation'
-  | 'notifications'
   | 'messaging'
   | 'formations'
-  | 'student-overview'
+  | 'eleves'
+  | 'pipeline'
+  | 'calendrier'
+  | 'activite'
+  | 'finances'
+  | 'users'
+  | 'notifications'
 
 const PERMISSIONS: Record<Module, AppRole[]> = {
   dashboard: ['admin', 'setter', 'eleve'],
-  clients: ['admin', 'setter'],
-  leads: ['admin', 'setter'],
-  'call-calendar': ['admin', 'setter'],
-  'closer-calls': ['admin'],
-  'setter-activity': ['admin', 'setter'],
-  'social-content': ['admin'],
-  finances: ['admin'],
-  instagram: ['admin'],
-  users: ['admin'],
-  documentation: ['admin', 'setter', 'eleve'],
-  notifications: ['admin', 'setter', 'eleve'],
   messaging: ['admin', 'setter', 'eleve'],
   formations: ['admin', 'eleve'],
-  'student-overview': ['admin'],
+  eleves: ['admin', 'setter'],
+  pipeline: ['admin', 'setter', 'eleve'],
+  calendrier: ['admin', 'setter'],
+  activite: ['admin', 'eleve'],
+  finances: ['admin'],
+  users: ['admin'],
+  notifications: ['admin', 'setter', 'eleve'],
 }
 
 export function canAccess(role: AppRole | null, module: Module): boolean {

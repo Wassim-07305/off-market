@@ -85,8 +85,8 @@ export function LeadsChart() {
               />
               <Line
                 type="monotone"
-                dataKey="booké"
-                name="Bookes"
+                dataKey="close"
+                name="Closés"
                 stroke="hsl(142 76% 36%)"
                 strokeWidth={2}
                 dot={{ r: 4, fill: 'hsl(142 76% 36%)' }}

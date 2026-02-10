@@ -6,8 +6,10 @@ import { EmptyState } from '@/components/ui/empty-state'
 import { cn, formatDate } from '@/lib/utils'
 import {
   CALL_TYPE_COLORS,
+  CALL_TYPE_LABELS,
   CALL_STATUSES,
   CALL_STATUS_COLORS,
+  CALL_STATUS_LABELS,
 } from '@/lib/constants'
 import type { CallType, CallStatus } from '@/lib/constants'
 import { ExternalLink } from 'lucide-react'
@@ -38,21 +40,6 @@ export function ListView({ calls, isLoading, onCallClick }: ListViewProps) {
         description="Aucun call ne correspond à vos critères."
       />
     )
-  }
-
-  const statusLabels: Record<CallStatus, string> = {
-    planifié: 'Planifié',
-    réalisé: 'Réalisé',
-    no_show: 'No show',
-    annulé: 'Annulé',
-    reporté: 'Reporté',
-  }
-
-  const typeLabels: Record<CallType, string> = {
-    manuel: 'Manuel',
-    iclosed: 'iClosed',
-    calendly: 'Calendly',
-    autre: 'Autre',
   }
 
   return (
@@ -104,7 +91,7 @@ export function ListView({ calls, isLoading, onCallClick }: ListViewProps) {
               </td>
               <td className="px-4 py-3">
                 <Badge className={CALL_TYPE_COLORS[call.type as CallType]}>
-                  {typeLabels[call.type as CallType]}
+                  {CALL_TYPE_LABELS[call.type as CallType]}
                 </Badge>
               </td>
               <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
@@ -124,7 +111,7 @@ export function ListView({ calls, isLoading, onCallClick }: ListViewProps) {
                 >
                   {CALL_STATUSES.map((s) => (
                     <option key={s} value={s}>
-                      {statusLabels[s]}
+                      {CALL_STATUS_LABELS[s]}
                     </option>
                   ))}
                 </select>

@@ -19,18 +19,18 @@ export function UrgentActions() {
     queryFn: async () => {
       const items: UrgentItem[] = []
 
-      // Leads to follow up
-      const { data: leadsToRelance } = await supabase
+      // Leads in premier_message (need first contact)
+      const { data: leadsToContact } = await supabase
         .from('leads')
         .select('id', { count: 'exact', head: true })
-        .eq('status', 'à_relancer')
+        .eq('status', 'premier_message')
 
-      const relanceCount = leadsToRelance?.length ?? 0
-      if (relanceCount > 0) {
+      const contactCount = leadsToContact?.length ?? 0
+      if (contactCount > 0) {
         items.push({
           icon: Users,
-          text: `${relanceCount} lead${relanceCount > 1 ? 's' : ''} à relancer`,
-          link: '/leads?status=à_relancer',
+          text: `${contactCount} lead${contactCount > 1 ? 's' : ''} en attente de contact`,
+          link: '/pipeline?status=premier_message',
         })
       }
 
@@ -46,7 +46,7 @@ export function UrgentActions() {
         items.push({
           icon: Phone,
           text: `${callCount} call${callCount > 1 ? 's' : ''} prévu${callCount > 1 ? 's' : ''} aujourd'hui`,
-          link: '/call-calendar',
+          link: '/calendrier',
         })
       }
 

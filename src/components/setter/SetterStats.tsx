@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
-import { MessageSquare, TrendingUp, Calendar } from 'lucide-react'
+import { MessageSquare, TrendingUp, Calendar, Phone } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useSetterStats } from '@/hooks/useSetterActivities'
@@ -26,8 +26,8 @@ export function SetterStats({ userId }: SetterStatsProps) {
   if (isLoading) {
     return (
       <div className="space-y-4">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          {Array.from({ length: 3 }).map((_, i) => (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
             <Card key={i}>
               <CardContent className="p-5">
                 <Skeleton className="h-10 w-10 rounded-lg" />
@@ -48,22 +48,32 @@ export function SetterStats({ userId }: SetterStatsProps) {
 
   const kpis = [
     {
-      title: 'Cette semaine',
+      title: 'Messages cette semaine',
       value: String(stats?.messages_this_week ?? 0),
+      suffix: 'DMs',
       icon: MessageSquare,
       color: 'bg-primary/10 text-primary',
     },
     {
-      title: 'Ce mois',
+      title: 'Messages ce mois',
       value: String(stats?.messages_this_month ?? 0),
+      suffix: 'DMs',
       icon: Calendar,
       color: 'bg-blue-100 text-blue-700',
     },
     {
-      title: 'Moyenne quotidienne',
+      title: 'Moyenne / jour',
       value: String(stats?.average_daily ?? 0),
+      suffix: 'DMs',
       icon: TrendingUp,
       color: 'bg-success/10 text-success',
+    },
+    {
+      title: 'Total 30j',
+      value: String(stats?.total_messages ?? 0),
+      suffix: 'DMs',
+      icon: Phone,
+      color: 'bg-purple-100 text-purple-700',
     },
   ]
 
@@ -78,7 +88,7 @@ export function SetterStats({ userId }: SetterStatsProps) {
               </div>
               <div className="mt-3">
                 <p className="text-sm font-medium text-muted-foreground">{kpi.title}</p>
-                <p className="mt-1 text-2xl font-bold text-foreground">{kpi.value} messages</p>
+                <p className="mt-1 text-2xl font-bold text-foreground">{kpi.value} <span className="text-sm font-medium text-muted-foreground">{kpi.suffix}</span></p>
               </div>
             </CardContent>
           </Card>
@@ -88,7 +98,7 @@ export function SetterStats({ userId }: SetterStatsProps) {
       {chartData.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Messages envoyés (14 derniers jours)</CardTitle>
+            <CardTitle className="text-base">Prospection (14 derniers jours)</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={240}>

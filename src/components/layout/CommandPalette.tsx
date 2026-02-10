@@ -7,16 +7,12 @@ import {
   Users,
   Target,
   Calendar,
-  PhoneCall,
-  MessageSquare,
   MessageCircle,
   GraduationCap,
-  Share2,
   DollarSign,
-  Instagram,
+  Activity,
   Plus,
   Phone,
-  FileText,
 } from 'lucide-react'
 import { useUIStore } from '@/stores/ui-store'
 import { useRole } from '@/hooks/useRole'
@@ -105,21 +101,16 @@ export function CommandPalette() {
     { id: 'nav-dashboard', label: 'Dashboard', icon: LayoutDashboard, action: () => go('/'), group: 'Navigation', module: 'dashboard' },
     { id: 'nav-messaging', label: 'Messagerie', icon: MessageCircle, action: () => go('/messaging'), group: 'Navigation', module: 'messaging' },
     { id: 'nav-formations', label: 'Formations', icon: GraduationCap, action: () => go('/formations'), group: 'Navigation', module: 'formations' },
-    { id: 'nav-clients', label: 'Élèves', icon: Users, action: () => go('/clients'), group: 'Navigation', module: 'clients' },
-    { id: 'nav-leads', label: 'Suivi Leads', icon: Target, action: () => go('/leads'), group: 'Navigation', module: 'leads' },
-    { id: 'nav-calendar', label: 'Calendrier', icon: Calendar, action: () => go('/call-calendar'), group: 'Navigation', module: 'call-calendar' },
-    { id: 'nav-calls', label: 'CA & Calls', icon: PhoneCall, action: () => go('/closer-calls'), group: 'Navigation', module: 'closer-calls' },
-    { id: 'nav-setter', label: 'Activité Setter', icon: MessageSquare, action: () => go('/setter-activity'), group: 'Navigation', module: 'setter-activity' },
-    { id: 'nav-social', label: 'Contenus Social', icon: Share2, action: () => go('/social-content'), group: 'Navigation', module: 'social-content' },
+    { id: 'nav-eleves', label: 'Élèves', icon: Users, action: () => go('/eleves'), group: 'Navigation', module: 'eleves' },
+    { id: 'nav-pipeline', label: 'Pipeline', icon: Target, action: () => go('/pipeline'), group: 'Navigation', module: 'pipeline' },
+    { id: 'nav-calendrier', label: 'Calendrier', icon: Calendar, action: () => go('/calendrier'), group: 'Navigation', module: 'calendrier' },
+    { id: 'nav-activite', label: 'Activité', icon: Activity, action: () => go('/activite'), group: 'Navigation', module: 'activite' },
     { id: 'nav-finances', label: 'Finances', icon: DollarSign, action: () => go('/finances'), group: 'Navigation', module: 'finances' },
-    { id: 'nav-instagram', label: 'Instagram', icon: Instagram, action: () => go('/instagram'), group: 'Navigation', module: 'instagram' },
-    { id: 'nav-student-overview', label: 'Suivi Élèves', icon: Users, action: () => go('/student-overview'), group: 'Navigation', module: 'student-overview' },
   ]
 
   const quickActions: CommandItem[] = [
-    { id: 'action-lead', label: 'Nouveau lead', icon: Plus, action: () => go('/leads?action=new'), group: 'Actions rapides', module: 'leads' },
-    { id: 'action-call', label: 'Nouveau call', icon: Phone, action: () => go('/call-calendar?action=new'), group: 'Actions rapides', module: 'call-calendar' },
-    { id: 'action-content', label: 'Nouveau contenu', icon: FileText, action: () => go('/social-content?action=new'), group: 'Actions rapides', module: 'social-content' },
+    { id: 'action-lead', label: 'Nouveau lead', icon: Plus, action: () => go('/pipeline?action=new'), group: 'Actions rapides', module: 'pipeline' },
+    { id: 'action-call', label: 'Nouveau call', icon: Phone, action: () => go('/calendrier?action=new'), group: 'Actions rapides', module: 'calendrier' },
   ]
 
   const filteredNavItems = navigationItems.filter(item =>
@@ -265,7 +256,7 @@ export function CommandPalette() {
                         {searchResults.clients.map((c) => (
                           <button
                             key={c.id}
-                            onClick={() => go(`/clients/${c.id}`)}
+                            onClick={() => go(`/eleves/${c.id}`)}
                             className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-foreground transition-colors hover:bg-muted"
                           >
                             <Users className="h-4 w-4 shrink-0 text-muted-foreground" />
@@ -282,7 +273,7 @@ export function CommandPalette() {
                         {searchResults.leads.map((l) => (
                           <button
                             key={l.id}
-                            onClick={() => go('/leads')}
+                            onClick={() => go('/pipeline')}
                             className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-foreground transition-colors hover:bg-muted"
                           >
                             <Target className="h-4 w-4 shrink-0 text-muted-foreground" />

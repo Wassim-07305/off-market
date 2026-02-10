@@ -10,20 +10,22 @@ import {
 import type { DragStartEvent, DragEndEvent } from '@dnd-kit/core'
 import { KanbanColumn } from './KanbanColumn'
 import { KanbanCard } from './KanbanCard'
-import { CLIENT_SCOPE_STATUSES, CLIENT_SCOPE_STATUS_LABELS } from '@/lib/constants'
-import type { ClientScopeStatus } from '@/lib/constants'
+import { LEAD_STATUSES, LEAD_STATUS_LABELS } from '@/lib/constants'
+import type { LeadStatus } from '@/lib/constants'
 import type { LeadWithRelations } from '@/types/database'
 
 interface LeadKanbanProps {
   leads: LeadWithRelations[]
-  onStatusChange: (leadId: string, newStatus: ClientScopeStatus) => void
+  onStatusChange: (leadId: string, newStatus: LeadStatus) => void
 }
 
-const COLUMN_COLORS: Record<ClientScopeStatus, string> = {
-  contacté: 'border-t-slate-400',
-  qualifié: 'border-t-blue-500',
-  proposé: 'border-t-amber-500',
-  closé: 'border-t-emerald-500',
+const COLUMN_COLORS: Record<LeadStatus, string> = {
+  premier_message: 'border-t-slate-400',
+  en_discussion: 'border-t-blue-500',
+  qualifie: 'border-t-indigo-500',
+  loom_envoye: 'border-t-purple-500',
+  call_planifie: 'border-t-amber-500',
+  close: 'border-t-emerald-500',
   perdu: 'border-t-red-500',
 }
 
@@ -36,10 +38,10 @@ export function LeadKanban({ leads, onStatusChange }: LeadKanbanProps) {
     })
   )
 
-  const columns = CLIENT_SCOPE_STATUSES.map((status) => ({
+  const columns = LEAD_STATUSES.map((status) => ({
     id: status,
-    label: CLIENT_SCOPE_STATUS_LABELS[status],
-    leads: leads.filter((l) => l.client_status === status),
+    label: LEAD_STATUS_LABELS[status],
+    leads: leads.filter((l) => l.status === status),
     color: COLUMN_COLORS[status],
   }))
 
@@ -56,12 +58,12 @@ export function LeadKanban({ leads, onStatusChange }: LeadKanbanProps) {
     if (!over) return
 
     const leadId = active.id as string
-    const newStatus = over.id as ClientScopeStatus
+    const newStatus = over.id as LeadStatus
 
     // Check if the drop target is a column
-    if (CLIENT_SCOPE_STATUSES.includes(newStatus as ClientScopeStatus)) {
+    if ((LEAD_STATUSES as readonly string[]).includes(newStatus)) {
       const lead = leads.find((l) => l.id === leadId)
-      if (lead && lead.client_status !== newStatus) {
+      if (lead && lead.status !== newStatus) {
         onStatusChange(leadId, newStatus)
       }
     }

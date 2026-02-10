@@ -15,8 +15,6 @@ import { Button } from '@/components/ui/button'
 import {
   LEAD_STATUSES,
   LEAD_STATUS_LABELS,
-  CLIENT_SCOPE_STATUSES,
-  CLIENT_SCOPE_STATUS_LABELS,
   LEAD_SOURCES,
   LEAD_SOURCE_LABELS,
 } from '@/lib/constants'
@@ -48,8 +46,7 @@ export function LeadFormModal({ open, onClose, lead }: LeadFormModalProps) {
       email: '',
       phone: '',
       source: undefined,
-      status: 'à_relancer',
-      client_status: 'contacté',
+      status: 'premier_message',
       client_id: null,
       assigned_to: null,
       ca_contracté: 0,
@@ -68,7 +65,6 @@ export function LeadFormModal({ open, onClose, lead }: LeadFormModalProps) {
         phone: lead.phone ?? '',
         source: lead.source ?? undefined,
         status: lead.status,
-        client_status: lead.client_status,
         client_id: lead.client_id,
         assigned_to: lead.assigned_to,
         ca_contracté: lead.ca_contracté,
@@ -83,8 +79,7 @@ export function LeadFormModal({ open, onClose, lead }: LeadFormModalProps) {
         email: '',
         phone: '',
         source: undefined,
-        status: 'à_relancer',
-        client_status: 'contacté',
+        status: 'premier_message',
         client_id: null,
         assigned_to: null,
         ca_contracté: 0,
@@ -123,11 +118,6 @@ export function LeadFormModal({ open, onClose, lead }: LeadFormModalProps) {
     label: LEAD_STATUS_LABELS[s],
   }))
 
-  const clientStatusOptions = CLIENT_SCOPE_STATUSES.map((s) => ({
-    value: s,
-    label: CLIENT_SCOPE_STATUS_LABELS[s],
-  }))
-
   const clientOptions = [
     { value: '', label: 'Aucun client' },
     ...(clientsData?.data ?? []).map((c) => ({ value: c.id, label: c.name })),
@@ -140,7 +130,6 @@ export function LeadFormModal({ open, onClose, lead }: LeadFormModalProps) {
 
   const watchedSource = watch('source')
   const watchedStatus = watch('status')
-  const watchedClientStatus = watch('client_status')
   const watchedClientId = watch('client_id')
   const watchedAssignedTo = watch('assigned_to')
 
@@ -190,22 +179,15 @@ export function LeadFormModal({ open, onClose, lead }: LeadFormModalProps) {
             error={errors.status?.message}
           />
           <Select
-            label="Statut Client"
-            options={clientStatusOptions}
-            value={watchedClientStatus}
-            onChange={(val) => setValue('client_status', val as LeadFormData['client_status'])}
-            error={errors.client_status?.message}
-          />
-        </div>
-
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <Select
             label="Client"
             options={clientOptions}
             value={watchedClientId ?? ''}
             onChange={(val) => setValue('client_id', val || null)}
             error={errors.client_id?.message}
           />
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Select
             label="Assigné à"
             options={profileOptions}
