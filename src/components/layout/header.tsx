@@ -1,13 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { useAuth } from "@/hooks/use-auth";
 import { useUIStore } from "@/stores/ui-store";
-import {
-  Search,
-  Bell,
-  Menu,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Search, Bell, Menu } from "lucide-react";
+import { cn, getInitials } from "@/lib/utils";
 
 export function Header() {
   const { profile } = useAuth();
@@ -17,6 +14,8 @@ export function Header() {
     setNotificationPanelOpen,
     setMobileMenuOpen,
   } = useUIStore();
+
+  const initials = profile?.full_name ? getInitials(profile.full_name) : "U";
 
   return (
     <header
@@ -56,15 +55,23 @@ export function Header() {
           <Bell className="w-5 h-5" />
         </button>
 
-        {/* Avatar */}
-        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-xs text-primary font-semibold">
-          {profile?.full_name
-            ?.split(" ")
-            .map((n) => n[0])
-            .join("")
-            .toUpperCase()
-            .slice(0, 2) ?? "?"}
-        </div>
+        {/* Avatar - clickable to settings */}
+        <Link
+          href="/settings"
+          className="rounded-full hover:ring-2 hover:ring-primary/30 transition-all"
+        >
+          {profile?.avatar_url ? (
+            <img
+              src={profile.avatar_url}
+              alt={profile.full_name ?? ""}
+              className="w-8 h-8 rounded-full object-cover"
+            />
+          ) : (
+            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-xs text-primary font-semibold">
+              {initials}
+            </div>
+          )}
+        </Link>
       </div>
     </header>
   );

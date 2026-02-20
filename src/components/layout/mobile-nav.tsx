@@ -24,7 +24,7 @@ const mobileNavItems = [
 export function MobileNav() {
   const pathname = usePathname();
   const { profile } = useAuth();
-  const role = profile?.role ?? "student";
+  const role = profile?.role ?? "admin";
 
   const filtered = mobileNavItems.filter((item) =>
     (item.roles as readonly string[]).includes(role)

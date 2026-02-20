@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
+import { cn, getInitials } from "@/lib/utils";
 import { useUIStore } from "@/stores/ui-store";
 import { useAuth } from "@/hooks/use-auth";
 import {
@@ -27,18 +28,20 @@ const navigation = [
   { name: "Formulaires", href: "/forms", icon: FileText, roles: ["admin", "coach", "team", "student"] },
   { name: "Assistant IA", href: "/ai", icon: Bot, roles: ["admin", "coach", "team"] },
   { name: "Analytics", href: "/analytics", icon: BarChart3, roles: ["admin", "coach"] },
-  { name: "Reglages", href: "/settings", icon: Settings, roles: ["admin", "coach", "team"] },
+  { name: "Reglages", href: "/settings", icon: Settings, roles: ["admin", "coach", "team", "student"] },
 ] as const;
 
 export function Sidebar() {
   const pathname = usePathname();
   const { sidebarCollapsed, toggleSidebar } = useUIStore();
-  const { profile, signOut } = useAuth();
-  const role = profile?.role ?? "student";
+  const { profile, loading, signOut } = useAuth();
+  const role = profile?.role ?? "admin";
 
   const filteredNavigation = navigation.filter((item) =>
     (item.roles as readonly string[]).includes(role)
   );
+
+  const initials = profile?.full_name ? getInitials(profile.full_name) : "";
 
   return (
     <aside
@@ -54,36 +57,32 @@ export function Sidebar() {
           sidebarCollapsed ? "justify-center" : "justify-between"
         )}
       >
-        {!sidebarCollapsed && (
-          <Link href="/dashboard" className="flex items-center gap-2">
+        <Link href="/dashboard" className="flex items-center gap-2.5">
+          <Image
+            src="/logo.png"
+            alt="Off Market"
+            width={32}
+            height={32}
+            className="rounded-lg shrink-0"
+          />
+          {!sidebarCollapsed && (
             <span
-              className="text-2xl text-white"
+              className="text-xl text-white"
               style={{ fontFamily: "Instrument Serif, serif" }}
             >
               Off Market
             </span>
-          </Link>
-        )}
-        {sidebarCollapsed && (
-          <Link href="/dashboard">
-            <span
-              className="text-2xl text-white font-bold"
-              style={{ fontFamily: "Instrument Serif, serif" }}
-            >
-              O
-            </span>
-          </Link>
-        )}
-        <button
-          onClick={toggleSidebar}
-          className={cn(
-            "w-7 h-7 rounded-lg flex items-center justify-center text-[var(--sidebar-text)] hover:text-[var(--sidebar-text-active)] hover:bg-zinc-800 transition-colors",
-            sidebarCollapsed && "hidden"
           )}
-          aria-label="Reduire le menu"
-        >
-          <ChevronLeft className="w-4 h-4" />
-        </button>
+        </Link>
+        {!sidebarCollapsed && (
+          <button
+            onClick={toggleSidebar}
+            className="w-7 h-7 rounded-lg flex items-center justify-center text-[var(--sidebar-text)] hover:text-[var(--sidebar-text-active)] hover:bg-zinc-800 transition-colors"
+            aria-label="Reduire le menu"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+        )}
       </div>
 
       {/* Navigation */}
@@ -138,28 +137,39 @@ export function Sidebar() {
         {/* User profile */}
         <div
           className={cn(
-            "flex items-center gap-3 p-2 rounded-lg",
-            sidebarCollapsed && "justify-center p-0"
+            "flex items-center gap-3 rounded-lg",
+            sidebarCollapsed && "justify-center"
           )}
         >
-          <div className="w-8 h-8 rounded-full bg-zinc-700 flex items-center justify-center text-xs text-white font-medium shrink-0">
-            {profile?.full_name
-              ?.split(" ")
-              .map((n) => n[0])
-              .join("")
-              .toUpperCase()
-              .slice(0, 2) ?? "?"}
-          </div>
-          {!sidebarCollapsed && (
-            <div className="flex-1 min-w-0">
-              <p className="text-sm text-[var(--sidebar-text-active)] font-medium truncate">
-                {profile?.full_name ?? "Chargement..."}
-              </p>
-              <p className="text-xs text-[var(--sidebar-text)] truncate">
-                {profile?.email}
-              </p>
-            </div>
-          )}
+          <Link
+            href="/settings"
+            className={cn(
+              "flex items-center gap-3 flex-1 min-w-0 p-2 rounded-lg hover:bg-zinc-800/50 transition-colors",
+              sidebarCollapsed && "justify-center p-0"
+            )}
+          >
+            {profile?.avatar_url ? (
+              <img
+                src={profile.avatar_url}
+                alt={profile.full_name ?? ""}
+                className="w-8 h-8 rounded-full object-cover shrink-0"
+              />
+            ) : (
+              <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-xs text-primary font-semibold shrink-0">
+                {loading ? "..." : initials || "U"}
+              </div>
+            )}
+            {!sidebarCollapsed && (
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-[var(--sidebar-text-active)] font-medium truncate">
+                  {loading ? "Chargement..." : profile?.full_name ?? "Mon profil"}
+                </p>
+                <p className="text-xs text-[var(--sidebar-text)] truncate">
+                  {profile?.email}
+                </p>
+              </div>
+            )}
+          </Link>
           {!sidebarCollapsed && (
             <button
               onClick={signOut}

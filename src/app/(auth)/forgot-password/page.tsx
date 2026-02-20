@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import { ArrowLeft, Loader2 } from "lucide-react";
@@ -27,6 +28,14 @@ export default function ForgotPasswordPage() {
   return (
     <div className="animate-fade-in">
       <div className="text-center mb-8">
+        <Image
+          src="/logo.png"
+          alt="Off Market"
+          width={72}
+          height={72}
+          className="mx-auto mb-4 rounded-2xl"
+          priority
+        />
         <h1
           className="text-4xl text-white mb-2"
           style={{ fontFamily: "Instrument Serif, serif" }}
