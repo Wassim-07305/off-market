@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { cn, getInitials } from "@/lib/utils";
 import { useUIStore } from "@/stores/ui-store";
@@ -58,7 +57,7 @@ export function Sidebar() {
         )}
       >
         <Link href="/dashboard" className="flex items-center gap-2.5">
-          <Image
+          <img
             src="/logo.png"
             alt="Off Market"
             width={32}

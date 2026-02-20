@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { useSupabase } from "./use-supabase";
 import type { Profile } from "@/types/database";
 import type { User } from "@supabase/supabase-js";
 
@@ -9,24 +9,33 @@ export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
-  const supabase = createClient();
+  const supabase = useSupabase();
 
   useEffect(() => {
-    const getUser = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      setUser(user);
+    let cancelled = false;
 
-      if (user) {
-        const { data } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", user.id)
-          .single();
-        setProfile(data);
+    const getUser = async () => {
+      try {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+
+        if (cancelled) return;
+        setUser(user);
+
+        if (user) {
+          const { data } = await supabase
+            .from("profiles")
+            .select("*")
+            .eq("id", user.id)
+            .single();
+          if (!cancelled) setProfile(data);
+        }
+      } catch {
+        // Auth error - user not logged in
+      } finally {
+        if (!cancelled) setLoading(false);
       }
-      setLoading(false);
     };
 
     getUser();
@@ -34,6 +43,7 @@ export function useAuth() {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (cancelled) return;
       setUser(session?.user ?? null);
       if (session?.user) {
         const { data } = await supabase
@@ -41,13 +51,16 @@ export function useAuth() {
           .select("*")
           .eq("id", session.user.id)
           .single();
-        setProfile(data);
+        if (!cancelled) setProfile(data);
       } else {
         setProfile(null);
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      cancelled = true;
+      subscription.unsubscribe();
+    };
   }, [supabase]);
 
   const signIn = useCallback(
@@ -99,8 +112,12 @@ export function useAuth() {
   }, [supabase]);
 
   const signOut = useCallback(async () => {
-    await supabase.auth.signOut();
-    window.location.href = "/login";
+    try {
+      await supabase.auth.signOut();
+    } catch {
+      // Ignore signOut errors
+    }
+    window.location.replace("/login");
   }, [supabase]);
 
   const resetPassword = useCallback(
