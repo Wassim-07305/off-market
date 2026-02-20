@@ -24,6 +24,17 @@ export const metadata: Metadata = {
     ],
     apple: "/apple-touch-icon.png",
   },
+  openGraph: {
+    title: "Off Market",
+    description: "Plateforme de coaching business tout-en-un",
+    siteName: "Off Market",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Off Market",
+    description: "Plateforme de coaching business tout-en-un",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
