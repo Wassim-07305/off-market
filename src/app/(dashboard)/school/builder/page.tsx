@@ -110,8 +110,7 @@ export default function CourseBuilderPage() {
 
       <div className="bg-surface border border-border rounded-xl p-6 space-y-4">
         <h2
-          className="text-2xl font-semibold text-foreground"
-          style={{ fontFamily: "Instrument Serif, serif" }}
+          className="text-2xl font-semibold text-foreground font-bold"
         >
           Nouveau cours
         </h2>

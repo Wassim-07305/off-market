@@ -35,8 +35,7 @@ export function RevenueChart() {
           <p className="text-xs text-muted-foreground">12 derniers mois</p>
         </div>
         <span
-          className="text-2xl font-semibold text-foreground"
-          style={{ fontFamily: "Instrument Serif, serif" }}
+          className="text-2xl font-semibold text-foreground font-bold"
         >
           91 000 EUR
         </span>

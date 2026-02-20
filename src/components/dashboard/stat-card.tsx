@@ -39,8 +39,7 @@ export function StatCard({
         </div>
       </div>
       <div
-        className="text-3xl font-semibold text-foreground mb-1"
-        style={{ fontFamily: "Instrument Serif, serif" }}
+        className="text-3xl font-semibold text-foreground mb-1 font-bold"
       >
         {value}
       </div>

@@ -1,12 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { DM_Sans } from "next/font/google";
+import { Montserrat } from "next/font/google";
 import { Toaster } from "sonner";
 import { Providers } from "@/components/providers/providers";
 import "./globals.css";
 
-const dmSans = DM_Sans({
+const montserrat = Montserrat({
   subsets: ["latin"],
-  variable: "--font-dm-sans",
+  variable: "--font-montserrat",
   display: "swap",
 });
 
@@ -56,13 +56,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr" suppressHydrationWarning>
-      <head>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap"
-          rel="stylesheet"
-        />
-      </head>
-      <body className={`${dmSans.variable} font-sans antialiased`}>
+      <head />
+      <body className={`${montserrat.variable} font-sans antialiased`}>
         <Providers>{children}</Providers>
         <Toaster
           position="top-right"

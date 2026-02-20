@@ -163,8 +163,7 @@ export default function AIPage() {
                 <Sparkles className="w-7 h-7 text-primary" />
               </div>
               <h1
-                className="text-2xl font-semibold text-foreground mb-2"
-                style={{ fontFamily: "Instrument Serif, serif" }}
+                className="text-2xl font-semibold text-foreground mb-2 font-bold"
               >
                 Assistant IA
               </h1>

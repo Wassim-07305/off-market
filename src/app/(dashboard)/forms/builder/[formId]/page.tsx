@@ -33,8 +33,7 @@ export default function EditFormPage({
 
       <div className="bg-surface border border-border rounded-xl p-6">
         <h1
-          className="text-2xl font-semibold text-foreground"
-          style={{ fontFamily: "Instrument Serif, serif" }}
+          className="text-2xl font-semibold text-foreground font-bold"
         >
           Modifier : {form.title}
         </h1>

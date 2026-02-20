@@ -42,8 +42,7 @@ export default function LoginPage() {
           priority
         />
         <h1
-          className="text-4xl text-white mb-2"
-          style={{ fontFamily: "Instrument Serif, serif" }}
+          className="text-4xl text-white mb-2 font-bold"
         >
           Off Market
         </h1>

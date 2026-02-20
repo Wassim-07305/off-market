@@ -66,8 +66,7 @@ export function Sidebar() {
           />
           {!sidebarCollapsed && (
             <span
-              className="text-xl text-white"
-              style={{ fontFamily: "Instrument Serif, serif" }}
+              className="text-xl text-white font-bold"
             >
               Off Market
             </span>

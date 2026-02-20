@@ -16,8 +16,7 @@
   --color-warning: #F59E0B;
   --color-error: #EF4444;
   --color-info: #3B82F6;
-  --font-serif: "Instrument Serif", serif;
-  --font-sans: "DM Sans", sans-serif;
+  --font-sans: "Montserrat", sans-serif;
   --radius-sm: 8px;
   --radius-md: 10px;
   --radius-lg: 12px;
@@ -62,7 +61,7 @@
 
 /* Base */
 body {
-  font-family: "DM Sans", sans-serif;
+  font-family: "Montserrat", sans-serif;
   background: var(--background);
   color: var(--foreground);
   -webkit-font-smoothing: antialiased;

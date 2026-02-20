@@ -120,8 +120,7 @@ export default function FormBuilderPage() {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Titre du formulaire"
-              className="w-full text-xl font-semibold text-foreground bg-transparent border-none outline-none placeholder:text-muted-foreground"
-              style={{ fontFamily: "Instrument Serif, serif" }}
+              className="w-full text-xl font-semibold text-foreground bg-transparent border-none outline-none placeholder:text-muted-foreground font-bold"
             />
             <input
               value={description}

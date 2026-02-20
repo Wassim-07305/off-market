@@ -58,8 +58,7 @@ export default function AnalyticsPage() {
     >
       <motion.div variants={fadeInUp} transition={defaultTransition}>
         <h1
-          className="text-3xl font-semibold text-foreground"
-          style={{ fontFamily: "Instrument Serif, serif" }}
+          className="text-3xl font-semibold text-foreground font-bold"
         >
           Analytics
         </h1>
@@ -86,8 +85,7 @@ export default function AnalyticsPage() {
           >
             <p className="text-xs text-muted-foreground mb-1">{stat.label}</p>
             <p
-              className="text-2xl font-semibold text-foreground"
-              style={{ fontFamily: "Instrument Serif, serif" }}
+              className="text-2xl font-semibold text-foreground font-bold"
             >
               {stat.value}
             </p>

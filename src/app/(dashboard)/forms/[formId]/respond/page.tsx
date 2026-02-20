@@ -57,8 +57,7 @@ export default function FormRespondPage({
           <Check className="w-8 h-8 text-success" />
         </div>
         <h1
-          className="text-2xl font-semibold text-foreground mb-2"
-          style={{ fontFamily: "Instrument Serif, serif" }}
+          className="text-2xl font-semibold text-foreground mb-2 font-bold"
         >
           Merci !
         </h1>
@@ -88,8 +87,7 @@ export default function FormRespondPage({
 
       <div className="bg-surface border border-border rounded-xl p-8">
         <h1
-          className="text-2xl font-semibold text-foreground mb-2"
-          style={{ fontFamily: "Instrument Serif, serif" }}
+          className="text-2xl font-semibold text-foreground mb-2 font-bold"
         >
           {form.title}
         </h1>

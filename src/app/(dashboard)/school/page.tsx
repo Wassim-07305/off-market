@@ -41,8 +41,7 @@ export default function SchoolPage() {
       >
         <div>
           <h1
-            className="text-3xl font-semibold text-foreground"
-            style={{ fontFamily: "Instrument Serif, serif" }}
+            className="text-3xl font-semibold text-foreground font-bold"
           >
             Formation
           </h1>

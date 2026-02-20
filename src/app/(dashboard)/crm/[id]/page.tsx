@@ -165,8 +165,7 @@ export default function StudentDetailPage({
         <div className="bg-surface border border-border rounded-xl p-4 text-center">
           <p className="text-xs text-muted-foreground mb-1">Score</p>
           <p
-            className="text-2xl font-semibold"
-            style={{ fontFamily: "Instrument Serif, serif" }}
+            className="text-2xl font-semibold font-bold"
           >
             <span
               className={
@@ -184,8 +183,7 @@ export default function StudentDetailPage({
         <div className="bg-surface border border-border rounded-xl p-4 text-center">
           <p className="text-xs text-muted-foreground mb-1">Revenus</p>
           <p
-            className="text-2xl font-semibold text-foreground"
-            style={{ fontFamily: "Instrument Serif, serif" }}
+            className="text-2xl font-semibold text-foreground font-bold"
           >
             {formatCurrency(Number(details?.revenue ?? 0))}
           </p>
