@@ -1,0 +1,34 @@
+"use client";
+
+import { create } from "zustand";
+
+interface UIState {
+  sidebarCollapsed: boolean;
+  toggleSidebar: () => void;
+  setSidebarCollapsed: (collapsed: boolean) => void;
+
+  commandPaletteOpen: boolean;
+  setCommandPaletteOpen: (open: boolean) => void;
+
+  notificationPanelOpen: boolean;
+  setNotificationPanelOpen: (open: boolean) => void;
+
+  mobileMenuOpen: boolean;
+  setMobileMenuOpen: (open: boolean) => void;
+}
+
+export const useUIStore = create<UIState>((set) => ({
+  sidebarCollapsed: false,
+  toggleSidebar: () =>
+    set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
+  setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),
+
+  commandPaletteOpen: false,
+  setCommandPaletteOpen: (open) => set({ commandPaletteOpen: open }),
+
+  notificationPanelOpen: false,
+  setNotificationPanelOpen: (open) => set({ notificationPanelOpen: open }),
+
+  mobileMenuOpen: false,
+  setMobileMenuOpen: (open) => set({ mobileMenuOpen: open }),
+}));
