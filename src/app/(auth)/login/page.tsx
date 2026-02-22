@@ -25,7 +25,7 @@ export default function LoginPage() {
     if (error) {
       toast.error("Email ou mot de passe incorrect");
     } else {
-      router.push("/dashboard");
+      router.push("/");
       router.refresh();
     }
   };

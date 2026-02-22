@@ -14,10 +14,20 @@ export default async function Home() {
       .eq("id", user.id)
       .single();
 
-    if (profile?.role === "student") {
-      redirect("/school");
+    const role = profile?.role ?? "client";
+
+    switch (role) {
+      case "admin":
+        redirect("/admin/dashboard");
+      case "coach":
+        redirect("/coach/dashboard");
+      case "setter":
+      case "closer":
+        redirect("/sales/dashboard");
+      case "client":
+      default:
+        redirect("/client/dashboard");
     }
-    redirect("/dashboard");
   }
 
   redirect("/login");

@@ -63,8 +63,9 @@ export const LESSON_TYPES = [
 export const ROLES = {
   admin: { label: "Admin", color: "bg-primary/10 text-primary" },
   coach: { label: "Coach", color: "bg-primary/10 text-primary" },
-  team: { label: "Equipe", color: "bg-blue-100 text-blue-800" },
-  student: { label: "El\u00e8ve", color: "bg-zinc-100 text-zinc-800" },
+  setter: { label: "Setter", color: "bg-blue-100 text-blue-800" },
+  closer: { label: "Closer", color: "bg-indigo-100 text-indigo-800" },
+  client: { label: "Client", color: "bg-zinc-100 text-zinc-800" },
 } as const;
 
 export type StudentTag = (typeof STUDENT_TAGS)[number]["value"];

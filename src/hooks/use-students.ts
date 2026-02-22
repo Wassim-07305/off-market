@@ -27,7 +27,7 @@ export function useStudents(options: UseStudentsOptions = {}) {
       let query = supabase
         .from("profiles")
         .select("*, student_details(*)")
-        .eq("role", "student")
+        .eq("role", "client")
         .order("created_at", { ascending: false })
         .limit(limit);
 

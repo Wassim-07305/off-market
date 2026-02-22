@@ -3,11 +3,12 @@ export interface Profile {
   email: string;
   full_name: string;
   avatar_url: string | null;
-  role: "admin" | "coach" | "team" | "student";
+  role: "admin" | "coach" | "setter" | "closer" | "client";
   phone: string | null;
   bio: string | null;
   timezone: string;
   onboarding_completed: boolean;
+  onboarding_step: number;
   last_seen_at: string | null;
   created_at: string;
   updated_at: string;

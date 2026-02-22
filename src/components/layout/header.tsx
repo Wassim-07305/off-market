@@ -3,11 +3,13 @@
 import Link from "next/link";
 import { useAuth } from "@/hooks/use-auth";
 import { useUIStore } from "@/stores/ui-store";
+import { useRoutePrefix } from "@/hooks/use-route-prefix";
 import { Search, Bell, Menu } from "lucide-react";
 import { cn, getInitials } from "@/lib/utils";
 
 export function Header() {
   const { profile } = useAuth();
+  const prefix = useRoutePrefix();
   const {
     sidebarCollapsed,
     setCommandPaletteOpen,
@@ -57,7 +59,7 @@ export function Header() {
 
         {/* Avatar - clickable to settings */}
         <Link
-          href="/settings"
+          href={`${prefix}/settings`}
           className="rounded-full hover:ring-2 hover:ring-primary/30 transition-all"
         >
           {profile?.avatar_url ? (

@@ -20,14 +20,14 @@ import {
 } from "lucide-react";
 
 const navigation = [
-  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, roles: ["admin", "coach", "team"] },
-  { name: "CRM", href: "/crm", icon: Users, roles: ["admin", "coach", "team"] },
-  { name: "Messagerie", href: "/messaging", icon: MessageSquare, roles: ["admin", "coach", "team", "student"] },
-  { name: "Formation", href: "/school", icon: GraduationCap, roles: ["admin", "coach", "team", "student"] },
-  { name: "Formulaires", href: "/forms", icon: FileText, roles: ["admin", "coach", "team", "student"] },
-  { name: "Assistant IA", href: "/ai", icon: Bot, roles: ["admin", "coach", "team"] },
+  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, roles: ["admin", "coach", "setter", "closer"] },
+  { name: "CRM", href: "/crm", icon: Users, roles: ["admin", "coach", "setter", "closer"] },
+  { name: "Messagerie", href: "/messaging", icon: MessageSquare, roles: ["admin", "coach", "setter", "closer", "client"] },
+  { name: "Formation", href: "/school", icon: GraduationCap, roles: ["admin", "coach", "client"] },
+  { name: "Formulaires", href: "/forms", icon: FileText, roles: ["admin", "coach", "client"] },
+  { name: "Assistant IA", href: "/ai", icon: Bot, roles: ["admin", "coach"] },
   { name: "Analytics", href: "/analytics", icon: BarChart3, roles: ["admin", "coach"] },
-  { name: "Reglages", href: "/settings", icon: Settings, roles: ["admin", "coach", "team", "student"] },
+  { name: "Reglages", href: "/settings", icon: Settings, roles: ["admin", "coach", "setter", "closer", "client"] },
 ] as const;
 
 export function Sidebar() {

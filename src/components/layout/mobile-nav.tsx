@@ -14,11 +14,11 @@ import {
 } from "lucide-react";
 
 const mobileNavItems = [
-  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, roles: ["admin", "coach", "team"] },
-  { name: "CRM", href: "/crm", icon: Users, roles: ["admin", "coach", "team"] },
-  { name: "Messages", href: "/messaging", icon: MessageSquare, roles: ["admin", "coach", "team", "student"] },
-  { name: "Formation", href: "/school", icon: GraduationCap, roles: ["admin", "coach", "team", "student"] },
-  { name: "Forms", href: "/forms", icon: FileText, roles: ["admin", "coach", "team", "student"] },
+  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, roles: ["admin", "coach", "setter", "closer"] },
+  { name: "CRM", href: "/crm", icon: Users, roles: ["admin", "coach", "setter", "closer"] },
+  { name: "Messages", href: "/messaging", icon: MessageSquare, roles: ["admin", "coach", "setter", "closer", "client"] },
+  { name: "Formation", href: "/school", icon: GraduationCap, roles: ["admin", "coach", "client"] },
+  { name: "Forms", href: "/forms", icon: FileText, roles: ["admin", "coach", "client"] },
 ] as const;
 
 export function MobileNav() {

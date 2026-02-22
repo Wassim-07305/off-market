@@ -130,9 +130,14 @@ export function useAuth() {
     [supabase]
   );
 
-  const isAdmin = profile?.role === "admin" || profile?.role === "coach";
-  const isTeam = profile?.role === "team";
-  const isStudent = profile?.role === "student";
+  const role = profile?.role;
+  const isAdmin = role === "admin";
+  const isCoach = role === "coach";
+  const isStaff = role === "admin" || role === "coach";
+  const isSetter = role === "setter";
+  const isCloser = role === "closer";
+  const isSales = role === "setter" || role === "closer";
+  const isClient = role === "client";
 
   return {
     user,
@@ -145,7 +150,11 @@ export function useAuth() {
     signOut,
     resetPassword,
     isAdmin,
-    isTeam,
-    isStudent,
+    isCoach,
+    isStaff,
+    isSetter,
+    isCloser,
+    isSales,
+    isClient,
   };
 }
