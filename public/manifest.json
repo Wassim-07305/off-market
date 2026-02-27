@@ -4,8 +4,8 @@
   "description": "Plateforme de coaching business tout-en-un",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#09090B",
-  "theme_color": "#AF0000",
+  "background_color": "#0C0A09",
+  "theme_color": "#C41E3A",
   "orientation": "portrait-primary",
   "icons": [
     {
