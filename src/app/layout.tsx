@@ -1,12 +1,18 @@
 import type { Metadata, Viewport } from "next";
-import { Montserrat } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import { Providers } from "@/components/providers/providers";
 import "./globals.css";
 
-const montserrat = Montserrat({
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-montserrat",
+  variable: "--font-inter",
+  display: "swap",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-jetbrains",
   display: "swap",
 });
 
@@ -43,7 +49,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#09090B",
+  themeColor: "#0C0A09",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
@@ -56,8 +62,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr" suppressHydrationWarning>
-      <head />
-      <body className={`${montserrat.variable} font-sans antialiased`}>
+      <head>
+        <link
+          href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,600,700,800,900&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body
+        className={`${inter.variable} ${jetbrainsMono.variable} font-sans antialiased`}
+      >
         <Providers>{children}</Providers>
         <Toaster
           position="top-right"
@@ -65,6 +78,9 @@ export default function RootLayout({
             style: {
               borderRadius: "12px",
               fontSize: "14px",
+              fontFamily: "Inter, system-ui, sans-serif",
+              boxShadow:
+                "0 4px 16px rgba(0,0,0,0.08), 0 12px 40px rgba(0,0,0,0.04)",
             },
           }}
         />

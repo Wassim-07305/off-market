@@ -19,6 +19,7 @@ import {
   Trophy,
   Flame,
   Crown,
+  Phone,
   type LucideIcon,
 } from "lucide-react";
 
@@ -38,6 +39,7 @@ export const adminNavigation: NavItem[] = [
   { name: "Facturation", href: "/admin/billing", icon: CreditCard },
   { name: "Onboarding", href: "/admin/onboarding", icon: UserPlus },
   { name: "Feed", href: "/admin/feed", icon: Rss },
+  { name: "Appels", href: "/admin/calls", icon: Phone },
   { name: "Assistant IA", href: "/admin/ai", icon: Bot },
   { name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
   { name: "Reglages", href: "/admin/settings", icon: Settings },
@@ -53,6 +55,7 @@ export const coachNavigation: NavItem[] = [
   { name: "Check-ins", href: "/coach/checkins", icon: ClipboardCheck },
   { name: "Alertes", href: "/coach/alerts", icon: Bell },
   { name: "Seances", href: "/coach/sessions", icon: Video },
+  { name: "Appels", href: "/coach/calls", icon: Phone },
   { name: "Reglages", href: "/coach/settings", icon: Settings },
 ];
 
@@ -60,6 +63,7 @@ export const coachNavigation: NavItem[] = [
 export const salesNavigation: NavItem[] = [
   { name: "Dashboard", href: "/sales/dashboard", icon: LayoutDashboard },
   { name: "Messagerie", href: "/sales/messaging", icon: MessageSquare },
+  { name: "Appels", href: "/sales/calls", icon: Phone },
   { name: "Reglages", href: "/sales/settings", icon: Settings },
 ];
 

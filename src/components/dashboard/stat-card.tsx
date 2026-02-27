@@ -26,25 +26,32 @@ export function StatCard({
   return (
     <div
       className={cn(
-        "bg-surface border border-border rounded-xl p-6 transition-all duration-150 hover:shadow-sm",
+        "bg-surface rounded-2xl p-6 transition-all duration-300 hover:translate-y-[-2px] group",
         className
       )}
+      style={{
+        boxShadow: "var(--shadow-card)",
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.boxShadow = "var(--shadow-card-hover)";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.boxShadow = "var(--shadow-card)";
+      }}
     >
       <div className="flex items-start justify-between mb-4">
-        <span className="text-sm text-muted-foreground font-medium">
+        <span className="text-[13px] text-muted-foreground font-medium">
           {title}
         </span>
-        <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
-          <Icon className="w-4.5 h-4.5 text-primary" />
+        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/5 to-primary/10 flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
+          <Icon className="w-[18px] h-[18px] text-primary" />
         </div>
       </div>
-      <div
-        className="text-3xl font-semibold text-foreground mb-1 font-bold"
-      >
+      <div className="text-3xl font-display font-bold text-foreground tracking-tight">
         {value}
       </div>
       {change !== undefined && (
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5 mt-2">
           {isPositive ? (
             <TrendingUp className="w-3.5 h-3.5 text-success" />
           ) : (
@@ -52,7 +59,7 @@ export function StatCard({
           )}
           <span
             className={cn(
-              "text-xs font-medium",
+              "text-xs font-mono font-medium",
               isPositive ? "text-success" : "text-error"
             )}
           >

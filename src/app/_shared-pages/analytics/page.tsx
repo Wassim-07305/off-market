@@ -1,65 +1,61 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { staggerContainer, fadeInUp, defaultTransition } from "@/lib/animations";
+import { staggerContainer, staggerItem } from "@/lib/animations";
+import { useAnalytics } from "@/hooks/use-analytics";
 import {
-  LineChart,
-  Line,
+  AreaChart,
+  Area,
   BarChart,
   Bar,
   XAxis,
   YAxis,
   Tooltip,
   ResponsiveContainer,
-  CartesianGrid,
-  PieChart,
-  Pie,
-  Cell,
 } from "recharts";
-
-const revenueData = [
-  { month: "Jan", value: 4200 },
-  { month: "Fev", value: 5100 },
-  { month: "Mar", value: 6800 },
-  { month: "Avr", value: 5900 },
-  { month: "Mai", value: 7200 },
-  { month: "Juin", value: 8100 },
-  { month: "Juil", value: 7600 },
-  { month: "Aout", value: 6900 },
-  { month: "Sep", value: 8400 },
-  { month: "Oct", value: 9200 },
-  { month: "Nov", value: 10100 },
-  { month: "Dec", value: 11500 },
-];
-
-const completionData = [
-  { name: "Module 1", completion: 92 },
-  { name: "Module 2", completion: 78 },
-  { name: "Module 3", completion: 65 },
-  { name: "Module 4", completion: 54 },
-  { name: "Module 5", completion: 41 },
-];
-
-const tagDistribution = [
-  { name: "Standard", value: 45, color: "#71717A" },
-  { name: "VIP", value: 15, color: "#F59E0B" },
-  { name: "Nouveau", value: 20, color: "#22C55E" },
-  { name: "A risque", value: 12, color: "#EF4444" },
-  { name: "Perdu", value: 8, color: "#D4D4D8" },
-];
+import { TrendingUp, BarChart3 } from "lucide-react";
 
 export default function AnalyticsPage() {
+  const { data: analytics, isLoading } = useAnalytics();
+
+  if (isLoading) {
+    return (
+      <div className="space-y-8">
+        <div>
+          <h1 className="text-2xl font-display font-bold text-foreground tracking-tight">Analytics</h1>
+          <p className="text-sm text-muted-foreground mt-1">Performance et metriques detaillees</p>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-5">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="bg-surface rounded-2xl p-5 animate-shimmer" style={{ boxShadow: "var(--shadow-card)" }}>
+              <div className="h-3 w-20 bg-muted rounded-lg mb-2" />
+              <div className="h-7 w-16 bg-muted rounded-lg" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  const stats = [
+    { label: "Revenus total", value: analytics ? `${analytics.totalRevenue.toLocaleString("fr-FR")} EUR` : "0 EUR" },
+    { label: "Clients total", value: String(analytics?.totalClients ?? 0) },
+    { label: "Taux completion", value: `${analytics?.completionRate ?? 0}%` },
+    { label: "Humeur moyenne", value: String(analytics?.avgMood ?? "\u2014") },
+  ];
+
+  const hasRevenueData = (analytics?.revenueByMonth ?? []).some((d) => d.value > 0);
+  const hasCompletionData = (analytics?.completionByCourse ?? []).length > 0;
+
   return (
     <motion.div
       variants={staggerContainer}
       initial="hidden"
       animate="visible"
-      className="space-y-6"
+      className="space-y-8"
     >
-      <motion.div variants={fadeInUp} transition={defaultTransition}>
-        <h1
-          className="text-3xl font-semibold text-foreground font-bold"
-        >
+      <motion.div variants={staggerItem}>
+        <h1 className="text-2xl font-display font-bold text-foreground tracking-tight">
           Analytics
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
@@ -67,106 +63,77 @@ export default function AnalyticsPage() {
         </p>
       </motion.div>
 
-      {/* Overview stats */}
       <motion.div
-        variants={fadeInUp}
-        transition={defaultTransition}
-        className="grid grid-cols-2 sm:grid-cols-4 gap-4"
+        variants={staggerItem}
+        className="grid grid-cols-2 sm:grid-cols-4 gap-5"
       >
-        {[
-          { label: "Revenus total", value: "91 000 EUR" },
-          { label: "Eleves total", value: "47" },
-          { label: "Taux completion", value: "73%" },
-          { label: "NPS moyen", value: "8.2" },
-        ].map((stat) => (
+        {stats.map((stat) => (
           <div
             key={stat.label}
-            className="bg-surface border border-border rounded-xl p-5 text-center"
+            className="bg-surface rounded-2xl p-5 text-center transition-all duration-300 hover:translate-y-[-1px]"
+            style={{ boxShadow: "var(--shadow-card)" }}
           >
-            <p className="text-xs text-muted-foreground mb-1">{stat.label}</p>
-            <p
-              className="text-2xl font-semibold text-foreground font-bold"
-            >
+            <p className="text-[11px] text-muted-foreground uppercase tracking-wider mb-1">{stat.label}</p>
+            <p className="text-2xl font-display font-bold text-foreground tracking-tight">
               {stat.value}
             </p>
           </div>
         ))}
       </motion.div>
 
-      {/* Charts */}
       <motion.div
-        variants={fadeInUp}
-        transition={defaultTransition}
+        variants={staggerItem}
         className="grid grid-cols-1 lg:grid-cols-2 gap-6"
       >
-        {/* Revenue trend */}
-        <div className="bg-surface border border-border rounded-xl p-6">
-          <h3 className="text-sm font-semibold text-foreground mb-4">
+        <div className="bg-surface rounded-2xl p-6" style={{ boxShadow: "var(--shadow-card)" }}>
+          <h3 className="text-[13px] font-semibold text-foreground mb-4">
             Evolution des revenus
           </h3>
           <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={revenueData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" />
-                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: "var(--muted-foreground)", fontSize: 12 }} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fill: "var(--muted-foreground)", fontSize: 12 }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
-                <Tooltip contentStyle={{ backgroundColor: "var(--surface)", border: "1px solid var(--border-color)", borderRadius: "10px", fontSize: "13px" }} />
-                <Line type="monotone" dataKey="value" stroke="#AF0000" strokeWidth={2.5} dot={false} />
-              </LineChart>
-            </ResponsiveContainer>
+            {!hasRevenueData ? (
+              <div className="h-full flex flex-col items-center justify-center text-muted-foreground">
+                <TrendingUp className="w-8 h-8 mb-2 opacity-20" />
+                <p className="text-sm">Aucune donnee de revenus</p>
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={analytics?.revenueByMonth}>
+                  <defs>
+                    <linearGradient id="analyticsRevenueGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.15} />
+                      <stop offset="100%" stopColor="var(--primary)" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: "var(--muted-foreground)", fontSize: 11, fontFamily: "var(--font-mono)" }} dy={8} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fill: "var(--muted-foreground)", fontSize: 11, fontFamily: "var(--font-mono)" }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} width={40} />
+                  <Tooltip contentStyle={{ backgroundColor: "var(--surface)", border: "none", borderRadius: "12px", fontSize: "13px", boxShadow: "var(--shadow-elevated)", padding: "8px 12px" }} formatter={(v) => [`${Number(v).toLocaleString("fr-FR")} EUR`, "Revenus"]} />
+                  <Area type="monotone" dataKey="value" stroke="var(--primary)" strokeWidth={2.5} fill="url(#analyticsRevenueGradient)" dot={false} activeDot={{ r: 5, fill: "var(--primary)", stroke: "var(--surface)", strokeWidth: 2 }} />
+                </AreaChart>
+              </ResponsiveContainer>
+            )}
           </div>
         </div>
 
-        {/* Completion by module */}
-        <div className="bg-surface border border-border rounded-xl p-6">
-          <h3 className="text-sm font-semibold text-foreground mb-4">
-            Completion par module
+        <div className="bg-surface rounded-2xl p-6" style={{ boxShadow: "var(--shadow-card)" }}>
+          <h3 className="text-[13px] font-semibold text-foreground mb-4">
+            Completion par formation
           </h3>
           <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={completionData} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" />
-                <XAxis type="number" domain={[0, 100]} axisLine={false} tickLine={false} tick={{ fill: "var(--muted-foreground)", fontSize: 12 }} tickFormatter={(v) => `${v}%`} />
-                <YAxis type="category" dataKey="name" axisLine={false} tickLine={false} tick={{ fill: "var(--muted-foreground)", fontSize: 12 }} width={80} />
-                <Tooltip contentStyle={{ backgroundColor: "var(--surface)", border: "1px solid var(--border-color)", borderRadius: "10px", fontSize: "13px" }} formatter={(v) => [`${v}%`, "Completion"]} />
-                <Bar dataKey="completion" fill="#AF0000" radius={[0, 6, 6, 0]} barSize={20} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        {/* Tag distribution */}
-        <div className="bg-surface border border-border rounded-xl p-6">
-          <h3 className="text-sm font-semibold text-foreground mb-4">
-            Repartition des eleves
-          </h3>
-          <div className="h-64 flex items-center justify-center">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={tagDistribution}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={90}
-                  paddingAngle={4}
-                  dataKey="value"
-                >
-                  {tagDistribution.map((entry) => (
-                    <Cell key={entry.name} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip contentStyle={{ backgroundColor: "var(--surface)", border: "1px solid var(--border-color)", borderRadius: "10px", fontSize: "13px" }} />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-          <div className="flex flex-wrap justify-center gap-3 mt-2">
-            {tagDistribution.map((entry) => (
-              <div key={entry.name} className="flex items-center gap-1.5">
-                <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: entry.color }} />
-                <span className="text-xs text-muted-foreground">{entry.name}</span>
+            {!hasCompletionData ? (
+              <div className="h-full flex flex-col items-center justify-center text-muted-foreground">
+                <BarChart3 className="w-8 h-8 mb-2 opacity-20" />
+                <p className="text-sm">Aucune formation publiee</p>
               </div>
-            ))}
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={analytics?.completionByCourse} layout="vertical">
+                  <XAxis type="number" domain={[0, 100]} axisLine={false} tickLine={false} tick={{ fill: "var(--muted-foreground)", fontSize: 11, fontFamily: "var(--font-mono)" }} tickFormatter={(v) => `${v}%`} />
+                  <YAxis type="category" dataKey="name" axisLine={false} tickLine={false} tick={{ fill: "var(--muted-foreground)", fontSize: 11 }} width={100} />
+                  <Tooltip contentStyle={{ backgroundColor: "var(--surface)", border: "none", borderRadius: "12px", fontSize: "13px", boxShadow: "var(--shadow-elevated)", padding: "8px 12px" }} formatter={(v) => [`${v}%`, "Completion"]} />
+                  <Bar dataKey="completion" fill="var(--primary)" radius={[0, 6, 6, 0]} barSize={18} />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
           </div>
         </div>
       </motion.div>

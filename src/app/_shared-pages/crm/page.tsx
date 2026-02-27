@@ -8,19 +8,19 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useRoutePrefix } from "@/hooks/use-route-prefix";
 import { motion } from "framer-motion";
-import { staggerContainer, fadeInUp, defaultTransition } from "@/lib/animations";
+import { staggerContainer, staggerItem } from "@/lib/animations";
 import {
   Search,
-  Filter,
   Download,
   Plus,
-  MoreHorizontal,
   ChevronRight,
 } from "lucide-react";
+import { AddClientModal } from "@/components/crm/add-client-modal";
 
 export default function CRMPage() {
   const [search, setSearch] = useState("");
   const [activeTag, setActiveTag] = useState("all");
+  const [showAddModal, setShowAddModal] = useState(false);
   const prefix = useRoutePrefix();
   const { students, isLoading } = useStudents({ search, tag: activeTag });
 
@@ -56,14 +56,11 @@ export default function CRMPage() {
     >
       {/* Header */}
       <motion.div
-        variants={fadeInUp}
-        transition={defaultTransition}
+        variants={staggerItem}
         className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
       >
         <div>
-          <h1
-            className="text-3xl font-semibold text-foreground font-bold"
-          >
+          <h1 className="text-2xl font-display font-bold text-foreground tracking-tight">
             CRM
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
@@ -73,12 +70,15 @@ export default function CRMPage() {
         <div className="flex items-center gap-2">
           <button
             onClick={handleExportCSV}
-            className="h-9 px-3 rounded-[10px] border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center gap-2"
+            className="h-9 px-3 rounded-xl border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-all duration-200 flex items-center gap-2"
           >
             <Download className="w-4 h-4" />
             Export
           </button>
-          <button className="h-9 px-4 rounded-[10px] bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-all active:scale-[0.98] flex items-center gap-2">
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="h-9 px-4 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-all duration-200 active:scale-[0.98] flex items-center gap-2"
+          >
             <Plus className="w-4 h-4" />
             Ajouter
           </button>
@@ -87,8 +87,7 @@ export default function CRMPage() {
 
       {/* Filters & Search */}
       <motion.div
-        variants={fadeInUp}
-        transition={defaultTransition}
+        variants={staggerItem}
         className="flex flex-col sm:flex-row gap-3"
       >
         <div className="relative flex-1">
@@ -98,14 +97,14 @@ export default function CRMPage() {
             placeholder="Rechercher un eleve..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full h-10 pl-10 pr-4 bg-surface border border-border rounded-[10px] text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
+            className="w-full h-10 pl-10 pr-4 bg-surface border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all duration-200"
           />
         </div>
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
           <button
             onClick={() => setActiveTag("all")}
             className={cn(
-              "h-8 px-3 rounded-full text-xs font-medium whitespace-nowrap transition-colors",
+              "h-8 px-3 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-200",
               activeTag === "all"
                 ? "bg-foreground text-background"
                 : "bg-muted text-muted-foreground hover:text-foreground"
@@ -118,7 +117,7 @@ export default function CRMPage() {
               key={tag.value}
               onClick={() => setActiveTag(tag.value)}
               className={cn(
-                "h-8 px-3 rounded-full text-xs font-medium whitespace-nowrap transition-colors",
+                "h-8 px-3 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-200",
                 activeTag === tag.value
                   ? "bg-foreground text-background"
                   : "bg-muted text-muted-foreground hover:text-foreground"
@@ -132,18 +131,18 @@ export default function CRMPage() {
 
       {/* Table */}
       <motion.div
-        variants={fadeInUp}
-        transition={defaultTransition}
-        className="bg-surface border border-border rounded-xl overflow-hidden"
+        variants={staggerItem}
+        className="bg-surface rounded-2xl overflow-hidden"
+        style={{ boxShadow: "var(--shadow-card)" }}
       >
         {isLoading ? (
           <div className="p-6 space-y-4">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="flex items-center gap-4 animate-pulse">
-                <div className="w-10 h-10 rounded-full bg-muted" />
+              <div key={i} className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-full animate-shimmer" />
                 <div className="flex-1 space-y-2">
-                  <div className="h-3 w-32 bg-muted rounded" />
-                  <div className="h-2.5 w-48 bg-muted rounded" />
+                  <div className="h-3 w-32 animate-shimmer rounded-lg" />
+                  <div className="h-2.5 w-48 animate-shimmer rounded-lg" />
                 </div>
               </div>
             ))}
@@ -158,24 +157,24 @@ export default function CRMPage() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-border">
-                  <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3">
+                <tr className="border-b border-border/50">
+                  <th className="text-left text-[11px] font-medium text-muted-foreground uppercase tracking-wider px-5 py-3">
                     Eleve
                   </th>
-                  <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3 hidden md:table-cell">
+                  <th className="text-left text-[11px] font-medium text-muted-foreground uppercase tracking-wider px-5 py-3 hidden md:table-cell">
                     Tag
                   </th>
-                  <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3 hidden lg:table-cell">
+                  <th className="text-left text-[11px] font-medium text-muted-foreground uppercase tracking-wider px-5 py-3 hidden lg:table-cell">
                     Progression
                   </th>
-                  <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3 hidden md:table-cell">
+                  <th className="text-left text-[11px] font-medium text-muted-foreground uppercase tracking-wider px-5 py-3 hidden md:table-cell">
                     Revenus
                   </th>
-                  <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3 hidden lg:table-cell">
+                  <th className="text-left text-[11px] font-medium text-muted-foreground uppercase tracking-wider px-5 py-3 hidden lg:table-cell">
                     Score
                   </th>
-                  <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3 hidden lg:table-cell">
-                    Derniere activite
+                  <th className="text-left text-[11px] font-medium text-muted-foreground uppercase tracking-wider px-5 py-3 hidden lg:table-cell">
+                    Activite
                   </th>
                   <th className="w-10" />
                 </tr>
@@ -190,31 +189,31 @@ export default function CRMPage() {
                   return (
                     <tr
                       key={student.id}
-                      className="border-b border-border last:border-0 hover:bg-muted/50 transition-colors"
+                      className="border-b border-border/30 last:border-0 hover:bg-muted/30 transition-colors duration-200 group"
                     >
-                      <td className="px-4 py-3">
+                      <td className="px-5 py-3.5">
                         <Link
                           href={`${prefix}/crm/${student.id}`}
                           className="flex items-center gap-3"
                         >
-                          <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-xs text-primary font-medium shrink-0">
+                          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center text-xs text-primary font-medium shrink-0">
                             {getInitials(student.full_name)}
                           </div>
                           <div>
-                            <p className="text-sm font-medium text-foreground">
+                            <p className="text-[13px] font-medium text-foreground">
                               {student.full_name}
                             </p>
-                            <p className="text-xs text-muted-foreground">
+                            <p className="text-[11px] text-muted-foreground">
                               {student.email}
                             </p>
                           </div>
                         </Link>
                       </td>
-                      <td className="px-4 py-3 hidden md:table-cell">
+                      <td className="px-5 py-3.5 hidden md:table-cell">
                         {tag && (
                           <span
                             className={cn(
-                              "inline-flex items-center h-6 px-2.5 rounded-full text-xs font-medium border",
+                              "inline-flex items-center h-6 px-2.5 rounded-full text-[11px] font-medium",
                               tag.color
                             )}
                           >
@@ -222,52 +221,54 @@ export default function CRMPage() {
                           </span>
                         )}
                       </td>
-                      <td className="px-4 py-3 hidden lg:table-cell">
+                      <td className="px-5 py-3.5 hidden lg:table-cell">
                         <div className="flex items-center gap-2 w-28">
                           <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
                             <div
-                              className="h-full rounded-full bg-primary"
+                              className="h-full rounded-full bg-gradient-to-r from-primary to-primary-hover transition-all duration-500"
                               style={{ width: `${score}%` }}
                             />
                           </div>
-                          <span className="text-xs text-muted-foreground font-mono w-8 text-right">
+                          <span className="text-[11px] text-muted-foreground font-mono tabular-nums w-8 text-right">
                             {score}%
                           </span>
                         </div>
                       </td>
-                      <td className="px-4 py-3 hidden md:table-cell">
-                        <span className="text-sm text-foreground">
+                      <td className="px-5 py-3.5 hidden md:table-cell">
+                        <span className="text-[13px] text-foreground font-mono tabular-nums">
                           {formatCurrency(Number(details?.revenue ?? 0))}
                         </span>
                       </td>
-                      <td className="px-4 py-3 hidden lg:table-cell">
-                        <div className="flex items-center gap-1.5">
-                          <div
-                            className={cn(
-                              "w-2 h-2 rounded-full",
-                              score >= 70
-                                ? "bg-success"
-                                : score >= 40
-                                  ? "bg-warning"
-                                  : "bg-error"
-                            )}
-                          />
-                          <span className="text-sm text-foreground font-mono">
-                            {score}
-                          </span>
+                      <td className="px-5 py-3.5 hidden lg:table-cell">
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1.5">
+                            <div
+                              className={cn(
+                                "w-2 h-2 rounded-full",
+                                score >= 70
+                                  ? "bg-success"
+                                  : score >= 40
+                                    ? "bg-warning"
+                                    : "bg-error"
+                              )}
+                            />
+                            <span className="text-[13px] text-foreground font-mono tabular-nums">
+                              {score}
+                            </span>
+                          </div>
                         </div>
                       </td>
-                      <td className="px-4 py-3 hidden lg:table-cell">
-                        <span className="text-xs text-muted-foreground">
+                      <td className="px-5 py-3.5 hidden lg:table-cell">
+                        <span className="text-[11px] text-muted-foreground font-mono">
                           {details?.last_engagement_at
                             ? formatDate(details.last_engagement_at, "relative")
                             : "-"}
                         </span>
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-5 py-3.5">
                         <Link
                           href={`${prefix}/crm/${student.id}`}
-                          className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                          className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-all duration-200 opacity-0 group-hover:opacity-100"
                         >
                           <ChevronRight className="w-4 h-4" />
                         </Link>
@@ -280,6 +281,8 @@ export default function CRMPage() {
           </div>
         )}
       </motion.div>
+
+      <AddClientModal open={showAddModal} onClose={() => setShowAddModal(false)} />
     </motion.div>
   );
 }

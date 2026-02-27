@@ -88,23 +88,37 @@ export default function AIPage() {
       });
     }
 
-    // For now, simulate a response (the Edge Function would handle real Claude API calls)
+    // Call the Claude API route
     setIsStreaming(true);
-    const response =
-      "Je suis l'assistant IA d'Off Market. Pour le moment, la connexion avec l'API Claude n'est pas encore configuree. Une fois configuree, je pourrai analyser les donnees de tes eleves, generer des rapports, et te donner des recommandations personnalisees.";
-
-    setMessages((prev) => [
-      ...prev,
-      { role: "assistant", content: response },
-    ]);
-    setIsStreaming(false);
-
-    if (conversationId) {
-      await supabase.from("ai_messages").insert({
-        conversation_id: conversationId,
-        role: "assistant",
-        content: response,
+    try {
+      const allMessages = [...messages, { role: "user" as const, content: message }];
+      const res = await fetch("/api/ai/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: allMessages }),
       });
+      const data = await res.json();
+      const response = data.response ?? "Erreur de reponse";
+
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: response },
+      ]);
+
+      if (conversationId) {
+        await supabase.from("ai_messages").insert({
+          conversation_id: conversationId,
+          role: "assistant",
+          content: response,
+        });
+      }
+    } catch {
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: "Erreur de connexion avec l'assistant IA." },
+      ]);
+    } finally {
+      setIsStreaming(false);
     }
   };
 
@@ -114,10 +128,10 @@ export default function AIPage() {
   };
 
   return (
-    <div className="flex h-[calc(100vh-7rem)]">
+    <div className="flex h-[calc(100vh-7rem)] bg-surface rounded-2xl overflow-hidden" style={{ boxShadow: "var(--shadow-card)" }}>
       {/* Sidebar */}
-      <div className="w-64 border-r border-border hidden lg:flex flex-col">
-        <div className="p-3 border-b border-border">
+      <div className="w-64 border-r border-border/50 hidden lg:flex flex-col">
+        <div className="p-3 border-b border-border/50">
           <button
             onClick={startNewConversation}
             className="w-full h-9 rounded-[10px] border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center justify-center gap-2"
@@ -162,9 +176,7 @@ export default function AIPage() {
               <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
                 <Sparkles className="w-7 h-7 text-primary" />
               </div>
-              <h1
-                className="text-2xl font-semibold text-foreground mb-2 font-bold"
-              >
+              <h1 className="text-2xl font-display font-bold text-foreground tracking-tight mb-2">
                 Assistant IA
               </h1>
               <p className="text-sm text-muted-foreground mb-8">
@@ -176,7 +188,8 @@ export default function AIPage() {
                   <button
                     key={s}
                     onClick={() => handleSend(s)}
-                    className="text-left p-3 rounded-xl border border-border text-sm text-foreground hover:bg-muted hover:border-border/80 transition-colors"
+                    className="text-left p-3 rounded-xl text-sm text-foreground hover:bg-muted/50 transition-all duration-200"
+                    style={{ boxShadow: "var(--shadow-xs)" }}
                   >
                     {s}
                   </button>
@@ -230,13 +243,14 @@ export default function AIPage() {
         )}
 
         {/* Input */}
-        <div className="border-t border-border p-4">
+        <div className="border-t border-border/50 p-4">
           <div className="flex gap-2 max-w-3xl mx-auto">
             <input
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ecris ton message..."
-              className="flex-1 h-11 px-4 bg-muted border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+              className="flex-1 h-11 px-4 bg-muted/50 rounded-2xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+              style={{ boxShadow: "var(--shadow-xs)" }}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
@@ -247,7 +261,7 @@ export default function AIPage() {
             <button
               onClick={() => handleSend()}
               disabled={!input.trim() || isStreaming}
-              className="w-11 h-11 bg-primary rounded-xl flex items-center justify-center text-white hover:bg-primary-hover transition-all active:scale-[0.95] disabled:opacity-50"
+              className="w-11 h-11 bg-primary rounded-2xl flex items-center justify-center text-white hover:bg-primary-hover transition-all duration-200 active:scale-[0.95] disabled:opacity-50"
             >
               <Send className="w-4 h-4" />
             </button>

@@ -45,29 +45,30 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "fixed left-0 top-0 h-screen bg-[var(--sidebar-bg)] border-r border-[var(--sidebar-border)] flex flex-col transition-all duration-300 z-40 hidden lg:flex",
+        "fixed left-0 top-0 h-screen flex flex-col transition-all duration-300 z-40 hidden lg:flex",
+        "bg-[var(--sidebar-bg)]",
         sidebarCollapsed ? "w-[72px]" : "w-[260px]"
       )}
     >
       {/* Logo */}
       <div
         className={cn(
-          "h-16 flex items-center border-b border-[var(--sidebar-border)] px-4",
+          "h-16 flex items-center px-4 shrink-0",
           sidebarCollapsed ? "justify-center" : "justify-between"
         )}
       >
-        <Link href="/dashboard" className="flex items-center gap-2.5">
-          <img
-            src="/logo.png"
-            alt="Off Market"
-            width={32}
-            height={32}
-            className="rounded-lg shrink-0"
-          />
+        <Link href="/dashboard" className="flex items-center gap-3 group">
+          <div className="relative">
+            <img
+              src="/logo.png"
+              alt="Off Market"
+              width={34}
+              height={34}
+              className="rounded-xl shrink-0 transition-transform duration-300 group-hover:scale-105"
+            />
+          </div>
           {!sidebarCollapsed && (
-            <span
-              className="text-xl text-white font-bold"
-            >
+            <span className="text-lg text-[var(--sidebar-text-active)] font-display font-bold tracking-tight">
               Off Market
             </span>
           )}
@@ -75,7 +76,7 @@ export function Sidebar() {
         {!sidebarCollapsed && (
           <button
             onClick={toggleSidebar}
-            className="w-7 h-7 rounded-lg flex items-center justify-center text-[var(--sidebar-text)] hover:text-[var(--sidebar-text-active)] hover:bg-zinc-800 transition-colors"
+            className="w-7 h-7 rounded-lg flex items-center justify-center text-[var(--sidebar-text)] hover:text-[var(--sidebar-text-active)] hover:bg-white/[0.06] transition-all duration-200"
             aria-label="Reduire le menu"
           >
             <ChevronLeft className="w-4 h-4" />
@@ -84,48 +85,55 @@ export function Sidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
+      <nav className="flex-1 py-3 px-3 space-y-0.5 overflow-y-auto">
         {filteredNavigation.map((item) => {
           const isActive =
             pathname === item.href || pathname.startsWith(item.href + "/");
+
+          const showSeparator = item.name === "Reglages";
+
           return (
-            <Link
-              key={item.name}
-              href={item.href}
-              className={cn(
-                "flex items-center gap-3 h-10 rounded-lg px-3 transition-all duration-150 group",
-                isActive
-                  ? "bg-primary/10 text-primary"
-                  : "text-[var(--sidebar-text)] hover:text-[var(--sidebar-text-active)] hover:bg-zinc-800/50",
-                sidebarCollapsed && "justify-center px-0"
+            <div key={item.name}>
+              {showSeparator && (
+                <div className="my-2 mx-3 h-px bg-white/[0.06]" />
               )}
-              title={sidebarCollapsed ? item.name : undefined}
-            >
-              <item.icon
+              <Link
+                href={item.href}
                 className={cn(
-                  "w-5 h-5 shrink-0",
-                  isActive ? "text-primary" : ""
+                  "relative flex items-center gap-3 h-10 rounded-xl px-3 transition-all duration-200 group",
+                  isActive
+                    ? "bg-white/[0.08] text-[var(--sidebar-text-active)]"
+                    : "text-[var(--sidebar-text)] hover:text-[var(--sidebar-text-active)] hover:bg-white/[0.04]",
+                  sidebarCollapsed && "justify-center px-0"
                 )}
-              />
-              {!sidebarCollapsed && (
-                <span className="text-sm font-medium truncate">
-                  {item.name}
-                </span>
-              )}
-              {isActive && !sidebarCollapsed && (
-                <div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary" />
-              )}
-            </Link>
+                title={sidebarCollapsed ? item.name : undefined}
+              >
+                {isActive && (
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-primary" />
+                )}
+                <item.icon
+                  className={cn(
+                    "w-[18px] h-[18px] shrink-0 transition-colors duration-200",
+                    isActive ? "text-primary" : "group-hover:text-[var(--sidebar-text-active)]"
+                  )}
+                />
+                {!sidebarCollapsed && (
+                  <span className="text-[13px] font-medium tracking-[-0.01em] truncate">
+                    {item.name}
+                  </span>
+                )}
+              </Link>
+            </div>
           );
         })}
       </nav>
 
       {/* Bottom section */}
-      <div className="border-t border-[var(--sidebar-border)] p-3 space-y-2">
+      <div className="border-t border-white/[0.06] p-3 space-y-2 shrink-0">
         {sidebarCollapsed && (
           <button
             onClick={toggleSidebar}
-            className="w-full h-10 rounded-lg flex items-center justify-center text-[var(--sidebar-text)] hover:text-[var(--sidebar-text-active)] hover:bg-zinc-800/50 transition-colors"
+            className="w-full h-10 rounded-xl flex items-center justify-center text-[var(--sidebar-text)] hover:text-[var(--sidebar-text-active)] hover:bg-white/[0.04] transition-all duration-200"
             aria-label="Agrandir le menu"
           >
             <ChevronRight className="w-4 h-4" />
@@ -135,14 +143,14 @@ export function Sidebar() {
         {/* User profile */}
         <div
           className={cn(
-            "flex items-center gap-3 rounded-lg",
+            "flex items-center gap-2 rounded-xl",
             sidebarCollapsed && "justify-center"
           )}
         >
           <Link
             href="/settings"
             className={cn(
-              "flex items-center gap-3 flex-1 min-w-0 p-2 rounded-lg hover:bg-zinc-800/50 transition-colors",
+              "flex items-center gap-3 flex-1 min-w-0 p-2 rounded-xl hover:bg-white/[0.04] transition-all duration-200",
               sidebarCollapsed && "justify-center p-0"
             )}
           >
@@ -150,19 +158,19 @@ export function Sidebar() {
               <img
                 src={profile.avatar_url}
                 alt={profile.full_name ?? ""}
-                className="w-8 h-8 rounded-full object-cover shrink-0"
+                className="w-9 h-9 rounded-full object-cover shrink-0 ring-2 ring-white/[0.08]"
               />
             ) : (
-              <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-xs text-primary font-semibold shrink-0">
+              <div className="w-9 h-9 rounded-full bg-primary/20 flex items-center justify-center text-xs text-primary font-semibold shrink-0 ring-2 ring-white/[0.08]">
                 {loading ? "..." : initials || "U"}
               </div>
             )}
             {!sidebarCollapsed && (
               <div className="flex-1 min-w-0">
-                <p className="text-sm text-[var(--sidebar-text-active)] font-medium truncate">
+                <p className="text-[13px] text-[var(--sidebar-text-active)] font-medium truncate leading-tight">
                   {loading ? "Chargement..." : profile?.full_name ?? "Mon profil"}
                 </p>
-                <p className="text-xs text-[var(--sidebar-text)] truncate">
+                <p className="text-[11px] text-[var(--sidebar-text)] truncate mt-0.5">
                   {profile?.email}
                 </p>
               </div>
@@ -171,7 +179,7 @@ export function Sidebar() {
           {!sidebarCollapsed && (
             <button
               onClick={signOut}
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--sidebar-text)] hover:text-red-400 hover:bg-zinc-800/50 transition-colors shrink-0"
+              className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--sidebar-text)] hover:text-red-400 hover:bg-white/[0.04] transition-all duration-200 shrink-0"
               aria-label="Deconnexion"
             >
               <LogOut className="w-4 h-4" />

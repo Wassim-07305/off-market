@@ -7,70 +7,88 @@ import {
   YAxis,
   Tooltip,
   ResponsiveContainer,
-  CartesianGrid,
 } from "recharts";
-
-const weeklyData = [
-  { day: "Lun", messages: 24, lessons: 8, logins: 15 },
-  { day: "Mar", messages: 31, lessons: 12, logins: 18 },
-  { day: "Mer", messages: 18, lessons: 6, logins: 12 },
-  { day: "Jeu", messages: 42, lessons: 14, logins: 22 },
-  { day: "Ven", messages: 35, lessons: 11, logins: 19 },
-  { day: "Sam", messages: 12, lessons: 4, logins: 8 },
-  { day: "Dim", messages: 8, lessons: 2, logins: 5 },
-];
+import { useEngagementChart } from "@/hooks/use-dashboard-stats";
+import { Activity } from "lucide-react";
 
 export function EngagementChart() {
+  const { data: chartData, isLoading } = useEngagementChart();
+
+  const hasData = (chartData ?? []).some((d) => d.messages > 0 || d.checkins > 0);
+
   return (
-    <div className="bg-surface border border-border rounded-xl p-6">
+    <div
+      className="bg-surface rounded-2xl p-6"
+      style={{ boxShadow: "var(--shadow-card)" }}
+    >
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h3 className="text-sm font-semibold text-foreground">Engagement</h3>
-          <p className="text-xs text-muted-foreground">Cette semaine</p>
+          <h3 className="text-[13px] font-semibold text-foreground">Engagement</h3>
+          <p className="text-xs text-muted-foreground mt-0.5">Cette semaine</p>
         </div>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-1.5">
-            <div className="w-2.5 h-2.5 rounded-full bg-primary" />
-            <span className="text-xs text-muted-foreground">Messages</span>
+            <div className="w-2 h-2 rounded-full bg-primary" />
+            <span className="text-[11px] text-muted-foreground">Messages</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <div className="w-2.5 h-2.5 rounded-full bg-success" />
-            <span className="text-xs text-muted-foreground">Lecons</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="w-2.5 h-2.5 rounded-full bg-info" />
-            <span className="text-xs text-muted-foreground">Connexions</span>
+            <div className="w-2 h-2 rounded-full bg-success" />
+            <span className="text-[11px] text-muted-foreground">Check-ins</span>
           </div>
         </div>
       </div>
       <div className="h-64">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={weeklyData} barGap={2}>
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" />
-            <XAxis
-              dataKey="day"
-              axisLine={false}
-              tickLine={false}
-              tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
-            />
-            <YAxis
-              axisLine={false}
-              tickLine={false}
-              tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
-            />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: "var(--surface)",
-                border: "1px solid var(--border-color)",
-                borderRadius: "10px",
-                fontSize: "13px",
-              }}
-            />
-            <Bar dataKey="messages" fill="#AF0000" radius={[4, 4, 0, 0]} barSize={16} />
-            <Bar dataKey="lessons" fill="#22C55E" radius={[4, 4, 0, 0]} barSize={16} />
-            <Bar dataKey="logins" fill="#3B82F6" radius={[4, 4, 0, 0]} barSize={16} />
-          </BarChart>
-        </ResponsiveContainer>
+        {isLoading ? (
+          <div className="h-full flex items-center justify-center">
+            <div className="h-40 w-full animate-shimmer rounded-xl" />
+          </div>
+        ) : !hasData ? (
+          <div className="h-full flex flex-col items-center justify-center text-muted-foreground">
+            <Activity className="w-8 h-8 mb-2 opacity-20" />
+            <p className="text-sm">Aucune activite cette semaine</p>
+            <p className="text-xs mt-1 text-muted-foreground/60">L&apos;engagement de tes clients apparaitra ici</p>
+          </div>
+        ) : (
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={chartData} barGap={4}>
+              <XAxis
+                dataKey="day"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: "var(--muted-foreground)", fontSize: 11, fontFamily: "var(--font-mono)" }}
+                dy={8}
+              />
+              <YAxis
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: "var(--muted-foreground)", fontSize: 11, fontFamily: "var(--font-mono)" }}
+                width={30}
+              />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "var(--surface)",
+                  border: "none",
+                  borderRadius: "12px",
+                  fontSize: "13px",
+                  boxShadow: "var(--shadow-elevated)",
+                  padding: "8px 12px",
+                }}
+              />
+              <Bar
+                dataKey="messages"
+                fill="var(--primary)"
+                radius={[6, 6, 0, 0]}
+                barSize={18}
+              />
+              <Bar
+                dataKey="checkins"
+                fill="#22C55E"
+                radius={[6, 6, 0, 0]}
+                barSize={18}
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        )}
       </div>
     </div>
   );

@@ -18,7 +18,7 @@ export default function CourseBuilderPage() {
     Array<{
       id: string;
       title: string;
-      lessons: Array<{ id: string; title: string; type: string }>;
+      lessons: Array<{ id: string; title: string; type: string; videoUrl?: string }>;
     }>
   >([]);
 
@@ -82,6 +82,7 @@ export default function CourseBuilderPage() {
           title: lesson.title,
           content_type: lesson.type,
           sort_order: j,
+          content: lesson.videoUrl ? { url: lesson.videoUrl, video_url: lesson.videoUrl } : undefined,
         });
       }
     }
@@ -90,8 +91,10 @@ export default function CourseBuilderPage() {
     router.push(`${prefix}/school`);
   };
 
+  const inputClass = "w-full h-10 px-4 bg-muted/50 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-shadow";
+
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
+    <div className="max-w-3xl mx-auto space-y-8">
       <div className="flex items-center justify-between">
         <Link
           href={`${prefix}/school`}
@@ -103,34 +106,32 @@ export default function CourseBuilderPage() {
         <button
           onClick={handleSave}
           disabled={createCourse.isPending}
-          className="h-9 px-4 rounded-[10px] bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-2"
+          className="h-9 px-4 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-2"
         >
           <Save className="w-4 h-4" />
           Sauvegarder
         </button>
       </div>
 
-      <div className="bg-surface border border-border rounded-xl p-6 space-y-4">
-        <h2
-          className="text-2xl font-semibold text-foreground font-bold"
-        >
+      <div className="bg-surface rounded-2xl p-6 space-y-5" style={{ boxShadow: "var(--shadow-card)" }}>
+        <h2 className="text-xl font-display font-bold text-foreground tracking-tight">
           Nouveau cours
         </h2>
 
         <div>
-          <label className="block text-sm font-medium text-foreground mb-1.5">
+          <label className="block text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
             Titre
           </label>
           <input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Titre du cours"
-            className="w-full h-11 px-4 bg-muted border border-border rounded-[10px] text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+            className={inputClass}
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-foreground mb-1.5">
+          <label className="block text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
             Description
           </label>
           <textarea
@@ -138,7 +139,7 @@ export default function CourseBuilderPage() {
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Description du cours"
             rows={3}
-            className="w-full px-4 py-3 bg-muted border border-border rounded-[10px] text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
+            className="w-full px-4 py-3 bg-muted/50 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none transition-shadow"
           />
         </div>
       </div>
@@ -146,10 +147,11 @@ export default function CourseBuilderPage() {
       {/* Modules */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-foreground">Modules</h3>
+          <h3 className="text-sm font-display font-semibold text-foreground">Modules</h3>
           <button
             onClick={addModule}
-            className="h-8 px-3 rounded-lg border border-border text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center gap-1.5"
+            className="h-8 px-3 rounded-xl text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center gap-1.5"
+            style={{ boxShadow: "var(--shadow-xs)" }}
           >
             <Plus className="w-3.5 h-3.5" />
             Module
@@ -159,7 +161,8 @@ export default function CourseBuilderPage() {
         {modules.map((mod, mi) => (
           <div
             key={mod.id}
-            className="bg-surface border border-border rounded-xl p-4 space-y-3"
+            className="bg-surface rounded-2xl p-4 space-y-3"
+            style={{ boxShadow: "var(--shadow-card)" }}
           >
             <div className="flex items-center gap-2">
               <GripVertical className="w-4 h-4 text-muted-foreground cursor-grab" />
@@ -173,7 +176,7 @@ export default function CourseBuilderPage() {
                   )
                 }
                 placeholder={`Module ${mi + 1}`}
-                className="flex-1 h-9 px-3 bg-muted border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                className="flex-1 h-9 px-3 bg-muted/50 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-shadow"
               />
               <button
                 onClick={() => removeModule(mod.id)}
@@ -184,60 +187,87 @@ export default function CourseBuilderPage() {
             </div>
 
             {mod.lessons.map((lesson, li) => (
-              <div key={lesson.id} className="flex items-center gap-2 pl-6">
-                <input
-                  value={lesson.title}
-                  onChange={(e) =>
-                    setModules(
-                      modules.map((m) =>
-                        m.id === mod.id
-                          ? {
-                              ...m,
-                              lessons: m.lessons.map((l) =>
-                                l.id === lesson.id
-                                  ? { ...l, title: e.target.value }
-                                  : l
-                              ),
-                            }
-                          : m
+              <div key={lesson.id} className="space-y-1.5">
+                <div className="flex items-center gap-2 pl-6">
+                  <input
+                    value={lesson.title}
+                    onChange={(e) =>
+                      setModules(
+                        modules.map((m) =>
+                          m.id === mod.id
+                            ? {
+                                ...m,
+                                lessons: m.lessons.map((l) =>
+                                  l.id === lesson.id
+                                    ? { ...l, title: e.target.value }
+                                    : l
+                                ),
+                              }
+                            : m
+                        )
                       )
-                    )
-                  }
-                  placeholder={`Lecon ${li + 1}`}
-                  className="flex-1 h-8 px-3 bg-background border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-                />
-                <select
-                  value={lesson.type}
-                  onChange={(e) =>
-                    setModules(
-                      modules.map((m) =>
-                        m.id === mod.id
-                          ? {
-                              ...m,
-                              lessons: m.lessons.map((l) =>
-                                l.id === lesson.id
-                                  ? { ...l, type: e.target.value }
-                                  : l
-                              ),
-                            }
-                          : m
+                    }
+                    placeholder={`Lecon ${li + 1}`}
+                    className="flex-1 h-8 px-3 bg-background rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-shadow"
+                  />
+                  <select
+                    value={lesson.type}
+                    onChange={(e) =>
+                      setModules(
+                        modules.map((m) =>
+                          m.id === mod.id
+                            ? {
+                                ...m,
+                                lessons: m.lessons.map((l) =>
+                                  l.id === lesson.id
+                                    ? { ...l, type: e.target.value }
+                                    : l
+                                ),
+                              }
+                            : m
+                        )
                       )
-                    )
-                  }
-                  className="h-8 px-2 bg-background border border-border rounded-lg text-xs text-foreground focus:outline-none"
-                >
-                  <option value="text">Texte</option>
-                  <option value="video">Video</option>
-                  <option value="quiz">Quiz</option>
-                  <option value="assignment">Exercice</option>
-                  <option value="pdf">PDF</option>
-                </select>
+                    }
+                    className="h-8 px-2 bg-background rounded-lg text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-shadow"
+                  >
+                    <option value="text">Texte</option>
+                    <option value="video">Video</option>
+                    <option value="quiz">Quiz</option>
+                    <option value="assignment">Exercice</option>
+                    <option value="pdf">PDF</option>
+                  </select>
+                </div>
+                {lesson.type === "video" && (
+                  <div className="pl-6">
+                    <input
+                      value={lesson.videoUrl ?? ""}
+                      onChange={(e) =>
+                        setModules(
+                          modules.map((m) =>
+                            m.id === mod.id
+                              ? {
+                                  ...m,
+                                  lessons: m.lessons.map((l) =>
+                                    l.id === lesson.id
+                                      ? { ...l, videoUrl: e.target.value }
+                                      : l
+                                  ),
+                                }
+                              : m
+                          )
+                        )
+                      }
+                      placeholder="URL de la video (YouTube, Vimeo, etc.)"
+                      className="w-full h-8 px-3 bg-background rounded-lg text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-shadow"
+                    />
+                  </div>
+                )}
               </div>
             ))}
 
             <button
               onClick={() => addLesson(mod.id)}
-              className="ml-6 h-7 px-2.5 rounded text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center gap-1"
+              className="ml-6 h-7 px-2.5 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center gap-1"
             >
               <Plus className="w-3 h-3" />
               Lecon

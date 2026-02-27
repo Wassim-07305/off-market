@@ -7,14 +7,13 @@ import { useCourses } from "@/hooks/use-courses";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { staggerContainer, fadeInUp, defaultTransition } from "@/lib/animations";
+import { staggerContainer, staggerItem } from "@/lib/animations";
 import {
   GraduationCap,
   Clock,
   BookOpen,
   Users,
   Plus,
-  Filter,
 } from "lucide-react";
 
 export default function SchoolPage() {
@@ -34,17 +33,14 @@ export default function SchoolPage() {
       variants={staggerContainer}
       initial="hidden"
       animate="visible"
-      className="space-y-6"
+      className="space-y-8"
     >
       <motion.div
-        variants={fadeInUp}
-        transition={defaultTransition}
+        variants={staggerItem}
         className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
       >
         <div>
-          <h1
-            className="text-3xl font-semibold text-foreground font-bold"
-          >
+          <h1 className="text-2xl font-display font-bold text-foreground tracking-tight">
             Formation
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
@@ -54,7 +50,7 @@ export default function SchoolPage() {
         {isStaff && (
           <Link
             href={`${prefix}/school/builder`}
-            className="h-9 px-4 rounded-[10px] bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-all active:scale-[0.98] inline-flex items-center gap-2"
+            className="h-9 px-4 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-all active:scale-[0.98] inline-flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
             Nouveau cours
@@ -64,8 +60,7 @@ export default function SchoolPage() {
 
       {isStaff && (
         <motion.div
-          variants={fadeInUp}
-          transition={defaultTransition}
+          variants={staggerItem}
           className="flex items-center gap-1.5"
         >
           {filters.map((f) => (
@@ -73,7 +68,7 @@ export default function SchoolPage() {
               key={f.value}
               onClick={() => setStatusFilter(f.value)}
               className={cn(
-                "h-8 px-3 rounded-full text-xs font-medium transition-colors",
+                "h-8 px-3 rounded-full text-xs font-medium transition-all",
                 statusFilter === f.value
                   ? "bg-foreground text-background"
                   : "bg-muted text-muted-foreground hover:text-foreground"
@@ -86,21 +81,21 @@ export default function SchoolPage() {
       )}
 
       <motion.div
-        variants={fadeInUp}
-        transition={defaultTransition}
+        variants={staggerItem}
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
       >
         {isLoading ? (
           Array.from({ length: 6 }).map((_, i) => (
             <div
               key={i}
-              className="bg-surface border border-border rounded-xl overflow-hidden animate-pulse"
+              className="bg-surface rounded-2xl overflow-hidden"
+              style={{ boxShadow: "var(--shadow-card)" }}
             >
-              <div className="h-40 bg-muted" />
+              <div className="h-40 bg-muted animate-shimmer" />
               <div className="p-5 space-y-3">
-                <div className="h-4 w-2/3 bg-muted rounded" />
-                <div className="h-3 w-full bg-muted rounded" />
-                <div className="h-3 w-1/2 bg-muted rounded" />
+                <div className="h-4 w-2/3 bg-muted rounded-lg animate-shimmer" />
+                <div className="h-3 w-full bg-muted rounded-lg animate-shimmer" />
+                <div className="h-3 w-1/2 bg-muted rounded-lg animate-shimmer" />
               </div>
             </div>
           ))
@@ -122,25 +117,36 @@ export default function SchoolPage() {
               <Link
                 key={course.id}
                 href={`${prefix}/school/${course.id}`}
-                className="group bg-surface border border-border rounded-xl overflow-hidden transition-all duration-200 hover:shadow-md hover:-translate-y-0.5"
+                className="group bg-surface rounded-2xl overflow-hidden transition-all duration-300 hover:translate-y-[-2px]"
+                style={{ boxShadow: "var(--shadow-card)" }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = "var(--shadow-card-hover)"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = "var(--shadow-card)"; }}
               >
                 <div
-                  className="h-40 relative"
+                  className="h-40 relative overflow-hidden"
                   style={{
                     background: course.cover_image_url
                       ? `url(${course.cover_image_url}) center/cover`
-                      : "linear-gradient(135deg, #AF0000 0%, #18181B 100%)",
+                      : "linear-gradient(135deg, var(--primary) 0%, #18181B 100%)",
                   }}
                 >
+                  {/* Overlay gradient for text readability */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                  {/* Hover zoom effect */}
+                  <div className="absolute inset-0 transition-transform duration-500 group-hover:scale-105" style={{
+                    background: course.cover_image_url
+                      ? `url(${course.cover_image_url}) center/cover`
+                      : "transparent",
+                  }} />
                   {isStaff && (
                     <span
                       className={cn(
-                        "absolute top-3 right-3 text-xs font-medium px-2.5 py-1 rounded-full",
+                        "absolute top-3 right-3 text-[10px] font-medium px-2.5 py-1 rounded-full backdrop-blur-sm z-10",
                         course.status === "published"
-                          ? "bg-success/90 text-white"
+                          ? "bg-success/80 text-white"
                           : course.status === "draft"
-                            ? "bg-zinc-800/90 text-zinc-300"
-                            : "bg-zinc-500/90 text-white"
+                            ? "bg-black/50 text-white/80"
+                            : "bg-black/40 text-white/70"
                       )}
                     >
                       {course.status === "published"
@@ -152,7 +158,7 @@ export default function SchoolPage() {
                   )}
                 </div>
                 <div className="p-5">
-                  <h3 className="text-base font-semibold text-foreground group-hover:text-primary transition-colors">
+                  <h3 className="text-base font-display font-semibold text-foreground group-hover:text-primary transition-colors">
                     {course.title}
                   </h3>
                   {course.description && (
@@ -163,17 +169,17 @@ export default function SchoolPage() {
                   <div className="flex items-center gap-4 mt-4 text-xs text-muted-foreground">
                     <span className="flex items-center gap-1">
                       <BookOpen className="w-3.5 h-3.5" />
-                      {totalLessons} lecon{totalLessons !== 1 ? "s" : ""}
+                      <span className="font-mono">{totalLessons}</span> lecon{totalLessons !== 1 ? "s" : ""}
                     </span>
                     {totalDuration > 0 && (
                       <span className="flex items-center gap-1">
                         <Clock className="w-3.5 h-3.5" />
-                        {Math.round(totalDuration / 60)}h
+                        <span className="font-mono">{Math.round(totalDuration / 60)}</span>h
                       </span>
                     )}
                     <span className="flex items-center gap-1">
                       <Users className="w-3.5 h-3.5" />
-                      {course.modules?.length ?? 0} module{(course.modules?.length ?? 0) !== 1 ? "s" : ""}
+                      <span className="font-mono">{course.modules?.length ?? 0}</span> module{(course.modules?.length ?? 0) !== 1 ? "s" : ""}
                     </span>
                   </div>
                 </div>

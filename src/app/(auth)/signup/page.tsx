@@ -31,6 +31,9 @@ export default function SignupPage() {
     }
   };
 
+  const inputClass =
+    "w-full h-11 px-4 bg-white/[0.06] border border-white/[0.08] rounded-xl text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/40 transition-all text-sm backdrop-blur-sm";
+
   return (
     <div className="animate-fade-in">
       <div className="text-center mb-8">
@@ -40,22 +43,24 @@ export default function SignupPage() {
           width={72}
           height={72}
           className="mx-auto mb-4 rounded-2xl"
+          style={{ filter: "drop-shadow(0 0 20px rgba(196, 30, 58, 0.3))" }}
           priority
         />
-        <h1
-          className="text-4xl text-white mb-2 font-bold"
-        >
+        <h1 className="text-4xl text-white mb-2 font-display font-bold tracking-tight">
           Off Market
         </h1>
-        <p className="text-zinc-400 text-sm">Cree ton compte</p>
+        <p className="text-white/40 text-sm">Cree ton compte</p>
       </div>
 
-      <div className="bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 rounded-2xl p-8">
+      <div
+        className="backdrop-blur-2xl bg-white/[0.04] border border-white/[0.08] rounded-2xl p-8"
+        style={{ boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05)" }}
+      >
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label
               htmlFor="fullName"
-              className="block text-sm font-medium text-zinc-300 mb-1.5"
+              className="block text-[11px] font-medium text-white/50 uppercase tracking-wider mb-1.5"
             >
               Nom complet
             </label>
@@ -66,14 +71,14 @@ export default function SignupPage() {
               onChange={(e) => setFullName(e.target.value)}
               placeholder="Prenom Nom"
               required
-              className="w-full h-11 px-4 bg-zinc-800/50 border border-zinc-700 rounded-[10px] text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all text-sm"
+              className={inputClass}
             />
           </div>
 
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-zinc-300 mb-1.5"
+              className="block text-[11px] font-medium text-white/50 uppercase tracking-wider mb-1.5"
             >
               Email
             </label>
@@ -84,14 +89,14 @@ export default function SignupPage() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="ton@email.com"
               required
-              className="w-full h-11 px-4 bg-zinc-800/50 border border-zinc-700 rounded-[10px] text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all text-sm"
+              className={inputClass}
             />
           </div>
 
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-zinc-300 mb-1.5"
+              className="block text-[11px] font-medium text-white/50 uppercase tracking-wider mb-1.5"
             >
               Mot de passe
             </label>
@@ -104,12 +109,12 @@ export default function SignupPage() {
                 placeholder="6 caracteres minimum"
                 required
                 minLength={6}
-                className="w-full h-11 px-4 pr-11 bg-zinc-800/50 border border-zinc-700 rounded-[10px] text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all text-sm"
+                className={`${inputClass} pr-11`}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-200 transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors"
                 tabIndex={-1}
               >
                 {showPassword ? (
@@ -124,16 +129,16 @@ export default function SignupPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full h-11 bg-primary hover:bg-primary-hover text-white font-medium rounded-[10px] transition-all duration-150 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
+            className="w-full h-11 bg-primary hover:bg-primary-hover text-white font-medium rounded-xl transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm mt-6"
+            style={{ boxShadow: "0 0 20px rgba(196, 30, 58, 0.25), 0 4px 12px rgba(0, 0, 0, 0.3)" }}
           >
             {loading && <Loader2 className="w-4 h-4 animate-spin" />}
             Creer mon compte
           </button>
         </form>
-
       </div>
 
-      <p className="text-center text-zinc-500 text-sm mt-6">
+      <p className="text-center text-white/30 text-sm mt-6">
         Deja un compte ?{" "}
         <Link
           href="/login"
