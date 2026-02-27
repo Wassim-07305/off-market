@@ -14,8 +14,8 @@ import {
   Bot,
   BarChart3,
   Settings,
-  ChevronLeft,
-  ChevronRight,
+  PanelLeftClose,
+  PanelLeft,
   LogOut,
 } from "lucide-react";
 
@@ -42,6 +42,15 @@ export function Sidebar() {
 
   const initials = profile?.full_name ? getInitials(profile.full_name) : "";
 
+  const roleLabel =
+    role === "admin"
+      ? "Admin"
+      : role === "coach"
+        ? "Coach"
+        : role === "setter" || role === "closer"
+          ? "Sales"
+          : "Client";
+
   return (
     <aside
       className={cn(
@@ -54,7 +63,7 @@ export function Sidebar() {
       <div
         className={cn(
           "h-16 flex items-center px-4 shrink-0",
-          sidebarCollapsed ? "justify-center" : "justify-between"
+          sidebarCollapsed ? "justify-center" : "gap-3"
         )}
       >
         <Link href="/dashboard" className="flex items-center gap-3 group">
@@ -66,6 +75,7 @@ export function Sidebar() {
               height={34}
               className="rounded-xl shrink-0 transition-transform duration-300 group-hover:scale-105"
             />
+            <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-primary/10 blur-md" />
           </div>
           {!sidebarCollapsed && (
             <span className="text-lg text-[var(--sidebar-text-active)] font-display font-bold tracking-tight">
@@ -73,15 +83,6 @@ export function Sidebar() {
             </span>
           )}
         </Link>
-        {!sidebarCollapsed && (
-          <button
-            onClick={toggleSidebar}
-            className="w-7 h-7 rounded-lg flex items-center justify-center text-[var(--sidebar-text)] hover:text-[var(--sidebar-text-active)] hover:bg-white/[0.06] transition-all duration-200"
-            aria-label="Reduire le menu"
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </button>
-        )}
       </div>
 
       {/* Navigation */}
@@ -102,19 +103,21 @@ export function Sidebar() {
                 className={cn(
                   "relative flex items-center gap-3 h-10 rounded-xl px-3 transition-all duration-200 group",
                   isActive
-                    ? "bg-white/[0.08] text-[var(--sidebar-text-active)]"
+                    ? "bg-primary/[0.08] text-[var(--sidebar-text-active)]"
                     : "text-[var(--sidebar-text)] hover:text-[var(--sidebar-text-active)] hover:bg-white/[0.04]",
                   sidebarCollapsed && "justify-center px-0"
                 )}
-                title={sidebarCollapsed ? item.name : undefined}
               >
+                {/* Active indicator bar with glow */}
                 {isActive && (
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-primary" />
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-full bg-primary shadow-[0_0_8px_rgba(196,30,58,0.4)]" />
                 )}
                 <item.icon
                   className={cn(
-                    "w-[18px] h-[18px] shrink-0 transition-colors duration-200",
-                    isActive ? "text-primary" : "group-hover:text-[var(--sidebar-text-active)]"
+                    "w-[18px] h-[18px] shrink-0 transition-all duration-200",
+                    isActive
+                      ? "text-primary drop-shadow-[0_0_6px_rgba(196,30,58,0.3)]"
+                      : "group-hover:text-[var(--sidebar-text-active)]"
                   )}
                 />
                 {!sidebarCollapsed && (
@@ -122,68 +125,109 @@ export function Sidebar() {
                     {item.name}
                   </span>
                 )}
+                {/* Tooltip when collapsed */}
+                {sidebarCollapsed && (
+                  <div className="absolute left-full ml-3 hidden lg:group-hover:block pointer-events-none z-50">
+                    <div className="bg-stone-800 rounded-lg px-2.5 py-1.5 text-xs font-medium text-white shadow-xl whitespace-nowrap">
+                      {item.name}
+                    </div>
+                  </div>
+                )}
               </Link>
             </div>
           );
         })}
       </nav>
 
-      {/* Bottom section */}
-      <div className="border-t border-white/[0.06] p-3 space-y-2 shrink-0">
-        {sidebarCollapsed && (
-          <button
-            onClick={toggleSidebar}
-            className="w-full h-10 rounded-xl flex items-center justify-center text-[var(--sidebar-text)] hover:text-[var(--sidebar-text-active)] hover:bg-white/[0.04] transition-all duration-200"
-            aria-label="Agrandir le menu"
-          >
-            <ChevronRight className="w-4 h-4" />
-          </button>
-        )}
+      {/* Collapse button — desktop only */}
+      <div className="border-t border-white/[0.05] px-3 py-2 shrink-0 hidden lg:block">
+        <button
+          onClick={toggleSidebar}
+          className={cn(
+            "w-full h-9 rounded-xl flex items-center gap-3 transition-all duration-200 text-[var(--sidebar-text)] hover:text-[var(--sidebar-text-active)] hover:bg-white/[0.04]",
+            sidebarCollapsed ? "justify-center px-0" : "px-3"
+          )}
+          title={sidebarCollapsed ? "Ouvrir le menu" : "Reduire le menu"}
+        >
+          {sidebarCollapsed ? (
+            <PanelLeft className="w-[18px] h-[18px]" />
+          ) : (
+            <>
+              <PanelLeftClose className="w-[18px] h-[18px]" />
+              <span className="text-[13px] font-medium">Reduire</span>
+            </>
+          )}
+        </button>
+      </div>
 
-        {/* User profile */}
+      {/* Profile section */}
+      <div className="border-t border-white/[0.05] p-3 shrink-0">
         <div
           className={cn(
-            "flex items-center gap-2 rounded-xl",
+            "flex items-center gap-2",
             sidebarCollapsed && "justify-center"
           )}
         >
-          <Link
-            href="/settings"
+          {/* Avatar + info */}
+          <div
             className={cn(
-              "flex items-center gap-3 flex-1 min-w-0 p-2 rounded-xl hover:bg-white/[0.04] transition-all duration-200",
-              sidebarCollapsed && "justify-center p-0"
+              "flex items-center gap-3 flex-1 min-w-0 group",
+              sidebarCollapsed && "justify-center"
             )}
           >
-            {profile?.avatar_url ? (
-              <img
-                src={profile.avatar_url}
-                alt={profile.full_name ?? ""}
-                className="w-9 h-9 rounded-full object-cover shrink-0 ring-2 ring-white/[0.08]"
-              />
-            ) : (
-              <div className="w-9 h-9 rounded-full bg-primary/20 flex items-center justify-center text-xs text-primary font-semibold shrink-0 ring-2 ring-white/[0.08]">
-                {loading ? "..." : initials || "U"}
-              </div>
-            )}
+            <div className="relative shrink-0">
+              {profile?.avatar_url ? (
+                <img
+                  src={profile.avatar_url}
+                  alt={profile.full_name ?? ""}
+                  className="w-9 h-9 rounded-full object-cover ring-2 ring-primary/10"
+                />
+              ) : (
+                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center text-xs text-primary font-semibold ring-2 ring-primary/10">
+                  {loading ? "..." : initials || "U"}
+                </div>
+              )}
+              {/* Online indicator */}
+              <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400 ring-2 ring-[var(--sidebar-bg)]" />
+            </div>
             {!sidebarCollapsed && (
               <div className="flex-1 min-w-0">
-                <p className="text-[13px] text-[var(--sidebar-text-active)] font-medium truncate leading-tight">
+                <p className="text-sm font-semibold text-white truncate leading-tight">
                   {loading ? "Chargement..." : profile?.full_name ?? "Mon profil"}
                 </p>
-                <p className="text-[11px] text-[var(--sidebar-text)] truncate mt-0.5">
-                  {profile?.email}
+                <p className="text-xs text-stone-500 capitalize truncate mt-0.5">
+                  {roleLabel}
                 </p>
               </div>
             )}
-          </Link>
+            {/* Tooltip when collapsed */}
+            {sidebarCollapsed && (
+              <div className="absolute left-full ml-3 hidden lg:group-hover:block pointer-events-none z-50">
+                <div className="bg-stone-800 rounded-lg px-2.5 py-1.5 text-xs font-medium text-white shadow-xl whitespace-nowrap">
+                  {profile?.full_name ?? "Mon profil"}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Settings + Logout buttons */}
           {!sidebarCollapsed && (
-            <button
-              onClick={signOut}
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--sidebar-text)] hover:text-red-400 hover:bg-white/[0.04] transition-all duration-200 shrink-0"
-              aria-label="Deconnexion"
-            >
-              <LogOut className="w-4 h-4" />
-            </button>
+            <div className="flex items-center gap-1 shrink-0">
+              <Link
+                href="/settings"
+                className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--sidebar-text)] hover:text-[var(--sidebar-text-active)] hover:bg-white/[0.06] transition-all duration-200"
+                title="Reglages"
+              >
+                <Settings className="w-4 h-4" />
+              </Link>
+              <button
+                onClick={signOut}
+                className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--sidebar-text)] hover:text-red-400 hover:bg-red-500/10 transition-all duration-200"
+                title="Deconnexion"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </div>
           )}
         </div>
       </div>
