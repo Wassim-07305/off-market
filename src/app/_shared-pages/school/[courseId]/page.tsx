@@ -3,7 +3,7 @@
 import { use, useState } from "react";
 import Link from "next/link";
 import { useRoutePrefix } from "@/hooks/use-route-prefix";
-import { useCourse } from "@/hooks/use-courses";
+import { useCourse, useLessonProgress } from "@/hooks/use-courses";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 import {
@@ -13,8 +13,7 @@ import {
   File,
   HelpCircle,
   PenTool,
-  Check,
-  Lock,
+  CheckCircle,
   ChevronDown,
   ChevronRight,
   Edit,
@@ -29,6 +28,7 @@ export default function CourseDetailPage({
   const { data: course, isLoading } = useCourse(courseId);
   const { isStaff } = useAuth();
   const prefix = useRoutePrefix();
+  const { data: progress } = useLessonProgress();
   const [expandedModules, setExpandedModules] = useState<Set<string>>(new Set());
 
   const toggleModule = (id: string) => {
@@ -122,6 +122,10 @@ export default function CourseDetailPage({
               (a, b) => a.sort_order - b.sort_order
             ) ?? [];
 
+            const completedInModule = sortedLessons.filter((l) =>
+              progress?.some((p) => p.lesson_id === l.id && p.status === "completed")
+            ).length;
+
             return (
               <div
                 key={mod.id}
@@ -142,24 +146,45 @@ export default function CourseDetailPage({
                     </h3>
                     <p className="text-xs text-muted-foreground">
                       {sortedLessons.length} lecon{sortedLessons.length !== 1 ? "s" : ""}
+                      {completedInModule > 0 && (
+                        <span className="ml-2 text-success">
+                          · {completedInModule}/{sortedLessons.length} terminee{completedInModule !== 1 ? "s" : ""}
+                        </span>
+                      )}
                     </p>
                   </div>
+                  {completedInModule === sortedLessons.length && sortedLessons.length > 0 && (
+                    <CheckCircle className="w-4 h-4 text-success shrink-0" />
+                  )}
                 </button>
 
                 {isExpanded && sortedLessons.length > 0 && (
                   <div className="border-t border-border">
                     {sortedLessons.map((lesson) => {
                       const Icon = lessonIcon(lesson.content_type);
+                      const lessonCompleted = progress?.some(
+                        (p) => p.lesson_id === lesson.id && p.status === "completed"
+                      );
                       return (
                         <Link
                           key={lesson.id}
                           href={`${prefix}/school/${courseId}/${lesson.id}`}
                           className="flex items-center gap-3 px-4 py-3 hover:bg-muted/50 transition-colors border-b border-border last:border-0"
                         >
-                          <div className="w-7 h-7 rounded-lg bg-muted flex items-center justify-center">
-                            <Icon className="w-3.5 h-3.5 text-muted-foreground" />
+                          <div className={cn(
+                            "w-7 h-7 rounded-lg flex items-center justify-center",
+                            lessonCompleted ? "bg-success/10" : "bg-muted"
+                          )}>
+                            {lessonCompleted ? (
+                              <CheckCircle className="w-3.5 h-3.5 text-success" />
+                            ) : (
+                              <Icon className="w-3.5 h-3.5 text-muted-foreground" />
+                            )}
                           </div>
-                          <span className="text-sm text-foreground flex-1">
+                          <span className={cn(
+                            "text-sm flex-1",
+                            lessonCompleted ? "text-muted-foreground line-through" : "text-foreground"
+                          )}>
                             {lesson.title}
                           </span>
                           {lesson.estimated_duration && (

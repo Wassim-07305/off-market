@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
+import { useAuth } from "./use-auth";
 import type { Course, Module, Lesson } from "@/types/database";
 
 export function useCourses(status?: string) {
@@ -102,4 +103,50 @@ export function useCourseMutations() {
   });
 
   return { createCourse, updateCourse, createModule, createLesson };
+}
+
+export function useLessonProgress() {
+  const supabase = useSupabase();
+  const { user } = useAuth();
+
+  return useQuery({
+    queryKey: ["lesson-progress", user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("lesson_progress")
+        .select("lesson_id, status, completed_at")
+        .eq("student_id", user!.id);
+      if (error) throw error;
+      return data as { lesson_id: string; status: string; completed_at: string | null }[];
+    },
+    enabled: !!user,
+  });
+}
+
+export function useMarkLessonComplete() {
+  const supabase = useSupabase();
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+
+  return useMutation({
+    mutationFn: async (lessonId: string) => {
+      if (!user) throw new Error("Non connecte");
+      const { error } = await supabase
+        .from("lesson_progress")
+        .upsert(
+          {
+            student_id: user.id,
+            lesson_id: lessonId,
+            status: "completed",
+            completed_at: new Date().toISOString(),
+            progress_percent: 100,
+          },
+          { onConflict: "lesson_id,student_id" }
+        );
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["lesson-progress"] });
+    },
+  });
 }

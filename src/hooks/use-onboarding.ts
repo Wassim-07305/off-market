@@ -36,9 +36,19 @@ export function useOnboarding() {
     updateStep.mutate(prev);
   };
 
-  const completeOnboarding = () => {
-    updateStep.mutate(5);
-  };
+  const completeOnboarding = useMutation({
+    mutationFn: async () => {
+      if (!user) throw new Error("Not authenticated");
+      const { error } = await supabase
+        .from("profiles")
+        .update({ onboarding_step: 5, onboarding_completed: true })
+        .eq("id", user.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["auth"] });
+    },
+  });
 
   return {
     currentStep,

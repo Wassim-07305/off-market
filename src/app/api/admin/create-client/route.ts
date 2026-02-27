@@ -44,7 +44,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: createError.message }, { status: 500 });
   }
 
-  // Update profile with additional info
+  // Update profile with additional info (triggers auto_provision_client)
   if (newUser.user) {
     await admin
       .from("profiles")
@@ -54,6 +54,35 @@ export async function POST(request: Request) {
         role: "client",
       })
       .eq("id", newUser.user.id);
+
+    // Create DM channel between creator (admin/coach) and new client
+    const dmName = `DM - ${profile?.role === "coach" ? "Coach" : "Admin"} & ${fullName}`;
+    const { data: dmChannel } = await admin
+      .from("channels")
+      .insert({
+        name: dmName,
+        type: "dm",
+        created_by: user.id,
+        description: `Canal prive avec ${fullName}`,
+      })
+      .select("id")
+      .single();
+
+    if (dmChannel) {
+      // Add both as members
+      await admin.from("channel_members").insert([
+        { channel_id: dmChannel.id, profile_id: user.id, role: "admin" },
+        { channel_id: dmChannel.id, profile_id: newUser.user.id, role: "member" },
+      ]);
+
+      // System welcome message in DM
+      await admin.from("messages").insert({
+        channel_id: dmChannel.id,
+        sender_id: user.id,
+        content: `Bienvenue ${fullName} ! Ce canal est ton espace de discussion prive avec ton coach.`,
+        content_type: "system",
+      });
+    }
   }
 
   return NextResponse.json({ user: newUser.user, tempPassword });

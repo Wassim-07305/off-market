@@ -1,11 +1,17 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { fadeInUp, defaultTransition } from "@/lib/animations";
 import { useOnboarding } from "@/hooks/use-onboarding";
 import { useContracts } from "@/hooks/use-contracts";
+import { useCourses } from "@/hooks/use-courses";
+import { useInvoices } from "@/hooks/use-invoices";
 import { useAuth } from "@/hooks/use-auth";
+import { useSupabase } from "@/hooks/use-supabase";
 import { ONBOARDING_STEPS } from "@/types/billing";
+import { toast } from "sonner";
 import {
   Check,
   ChevronRight,
@@ -16,16 +22,32 @@ import {
   CreditCard,
   GraduationCap,
   PartyPopper,
+  BookOpen,
+  Loader2,
 } from "lucide-react";
 
 const STEP_ICONS = [Sparkles, User, FileText, CreditCard, GraduationCap, PartyPopper];
 
 export default function ClientOnboardingPage() {
+  const router = useRouter();
   const { user, profile } = useAuth();
-  const { currentStep, isComplete, nextStep, prevStep, isUpdating } = useOnboarding();
+  const { currentStep, isComplete, nextStep, prevStep, completeOnboarding, isUpdating } = useOnboarding();
   const { contracts, signContract } = useContracts({ clientId: user?.id, status: "sent" });
 
   const StepIcon = STEP_ICONS[currentStep] ?? Sparkles;
+
+  const handleNext = () => {
+    if (currentStep === 4) {
+      completeOnboarding.mutate(undefined, {
+        onSuccess: () => {
+          toast.success("Onboarding termine !");
+          router.push("/client/dashboard");
+        },
+      });
+    } else {
+      nextStep();
+    }
+  };
 
   if (isComplete) {
     return (
@@ -58,7 +80,7 @@ export default function ClientOnboardingPage() {
     <div className="max-w-2xl mx-auto py-8">
       {/* Progress */}
       <div className="flex items-center gap-1 mb-8">
-        {ONBOARDING_STEPS.map((s, i) => (
+        {ONBOARDING_STEPS.map((_, i) => (
           <div key={i} className="flex-1 flex items-center gap-1">
             <div
               className={`h-1.5 rounded-full flex-1 transition-colors ${
@@ -96,7 +118,7 @@ export default function ClientOnboardingPage() {
 
           {/* Step content */}
           {currentStep === 0 && <StepWelcome />}
-          {currentStep === 1 && <StepProfile name={profile?.full_name ?? ""} />}
+          {currentStep === 1 && <StepProfile userId={user?.id} profile={profile} />}
           {currentStep === 2 && (
             <StepContract
               contracts={contracts}
@@ -112,7 +134,7 @@ export default function ClientOnboardingPage() {
               isSigning={signContract.isPending}
             />
           )}
-          {currentStep === 3 && <StepPayment />}
+          {currentStep === 3 && <StepPayment userId={user?.id} />}
           {currentStep === 4 && <StepFormation />}
 
           {/* Navigation */}
@@ -126,10 +148,13 @@ export default function ClientOnboardingPage() {
               Precedent
             </button>
             <button
-              onClick={nextStep}
-              disabled={isUpdating}
+              onClick={handleNext}
+              disabled={isUpdating || completeOnboarding.isPending}
               className="h-10 px-6 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center gap-1"
             >
+              {(isUpdating || completeOnboarding.isPending) && (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              )}
               {currentStep === 4 ? "Terminer" : "Suivant"}
               <ChevronRight className="w-4 h-4" />
             </button>
@@ -165,15 +190,74 @@ function StepWelcome() {
   );
 }
 
-function StepProfile({ name }: { name: string }) {
+function StepProfile({
+  userId,
+  profile,
+}: {
+  userId: string | undefined;
+  profile: { full_name?: string | null; phone?: string | null; bio?: string | null } | null;
+}) {
+  const supabase = useSupabase();
+  const [phone, setPhone] = useState(profile?.phone ?? "");
+  const [bio, setBio] = useState(profile?.bio ?? "");
+  const [saving, setSaving] = useState(false);
+
+  const handleSave = async () => {
+    if (!userId) return;
+    setSaving(true);
+    const { error } = await supabase
+      .from("profiles")
+      .update({ phone: phone || null, bio: bio || null })
+      .eq("id", userId);
+    setSaving(false);
+    if (error) {
+      toast.error("Erreur lors de la sauvegarde");
+    } else {
+      toast.success("Profil mis a jour");
+    }
+  };
+
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       <p className="text-sm text-foreground leading-relaxed">
-        Votre profil est configure avec le nom : <strong>{name || "Non renseigne"}</strong>
+        Completez votre profil pour que votre coach puisse mieux vous connaitre.
       </p>
-      <p className="text-sm text-muted-foreground leading-relaxed">
-        Vous pourrez completer votre profil plus tard dans les reglages (photo, bio, etc.).
-      </p>
+      <div>
+        <label className="block text-xs font-medium text-muted-foreground mb-1.5">Nom</label>
+        <input
+          type="text"
+          value={profile?.full_name ?? ""}
+          disabled
+          className="w-full h-10 px-3 bg-muted/50 rounded-lg text-sm text-muted-foreground"
+        />
+      </div>
+      <div>
+        <label className="block text-xs font-medium text-muted-foreground mb-1.5">Telephone</label>
+        <input
+          type="tel"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          placeholder="06 12 34 56 78"
+          className="w-full h-10 px-3 bg-muted/50 rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+        />
+      </div>
+      <div>
+        <label className="block text-xs font-medium text-muted-foreground mb-1.5">Bio</label>
+        <textarea
+          value={bio}
+          onChange={(e) => setBio(e.target.value)}
+          placeholder="Parlez-nous de vous, votre activite, vos objectifs..."
+          rows={3}
+          className="w-full px-3 py-2 bg-muted/50 rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none"
+        />
+      </div>
+      <button
+        onClick={handleSave}
+        disabled={saving}
+        className="h-9 px-4 bg-foreground text-background rounded-lg text-xs font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+      >
+        {saving ? "Enregistrement..." : "Enregistrer"}
+      </button>
     </div>
   );
 }
@@ -225,28 +309,84 @@ function StepContract({
   );
 }
 
-function StepPayment() {
+function StepPayment({ userId }: { userId: string | undefined }) {
+  const { invoices, isLoading } = useInvoices({ clientId: userId });
+  const pending = invoices?.filter((inv) => inv.status === "sent" || inv.status === "overdue") ?? [];
+
   return (
     <div className="space-y-3">
       <p className="text-sm text-foreground leading-relaxed">
-        Le paiement sera configure par votre coach. Vous recevrez vos factures directement dans
-        votre espace.
+        Consultez vos factures et paiements.
       </p>
-      <p className="text-sm text-muted-foreground leading-relaxed">
-        Vous pourrez consulter vos factures et l&apos;historique de vos paiements a tout moment.
+      {isLoading ? (
+        <div className="h-12 bg-muted/50 rounded-lg animate-shimmer" />
+      ) : pending.length > 0 ? (
+        <div className="space-y-2">
+          {pending.map((inv) => (
+            <div key={inv.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+              <div>
+                <p className="text-sm font-medium text-foreground">Facture #{inv.invoice_number}</p>
+                <p className="text-xs text-muted-foreground">{Number(inv.total).toFixed(2)} EUR</p>
+              </div>
+              <span className="text-xs font-medium px-2 py-1 rounded-full bg-amber-500/10 text-amber-600">
+                {inv.status === "overdue" ? "En retard" : "En attente"}
+              </span>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="text-sm text-muted-foreground">Aucune facture en attente. Tout est a jour !</p>
+      )}
+      <p className="text-xs text-muted-foreground">
+        Retrouvez toutes vos factures dans la section Facturation de votre espace.
       </p>
     </div>
   );
 }
 
 function StepFormation() {
+  const { data: courses, isLoading } = useCourses("published");
   return (
     <div className="space-y-3">
       <p className="text-sm text-foreground leading-relaxed">
-        Votre formation est prete ! Une fois l&apos;onboarding termine, vous aurez acces a tous
-        les modules et lecons.
+        Voici les formations disponibles :
       </p>
-      <p className="text-sm text-muted-foreground leading-relaxed">
+      {isLoading ? (
+        <div className="space-y-2">
+          <div className="h-12 bg-muted/50 rounded-lg animate-shimmer" />
+          <div className="h-12 bg-muted/50 rounded-lg animate-shimmer" />
+        </div>
+      ) : courses && courses.length > 0 ? (
+        <div className="space-y-2">
+          {courses.map((course) => {
+            const totalLessons = course.modules?.reduce(
+              (acc, m) => acc + (m.lessons?.length ?? 0), 0
+            ) ?? 0;
+            return (
+              <div
+                key={course.id}
+                className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg"
+              >
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                  <BookOpen className="w-5 h-5 text-primary" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-foreground truncate">{course.title}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {course.modules?.length ?? 0} module{(course.modules?.length ?? 0) !== 1 ? "s" : ""} · {totalLessons} lecon{totalLessons !== 1 ? "s" : ""}
+                  </p>
+                </div>
+                <GraduationCap className="w-4 h-4 text-muted-foreground shrink-0" />
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <p className="text-sm text-muted-foreground">
+          Aucune formation disponible pour le moment.
+        </p>
+      )}
+      <p className="text-xs text-muted-foreground">
         Cliquez sur &quot;Terminer&quot; pour acceder a votre dashboard et commencer votre parcours.
       </p>
     </div>
