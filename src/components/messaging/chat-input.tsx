@@ -158,7 +158,14 @@ export function ChatInput({
         </div>
 
         <div className="flex items-end gap-2">
-          <div className="flex-1 bg-muted/40 rounded-xl px-3.5 py-2.5 flex items-end gap-2 border border-border/30 focus-within:border-primary/40 focus-within:ring-2 focus-within:ring-primary/10 focus-within:bg-surface transition-all duration-200 relative">
+          <div
+            className="flex-1 bg-muted/40 rounded-xl px-3.5 py-2.5 flex items-end gap-2 border border-border/30 focus-within:border-primary/40 focus-within:ring-2 focus-within:ring-primary/10 focus-within:bg-surface transition-all duration-200 relative cursor-text"
+            onClick={(e) => {
+              const target = e.target as HTMLElement;
+              if (target.closest("button, input, [role='dialog'], [data-emoji-picker]")) return;
+              textareaRef.current?.focus();
+            }}
+          >
             <textarea
               ref={textareaRef}
               value={message}

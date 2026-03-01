@@ -2,7 +2,7 @@
 
 import { formatFileSize } from "@/lib/messaging-utils";
 import { FileText, Download, Play, Pause, FileArchive, FileSpreadsheet, FileImage } from "lucide-react";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { ImageLightbox } from "./image-lightbox";
 import type { EnrichedMessage } from "@/types/messaging";
 
@@ -137,12 +137,38 @@ function VideoContent({ message }: { message: EnrichedMessage }) {
   );
 }
 
+// Pre-compute bar heights once (deterministic waveform shape)
+const WAVEFORM_BARS = Array.from({ length: 30 }, (_, i) => Math.max(Math.sin(i * 0.6 + 1) * 0.5 + 0.5, 0.15) * 100);
+
 function AudioContent({ message }: { message: EnrichedMessage }) {
   const url = message.attachments?.[0]?.file_url ?? message.content;
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const rafRef = useRef<number>(0);
+
+  // 60fps progress update via requestAnimationFrame
+  const tick = useCallback(() => {
+    const el = audioRef.current;
+    if (!el) return;
+    const dur = isFinite(el.duration) ? el.duration : duration;
+    if (dur > 0) {
+      setProgress(el.currentTime / dur);
+      setCurrentTime(el.currentTime);
+    }
+    rafRef.current = requestAnimationFrame(tick);
+  }, [duration]);
+
+  useEffect(() => {
+    if (playing) {
+      rafRef.current = requestAnimationFrame(tick);
+    } else {
+      cancelAnimationFrame(rafRef.current);
+    }
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [playing, tick]);
 
   const togglePlay = () => {
     if (!audioRef.current) return;
@@ -156,9 +182,10 @@ function AudioContent({ message }: { message: EnrichedMessage }) {
     const dur = el && isFinite(el.duration) ? el.duration : duration;
     if (!el || !dur) return;
     const rect = e.currentTarget.getBoundingClientRect();
-    const pct = (e.clientX - rect.left) / rect.width;
+    const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
     el.currentTime = pct * dur;
     setProgress(pct);
+    setCurrentTime(pct * dur);
   };
 
   const formatTime = (s: number) => {
@@ -174,12 +201,6 @@ function AudioContent({ message }: { message: EnrichedMessage }) {
         ref={audioRef}
         src={url}
         preload="metadata"
-        onTimeUpdate={() => {
-          const el = audioRef.current;
-          if (!el) return;
-          const dur = isFinite(el.duration) ? el.duration : duration;
-          if (dur > 0) setProgress(el.currentTime / dur);
-        }}
         onLoadedMetadata={() => {
           const el = audioRef.current;
           if (el && isFinite(el.duration)) setDuration(el.duration);
@@ -188,7 +209,7 @@ function AudioContent({ message }: { message: EnrichedMessage }) {
           const el = audioRef.current;
           if (el && isFinite(el.duration)) setDuration(el.duration);
         }}
-        onEnded={() => { setPlaying(false); setProgress(0); }}
+        onEnded={() => { setPlaying(false); setProgress(0); setCurrentTime(0); }}
       />
       <button
         onClick={togglePlay}
@@ -197,25 +218,27 @@ function AudioContent({ message }: { message: EnrichedMessage }) {
         {playing ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5 ml-0.5" />}
       </button>
 
-      <div className="flex-1 flex items-center gap-px h-7 cursor-pointer" onClick={handleSeek}>
-        {Array.from({ length: 30 }).map((_, i) => {
-          const barProgress = i / 30;
-          const h = Math.sin(i * 0.6 + 1) * 0.5 + 0.5;
-          return (
-            <div
-              key={i}
-              className="flex-1 rounded-full transition-colors duration-100"
-              style={{
-                height: `${Math.max(h * 100, 15)}%`,
-                backgroundColor: barProgress <= progress ? "var(--primary)" : "var(--border)",
-              }}
-            />
-          );
-        })}
+      {/* Waveform — dual-layer with GPU-accelerated clipPath for smooth sweep */}
+      <div className="flex-1 relative h-7 cursor-pointer" onClick={handleSeek}>
+        {/* Background layer (inactive bars) */}
+        <div className="absolute inset-0 flex items-center gap-px">
+          {WAVEFORM_BARS.map((h, i) => (
+            <div key={i} className="flex-1 rounded-full bg-border" style={{ height: `${h}%` }} />
+          ))}
+        </div>
+        {/* Foreground layer (active bars) — clipped to progress */}
+        <div
+          className="absolute inset-0 flex items-center gap-px"
+          style={{ clipPath: `inset(0 ${100 - progress * 100}% 0 0)` }}
+        >
+          {WAVEFORM_BARS.map((h, i) => (
+            <div key={i} className="flex-1 rounded-full bg-primary" style={{ height: `${h}%` }} />
+          ))}
+        </div>
       </div>
 
       <span className="text-[11px] text-muted-foreground font-mono shrink-0 w-9 text-right">
-        {formatTime(playing ? (audioRef.current?.currentTime ?? 0) : duration)}
+        {formatTime(playing ? currentTime : duration)}
       </span>
     </div>
   );
