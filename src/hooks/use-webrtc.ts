@@ -264,6 +264,12 @@ export function useWebRTC({ callId }: UseWebRTCOptions) {
       })
       .subscribe(async (status) => {
         if (status === "SUBSCRIBED") {
+          // We're in the room — mark as connected (waiting for peer)
+          useCallStore.getState().setPhase("connected");
+          if (!useCallStore.getState().callStartTime) {
+            useCallStore.getState().setCallStartTime(Date.now());
+          }
+
           // Announce our presence
           sigChannel.send({
             type: "broadcast",
@@ -331,6 +337,9 @@ export function useWebRTC({ callId }: UseWebRTCOptions) {
       if (sender) {
         await sender.replaceTrack(screenTrack);
       }
+
+      // Show screen locally (replace local stream display)
+      setLocalStream(screenStream);
       useCallStore.getState().setScreenSharing(true);
 
       // When user stops sharing via browser UI
@@ -359,6 +368,9 @@ export function useWebRTC({ callId }: UseWebRTCOptions) {
         await sender.replaceTrack(cameraTrack);
       }
     }
+
+    // Restore local camera stream display
+    setLocalStream(localStreamRef.current);
     useCallStore.getState().setScreenSharing(false);
   }, []);
 

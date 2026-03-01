@@ -40,7 +40,15 @@ export function VideoRoom({ callId }: VideoRoomProps) {
   const [previewCamera, setPreviewCamera] = useState(true);
   const [previewError, setPreviewError] = useState<string | null>(null);
   const [previewAudioLevel, setPreviewAudioLevel] = useState(0);
-  const previewVideoRef = useRef<HTMLVideoElement>(null);
+  // Callback ref: sets srcObject every time the video element mounts/remounts
+  const previewVideoRef = useCallback(
+    (el: HTMLVideoElement | null) => {
+      if (el && previewStream) {
+        el.srcObject = previewStream;
+      }
+    },
+    [previewStream]
+  );
   const analyserRef = useRef<AnalyserNode | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const rafRef = useRef<number>(0);
@@ -84,13 +92,6 @@ export function VideoRoom({ callId }: VideoRoomProps) {
       cancelled = true;
     };
   }, []);
-
-  // Attach preview stream to video element
-  useEffect(() => {
-    if (previewVideoRef.current && previewStream) {
-      previewVideoRef.current.srcObject = previewStream;
-    }
-  }, [previewStream]);
 
   // Audio level meter
   useEffect(() => {
