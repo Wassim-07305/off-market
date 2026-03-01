@@ -92,7 +92,7 @@ export interface Message {
   channel_id: string;
   sender_id: string;
   content: string;
-  content_type: "text" | "image" | "file" | "video" | "system";
+  content_type: "text" | "image" | "file" | "video" | "audio" | "system";
   reply_to: string | null;
   is_pinned: boolean;
   is_edited: boolean;

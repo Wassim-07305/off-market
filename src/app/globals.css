@@ -335,3 +335,18 @@ body {
 
 .tiptap ul { list-style-type: disc; }
 .tiptap ol { list-style-type: decimal; }
+
+/* Messaging animations */
+@keyframes typing-dot {
+  0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
+  30% { opacity: 1; transform: translateY(-2px); }
+}
+
+@keyframes msg-enter {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.msg-animate {
+  animation: msg-enter 0.15s ease-out;
+}
