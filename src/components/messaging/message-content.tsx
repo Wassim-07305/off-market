@@ -152,14 +152,17 @@ function AudioContent({ message }: { message: EnrichedMessage }) {
   };
 
   const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!audioRef.current || !duration) return;
+    const el = audioRef.current;
+    const dur = el && isFinite(el.duration) ? el.duration : duration;
+    if (!el || !dur) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const pct = (e.clientX - rect.left) / rect.width;
-    audioRef.current.currentTime = pct * duration;
+    el.currentTime = pct * dur;
     setProgress(pct);
   };
 
   const formatTime = (s: number) => {
+    if (!s || !isFinite(s)) return "0:00";
     const min = Math.floor(s / 60);
     const sec = Math.floor(s % 60);
     return `${min}:${sec.toString().padStart(2, "0")}`;
@@ -170,11 +173,20 @@ function AudioContent({ message }: { message: EnrichedMessage }) {
       <audio
         ref={audioRef}
         src={url}
+        preload="metadata"
         onTimeUpdate={() => {
-          if (audioRef.current) setProgress(audioRef.current.currentTime / (audioRef.current.duration || 1));
+          const el = audioRef.current;
+          if (!el) return;
+          const dur = isFinite(el.duration) ? el.duration : duration;
+          if (dur > 0) setProgress(el.currentTime / dur);
         }}
         onLoadedMetadata={() => {
-          if (audioRef.current) setDuration(audioRef.current.duration);
+          const el = audioRef.current;
+          if (el && isFinite(el.duration)) setDuration(el.duration);
+        }}
+        onDurationChange={() => {
+          const el = audioRef.current;
+          if (el && isFinite(el.duration)) setDuration(el.duration);
         }}
         onEnded={() => { setPlaying(false); setProgress(0); }}
       />
