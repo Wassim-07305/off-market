@@ -3,13 +3,14 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
-import { useEffect } from "react";
+import { useEffect, useCallback, useRef } from "react";
 import type { EnrichedMessage } from "@/types/messaging";
 
 export function useMessages(channelId: string | null) {
   const supabase = useSupabase();
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const scrollLockRef = useRef(false);
 
   const messagesQuery = useQuery({
     queryKey: ["messages", channelId],
@@ -60,6 +61,7 @@ export function useMessages(channelId: string | null) {
     };
   }, [supabase, channelId, queryClient]);
 
+  // --- Optimistic send ---
   const sendMessage = useMutation({
     mutationFn: async ({
       content,
@@ -85,12 +87,58 @@ export function useMessages(channelId: string | null) {
       if (error) throw error;
       return data;
     },
-    onSuccess: () => {
+    onMutate: async ({ content, contentType = "text", replyTo }) => {
+      if (!user) return;
+      // Cancel in-flight fetches
+      await queryClient.cancelQueries({ queryKey: ["messages", channelId] });
+
+      const previousMessages = queryClient.getQueryData<EnrichedMessage[]>(["messages", channelId]);
+
+      // Create optimistic message
+      const optimisticMsg: EnrichedMessage = {
+        id: `optimistic-${Date.now()}`,
+        channel_id: channelId!,
+        sender_id: user.id,
+        content,
+        content_type: contentType as EnrichedMessage["content_type"],
+        reply_to: replyTo ?? null,
+        is_pinned: false,
+        is_edited: false,
+        metadata: {},
+        deleted_at: null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        sender: {
+          id: user.id,
+          full_name: user.user_metadata?.full_name ?? "Moi",
+          avatar_url: user.user_metadata?.avatar_url ?? null,
+          role: user.user_metadata?.role ?? "client",
+        },
+        reactions: [],
+        attachments: [],
+        reply_message: null,
+      };
+
+      queryClient.setQueryData<EnrichedMessage[]>(["messages", channelId], (old) => [
+        ...(old ?? []),
+        optimisticMsg,
+      ]);
+
+      scrollLockRef.current = true;
+      return { previousMessages };
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previousMessages) {
+        queryClient.setQueryData(["messages", channelId], context.previousMessages);
+      }
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["messages", channelId] });
       queryClient.invalidateQueries({ queryKey: ["channels"] });
     },
   });
 
+  // --- Optimistic edit ---
   const editMessage = useMutation({
     mutationFn: async ({ id, content }: { id: string; content: string }) => {
       const { error } = await supabase
@@ -99,11 +147,24 @@ export function useMessages(channelId: string | null) {
         .eq("id", id);
       if (error) throw error;
     },
-    onSuccess: () => {
+    onMutate: async ({ id, content }) => {
+      await queryClient.cancelQueries({ queryKey: ["messages", channelId] });
+      const previous = queryClient.getQueryData<EnrichedMessage[]>(["messages", channelId]);
+
+      queryClient.setQueryData<EnrichedMessage[]>(["messages", channelId], (old) =>
+        (old ?? []).map((m) => (m.id === id ? { ...m, content, is_edited: true } : m))
+      );
+      return { previous };
+    },
+    onError: (_err, _vars, ctx) => {
+      if (ctx?.previous) queryClient.setQueryData(["messages", channelId], ctx.previous);
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["messages", channelId] });
     },
   });
 
+  // --- Optimistic delete ---
   const deleteMessage = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase
@@ -112,7 +173,19 @@ export function useMessages(channelId: string | null) {
         .eq("id", id);
       if (error) throw error;
     },
-    onSuccess: () => {
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey: ["messages", channelId] });
+      const previous = queryClient.getQueryData<EnrichedMessage[]>(["messages", channelId]);
+
+      queryClient.setQueryData<EnrichedMessage[]>(["messages", channelId], (old) =>
+        (old ?? []).filter((m) => m.id !== id)
+      );
+      return { previous };
+    },
+    onError: (_err, _vars, ctx) => {
+      if (ctx?.previous) queryClient.setQueryData(["messages", channelId], ctx.previous);
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["messages", channelId] });
     },
   });
@@ -125,16 +198,28 @@ export function useMessages(channelId: string | null) {
         .eq("id", id);
       if (error) throw error;
     },
-    onSuccess: () => {
+    onMutate: async ({ id, pinned }) => {
+      await queryClient.cancelQueries({ queryKey: ["messages", channelId] });
+      const previous = queryClient.getQueryData<EnrichedMessage[]>(["messages", channelId]);
+
+      queryClient.setQueryData<EnrichedMessage[]>(["messages", channelId], (old) =>
+        (old ?? []).map((m) => (m.id === id ? { ...m, is_pinned: !pinned } : m))
+      );
+      return { previous };
+    },
+    onError: (_err, _vars, ctx) => {
+      if (ctx?.previous) queryClient.setQueryData(["messages", channelId], ctx.previous);
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["messages", channelId] });
     },
   });
 
+  // --- Optimistic reactions ---
   const toggleReaction = useMutation({
     mutationFn: async ({ messageId, emoji }: { messageId: string; emoji: string }) => {
       if (!user) throw new Error("Not authenticated");
 
-      // Check if reaction already exists
       const { data: existing } = await supabase
         .from("message_reactions")
         .select("id")
@@ -156,7 +241,33 @@ export function useMessages(channelId: string | null) {
         if (error) throw error;
       }
     },
-    onSuccess: () => {
+    onMutate: async ({ messageId, emoji }) => {
+      if (!user) return;
+      await queryClient.cancelQueries({ queryKey: ["messages", channelId] });
+      const previous = queryClient.getQueryData<EnrichedMessage[]>(["messages", channelId]);
+
+      queryClient.setQueryData<EnrichedMessage[]>(["messages", channelId], (old) =>
+        (old ?? []).map((m) => {
+          if (m.id !== messageId) return m;
+          const existing = m.reactions?.find((r) => r.emoji === emoji && r.profile_id === user.id);
+          if (existing) {
+            return { ...m, reactions: (m.reactions ?? []).filter((r) => r.id !== existing.id) };
+          }
+          return {
+            ...m,
+            reactions: [
+              ...(m.reactions ?? []),
+              { id: `opt-${Date.now()}`, emoji, profile_id: user.id, message_id: messageId, created_at: new Date().toISOString() },
+            ],
+          };
+        })
+      );
+      return { previous };
+    },
+    onError: (_err, _vars, ctx) => {
+      if (ctx?.previous) queryClient.setQueryData(["messages", channelId], ctx.previous);
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["messages", channelId] });
     },
   });
@@ -184,16 +295,19 @@ export function useMessages(channelId: string | null) {
       });
       if (error) throw error;
     },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["messages", channelId] });
+    },
   });
 
-  const markAsRead = async () => {
+  const markAsRead = useCallback(async () => {
     if (!channelId || !user) return;
     await supabase
       .from("channel_members")
       .update({ last_read_at: new Date().toISOString() })
       .eq("channel_id", channelId)
       .eq("profile_id", user.id);
-  };
+  }, [channelId, user, supabase]);
 
   return {
     messages: messagesQuery.data ?? [],

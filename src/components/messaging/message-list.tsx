@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useCallback } from "react";
 import { groupMessages, isSameDay } from "@/lib/messaging-utils";
 import { DateSeparator } from "./date-separator";
 import { MessageBubble } from "./message-bubble";
@@ -31,24 +31,54 @@ export function MessageList({
 }: MessageListProps) {
   const endRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const prevCountRef = useRef(0);
+  const initialLoadRef = useRef(true);
 
+  const scrollToBottom = useCallback((instant = false) => {
+    endRef.current?.scrollIntoView({ behavior: instant ? "instant" : "smooth" });
+  }, []);
+
+  // Scroll on new messages — instant on first load, smooth on subsequent
   useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (messages.length === 0) return;
+
+    if (initialLoadRef.current) {
+      // First load: instant scroll, no animation
+      initialLoadRef.current = false;
+      requestAnimationFrame(() => scrollToBottom(true));
+    } else if (messages.length > prevCountRef.current) {
+      // New message: check if near bottom, then smooth scroll
+      const container = containerRef.current;
+      if (container) {
+        const { scrollTop, scrollHeight, clientHeight } = container;
+        const nearBottom = scrollHeight - scrollTop - clientHeight < 120;
+        if (nearBottom) scrollToBottom(false);
+      }
+    }
+    prevCountRef.current = messages.length;
+  }, [messages.length, scrollToBottom]);
+
+  // Reset initial load flag when channel changes (messages go empty then refill)
+  useEffect(() => {
+    if (messages.length === 0) {
+      initialLoadRef.current = true;
+      prevCountRef.current = 0;
+    }
   }, [messages.length]);
 
   if (isLoading) {
     return (
       <div className="flex-1 overflow-y-auto p-4 space-y-5">
         {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} className="flex items-start gap-3 animate-pulse">
-            <div className="w-9 h-9 rounded-full bg-muted shrink-0" />
+          <div key={i} className="flex items-start gap-3">
+            <div className="w-9 h-9 rounded-full bg-muted shrink-0 animate-shimmer" />
             <div className="space-y-2 flex-1">
               <div className="flex items-center gap-2">
-                <div className="h-3 w-20 bg-muted rounded" />
-                <div className="h-2.5 w-12 bg-muted/60 rounded" />
+                <div className="h-3 w-20 bg-muted rounded animate-shimmer" />
+                <div className="h-2.5 w-12 bg-muted/60 rounded animate-shimmer" />
               </div>
-              <div className="h-3.5 w-3/4 bg-muted rounded" />
-              {i % 2 === 0 && <div className="h-3.5 w-1/2 bg-muted rounded" />}
+              <div className="h-3.5 w-3/4 bg-muted rounded animate-shimmer" />
+              {i % 2 === 0 && <div className="h-3.5 w-1/2 bg-muted rounded animate-shimmer" />}
             </div>
           </div>
         ))}
@@ -71,7 +101,7 @@ export function MessageList({
   const groups = groupMessages(messages);
 
   return (
-    <div ref={containerRef} className="flex-1 overflow-y-auto px-4 py-3">
+    <div ref={containerRef} className="flex-1 overflow-y-auto px-4 py-3 scroll-smooth">
       {groups.map((group, gi) => {
         const prevGroup = groups[gi - 1];
         const showDateSep =

@@ -133,7 +133,7 @@ export function ChatInput({
   return (
     <div className="border-t border-border/40 bg-surface">
       {replyTo && (
-        <div className="flex items-center gap-2 px-4 py-2 bg-muted/30 border-b border-border/30">
+        <div className="flex items-center gap-2 px-4 py-2 bg-primary/5 border-b border-primary/15 animate-fade-in">
           <CornerUpLeft className="w-3.5 h-3.5 text-primary shrink-0" />
           <div className="flex-1 min-w-0">
             <span className="text-xs font-medium text-primary">{replyTo.senderName}</span>
@@ -158,7 +158,7 @@ export function ChatInput({
         </div>
 
         <div className="flex items-end gap-2">
-          <div className="flex-1 bg-muted/40 rounded-xl px-3.5 py-2.5 flex items-end gap-2 border border-border/30 focus-within:border-primary/30 focus-within:ring-1 focus-within:ring-primary/10 transition-all relative">
+          <div className="flex-1 bg-muted/40 rounded-xl px-3.5 py-2.5 flex items-end gap-2 border border-border/30 focus-within:border-primary/40 focus-within:ring-2 focus-within:ring-primary/10 focus-within:bg-surface transition-all duration-200 relative">
             <textarea
               ref={textareaRef}
               value={message}
@@ -215,7 +215,7 @@ export function ChatInput({
           <button
             onClick={handleSend}
             disabled={!message.trim() || isSending}
-            className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white hover:bg-primary/90 transition-all active:scale-[0.95] disabled:opacity-40 disabled:pointer-events-none shrink-0"
+            className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white hover:bg-primary/90 transition-all duration-150 active:scale-90 disabled:opacity-30 disabled:pointer-events-none disabled:scale-100 shrink-0 shadow-sm hover:shadow-md"
           >
             {isSending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
           </button>

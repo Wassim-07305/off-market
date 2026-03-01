@@ -28,9 +28,9 @@ export function MessageReactions({ reactions, currentUserId, onToggle }: Message
           key={emoji}
           onClick={() => onToggle(emoji)}
           className={cn(
-            "inline-flex items-center gap-1 h-6 px-1.5 rounded-full text-xs border transition-colors",
+            "inline-flex items-center gap-1 h-6 px-1.5 rounded-full text-xs border transition-all duration-150 active:scale-90",
             hasMe
-              ? "bg-primary/10 border-primary/30 text-primary"
+              ? "bg-primary/10 border-primary/30 text-primary hover:bg-primary/15"
               : "bg-muted/40 border-border/40 text-muted-foreground hover:bg-muted hover:border-border"
           )}
         >

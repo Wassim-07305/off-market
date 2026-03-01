@@ -136,13 +136,13 @@ export function ChannelSidebar({
                         key={ch.id}
                         onClick={() => onSelectChannel(ch.id)}
                         className={cn(
-                          "w-full flex items-center gap-2.5 px-2.5 h-8 rounded-lg text-[13px] transition-all",
+                          "w-full flex items-center gap-2.5 px-2.5 h-8 rounded-lg text-[13px] transition-all duration-150",
                           isActive
-                            ? "bg-primary/10 text-primary font-medium"
-                            : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
+                            ? "bg-primary/10 text-primary font-medium shadow-sm"
+                            : "text-muted-foreground hover:text-foreground hover:bg-muted/60 active:scale-[0.98]"
                         )}
                       >
-                        <Icon className="w-4 h-4 shrink-0 opacity-60" />
+                        <Icon className={cn("w-4 h-4 shrink-0 transition-opacity", isActive ? "opacity-100" : "opacity-50")} />
                         <span className="truncate flex-1 text-left">{ch.name}</span>
                         {ch.unreadCount > 0 && (
                           <span className="min-w-[18px] h-[18px] rounded-full bg-primary text-white text-[10px] font-bold flex items-center justify-center px-1">
@@ -245,10 +245,10 @@ export function ChannelSidebar({
                           key={ch.id}
                           onClick={() => onSelectChannel(ch.id)}
                           className={cn(
-                            "w-full flex items-center gap-2.5 px-2.5 h-9 rounded-lg text-[13px] transition-all",
+                            "w-full flex items-center gap-2.5 px-2.5 h-9 rounded-lg text-[13px] transition-all duration-150",
                             isActive
-                              ? "bg-primary/10 text-primary font-medium"
-                              : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
+                              ? "bg-primary/10 text-primary font-medium shadow-sm"
+                              : "text-muted-foreground hover:text-foreground hover:bg-muted/60 active:scale-[0.98]"
                           )}
                         >
                           <div className="relative shrink-0">

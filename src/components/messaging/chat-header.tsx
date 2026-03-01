@@ -103,7 +103,7 @@ export function ChatHeader({
       </div>
 
       {showSearch && (
-        <div className="px-4 py-2 border-t border-border/30 flex items-center gap-2 bg-muted/20">
+        <div className="px-4 py-2 border-t border-border/30 flex items-center gap-2 bg-muted/20 animate-fade-in">
           <Search className="w-4 h-4 text-muted-foreground shrink-0" />
           <input
             autoFocus

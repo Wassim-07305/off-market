@@ -93,11 +93,11 @@ export function ChatPanel({
       const isVideo = file.type.startsWith("video/");
       const contentType = isImage ? "image" : isVideo ? "video" : "file";
 
-      const { data: msg } = (await sendMessage.mutateAsync({
+      const msg = await sendMessage.mutateAsync({
         content: file.name,
         contentType,
         replyTo: replyToMessage?.id,
-      })) as unknown as { data: { id: string } };
+      });
 
       if (msg?.id) {
         await addAttachment.mutateAsync({
@@ -119,10 +119,11 @@ export function ChatPanel({
     async (blob: Blob, duration: number) => {
       if (!user || !channel) return;
 
-      const filePath = `${channel.id}/${Date.now()}.webm`;
+      const ext = blob.type.includes("mp4") ? "m4a" : blob.type.includes("ogg") ? "ogg" : "webm";
+      const filePath = `${channel.id}/${Date.now()}.${ext}`;
       const { error: uploadError } = await supabase.storage
         .from("message-attachments")
-        .upload(filePath, blob, { contentType: "audio/webm" });
+        .upload(filePath, blob, { contentType: blob.type });
 
       if (uploadError) {
         toast.error("Erreur lors de l'upload");

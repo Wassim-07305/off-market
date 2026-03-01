@@ -2,10 +2,24 @@
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import { Mic, Square, Send, X, Loader2 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface VoiceRecorderProps {
   onSend: (blob: Blob, duration: number) => Promise<void>;
+}
+
+function getSupportedMimeType(): string {
+  const types = [
+    "audio/webm;codecs=opus",
+    "audio/webm",
+    "audio/mp4",
+    "audio/ogg;codecs=opus",
+    "audio/ogg",
+  ];
+  for (const type of types) {
+    if (MediaRecorder.isTypeSupported(type)) return type;
+  }
+  return "";
 }
 
 export function VoiceRecorder({ onSend }: VoiceRecorderProps) {
@@ -16,9 +30,10 @@ export function VoiceRecorder({ onSend }: VoiceRecorderProps) {
   const [levels, setLevels] = useState<number[]>([]);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const animFrameRef = useRef<number>(0);
+  const mimeTypeRef = useRef<string>("");
 
   const formatTime = (s: number) => {
     const min = Math.floor(s / 60);
@@ -28,8 +43,15 @@ export function VoiceRecorder({ onSend }: VoiceRecorderProps) {
 
   const startRecording = useCallback(async () => {
     try {
+      const mimeType = getSupportedMimeType();
+      if (!mimeType) {
+        toast.error("L'enregistrement vocal n'est pas supporte par ce navigateur");
+        return;
+      }
+      mimeTypeRef.current = mimeType;
+
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
+      const mediaRecorder = new MediaRecorder(stream, { mimeType });
       mediaRecorderRef.current = mediaRecorder;
       chunksRef.current = [];
 
@@ -46,7 +68,7 @@ export function VoiceRecorder({ onSend }: VoiceRecorderProps) {
       };
 
       mediaRecorder.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: "audio/webm" });
+        const blob = new Blob(chunksRef.current, { type: mimeType });
         setAudioBlob(blob);
         stream.getTracks().forEach((t) => t.stop());
         audioCtx.close();
@@ -72,7 +94,7 @@ export function VoiceRecorder({ onSend }: VoiceRecorderProps) {
       };
       updateLevels();
     } catch {
-      // Microphone permission denied - silently ignore
+      toast.error("Impossible d'acceder au microphone");
     }
   }, []);
 

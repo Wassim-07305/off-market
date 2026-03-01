@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { getInitials, cn } from "@/lib/utils";
 import { formatMessageTime } from "@/lib/messaging-utils";
 import { MessageContent } from "./message-content";
@@ -26,7 +26,7 @@ interface MessageBubbleProps {
   onPin: () => void;
 }
 
-const QUICK_REACTIONS = ["👍", "❤️", "😂", "🎉", "🔥", "✅"];
+const QUICK_REACTIONS = ["\u{1F44D}", "\u{2764}\u{FE0F}", "\u{1F602}", "\u{1F389}", "\u{1F525}", "\u{2705}"];
 
 export function MessageBubble({
   message,
@@ -44,6 +44,8 @@ export function MessageBubble({
   const [editing, setEditing] = useState(false);
   const [editContent, setEditContent] = useState(message.content);
   const sender = message.sender;
+  const isOptimistic = message.id.startsWith("optimistic-");
+  const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // System messages
   if (message.content_type === "system") {
@@ -63,18 +65,28 @@ export function MessageBubble({
     setEditing(false);
   };
 
+  const handleMouseEnter = () => {
+    if (hideTimer.current) clearTimeout(hideTimer.current);
+    setShowActions(true);
+  };
+
+  const handleMouseLeave = () => {
+    hideTimer.current = setTimeout(() => {
+      setShowActions(false);
+      setShowQuickReact(false);
+    }, 120);
+  };
+
   return (
     <div
       className={cn(
-        "group relative flex gap-3 px-1 -mx-1 rounded-lg transition-colors msg-animate",
+        "group relative flex gap-3 px-1.5 -mx-1.5 rounded-lg transition-colors duration-150",
         isFirstInGroup ? "pt-2" : "pt-0.5",
-        showActions && "bg-muted/30"
+        showActions && "bg-muted/30",
+        isOptimistic && "opacity-50"
       )}
-      onMouseEnter={() => setShowActions(true)}
-      onMouseLeave={() => {
-        setShowActions(false);
-        setShowQuickReact(false);
-      }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       {/* Avatar or spacer */}
       <div className="w-9 shrink-0">
@@ -119,7 +131,7 @@ export function MessageBubble({
 
         {/* Reply preview */}
         {message.reply_to && message.reply_message && (
-          <div className="flex items-center gap-2 mb-1 pl-3 border-l-2 border-primary/30">
+          <div className="flex items-center gap-2 mb-1 pl-3 border-l-2 border-primary/30 rounded-r">
             <span className="text-[11px] text-primary font-medium">
               {message.reply_message.sender?.full_name ?? "Inconnu"}
             </span>
@@ -136,7 +148,7 @@ export function MessageBubble({
               autoFocus
               value={editContent}
               onChange={(e) => setEditContent(e.target.value)}
-              className="w-full p-2 bg-muted border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary resize-none"
+              className="w-full p-2 bg-muted border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary resize-none transition-shadow"
               rows={2}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
@@ -148,7 +160,7 @@ export function MessageBubble({
             />
             <div className="flex items-center gap-2 text-[11px]">
               <span className="text-muted-foreground">Echap pour annuler</span>
-              <span className="text-muted-foreground">·</span>
+              <span className="text-muted-foreground">&middot;</span>
               <span className="text-muted-foreground">Entree pour sauvegarder</span>
             </div>
           </div>
@@ -166,76 +178,86 @@ export function MessageBubble({
         )}
       </div>
 
-      {/* Actions toolbar */}
-      {showActions && !editing && (
-        <div className="absolute -top-3 right-2 flex items-center bg-surface border border-border/60 rounded-lg shadow-sm overflow-hidden z-10">
+      {/* Actions toolbar — fade transition */}
+      <div
+        className={cn(
+          "absolute -top-3 right-2 flex items-center bg-surface border border-border/60 rounded-lg shadow-sm overflow-hidden z-10 transition-all duration-150",
+          showActions && !editing
+            ? "opacity-100 translate-y-0 pointer-events-auto"
+            : "opacity-0 translate-y-1 pointer-events-none"
+        )}
+      >
+        <button
+          onClick={() => setShowQuickReact(!showQuickReact)}
+          className="w-7 h-7 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+          title="Reagir"
+        >
+          <Smile className="w-3.5 h-3.5" />
+        </button>
+        <button
+          onClick={onReply}
+          className="w-7 h-7 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+          title="Repondre"
+        >
+          <CornerUpLeft className="w-3.5 h-3.5" />
+        </button>
+        {isOwn && (
           <button
-            onClick={() => setShowQuickReact(!showQuickReact)}
+            onClick={() => {
+              setEditing(true);
+              setEditContent(message.content);
+            }}
             className="w-7 h-7 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-            title="Reagir"
+            title="Modifier"
           >
-            <Smile className="w-3.5 h-3.5" />
+            <Pencil className="w-3.5 h-3.5" />
           </button>
-          <button
-            onClick={onReply}
-            className="w-7 h-7 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-            title="Repondre"
-          >
-            <CornerUpLeft className="w-3.5 h-3.5" />
-          </button>
-          {isOwn && (
-            <button
-              onClick={() => {
-                setEditing(true);
-                setEditContent(message.content);
-              }}
-              className="w-7 h-7 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-              title="Modifier"
-            >
-              <Pencil className="w-3.5 h-3.5" />
-            </button>
+        )}
+        <button
+          onClick={onPin}
+          className={cn(
+            "w-7 h-7 flex items-center justify-center transition-colors",
+            message.is_pinned
+              ? "text-amber-500 hover:bg-muted"
+              : "text-muted-foreground hover:text-foreground hover:bg-muted"
           )}
+          title={message.is_pinned ? "Desepingler" : "Epingler"}
+        >
+          <Pin className="w-3.5 h-3.5" />
+        </button>
+        {isOwn && (
           <button
-            onClick={onPin}
-            className={cn(
-              "w-7 h-7 flex items-center justify-center transition-colors",
-              message.is_pinned
-                ? "text-amber-500 hover:bg-muted"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted"
-            )}
-            title={message.is_pinned ? "Desepingler" : "Epingler"}
+            onClick={onDelete}
+            className="w-7 h-7 flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+            title="Supprimer"
           >
-            <Pin className="w-3.5 h-3.5" />
+            <Trash2 className="w-3.5 h-3.5" />
           </button>
-          {isOwn && (
-            <button
-              onClick={onDelete}
-              className="w-7 h-7 flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-              title="Supprimer"
-            >
-              <Trash2 className="w-3.5 h-3.5" />
-            </button>
-          )}
-        </div>
-      )}
+        )}
+      </div>
 
-      {/* Quick reactions popup */}
-      {showQuickReact && (
-        <div className="absolute -top-10 right-2 flex items-center gap-0.5 bg-surface border border-border/60 rounded-lg shadow-md p-1 z-20">
-          {QUICK_REACTIONS.map((emoji) => (
-            <button
-              key={emoji}
-              onClick={() => {
-                onReact(message.id, emoji);
-                setShowQuickReact(false);
-              }}
-              className="w-7 h-7 rounded flex items-center justify-center hover:bg-muted transition-colors text-sm"
-            >
-              {emoji}
-            </button>
-          ))}
-        </div>
-      )}
+      {/* Quick reactions popup — scale transition */}
+      <div
+        className={cn(
+          "absolute -top-10 right-2 flex items-center gap-0.5 bg-surface border border-border/60 rounded-lg shadow-md p-1 z-20 transition-all duration-150 origin-bottom-right",
+          showQuickReact
+            ? "opacity-100 scale-100 pointer-events-auto"
+            : "opacity-0 scale-90 pointer-events-none"
+        )}
+      >
+        {QUICK_REACTIONS.map((emoji) => (
+          <button
+            key={emoji}
+            onClick={() => {
+              onReact(message.id, emoji);
+              setShowQuickReact(false);
+            }}
+            className="w-7 h-7 rounded flex items-center justify-center hover:bg-muted transition-all duration-100 hover:scale-110 active:scale-95 text-sm"
+          >
+            {emoji}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
