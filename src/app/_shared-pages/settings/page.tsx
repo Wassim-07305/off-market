@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useSupabase } from "@/hooks/use-supabase";
 import { useTheme } from "next-themes";
@@ -38,6 +38,16 @@ export default function SettingsPage() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Sync state when profile loads (useState initial value only runs once)
+  useEffect(() => {
+    if (profile) {
+      setFullName(profile.full_name ?? "");
+      setPhone(profile.phone ?? "");
+      setBio(profile.bio ?? "");
+      setAvatarUrl(profile.avatar_url ?? "");
+    }
+  }, [profile]);
 
   const initials = fullName ? getInitials(fullName) : "U";
 

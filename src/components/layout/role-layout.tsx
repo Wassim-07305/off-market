@@ -4,6 +4,7 @@ import { RoleSidebar } from "@/components/layout/role-sidebar";
 import { Header } from "@/components/layout/header";
 import { RoleMobileNav } from "@/components/layout/role-mobile-nav";
 import { CommandPalette } from "@/components/layout/command-palette";
+import { NotificationPanel } from "@/components/layout/notification-panel";
 import { useUIStore } from "@/stores/ui-store";
 import { cn } from "@/lib/utils";
 import type { RoleVariant } from "@/lib/navigation";
@@ -30,6 +31,7 @@ export function RoleLayout({ variant, children }: RoleLayoutProps) {
       </div>
       <RoleMobileNav variant={variant} />
       <CommandPalette />
+      <NotificationPanel />
     </div>
   );
 }
