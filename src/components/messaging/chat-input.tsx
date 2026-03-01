@@ -146,32 +146,34 @@ export function ChatInput({
       )}
 
       <div className="p-3">
-        <div className="flex items-center gap-0.5 mb-1.5 px-1">
-          <FormatBtn icon={Bold} title="Gras" onClick={() => wrapSelection("**", "**")} />
-          <FormatBtn icon={Italic} title="Italique" onClick={() => wrapSelection("_", "_")} />
-          <FormatBtn icon={Strikethrough} title="Barre" onClick={() => wrapSelection("~~", "~~")} />
-          <div className="w-px h-4 bg-border/40 mx-1" />
-          <FormatBtn icon={List} title="Liste" onClick={() => wrapSelection("\n- ", "")} />
-          <FormatBtn icon={ListOrdered} title="Liste numerotee" onClick={() => wrapSelection("\n1. ", "")} />
-          <div className="w-px h-4 bg-border/40 mx-1" />
-          <FormatBtn icon={Code} title="Code" onClick={() => wrapSelection("`", "`")} />
-        </div>
+        <div
+          className="rounded-xl border border-border/30 bg-muted/40 focus-within:border-primary/40 focus-within:ring-2 focus-within:ring-primary/10 focus-within:bg-surface transition-all duration-200 relative cursor-text"
+          onClick={(e) => {
+            const target = e.target as HTMLElement;
+            if (target.closest("button, input, [role='dialog'], [data-emoji-picker]")) return;
+            textareaRef.current?.focus();
+          }}
+        >
+          {/* Formatting toolbar */}
+          <div className="flex items-center gap-0.5 px-3 pt-2 pb-0.5">
+            <FormatBtn icon={Bold} title="Gras" onClick={() => wrapSelection("**", "**")} />
+            <FormatBtn icon={Italic} title="Italique" onClick={() => wrapSelection("_", "_")} />
+            <FormatBtn icon={Strikethrough} title="Barre" onClick={() => wrapSelection("~~", "~~")} />
+            <div className="w-px h-4 bg-border/40 mx-1" />
+            <FormatBtn icon={List} title="Liste" onClick={() => wrapSelection("\n- ", "")} />
+            <FormatBtn icon={ListOrdered} title="Liste numerotee" onClick={() => wrapSelection("\n1. ", "")} />
+            <div className="w-px h-4 bg-border/40 mx-1" />
+            <FormatBtn icon={Code} title="Code" onClick={() => wrapSelection("`", "`")} />
+          </div>
 
-        <div className="flex items-end gap-2">
-          <div
-            className="flex-1 bg-muted/40 rounded-xl px-3.5 py-2.5 flex items-end gap-2 border border-border/30 focus-within:border-primary/40 focus-within:ring-2 focus-within:ring-primary/10 focus-within:bg-surface transition-all duration-200 relative cursor-text"
-            onClick={(e) => {
-              const target = e.target as HTMLElement;
-              if (target.closest("button, input, [role='dialog'], [data-emoji-picker]")) return;
-              textareaRef.current?.focus();
-            }}
-          >
+          {/* Textarea + action buttons */}
+          <div className="flex items-end gap-2 px-3.5 pb-2.5">
             <textarea
               ref={textareaRef}
               value={message}
               onChange={handleInput}
               placeholder={`Message ${channelName}`}
-              className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none resize-none min-h-[20px] max-h-[160px] leading-5"
+              className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none resize-none min-h-[20px] max-h-[160px] leading-5 py-1"
               rows={1}
               onKeyDown={handleKeyDown}
             />
@@ -206,26 +208,26 @@ export function ChatInput({
                   onClose={() => setShowEmoji(false)}
                 />
               )}
-            </div>
 
-            {mentionQuery !== null && memberOptions.length > 0 && (
-              <MentionAutocomplete
-                query={mentionQuery}
-                members={memberOptions}
-                onSelect={handleMentionSelect}
-                onClose={() => setMentionQuery(null)}
-                position={{ top: 8, left: 0 }}
-              />
-            )}
+              <button
+                onClick={handleSend}
+                disabled={!message.trim() || isSending}
+                className="w-7 h-7 bg-primary rounded-lg flex items-center justify-center text-white hover:bg-primary/90 transition-all duration-150 active:scale-90 disabled:opacity-30 disabled:pointer-events-none disabled:scale-100 shrink-0"
+              >
+                {isSending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
+              </button>
+            </div>
           </div>
 
-          <button
-            onClick={handleSend}
-            disabled={!message.trim() || isSending}
-            className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white hover:bg-primary/90 transition-all duration-150 active:scale-90 disabled:opacity-30 disabled:pointer-events-none disabled:scale-100 shrink-0 shadow-sm hover:shadow-md"
-          >
-            {isSending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-          </button>
+          {mentionQuery !== null && memberOptions.length > 0 && (
+            <MentionAutocomplete
+              query={mentionQuery}
+              members={memberOptions}
+              onSelect={handleMentionSelect}
+              onClose={() => setMentionQuery(null)}
+              position={{ top: 8, left: 0 }}
+            />
+          )}
         </div>
       </div>
     </div>
