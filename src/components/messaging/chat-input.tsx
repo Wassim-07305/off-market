@@ -147,7 +147,7 @@ export function ChatInput({
 
       <div className="p-3">
         <div
-          className="rounded-xl border border-border/30 bg-muted/40 focus-within:border-primary/40 focus-within:ring-2 focus-within:ring-primary/10 focus-within:bg-surface transition-all duration-200 relative cursor-text"
+          className="rounded-xl bg-muted/40 transition-all duration-200 relative cursor-text"
           onClick={(e) => {
             const target = e.target as HTMLElement;
             if (target.closest("button, input, [role='dialog'], [data-emoji-picker]")) return;
