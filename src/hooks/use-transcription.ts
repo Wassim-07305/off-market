@@ -53,7 +53,6 @@ export function useTranscription({
 }: UseTranscriptionOptions) {
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const shouldRestartRef = useRef(false);
-  const store = useCallStore();
 
   const [isSupported] = useState(() => {
     if (typeof window === "undefined") return false;
@@ -89,7 +88,7 @@ export function useTranscription({
             text: transcript.trim(),
             timestamp_ms: Date.now(),
           };
-          store.addTranscriptEntry(entry);
+          useCallStore.getState().addTranscriptEntry(entry);
           onEntry?.(entry);
           setInterimText("");
         } else {
@@ -122,19 +121,19 @@ export function useTranscription({
 
     try {
       recognition.start();
-      store.setTranscribing(true);
+      useCallStore.getState().setTranscribing(true);
     } catch {
       // Already started
     }
-  }, [isSupported, language, speakerId, speakerName, store, onEntry]);
+  }, [isSupported, language, speakerId, speakerName, onEntry]);
 
   const stopTranscription = useCallback(() => {
     shouldRestartRef.current = false;
     recognitionRef.current?.stop();
     recognitionRef.current = null;
-    store.setTranscribing(false);
+    useCallStore.getState().setTranscribing(false);
     setInterimText("");
-  }, [store]);
+  }, []);
 
   // Cleanup on unmount
   useEffect(() => {

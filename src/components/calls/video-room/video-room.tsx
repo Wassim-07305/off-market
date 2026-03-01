@@ -169,8 +169,9 @@ export function VideoRoom({ callId }: VideoRoomProps) {
     cleanupPreview();
 
     // Carry over preview toggles to the call store
-    if (!previewMic) store.toggleMic();
-    if (!previewCamera) store.toggleCamera();
+    const s = useCallStore.getState();
+    if (!previewMic) s.toggleMic();
+    if (!previewCamera) s.toggleCamera();
 
     setHasJoined(true);
 
@@ -199,19 +200,21 @@ export function VideoRoom({ callId }: VideoRoomProps) {
     }
 
     await joinCall();
-  }, [call, user, callId, myName, joinCall, updateRoomStatus, supabase, cleanupPreview, previewMic, previewCamera, store]);
+  }, [call, user, callId, myName, joinCall, updateRoomStatus, supabase, cleanupPreview, previewMic, previewCamera]);
 
   // Leave / hang up
   const handleHangUp = useCallback(async () => {
+    const s = useCallStore.getState();
+
     // Save transcript if any
-    if (store.transcriptEntries.length > 0) {
-      const durationSeconds = store.callStartTime
-        ? Math.floor((Date.now() - store.callStartTime) / 1000)
+    if (s.transcriptEntries.length > 0) {
+      const durationSeconds = s.callStartTime
+        ? Math.floor((Date.now() - s.callStartTime) / 1000)
         : undefined;
 
       saveTranscript.mutate({
         call_id: callId,
-        content: store.transcriptEntries,
+        content: s.transcriptEntries,
         duration_seconds: durationSeconds,
       });
     }
@@ -221,50 +224,52 @@ export function VideoRoom({ callId }: VideoRoomProps) {
       id: callId,
       room_status: "ended",
       ended_at: new Date().toISOString(),
-      actual_duration_seconds: store.callStartTime
-        ? Math.floor((Date.now() - store.callStartTime) / 1000)
+      actual_duration_seconds: s.callStartTime
+        ? Math.floor((Date.now() - s.callStartTime) / 1000)
         : undefined,
     });
 
     stopTranscription();
     leaveCall();
-  }, [callId, store.transcriptEntries, store.callStartTime, saveTranscript, updateRoomStatus, stopTranscription, leaveCall]);
+  }, [callId, saveTranscript, updateRoomStatus, stopTranscription, leaveCall]);
 
   // Toggle transcription
   const handleToggleTranscript = useCallback(() => {
-    if (store.isTranscribing) {
+    if (useCallStore.getState().isTranscribing) {
       stopTranscription();
       setShowTranscript(false);
     } else {
       startTranscription();
       setShowTranscript(true);
     }
-  }, [store.isTranscribing, startTranscription, stopTranscription]);
+  }, [startTranscription, stopTranscription]);
 
   // Toggle screen share
   const handleToggleScreenShare = useCallback(() => {
-    if (store.isScreenSharing) {
+    if (useCallStore.getState().isScreenSharing) {
       stopScreenShare();
     } else {
       startScreenShare();
     }
-  }, [store.isScreenSharing, startScreenShare, stopScreenShare]);
+  }, [startScreenShare, stopScreenShare]);
 
   // Cleanup on unmount / beforeunload
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (store.phase === "connected" || store.phase === "connecting") {
+      const { phase } = useCallStore.getState();
+      if (phase === "connected" || phase === "connecting") {
         e.preventDefault();
       }
     };
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [store.phase]);
+  }, []);
 
   // Download transcript as TXT
   const handleDownloadTranscript = () => {
-    const callStart = store.callStartTime ?? Date.now();
-    const lines = store.transcriptEntries.map((e) => {
+    const s = useCallStore.getState();
+    const callStart = s.callStartTime ?? Date.now();
+    const lines = s.transcriptEntries.map((e) => {
       const relSec = Math.floor((e.timestamp_ms - callStart) / 1000);
       const min = Math.floor(relSec / 60);
       const sec = relSec % 60;

@@ -45,7 +45,6 @@ interface UseWebRTCOptions {
 export function useWebRTC({ callId }: UseWebRTCOptions) {
   const supabase = useSupabase();
   const { user, profile } = useAuth();
-  const store = useCallStore();
 
   const pcRef = useRef<RTCPeerConnection | null>(null);
   const channelRef = useRef<RealtimeChannel | null>(null);
@@ -66,6 +65,7 @@ export function useWebRTC({ callId }: UseWebRTCOptions) {
     [myId]
   );
 
+  // Use getState() everywhere to avoid stale closures and dependency cascades
   const cleanup = useCallback(() => {
     try {
       localStreamRef.current?.getTracks().forEach((t) => t.stop());
@@ -88,14 +88,15 @@ export function useWebRTC({ callId }: UseWebRTCOptions) {
     } catch { /* channel already removed */ }
     channelRef.current = null;
 
-    store.setRemoteConnected(false);
-    store.setScreenSharing(false);
-  }, [supabase, store]);
+    useCallStore.getState().setRemoteConnected(false);
+    useCallStore.getState().setScreenSharing(false);
+  }, [supabase]);
 
   // Create peer connection and wire up signaling
   const setupConnection = useCallback(async () => {
     if (!myId) return;
 
+    const store = useCallStore.getState();
     store.setPhase("joining");
 
     // 1. Get local media
@@ -115,15 +116,15 @@ export function useWebRTC({ callId }: UseWebRTCOptions) {
         });
         localStreamRef.current = stream;
         setLocalStream(stream);
-        store.toggleCamera(); // camera off since no video
+        useCallStore.getState().toggleCamera(); // camera off since no video
       } catch (err) {
         console.error("Cannot access media devices:", err);
-        store.setPhase("ended");
+        useCallStore.getState().setPhase("ended");
         return;
       }
     }
 
-    store.setPhase("connecting");
+    useCallStore.getState().setPhase("connecting");
 
     // 2. Create RTCPeerConnection
     const pc = new RTCPeerConnection({ iceServers: getIceServers() });
@@ -145,19 +146,20 @@ export function useWebRTC({ callId }: UseWebRTCOptions) {
 
     // Connection state
     pc.onconnectionstatechange = () => {
+      const s = useCallStore.getState();
       switch (pc.connectionState) {
         case "connected":
-          store.setPhase("connected");
-          store.setRemoteConnected(true);
-          if (!store.callStartTime) store.setCallStartTime(Date.now());
+          s.setPhase("connected");
+          s.setRemoteConnected(true);
+          if (!s.callStartTime) s.setCallStartTime(Date.now());
           break;
         case "disconnected":
         case "failed":
-          store.setPhase("reconnecting");
-          store.setRemoteConnected(false);
+          s.setPhase("reconnecting");
+          s.setRemoteConnected(false);
           break;
         case "closed":
-          store.setRemoteConnected(false);
+          s.setRemoteConnected(false);
           break;
       }
     };
@@ -200,23 +202,23 @@ export function useWebRTC({ callId }: UseWebRTCOptions) {
     sigChannel
       .on("broadcast", { event: "offer" }, async ({ payload }) => {
         if (!pcRef.current || payload.senderId === myId) return;
-        const pc = pcRef.current;
+        const currentPc = pcRef.current;
         const polite = isPolite(payload.senderId);
 
         const offerCollision =
-          makingOfferRef.current || pc.signalingState !== "stable";
+          makingOfferRef.current || currentPc.signalingState !== "stable";
 
         ignoringOfferRef.current = !polite && offerCollision;
         if (ignoringOfferRef.current) return;
 
-        store.setRemotePeer(payload.senderId, payload.senderName);
+        useCallStore.getState().setRemotePeer(payload.senderId, payload.senderName);
 
-        await pc.setRemoteDescription(payload.sdp);
-        await pc.setLocalDescription();
+        await currentPc.setRemoteDescription(payload.sdp);
+        await currentPc.setLocalDescription();
         sigChannel.send({
           type: "broadcast",
           event: "answer",
-          payload: { sdp: pc.localDescription, senderId: myId },
+          payload: { sdp: currentPc.localDescription, senderId: myId },
         });
       })
       .on("broadcast", { event: "answer" }, async ({ payload }) => {
@@ -233,7 +235,7 @@ export function useWebRTC({ callId }: UseWebRTCOptions) {
       })
       .on("broadcast", { event: "join" }, async ({ payload }) => {
         if (payload.senderId === myId) return;
-        store.setRemotePeer(payload.senderId, payload.senderName);
+        useCallStore.getState().setRemotePeer(payload.senderId, payload.senderName);
         // If we're the impolite peer (higher ID), create offer
         if (!isPolite(payload.senderId)) {
           try {
@@ -253,12 +255,12 @@ export function useWebRTC({ callId }: UseWebRTCOptions) {
       })
       .on("broadcast", { event: "leave" }, ({ payload }) => {
         if (payload.senderId === myId) return;
-        store.setRemoteConnected(false);
-        store.setPhase("ended");
+        useCallStore.getState().setRemoteConnected(false);
+        useCallStore.getState().setPhase("ended");
       })
       .on("broadcast", { event: "transcript" }, ({ payload }) => {
         if (payload.senderId === myId) return;
-        store.addTranscriptEntry(payload.entry);
+        useCallStore.getState().addTranscriptEntry(payload.entry);
       })
       .subscribe(async (status) => {
         if (status === "SUBSCRIBED") {
@@ -270,7 +272,7 @@ export function useWebRTC({ callId }: UseWebRTCOptions) {
           });
         }
       });
-  }, [myId, myName, callId, supabase, store, isPolite]);
+  }, [myId, myName, callId, supabase, isPolite]);
 
   // Join call
   const joinCall = useCallback(async () => {
@@ -287,8 +289,8 @@ export function useWebRTC({ callId }: UseWebRTCOptions) {
       });
     } catch { /* channel may already be closed */ }
     cleanup();
-    store.setPhase("ended");
-  }, [myId, cleanup, store]);
+    useCallStore.getState().setPhase("ended");
+  }, [myId, cleanup]);
 
   // Toggle mic
   const toggleMic = useCallback(() => {
@@ -297,9 +299,9 @@ export function useWebRTC({ callId }: UseWebRTCOptions) {
       .find((t) => t.kind === "audio");
     if (audioTrack) {
       audioTrack.enabled = !audioTrack.enabled;
-      store.toggleMic();
+      useCallStore.getState().toggleMic();
     }
-  }, [store]);
+  }, []);
 
   // Toggle camera
   const toggleCamera = useCallback(() => {
@@ -308,9 +310,9 @@ export function useWebRTC({ callId }: UseWebRTCOptions) {
       .find((t) => t.kind === "video");
     if (videoTrack) {
       videoTrack.enabled = !videoTrack.enabled;
-      store.toggleCamera();
+      useCallStore.getState().toggleCamera();
     }
-  }, [store]);
+  }, []);
 
   // Screen share
   const startScreenShare = useCallback(async () => {
@@ -329,7 +331,7 @@ export function useWebRTC({ callId }: UseWebRTCOptions) {
       if (sender) {
         await sender.replaceTrack(screenTrack);
       }
-      store.setScreenSharing(true);
+      useCallStore.getState().setScreenSharing(true);
 
       // When user stops sharing via browser UI
       screenTrack.onended = () => {
@@ -338,7 +340,7 @@ export function useWebRTC({ callId }: UseWebRTCOptions) {
     } catch {
       // User cancelled
     }
-  }, [store]);
+  }, []);
 
   const stopScreenShare = useCallback(async () => {
     if (!pcRef.current || !localStreamRef.current) return;
@@ -357,8 +359,8 @@ export function useWebRTC({ callId }: UseWebRTCOptions) {
         await sender.replaceTrack(cameraTrack);
       }
     }
-    store.setScreenSharing(false);
-  }, [store]);
+    useCallStore.getState().setScreenSharing(false);
+  }, []);
 
   // Broadcast transcript entry to peer
   const broadcastTranscript = useCallback(
@@ -372,7 +374,7 @@ export function useWebRTC({ callId }: UseWebRTCOptions) {
     [myId]
   );
 
-  // Cleanup on unmount
+  // Cleanup on unmount only — stable deps so this won't re-fire on state changes
   useEffect(() => {
     return () => {
       cleanup();
