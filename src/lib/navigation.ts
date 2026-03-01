@@ -81,6 +81,7 @@ export const clientNavigation: NavItem[] = [
   { name: "Progression", href: "/client/progress", icon: Trophy },
   { name: "Defis", href: "/client/challenges", icon: Flame },
   { name: "Classement", href: "/client/leaderboard", icon: Crown },
+  { name: "Appels", href: "/client/calls", icon: Phone },
   { name: "Reglages", href: "/client/settings", icon: Settings },
 ];
 

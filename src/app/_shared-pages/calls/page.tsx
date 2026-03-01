@@ -9,6 +9,8 @@ import { CALL_STATUS_COLORS, type CallCalendarWithRelations } from "@/types/call
 import { motion } from "framer-motion";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 import { cn } from "@/lib/utils";
+import { useRoutePrefix } from "@/hooks/use-route-prefix";
+import Link from "next/link";
 import {
   Phone,
   Plus,
@@ -16,6 +18,7 @@ import {
   ChevronRight,
   Calendar,
   List,
+  Video,
 } from "lucide-react";
 
 export default function CallsPage() {
@@ -33,7 +36,18 @@ export default function CallsPage() {
   const [defaultDate, setDefaultDate] = useState<string>();
   const [defaultTime, setDefaultTime] = useState<string>();
 
+  const prefix = useRoutePrefix();
   const { calls, isLoading } = useCalls(weekStart);
+
+  /** An appointment is joinable 15 min before → 30 min after its scheduled time */
+  const isJoinable = (call: CallCalendarWithRelations) => {
+    if (call.status === "annule") return false;
+    const callDate = new Date(`${call.date}T${call.time}`);
+    const now = Date.now();
+    const fifteenMinBefore = callDate.getTime() - 15 * 60_000;
+    const thirtyMinAfter = callDate.getTime() + 30 * 60_000;
+    return now >= fifteenMinBefore && now <= thirtyMinAfter;
+  };
 
   const navigateWeek = (direction: number) => {
     setWeekStart((prev) => {
@@ -205,7 +219,18 @@ export default function CallsPage() {
                       {call.client && ` · ${call.client.full_name}`}
                     </p>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-muted-foreground/40 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  {isJoinable(call) ? (
+                    <Link
+                      href={`${prefix}/calls/${call.id}`}
+                      onClick={(e) => e.stopPropagation()}
+                      className="h-7 px-3 rounded-lg bg-green-600 text-white text-xs font-medium hover:bg-green-700 transition-all flex items-center gap-1.5 shrink-0"
+                    >
+                      <Video className="w-3 h-3" />
+                      Rejoindre
+                    </Link>
+                  ) : (
+                    <ChevronRight className="w-4 h-4 text-muted-foreground/40 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  )}
                 </button>
               ))
             )}

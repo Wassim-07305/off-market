@@ -1,3 +1,21 @@
+export type RoomStatus = "idle" | "waiting" | "active" | "ended";
+
+export interface TranscriptEntry {
+  speaker_id: string;
+  speaker_name: string;
+  text: string;
+  timestamp_ms: number;
+}
+
+export interface CallTranscript {
+  id: string;
+  call_id: string;
+  content: TranscriptEntry[];
+  language: string;
+  duration_seconds: number | null;
+  created_at: string;
+}
+
 export interface CallCalendar {
   id: string;
   client_id: string | null;
@@ -10,6 +28,10 @@ export interface CallCalendar {
   status: CallStatus;
   link: string | null;
   notes: string | null;
+  room_status: RoomStatus;
+  started_at: string | null;
+  ended_at: string | null;
+  actual_duration_seconds: number | null;
   created_at: string;
   updated_at: string;
 }

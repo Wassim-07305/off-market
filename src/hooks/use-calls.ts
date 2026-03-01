@@ -3,7 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
-import type { CallCalendarWithRelations } from "@/types/calls";
+import type { CallCalendarWithRelations, RoomStatus, TranscriptEntry } from "@/types/calls";
 
 export function useCalls(weekStart?: Date) {
   const supabase = useSupabase();
@@ -82,11 +82,88 @@ export function useCalls(weekStart?: Date) {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["calls"] }),
   });
 
+  const updateRoomStatus = useMutation({
+    mutationFn: async ({
+      id,
+      room_status,
+      started_at,
+      ended_at,
+      actual_duration_seconds,
+    }: {
+      id: string;
+      room_status: RoomStatus;
+      started_at?: string;
+      ended_at?: string;
+      actual_duration_seconds?: number;
+    }) => {
+      const updates: Record<string, unknown> = { room_status };
+      if (started_at) updates.started_at = started_at;
+      if (ended_at) updates.ended_at = ended_at;
+      if (actual_duration_seconds !== undefined) updates.actual_duration_seconds = actual_duration_seconds;
+      const { error } = await supabase
+        .from("call_calendar")
+        .update(updates)
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["calls"] }),
+  });
+
+  const saveTranscript = useMutation({
+    mutationFn: async ({
+      call_id,
+      content,
+      language,
+      duration_seconds,
+    }: {
+      call_id: string;
+      content: TranscriptEntry[];
+      language?: string;
+      duration_seconds?: number;
+    }) => {
+      const { data, error } = await supabase
+        .from("call_transcripts")
+        .insert({
+          call_id,
+          content: JSON.stringify(content),
+          language: language ?? "fr-FR",
+          duration_seconds,
+        })
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+  });
+
   return {
     calls: callsQuery.data ?? [],
     isLoading: callsQuery.isLoading,
     createCall,
     updateCall,
     deleteCall,
+    updateRoomStatus,
+    saveTranscript,
   };
+}
+
+export function useCallById(callId: string | null) {
+  const supabase = useSupabase();
+  const { user } = useAuth();
+
+  return useQuery({
+    queryKey: ["call", callId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("call_calendar")
+        .select(
+          "*, client:profiles!call_calendar_client_id_fkey(id, full_name, avatar_url), assigned_profile:profiles!call_calendar_assigned_to_fkey(id, full_name)"
+        )
+        .eq("id", callId!)
+        .single();
+      if (error) throw error;
+      return data as CallCalendarWithRelations;
+    },
+    enabled: !!user && !!callId,
+  });
 }
