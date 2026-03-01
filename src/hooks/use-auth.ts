@@ -14,31 +14,37 @@ export function useAuth() {
   useEffect(() => {
     let cancelled = false;
 
-    const getUser = async () => {
+    const fetchProfile = async (userId: string) => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", userId)
+        .single();
+      if (!cancelled) setProfile(data);
+    };
+
+    // Phase 1: getSession() reads from local cache — instant, no network call
+    const init = async () => {
       try {
         const {
-          data: { user },
-        } = await supabase.auth.getUser();
+          data: { session },
+        } = await supabase.auth.getSession();
 
         if (cancelled) return;
-        setUser(user);
 
-        if (user) {
-          const { data } = await supabase
-            .from("profiles")
-            .select("*")
-            .eq("id", user.id)
-            .single();
-          if (!cancelled) setProfile(data);
+        if (session?.user) {
+          setUser(session.user);
+          setLoading(false);
+          await fetchProfile(session.user.id);
+        } else {
+          setLoading(false);
         }
       } catch {
-        // Auth error - user not logged in
-      } finally {
         if (!cancelled) setLoading(false);
       }
     };
 
-    getUser();
+    init();
 
     const {
       data: { subscription },
@@ -46,12 +52,7 @@ export function useAuth() {
       if (cancelled) return;
       setUser(session?.user ?? null);
       if (session?.user) {
-        const { data } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", session.user.id)
-          .single();
-        if (!cancelled) setProfile(data);
+        await fetchProfile(session.user.id);
       } else {
         setProfile(null);
       }
