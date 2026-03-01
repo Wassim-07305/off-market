@@ -40,10 +40,9 @@ function getIceServers(): RTCIceServer[] {
 
 interface UseWebRTCOptions {
   callId: string;
-  enabled: boolean;
 }
 
-export function useWebRTC({ callId, enabled }: UseWebRTCOptions) {
+export function useWebRTC({ callId }: UseWebRTCOptions) {
   const supabase = useSupabase();
   const { user, profile } = useAuth();
   const store = useCallStore();
@@ -68,29 +67,34 @@ export function useWebRTC({ callId, enabled }: UseWebRTCOptions) {
   );
 
   const cleanup = useCallback(() => {
-    localStreamRef.current?.getTracks().forEach((t) => t.stop());
-    screenStreamRef.current?.getTracks().forEach((t) => t.stop());
+    try {
+      localStreamRef.current?.getTracks().forEach((t) => t.stop());
+      screenStreamRef.current?.getTracks().forEach((t) => t.stop());
+    } catch { /* tracks already stopped */ }
     localStreamRef.current = null;
     screenStreamRef.current = null;
     setLocalStream(null);
     setRemoteStream(null);
 
-    pcRef.current?.close();
+    try {
+      pcRef.current?.close();
+    } catch { /* already closed */ }
     pcRef.current = null;
 
-    if (channelRef.current) {
-      supabase.removeChannel(channelRef.current);
-      channelRef.current = null;
-    }
+    try {
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current);
+      }
+    } catch { /* channel already removed */ }
+    channelRef.current = null;
 
-    store.setPhase("ended");
     store.setRemoteConnected(false);
     store.setScreenSharing(false);
   }, [supabase, store]);
 
   // Create peer connection and wire up signaling
   const setupConnection = useCallback(async () => {
-    if (!enabled || !myId) return;
+    if (!myId) return;
 
     store.setPhase("joining");
 
@@ -266,7 +270,7 @@ export function useWebRTC({ callId, enabled }: UseWebRTCOptions) {
           });
         }
       });
-  }, [enabled, myId, myName, callId, supabase, store, isPolite]);
+  }, [myId, myName, callId, supabase, store, isPolite]);
 
   // Join call
   const joinCall = useCallback(async () => {
@@ -275,13 +279,16 @@ export function useWebRTC({ callId, enabled }: UseWebRTCOptions) {
 
   // Leave call
   const leaveCall = useCallback(() => {
-    channelRef.current?.send({
-      type: "broadcast",
-      event: "leave",
-      payload: { senderId: myId },
-    });
+    try {
+      channelRef.current?.send({
+        type: "broadcast",
+        event: "leave",
+        payload: { senderId: myId },
+      });
+    } catch { /* channel may already be closed */ }
     cleanup();
-  }, [myId, cleanup]);
+    store.setPhase("ended");
+  }, [myId, cleanup, store]);
 
   // Toggle mic
   const toggleMic = useCallback(() => {

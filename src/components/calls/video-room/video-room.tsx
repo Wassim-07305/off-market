@@ -29,6 +29,11 @@ export function VideoRoom({ callId }: VideoRoomProps) {
   const [showTranscript, setShowTranscript] = useState(false);
   const [hasJoined, setHasJoined] = useState(false);
 
+  // Reset call store when mounting (cleans up stale "ended" state from previous calls)
+  useEffect(() => {
+    store.resetCall();
+  }, [callId]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Preview lobby state
   const [previewStream, setPreviewStream] = useState<MediaStream | null>(null);
   const [previewMic, setPreviewMic] = useState(true);
@@ -147,7 +152,7 @@ export function VideoRoom({ callId }: VideoRoomProps) {
     startScreenShare,
     stopScreenShare,
     broadcastTranscript,
-  } = useWebRTC({ callId, enabled: hasJoined });
+  } = useWebRTC({ callId });
 
   const { isSupported: isTranscriptionSupported, startTranscription, stopTranscription } =
     useTranscription({
