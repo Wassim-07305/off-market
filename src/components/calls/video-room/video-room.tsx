@@ -5,7 +5,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useCalls, useCallById } from "@/hooks/use-calls";
 import { useWebRTC } from "@/hooks/use-webrtc";
 import { useTranscription } from "@/hooks/use-transcription";
-import { useCallNotifications } from "@/hooks/use-call-notifications";
+import { useSupabase } from "@/hooks/use-supabase";
 import { useCallStore } from "@/stores/call-store";
 import { VideoGrid } from "./video-grid";
 import { CallControls } from "./call-controls";
@@ -23,7 +23,7 @@ export function VideoRoom({ callId }: VideoRoomProps) {
   const { user, profile } = useAuth();
   const { data: call, isLoading } = useCallById(callId);
   const { updateRoomStatus, saveTranscript } = useCalls();
-  const { notifyPeer } = useCallNotifications();
+  const supabase = useSupabase();
   const store = useCallStore();
 
   const [showTranscript, setShowTranscript] = useState(false);
@@ -180,14 +180,26 @@ export function VideoRoom({ callId }: VideoRoomProps) {
       room_status: "waiting",
     });
 
-    // Notify the other participant
+    // Notify the other participant via one-shot broadcast
     const peerId = call.assigned_to === user.id ? call.client_id : call.assigned_to;
     if (peerId) {
-      notifyPeer(peerId, callId, myName);
+      const notifyChannel = supabase.channel(`call-notify-${peerId}`, {
+        config: { broadcast: { self: false } },
+      });
+      notifyChannel.subscribe((status) => {
+        if (status === "SUBSCRIBED") {
+          notifyChannel.send({
+            type: "broadcast",
+            event: "incoming-call",
+            payload: { callId, callerName: myName },
+          });
+          setTimeout(() => supabase.removeChannel(notifyChannel), 2000);
+        }
+      });
     }
 
     await joinCall();
-  }, [call, user, callId, myName, joinCall, updateRoomStatus, notifyPeer, cleanupPreview, previewMic, previewCamera, store]);
+  }, [call, user, callId, myName, joinCall, updateRoomStatus, supabase, cleanupPreview, previewMic, previewCamera, store]);
 
   // Leave / hang up
   const handleHangUp = useCallback(async () => {
