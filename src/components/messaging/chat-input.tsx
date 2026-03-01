@@ -17,7 +17,6 @@ import {
   Strikethrough,
   List,
   ListOrdered,
-  Code,
   Loader2,
 } from "lucide-react";
 
@@ -162,8 +161,6 @@ export function ChatInput({
             <div className="w-px h-4 bg-border/40 mx-1" />
             <FormatBtn icon={List} title="Liste" onClick={() => wrapSelection("\n- ", "")} />
             <FormatBtn icon={ListOrdered} title="Liste numerotee" onClick={() => wrapSelection("\n1. ", "")} />
-            <div className="w-px h-4 bg-border/40 mx-1" />
-            <FormatBtn icon={Code} title="Code" onClick={() => wrapSelection("`", "`")} />
           </div>
 
           {/* Textarea + action buttons */}
@@ -173,7 +170,7 @@ export function ChatInput({
               value={message}
               onChange={handleInput}
               placeholder={`Message ${channelName}`}
-              className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none resize-none min-h-[20px] max-h-[160px] leading-5 py-1"
+              className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none border-0 resize-none min-h-[20px] max-h-[160px] leading-5 py-1"
               rows={1}
               onKeyDown={handleKeyDown}
             />
