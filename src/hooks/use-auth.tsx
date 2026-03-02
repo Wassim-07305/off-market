@@ -1,11 +1,43 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+  type ReactNode,
+} from "react";
 import { useSupabase } from "./use-supabase";
 import type { Profile } from "@/types/database";
-import type { User } from "@supabase/supabase-js";
+import type { User, AuthError } from "@supabase/supabase-js";
 
-export function useAuth() {
+interface AuthContextValue {
+  user: User | null;
+  profile: Profile | null;
+  loading: boolean;
+  signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>;
+  signUp: (
+    email: string,
+    password: string,
+    fullName: string
+  ) => Promise<{ error: AuthError | null }>;
+  signInWithMagicLink: (email: string) => Promise<{ error: AuthError | null }>;
+  signInWithGoogle: () => Promise<{ error: AuthError | null }>;
+  signOut: () => Promise<void>;
+  resetPassword: (email: string) => Promise<{ error: AuthError | null }>;
+  isAdmin: boolean;
+  isCoach: boolean;
+  isStaff: boolean;
+  isSetter: boolean;
+  isCloser: boolean;
+  isSales: boolean;
+  isClient: boolean;
+}
+
+const AuthContext = createContext<AuthContextValue | null>(null);
+
+export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -23,7 +55,6 @@ export function useAuth() {
       if (!cancelled) setProfile(data);
     };
 
-    // Phase 1: getSession() reads from local cache — instant, no network call
     const init = async () => {
       try {
         const {
@@ -34,12 +65,11 @@ export function useAuth() {
 
         if (session?.user) {
           setUser(session.user);
-          setLoading(false);
           await fetchProfile(session.user.id);
-        } else {
-          setLoading(false);
         }
       } catch {
+        // Ignore init errors
+      } finally {
         if (!cancelled) setLoading(false);
       }
     };
@@ -132,15 +162,8 @@ export function useAuth() {
   );
 
   const role = profile?.role;
-  const isAdmin = role === "admin";
-  const isCoach = role === "coach";
-  const isStaff = role === "admin" || role === "coach";
-  const isSetter = role === "setter";
-  const isCloser = role === "closer";
-  const isSales = role === "setter" || role === "closer";
-  const isClient = role === "client";
 
-  return {
+  const value: AuthContextValue = {
     user,
     profile,
     loading,
@@ -150,12 +173,22 @@ export function useAuth() {
     signInWithGoogle,
     signOut,
     resetPassword,
-    isAdmin,
-    isCoach,
-    isStaff,
-    isSetter,
-    isCloser,
-    isSales,
-    isClient,
+    isAdmin: role === "admin",
+    isCoach: role === "coach",
+    isStaff: role === "admin" || role === "coach",
+    isSetter: role === "setter",
+    isCloser: role === "closer",
+    isSales: role === "setter" || role === "closer",
+    isClient: role === "client",
   };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+export function useAuth(): AuthContextValue {
+  const ctx = useContext(AuthContext);
+  if (!ctx) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return ctx;
 }
