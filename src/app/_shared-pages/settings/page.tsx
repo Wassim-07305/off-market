@@ -21,8 +21,15 @@ import {
   Download,
   Trash2,
   AlertTriangle,
+  Calendar,
+  Unlink,
+  ExternalLink,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  useGoogleCalendarStatus,
+  useDisconnectGoogleCalendar,
+} from "@/hooks/use-google-calendar";
 
 export default function SettingsPage() {
   const { profile, user, signOut } = useAuth();
@@ -38,6 +45,22 @@ export default function SettingsPage() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const googleStatus = useGoogleCalendarStatus();
+  const disconnectGoogle = useDisconnectGoogleCalendar();
+
+  // Toast on Google Calendar OAuth callback redirect
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const googleParam = params.get("google");
+    if (googleParam === "success") {
+      toast.success("Google Agenda connecte avec succes");
+      window.history.replaceState({}, "", window.location.pathname);
+      googleStatus.refetch();
+    } else if (googleParam === "error") {
+      toast.error("Erreur lors de la connexion a Google Agenda");
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+  }, []);
 
   // Sync state when profile loads (useState initial value only runs once)
   useEffect(() => {
@@ -305,6 +328,55 @@ export default function SettingsPage() {
             </button>
           ))}
         </div>
+      </div>
+
+      {/* Google Agenda */}
+      <div className="bg-surface rounded-2xl p-6 space-y-4" style={{ boxShadow: "var(--shadow-card)" }}>
+        <div className="flex items-center gap-2 mb-2">
+          <Calendar className="w-4 h-4 text-muted-foreground" />
+          <h2 className="text-sm font-semibold text-foreground">Google Agenda</h2>
+        </div>
+
+        {googleStatus.data?.connected ? (
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+                <Calendar className="w-4 h-4 text-emerald-500" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-foreground">Connecte</p>
+                <p className="text-xs text-muted-foreground">
+                  {googleStatus.data.google_email}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => disconnectGoogle.mutate()}
+              disabled={disconnectGoogle.isPending}
+              className="h-9 px-4 rounded-[10px] border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center gap-2"
+            >
+              {disconnectGoogle.isPending ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <Unlink className="w-3.5 h-3.5" />
+              )}
+              Deconnecter
+            </button>
+          </div>
+        ) : (
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-muted-foreground">
+              Connecte ton agenda Google pour voir tes evenements dans la page Appels.
+            </p>
+            <a
+              href="/api/google-calendar/connect"
+              className="h-9 px-4 rounded-[10px] bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-all active:scale-[0.98] flex items-center gap-2 shrink-0"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+              Connecter
+            </a>
+          </div>
+        )}
       </div>
 
       {/* Danger zone */}

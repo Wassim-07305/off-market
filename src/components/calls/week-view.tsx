@@ -3,6 +3,7 @@
 import { cn } from "@/lib/utils";
 import { CallTypeBadge } from "./call-type-badge";
 import { CALL_STATUS_COLORS, type CallCalendarWithRelations } from "@/types/calls";
+import type { GoogleCalendarEvent } from "@/types/google-calendar";
 
 interface WeekViewProps {
   calls: CallCalendarWithRelations[];
@@ -10,12 +11,13 @@ interface WeekViewProps {
   isLoading: boolean;
   onCallClick: (call: CallCalendarWithRelations) => void;
   onSlotClick: (date: string, time: string) => void;
+  googleEvents?: GoogleCalendarEvent[];
 }
 
 const HOURS = Array.from({ length: 13 }, (_, i) => i + 8); // 8h to 20h
 const DAYS = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
 
-export function WeekView({ calls, weekStart, isLoading, onCallClick, onSlotClick }: WeekViewProps) {
+export function WeekView({ calls, weekStart, isLoading, onCallClick, onSlotClick, googleEvents }: WeekViewProps) {
   const today = new Date().toISOString().split("T")[0];
 
   const getDayDate = (dayIndex: number) => {
@@ -32,6 +34,30 @@ export function WeekView({ calls, weekStart, isLoading, onCallClick, onSlotClick
       return callHour === hour;
     });
   };
+
+  const getGoogleEventsForSlot = (dayIndex: number, hour: number) => {
+    if (!googleEvents) return [];
+    const dayStr = getDayDate(dayIndex).toISOString().split("T")[0];
+    return googleEvents.filter((event) => {
+      if (event.allDay) return false;
+      const start = new Date(event.start);
+      const eventDate = start.toISOString().split("T")[0];
+      if (eventDate !== dayStr) return false;
+      return start.getHours() === hour;
+    });
+  };
+
+  const getAllDayEventsForDay = (dayIndex: number) => {
+    if (!googleEvents) return [];
+    const dayStr = getDayDate(dayIndex).toISOString().split("T")[0];
+    return googleEvents.filter((event) => {
+      if (!event.allDay) return false;
+      // All-day events: start is a date string like "2026-03-01"
+      return event.start.startsWith(dayStr);
+    });
+  };
+
+  const hasAllDayEvents = googleEvents?.some((e) => e.allDay) ?? false;
 
   if (isLoading) {
     return (
@@ -56,6 +82,7 @@ export function WeekView({ calls, weekStart, isLoading, onCallClick, onSlotClick
               const date = getDayDate(i);
               const dateStr = date.toISOString().split("T")[0];
               const isToday = dateStr === today;
+              const allDayEvents = getAllDayEventsForDay(i);
               return (
                 <div
                   key={day}
@@ -71,6 +98,19 @@ export function WeekView({ calls, weekStart, isLoading, onCallClick, onSlotClick
                   )}>
                     {date.getDate()}
                   </p>
+                  {/* All-day Google events */}
+                  {allDayEvents.map((event) => (
+                    <a
+                      key={event.id}
+                      href={event.htmlLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block mt-1 px-1.5 py-0.5 rounded bg-emerald-500/10 text-[9px] font-medium text-emerald-600 dark:text-emerald-400 truncate hover:bg-emerald-500/20 transition-colors"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {event.title}
+                    </a>
+                  ))}
                 </div>
               );
             })}
@@ -84,6 +124,7 @@ export function WeekView({ calls, weekStart, isLoading, onCallClick, onSlotClick
               </div>
               {DAYS.map((_, dayIndex) => {
                 const slotCalls = getCallsForSlot(dayIndex, hour);
+                const slotGoogleEvents = getGoogleEventsForSlot(dayIndex, hour);
                 const dateStr = getDayDate(dayIndex).toISOString().split("T")[0];
                 const isToday = dateStr === today;
 
@@ -96,6 +137,7 @@ export function WeekView({ calls, weekStart, isLoading, onCallClick, onSlotClick
                       isToday && "bg-primary/[0.03]"
                     )}
                   >
+                    {/* Off-Market calls */}
                     {slotCalls.map((call) => (
                       <button
                         key={call.id}
@@ -127,6 +169,37 @@ export function WeekView({ calls, weekStart, isLoading, onCallClick, onSlotClick
                           </p>
                         )}
                       </button>
+                    ))}
+
+                    {/* Google Calendar events */}
+                    {slotGoogleEvents.map((event) => (
+                      <a
+                        key={event.id}
+                        href={event.htmlLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="w-full block text-left p-1.5 rounded-lg mb-0.5 transition-all hover:scale-[1.02] bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200/50 dark:border-emerald-800/50"
+                        style={{ boxShadow: "var(--shadow-xs)" }}
+                      >
+                        <div className="flex items-center gap-1">
+                          <div className="w-1.5 h-1.5 rounded-full shrink-0 bg-emerald-500" />
+                          <span className="text-[10px] font-medium text-foreground truncate font-mono">
+                            {new Date(event.start).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
+                          </span>
+                          <span className="ml-auto text-[8px] px-1 py-0.5 rounded bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-medium shrink-0">
+                            Google
+                          </span>
+                        </div>
+                        <p className="text-[10px] text-foreground truncate mt-0.5 font-medium">
+                          {event.title}
+                        </p>
+                        {event.location && (
+                          <p className="text-[10px] text-muted-foreground truncate">
+                            {event.location}
+                          </p>
+                        )}
+                      </a>
                     ))}
                   </div>
                 );

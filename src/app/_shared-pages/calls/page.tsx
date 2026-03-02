@@ -10,6 +10,10 @@ import { motion } from "framer-motion";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 import { cn } from "@/lib/utils";
 import { useRoutePrefix } from "@/hooks/use-route-prefix";
+import {
+  useGoogleCalendarStatus,
+  useGoogleCalendarEvents,
+} from "@/hooks/use-google-calendar";
 import Link from "next/link";
 import {
   Phone,
@@ -36,8 +40,16 @@ export default function CallsPage() {
   const [defaultDate, setDefaultDate] = useState<string>();
   const [defaultTime, setDefaultTime] = useState<string>();
 
+  const [showGoogle, setShowGoogle] = useState(true);
+
   const prefix = useRoutePrefix();
   const { calls, isLoading } = useCalls(weekStart);
+  const googleStatus = useGoogleCalendarStatus();
+  const isGoogleConnected = googleStatus.data?.connected ?? false;
+  const googleEvents = useGoogleCalendarEvents(
+    weekStart,
+    isGoogleConnected && showGoogle
+  );
 
   /** An appointment is joinable 15 min before → 30 min after its scheduled time */
   const isJoinable = (call: CallCalendarWithRelations) => {
@@ -114,6 +126,22 @@ export default function CallsPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          {/* Google Agenda toggle */}
+          {isGoogleConnected && (
+            <button
+              onClick={() => setShowGoogle((prev) => !prev)}
+              className={cn(
+                "h-9 px-3 rounded-xl text-xs font-medium flex items-center gap-1.5 transition-all",
+                showGoogle
+                  ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                  : "bg-surface text-muted-foreground hover:text-foreground"
+              )}
+              style={{ boxShadow: "var(--shadow-xs)" }}
+            >
+              <Calendar className="w-3.5 h-3.5" />
+              Google
+            </button>
+          )}
           {/* View toggle */}
           <div className="flex rounded-xl overflow-hidden" style={{ boxShadow: "var(--shadow-xs)" }}>
             <button
@@ -185,6 +213,7 @@ export default function CallsPage() {
             isLoading={isLoading}
             onCallClick={handleCallClick}
             onSlotClick={handleSlotClick}
+            googleEvents={showGoogle ? googleEvents.data : undefined}
           />
         ) : (
           <div className="bg-surface rounded-2xl divide-y divide-border/30" style={{ boxShadow: "var(--shadow-card)" }}>

@@ -275,6 +275,19 @@ export interface AIInsight {
   created_at: string;
 }
 
+export interface GoogleCalendarToken {
+  id: string;
+  user_id: string;
+  access_token: string;
+  refresh_token: string | null;
+  token_expiry: string | null;
+  google_email: string | null;
+  calendar_id: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 // Supabase Database type map
 export interface Database {
   public: {
