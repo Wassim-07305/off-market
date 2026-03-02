@@ -3,6 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
+import { toast } from "sonner";
 import type { OnboardingStep } from "@/types/billing";
 
 export function useOnboarding() {
@@ -50,6 +51,51 @@ export function useOnboarding() {
     },
   });
 
+  const updateProfile = useMutation({
+    mutationFn: async (data: { phone?: string | null; bio?: string | null; avatar_url?: string | null }) => {
+      if (!user) throw new Error("Not authenticated");
+      const { error } = await supabase
+        .from("profiles")
+        .update(data)
+        .eq("id", user.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["auth"] });
+    },
+  });
+
+  const uploadAvatar = useMutation({
+    mutationFn: async (file: File) => {
+      if (!user) throw new Error("Not authenticated");
+      const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+      const path = `${user.id}/avatar_${Date.now()}.${ext}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(path, file, { upsert: true });
+      if (uploadError) throw uploadError;
+
+      const { data: urlData } = supabase.storage
+        .from("avatars")
+        .getPublicUrl(path);
+
+      const { error: updateError } = await supabase
+        .from("profiles")
+        .update({ avatar_url: urlData.publicUrl })
+        .eq("id", user.id);
+      if (updateError) throw updateError;
+
+      return urlData.publicUrl;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["auth"] });
+    },
+    onError: () => {
+      toast.error("Erreur lors de l'upload de l'avatar");
+    },
+  });
+
   return {
     currentStep,
     isComplete: currentStep >= 5,
@@ -57,6 +103,8 @@ export function useOnboarding() {
     nextStep,
     prevStep,
     completeOnboarding,
+    updateProfile,
+    uploadAvatar,
     isUpdating: updateStep.isPending,
   };
 }

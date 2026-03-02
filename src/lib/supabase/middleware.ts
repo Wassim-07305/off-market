@@ -78,28 +78,48 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // Role-based route protection: ensure user only accesses their prefix
+  // Role-based route protection + onboarding enforcement
   if (user) {
+    const isOnboardingPage = pathname === "/onboarding";
+    const isApiRoute = pathname.startsWith("/api");
     const isRoleRoute =
       pathname.startsWith("/admin") ||
       pathname.startsWith("/coach") ||
       pathname.startsWith("/sales") ||
       pathname.startsWith("/client");
 
-    if (isRoleRoute) {
+    if (isRoleRoute || isOnboardingPage) {
       const { data: profile } = await supabase
         .from("profiles")
-        .select("role")
+        .select("role, onboarding_completed")
         .eq("id", user.id)
         .single();
 
       const role = profile?.role ?? "client";
-      const allowedPrefix = ROLE_PREFIXES[role] ?? "/client";
+      const onboardingDone = profile?.onboarding_completed ?? false;
 
-      if (!pathname.startsWith(allowedPrefix)) {
+      // Enforce onboarding: redirect to /onboarding if not completed
+      if (!onboardingDone && !isOnboardingPage && !isApiRoute) {
+        const url = request.nextUrl.clone();
+        url.pathname = "/onboarding";
+        return NextResponse.redirect(url);
+      }
+
+      // Already completed onboarding but on /onboarding → go to dashboard
+      if (onboardingDone && isOnboardingPage) {
         const url = request.nextUrl.clone();
         url.pathname = DEFAULT_ROUTES[role] ?? "/client/dashboard";
         return NextResponse.redirect(url);
+      }
+
+      // Role prefix check (skip for /onboarding)
+      if (isRoleRoute) {
+        const allowedPrefix = ROLE_PREFIXES[role] ?? "/client";
+        if (!pathname.startsWith(allowedPrefix)) {
+          const url = request.nextUrl.clone();
+          url.pathname = DEFAULT_ROUTES[role] ?? "/client/dashboard";
+          return NextResponse.redirect(url);
+        }
       }
     }
   }
