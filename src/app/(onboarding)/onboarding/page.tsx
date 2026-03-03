@@ -77,7 +77,7 @@ const STEPS: Step[] = [
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 
-// ─── Animated background ─────────────────────────────────────────
+// ─── Animated background (same pattern as Rivia/ScalingFlow) ─────
 function AnimatedBackground() {
   return (
     <div className="pointer-events-none fixed inset-0 overflow-hidden">
@@ -408,7 +408,7 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="relative flex min-h-screen flex-col bg-gradient-to-br from-zinc-950 via-red-950/20 to-zinc-900">
+    <div className="relative flex min-h-screen flex-col bg-gradient-to-br from-slate-950 via-red-950 to-slate-900">
       <AnimatedBackground />
 
       {/* Progress bar */}
