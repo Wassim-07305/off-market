@@ -2,12 +2,15 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
+import { useAuth } from "./use-auth";
 
 export function useDashboardStats() {
   const supabase = useSupabase();
+  const { user } = useAuth();
 
   const { data: stats, isLoading } = useQuery({
     queryKey: ["dashboard-stats"],
+    enabled: !!user,
     queryFn: async () => {
       const now = new Date();
       const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
@@ -77,9 +80,11 @@ export function useDashboardStats() {
 
 export function useRevenueChart() {
   const supabase = useSupabase();
+  const { user } = useAuth();
 
   return useQuery({
     queryKey: ["revenue-chart"],
+    enabled: !!user,
     queryFn: async () => {
       const now = new Date();
       const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1);
@@ -119,9 +124,11 @@ export function useRevenueChart() {
 
 export function useEngagementChart() {
   const supabase = useSupabase();
+  const { user } = useAuth();
 
   return useQuery({
     queryKey: ["engagement-chart"],
+    enabled: !!user,
     queryFn: async () => {
       const now = new Date();
       const dayOfWeek = now.getDay();

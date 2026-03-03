@@ -7,9 +7,11 @@ import type { Course, Module, Lesson } from "@/types/database";
 
 export function useCourses(status?: string) {
   const supabase = useSupabase();
+  const { user } = useAuth();
 
   return useQuery({
     queryKey: ["courses", status],
+    enabled: !!user,
     queryFn: async () => {
       let query = supabase
         .from("courses")

@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
+import { useAuth } from "./use-auth";
 import type { Invoice, InvoiceStatus, PaymentSchedule, BillingStats } from "@/types/billing";
 
 interface UseInvoicesOptions {
@@ -13,10 +14,12 @@ interface UseInvoicesOptions {
 export function useInvoices(options: UseInvoicesOptions = {}) {
   const supabase = useSupabase();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   const { status, clientId, limit = 50 } = options;
 
   const invoicesQuery = useQuery({
     queryKey: ["invoices", status, clientId, limit],
+    enabled: !!user,
     queryFn: async () => {
       let query = supabase
         .from("invoices")
@@ -130,9 +133,11 @@ export function useInvoice(id: string) {
 
 export function useBillingStats() {
   const supabase = useSupabase();
+  const { user } = useAuth();
 
   return useQuery({
     queryKey: ["billing-stats"],
+    enabled: !!user,
     queryFn: async () => {
       const [invoicesRes, contractsRes] = await Promise.all([
         supabase.from("invoices").select("status, total"),
@@ -169,9 +174,11 @@ export function useBillingStats() {
 export function usePaymentSchedules(clientId?: string) {
   const supabase = useSupabase();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   const schedulesQuery = useQuery({
     queryKey: ["payment-schedules", clientId],
+    enabled: !!user,
     queryFn: async () => {
       let query = supabase
         .from("payment_schedules")

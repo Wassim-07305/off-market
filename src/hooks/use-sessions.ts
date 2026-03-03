@@ -12,6 +12,7 @@ export function useSessions(clientId?: string) {
 
   const sessionsQuery = useQuery({
     queryKey: ["sessions", clientId],
+    enabled: !!user,
     queryFn: async () => {
       let query = supabase
         .from("sessions")

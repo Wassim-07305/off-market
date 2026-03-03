@@ -2,12 +2,15 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
+import { useAuth } from "./use-auth";
 
 export function useAnalytics() {
   const supabase = useSupabase();
+  const { user } = useAuth();
 
   return useQuery({
     queryKey: ["analytics"],
+    enabled: !!user,
     queryFn: async () => {
       const [
         clientsRes,

@@ -19,10 +19,12 @@ interface UseStudentsOptions {
 export function useStudents(options: UseStudentsOptions = {}) {
   const supabase = useSupabase();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   const { search, tag, limit = 50 } = options;
 
   const studentsQuery = useQuery({
     queryKey: ["students", search, tag, limit],
+    enabled: !!user,
     queryFn: async () => {
       let query = supabase
         .from("profiles")

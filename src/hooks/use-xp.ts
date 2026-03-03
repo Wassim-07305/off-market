@@ -31,6 +31,7 @@ export function useXp() {
   // Fetch levels config
   const levelsQuery = useQuery({
     queryKey: ["level-config"],
+    enabled: !!user,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("level_config")
@@ -121,9 +122,11 @@ export function useXp() {
 export function useXpConfig() {
   const supabase = useSupabase();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   const configQuery = useQuery({
     queryKey: ["xp-config"],
+    enabled: !!user,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("xp_config")

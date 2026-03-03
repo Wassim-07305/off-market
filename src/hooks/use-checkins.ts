@@ -82,9 +82,11 @@ export function useCheckins(clientId?: string) {
 export function useAllCheckins() {
   const supabase = useSupabase();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   const query = useQuery({
     queryKey: ["all-checkins"],
+    enabled: !!user,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("weekly_checkins")

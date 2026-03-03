@@ -13,6 +13,7 @@ export function useChallenges() {
   // Active challenges
   const challengesQuery = useQuery({
     queryKey: ["challenges"],
+    enabled: !!user,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("challenges")

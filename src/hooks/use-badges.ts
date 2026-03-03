@@ -12,6 +12,7 @@ export function useBadges() {
   // All available badges
   const allBadgesQuery = useQuery({
     queryKey: ["badges"],
+    enabled: !!user,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("badges")

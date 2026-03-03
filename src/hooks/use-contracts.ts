@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
+import { useAuth } from "./use-auth";
 import type { Contract, ContractTemplate, ContractStatus } from "@/types/billing";
 
 interface UseContractsOptions {
@@ -13,10 +14,12 @@ interface UseContractsOptions {
 export function useContracts(options: UseContractsOptions = {}) {
   const supabase = useSupabase();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   const { status, clientId, limit = 50 } = options;
 
   const contractsQuery = useQuery({
     queryKey: ["contracts", status, clientId, limit],
+    enabled: !!user,
     queryFn: async () => {
       let query = supabase
         .from("contracts")
@@ -130,9 +133,11 @@ export function useContract(id: string) {
 export function useContractTemplates() {
   const supabase = useSupabase();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   const templatesQuery = useQuery({
     queryKey: ["contract-templates"],
+    enabled: !!user,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("contract_templates")

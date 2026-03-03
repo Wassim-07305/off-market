@@ -15,6 +15,7 @@ export function useFeed(postType?: PostType) {
 
   const postsQuery = useQuery({
     queryKey: ["feed-posts", postType],
+    enabled: !!user,
     queryFn: async () => {
       let query = supabase
         .from("feed_posts")

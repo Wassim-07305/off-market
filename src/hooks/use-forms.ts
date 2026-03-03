@@ -2,13 +2,16 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
+import { useAuth } from "./use-auth";
 import type { Form, FormField, FormSubmission } from "@/types/database";
 
 export function useForms(status?: string) {
   const supabase = useSupabase();
+  const { user } = useAuth();
 
   return useQuery({
     queryKey: ["forms", status],
+    enabled: !!user,
     queryFn: async () => {
       let query = supabase
         .from("forms")

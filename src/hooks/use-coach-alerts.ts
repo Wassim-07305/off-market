@@ -2,14 +2,17 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
+import { useAuth } from "./use-auth";
 import type { CoachAlert } from "@/types/coaching";
 
 export function useCoachAlerts(resolved?: boolean) {
   const supabase = useSupabase();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   const alertsQuery = useQuery({
     queryKey: ["coach-alerts", resolved],
+    enabled: !!user,
     queryFn: async () => {
       let query = supabase
         .from("coach_alerts")
