@@ -6,7 +6,6 @@ import {
   FileText,
   Bot,
   BarChart3,
-  Settings,
   CreditCard,
   Receipt,
   UserPlus,
@@ -42,7 +41,6 @@ export const adminNavigation: NavItem[] = [
   { name: "Appels", href: "/admin/calls", icon: Phone },
   { name: "Assistant IA", href: "/admin/ai", icon: Bot },
   { name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
-  { name: "Reglages", href: "/admin/settings", icon: Settings },
 ];
 
 /** Coach / CSM */
@@ -56,7 +54,6 @@ export const coachNavigation: NavItem[] = [
   { name: "Alertes", href: "/coach/alerts", icon: Bell },
   { name: "Seances", href: "/coach/sessions", icon: Video },
   { name: "Appels", href: "/coach/calls", icon: Phone },
-  { name: "Reglages", href: "/coach/settings", icon: Settings },
 ];
 
 /** Sales (Setter + Closer) */
@@ -64,7 +61,6 @@ export const salesNavigation: NavItem[] = [
   { name: "Dashboard", href: "/sales/dashboard", icon: LayoutDashboard },
   { name: "Messagerie", href: "/sales/messaging", icon: MessageSquare },
   { name: "Appels", href: "/sales/calls", icon: Phone },
-  { name: "Reglages", href: "/sales/settings", icon: Settings },
 ];
 
 /** Client / Freelance */
@@ -82,7 +78,6 @@ export const clientNavigation: NavItem[] = [
   { name: "Defis", href: "/client/challenges", icon: Flame },
   { name: "Classement", href: "/client/leaderboard", icon: Crown },
   { name: "Appels", href: "/client/calls", icon: Phone },
-  { name: "Reglages", href: "/client/settings", icon: Settings },
 ];
 
 export type RoleVariant = "admin" | "coach" | "sales" | "client";

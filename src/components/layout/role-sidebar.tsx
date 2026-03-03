@@ -77,7 +77,6 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
             pathname === item.href || pathname.startsWith(item.href + "/");
 
           const showSeparator =
-            item.name === "Reglages" ||
             (variant === "admin" && item.name === "Feed") ||
             (variant === "coach" && item.name === "Feed") ||
             (variant === "client" && item.name === "Feed");
@@ -150,75 +149,76 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
       </div>
 
       {/* Profile section */}
-      <div className="border-t border-white/[0.05] p-3 shrink-0">
+      <div className="border-t border-white/[0.05] p-3 shrink-0 space-y-1">
+        {/* Avatar + info */}
         <div
           className={cn(
-            "flex items-center gap-2",
+            "flex items-center gap-3 group",
             sidebarCollapsed && "justify-center"
           )}
         >
-          {/* Avatar + info */}
-          <div
-            className={cn(
-              "flex items-center gap-3 flex-1 min-w-0 group",
-              sidebarCollapsed && "justify-center"
-            )}
-          >
-            <div className="relative shrink-0">
-              {profile?.avatar_url ? (
-                <img
-                  src={profile.avatar_url}
-                  alt={profile.full_name ?? ""}
-                  className="w-9 h-9 rounded-full object-cover ring-2 ring-primary/10"
-                />
-              ) : (
-                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center text-xs text-primary font-semibold ring-2 ring-primary/10">
-                  {loading ? "..." : initials || "U"}
-                </div>
-              )}
-              {/* Online indicator */}
-              <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400 ring-2 ring-[var(--sidebar-bg)]" />
-            </div>
-            {!sidebarCollapsed && (
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-white truncate leading-tight">
-                  {loading ? "Chargement..." : profile?.full_name ?? "Mon profil"}
-                </p>
-                <p className="text-xs text-stone-500 capitalize truncate mt-0.5">
-                  {roleLabel}
-                </p>
+          <div className="relative shrink-0">
+            {profile?.avatar_url ? (
+              <img
+                src={profile.avatar_url}
+                alt={profile.full_name ?? ""}
+                className="w-9 h-9 rounded-full object-cover ring-2 ring-primary/10"
+              />
+            ) : (
+              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center text-xs text-primary font-semibold ring-2 ring-primary/10">
+                {loading ? "..." : initials || "U"}
               </div>
             )}
-            {/* Tooltip when collapsed */}
-            {sidebarCollapsed && (
-              <div className="absolute left-full ml-3 hidden lg:group-hover:block pointer-events-none z-50">
-                <div className="bg-stone-800 rounded-lg px-2.5 py-1.5 text-xs font-medium text-white shadow-xl whitespace-nowrap">
-                  {profile?.full_name ?? "Mon profil"}
-                </div>
-              </div>
-            )}
+            {/* Online indicator */}
+            <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400 ring-2 ring-[var(--sidebar-bg)]" />
           </div>
-
-          {/* Settings + Logout buttons */}
           {!sidebarCollapsed && (
-            <div className="flex items-center gap-1 shrink-0">
-              <Link
-                href={settingsHref}
-                className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--sidebar-text)] hover:text-[var(--sidebar-text-active)] hover:bg-white/[0.06] transition-all duration-200"
-                title="Reglages"
-              >
-                <Settings className="w-4 h-4" />
-              </Link>
-              <button
-                onClick={signOut}
-                className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--sidebar-text)] hover:text-red-400 hover:bg-red-500/10 transition-all duration-200"
-                title="Deconnexion"
-              >
-                <LogOut className="w-4 h-4" />
-              </button>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-white truncate leading-tight">
+                {loading ? "Chargement..." : profile?.full_name ?? "Mon profil"}
+              </p>
+              <p className="text-xs text-stone-500 capitalize truncate mt-0.5">
+                {roleLabel}
+              </p>
+            </div>
+          )}
+          {/* Tooltip when collapsed */}
+          {sidebarCollapsed && (
+            <div className="absolute left-full ml-3 hidden lg:group-hover:block pointer-events-none z-50">
+              <div className="bg-stone-800 rounded-lg px-2.5 py-1.5 text-xs font-medium text-white shadow-xl whitespace-nowrap">
+                {profile?.full_name ?? "Mon profil"}
+              </div>
             </div>
           )}
         </div>
+
+        {/* Paramètres */}
+        <Link
+          href={settingsHref}
+          className={cn(
+            "flex items-center gap-3 h-9 rounded-xl px-3 transition-all duration-200 text-[var(--sidebar-text)] hover:text-[var(--sidebar-text-active)] hover:bg-white/[0.04]",
+            sidebarCollapsed && "justify-center px-0"
+          )}
+        >
+          <Settings className="w-[18px] h-[18px] shrink-0" />
+          {!sidebarCollapsed && (
+            <span className="text-[13px] font-medium">Paramètres</span>
+          )}
+        </Link>
+
+        {/* Déconnexion */}
+        <button
+          onClick={signOut}
+          className={cn(
+            "w-full flex items-center gap-3 h-9 rounded-xl px-3 transition-all duration-200 text-[var(--sidebar-text)] hover:text-red-400 hover:bg-red-500/10",
+            sidebarCollapsed && "justify-center px-0"
+          )}
+        >
+          <LogOut className="w-[18px] h-[18px] shrink-0" />
+          {!sidebarCollapsed && (
+            <span className="text-[13px] font-medium">Déconnexion</span>
+          )}
+        </button>
       </div>
     </aside>
   );
