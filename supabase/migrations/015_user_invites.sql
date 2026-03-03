@@ -60,7 +60,7 @@ RETURNS TRIGGER AS $$
 DECLARE
   invite_record RECORD;
   user_name TEXT;
-  user_role TEXT;
+  target_role TEXT;
 BEGIN
   -- Chercher une invitation pending pour cet email
   SELECT * INTO invite_record FROM public.user_invites
@@ -71,7 +71,7 @@ BEGIN
   IF FOUND THEN
     -- Utiliser les infos de l'invitation
     user_name := invite_record.full_name;
-    user_role := invite_record.role;
+    target_role := invite_record.role;
 
     -- Marquer l'invitation comme acceptee
     UPDATE public.user_invites
@@ -80,7 +80,7 @@ BEGIN
   ELSE
     -- Inscription libre: role client par defaut
     user_name := COALESCE(NEW.raw_user_meta_data->>'full_name', split_part(NEW.email, '@', 1));
-    user_role := 'client';
+    target_role := 'client';
   END IF;
 
   INSERT INTO public.profiles (id, email, full_name, avatar_url, role, onboarding_completed, onboarding_step)
@@ -89,7 +89,7 @@ BEGIN
     NEW.email,
     user_name,
     NEW.raw_user_meta_data->>'avatar_url',
-    user_role,
+    target_role::public.user_role,
     false,
     0
   );
