@@ -19,6 +19,7 @@ import {
   Flame,
   Crown,
   Phone,
+  Send,
   type LucideIcon,
 } from "lucide-react";
 
@@ -40,6 +41,7 @@ export const adminNavigation: NavItem[] = [
   { name: "Feed", href: "/admin/feed", icon: Rss },
   { name: "Appels", href: "/admin/calls", icon: Phone },
   { name: "Assistant IA", href: "/admin/ai", icon: Bot },
+  { name: "Invitations", href: "/admin/invitations", icon: Send },
   { name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
 ];
 
