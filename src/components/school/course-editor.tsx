@@ -253,12 +253,14 @@ function LessonEditorPanel({
   onAddAttachment,
   onRemoveAttachment,
   isPending,
+  moduleTitle,
 }: {
   lesson: Lesson;
   onSave: (updates: Partial<Lesson>) => void;
   onAddAttachment: (att: LessonAttachment) => void;
   onRemoveAttachment: (url: string) => void;
   isPending: boolean;
+  moduleTitle?: string;
 }) {
   const [title, setTitle] = useState(lesson.title);
   const [description, setDescription] = useState(lesson.description ?? "");
@@ -306,171 +308,188 @@ function LessonEditorPanel({
   const attachments = (lesson.attachments ?? []) as LessonAttachment[];
 
   return (
-    <div className="space-y-5">
-      <div className="flex items-center justify-between">
-        <h3 className="text-base font-display font-semibold text-foreground">
-          Modifier la lecon
-        </h3>
-        <button
-          onClick={handleSave}
-          disabled={isPending}
-          className="h-8 px-3 rounded-xl bg-primary text-white text-xs font-medium hover:bg-primary-hover transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-1.5"
-        >
-          <Save className="w-3.5 h-3.5" />
-          Sauvegarder
-        </button>
+    <div className="max-w-2xl space-y-6">
+      {/* Header with badge */}
+      <div>
+        <span className="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full bg-muted text-muted-foreground mb-3">
+          <FileText className="w-3 h-3" />
+          Lecon
+        </span>
+        {moduleTitle && (
+          <p className="text-xs text-muted-foreground mb-1">{moduleTitle}</p>
+        )}
+        <h2 className="text-xl font-display font-semibold text-foreground">{lesson.title}</h2>
       </div>
 
-      {/* Title */}
-      <div>
-        <label className="block text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
-          Titre
-        </label>
-        <input value={title} onChange={(e) => setTitle(e.target.value)} className={inputClass} />
-      </div>
+      {/* Card 1: Informations generales */}
+      <div className="bg-surface rounded-2xl border border-border p-6 space-y-4" style={{ boxShadow: "var(--shadow-card)" }}>
+        <div>
+          <label className="block text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
+            Titre
+          </label>
+          <input value={title} onChange={(e) => setTitle(e.target.value)} className={inputClass} placeholder="Titre de la lecon" />
+        </div>
 
-      {/* Description */}
-      <div>
-        <label className="block text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
-          Description
-        </label>
-        <textarea
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          rows={2}
-          className="w-full px-4 py-3 bg-muted/50 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none transition-shadow"
-          placeholder="Description (optionnelle)"
-        />
-      </div>
+        <div>
+          <label className="block text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
+            Description
+          </label>
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            rows={3}
+            className="w-full px-4 py-3 bg-muted/50 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none transition-shadow"
+            placeholder="Description de la lecon (optionnelle)"
+          />
+        </div>
 
-      {/* Content Type */}
-      <div>
-        <label className="block text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
-          Type de contenu
-        </label>
-        <div className="flex flex-wrap gap-1.5">
-          {[
-            { value: "video", label: "Video", icon: Video },
-            { value: "text", label: "Texte", icon: FileText },
-            { value: "pdf", label: "PDF", icon: FileText },
-          ].map((t) => (
-            <button
-              key={t.value}
-              type="button"
-              onClick={() => setContentType(t.value as Lesson["content_type"])}
-              className={cn(
-                "h-8 px-3 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-all",
-                contentType === t.value
-                  ? "bg-foreground text-background"
-                  : "bg-muted text-muted-foreground hover:text-foreground"
-              )}
-            >
-              <t.icon className="w-3 h-3" />
-              {t.label}
-            </button>
-          ))}
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
+              <Clock className="w-3 h-3 inline mr-1" />
+              Duree (minutes)
+            </label>
+            <input
+              type="number"
+              min={0}
+              value={duration || ""}
+              onChange={(e) => setDuration(parseInt(e.target.value) || 0)}
+              placeholder="Ex : 15"
+              className={inputClass}
+            />
+          </div>
+          <div>
+            <label className="block text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
+              Type de contenu
+            </label>
+            <div className="flex flex-wrap gap-1.5">
+              {[
+                { value: "video", label: "Video", icon: Video },
+                { value: "text", label: "Texte", icon: FileText },
+              ].map((t) => (
+                <button
+                  key={t.value}
+                  type="button"
+                  onClick={() => setContentType(t.value as Lesson["content_type"])}
+                  className={cn(
+                    "h-8 px-3 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-all",
+                    contentType === t.value
+                      ? "bg-foreground text-background"
+                      : "bg-muted text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  <t.icon className="w-3 h-3" />
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="flex justify-end">
+          <button
+            onClick={handleSave}
+            disabled={isPending}
+            className="h-9 px-4 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-1.5"
+          >
+            {isPending && <Save className="w-3.5 h-3.5 animate-spin" />}
+            Enregistrer
+          </button>
         </div>
       </div>
 
-      {/* Video URL */}
-      {(contentType === "video") && (
+      {/* Card 2: Video */}
+      <div className="bg-surface rounded-2xl border border-border p-6 space-y-4" style={{ boxShadow: "var(--shadow-card)" }}>
+        <div className="flex items-center gap-2 mb-2">
+          <Video className="w-4 h-4 text-muted-foreground" />
+          <span className="text-base font-display font-semibold text-foreground">Video</span>
+        </div>
+
+        {videoUrl && (
+          <div className="rounded-xl border border-border bg-muted/30 p-3 space-y-2">
+            <p className="text-xs font-medium text-muted-foreground">Video actuelle :</p>
+            <p className="text-sm truncate">{videoUrl}</p>
+            <button
+              onClick={() => setVideoUrl("")}
+              className="h-7 px-2 rounded-lg text-xs text-error hover:bg-error/10 transition-colors flex items-center gap-1"
+            >
+              <X className="w-3 h-3" />
+              Retirer la video
+            </button>
+          </div>
+        )}
+
         <div>
           <label className="block text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
-            URL de la video
+            URL de la video (YouTube, Vimeo, etc.)
           </label>
           <input
             value={videoUrl}
             onChange={(e) => setVideoUrl(e.target.value)}
-            placeholder="https://youtube.com/watch?v=... ou URL directe"
+            placeholder="https://www.youtube.com/watch?v=..."
             className={inputClass}
           />
-          <p className="text-[10px] text-muted-foreground mt-1">
-            YouTube, Vimeo, Loom ou URL directe du fichier video
-          </p>
-          {!videoUrl && (
-            <div className="mt-2">
-              <FileUpload
-                bucket="course-assets"
-                path="videos"
-                accept="video/*"
-                maxSizeMB={500}
-                label="Ou televersez une video"
-                onUpload={(url) => setVideoUrl(url)}
-              />
-            </div>
-          )}
         </div>
-      )}
 
-      {/* Text/HTML Content */}
-      {(contentType === "text") && (
-        <div>
-          <label className="block text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
-            Contenu texte (HTML)
-          </label>
-          <textarea
-            value={contentHtml}
-            onChange={(e) => setContentHtml(e.target.value)}
-            rows={8}
-            placeholder="Contenu de la lecon (HTML supporte)"
-            className="w-full px-4 py-3 bg-muted/50 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 resize-y transition-shadow font-mono"
-          />
+        <div className="relative flex items-center">
+          <div className="flex-1 border-t border-border" />
+          <span className="px-3 text-xs text-muted-foreground">ou</span>
+          <div className="flex-1 border-t border-border" />
         </div>
-      )}
 
-      {/* Duration */}
-      <div>
-        <label className="block text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
-          Duree (minutes)
-        </label>
-        <input
-          type="number"
-          min={0}
-          value={duration || ""}
-          onChange={(e) => setDuration(parseInt(e.target.value) || 0)}
-          placeholder="0"
-          className="w-32 h-10 px-4 bg-muted/50 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-shadow"
+        <FileUpload
+          bucket="course-assets"
+          path="videos"
+          accept="video/*"
+          maxSizeMB={500}
+          label="Glissez une video ou cliquez pour uploader"
+          onUpload={(url) => setVideoUrl(url)}
         />
       </div>
 
-      {/* Attachments */}
-      <div>
-        <label className="block text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
-          Ressources / Fichiers joints
-        </label>
+      {/* Card 3: Pieces jointes */}
+      <div className="bg-surface rounded-2xl border border-border p-6 space-y-4" style={{ boxShadow: "var(--shadow-card)" }}>
+        <div className="flex items-center gap-2 mb-2">
+          <FileText className="w-4 h-4 text-muted-foreground" />
+          <span className="text-base font-display font-semibold text-foreground">Pieces jointes</span>
+        </div>
+
         {attachments.length > 0 && (
-          <div className="space-y-1.5 mb-3">
+          <div className="space-y-2">
             {attachments.map((att) => (
               <div
                 key={att.url}
-                className="flex items-center gap-2 p-2 bg-muted/30 rounded-lg"
+                className="flex items-center gap-3 rounded-xl border border-border px-3 py-2"
               >
                 <FileText className="w-4 h-4 text-muted-foreground shrink-0" />
-                <span className="text-xs text-foreground truncate flex-1">{att.name}</span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm truncate">{att.name}</p>
+                  <p className="text-xs text-muted-foreground uppercase">{att.type}</p>
+                </div>
                 <a
                   href={att.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-muted-foreground hover:text-foreground"
-                  onClick={(e) => e.stopPropagation()}
+                  className="text-xs text-primary hover:underline shrink-0"
                 >
-                  <ExternalLink className="w-3 h-3" />
+                  Ouvrir
                 </a>
                 <button
                   onClick={() => onRemoveAttachment(att.url)}
-                  className="text-muted-foreground hover:text-error"
+                  className="p-1 text-muted-foreground hover:text-error rounded shrink-0"
                 >
-                  <X className="w-3 h-3" />
+                  <X className="w-3.5 h-3.5" />
                 </button>
               </div>
             ))}
           </div>
         )}
+
         <FileUpload
           bucket="course-assets"
           path="resources"
           maxSizeMB={100}
-          label="Ajouter un fichier"
+          label="Ajouter une piece jointe"
           onUpload={(url, name) => {
             const ext = name.split(".").pop()?.toLowerCase() ?? "";
             let type = "document";
@@ -481,6 +500,23 @@ function LessonEditorPanel({
           }}
         />
       </div>
+
+      {/* Card 4: Text/HTML Content */}
+      {contentType === "text" && (
+        <div className="bg-surface rounded-2xl border border-border p-6 space-y-4" style={{ boxShadow: "var(--shadow-card)" }}>
+          <div className="flex items-center gap-2 mb-2">
+            <FileText className="w-4 h-4 text-muted-foreground" />
+            <span className="text-base font-display font-semibold text-foreground">Contenu texte</span>
+          </div>
+          <textarea
+            value={contentHtml}
+            onChange={(e) => setContentHtml(e.target.value)}
+            rows={10}
+            placeholder="Contenu de la lecon (HTML supporte)"
+            className="w-full px-4 py-3 bg-muted/50 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 resize-y transition-shadow font-mono"
+          />
+        </div>
+      )}
     </div>
   );
 }
@@ -510,39 +546,51 @@ function ModuleEditorPanel({
     "w-full h-10 px-4 bg-muted/50 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-shadow";
 
   return (
-    <div className="space-y-5">
-      <div className="flex items-center justify-between">
-        <h3 className="text-base font-display font-semibold text-foreground">
-          Modifier le module
-        </h3>
-        <button
-          onClick={() => onSave({ title, description: description || null })}
-          disabled={isPending}
-          className="h-8 px-3 rounded-xl bg-primary text-white text-xs font-medium hover:bg-primary-hover transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-1.5"
-        >
-          <Save className="w-3.5 h-3.5" />
-          Sauvegarder
-        </button>
+    <div className="max-w-2xl space-y-6">
+      {/* Header with badge */}
+      <div>
+        <span className="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full bg-muted text-muted-foreground mb-3">
+          <BookOpen className="w-3 h-3" />
+          Module
+        </span>
+        <h2 className="text-xl font-display font-semibold text-foreground">{mod.title}</h2>
+        <p className="text-sm text-muted-foreground mt-1">
+          {(mod.lessons?.length ?? 0)} lecon{(mod.lessons?.length ?? 0) > 1 ? "s" : ""}
+        </p>
       </div>
 
-      <div>
-        <label className="block text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
-          Titre
-        </label>
-        <input value={title} onChange={(e) => setTitle(e.target.value)} className={inputClass} />
-      </div>
+      {/* Card */}
+      <div className="bg-surface rounded-2xl border border-border p-6 space-y-4" style={{ boxShadow: "var(--shadow-card)" }}>
+        <div>
+          <label className="block text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
+            Titre
+          </label>
+          <input value={title} onChange={(e) => setTitle(e.target.value)} className={inputClass} placeholder="Titre du module" />
+        </div>
 
-      <div>
-        <label className="block text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
-          Description
-        </label>
-        <textarea
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          rows={3}
-          placeholder="Description du module"
-          className="w-full px-4 py-3 bg-muted/50 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none transition-shadow"
-        />
+        <div>
+          <label className="block text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
+            Description
+          </label>
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            rows={4}
+            placeholder="Description du module (optionnelle)"
+            className="w-full px-4 py-3 bg-muted/50 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none transition-shadow"
+          />
+        </div>
+
+        <div className="flex justify-end">
+          <button
+            onClick={() => onSave({ title, description: description || null })}
+            disabled={isPending}
+            className="h-9 px-4 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-1.5"
+          >
+            {isPending && <Save className="w-3.5 h-3.5 animate-spin" />}
+            Enregistrer
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -778,7 +826,9 @@ export function CourseEditor({ course, routePrefix }: CourseEditorProps) {
       <div className="flex-1 overflow-y-auto p-6 lg:p-8">
         {selectedLesson ? (
           <LessonEditorPanel
+            key={selectedLesson.id}
             lesson={selectedLesson}
+            moduleTitle={modules.find((m) => (m.lessons ?? []).some((l) => l.id === selectedLesson.id))?.title}
             isPending={mutations.updateLesson.isPending}
             onSave={(updates) => {
               mutations.updateLesson.mutate(
@@ -810,6 +860,7 @@ export function CourseEditor({ course, routePrefix }: CourseEditorProps) {
           />
         ) : selectedModule ? (
           <ModuleEditorPanel
+            key={selectedModule.id}
             module={selectedModule}
             isPending={mutations.updateModule.isPending}
             onSave={(updates) => {
@@ -824,12 +875,14 @@ export function CourseEditor({ course, routePrefix }: CourseEditorProps) {
           />
         ) : (
           <div className="flex flex-col items-center justify-center h-full text-center">
-            <BookOpen className="w-12 h-12 text-muted-foreground/20 mb-4" />
+            <div className="rounded-full bg-muted p-4 mb-4">
+              <FileText className="w-8 h-8 text-muted-foreground" />
+            </div>
             <h3 className="text-lg font-display font-semibold text-foreground mb-1">
-              Editeur de cours
+              Selectionnez un element
             </h3>
-            <p className="text-sm text-muted-foreground max-w-sm">
-              Selectionnez un module ou une lecon dans la barre laterale pour commencer a editer.
+            <p className="text-sm text-muted-foreground max-w-xs">
+              Cliquez sur un module ou une lecon dans le panneau de gauche pour modifier son contenu.
             </p>
           </div>
         )}

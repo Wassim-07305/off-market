@@ -1,37 +1,103 @@
 "use client";
 
-import { use, useState, useMemo } from "react";
+import { use, useState, useRef, useMemo, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { useRoutePrefix } from "@/hooks/use-route-prefix";
-import { useCourse, useLessonProgress } from "@/hooks/use-courses";
+import { useCourse, useLessonProgress, useMarkLessonComplete } from "@/hooks/use-courses";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 import type { Lesson } from "@/types/database";
 import {
   ArrowLeft,
+  ArrowRight,
   Play,
-  FileText,
-  File,
-  HelpCircle,
-  PenTool,
   CheckCircle,
+  Circle,
+  Lock,
   ChevronDown,
   ChevronRight,
-  Edit,
-  Lock,
+  FileText,
+  Video,
+  Headphones,
+  File,
+  Download,
+  Loader2,
+  Menu,
+  X,
+  PlayCircle,
 } from "lucide-react";
 
-export default function CourseDetailPage({
+// ---------------------------------------------------------------------------
+// Video helpers
+// ---------------------------------------------------------------------------
+
+function getVideoEmbed(url: string): { type: "iframe" | "video" | "none"; src: string } {
+  if (!url) return { type: "none", src: "" };
+
+  // YouTube
+  if (url.includes("youtube.com") || url.includes("youtu.be")) {
+    let id: string | null | undefined = null;
+    if (url.includes("youtu.be")) {
+      id = url.split("/").pop()?.split("?")[0];
+    } else {
+      try { id = new URL(url).searchParams.get("v"); } catch { id = null; }
+    }
+    if (id) return { type: "iframe", src: `https://www.youtube.com/embed/${id}` };
+  }
+
+  // Vimeo
+  if (url.includes("vimeo.com")) {
+    const id = url.split("/").pop()?.split("?")[0];
+    if (id) return { type: "iframe", src: `https://player.vimeo.com/video/${id}` };
+  }
+
+  // Loom
+  if (url.includes("loom.com")) {
+    const id = url.split("/").pop()?.split("?")[0];
+    if (id) return { type: "iframe", src: `https://www.loom.com/embed/${id}` };
+  }
+
+  return { type: "video", src: url };
+}
+
+function getAttachmentIcon(type: string) {
+  if (type.includes("pdf") || type.includes("document") || type.includes("text")) return FileText;
+  if (type.includes("video")) return Video;
+  if (type.includes("audio")) return Headphones;
+  return File;
+}
+
+// ---------------------------------------------------------------------------
+// Page Component
+// ---------------------------------------------------------------------------
+
+export default function CourseViewPage({
   params,
 }: {
   params: Promise<{ courseId: string }>;
 }) {
   const { courseId } = use(params);
-  const { data: course, isLoading } = useCourse(courseId);
-  const { isStaff } = useAuth();
   const prefix = useRoutePrefix();
+  const { isStaff } = useAuth();
+
+  const { data: course, isLoading } = useCourse(courseId);
   const { data: progress } = useLessonProgress();
-  const [expandedModules, setExpandedModules] = useState<Set<string>>(new Set());
+  const markComplete = useMarkLessonComplete();
+
+  // Flatten lessons
+  const flatLessons = useMemo(() => {
+    if (!course?.modules) return [];
+    return course.modules
+      .sort((a, b) => a.sort_order - b.sort_order)
+      .flatMap((mod) =>
+        (mod.lessons ?? []).sort((a, b) => a.sort_order - b.sort_order).map((l) => ({
+          ...l,
+          moduleId: mod.id,
+          moduleTitle: mod.title,
+        }))
+      );
+  }, [course]);
 
   const completedIds = useMemo(() => {
     const set = new Set<string>();
@@ -41,231 +107,480 @@ export default function CourseDetailPage({
     return set;
   }, [progress]);
 
-  // Build flat lesson list for sequential unlock check
-  const allLessons = useMemo(() => {
-    if (!course?.modules) return [];
-    return course.modules
-      .sort((a, b) => a.sort_order - b.sort_order)
-      .flatMap((mod) =>
-        (mod.lessons ?? []).sort((a, b) => a.sort_order - b.sort_order)
-      );
-  }, [course]);
+  const totalLessons = flatLessons.length;
+  const completedCount = flatLessons.filter((l) => completedIds.has(l.id)).length;
+  const progressPercent = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
 
-  const isLessonUnlocked = (lesson: Lesson) => {
-    if (isStaff) return true; // Staff can access all
-    const idx = allLessons.findIndex((l) => l.id === lesson.id);
-    if (idx <= 0) return true;
-    return completedIds.has(allLessons[idx - 1].id);
-  };
+  // Sequential unlock
+  const isLessonUnlocked = useCallback(
+    (lessonId: string): boolean => {
+      if (isStaff) return true;
+      const idx = flatLessons.findIndex((l) => l.id === lessonId);
+      if (idx <= 0) return true;
+      return completedIds.has(flatLessons[idx - 1].id);
+    },
+    [flatLessons, completedIds, isStaff]
+  );
 
-  const toggleModule = (id: string) => {
+  // Find first incomplete lesson
+  const firstIncompleteLessonId = useMemo(() => {
+    for (const lesson of flatLessons) {
+      if (!completedIds.has(lesson.id)) return lesson.id;
+    }
+    return flatLessons[0]?.id ?? null;
+  }, [flatLessons, completedIds]);
+
+  const [selectedLessonId, setSelectedLessonId] = useState<string | null>(null);
+
+  // Auto-select first incomplete lesson when course loads
+  useEffect(() => {
+    if (!selectedLessonId && firstIncompleteLessonId) {
+      setSelectedLessonId(firstIncompleteLessonId);
+    }
+  }, [firstIncompleteLessonId, selectedLessonId]);
+
+  const selectedLesson = useMemo(
+    () => flatLessons.find((l) => l.id === selectedLessonId) ?? null,
+    [flatLessons, selectedLessonId]
+  );
+
+  const selectedLessonIndex = useMemo(
+    () => flatLessons.findIndex((l) => l.id === selectedLessonId),
+    [flatLessons, selectedLessonId]
+  );
+
+  // Expanded modules
+  const [expandedModules, setExpandedModules] = useState<Set<string>>(() => new Set());
+
+  // Auto-expand modules with progress
+  useEffect(() => {
+    if (!course?.modules) return;
+    const initial = new Set<string>();
+    for (const mod of course.modules) {
+      const hasIncomplete = mod.lessons?.some((l) => !completedIds.has(l.id));
+      const hasCompleted = mod.lessons?.some((l) => completedIds.has(l.id));
+      if (hasIncomplete || hasCompleted) initial.add(mod.id);
+    }
+    if (initial.size === 0 && course.modules.length > 0) {
+      initial.add(course.modules[0].id);
+    }
+    setExpandedModules(initial);
+  }, [course, completedIds]);
+
+  // Video auto-complete
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [autoCompleted, setAutoCompleted] = useState(false);
+
+  // Mobile sidebar
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    setAutoCompleted(false);
+  }, [selectedLessonId]);
+
+  function toggleModule(moduleId: string) {
     setExpandedModules((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+      if (next.has(moduleId)) next.delete(moduleId);
+      else next.add(moduleId);
       return next;
     });
-  };
+  }
 
-  const lessonIcon = (type: string) => {
-    switch (type) {
-      case "video": return Play;
-      case "text": return FileText;
-      case "pdf": return File;
-      case "quiz": return HelpCircle;
-      case "assignment": return PenTool;
-      default: return FileText;
+  function selectLesson(lessonId: string) {
+    if (!isLessonUnlocked(lessonId)) return;
+    setSelectedLessonId(lessonId);
+    setMobileSidebarOpen(false);
+  }
+
+  function handleMarkComplete() {
+    if (!selectedLessonId) return;
+    if (completedIds.has(selectedLessonId)) return;
+
+    markComplete.mutate(selectedLessonId, {
+      onSuccess: () => toast.success("Lecon terminee !"),
+      onError: () => toast.error("Erreur lors de la mise a jour"),
+    });
+  }
+
+  function handleTimeUpdate() {
+    const video = videoRef.current;
+    if (!video || autoCompleted) return;
+    if (!video.duration) return;
+    const percent = (video.currentTime / video.duration) * 100;
+    if (percent >= 80) {
+      setAutoCompleted(true);
+      handleMarkComplete();
     }
-  };
+  }
 
+  function navigateLesson(direction: "prev" | "next") {
+    const newIndex = direction === "prev" ? selectedLessonIndex - 1 : selectedLessonIndex + 1;
+    if (newIndex < 0 || newIndex >= flatLessons.length) return;
+    const target = flatLessons[newIndex];
+    if (!isLessonUnlocked(target.id)) return;
+    selectLesson(target.id);
+  }
+
+  // Loading
   if (isLoading) {
     return (
-      <div className="space-y-6 animate-pulse">
-        <div className="h-6 w-20 bg-muted rounded" />
-        <div className="h-48 bg-muted rounded-xl" />
-        <div className="space-y-3">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="h-14 bg-muted rounded-xl" />
-          ))}
-        </div>
+      <div className="flex items-center justify-center h-64">
+        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   if (!course) {
+    return <p className="text-center text-muted-foreground py-16">Cours non trouve</p>;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Sidebar content
+  // ---------------------------------------------------------------------------
+  // eslint-disable-next-line react/no-unstable-nested-components -- intentional render helper
+  function renderSidebar() {
+    if (!course) return null;
     return (
-      <div className="text-center py-16">
-        <p className="text-muted-foreground">Cours non trouve</p>
+      <>
+        {/* Course title + back */}
+        <div className="px-5 py-4 border-b border-border">
+          <Link
+            href={`${prefix}/school`}
+            className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground mb-3 transition-colors"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            Retour aux formations
+          </Link>
+          <h2 className="text-lg font-display font-bold leading-snug text-foreground">
+            {course.title}
+          </h2>
+        </div>
+
+        {/* Progress */}
+        <div className="px-5 py-4 border-b border-border">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm font-semibold text-foreground">
+              {progressPercent}%
+            </span>
+            <span className="text-xs text-muted-foreground">
+              {completedCount}/{totalLessons} lecons terminees
+            </span>
+          </div>
+          <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
+            <div
+              className="h-full rounded-full bg-primary transition-all duration-500 ease-out"
+              style={{ width: `${progressPercent}%` }}
+            />
+          </div>
+        </div>
+
+        {/* Modules */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="py-2">
+            {course.modules
+              ?.sort((a, b) => a.sort_order - b.sort_order)
+              .map((mod) => {
+                const isExpanded = expandedModules.has(mod.id);
+                const sortedLessons = (mod.lessons ?? []).sort(
+                  (a, b) => a.sort_order - b.sort_order
+                );
+                const moduleCompletedCount = sortedLessons.filter((l) =>
+                  completedIds.has(l.id)
+                ).length;
+
+                return (
+                  <div key={mod.id}>
+                    <button
+                      onClick={() => toggleModule(mod.id)}
+                      className="w-full flex items-center justify-between px-5 py-3 hover:bg-muted/50 transition-colors group"
+                    >
+                      <div className="flex items-center gap-2 min-w-0">
+                        {isExpanded ? (
+                          <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0" />
+                        ) : (
+                          <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+                        )}
+                        <span className="text-xs font-semibold tracking-wider uppercase text-muted-foreground group-hover:text-foreground truncate transition-colors">
+                          {mod.title}
+                        </span>
+                      </div>
+                      <span className="text-[10px] text-muted-foreground shrink-0 ml-2">
+                        {moduleCompletedCount}/{sortedLessons.length}
+                      </span>
+                    </button>
+
+                    {isExpanded && (
+                      <div className="pb-1">
+                        {sortedLessons.map((lesson) => {
+                          const completed = completedIds.has(lesson.id);
+                          const isActive = selectedLessonId === lesson.id;
+                          const unlocked = isLessonUnlocked(lesson.id);
+
+                          return (
+                            <button
+                              key={lesson.id}
+                              disabled={!unlocked}
+                              onClick={() => selectLesson(lesson.id)}
+                              className={cn(
+                                "w-full flex items-center gap-3 pl-7 pr-4 py-2.5 text-left transition-colors relative",
+                                isActive && "bg-primary/10 border-l-2 border-primary",
+                                !isActive && unlocked && "hover:bg-muted/50",
+                                !unlocked && "opacity-40 cursor-not-allowed"
+                              )}
+                            >
+                              <span className="shrink-0">
+                                {completed ? (
+                                  <CheckCircle className="h-4 w-4 text-primary" />
+                                ) : isActive ? (
+                                  <Play className="h-4 w-4 text-primary" />
+                                ) : unlocked ? (
+                                  <Circle className="h-4 w-4 text-muted-foreground" />
+                                ) : (
+                                  <Lock className="h-4 w-4 text-muted-foreground" />
+                                )}
+                              </span>
+
+                              <div className="min-w-0 flex-1">
+                                <p
+                                  className={cn(
+                                    "text-sm truncate",
+                                    isActive && "font-medium text-foreground",
+                                    completed && !isActive && "text-muted-foreground",
+                                    !completed && !isActive && unlocked && "text-foreground"
+                                  )}
+                                >
+                                  {lesson.title}
+                                </p>
+                                {lesson.estimated_duration && (
+                                  <span className="text-[11px] text-muted-foreground">
+                                    {lesson.estimated_duration} min
+                                  </span>
+                                )}
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Lesson content helpers
+  // ---------------------------------------------------------------------------
+  const content = selectedLesson?.content as Record<string, string> | undefined;
+  const videoUrl = selectedLesson?.video_url ?? content?.video_url ?? content?.url;
+  // NOTE: content_html is admin-authored content stored in DB, not user-generated
+  const htmlContent = selectedLesson?.content_html ?? content?.html;
+  const attachments = (selectedLesson?.attachments ?? []) as Array<{
+    name: string;
+    url: string;
+    type: string;
+  }>;
+
+  return (
+    <div className="flex h-[calc(100vh-4rem)] -m-5 md:-m-8">
+      {/* Mobile sidebar toggle */}
+      <div className="md:hidden fixed top-[4.5rem] left-4 z-40">
+        <button
+          onClick={() => setMobileSidebarOpen((v) => !v)}
+          className="h-9 px-3 rounded-xl border border-border bg-surface text-sm font-medium shadow-md flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <Menu className="h-4 w-4" />
+          Menu du cours
+        </button>
+      </div>
+
+      {/* Mobile sidebar overlay */}
+      {mobileSidebarOpen && (
+        <div className="fixed inset-0 z-50 md:hidden">
+          <div
+            className="absolute inset-0 bg-black/50"
+            onClick={() => setMobileSidebarOpen(false)}
+          />
+          <div className="absolute inset-y-0 left-0 w-[300px] bg-surface border-r border-border shadow-xl flex flex-col animate-in slide-in-from-left duration-200">
+            <div className="flex items-center justify-end p-3 border-b border-border">
+              <button
+                onClick={() => setMobileSidebarOpen(false)}
+                className="p-1 rounded-md hover:bg-muted transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            {renderSidebar()}
+          </div>
+        </div>
+      )}
+
+      {/* Desktop sidebar */}
+      <aside className="hidden md:flex w-[300px] shrink-0 border-r border-border bg-surface flex-col overflow-hidden">
+        {renderSidebar()}
+      </aside>
+
+      {/* Content area */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="p-6 md:p-8 pt-16 md:pt-8 max-w-4xl mx-auto">
+          {selectedLesson ? (
+            <>
+              {/* Video */}
+              {videoUrl && <VideoPlayer videoUrl={videoUrl} videoRef={videoRef} onTimeUpdate={handleTimeUpdate} />}
+
+              {/* Lesson title */}
+              <h1 className="text-2xl font-display font-bold text-foreground tracking-tight mt-6">
+                {selectedLesson.title}
+              </h1>
+
+              {selectedLesson.description && (
+                <p className="text-muted-foreground mt-2 leading-relaxed">
+                  {selectedLesson.description}
+                </p>
+              )}
+
+              {/* HTML content — admin-authored, stored in DB */}
+              {htmlContent && (
+                <div
+                  className="prose prose-stone dark:prose-invert max-w-none mt-6 prose-headings:font-display prose-headings:tracking-tight"
+                  dangerouslySetInnerHTML={{ __html: htmlContent }}
+                />
+              )}
+
+              {/* Attachments */}
+              {attachments.length > 0 && (
+                <div className="mt-8">
+                  <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+                    Ressources
+                  </h3>
+                  <div className="space-y-2">
+                    {attachments.map((att, idx) => {
+                      const Icon = getAttachmentIcon(att.type);
+                      return (
+                        <a
+                          key={idx}
+                          href={att.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-3 rounded-xl border border-border bg-surface px-4 py-3 hover:bg-muted/50 transition-colors group"
+                        >
+                          <Icon className="h-5 w-5 text-muted-foreground shrink-0" />
+                          <span className="flex-1 text-sm font-medium truncate">
+                            {att.name}
+                          </span>
+                          <span className="text-xs text-primary font-medium group-hover:underline flex items-center gap-1">
+                            <Download className="h-3.5 w-3.5" />
+                            Ouvrir
+                          </span>
+                        </a>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Actions + Navigation */}
+              <div className="mt-8 flex flex-wrap items-center gap-3">
+                {completedIds.has(selectedLesson.id) ? (
+                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-primary bg-primary/10 px-3 py-1.5 rounded-full">
+                    <CheckCircle className="h-3.5 w-3.5" />
+                    Termine
+                  </span>
+                ) : (
+                  <button
+                    onClick={handleMarkComplete}
+                    disabled={markComplete.isPending}
+                    className="h-10 px-4 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-all active:scale-[0.98] flex items-center gap-2 disabled:opacity-50"
+                  >
+                    {markComplete.isPending ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <CheckCircle className="h-4 w-4" />
+                    )}
+                    {markComplete.isPending ? "Enregistrement..." : "Marquer comme termine"}
+                  </button>
+                )}
+
+                <div className="flex-1" />
+
+                <div className="flex items-center gap-2">
+                  <button
+                    className="h-9 px-3 rounded-xl text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
+                    disabled={selectedLessonIndex <= 0}
+                    onClick={() => navigateLesson("prev")}
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                    <span className="hidden sm:inline">Precedente</span>
+                  </button>
+                  <button
+                    className="h-9 px-3 rounded-xl text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
+                    disabled={
+                      selectedLessonIndex >= flatLessons.length - 1 ||
+                      !isLessonUnlocked(flatLessons[selectedLessonIndex + 1]?.id ?? "")
+                    }
+                    onClick={() => navigateLesson("next")}
+                  >
+                    <span className="hidden sm:inline">Suivante</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="flex flex-col items-center justify-center h-80 text-muted-foreground gap-3">
+              <PlayCircle className="h-12 w-12 text-muted-foreground/50" />
+              <p className="text-sm">Selectionnez une lecon pour commencer</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Video player
+// ---------------------------------------------------------------------------
+
+function VideoPlayer({
+  videoUrl,
+  videoRef,
+  onTimeUpdate,
+}: {
+  videoUrl: string;
+  videoRef: React.RefObject<HTMLVideoElement | null>;
+  onTimeUpdate: () => void;
+}) {
+  const embed = getVideoEmbed(videoUrl);
+
+  if (embed.type === "none") return null;
+
+  if (embed.type === "iframe") {
+    return (
+      <div className="aspect-video rounded-xl overflow-hidden bg-black" style={{ boxShadow: "var(--shadow-elevated)" }}>
+        <iframe
+          src={embed.src}
+          className="w-full h-full"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        />
       </div>
     );
   }
 
-  const totalLessons = allLessons.length;
-  const completedCount = allLessons.filter((l) => completedIds.has(l.id)).length;
-  const progressPercent = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
-
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <Link
-          href={`${prefix}/school`}
-          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Retour
-        </Link>
-        {isStaff && (
-          <Link
-            href={`${prefix}/school/builder/${courseId}`}
-            className="h-9 px-3 rounded-[10px] border border-border text-sm flex items-center gap-2 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-          >
-            <Edit className="w-4 h-4" />
-            Modifier
-          </Link>
-        )}
-      </div>
-
-      {/* Course header */}
-      <div
-        className="h-48 rounded-xl relative overflow-hidden flex items-end p-6"
-        style={{
-          background: course.cover_image_url
-            ? `url(${course.cover_image_url}) center/cover`
-            : "linear-gradient(135deg, #AF0000 0%, #18181B 100%)",
-        }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-        <div className="relative z-10">
-          <h1 className="text-2xl font-semibold text-white">{course.title}</h1>
-          {course.description && (
-            <p className="text-sm text-white/70 mt-1">{course.description}</p>
-          )}
-        </div>
-        {/* Progress bar */}
-        {progressPercent > 0 && (
-          <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-black/30">
-            <div className="h-full bg-success transition-all" style={{ width: `${progressPercent}%` }} />
-          </div>
-        )}
-      </div>
-
-      {/* Progress summary */}
-      {totalLessons > 0 && (
-        <div className="flex items-center gap-3 text-sm text-muted-foreground">
-          <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
-            <div className="h-full bg-success transition-all rounded-full" style={{ width: `${progressPercent}%` }} />
-          </div>
-          <span className="text-xs font-mono shrink-0">
-            {completedCount}/{totalLessons} ({progressPercent}%)
-          </span>
-        </div>
-      )}
-
-      {/* Modules */}
-      <div className="space-y-3">
-        {course.modules
-          ?.sort((a, b) => a.sort_order - b.sort_order)
-          .map((mod) => {
-            const isExpanded = expandedModules.has(mod.id);
-            const sortedLessons = mod.lessons?.sort(
-              (a, b) => a.sort_order - b.sort_order
-            ) ?? [];
-
-            const completedInModule = sortedLessons.filter((l) =>
-              completedIds.has(l.id)
-            ).length;
-
-            return (
-              <div
-                key={mod.id}
-                className="bg-surface border border-border rounded-xl overflow-hidden"
-              >
-                <button
-                  onClick={() => toggleModule(mod.id)}
-                  className="w-full flex items-center gap-3 p-4 text-left hover:bg-muted/50 transition-colors"
-                >
-                  {isExpanded ? (
-                    <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
-                  ) : (
-                    <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
-                  )}
-                  <div className="flex-1">
-                    <h3 className="text-sm font-semibold text-foreground">
-                      {mod.title}
-                    </h3>
-                    <p className="text-xs text-muted-foreground">
-                      {sortedLessons.length} lecon{sortedLessons.length !== 1 ? "s" : ""}
-                      {completedInModule > 0 && (
-                        <span className="ml-2 text-success">
-                          · {completedInModule}/{sortedLessons.length} terminee{completedInModule !== 1 ? "s" : ""}
-                        </span>
-                      )}
-                    </p>
-                  </div>
-                  {completedInModule === sortedLessons.length && sortedLessons.length > 0 && (
-                    <CheckCircle className="w-4 h-4 text-success shrink-0" />
-                  )}
-                </button>
-
-                {isExpanded && sortedLessons.length > 0 && (
-                  <div className="border-t border-border">
-                    {sortedLessons.map((lesson) => {
-                      const Icon = lessonIcon(lesson.content_type);
-                      const lessonCompleted = completedIds.has(lesson.id);
-                      const unlocked = isLessonUnlocked(lesson);
-
-                      if (!unlocked) {
-                        return (
-                          <div
-                            key={lesson.id}
-                            className="flex items-center gap-3 px-4 py-3 border-b border-border last:border-0 opacity-50 cursor-not-allowed"
-                          >
-                            <div className="w-7 h-7 rounded-lg flex items-center justify-center bg-muted">
-                              <Lock className="w-3.5 h-3.5 text-muted-foreground" />
-                            </div>
-                            <span className="text-sm flex-1 text-muted-foreground">
-                              {lesson.title}
-                            </span>
-                          </div>
-                        );
-                      }
-
-                      return (
-                        <Link
-                          key={lesson.id}
-                          href={`${prefix}/school/${courseId}/${lesson.id}`}
-                          className="flex items-center gap-3 px-4 py-3 hover:bg-muted/50 transition-colors border-b border-border last:border-0"
-                        >
-                          <div className={cn(
-                            "w-7 h-7 rounded-lg flex items-center justify-center",
-                            lessonCompleted ? "bg-success/10" : "bg-muted"
-                          )}>
-                            {lessonCompleted ? (
-                              <CheckCircle className="w-3.5 h-3.5 text-success" />
-                            ) : (
-                              <Icon className="w-3.5 h-3.5 text-muted-foreground" />
-                            )}
-                          </div>
-                          <span className={cn(
-                            "text-sm flex-1",
-                            lessonCompleted ? "text-muted-foreground line-through" : "text-foreground"
-                          )}>
-                            {lesson.title}
-                          </span>
-                          {lesson.estimated_duration && (
-                            <span className="text-xs text-muted-foreground">
-                              {lesson.estimated_duration}min
-                            </span>
-                          )}
-                        </Link>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-      </div>
+    <div className="aspect-video rounded-xl overflow-hidden bg-black" style={{ boxShadow: "var(--shadow-elevated)" }}>
+      <video
+        ref={videoRef}
+        src={embed.src}
+        className="w-full h-full"
+        controls
+        onTimeUpdate={onTimeUpdate}
+      />
     </div>
   );
 }
