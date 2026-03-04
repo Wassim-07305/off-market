@@ -1,11 +1,12 @@
 "use client";
 
-import { use, useState } from "react";
+import { use, useState, useMemo } from "react";
 import Link from "next/link";
 import { useRoutePrefix } from "@/hooks/use-route-prefix";
 import { useCourse, useLessonProgress } from "@/hooks/use-courses";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
+import type { Lesson } from "@/types/database";
 import {
   ArrowLeft,
   Play,
@@ -17,6 +18,7 @@ import {
   ChevronDown,
   ChevronRight,
   Edit,
+  Lock,
 } from "lucide-react";
 
 export default function CourseDetailPage({
@@ -30,6 +32,31 @@ export default function CourseDetailPage({
   const prefix = useRoutePrefix();
   const { data: progress } = useLessonProgress();
   const [expandedModules, setExpandedModules] = useState<Set<string>>(new Set());
+
+  const completedIds = useMemo(() => {
+    const set = new Set<string>();
+    progress?.forEach((p) => {
+      if (p.status === "completed") set.add(p.lesson_id);
+    });
+    return set;
+  }, [progress]);
+
+  // Build flat lesson list for sequential unlock check
+  const allLessons = useMemo(() => {
+    if (!course?.modules) return [];
+    return course.modules
+      .sort((a, b) => a.sort_order - b.sort_order)
+      .flatMap((mod) =>
+        (mod.lessons ?? []).sort((a, b) => a.sort_order - b.sort_order)
+      );
+  }, [course]);
+
+  const isLessonUnlocked = (lesson: Lesson) => {
+    if (isStaff) return true; // Staff can access all
+    const idx = allLessons.findIndex((l) => l.id === lesson.id);
+    if (idx <= 0) return true;
+    return completedIds.has(allLessons[idx - 1].id);
+  };
 
   const toggleModule = (id: string) => {
     setExpandedModules((prev) => {
@@ -73,6 +100,10 @@ export default function CourseDetailPage({
     );
   }
 
+  const totalLessons = allLessons.length;
+  const completedCount = allLessons.filter((l) => completedIds.has(l.id)).length;
+  const progressPercent = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -110,7 +141,25 @@ export default function CourseDetailPage({
             <p className="text-sm text-white/70 mt-1">{course.description}</p>
           )}
         </div>
+        {/* Progress bar */}
+        {progressPercent > 0 && (
+          <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-black/30">
+            <div className="h-full bg-success transition-all" style={{ width: `${progressPercent}%` }} />
+          </div>
+        )}
       </div>
+
+      {/* Progress summary */}
+      {totalLessons > 0 && (
+        <div className="flex items-center gap-3 text-sm text-muted-foreground">
+          <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
+            <div className="h-full bg-success transition-all rounded-full" style={{ width: `${progressPercent}%` }} />
+          </div>
+          <span className="text-xs font-mono shrink-0">
+            {completedCount}/{totalLessons} ({progressPercent}%)
+          </span>
+        </div>
+      )}
 
       {/* Modules */}
       <div className="space-y-3">
@@ -123,7 +172,7 @@ export default function CourseDetailPage({
             ) ?? [];
 
             const completedInModule = sortedLessons.filter((l) =>
-              progress?.some((p) => p.lesson_id === l.id && p.status === "completed")
+              completedIds.has(l.id)
             ).length;
 
             return (
@@ -162,9 +211,25 @@ export default function CourseDetailPage({
                   <div className="border-t border-border">
                     {sortedLessons.map((lesson) => {
                       const Icon = lessonIcon(lesson.content_type);
-                      const lessonCompleted = progress?.some(
-                        (p) => p.lesson_id === lesson.id && p.status === "completed"
-                      );
+                      const lessonCompleted = completedIds.has(lesson.id);
+                      const unlocked = isLessonUnlocked(lesson);
+
+                      if (!unlocked) {
+                        return (
+                          <div
+                            key={lesson.id}
+                            className="flex items-center gap-3 px-4 py-3 border-b border-border last:border-0 opacity-50 cursor-not-allowed"
+                          >
+                            <div className="w-7 h-7 rounded-lg flex items-center justify-center bg-muted">
+                              <Lock className="w-3.5 h-3.5 text-muted-foreground" />
+                            </div>
+                            <span className="text-sm flex-1 text-muted-foreground">
+                              {lesson.title}
+                            </span>
+                          </div>
+                        );
+                      }
+
                       return (
                         <Link
                           key={lesson.id}

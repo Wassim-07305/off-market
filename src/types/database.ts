@@ -152,12 +152,23 @@ export interface Module {
   lessons?: Lesson[];
 }
 
+
+export interface LessonAttachment {
+  name: string;
+  url: string;
+  type: string;
+}
+
 export interface Lesson {
   id: string;
   module_id: string;
   title: string;
+  description: string | null;
   content_type: "video" | "text" | "pdf" | "quiz" | "assignment";
   content: Record<string, unknown>;
+  video_url: string | null;
+  content_html: string | null;
+  attachments: LessonAttachment[];
   sort_order: number;
   estimated_duration: number | null;
   is_preview: boolean;

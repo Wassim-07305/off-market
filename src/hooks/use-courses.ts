@@ -3,7 +3,11 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
-import type { Course, Module, Lesson } from "@/types/database";
+import type { Course, Module, Lesson, LessonAttachment } from "@/types/database";
+
+// ---------------------------------------------------------------------------
+// Read hooks
+// ---------------------------------------------------------------------------
 
 export function useCourses(status?: string) {
   const supabase = useSupabase();
@@ -47,21 +51,30 @@ export function useCourse(courseId: string) {
   });
 }
 
+// ---------------------------------------------------------------------------
+// Course mutations
+// ---------------------------------------------------------------------------
+
 export function useCourseMutations() {
   const supabase = useSupabase();
   const queryClient = useQueryClient();
 
+  const invalidate = () => {
+    queryClient.invalidateQueries({ queryKey: ["courses"] });
+    queryClient.invalidateQueries({ queryKey: ["course"] });
+  };
+
   const createCourse = useMutation({
-    mutationFn: async (course: { title: string; description?: string; status?: string }) => {
+    mutationFn: async (course: { title: string; description?: string; status?: string; cover_image_url?: string }) => {
       const { data, error } = await supabase
         .from("courses")
         .insert(course)
         .select()
         .single();
       if (error) throw error;
-      return data;
+      return data as Course;
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["courses"] }),
+    onSuccess: invalidate,
   });
 
   const updateCourse = useMutation({
@@ -69,43 +82,193 @@ export function useCourseMutations() {
       const { error } = await supabase.from("courses").update(updates).eq("id", id);
       if (error) throw error;
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["courses"] }),
+    onSuccess: invalidate,
   });
 
+  const deleteCourse = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("courses").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: invalidate,
+  });
+
+  const reorderCourses = useMutation({
+    mutationFn: async (orderedIds: string[]) => {
+      for (let i = 0; i < orderedIds.length; i++) {
+        const { error } = await supabase
+          .from("courses")
+          .update({ sort_order: i })
+          .eq("id", orderedIds[i]);
+        if (error) throw error;
+      }
+    },
+    onSuccess: invalidate,
+  });
+
+  // -------------------------------------------------------------------------
+  // Module mutations
+  // -------------------------------------------------------------------------
+
   const createModule = useMutation({
-    mutationFn: async (mod: { course_id: string; title: string; sort_order?: number }) => {
+    mutationFn: async (mod: { course_id: string; title: string; description?: string; sort_order?: number }) => {
       const { data, error } = await supabase
         .from("modules")
         .insert(mod)
         .select()
         .single();
       if (error) throw error;
-      return data;
+      return data as Module;
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["courses"] }),
+    onSuccess: invalidate,
   });
+
+  const updateModule = useMutation({
+    mutationFn: async ({ id, ...updates }: { id: string } & Partial<Module>) => {
+      const { error } = await supabase.from("modules").update(updates).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: invalidate,
+  });
+
+  const deleteModule = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("modules").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: invalidate,
+  });
+
+  const reorderModules = useMutation({
+    mutationFn: async ({ courseId, orderedIds }: { courseId: string; orderedIds: string[] }) => {
+      void courseId; // used contextually
+      for (let i = 0; i < orderedIds.length; i++) {
+        const { error } = await supabase
+          .from("modules")
+          .update({ sort_order: i })
+          .eq("id", orderedIds[i]);
+        if (error) throw error;
+      }
+    },
+    onSuccess: invalidate,
+  });
+
+  // -------------------------------------------------------------------------
+  // Lesson mutations
+  // -------------------------------------------------------------------------
 
   const createLesson = useMutation({
     mutationFn: async (lesson: {
       module_id: string;
       title: string;
-      content_type: string;
+      description?: string;
+      content_type?: string;
       content?: Record<string, unknown>;
+      video_url?: string;
       sort_order?: number;
     }) => {
       const { data, error } = await supabase
         .from("lessons")
-        .insert(lesson)
+        .insert({ content_type: "video", ...lesson })
         .select()
         .single();
       if (error) throw error;
-      return data;
+      return data as Lesson;
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["courses"] }),
+    onSuccess: invalidate,
   });
 
-  return { createCourse, updateCourse, createModule, createLesson };
+  const updateLesson = useMutation({
+    mutationFn: async ({ id, ...updates }: { id: string } & Partial<Lesson>) => {
+      const { error } = await supabase.from("lessons").update(updates).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: invalidate,
+  });
+
+  const deleteLesson = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("lessons").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: invalidate,
+  });
+
+  const reorderLessons = useMutation({
+    mutationFn: async ({ moduleId, orderedIds }: { moduleId: string; orderedIds: string[] }) => {
+      void moduleId;
+      for (let i = 0; i < orderedIds.length; i++) {
+        const { error } = await supabase
+          .from("lessons")
+          .update({ sort_order: i })
+          .eq("id", orderedIds[i]);
+        if (error) throw error;
+      }
+    },
+    onSuccess: invalidate,
+  });
+
+  const addAttachment = useMutation({
+    mutationFn: async ({ lessonId, attachment }: { lessonId: string; attachment: LessonAttachment }) => {
+      // Fetch current attachments
+      const { data: lesson, error: fetchError } = await supabase
+        .from("lessons")
+        .select("attachments")
+        .eq("id", lessonId)
+        .single();
+      if (fetchError) throw fetchError;
+
+      const current = (lesson?.attachments as LessonAttachment[]) ?? [];
+      const { error } = await supabase
+        .from("lessons")
+        .update({ attachments: [...current, attachment] })
+        .eq("id", lessonId);
+      if (error) throw error;
+    },
+    onSuccess: invalidate,
+  });
+
+  const removeAttachment = useMutation({
+    mutationFn: async ({ lessonId, attachmentUrl }: { lessonId: string; attachmentUrl: string }) => {
+      const { data: lesson, error: fetchError } = await supabase
+        .from("lessons")
+        .select("attachments")
+        .eq("id", lessonId)
+        .single();
+      if (fetchError) throw fetchError;
+
+      const current = (lesson?.attachments as LessonAttachment[]) ?? [];
+      const updated = current.filter((a) => a.url !== attachmentUrl);
+      const { error } = await supabase
+        .from("lessons")
+        .update({ attachments: updated })
+        .eq("id", lessonId);
+      if (error) throw error;
+    },
+    onSuccess: invalidate,
+  });
+
+  return {
+    createCourse,
+    updateCourse,
+    deleteCourse,
+    reorderCourses,
+    createModule,
+    updateModule,
+    deleteModule,
+    reorderModules,
+    createLesson,
+    updateLesson,
+    deleteLesson,
+    reorderLessons,
+    addAttachment,
+    removeAttachment,
+  };
 }
+
+// ---------------------------------------------------------------------------
+// Progress hooks
+// ---------------------------------------------------------------------------
 
 export function useLessonProgress() {
   const supabase = useSupabase();
