@@ -9,12 +9,26 @@ export interface WeeklyCheckin {
   blocker: string | null;
   goal_next_week: string | null;
   mood: Mood | null;
+  energy: Energy | null;
+  gratitudes: string[];
+  daily_goals: string[];
+  notes: string | null;
   coach_feedback: string | null;
   created_at: string;
   updated_at: string;
   // Joined
   client?: { id: string; full_name: string; avatar_url: string | null };
 }
+
+export type Energy = 1 | 2 | 3 | 4 | 5;
+
+export const ENERGY_CONFIG: Record<Energy, { label: string; emoji: string; color: string }> = {
+  1: { label: "Epuise", emoji: "🪫", color: "text-red-500" },
+  2: { label: "Fatigue", emoji: "😴", color: "text-orange-500" },
+  3: { label: "Normal", emoji: "⚡", color: "text-amber-500" },
+  4: { label: "En forme", emoji: "💪", color: "text-emerald-500" },
+  5: { label: "Au top", emoji: "🔥", color: "text-green-500" },
+};
 
 export type Mood = 1 | 2 | 3 | 4 | 5;
 
