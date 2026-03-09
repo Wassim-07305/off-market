@@ -22,11 +22,11 @@ export function useEleves(filters: EleveFilters = {}) {
   return useQuery({
     queryKey: ['eleves', filters],
     queryFn: async () => {
-      // Get user_ids with role = 'eleve'
+      // Get user_ids with role = 'prospect'
       const { data: roleData, error: roleError } = await supabase
         .from('user_roles')
         .select('user_id')
-        .eq('role', 'eleve')
+        .eq('role', 'prospect')
 
       if (roleError) throw roleError
       const eleveIds = roleData.map((r) => r.user_id)

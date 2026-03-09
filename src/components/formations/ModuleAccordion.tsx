@@ -9,7 +9,7 @@ interface ModuleAccordionProps {
   items: ModuleItem[]
   completions?: ItemCompletion[]
   isAdmin?: boolean
-  isEleve?: boolean
+  isProspect?: boolean
   onToggleComplete?: (itemId: string, completed: boolean) => void
   onItemClick?: (item: ModuleItem) => void
   onEditModule?: () => void
@@ -25,7 +25,7 @@ export function ModuleAccordion({
   items,
   completions = [],
   isAdmin,
-  isEleve,
+  isProspect,
   onToggleComplete,
   onItemClick,
   onEditModule,
@@ -61,7 +61,7 @@ export function ModuleAccordion({
           )}
         </div>
         <span className="shrink-0 text-xs text-muted-foreground">
-          {isEleve ? `${completedCount}/${items.length}` : `${items.length} items`}
+          {isProspect ? `${completedCount}/${items.length}` : `${items.length} items`}
         </span>
 
         {/* Admin actions */}
@@ -113,7 +113,7 @@ export function ModuleAccordion({
                 isCompleted={completedIds.has(item.id)}
                 isAdmin={isAdmin}
                 onToggleComplete={
-                  isEleve && onToggleComplete
+                  isProspect && onToggleComplete
                     ? (completed) => onToggleComplete(item.id, completed)
                     : undefined
                 }

@@ -1,0 +1,1666 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Janvier — 31 500€ au lieu de 60 000€</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --accent: #AF0000;
+  --accent-light: #D42B2B;
+  --accent-glow: rgba(175, 0, 0, 0.12);
+  --accent-subtle: rgba(175, 0, 0, 0.06);
+  --bg: #EDEAE4;
+  --bg-warm: #F0EDE6;
+  --bg-card: #FFFFFF;
+  --text: #1A1714;
+  --text-secondary: #6B6560;
+  --text-muted: #9B9590;
+  --border: rgba(26, 23, 20, 0.08);
+  --border-strong: rgba(26, 23, 20, 0.15);
+  --shadow-sm: 0 2px 8px rgba(26, 23, 20, 0.06);
+  --shadow-md: 0 6px 24px rgba(26, 23, 20, 0.08);
+  --shadow-lg: 0 16px 48px rgba(26, 23, 20, 0.12);
+  --shadow-accent: 0 8px 30px rgba(175, 0, 0, 0.15);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --heading: 'Montserrat', system-ui, sans-serif;
+  --sans: 'Montserrat', system-ui, sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+  --card-w: 420px;
+  --card-h: auto;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+body.tool-pointer { cursor: default; }
+body.tool-hand { cursor: grab; }
+body.tool-hand:active { cursor: grabbing; }
+body.tool-pen { cursor: crosshair; }
+body.tool-eraser { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Ccircle cx='10' cy='10' r='8' fill='none' stroke='%23AF0000' stroke-width='2'/%3E%3C/svg%3E") 10 10, crosshair; }
+
+/* ─── GRID BACKGROUND ─── */
+#canvas-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle, rgba(26,23,20,0.06) 1px, transparent 1px);
+  background-size: 30px 30px;
+  background-position: 0 0;
+  transition: none;
+}
+
+/* ─── CANVAS ─── */
+#canvas {
+  position: absolute;
+  top: 0; left: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+  z-index: 1;
+}
+
+/* ─── SVG CONNECTORS ─── */
+#connectors {
+  position: absolute;
+  top: 0; left: 0;
+  width: 8000px;
+  height: 5000px;
+  z-index: 0;
+  pointer-events: none;
+}
+#connectors line, #connectors path {
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-dasharray: 6 4;
+  opacity: 0.18;
+  fill: none;
+}
+
+/* ─── SECTION LABELS (floating on canvas) ─── */
+.section-label {
+  position: absolute;
+  font-family: var(--heading);
+  font-weight: 800;
+  font-size: 1.8rem;
+  color: var(--accent);
+  opacity: 0.10;
+  letter-spacing: -0.02em;
+  pointer-events: none;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
+/* ─── SLIDE CARDS ─── */
+.frame {
+  position: absolute;
+  width: var(--card-w);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+  cursor: default;
+  user-select: text;
+}
+.frame:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-strong);
+  z-index: 10;
+}
+.frame.focused {
+  box-shadow: var(--shadow-lg);
+  border-color: rgba(175, 0, 0, 0.25);
+  z-index: 20;
+}
+.frame.wide { width: 520px; }
+.frame.narrow { width: 340px; }
+.frame.accent-border { border-left: 4px solid var(--accent); }
+.frame.accent-bg {
+  border-color: rgba(175, 0, 0, 0.15);
+  background: linear-gradient(135deg, var(--bg-card), rgba(175, 0, 0, 0.02));
+}
+.frame.dark-bg {
+  background: var(--text);
+  color: #fff;
+  border-color: transparent;
+}
+.frame.dark-bg .label { color: rgba(255,255,255,0.5); }
+.frame.dark-bg .label::before { background: rgba(255,255,255,0.3); }
+.frame.dark-bg p { color: rgba(255,255,255,0.7); }
+.frame.dark-bg .accent { color: #FF4444; }
+.frame.dark-bg .stat-label { color: rgba(255,255,255,0.5); }
+.frame.dark-bg .cta-btn { background: #fff; color: var(--accent); }
+.frame.dark-bg .cta-btn:hover { background: #F6F3EE; }
+
+/* ─── TYPOGRAPHY ─── */
+.label {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.label::before {
+  content: '';
+  width: 16px;
+  height: 2px;
+  background: var(--accent);
+  display: inline-block;
+}
+
+h1 {
+  font-family: var(--heading);
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+.frame.dark-bg h1 { color: #fff; }
+h1.hero { font-size: 1.6rem; }
+h1.section { font-size: 1.3rem; }
+h1.small { font-size: 1.1rem; }
+
+p, li {
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.accent { color: var(--accent); }
+.bold { font-weight: 700; }
+.strikethrough { text-decoration: line-through; color: var(--text-muted); }
+
+/* ─── BIG NUMBER ─── */
+.big-number {
+  font-family: var(--heading);
+  font-weight: 800;
+  font-size: 2.8rem;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--text);
+}
+.big-number.accent-color { color: var(--accent); }
+.big-number.smaller { font-size: 2rem; }
+.frame.dark-bg .big-number { color: #fff; }
+
+/* ─── STAT ─── */
+.stat { text-align: center; }
+.stat-value {
+  font-family: var(--heading);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.stat-value.red { color: var(--accent); }
+.stat-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+/* ─── METRIC BAR ─── */
+.metric-bar {
+  height: 5px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+.metric-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 1s cubic-bezier(0.22, 1, 0.36, 1);
+  width: 0;
+}
+.metric-bar-fill.accent-bg { background: var(--accent); }
+.metric-bar-fill.muted-bg { background: var(--text-muted); }
+
+/* ─── TAG ─── */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 100px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  font-family: var(--mono);
+  letter-spacing: 0.03em;
+}
+.tag-red { background: rgba(175, 0, 0, 0.08); color: var(--accent); }
+.tag-muted { background: var(--border); color: var(--text-secondary); }
+.tag-green { background: rgba(34, 139, 34, 0.08); color: #1a7a1a; }
+
+/* ─── GRID ─── */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.flex-row { display: flex; align-items: center; gap: 10px; }
+.flex-col { display: flex; flex-direction: column; }
+.gap-xs { gap: 6px; }
+.gap-sm { gap: 10px; }
+.gap-md { gap: 16px; }
+
+/* ─── DIVIDER ─── */
+.divider { width: 32px; height: 2px; background: var(--accent); margin: 12px 0; }
+.frame.dark-bg .divider { background: rgba(255,255,255,0.3); }
+
+/* ─── SPIRAL / INDICATOR ─── */
+.spiral-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: rgba(175, 0, 0, 0.05);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-size: 0.75rem;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+/* ─── QUOTE ─── */
+.quote-block {
+  padding: 18px 20px;
+  background: var(--accent-subtle);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--accent);
+}
+.quote-block p {
+  font-size: 0.88rem;
+  color: var(--text);
+  font-weight: 500;
+  font-style: italic;
+  line-height: 1.45;
+}
+
+/* ─── CASCADE ─── */
+.cascade-item {
+  padding: 12px 16px;
+  background: var(--bg-warm);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--accent);
+}
+.cascade-item h4 { font-size: 0.78rem; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+.cascade-item p { font-size: 0.72rem; color: var(--text-muted); }
+.cascade-arrow { text-align: center; color: var(--accent); font-size: 0.8rem; opacity: 0.4; line-height: 1.2; }
+
+/* ─── ICON CIRCLE ─── */
+.icon-circle {
+  width: 34px; height: 34px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.icon-circle.red { background: rgba(175, 0, 0, 0.08); }
+
+/* ─── CTA ─── */
+.cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 100px;
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  box-shadow: var(--shadow-accent);
+}
+.cta-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(175, 0, 0, 0.25);
+}
+.cta-btn .arrow { transition: transform 0.3s ease; }
+.cta-btn:hover .arrow { transform: translateX(4px); }
+
+/* ─── PLAN ITEM ─── */
+.plan-item {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+.plan-item:last-child { border-bottom: none; }
+.plan-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+.plan-item h4 { font-size: 0.8rem; font-weight: 600; color: var(--text); margin-bottom: 1px; }
+.plan-item p { font-size: 0.72rem; color: var(--text-muted); }
+
+/* ─── KPI PILL ─── */
+.kpi-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+.kpi-pill {
+  padding: 5px 12px;
+  background: var(--bg-warm);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+/* ─── RULE ─── */
+.rule-card { display: flex; gap: 14px; align-items: flex-start; }
+.rule-number {
+  font-family: var(--heading);
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--accent);
+  flex-shrink: 0;
+  opacity: 0.6;
+}
+.rule-content h3 {
+  font-family: var(--heading);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+  line-height: 1.3;
+}
+.rule-content p { font-size: 0.78rem; color: var(--text-muted); line-height: 1.45; }
+
+/* ─── TOOLBAR ─── */
+.toolbar {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 4px;
+  box-shadow: var(--shadow-md);
+  z-index: 1000;
+  user-select: none;
+}
+.toolbar button {
+  width: 36px; height: 36px;
+  border: none;
+  background: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: var(--sans);
+  transition: all 0.2s ease;
+}
+.toolbar button:hover { background: var(--bg-warm); color: var(--text); }
+.toolbar button:active { transform: scale(0.92); }
+.toolbar .sep {
+  width: 1px;
+  height: 20px;
+  background: var(--border);
+  margin: 0 4px;
+}
+.toolbar .zoom-level {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  min-width: 48px;
+  text-align: center;
+  pointer-events: none;
+}
+
+/* ─── MINIMAP ─── */
+.minimap {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 180px;
+  height: 110px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  z-index: 1000;
+  cursor: pointer;
+}
+.minimap-canvas {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+.minimap-dot {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: var(--accent);
+  border-radius: 1px;
+  opacity: 0.5;
+}
+.minimap-viewport {
+  position: absolute;
+  border: 1.5px solid var(--accent);
+  border-radius: 2px;
+  background: rgba(175, 0, 0, 0.06);
+  pointer-events: none;
+  transition: all 0.15s ease;
+}
+
+/* ─── NAV PILLS ─── */
+.nav-pills {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 4px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 4px;
+  box-shadow: var(--shadow-sm);
+  z-index: 1000;
+  user-select: none;
+}
+.nav-pill {
+  padding: 6px 14px;
+  border: none;
+  background: none;
+  border-radius: 7px;
+  cursor: pointer;
+  font-family: var(--sans);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: all 0.25s ease;
+  white-space: nowrap;
+}
+.nav-pill:hover { color: var(--text); background: var(--bg-warm); }
+.nav-pill.active { color: #fff; background: var(--accent); }
+
+/* ─── DRAWING LAYER ─── */
+#draw-layer {
+  position: absolute;
+  top: 0; left: 0;
+  width: 8000px;
+  height: 5000px;
+  z-index: 50;
+  pointer-events: none;
+}
+body.tool-pen #draw-layer,
+body.tool-eraser #draw-layer {
+  pointer-events: all;
+}
+#draw-layer path {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ─── TOOL BUTTONS IN TOOLBAR ─── */
+.toolbar button.active {
+  background: var(--accent) !important;
+  color: #fff !important;
+}
+.toolbar button.active:hover {
+  background: var(--accent-light) !important;
+}
+
+/* ─── PEN OPTIONS ─── */
+.pen-options {
+  position: fixed;
+  bottom: 72px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: none;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 6px 10px;
+  box-shadow: var(--shadow-md);
+  z-index: 1001;
+  user-select: none;
+}
+.pen-options.visible { display: flex; }
+.pen-options .color-btn {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  padding: 0;
+}
+.pen-options .color-btn:hover { transform: scale(1.15); }
+.pen-options .color-btn.active { border-color: var(--text); box-shadow: 0 0 0 2px var(--bg-card), 0 0 0 3px var(--text); }
+.pen-options .sep-v { width: 1px; height: 22px; background: var(--border); }
+.pen-options .size-btn {
+  width: 30px; height: 30px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-card);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  padding: 0;
+}
+.pen-options .size-btn:hover { background: var(--bg-warm); }
+.pen-options .size-btn.active { border-color: var(--accent); background: var(--accent-subtle); }
+.pen-options .size-dot {
+  border-radius: 50%;
+  background: var(--text);
+}
+.pen-options .undo-btn {
+  width: 30px; height: 30px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-card);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  transition: all 0.15s ease;
+  padding: 0;
+}
+.pen-options .undo-btn:hover { background: var(--bg-warm); color: var(--text); }
+.pen-options .clear-btn {
+  padding: 4px 10px;
+  border: 1px solid rgba(175,0,0,0.2);
+  border-radius: 6px;
+  background: none;
+  cursor: pointer;
+  font-family: var(--sans);
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--accent);
+  transition: all 0.15s ease;
+}
+.pen-options .clear-btn:hover { background: rgba(175,0,0,0.06); }
+
+/* ─── FRAME NUMBER BADGE ─── */
+.frame-badge {
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  width: 24px;
+  height: 24px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(175,0,0,0.25);
+}
+</style>
+</head>
+<body>
+
+<!-- Grid background -->
+<div id="canvas-bg"></div>
+
+<!-- Section nav pills -->
+<div class="nav-pills" id="navPills">
+  <button class="nav-pill active" data-section="hook">Hook</button>
+  <button class="nav-pill" data-section="contexte">Contexte</button>
+  <button class="nav-pill" data-section="erreurs">Erreurs</button>
+  <button class="nav-pill" data-section="cta-mid">CTA</button>
+  <button class="nav-pill" data-section="solutions">Solutions</button>
+  <button class="nav-pill" data-section="plan">Plan Fev</button>
+  <button class="nav-pill" data-section="cta-final">CTA Final</button>
+</div>
+
+<!-- CANVAS -->
+<div id="canvas">
+
+  <!-- SVG connectors -->
+  <svg id="connectors" xmlns="http://www.w3.org/2000/svg"></svg>
+
+  <!-- Drawing layer -->
+  <svg id="draw-layer" xmlns="http://www.w3.org/2000/svg"></svg>
+
+  <!-- Section labels -->
+  <div class="section-label" style="left:80px;top:30px;">Hook</div>
+  <div class="section-label" style="left:80px;top:450px;">S1 — Le Contexte</div>
+  <div class="section-label" style="left:80px;top:1150px;">S2 — Les Erreurs</div>
+  <div class="section-label" style="left:80px;top:1950px;">Mid-CTA</div>
+  <div class="section-label" style="left:80px;top:2250px;">S3 — Les Solutions</div>
+  <div class="section-label" style="left:80px;top:3350px;">S4 — Plan Février</div>
+  <div class="section-label" style="left:80px;top:4250px;">CTA Final</div>
+
+  <!-- ════════════════════════════════════════════════ -->
+  <!-- HOOK -->
+  <!-- ════════════════════════════════════════════════ -->
+
+  <!-- 1: Hook principal -->
+  <div class="frame accent-border" data-section="hook" style="left:120px;top:80px;width:480px;" id="f1">
+    <div class="frame-badge">1</div>
+    <div class="label">Janvier 2025 — Bilan</div>
+    <div style="margin-bottom:6px;">
+      <span class="big-number accent-color" data-count="31500" data-suffix=" €">0 €</span>
+    </div>
+    <div class="flex-row" style="gap:8px;margin-bottom:16px;">
+      <span style="font-size:0.95rem;color:var(--text-muted);">au lieu de</span>
+      <span class="strikethrough" style="font-size:1.4rem;font-weight:700;">60 000 €</span>
+    </div>
+    <div class="divider"></div>
+    <p>Un mois qui ressemble à un succès vu de l'extérieur. Un <span class="accent bold">échec</span> par rapport à ma stratégie.</p>
+  </div>
+
+  <!-- 2: Accroche vidéo -->
+  <div class="frame narrow" data-section="hook" style="left:660px;top:80px;" id="f2">
+    <div class="frame-badge">2</div>
+    <div class="label">Promesse vidéo</div>
+    <p style="font-size:0.85rem;font-weight:500;color:var(--text);">Je vais tout te montrer : les chiffres, les détails, tout ce que j'ai fait et <span class="accent">pourquoi ça n'a pas fonctionné</span>.</p>
+  </div>
+
+  <!-- 3: Pour qui -->
+  <div class="frame narrow accent-bg" data-section="hook" style="left:660px;top:260px;" id="f3">
+    <div class="frame-badge">3</div>
+    <div class="label">Pour toi si...</div>
+    <p style="font-size:0.82rem;">Tu stagnes sous les <span class="accent bold">10K/mois</span>, tu travailles comme un acharné mais tu ne comprends pas d'où vient le blocage.</p>
+  </div>
+
+  <!-- ════════════════════════════════════════════════ -->
+  <!-- S1 — CONTEXTE -->
+  <!-- ════════════════════════════════════════════════ -->
+
+  <!-- 4: Intro contexte -->
+  <div class="frame" data-section="contexte" style="left:120px;top:500px;" id="f4">
+    <div class="frame-badge">4</div>
+    <div class="label">S1 — Le contexte</div>
+    <h1 class="hero">Avant de voir pourquoi j'ai foiré</h1>
+    <div class="divider"></div>
+    <p>C'est important de remettre du contexte. Tous les chiffres, tout ce qu'il s'est passé.</p>
+  </div>
+
+  <!-- 5: Objectif -->
+  <div class="frame narrow" data-section="contexte" style="left:600px;top:500px;text-align:center;" id="f5">
+    <div class="frame-badge">5</div>
+    <div class="label" style="justify-content:center;">Objectif Janvier</div>
+    <div class="big-number" data-count="60000" data-suffix=" €" style="margin-bottom:4px;">0 €</div>
+    <p>de chiffre d'affaires</p>
+  </div>
+
+  <!-- 6: Résultat -->
+  <div class="frame narrow accent-bg" data-section="contexte" style="left:990px;top:500px;text-align:center;" id="f6">
+    <div class="frame-badge">6</div>
+    <div class="label" style="justify-content:center;">Résultat</div>
+    <div class="big-number accent-color" data-count="31500" data-suffix=" €" style="margin-bottom:4px;">0 €</div>
+    <p>8 ventes — objectif manqué de <span class="accent bold">47%</span></p>
+  </div>
+
+  <!-- 7: Novembre vs Janvier -->
+  <div class="frame wide" data-section="contexte" style="left:120px;top:730px;" id="f7">
+    <div class="frame-badge">7</div>
+    <div class="label">Comparaison</div>
+    <h1 class="section" style="margin-bottom:16px;">Novembre vs Janvier</h1>
+    <div class="grid-2">
+      <div style="padding:16px;background:var(--bg-warm);border-radius:var(--radius-sm);">
+        <span class="tag tag-green" style="margin-bottom:8px;">Novembre</span>
+        <div class="stat" style="margin-top:10px;">
+          <div class="stat-value" data-count="40800" data-suffix=" €">0 €</div>
+          <div class="stat-label">CA — ~20 calls</div>
+        </div>
+        <div class="metric-bar"><div class="metric-bar-fill muted-bg" data-width="68%"></div></div>
+      </div>
+      <div style="padding:16px;background:rgba(175,0,0,0.03);border-radius:var(--radius-sm);border:1px solid rgba(175,0,0,0.1);">
+        <span class="tag tag-red" style="margin-bottom:8px;">Janvier</span>
+        <div class="stat" style="margin-top:10px;">
+          <div class="stat-value red" data-count="31500" data-suffix=" €">0 €</div>
+          <div class="stat-label">CA — 8 ventes</div>
+        </div>
+        <div class="metric-bar"><div class="metric-bar-fill accent-bg" data-width="52%"></div></div>
+      </div>
+    </div>
+    <div class="spiral-indicator" style="margin-top:14px;">↓ −23% par rapport à Novembre</div>
+  </div>
+
+  <!-- 8: Calls Janvier -->
+  <div class="frame" data-section="contexte" style="left:700px;top:730px;" id="f8">
+    <div class="frame-badge">8</div>
+    <div class="label">Janvier — Calls</div>
+    <div class="grid-3" style="margin-bottom:14px;">
+      <div class="stat">
+        <div class="stat-value" data-count="25">0</div>
+        <div class="stat-label">Bookés</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" data-count="16">0</div>
+        <div class="stat-label">Shows</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value red" data-count="50" data-suffix="%">0%</div>
+        <div class="stat-label">Closing</div>
+      </div>
+    </div>
+    <p style="font-size:0.78rem;">16 qualifiés sur 16 shows — le problème n'est pas la qualif mais la conversion.</p>
+  </div>
+
+  <!-- 9: Restriction LinkedIn -->
+  <div class="frame accent-bg" data-section="contexte" style="left:1150px;top:730px;" id="f9">
+    <div class="frame-badge">9</div>
+    <div class="label">Problème majeur</div>
+    <h1 class="small" style="margin-bottom:12px;">Restriction <span class="accent">LinkedIn</span></h1>
+    <div class="flex-col gap-xs">
+      <p style="font-size:0.8rem;">Impossible d'envoyer des messages</p>
+      <p style="font-size:0.8rem;">Impossible de faire des demandes de connexion</p>
+      <p style="font-size:0.8rem;">Reach contenu en chute libre</p>
+    </div>
+    <div class="spiral-indicator" style="margin-top:12px;">
+      <span class="tag tag-red">80% du CA</span>&nbsp;dépendait de LinkedIn
+    </div>
+  </div>
+
+  <!-- 10: Spirale négative -->
+  <div class="frame narrow" data-section="contexte" style="left:1150px;top:1020px;" id="f10">
+    <div class="frame-badge">10</div>
+    <div class="label">Cascade</div>
+    <div class="flex-col gap-xs">
+      <div class="cascade-item"><h4>Ban LinkedIn</h4></div>
+      <div class="cascade-arrow">↓</div>
+      <div class="cascade-item" style="opacity:0.85;"><h4>Changement de process</h4></div>
+      <div class="cascade-arrow">↓</div>
+      <div class="cascade-item" style="opacity:0.7;"><h4>Impact mental</h4></div>
+      <div class="cascade-arrow">↓</div>
+      <div class="cascade-item" style="opacity:0.55;border-left-color:var(--accent);"><h4 style="color:var(--accent);">Spirale négative</h4></div>
+    </div>
+  </div>
+
+  <!-- 11: Payoff S1 -->
+  <div class="frame accent-border" data-section="contexte" style="left:700px;top:1020px;" id="f11">
+    <div class="frame-badge">11</div>
+    <div class="quote-block">
+      <p>"Au lieu de marteler une stratégie qui fonctionnait, j'ai fait trop de changements pour m'adapter au ban LinkedIn."</p>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════ -->
+  <!-- S2 — ERREURS -->
+  <!-- ════════════════════════════════════════════════ -->
+
+  <!-- 12: Erreurs intro -->
+  <div class="frame" data-section="erreurs" style="left:120px;top:1200px;" id="f12">
+    <div class="frame-badge">12</div>
+    <div class="label">S2 — Les erreurs</div>
+    <h1 class="hero">Des petits détails qui changent <span class="accent">tout</span></h1>
+    <div class="divider"></div>
+    <p>Des détails structurels dans une stratégie optimisée font une <span class="bold">énorme différence</span>.</p>
+  </div>
+
+  <!-- 13: Erreur 1 — Acquisition -->
+  <div class="frame accent-bg" data-section="erreurs" style="left:120px;top:1470px;" id="f13">
+    <div class="frame-badge">13</div>
+    <div class="label">Erreur #1</div>
+    <div class="flex-row" style="margin-bottom:10px;">
+      <div class="icon-circle red">
+        <svg width="16" height="16" fill="none" stroke="var(--accent)" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      </div>
+      <h1 class="small">Acquisition — DM standardisés</h1>
+    </div>
+    <p style="margin-bottom:10px;">Moins de personnalisation, scripts simplifiés, setter avec moins de contrôle.</p>
+    <div class="flex-row">
+      <div>
+        <span style="font-family:var(--heading);font-size:1.3rem;font-weight:700;color:var(--accent);" data-count="51" data-suffix="%">0%</span>
+        <span style="font-size:0.68rem;color:var(--text-muted);"> taux réponse DM</span>
+      </div>
+    </div>
+    <div class="metric-bar"><div class="metric-bar-fill accent-bg" data-width="51%"></div></div>
+  </div>
+
+  <!-- 14: Erreur 2 — Loom -->
+  <div class="frame accent-bg" data-section="erreurs" style="left:580px;top:1470px;" id="f14">
+    <div class="frame-badge">14</div>
+    <div class="label">Erreur #2</div>
+    <div class="flex-row" style="margin-bottom:10px;">
+      <div class="icon-circle red">
+        <svg width="16" height="16" fill="none" stroke="var(--accent)" stroke-width="2" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+      </div>
+      <h1 class="small">Loom — Quasi abandonné</h1>
+    </div>
+    <p style="margin-bottom:10px;">Quasi aucun loom envoyé. Prospects non réchauffés.</p>
+    <div class="grid-2">
+      <div class="stat">
+        <div class="stat-value red" data-count="2">0</div>
+        <div class="stat-label">Looms envoyés</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value red" data-count="2" data-suffix="%">0%</div>
+        <div class="stat-label">Loom → Call</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 15: Erreur 3 — Positionnement -->
+  <div class="frame accent-bg" data-section="erreurs" style="left:1040px;top:1470px;" id="f15">
+    <div class="frame-badge">15</div>
+    <div class="label">Erreur #3</div>
+    <div class="flex-row" style="margin-bottom:10px;">
+      <div class="icon-circle red">
+        <svg width="16" height="16" fill="none" stroke="var(--accent)" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+      </div>
+      <h1 class="small">Positionnement trop générique</h1>
+    </div>
+    <p>Communication moins personnalisée, approche plus générique. Perte de l'avantage différenciant.</p>
+  </div>
+
+  <!-- 16: Erreur 4 — Remise en question -->
+  <div class="frame accent-bg" data-section="erreurs" style="left:580px;top:1720px;" id="f16">
+    <div class="frame-badge">16</div>
+    <div class="label">Erreur #4</div>
+    <div class="flex-row" style="margin-bottom:10px;">
+      <div class="icon-circle red">
+        <svg width="16" height="16" fill="none" stroke="var(--accent)" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </div>
+      <h1 class="small">Remise en question trop tardive</h1>
+    </div>
+    <p>Continué sur des process cassés. Analyse seulement en fin de mois au lieu de corriger en temps réel.</p>
+  </div>
+
+  <!-- 17: Payoff S2 -->
+  <div class="frame accent-border" data-section="erreurs" style="left:120px;top:1720px;" id="f17">
+    <div class="frame-badge">17</div>
+    <div class="quote-block">
+      <p>"Chaque détail compte. Tout est une question de data et d'exécution des actions qui mènent aux résultats."</p>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════ -->
+  <!-- MID-CTA -->
+  <!-- ════════════════════════════════════════════════ -->
+
+  <!-- 18: CTA Mid -->
+  <div class="frame dark-bg wide" data-section="cta-mid" style="left:120px;top:2000px;text-align:center;" id="f18">
+    <div class="frame-badge">18</div>
+    <div class="tag tag-red" style="margin-bottom:12px;display:inline-flex;background:rgba(255,68,68,0.15);color:#FF4444;">Pause</div>
+    <h1 class="hero" style="margin-bottom:12px;">Bloqué sous les <span class="accent">10K</span>/mois ?</h1>
+    <p style="margin-bottom:20px;">Tu travailles comme un acharné mais tu ne comprends pas d'où vient ton blocage.</p>
+    <a href="#" class="cta-btn">Appel gratuit — 15 min <span class="arrow">→</span></a>
+    <p style="margin-top:10px;font-size:0.68rem;color:rgba(255,255,255,0.4);">Lien en description</p>
+  </div>
+
+  <!-- ════════════════════════════════════════════════ -->
+  <!-- S3 — SOLUTIONS -->
+  <!-- ════════════════════════════════════════════════ -->
+
+  <!-- 19: Solutions intro -->
+  <div class="frame" data-section="solutions" style="left:120px;top:2300px;" id="f19">
+    <div class="frame-badge">19</div>
+    <div class="label">S3 — Les solutions</div>
+    <h1 class="hero">Ce que j'ai corrigé <span class="accent">pendant</span> le mois</h1>
+    <div class="divider"></div>
+    <p>3 règles importantes que tu peux aussi appliquer.</p>
+  </div>
+
+  <!-- 20: Actions correctives -->
+  <div class="frame" data-section="solutions" style="left:600px;top:2300px;" id="f20">
+    <div class="frame-badge">20</div>
+    <div class="label">Corrections en cours de mois</div>
+    <div class="flex-col gap-sm">
+      <div class="plan-item" style="border:none;padding:6px 0;">
+        <div class="plan-dot"></div>
+        <div><h4>Recommandations clients</h4><p>Clients satisfaits = bouche-à-oreille</p></div>
+      </div>
+      <div class="plan-item" style="border:none;padding:6px 0;">
+        <div class="plan-dot"></div>
+        <div><h4>Relances LinkedIn</h4><p>Encore possibles malgré restriction</p></div>
+      </div>
+      <div class="plan-item" style="border:none;padding:6px 0;">
+        <div class="plan-dot"></div>
+        <div><h4>Reprise du contrôle setter</h4><p>Reprendre la prospection moi-même</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 21: Règle 1 -->
+  <div class="frame" data-section="solutions" style="left:120px;top:2580px;" id="f21">
+    <div class="frame-badge">21</div>
+    <div class="label">Règle #1</div>
+    <div class="rule-card">
+      <div class="rule-number">01</div>
+      <div class="rule-content">
+        <h3>Ne change jamais une stratégie qui fonctionne <span class="accent">sans data claire</span></h3>
+        <p>Adapter sans mesurer, c'est naviguer à l'aveugle.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 22: Règle 2 -->
+  <div class="frame" data-section="solutions" style="left:580px;top:2580px;" id="f22">
+    <div class="frame-badge">22</div>
+    <div class="label">Règle #2</div>
+    <div class="rule-card">
+      <div class="rule-number">02</div>
+      <div class="rule-content">
+        <h3>La personnalisation est un <span class="accent">levier de conversion</span>, pas un détail</h3>
+        <p>Chaque prospect mérite une approche sur mesure.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 23: Règle 3 -->
+  <div class="frame" data-section="solutions" style="left:1040px;top:2580px;" id="f23">
+    <div class="frame-badge">23</div>
+    <div class="label">Règle #3</div>
+    <div class="rule-card">
+      <div class="rule-number">03</div>
+      <div class="rule-content">
+        <h3>Ne dépends <span class="accent">jamais</span> d'un seul canal d'acquisition</h3>
+        <p>Un seul canal = une seule faille.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 24: Freelances <5K -->
+  <div class="frame wide" data-section="solutions" style="left:120px;top:2830px;" id="f24">
+    <div class="frame-badge">24</div>
+    <div class="label">Pour les freelances &lt;5K</div>
+    <div class="grid-3" style="gap:10px;">
+      <div style="padding:14px;background:var(--bg-warm);border-radius:var(--radius-sm);">
+        <p style="font-size:0.8rem;color:var(--text);font-weight:500;">Copier des scripts ≠ <span class="accent bold">comprendre ton marché</span></p>
+      </div>
+      <div style="padding:14px;background:var(--bg-warm);border-radius:var(--radius-sm);">
+        <p style="font-size:0.8rem;color:var(--text);font-weight:500;">La pré-vente commence <span class="accent bold">avant</span> le call</p>
+      </div>
+      <div style="padding:14px;background:var(--bg-warm);border-radius:var(--radius-sm);">
+        <p style="font-size:0.8rem;color:var(--text);font-weight:500;">L'acquisition est un <span class="accent bold">système</span></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 25: Payoff S3 -->
+  <div class="frame accent-border" data-section="solutions" style="left:700px;top:2830px;" id="f25">
+    <div class="frame-badge">25</div>
+    <div class="quote-block">
+      <p>"Ces 3 règles vont me permettre de ne plus me retrouver dos au mur et de toujours avancer avec plusieurs canaux."</p>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════ -->
+  <!-- S4 — PLAN FÉVRIER -->
+  <!-- ════════════════════════════════════════════════ -->
+
+  <!-- 26: Plan intro -->
+  <div class="frame" data-section="plan" style="left:120px;top:3100px;" id="f26">
+    <div class="frame-badge">26</div>
+    <div class="label">S4 — Plan Février</div>
+    <h1 class="hero">Objectif : <span class="accent">60K€</span></h1>
+    <div class="divider"></div>
+    <p>Pas uniquement revenir à novembre, mais exploser l'objectif.</p>
+  </div>
+
+  <!-- 27: Acquisition -->
+  <div class="frame accent-bg" data-section="plan" style="left:120px;top:3370px;" id="f27">
+    <div class="frame-badge">27</div>
+    <div class="label">Plan — Acquisition</div>
+    <h1 class="small" style="margin-bottom:10px;">Prospection full personnalisée</h1>
+    <div class="plan-item" style="border:none;padding:6px 0;">
+      <div class="plan-dot"></div>
+      <div><h4>Personnalisation totale</h4><p>Chaque DM adapté, fini la standardisation</p></div>
+    </div>
+    <div class="plan-item" style="border:none;padding:6px 0;">
+      <div class="plan-dot"></div>
+      <div><h4>Loom + YouTube</h4><p>Vidéos valeur pour sujets communs</p></div>
+    </div>
+  </div>
+
+  <!-- 28: Canaux -->
+  <div class="frame accent-bg" data-section="plan" style="left:580px;top:3370px;" id="f28">
+    <div class="frame-badge">28</div>
+    <div class="label">Plan — Canaux</div>
+    <h1 class="small" style="margin-bottom:10px;">Ne plus dépendre de LinkedIn</h1>
+    <div class="grid-3" style="gap:8px;">
+      <div style="text-align:center;padding:10px;background:var(--bg-warm);border-radius:8px;">
+        <div style="font-size:1.2rem;margin-bottom:4px;">📸</div>
+        <div style="font-size:0.72rem;font-weight:600;">Instagram</div>
+      </div>
+      <div style="text-align:center;padding:10px;background:var(--bg-warm);border-radius:8px;">
+        <div style="font-size:1.2rem;margin-bottom:4px;">🎬</div>
+        <div style="font-size:0.72rem;font-weight:600;">YouTube</div>
+      </div>
+      <div style="text-align:center;padding:10px;background:var(--bg-warm);border-radius:8px;">
+        <div style="font-size:1.2rem;margin-bottom:4px;">💰</div>
+        <div style="font-size:0.72rem;font-weight:600;">Paid</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 29: Delivery -->
+  <div class="frame accent-bg" data-section="plan" style="left:1040px;top:3370px;" id="f29">
+    <div class="frame-badge">29</div>
+    <div class="label">Plan — Delivery</div>
+    <h1 class="small" style="margin-bottom:10px;">Satisfaction & recommandations</h1>
+    <p>Meilleure delivery = plus de résultats clients = plus de recommandations naturelles.</p>
+  </div>
+
+  <!-- 30: KPIs -->
+  <div class="frame wide" data-section="plan" style="left:120px;top:3650px;" id="f30">
+    <div class="frame-badge">30</div>
+    <div class="label">Plan — KPIs</div>
+    <h1 class="small" style="margin-bottom:12px;">Surveillés chaque semaine</h1>
+    <div class="kpi-grid">
+      <div class="kpi-pill">Taux réponse prospection</div>
+      <div class="kpi-pill">Calls qualifiés bookés</div>
+      <div class="kpi-pill">Looms / vidéos envoyés</div>
+      <div class="kpi-pill">Prospects qualifiés IG</div>
+      <div class="kpi-pill">Leads YouTube</div>
+      <div class="kpi-pill">KPI Social Ads</div>
+    </div>
+  </div>
+
+  <!-- 31: Payoff S4 -->
+  <div class="frame accent-border" data-section="plan" style="left:700px;top:3650px;" id="f31">
+    <div class="frame-badge">31</div>
+    <div class="quote-block">
+      <p>"Ce plan fonctionne car il martèle une stratégie validée + développe d'autres sources d'acquisition."</p>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════ -->
+  <!-- CTA FINAL -->
+  <!-- ════════════════════════════════════════════════ -->
+
+  <!-- 32: CTA -->
+  <div class="frame dark-bg wide" data-section="cta-final" style="left:120px;top:3920px;text-align:center;" id="f32">
+    <div class="frame-badge">32</div>
+    <div class="label" style="justify-content:center;">CTA Final</div>
+    <h1 class="hero" style="margin-bottom:10px;">La stratégie des <span class="accent">40,8K€</span><br>en Novembre</h1>
+    <div class="divider" style="margin:12px auto;"></div>
+    <p style="margin-bottom:8px;">Ce plan est à adapter à ton business. Mais d'abord, fixe les bases.</p>
+    <p style="font-size:0.8rem;margin-bottom:20px;">Je t'explique toute la stratégie dans cette vidéo ↓</p>
+    <a href="#" class="cta-btn">Voir la vidéo stratégie <span class="arrow">→</span></a>
+  </div>
+
+</div>
+
+<!-- Toolbar -->
+<div class="toolbar" id="toolbar">
+  <!-- Tool selector -->
+  <button id="toolPointer" class="active" title="Pointer (V)">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M4 1l16 13.5H11l5 9.5-3 1.5-5-9.5L4 21V1z"/></svg>
+  </button>
+  <button id="toolHand" title="Hand (H)">
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 11V6a2 2 0 00-4 0M14 10V4a2 2 0 00-4 0v6M10 9.5V5a2 2 0 00-4 0v9"/><path d="M18 11a2 2 0 014 0v3a8 8 0 01-8 8h-2c-2.5 0-4-1-6-3.5l-2.5-3.5a2 2 0 013-2.5L10 15V4"/></svg>
+  </button>
+  <button id="toolPen" title="Pen (P)">
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
+  </button>
+  <button id="toolEraser" title="Eraser (E)">
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 20H7L3 16l10-10 8 8-4 4"/><path d="M6.5 13.5l5 5"/></svg>
+  </button>
+  <div class="sep"></div>
+  <button id="zoomOut" title="Zoom out">−</button>
+  <span class="zoom-level" id="zoomLevel">100%</span>
+  <button id="zoomIn" title="Zoom in">+</button>
+  <div class="sep"></div>
+  <button id="fitAll" title="Fit all (0)">
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+  </button>
+</div>
+
+<!-- Pen options -->
+<div class="pen-options" id="penOptions">
+  <button class="color-btn active" data-color="#1A1714" style="background:#1A1714;"></button>
+  <button class="color-btn" data-color="#AF0000" style="background:#AF0000;"></button>
+  <button class="color-btn" data-color="#2563EB" style="background:#2563EB;"></button>
+  <button class="color-btn" data-color="#16A34A" style="background:#16A34A;"></button>
+  <button class="color-btn" data-color="#F59E0B" style="background:#F59E0B;"></button>
+  <div class="sep-v"></div>
+  <button class="size-btn active" data-size="2" title="Thin"><div class="size-dot" style="width:4px;height:4px;"></div></button>
+  <button class="size-btn" data-size="4" title="Medium"><div class="size-dot" style="width:7px;height:7px;"></div></button>
+  <button class="size-btn" data-size="8" title="Thick"><div class="size-dot" style="width:11px;height:11px;"></div></button>
+  <div class="sep-v"></div>
+  <button class="undo-btn" id="undoDraw" title="Undo (Ctrl+Z)">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 105.64-11.36L1 10"/></svg>
+  </button>
+  <button class="clear-btn" id="clearDraw">Clear all</button>
+</div>
+
+<!-- Minimap -->
+<div class="minimap" id="minimap">
+  <div class="minimap-canvas" id="minimapCanvas">
+    <div class="minimap-viewport" id="minimapViewport"></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+const canvas = document.getElementById('canvas');
+const canvasBg = document.getElementById('canvas-bg');
+const frames = document.querySelectorAll('.frame');
+const connectorsSvg = document.getElementById('connectors');
+const drawLayer = document.getElementById('draw-layer');
+const penOptionsEl = document.getElementById('penOptions');
+
+let scale = 0.55, panX = 100, panY = 80;
+let isPanning = false, startX, startY;
+const minScale = 0.12, maxScale = 2.0;
+
+// Tools: 'pointer' | 'hand' | 'pen' | 'eraser'
+let currentTool = 'pointer';
+let spaceHeld = false;
+let prevToolBeforeSpace = null;
+
+// Pen state
+let penColor = '#1A1714';
+let penSize = 2;
+let isDrawing = false;
+let currentPath = null;
+let pathPoints = [];
+let drawHistory = []; // array of SVG path elements
+
+// ═══════════════════════════════════════════
+// TOOL MANAGEMENT
+// ═══════════════════════════════════════════
+const toolBtns = {
+  pointer: document.getElementById('toolPointer'),
+  hand: document.getElementById('toolHand'),
+  pen: document.getElementById('toolPen'),
+  eraser: document.getElementById('toolEraser'),
+};
+
+function setTool(tool) {
+  currentTool = tool;
+  document.body.className = 'tool-' + tool;
+  Object.values(toolBtns).forEach(b => b.classList.remove('active'));
+  if (toolBtns[tool]) toolBtns[tool].classList.add('active');
+  penOptionsEl.classList.toggle('visible', tool === 'pen' || tool === 'eraser');
+}
+setTool('pointer');
+
+toolBtns.pointer.addEventListener('click', () => setTool('pointer'));
+toolBtns.hand.addEventListener('click', () => setTool('hand'));
+toolBtns.pen.addEventListener('click', () => setTool('pen'));
+toolBtns.eraser.addEventListener('click', () => setTool('eraser'));
+
+// Pen color buttons
+document.querySelectorAll('.pen-options .color-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.pen-options .color-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    penColor = btn.dataset.color;
+  });
+});
+
+// Pen size buttons
+document.querySelectorAll('.pen-options .size-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.pen-options .size-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    penSize = parseInt(btn.dataset.size);
+  });
+});
+
+// Undo
+document.getElementById('undoDraw').addEventListener('click', undoDraw);
+function undoDraw() {
+  if (drawHistory.length === 0) return;
+  const last = drawHistory.pop();
+  last.remove();
+}
+
+// Clear all
+document.getElementById('clearDraw').addEventListener('click', () => {
+  drawHistory.forEach(p => p.remove());
+  drawHistory = [];
+});
+
+// ═══════════════════════════════════════════
+// CANVAS TRANSFORM
+// ═══════════════════════════════════════════
+function getCanvasBounds() {
+  let mnX = Infinity, mnY = Infinity, mxX = -Infinity, mxY = -Infinity;
+  frames.forEach(f => {
+    const x = parseInt(f.style.left), y = parseInt(f.style.top);
+    const w = f.offsetWidth || 420, h = f.offsetHeight || 300;
+    mnX = Math.min(mnX, x); mnY = Math.min(mnY, y);
+    mxX = Math.max(mxX, x + w); mxY = Math.max(mxY, y + h);
+  });
+  return { minX: mnX - 60, minY: mnY - 60, maxX: mxX + 60, maxY: mxY + 60 };
+}
+
+function applyTransform() {
+  canvas.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+  const gs = 30 * scale;
+  canvasBg.style.backgroundSize = `${gs}px ${gs}px`;
+  canvasBg.style.backgroundPosition = `${panX % gs}px ${panY % gs}px`;
+  document.getElementById('zoomLevel').textContent = Math.round(scale * 100) + '%';
+  updateMinimap();
+}
+
+function zoomAt(newScale, cx, cy) {
+  newScale = Math.max(minScale, Math.min(maxScale, newScale));
+  const r = newScale / scale;
+  panX = cx - r * (cx - panX);
+  panY = cy - r * (cy - panY);
+  scale = newScale;
+  applyTransform();
+}
+
+function smoothTransition(fn) {
+  canvas.style.transition = 'transform 0.6s cubic-bezier(0.22, 1, 0.36, 1)';
+  canvasBg.style.transition = 'background-size 0.6s ease, background-position 0.6s ease';
+  fn();
+  applyTransform();
+  setTimeout(() => {
+    canvas.style.transition = 'none';
+    canvasBg.style.transition = 'none';
+  }, 650);
+}
+
+function focusFrame(frame) {
+  const x = parseInt(frame.style.left), y = parseInt(frame.style.top);
+  const w = frame.offsetWidth, h = frame.offsetHeight;
+  const vw = window.innerWidth, vh = window.innerHeight;
+  smoothTransition(() => {
+    scale = Math.min(vw / (w + 120), vh / (h + 120), 1.2);
+    panX = vw / 2 - (x + w / 2) * scale;
+    panY = vh / 2 - (y + h / 2) * scale;
+  });
+  frames.forEach(f => f.classList.remove('focused'));
+  frame.classList.add('focused');
+}
+
+function fitAll() {
+  const b = getCanvasBounds();
+  const vw = window.innerWidth, vh = window.innerHeight - 100;
+  const cw = b.maxX - b.minX, ch = b.maxY - b.minY;
+  smoothTransition(() => {
+    scale = Math.min(vw / cw, vh / ch, 1);
+    panX = (vw - cw * scale) / 2 - b.minX * scale;
+    panY = (vh - ch * scale) / 2 - b.minY * scale + 30;
+  });
+  frames.forEach(f => f.classList.remove('focused'));
+}
+
+// ═══════════════════════════════════════════
+// SCREEN → CANVAS COORDS
+// ═══════════════════════════════════════════
+function screenToCanvas(sx, sy) {
+  return { x: (sx - panX) / scale, y: (sy - panY) / scale };
+}
+
+// ═══════════════════════════════════════════
+// MIRO-LIKE CONTROLS
+// Scroll = pan, Ctrl/Cmd+Scroll = zoom
+// ═══════════════════════════════════════════
+document.addEventListener('wheel', e => {
+  e.preventDefault();
+  if (e.ctrlKey || e.metaKey) {
+    // Pinch-zoom or Ctrl+scroll → zoom
+    const delta = e.deltaY > 0 ? 0.92 : 1.08;
+    zoomAt(scale * delta, e.clientX, e.clientY);
+  } else {
+    // Regular scroll → pan
+    panX -= e.deltaX;
+    panY -= e.deltaY;
+    applyTransform();
+  }
+}, { passive: false });
+
+// ═══════════════════════════════════════════
+// MOUSE INTERACTIONS
+// ═══════════════════════════════════════════
+function isUI(e) {
+  return e.target.closest('.toolbar') || e.target.closest('.nav-pills') || e.target.closest('.minimap') || e.target.closest('.pen-options');
+}
+
+document.addEventListener('mousedown', e => {
+  if (isUI(e)) return;
+  const tool = currentTool;
+
+  // Drawing tools
+  if ((tool === 'pen' || tool === 'eraser') && e.target.closest('#draw-layer')) {
+    if (tool === 'pen') startDrawing(e);
+    return;
+  }
+  if (tool === 'eraser' && e.target.closest('#draw-layer')) return;
+
+  // Hand tool or pointer on empty canvas → pan
+  if (tool === 'hand' || (tool === 'pointer' && !e.target.closest('.frame'))) {
+    isPanning = true;
+    startX = e.clientX - panX;
+    startY = e.clientY - panY;
+  }
+});
+
+document.addEventListener('mousemove', e => {
+  if (isDrawing) {
+    continueDrawing(e);
+    return;
+  }
+  if (isPanning) {
+    panX = e.clientX - startX;
+    panY = e.clientY - startY;
+    applyTransform();
+  }
+  // Eraser hover
+  if (currentTool === 'eraser') {
+    highlightEraserTarget(e);
+  }
+});
+
+document.addEventListener('mouseup', e => {
+  if (isDrawing) { stopDrawing(); return; }
+  isPanning = false;
+});
+
+// Eraser: click to delete a path
+document.addEventListener('click', e => {
+  if (currentTool === 'eraser' && e.target.closest('#draw-layer')) {
+    const path = e.target.closest('path');
+    if (path && drawHistory.includes(path)) {
+      drawHistory = drawHistory.filter(p => p !== path);
+      path.remove();
+    }
+  }
+});
+
+// Double-click → focus card or fit all
+document.addEventListener('dblclick', e => {
+  if (isUI(e)) return;
+  if (currentTool === 'pen' || currentTool === 'eraser') return;
+  const frame = e.target.closest('.frame');
+  if (frame) focusFrame(frame);
+  else fitAll();
+});
+
+// ═══════════════════════════════════════════
+// TOUCH
+// ═══════════════════════════════════════════
+let touchStartDist = 0, touchStartScale = 1, touchPanSX, touchPanSY;
+document.addEventListener('touchstart', e => {
+  if (isUI(e)) return;
+  if (e.touches.length === 2) {
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    touchStartDist = Math.sqrt(dx * dx + dy * dy);
+    touchStartScale = scale;
+  } else if (e.touches.length === 1 && currentTool !== 'pen') {
+    isPanning = true;
+    touchPanSX = e.touches[0].clientX - panX;
+    touchPanSY = e.touches[0].clientY - panY;
+  }
+}, { passive: true });
+document.addEventListener('touchmove', e => {
+  if (e.touches.length === 2) {
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    const d = Math.sqrt(dx * dx + dy * dy);
+    const cx = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+    const cy = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+    zoomAt(touchStartScale * (d / touchStartDist), cx, cy);
+  } else if (isPanning && e.touches.length === 1) {
+    panX = e.touches[0].clientX - touchPanSX;
+    panY = e.touches[0].clientY - touchPanSY;
+    applyTransform();
+  }
+}, { passive: true });
+document.addEventListener('touchend', () => { isPanning = false; });
+
+// ═══════════════════════════════════════════
+// DRAWING ENGINE
+// ═══════════════════════════════════════════
+function startDrawing(e) {
+  isDrawing = true;
+  const pt = screenToCanvas(e.clientX, e.clientY);
+  pathPoints = [pt];
+  currentPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  currentPath.setAttribute('stroke', penColor);
+  currentPath.setAttribute('stroke-width', penSize);
+  currentPath.setAttribute('d', `M${pt.x} ${pt.y}`);
+  currentPath.style.pointerEvents = 'stroke';
+  currentPath.style.cursor = 'pointer';
+  drawLayer.appendChild(currentPath);
+}
+
+function continueDrawing(e) {
+  if (!isDrawing || !currentPath) return;
+  const pt = screenToCanvas(e.clientX, e.clientY);
+  pathPoints.push(pt);
+
+  // Smooth path using quadratic bezier through midpoints
+  if (pathPoints.length < 3) {
+    currentPath.setAttribute('d', `M${pathPoints[0].x} ${pathPoints[0].y} L${pt.x} ${pt.y}`);
+    return;
+  }
+  let d = `M${pathPoints[0].x} ${pathPoints[0].y}`;
+  for (let i = 1; i < pathPoints.length - 1; i++) {
+    const mx = (pathPoints[i].x + pathPoints[i + 1].x) / 2;
+    const my = (pathPoints[i].y + pathPoints[i + 1].y) / 2;
+    d += ` Q${pathPoints[i].x} ${pathPoints[i].y} ${mx} ${my}`;
+  }
+  const last = pathPoints[pathPoints.length - 1];
+  d += ` L${last.x} ${last.y}`;
+  currentPath.setAttribute('d', d);
+}
+
+function stopDrawing() {
+  if (currentPath && pathPoints.length > 1) {
+    drawHistory.push(currentPath);
+  } else if (currentPath) {
+    currentPath.remove();
+  }
+  isDrawing = false;
+  currentPath = null;
+  pathPoints = [];
+}
+
+function highlightEraserTarget(e) {
+  drawLayer.querySelectorAll('path').forEach(p => p.style.opacity = '1');
+  const el = document.elementFromPoint(e.clientX, e.clientY);
+  if (el && el.tagName === 'path' && el.closest('#draw-layer')) {
+    el.style.opacity = '0.3';
+  }
+}
+
+// ═══════════════════════════════════════════
+// KEYBOARD
+// ═══════════════════════════════════════════
+document.addEventListener('keydown', e => {
+  // Space → temporary hand
+  if (e.code === 'Space' && !spaceHeld && currentTool !== 'hand') {
+    e.preventDefault();
+    spaceHeld = true;
+    prevToolBeforeSpace = currentTool;
+    setTool('hand');
+    return;
+  }
+  if (e.key === 'v' || e.key === 'V') setTool('pointer');
+  if (e.key === 'h' || e.key === 'H') setTool('hand');
+  if (e.key === 'p' || e.key === 'P') setTool('pen');
+  if (e.key === 'e' || e.key === 'E') setTool('eraser');
+  if (e.key === '=' || e.key === '+') zoomAt(scale * 1.2, window.innerWidth/2, window.innerHeight/2);
+  if (e.key === '-') zoomAt(scale * 0.83, window.innerWidth/2, window.innerHeight/2);
+  if (e.key === '0') fitAll();
+  if (e.key === 'Escape') { frames.forEach(f => f.classList.remove('focused')); setTool('pointer'); }
+  if ((e.ctrlKey || e.metaKey) && e.key === 'z') { e.preventDefault(); undoDraw(); }
+});
+document.addEventListener('keyup', e => {
+  if (e.code === 'Space' && spaceHeld) {
+    spaceHeld = false;
+    if (prevToolBeforeSpace) setTool(prevToolBeforeSpace);
+    prevToolBeforeSpace = null;
+  }
+});
+
+// ═══════════════════════════════════════════
+// ZOOM TOOLBAR
+// ═══════════════════════════════════════════
+document.getElementById('zoomIn').addEventListener('click', () => zoomAt(scale * 1.25, window.innerWidth/2, window.innerHeight/2));
+document.getElementById('zoomOut').addEventListener('click', () => zoomAt(scale * 0.8, window.innerWidth/2, window.innerHeight/2));
+document.getElementById('fitAll').addEventListener('click', fitAll);
+
+// ═══════════════════════════════════════════
+// NAV PILLS
+// ═══════════════════════════════════════════
+document.querySelectorAll('.nav-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    const section = pill.dataset.section;
+    document.querySelectorAll('.nav-pill').forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+    const sf = [...frames].filter(f => f.dataset.section === section);
+    if (!sf.length) return;
+    let mnX = Infinity, mnY = Infinity, mxX = -Infinity, mxY = -Infinity;
+    sf.forEach(f => {
+      const x = parseInt(f.style.left), y = parseInt(f.style.top);
+      mnX = Math.min(mnX, x); mnY = Math.min(mnY, y);
+      mxX = Math.max(mxX, x + (f.offsetWidth||420));
+      mxY = Math.max(mxY, y + (f.offsetHeight||300));
+    });
+    const cw = mxX - mnX, ch = mxY - mnY;
+    const vw = window.innerWidth, vh = window.innerHeight - 100;
+    smoothTransition(() => {
+      scale = Math.min(vw/(cw+120), vh/(ch+120), 0.85);
+      panX = vw/2 - (mnX+cw/2)*scale;
+      panY = vh/2 - (mnY+ch/2)*scale + 20;
+    });
+  });
+});
+
+// ═══════════════════════════════════════════
+// MINIMAP
+// ═══════════════════════════════════════════
+const minimapEl = document.getElementById('minimap');
+const minimapCanvas = document.getElementById('minimapCanvas');
+const minimapViewport = document.getElementById('minimapViewport');
+
+function initMinimap() {
+  const b = getCanvasBounds();
+  const cw = b.maxX-b.minX, ch = b.maxY-b.minY;
+  const mw = minimapEl.offsetWidth, mh = minimapEl.offsetHeight;
+  const ms = Math.min(mw/cw, mh/ch);
+  minimapCanvas.innerHTML = '';
+  minimapCanvas.appendChild(minimapViewport);
+  frames.forEach(f => {
+    const d = document.createElement('div');
+    d.className = 'minimap-dot';
+    d.style.left = (parseInt(f.style.left)-b.minX)*ms+'px';
+    d.style.top = (parseInt(f.style.top)-b.minY)*ms+'px';
+    d.style.width = Math.max((f.offsetWidth||420)*ms,3)+'px';
+    d.style.height = Math.max((f.offsetHeight||200)*ms,2)+'px';
+    minimapCanvas.appendChild(d);
+  });
+}
+
+function updateMinimap() {
+  const b = getCanvasBounds();
+  const cw = b.maxX-b.minX, ch = b.maxY-b.minY;
+  const mw = minimapEl.offsetWidth, mh = minimapEl.offsetHeight;
+  const ms = Math.min(mw/cw, mh/ch);
+  const vw = window.innerWidth, vh = window.innerHeight;
+  minimapViewport.style.left = (-panX/scale-b.minX)*ms+'px';
+  minimapViewport.style.top = (-panY/scale-b.minY)*ms+'px';
+  minimapViewport.style.width = (vw/scale)*ms+'px';
+  minimapViewport.style.height = (vh/scale)*ms+'px';
+}
+
+minimapEl.addEventListener('click', e => {
+  const rect = minimapEl.getBoundingClientRect();
+  const b = getCanvasBounds();
+  const ms = Math.min(minimapEl.offsetWidth/(b.maxX-b.minX), minimapEl.offsetHeight/(b.maxY-b.minY));
+  const cx = (e.clientX-rect.left)/ms+b.minX;
+  const cy = (e.clientY-rect.top)/ms+b.minY;
+  smoothTransition(() => {
+    panX = window.innerWidth/2-cx*scale;
+    panY = window.innerHeight/2-cy*scale;
+  });
+});
+
+// ═══════════════════════════════════════════
+// CONNECTORS + COUNTERS
+// ═══════════════════════════════════════════
+function drawConnectors() {
+  const pairs = [
+    ['f1','f2'],['f2','f3'],['f4','f5'],['f5','f6'],
+    ['f4','f7'],['f7','f8'],['f8','f9'],['f9','f10'],['f10','f11'],
+    ['f12','f13'],['f12','f17'],['f13','f14'],['f14','f15'],['f14','f16'],
+    ['f18','f19'],['f19','f20'],['f19','f21'],['f21','f22'],['f22','f23'],
+    ['f24','f25'],['f26','f27'],['f27','f28'],['f28','f29'],['f26','f30'],['f30','f31'],['f31','f32'],
+  ];
+  let svg = '';
+  pairs.forEach(([idA,idB]) => {
+    const a = document.getElementById(idA), b = document.getElementById(idB);
+    if (!a||!b) return;
+    svg += `<line x1="${parseInt(a.style.left)+a.offsetWidth/2}" y1="${parseInt(a.style.top)+a.offsetHeight/2}" x2="${parseInt(b.style.left)+b.offsetWidth/2}" y2="${parseInt(b.style.top)+b.offsetHeight/2}"/>`;
+  });
+  connectorsSvg.innerHTML = svg;
+}
+
+function animateCounters() {
+  document.querySelectorAll('[data-count]').forEach(el => {
+    if (el.dataset.animated) return;
+    el.dataset.animated = '1';
+    const target = parseInt(el.dataset.count);
+    const suffix = el.dataset.suffix||'', prefix = el.dataset.prefix||'';
+    const start = performance.now();
+    (function tick(now) {
+      const p = Math.min((now-start)/900,1);
+      const v = Math.round((1-Math.pow(1-p,3))*target);
+      el.textContent = prefix+(target>=1000?v.toLocaleString('fr-FR'):v)+suffix;
+      if(p<1) requestAnimationFrame(tick);
+    })(performance.now());
+  });
+}
+
+function animateBars() {
+  document.querySelectorAll('.metric-bar-fill[data-width]').forEach(b => {
+    setTimeout(() => b.style.width = b.dataset.width, 300);
+  });
+}
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+requestAnimationFrame(() => {
+  drawConnectors();
+  initMinimap();
+  applyTransform();
+  animateCounters();
+  animateBars();
+  setTimeout(() => fitAll(), 100);
+});
+window.addEventListener('resize', updateMinimap);
+</script>
+</body>
+</html>

@@ -23,11 +23,11 @@ export function FormationProgressAdmin({ formationId }: FormationProgressAdminPr
   const loadProgress = useCallback(async () => {
     setLoading(true)
 
-    // Get all students (role = eleve)
+    // Get all students (role = prospect)
     const { data: roles } = await supabase
       .from('user_roles')
       .select('user_id')
-      .eq('role', 'eleve')
+      .eq('role', 'prospect')
 
     if (!roles || roles.length === 0) {
       setData([])
@@ -118,7 +118,7 @@ export function FormationProgressAdmin({ formationId }: FormationProgressAdminPr
   if (data.length === 0) {
     return (
       <p className="py-6 text-center text-sm text-muted-foreground">
-        Aucun élève inscrit
+        Aucun prospect inscrit
       </p>
     )
   }

@@ -222,13 +222,13 @@ function AdminDashboard() {
 // ─── Main Dashboard ───
 export default function DashboardPage() {
   const [period, setPeriod] = useState<TimePeriod>('month')
-  const { isEleve } = useRole()
+  const { isProspect } = useRole()
 
   return (
     <div className="space-y-6">
       <GreetingHeader period={period} onPeriodChange={setPeriod} />
 
-      {isEleve ? (
+      {isProspect ? (
         <>
           <EleveDashboard />
           <SetterActivityChart />

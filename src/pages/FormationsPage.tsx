@@ -11,8 +11,8 @@ import { EmptyState } from '@/components/ui/empty-state'
 
 export default function FormationsPage() {
   const navigate = useNavigate()
-  const { isAdmin, isEleve } = useRole()
-  const { data: formations, isLoading } = useFormations(isEleve)
+  const { isAdmin, isProspect } = useRole()
+  const { data: formations, isLoading } = useFormations(isProspect)
   const [showModal, setShowModal] = useState(false)
 
   return (

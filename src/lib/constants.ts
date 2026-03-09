@@ -1,10 +1,10 @@
-export const APP_ROLES = ['admin', 'setter', 'eleve'] as const
+export const APP_ROLES = ['admin', 'coach', 'prospect'] as const
 export type AppRole = (typeof APP_ROLES)[number]
 
 export const ROLE_LABELS: Record<AppRole, string> = {
   admin: 'Administrateur',
-  setter: 'Setter',
-  eleve: 'Élève',
+  coach: 'Coach',
+  prospect: 'Prospect',
 }
 
 export const CLIENT_STATUSES = ['actif', 'inactif', 'archivé'] as const

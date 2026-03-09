@@ -20,7 +20,7 @@ import type { FormationModule as FormationModuleType, ModuleItem } from '@/types
 export default function FormationDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { isAdmin, isEleve } = useRole()
+  const { isAdmin, isProspect } = useRole()
 
   const { data: formation, isLoading: formationLoading } = useFormation(id)
   const { data: modules, isLoading: modulesLoading } = useModules(id)
@@ -153,7 +153,7 @@ export default function FormationDetailPage() {
       </div>
 
       {/* Student progress bar */}
-      {isEleve && totalItems > 0 && (
+      {isProspect && totalItems > 0 && (
         <div className="rounded-xl border border-border bg-white p-4">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium text-foreground">Votre progression</span>
@@ -223,7 +223,7 @@ export default function FormationDetailPage() {
               items={allItems.filter((i) => i.module_id === mod.id)}
               completions={completions ?? []}
               isAdmin={isAdmin}
-              isEleve={isEleve}
+              isProspect={isProspect}
               defaultOpen={idx === 0}
               onToggleComplete={(itemId, completed) =>
                 toggleCompletion.mutate({ itemId, completed })

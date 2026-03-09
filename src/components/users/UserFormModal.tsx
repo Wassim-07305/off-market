@@ -27,7 +27,7 @@ export function UserFormModal({ open, onClose, user }: UserFormModalProps) {
   const updateUserRole = useUpdateUserRole()
 
   const [fullName, setFullName] = useState('')
-  const [role, setRole] = useState<AppRole>('eleve')
+  const [role, setRole] = useState<AppRole>('prospect')
 
   useEffect(() => {
     if (open && user) {

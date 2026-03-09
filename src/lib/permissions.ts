@@ -13,16 +13,16 @@ export type Module =
   | 'notifications'
 
 const PERMISSIONS: Record<Module, AppRole[]> = {
-  dashboard: ['admin', 'setter', 'eleve'],
-  messaging: ['admin', 'setter', 'eleve'],
-  formations: ['admin', 'eleve'],
-  eleves: ['admin', 'setter'],
-  pipeline: ['admin', 'setter', 'eleve'],
-  calendrier: ['admin', 'setter'],
-  activite: ['admin', 'eleve'],
+  dashboard: ['admin', 'coach', 'prospect'],
+  messaging: ['admin', 'coach', 'prospect'],
+  formations: ['admin', 'prospect'],
+  eleves: ['admin', 'coach'],
+  pipeline: ['admin', 'coach', 'prospect'],
+  calendrier: ['admin', 'coach'],
+  activite: ['admin', 'prospect'],
   finances: ['admin'],
   users: ['admin'],
-  notifications: ['admin', 'setter', 'eleve'],
+  notifications: ['admin', 'coach', 'prospect'],
 }
 
 export function canAccess(role: AppRole | null, module: Module): boolean {

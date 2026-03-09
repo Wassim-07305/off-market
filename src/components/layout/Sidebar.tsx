@@ -41,7 +41,7 @@ const NAV_SECTIONS: NavSection[] = [
       { label: 'Dashboard', icon: LayoutDashboard, path: '/', module: 'dashboard' },
       { label: 'Messagerie', icon: MessageCircle, path: '/messaging', module: 'messaging' },
       { label: 'Formations', icon: GraduationCap, path: '/formations', module: 'formations' },
-      { label: 'Élèves', icon: Users, path: '/eleves', module: 'eleves' },
+      { label: 'Prospects', icon: Users, path: '/eleves', module: 'eleves' },
       { label: 'Pipeline', icon: Target, path: '/pipeline', module: 'pipeline' },
       { label: 'Calendrier', icon: Calendar, path: '/calendrier', module: 'calendrier' },
       { label: 'Activité', icon: Activity, path: '/activite', module: 'activite' },

@@ -101,7 +101,7 @@ export function CommandPalette() {
     { id: 'nav-dashboard', label: 'Dashboard', icon: LayoutDashboard, action: () => go('/'), group: 'Navigation', module: 'dashboard' },
     { id: 'nav-messaging', label: 'Messagerie', icon: MessageCircle, action: () => go('/messaging'), group: 'Navigation', module: 'messaging' },
     { id: 'nav-formations', label: 'Formations', icon: GraduationCap, action: () => go('/formations'), group: 'Navigation', module: 'formations' },
-    { id: 'nav-eleves', label: 'Élèves', icon: Users, action: () => go('/eleves'), group: 'Navigation', module: 'eleves' },
+    { id: 'nav-eleves', label: 'Prospects', icon: Users, action: () => go('/eleves'), group: 'Navigation', module: 'eleves' },
     { id: 'nav-pipeline', label: 'Pipeline', icon: Target, action: () => go('/pipeline'), group: 'Navigation', module: 'pipeline' },
     { id: 'nav-calendrier', label: 'Calendrier', icon: Calendar, action: () => go('/calendrier'), group: 'Navigation', module: 'calendrier' },
     { id: 'nav-activite', label: 'Activité', icon: Activity, action: () => go('/activite'), group: 'Navigation', module: 'activite' },
