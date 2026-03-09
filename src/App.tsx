@@ -21,6 +21,8 @@ import UsersPage from '@/pages/UsersPage'
 import MessagingPage from '@/pages/MessagingPage'
 import FormationsPage from '@/pages/FormationsPage'
 import FormationDetailPage from '@/pages/FormationDetailPage'
+import SettingsPage from '@/pages/SettingsPage'
+import AnalyticsPage from '@/pages/AnalyticsPage'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -62,6 +64,15 @@ function App() {
                 element={
                   <RoleGuard module="users">
                     <UsersPage />
+                  </RoleGuard>
+                }
+              />
+              <Route path="/settings" element={<SettingsPage />} />
+              <Route
+                path="/analytics"
+                element={
+                  <RoleGuard module="analytics">
+                    <AnalyticsPage />
                   </RoleGuard>
                 }
               />

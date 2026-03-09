@@ -5,11 +5,13 @@ const ROUTE_LABELS: Record<string, string> = {
   eleves: 'Prospects',
   pipeline: 'Pipeline',
   calendrier: 'Calendrier',
-  activite: 'Activité',
+  activite: 'Activite',
   finances: 'Finances',
   users: 'Utilisateurs',
   messaging: 'Messagerie',
   formations: 'Formations',
+  settings: 'Parametres',
+  analytics: 'Analytics',
 }
 
 export function Breadcrumb() {

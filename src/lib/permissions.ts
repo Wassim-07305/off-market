@@ -11,6 +11,8 @@ export type Module =
   | 'finances'
   | 'users'
   | 'notifications'
+  | 'settings'
+  | 'analytics'
 
 const PERMISSIONS: Record<Module, AppRole[]> = {
   dashboard: ['admin', 'coach', 'prospect'],
@@ -23,6 +25,8 @@ const PERMISSIONS: Record<Module, AppRole[]> = {
   finances: ['admin'],
   users: ['admin'],
   notifications: ['admin', 'coach', 'prospect'],
+  settings: ['admin', 'coach', 'prospect'],
+  analytics: ['admin'],
 }
 
 export function canAccess(role: AppRole | null, module: Module): boolean {

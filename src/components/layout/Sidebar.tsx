@@ -13,6 +13,8 @@ import {
   PanelLeftClose,
   PanelLeft,
   LogOut,
+  BarChart3,
+  UserCog,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { cn, getInitials } from '@/lib/utils'
@@ -44,14 +46,21 @@ const NAV_SECTIONS: NavSection[] = [
       { label: 'Prospects', icon: Users, path: '/eleves', module: 'eleves' },
       { label: 'Pipeline', icon: Target, path: '/pipeline', module: 'pipeline' },
       { label: 'Calendrier', icon: Calendar, path: '/calendrier', module: 'calendrier' },
-      { label: 'Activité', icon: Activity, path: '/activite', module: 'activite' },
+      { label: 'Activite', icon: Activity, path: '/activite', module: 'activite' },
     ],
   },
   {
     label: 'Gestion',
     items: [
+      { label: 'Analytics', icon: BarChart3, path: '/analytics', module: 'analytics' },
       { label: 'Finances', icon: DollarSign, path: '/finances', module: 'finances' },
-      { label: 'Utilisateurs', icon: Settings, path: '/users', module: 'users' },
+      { label: 'Utilisateurs', icon: UserCog, path: '/users', module: 'users' },
+    ],
+  },
+  {
+    label: 'Compte',
+    items: [
+      { label: 'Parametres', icon: Settings, path: '/settings', module: 'settings' },
     ],
   },
 ]
