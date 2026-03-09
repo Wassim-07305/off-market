@@ -46,14 +46,16 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             ref={ref}
             id={inputId}
             className={cn(
-              'flex h-9 w-full rounded-xl border border-border bg-white px-3 py-1.5 text-sm text-foreground',
+              'flex h-10 w-full rounded-lg border border-border bg-white px-3.5 py-2 text-sm text-foreground',
+              'shadow-sm',
               'transition-all duration-200',
-              'placeholder:text-muted-foreground',
-              'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1',
-              'disabled:cursor-not-allowed disabled:opacity-50',
-              icon && 'pl-9',
-              iconRight && 'pr-9',
-              error && 'border-destructive focus:ring-destructive',
+              'placeholder:text-muted-foreground/60',
+              'focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/10',
+              'hover:border-border/80',
+              'disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-muted/30',
+              icon && 'pl-10',
+              iconRight && 'pr-10',
+              error && 'border-destructive focus:ring-destructive/10 focus:border-destructive',
               className
             )}
             {...props}

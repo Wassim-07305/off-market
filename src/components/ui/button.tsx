@@ -5,21 +5,21 @@ import { cn } from '@/lib/utils'
 
 const buttonVariants = {
   primary:
-    'bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm shadow-primary/25',
+    'bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_1px_3px_0_rgb(220_38_38/0.3),inset_0_1px_0_0_rgb(255_255_255/0.1)]',
   secondary:
-    'border border-border bg-white text-foreground hover:bg-muted',
+    'border border-border bg-white text-foreground hover:bg-muted/50 hover:border-border/80 shadow-sm',
   ghost:
-    'text-foreground hover:bg-muted',
+    'text-foreground hover:bg-muted/60',
   destructive:
-    'bg-destructive text-white hover:bg-destructive/90 shadow-sm',
+    'bg-destructive text-white hover:bg-destructive/90 shadow-[0_1px_3px_0_rgb(220_38_38/0.3)]',
   outline:
-    'border-2 border-primary text-primary hover:bg-primary/5',
+    'border-2 border-primary/80 text-primary hover:bg-primary/5 hover:border-primary',
 } as const
 
 const buttonSizes = {
-  sm: 'h-8 px-3 text-xs gap-1.5',
-  md: 'h-9 px-4 text-sm gap-2',
-  lg: 'h-11 px-6 text-base gap-2.5',
+  sm: 'h-8 px-3 text-xs gap-1.5 font-medium',
+  md: 'h-9 px-4 text-sm gap-2 font-medium',
+  lg: 'h-11 px-5 text-sm gap-2.5 font-semibold',
 } as const
 
 type ButtonVariant = keyof typeof buttonVariants

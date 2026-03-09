@@ -6,26 +6,30 @@ import { cn } from '@/lib/utils'
 
 type AccentColor = 'red' | 'blue' | 'emerald' | 'amber'
 
-const accentConfig: Record<AccentColor, { gradient: string; iconBg: string; iconText: string }> = {
+const accentConfig: Record<AccentColor, { gradient: string; iconBg: string; iconText: string; ringColor: string }> = {
   red: {
-    gradient: 'from-red-500 to-rose-500',
-    iconBg: 'bg-gradient-to-br from-red-500/10 to-red-500/5',
+    gradient: 'from-red-500 to-rose-600',
+    iconBg: 'bg-gradient-to-br from-red-100 to-red-50',
     iconText: 'text-red-600',
+    ringColor: 'ring-red-100',
   },
   blue: {
-    gradient: 'from-blue-500 to-cyan-500',
-    iconBg: 'bg-gradient-to-br from-blue-500/10 to-blue-500/5',
+    gradient: 'from-blue-500 to-indigo-600',
+    iconBg: 'bg-gradient-to-br from-blue-100 to-blue-50',
     iconText: 'text-blue-600',
+    ringColor: 'ring-blue-100',
   },
   emerald: {
-    gradient: 'from-emerald-500 to-teal-500',
-    iconBg: 'bg-gradient-to-br from-emerald-500/10 to-emerald-500/5',
+    gradient: 'from-emerald-500 to-green-600',
+    iconBg: 'bg-gradient-to-br from-emerald-100 to-emerald-50',
     iconText: 'text-emerald-600',
+    ringColor: 'ring-emerald-100',
   },
   amber: {
-    gradient: 'from-amber-500 to-orange-500',
-    iconBg: 'bg-gradient-to-br from-amber-500/10 to-amber-500/5',
+    gradient: 'from-amber-500 to-orange-600',
+    iconBg: 'bg-gradient-to-br from-amber-100 to-amber-50',
     iconText: 'text-amber-600',
+    ringColor: 'ring-amber-100',
   },
 }
 
@@ -59,8 +63,8 @@ export function StatsCard({ title, value, icon: Icon, trend, trendLabel, accent 
 
         <div className="relative p-6">
           <div className="flex items-start justify-between">
-            <div className={cn('flex h-11 w-11 items-center justify-center rounded-xl', config.iconBg)}>
-              <Icon className={cn('h-5 w-5', config.iconText)} />
+            <div className={cn('flex h-12 w-12 items-center justify-center rounded-xl ring-1', config.iconBg, config.ringColor)}>
+              <Icon className={cn('h-5 w-5', config.iconText)} strokeWidth={2} />
             </div>
             <div
               className={cn(
