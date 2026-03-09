@@ -23,6 +23,8 @@ import FormationsPage from '@/pages/FormationsPage'
 import FormationDetailPage from '@/pages/FormationDetailPage'
 import SettingsPage from '@/pages/SettingsPage'
 import AnalyticsPage from '@/pages/AnalyticsPage'
+import NotFoundPage from '@/pages/NotFoundPage'
+import CSMLandingPage from '@/pages/CSMLandingPage'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -45,6 +47,7 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/recrutement-csm" element={<CSMLandingPage />} />
 
           {/* Protected routes */}
           <Route element={<RouteGuard />}>
@@ -78,6 +81,9 @@ function App() {
               />
             </Route>
           </Route>
+
+          {/* 404 catch-all */}
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </BrowserRouter>
 
