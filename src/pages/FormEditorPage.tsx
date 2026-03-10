@@ -5,7 +5,6 @@ import {
   Plus,
   Trash2,
   GripVertical,
-  Eye,
   Save,
   Type,
   Hash,
@@ -20,9 +19,12 @@ import {
   ChevronDown,
   ChevronUp,
   Settings2,
+  Inbox,
+  Download,
 } from 'lucide-react'
 import {
   useFormWithFields,
+  useFormSubmissions,
   useUpdateForm,
   useCreateFormField,
   useUpdateFormField,
@@ -31,10 +33,12 @@ import {
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
+import { TabsList, TabsContent } from '@/components/ui/tabs'
 import { Skeleton } from '@/components/ui/skeleton'
 import { EmptyState } from '@/components/ui/empty-state'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
-import { cn } from '@/lib/utils'
+import { cn, formatDate } from '@/lib/utils'
+import { exportToCSV } from '@/lib/csv'
 import type { FormField } from '@/types/database'
 
 // ── Types de champ disponibles ───────────────────────────────
@@ -304,6 +308,112 @@ function FormPreview({ fields, title }: { fields: FormField[]; title: string }) 
   )
 }
 
+// ── Onglet Réponses ──────────────────────────────────────────
+
+function SubmissionsTab({ formId, fields }: { formId: string; fields: FormField[] }) {
+  const { data: result, isLoading } = useFormSubmissions(formId)
+  const submissions = result?.data ?? []
+  const count = result?.count ?? 0
+
+  const handleExport = useCallback(() => {
+    if (submissions.length === 0) return
+
+    const columns: { key: string; label: string }[] = [
+      { key: '_date', label: 'Date' },
+      ...fields.map((f) => ({ key: f.id, label: f.label || f.field_type })),
+    ]
+
+    const rows = submissions.map((s) => {
+      const row: Record<string, string> = {
+        _date: formatDate(s.submitted_at),
+      }
+      for (const field of fields) {
+        const val = (s.answers as Record<string, unknown>)?.[field.id]
+        row[field.id] = val != null ? String(val) : ''
+      }
+      return row
+    })
+
+    exportToCSV(rows, columns as { key: keyof typeof rows[number]; label: string }[], `formulaire-reponses`)
+  }, [submissions, fields])
+
+  if (isLoading) {
+    return (
+      <div className="space-y-3">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <Skeleton key={i} className="h-14 w-full rounded-xl" />
+        ))}
+      </div>
+    )
+  }
+
+  if (submissions.length === 0) {
+    return (
+      <EmptyState
+        icon={<Inbox className="h-6 w-6" />}
+        title="Aucune réponse"
+        description="Les réponses à ce formulaire apparaîtront ici."
+      />
+    )
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-muted-foreground">
+          {count} réponse{count > 1 ? 's' : ''}
+        </p>
+        <Button
+          variant="secondary"
+          size="sm"
+          icon={<Download className="h-4 w-4" />}
+          onClick={handleExport}
+        >
+          Exporter CSV
+        </Button>
+      </div>
+
+      <div className="overflow-x-auto rounded-xl border border-border/40">
+        <table className="w-full text-left text-sm">
+          <thead className="border-b border-border/40 bg-muted/30">
+            <tr>
+              <th className="px-4 py-3 font-semibold text-muted-foreground whitespace-nowrap">Date</th>
+              {fields.map((field) => (
+                <th key={field.id} className="px-4 py-3 font-semibold text-muted-foreground whitespace-nowrap max-w-48">
+                  {field.label || field.field_type}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border/30">
+            {submissions.map((submission) => (
+              <tr key={submission.id} className="hover:bg-muted/20 transition-colors">
+                <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">
+                  {formatDate(submission.submitted_at)}
+                </td>
+                {fields.map((field) => {
+                  const value = (submission.answers as Record<string, unknown>)?.[field.id]
+                  const display = value == null
+                    ? '—'
+                    : Array.isArray(value)
+                      ? (value as string[]).join(', ')
+                      : String(value)
+
+                  return (
+                    <td key={field.id} className="px-4 py-3 text-foreground max-w-48 truncate">
+                      {display}
+                    </td>
+                  )
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  )
+}
+
 // ── Page principale ──────────────────────────────────────────
 
 export default function FormEditorPage() {
@@ -315,9 +425,9 @@ export default function FormEditorPage() {
   const updateField = useUpdateFormField()
   const deleteField = useDeleteFormField()
 
+  const [activeTab, setActiveTab] = useState('editeur')
   const [title, setTitle] = useState<string | null>(null)
   const [description, setDescription] = useState<string | null>(null)
-  const [showPreview, setShowPreview] = useState(false)
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
 
   // Sync title/description from loaded form
@@ -449,14 +559,6 @@ export default function FormEditorPage() {
           <Button
             variant="secondary"
             size="sm"
-            icon={<Eye className="h-4 w-4" />}
-            onClick={() => setShowPreview(!showPreview)}
-          >
-            {showPreview ? 'Éditeur' : 'Aperçu'}
-          </Button>
-          <Button
-            variant="secondary"
-            size="sm"
             onClick={handlePublish}
             loading={updateForm.isPending}
           >
@@ -473,15 +575,30 @@ export default function FormEditorPage() {
         </div>
       </div>
 
-      {showPreview ? (
-        /* ── Aperçu ── */
+      {/* Tabs */}
+      <TabsList
+        tabs={[
+          { value: 'editeur', label: 'Éditeur' },
+          { value: 'apercu', label: 'Aperçu' },
+          { value: 'reponses', label: 'Réponses' },
+        ]}
+        value={activeTab}
+        onChange={setActiveTab}
+      />
+
+      <TabsContent value="apercu" activeValue={activeTab}>
         <Card>
           <CardContent className="p-6 sm:p-8">
             <FormPreview fields={fields} title={effectiveTitle} />
           </CardContent>
         </Card>
-      ) : (
-        /* ── Éditeur ── */
+      </TabsContent>
+
+      <TabsContent value="reponses" activeValue={activeTab}>
+        <SubmissionsTab formId={id!} fields={fields} />
+      </TabsContent>
+
+      <TabsContent value="editeur" activeValue={activeTab}>
         <div className="grid gap-6 lg:grid-cols-3">
           {/* Colonne principale */}
           <div className="lg:col-span-2 space-y-6">
@@ -609,7 +726,7 @@ export default function FormEditorPage() {
             </Card>
           </div>
         </div>
-      )}
+      </TabsContent>
 
       {/* Confirm delete field */}
       <ConfirmDialog
