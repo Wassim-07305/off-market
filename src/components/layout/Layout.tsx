@@ -14,6 +14,7 @@ import { QuickAddModal } from '@/components/layout/QuickAddModal'
 import { NotificationsPanel } from '@/components/notifications/NotificationsPanel'
 import { AnnouncementBanner } from '@/components/announcements/AnnouncementBanner'
 import { DemoDataButton } from '@/components/admin/DemoDataButton'
+import { ScrollToTop } from '@/components/ui/scroll-to-top'
 
 export function Layout() {
   const { setSidebarCollapsed, setMobileSidebarOpen, quickAddOpen, setQuickAddOpen } = useUIStore()
@@ -80,6 +81,7 @@ export function Layout() {
       <QuickAddModal open={quickAddOpen} onClose={() => setQuickAddOpen(false)} />
       <NotificationsPanel />
       <DemoDataButton />
+      <ScrollToTop />
     </div>
   )
 }
