@@ -1,13 +1,15 @@
 import { useState, useCallback } from 'react'
-import { Plus, Download, LayoutList, Columns } from 'lucide-react'
+import { Plus, Download, Upload, LayoutList, Columns } from 'lucide-react'
 import type { LeadWithRelations } from '@/types/database'
 import type { LeadStatus } from '@/lib/constants'
-import { useLeads, useAllLeads, useUpdateLead } from '@/hooks/useLeads'
+import { useLeads, useAllLeads, useUpdateLead, useBulkCreateLeads } from '@/hooks/useLeads'
 import { useClients } from '@/hooks/useClients'
 import { LeadKPIs } from '@/components/leads/LeadKPIs'
 import { LeadsTable } from '@/components/leads/LeadsTable'
 import { LeadKanban } from '@/components/leads/LeadKanban'
 import { LeadFormModal } from '@/components/leads/LeadFormModal'
+import { CSVImportModal } from '@/components/shared/CSVImportModal'
+import type { CSVColumn } from '@/components/shared/CSVImportModal'
 import { SearchInput } from '@/components/ui/search-input'
 import { Select } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
@@ -22,6 +24,16 @@ import {
   ITEMS_PER_PAGE,
 } from '@/lib/constants'
 
+const LEAD_IMPORT_COLUMNS: CSVColumn<'name' | 'email' | 'phone' | 'source' | 'status' | 'notes' | 'ca_contracté'>[] = [
+  { key: 'name', label: 'Nom', required: true },
+  { key: 'email', label: 'Email' },
+  { key: 'phone', label: 'Téléphone' },
+  { key: 'source', label: 'Source' },
+  { key: 'status', label: 'Statut' },
+  { key: 'ca_contracté', label: 'CA Contracté' },
+  { key: 'notes', label: 'Notes' },
+]
+
 export default function LeadsPage() {
   const [search, setSearch] = useState('')
   const [status, setStatus] = useState('')
@@ -31,6 +43,9 @@ export default function LeadsPage() {
   const [modalOpen, setModalOpen] = useState(false)
   const [editingLead, setEditingLead] = useState<LeadWithRelations | null>(null)
   const [viewMode, setViewMode] = useState<'table' | 'kanban'>('table')
+  const [importOpen, setImportOpen] = useState(false)
+
+  const bulkCreate = useBulkCreateLeads()
 
   const filters = {
     search: search || undefined,
@@ -60,6 +75,31 @@ export default function LeadsPage() {
   const handleKanbanStatusChange = useCallback((leadId: string, newStatus: LeadStatus) => {
     updateLead.mutate({ id: leadId, status: newStatus })
   }, [updateLead])
+
+  const handleImportCSV = useCallback(
+    async (rows: Record<'name' | 'email' | 'phone' | 'source' | 'status' | 'notes' | 'ca_contracté', string>[]) => {
+      const validSources = ['instagram', 'linkedin', 'tiktok', 'referral', 'ads', 'autre']
+      const validStatuses = ['premier_message', 'en_discussion', 'qualifie', 'loom_envoye', 'call_planifie', 'close', 'perdu']
+
+      const leads = rows
+        .filter((r) => r.name?.trim())
+        .map((r) => ({
+          name: r.name.trim(),
+          email: r.email?.trim() || null,
+          phone: r.phone?.trim() || null,
+          source: validSources.includes(r.source?.toLowerCase()) ? r.source.toLowerCase() as 'instagram' | 'linkedin' | 'tiktok' | 'referral' | 'ads' | 'autre' : null,
+          status: validStatuses.includes(r.status?.toLowerCase()) ? r.status.toLowerCase() as 'premier_message' : 'premier_message' as const,
+          ca_contracté: Number(r.ca_contracté) || 0,
+          ca_collecté: 0,
+          commission_setter: 0,
+          commission_closer: 0,
+          notes: r.notes?.trim() || null,
+        }))
+
+      return bulkCreate.mutateAsync(leads)
+    },
+    [bulkCreate]
+  )
 
   const handleExport = useCallback(() => {
     if (!data?.data) return
@@ -142,11 +182,19 @@ export default function LeadsPage() {
           <Button
             variant="secondary"
             size="sm"
+            icon={<Upload className="h-4 w-4" />}
+            onClick={() => setImportOpen(true)}
+          >
+            Importer
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
             icon={<Download className="h-4 w-4" />}
             onClick={handleExport}
             disabled={!data?.data?.length}
           >
-            Exporter CSV
+            Exporter
           </Button>
           <Button
             size="sm"
@@ -225,6 +273,16 @@ export default function LeadsPage() {
         open={modalOpen}
         onClose={handleCloseModal}
         lead={editingLead}
+      />
+
+      <CSVImportModal
+        open={importOpen}
+        onClose={() => setImportOpen(false)}
+        title="Importer des leads"
+        description="Importez vos leads depuis un fichier CSV"
+        columns={LEAD_IMPORT_COLUMNS}
+        onImport={handleImportCSV}
+        templateFilename="template-leads"
       />
     </div>
   )
