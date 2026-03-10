@@ -1,4 +1,4 @@
-import { ArrowLeft, Hash, Settings } from 'lucide-react'
+import { ArrowLeft, Hash, Search, Settings } from 'lucide-react'
 import type { ChannelWithDetails } from '@/types/database'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -13,10 +13,11 @@ interface ChannelHeaderProps {
   channel: ChannelWithDetails
   onBack: () => void
   onSettings?: () => void
+  onSearch?: () => void
   showBack?: boolean
 }
 
-export function ChannelHeader({ channel, onBack, onSettings, showBack = false }: ChannelHeaderProps) {
+export function ChannelHeader({ channel, onBack, onSettings, onSearch, showBack = false }: ChannelHeaderProps) {
   const displayName =
     channel.type === 'direct' && channel.other_member
       ? channel.other_member.full_name
@@ -77,17 +78,30 @@ export function ChannelHeader({ channel, onBack, onSettings, showBack = false }:
         </p>
       </div>
 
-      {onSettings && channel.type === 'group' && (
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onSettings}
-          icon={<Settings className="h-4 w-4" />}
-          className={cn('shrink-0')}
-        >
-          <span className="sr-only">Paramètres</span>
-        </Button>
-      )}
+      <div className="flex items-center gap-1">
+        {onSearch && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onSearch}
+            icon={<Search className="h-4 w-4" />}
+            className={cn('shrink-0')}
+          >
+            <span className="sr-only">Rechercher</span>
+          </Button>
+        )}
+        {onSettings && channel.type === 'group' && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onSettings}
+            icon={<Settings className="h-4 w-4" />}
+            className={cn('shrink-0')}
+          >
+            <span className="sr-only">Paramètres</span>
+          </Button>
+        )}
+      </div>
     </div>
   )
 }
