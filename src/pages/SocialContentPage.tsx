@@ -1,6 +1,6 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import { Plus } from 'lucide-react'
-import { useSocialContent } from '@/hooks/useSocialContent'
+import { useSocialContent, useUpdateSocialContent } from '@/hooks/useSocialContent'
 import { useClients } from '@/hooks/useClients'
 import { SocialContentKPIs } from '@/components/social/SocialContentKPIs'
 import { SocialContentBoard } from '@/components/social/SocialContentBoard'
@@ -14,6 +14,7 @@ import {
   SOCIAL_FORMAT_LABELS,
 } from '@/lib/constants'
 import type { SocialContent } from '@/types/database'
+import type { SocialContentStatus } from '@/lib/constants'
 
 export default function SocialContentPage() {
   const [clientFilter, setClientFilter] = useState<string>('')
@@ -36,6 +37,14 @@ export default function SocialContentPage() {
   )
 
   const { data: contents, isLoading } = useSocialContent(filters)
+  const updateContent = useUpdateSocialContent()
+
+  const handleStatusChange = useCallback(
+    (contentId: string, newStatus: SocialContentStatus) => {
+      updateContent.mutate({ id: contentId, status: newStatus })
+    },
+    [updateContent]
+  )
 
   const clientOptions = useMemo(
     () => [
@@ -108,7 +117,7 @@ export default function SocialContentPage() {
         />
       </div>
 
-      <SocialContentBoard data={contents ?? []} isLoading={isLoading} />
+      <SocialContentBoard data={contents ?? []} isLoading={isLoading} onStatusChange={handleStatusChange} />
 
       <SocialContentFormModal
         open={modalOpen}
