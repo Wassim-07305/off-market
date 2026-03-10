@@ -41,6 +41,7 @@ const FeedPage = lazy(() => import('@/pages/FeedPage'))
 const ContractsPage = lazy(() => import('@/pages/ContractsPage'))
 const AIAssistantPage = lazy(() => import('@/pages/AIAssistantPage'))
 const DocumentationPage = lazy(() => import('@/pages/DocumentationPage'))
+const OnboardingPage = lazy(() => import('@/pages/OnboardingPage'))
 
 function PageLoader() {
   return (
@@ -82,6 +83,9 @@ function App() {
 
             {/* Protected routes */}
             <Route element={<RouteGuard />}>
+              {/* Onboarding (sans Layout) */}
+              <Route path="/onboarding" element={<OnboardingPage />} />
+
               <Route element={<Layout />}>
                 <Route path="/" element={<DashboardPage />} />
                 <Route path="/eleves" element={<ClientsPage />} />

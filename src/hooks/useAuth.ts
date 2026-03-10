@@ -17,8 +17,14 @@ async function fetchProfileAndRole(userId: string) {
       .single(),
   ])
 
+  const profile = profileResult.data ?? null
+  // Si le champ onboarding_completed n'existe pas encore en DB, considérer comme complété
+  if (profile && profile.onboarding_completed === undefined) {
+    profile.onboarding_completed = true
+  }
+
   return {
-    profile: profileResult.data ?? null,
+    profile,
     role: (roleResult.data?.role as AppRole) ?? null,
   }
 }

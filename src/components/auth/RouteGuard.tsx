@@ -1,10 +1,12 @@
-import { Navigate, Outlet } from 'react-router-dom'
+import { Navigate, Outlet, useLocation } from 'react-router-dom'
 import { useAuthStore } from '@/stores/auth-store'
 import { Skeleton } from '@/components/ui/skeleton'
 
 export function RouteGuard() {
   const user = useAuthStore((state) => state.user)
+  const profile = useAuthStore((state) => state.profile)
   const loading = useAuthStore((state) => state.loading)
+  const location = useLocation()
 
   if (loading) {
     return (
@@ -43,6 +45,12 @@ export function RouteGuard() {
 
   if (!user) {
     return <Navigate to="/login" replace />
+  }
+
+  // Rediriger vers l'onboarding si pas encore complété
+  // (sauf si on est déjà sur /onboarding)
+  if (profile && !profile.onboarding_completed && location.pathname !== '/onboarding') {
+    return <Navigate to="/onboarding" replace />
   }
 
   return <Outlet />

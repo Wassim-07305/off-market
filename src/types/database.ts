@@ -8,6 +8,7 @@ export interface Profile {
   coach_id: string | null
   phone: string | null
   last_seen_at: string | null
+  onboarding_completed: boolean
   created_at: string
   updated_at: string
 }
