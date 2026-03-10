@@ -3,6 +3,8 @@ import { Outlet, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useUIStore } from '@/stores/ui-store'
 import { usePresence } from '@/hooks/usePresence'
+import { useAuth } from '@/hooks/useAuth'
+import { useNotifications } from '@/hooks/useNotifications'
 import { Sidebar } from '@/components/layout/Sidebar'
 import { Header } from '@/components/layout/Header'
 import { CommandPalette } from '@/components/layout/CommandPalette'
@@ -12,7 +14,10 @@ import { DemoDataButton } from '@/components/admin/DemoDataButton'
 export function Layout() {
   const { setSidebarCollapsed, setMobileSidebarOpen } = useUIStore()
   const location = useLocation()
+  const { user } = useAuth()
   usePresence()
+  // Charger les notifications et activer les souscriptions realtime
+  useNotifications(user?.id)
 
   // Auto-collapse sidebar on small screens, hide on mobile
   useEffect(() => {
