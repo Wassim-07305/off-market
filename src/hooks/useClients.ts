@@ -91,6 +91,40 @@ export function useUpdateClient() {
   })
 }
 
+export function useBulkCreateClients() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (rows: Partial<Client>[]) => {
+      let success = 0
+      let errors = 0
+
+      for (let i = 0; i < rows.length; i += 50) {
+        const batch = rows.slice(i, i + 50)
+        const { error } = await supabase.from('clients').insert(batch)
+        if (error) {
+          errors += batch.length
+        } else {
+          success += batch.length
+        }
+      }
+
+      return { success, errors }
+    },
+    onSuccess: (result) => {
+      queryClient.invalidateQueries({ queryKey: ['clients'] })
+      if (result.errors === 0) {
+        toast.success(`${result.success} clients importés avec succès`)
+      } else {
+        toast.success(`${result.success} importés, ${result.errors} erreurs`)
+      }
+    },
+    onError: (error: Error) => {
+      toast.error(`Erreur d'import: ${error.message}`)
+    },
+  })
+}
+
 export function useDeleteClient() {
   const queryClient = useQueryClient()
 

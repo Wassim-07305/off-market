@@ -1,7 +1,9 @@
 import { useState, useMemo, useCallback } from 'react'
-import { Plus, Download, MoreVertical, Pencil, Trash2, Building2 } from 'lucide-react'
-import { useClients, useDeleteClient } from '@/hooks/useClients'
+import { Plus, Download, Upload, MoreVertical, Pencil, Trash2, Building2 } from 'lucide-react'
+import { useClients, useDeleteClient, useBulkCreateClients } from '@/hooks/useClients'
 import { ClientFormModal } from '@/components/clients/ClientFormModal'
+import { CSVImportModal } from '@/components/shared/CSVImportModal'
+import type { CSVColumn } from '@/components/shared/CSVImportModal'
 import { SearchInput } from '@/components/ui/search-input'
 import { Select } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
@@ -17,6 +19,14 @@ import { formatDate } from '@/lib/utils'
 import type { Client } from '@/types/database'
 import { toast } from 'sonner'
 
+const CLIENT_IMPORT_COLUMNS: CSVColumn<'name' | 'email' | 'phone' | 'status' | 'notes'>[] = [
+  { key: 'name', label: 'Nom', required: true },
+  { key: 'email', label: 'Email' },
+  { key: 'phone', label: 'Téléphone' },
+  { key: 'status', label: 'Statut' },
+  { key: 'notes', label: 'Notes' },
+]
+
 const STATUS_OPTIONS = [
   { value: '', label: 'Tous les statuts' },
   { value: 'actif', label: 'Actif' },
@@ -31,6 +41,9 @@ export default function ClientsManagePage() {
   const [modalOpen, setModalOpen] = useState(false)
   const [editItem, setEditItem] = useState<Client | null>(null)
   const [deleteConfirm, setDeleteConfirm] = useState<Client | null>(null)
+  const [importOpen, setImportOpen] = useState(false)
+
+  const bulkCreate = useBulkCreateClients()
 
   const filters = useMemo(
     () => ({
@@ -66,6 +79,25 @@ export default function ClientsManagePage() {
       'clients'
     )
   }, [clients])
+
+  const handleImportCSV = useCallback(
+    async (rows: Record<'name' | 'email' | 'phone' | 'status' | 'notes', string>[]) => {
+      const validStatuses = ['actif', 'inactif', 'archivé']
+
+      const clients = rows
+        .filter((r) => r.name?.trim())
+        .map((r) => ({
+          name: r.name.trim(),
+          email: r.email?.trim() || null,
+          phone: r.phone?.trim() || null,
+          status: validStatuses.includes(r.status?.toLowerCase()) ? r.status.toLowerCase() as 'actif' | 'inactif' | 'archivé' : 'actif' as const,
+          notes: r.notes?.trim() || null,
+        }))
+
+      return bulkCreate.mutateAsync(clients)
+    },
+    [bulkCreate]
+  )
 
   const handleEdit = (client: Client) => {
     setEditItem(client)
@@ -111,6 +143,14 @@ export default function ClientsManagePage() {
           />
         </div>
         <div className="flex items-center gap-2">
+          <Button
+            variant="secondary"
+            size="sm"
+            icon={<Upload className="h-4 w-4" />}
+            onClick={() => setImportOpen(true)}
+          >
+            Importer
+          </Button>
           <Button
             variant="secondary"
             size="sm"
@@ -223,6 +263,16 @@ export default function ClientsManagePage() {
         description={`Êtes-vous sûr de vouloir supprimer "${deleteConfirm?.name}" ? Cette action est irréversible.`}
         confirmLabel="Supprimer"
         variant="destructive"
+      />
+
+      <CSVImportModal
+        open={importOpen}
+        onClose={() => setImportOpen(false)}
+        title="Importer des clients"
+        description="Importez vos clients depuis un fichier CSV"
+        columns={CLIENT_IMPORT_COLUMNS}
+        onImport={handleImportCSV}
+        templateFilename="template-clients"
       />
     </div>
   )
