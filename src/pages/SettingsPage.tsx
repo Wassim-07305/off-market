@@ -260,6 +260,7 @@ export default function SettingsPage() {
 }
 
 const NOTIFICATION_ITEMS: { key: keyof NotificationPreferences; label: string; description: string }[] = [
+  { key: 'sound_enabled', label: 'Son de notification', description: 'Jouer un son lors de la réception de notifications' },
   { key: 'new_messages', label: 'Nouveaux messages', description: 'Recevoir une notification pour chaque nouveau message' },
   { key: 'new_leads', label: 'Nouveaux leads', description: 'Être notifié quand un nouveau lead est ajouté' },
   { key: 'call_reminders', label: 'Rappels de calls', description: 'Recevoir un rappel avant chaque call planifié' },

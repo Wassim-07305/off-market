@@ -5,6 +5,7 @@ export interface NotificationPreferences {
   new_leads: boolean
   call_reminders: boolean
   formation_progress: boolean
+  sound_enabled: boolean
 }
 
 export const DEFAULT_NOTIFICATION_PREFERENCES: NotificationPreferences = {
@@ -12,6 +13,7 @@ export const DEFAULT_NOTIFICATION_PREFERENCES: NotificationPreferences = {
   new_leads: true,
   call_reminders: true,
   formation_progress: false,
+  sound_enabled: true,
 }
 
 export interface Profile {

@@ -8,6 +8,16 @@
 - **GitHub :** https://github.com/Wassim-07305/off-market
 - **Vercel (prod) :** https://off-market-ahmanewassim6-2668s-projects.vercel.app
 
+## Description du projet (CDC)
+
+**Off-Market** est une plateforme tout-en-un de coaching et gestion business pour freelances et coachs qui veulent atteindre et dépasser 10 000€ de CA mensuel. **Ce n'est PAS une app immobilière.**
+
+Multi-portails : Admin (Alexia), Coach, Élève.
+
+**Modules :** CRM Élèves, Formation LMS, Messagerie, Appels vidéo, Gamification, Journal/Check-ins, Form Builder, Contrats, Communauté, Onboarding personnalisé, IA (réponses automatiques, analyse client), Notifications.
+
+Alexia utilise l'app pour gérer ses coachés, suivre leur progression, envoyer des modules de formation et automatiser ses relances.
+
 ## Stack technique
 
 - **Attention : React + Vite (pas Next.js)** — projet développé par Gilles
