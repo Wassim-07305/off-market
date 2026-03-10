@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { APP_ROLES, ROLE_LABELS } from '@/lib/constants'
 import type { Profile, AppRole } from '@/types/database'
-import { useUpdateProfile, useUpdateUserRole } from '@/hooks/useUsers'
+import { useUsers, useUpdateProfile, useUpdateUserRole } from '@/hooks/useUsers'
 import { Modal } from '@/components/ui/modal'
 import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
@@ -25,14 +25,22 @@ const ROLE_OPTIONS = APP_ROLES.map((r) => ({
 export function UserFormModal({ open, onClose, user }: UserFormModalProps) {
   const updateProfile = useUpdateProfile()
   const updateUserRole = useUpdateUserRole()
+  const { data: allUsers } = useUsers()
 
   const [fullName, setFullName] = useState('')
   const [role, setRole] = useState<AppRole>('prospect')
+  const [coachId, setCoachId] = useState<string | null>(null)
+
+  // Filtrer les coachs et admins pour le selecteur
+  const coachOptions = (allUsers ?? [])
+    .filter((u) => u.role === 'coach' || u.role === 'admin')
+    .map((u) => ({ value: u.id, label: u.full_name }))
 
   useEffect(() => {
     if (open && user) {
       setFullName(user.full_name)
       setRole(user.role)
+      setCoachId(user.coach_id ?? null)
     }
   }, [open, user])
 
@@ -42,11 +50,12 @@ export function UserFormModal({ open, onClose, user }: UserFormModalProps) {
 
     const promises: Promise<unknown>[] = []
 
-    // Update profile fields
+    // Update profile fields (incluant coach_id)
     promises.push(
       updateProfile.mutateAsync({
         id: user.id,
         full_name: fullName,
+        coach_id: coachId,
       })
     )
 
@@ -92,6 +101,13 @@ export function UserFormModal({ open, onClose, user }: UserFormModalProps) {
           options={ROLE_OPTIONS}
           value={role}
           onChange={(val) => setRole(val as AppRole)}
+        />
+
+        <Select
+          label="Coach"
+          options={[{ value: '', label: 'Aucun' }, ...coachOptions]}
+          value={coachId ?? ''}
+          onChange={(val) => setCoachId(val || null)}
         />
 
         <div className="flex items-center justify-end gap-3 pt-2">
