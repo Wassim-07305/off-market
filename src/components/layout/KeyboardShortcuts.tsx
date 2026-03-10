@@ -22,7 +22,7 @@ const SHORTCUT_GROUPS: ShortcutGroup[] = [
   {
     title: 'Actions rapides',
     shortcuts: [
-      { keys: ['⌘', 'N'], description: 'Nouvelle conversation (messagerie)' },
+      { keys: ['⌘', 'N'], description: 'Création rapide (lead, message, etc.)' },
       { keys: ['⌘', 'Enter'], description: 'Envoyer le message' },
       { keys: ['Enter'], description: 'Valider / Soumettre' },
     ],
@@ -38,7 +38,7 @@ const SHORTCUT_GROUPS: ShortcutGroup[] = [
 ]
 
 export function KeyboardShortcuts() {
-  const { keyboardShortcutsOpen, setKeyboardShortcutsOpen, setCommandPaletteOpen, toggleSidebar } = useUIStore()
+  const { keyboardShortcutsOpen, setKeyboardShortcutsOpen, setCommandPaletteOpen, setQuickAddOpen, toggleSidebar } = useUIStore()
 
   // Global keyboard shortcuts
   useEffect(() => {
@@ -53,6 +53,11 @@ export function KeyboardShortcuts() {
         e.preventDefault()
         toggleSidebar()
       }
+      // Cmd+N to open quick add
+      if ((e.metaKey || e.ctrlKey) && e.key === 'n' && !isInputFocused()) {
+        e.preventDefault()
+        setQuickAddOpen(true)
+      }
       // Escape to close modals
       if (e.key === 'Escape') {
         if (keyboardShortcutsOpen) {
@@ -63,7 +68,7 @@ export function KeyboardShortcuts() {
 
     document.addEventListener('keydown', handler)
     return () => document.removeEventListener('keydown', handler)
-  }, [keyboardShortcutsOpen, setKeyboardShortcutsOpen, setCommandPaletteOpen, toggleSidebar])
+  }, [keyboardShortcutsOpen, setKeyboardShortcutsOpen, setCommandPaletteOpen, setQuickAddOpen, toggleSidebar])
 
   return (
     <AnimatePresence>

@@ -10,12 +10,13 @@ import { Sidebar } from '@/components/layout/Sidebar'
 import { Header } from '@/components/layout/Header'
 import { CommandPalette } from '@/components/layout/CommandPalette'
 import { KeyboardShortcuts } from '@/components/layout/KeyboardShortcuts'
+import { QuickAddModal } from '@/components/layout/QuickAddModal'
 import { NotificationsPanel } from '@/components/notifications/NotificationsPanel'
 import { AnnouncementBanner } from '@/components/announcements/AnnouncementBanner'
 import { DemoDataButton } from '@/components/admin/DemoDataButton'
 
 export function Layout() {
-  const { setSidebarCollapsed, setMobileSidebarOpen } = useUIStore()
+  const { setSidebarCollapsed, setMobileSidebarOpen, quickAddOpen, setQuickAddOpen } = useUIStore()
   const location = useLocation()
   const { user } = useAuth()
   usePresence()
@@ -76,6 +77,7 @@ export function Layout() {
       {/* Global overlays */}
       <CommandPalette />
       <KeyboardShortcuts />
+      <QuickAddModal open={quickAddOpen} onClose={() => setQuickAddOpen(false)} />
       <NotificationsPanel />
       <DemoDataButton />
     </div>

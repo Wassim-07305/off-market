@@ -10,6 +10,7 @@ interface UIState {
   commandPaletteOpen: boolean
   notificationsPanelOpen: boolean
   keyboardShortcutsOpen: boolean
+  quickAddOpen: boolean
   theme: Theme
   toggleSidebar: () => void
   setSidebarCollapsed: (collapsed: boolean) => void
@@ -19,6 +20,7 @@ interface UIState {
   setCommandPaletteOpen: (open: boolean) => void
   setNotificationsPanelOpen: (open: boolean) => void
   setKeyboardShortcutsOpen: (open: boolean) => void
+  setQuickAddOpen: (open: boolean) => void
   setTheme: (theme: Theme) => void
 }
 
@@ -31,6 +33,7 @@ export const useUIStore = create<UIState>()(
       commandPaletteOpen: false,
       notificationsPanelOpen: false,
       keyboardShortcutsOpen: false,
+      quickAddOpen: false,
       theme: 'light' as Theme,
       toggleSidebar: () => set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
       setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),
@@ -40,6 +43,7 @@ export const useUIStore = create<UIState>()(
       setCommandPaletteOpen: (open) => set({ commandPaletteOpen: open }),
       setNotificationsPanelOpen: (open) => set({ notificationsPanelOpen: open }),
       setKeyboardShortcutsOpen: (open) => set({ keyboardShortcutsOpen: open }),
+      setQuickAddOpen: (open) => set({ quickAddOpen: open }),
       setTheme: (theme) => set({ theme }),
     }),
     {
