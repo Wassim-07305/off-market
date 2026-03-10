@@ -9,6 +9,7 @@ import { Sidebar } from '@/components/layout/Sidebar'
 import { Header } from '@/components/layout/Header'
 import { CommandPalette } from '@/components/layout/CommandPalette'
 import { NotificationsPanel } from '@/components/notifications/NotificationsPanel'
+import { AnnouncementBanner } from '@/components/announcements/AnnouncementBanner'
 import { DemoDataButton } from '@/components/admin/DemoDataButton'
 
 export function Layout() {
@@ -50,6 +51,7 @@ export function Layout() {
 
       <div className="flex min-w-0 flex-1 flex-col">
         <Header />
+        <AnnouncementBanner />
 
         <main className="flex-1 overflow-y-auto p-5 md:p-8 lg:p-10">
           <div className="mx-auto max-w-[1400px]">

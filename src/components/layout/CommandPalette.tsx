@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
@@ -28,6 +28,7 @@ import {
   Bot,
   Heart,
   FileSignature,
+  Hash,
 } from 'lucide-react'
 import { useUIStore } from '@/stores/ui-store'
 import { useRole } from '@/hooks/useRole'
@@ -47,6 +48,16 @@ interface CommandItem {
   module?: Module
 }
 
+type SearchCategory = 'all' | 'clients' | 'leads' | 'formations' | 'messages'
+
+const SEARCH_CATEGORIES: { value: SearchCategory; label: string; icon: LucideIcon }[] = [
+  { value: 'all', label: 'Tout', icon: Search },
+  { value: 'clients', label: 'Clients', icon: Users },
+  { value: 'leads', label: 'Leads', icon: Target },
+  { value: 'formations', label: 'Formations', icon: GraduationCap },
+  { value: 'messages', label: 'Messages', icon: MessageCircle },
+]
+
 export function CommandPalette() {
   const { commandPaletteOpen, setCommandPaletteOpen } = useUIStore()
   const { role } = useRole()
@@ -56,6 +67,7 @@ export function CommandPalette() {
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [searchResults, setSearchResults] = useState<GlobalSearchResult | null>(null)
   const [searching, setSearching] = useState(false)
+  const [searchCategory, setSearchCategory] = useState<SearchCategory>('all')
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined)
 
   const close = useCallback(() => {
@@ -63,6 +75,7 @@ export function CommandPalette() {
     setQuery('')
     setSelectedIndex(0)
     setSearchResults(null)
+    setSearchCategory('all')
   }, [setCommandPaletteOpen])
 
   // Keyboard shortcut
@@ -157,6 +170,25 @@ export function CommandPalette() {
 
   const allItems = [...filteredActions, ...filteredNavItems]
 
+  // Filter search results by category
+  const filteredSearchResults = useMemo(() => {
+    if (!searchResults) return null
+    if (searchCategory === 'all') return searchResults
+    return {
+      clients: searchCategory === 'clients' ? searchResults.clients : [],
+      leads: searchCategory === 'leads' ? searchResults.leads : [],
+      formations: searchCategory === 'formations' ? (searchResults.formations ?? []) : [],
+      messages: searchCategory === 'messages' ? (searchResults.messages ?? []) : [],
+    }
+  }, [searchResults, searchCategory])
+
+  const hasSearchResults = filteredSearchResults && (
+    filteredSearchResults.clients.length > 0 ||
+    filteredSearchResults.leads.length > 0 ||
+    (filteredSearchResults.formations?.length ?? 0) > 0 ||
+    (filteredSearchResults.messages?.length ?? 0) > 0
+  )
+
   // Keyboard navigation
   useEffect(() => {
     if (!commandPaletteOpen) return
@@ -220,10 +252,34 @@ export function CommandPalette() {
                 </kbd>
               </div>
 
+              {/* Search Filter Tabs - only show when searching */}
+              {query.length >= 2 && (
+                <div className="flex items-center gap-1 border-b border-border/40 px-2 py-2">
+                  {SEARCH_CATEGORIES.map((cat) => {
+                    const Icon = cat.icon
+                    return (
+                      <button
+                        key={cat.value}
+                        onClick={() => setSearchCategory(cat.value)}
+                        className={cn(
+                          'flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors',
+                          searchCategory === cat.value
+                            ? 'bg-primary/10 text-primary'
+                            : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                        )}
+                      >
+                        <Icon className="h-3.5 w-3.5" />
+                        {cat.label}
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
+
               {/* Results */}
               <div className="max-h-80 overflow-y-auto p-2">
-                {/* Quick Actions */}
-                {filteredActions.length > 0 && (
+                {/* Quick Actions - hide when searching with filters */}
+                {filteredActions.length > 0 && searchCategory === 'all' && (
                   <div className="mb-1">
                     <p className="px-2 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
                       Actions rapides
@@ -249,8 +305,8 @@ export function CommandPalette() {
                   </div>
                 )}
 
-                {/* Navigation */}
-                {filteredNavItems.length > 0 && (
+                {/* Navigation - hide when searching with specific filter */}
+                {filteredNavItems.length > 0 && searchCategory === 'all' && (
                   <div className="mb-1">
                     <p className="px-2 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
                       Navigation
@@ -278,38 +334,103 @@ export function CommandPalette() {
                 )}
 
                 {/* Search Results */}
-                {searchResults && (
+                {filteredSearchResults && (
                   <>
-                    {searchResults.clients.length > 0 && (
+                    {filteredSearchResults.clients.length > 0 && (
                       <div className="mb-1">
                         <p className="px-2 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
                           Clients
                         </p>
-                        {searchResults.clients.map((c) => (
+                        {filteredSearchResults.clients.map((c) => (
                           <button
                             key={c.id}
                             onClick={() => go(`/eleves/${c.id}`)}
                             className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-foreground transition-colors hover:bg-muted"
                           >
                             <Users className="h-4 w-4 shrink-0 text-muted-foreground" />
-                            <span className="truncate">{c.name}</span>
+                            <div className="min-w-0 flex-1 text-left">
+                              <span className="truncate block">{c.name}</span>
+                              {c.email && (
+                                <span className="text-xs text-muted-foreground truncate block">{c.email}</span>
+                              )}
+                            </div>
+                            <span className={cn(
+                              'shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium',
+                              c.status === 'actif' ? 'bg-emerald-100 text-emerald-700' : 'bg-muted text-muted-foreground'
+                            )}>
+                              {c.status}
+                            </span>
                           </button>
                         ))}
                       </div>
                     )}
-                    {searchResults.leads.length > 0 && (
+                    {filteredSearchResults.leads.length > 0 && (
                       <div className="mb-1">
                         <p className="px-2 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
                           Leads
                         </p>
-                        {searchResults.leads.map((l) => (
+                        {filteredSearchResults.leads.map((l) => (
                           <button
                             key={l.id}
                             onClick={() => go('/pipeline')}
                             className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-foreground transition-colors hover:bg-muted"
                           >
                             <Target className="h-4 w-4 shrink-0 text-muted-foreground" />
-                            <span className="truncate">{l.name}</span>
+                            <div className="min-w-0 flex-1 text-left">
+                              <span className="truncate block">{l.name}</span>
+                              {l.email && (
+                                <span className="text-xs text-muted-foreground truncate block">{l.email}</span>
+                              )}
+                            </div>
+                            <span className="shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">
+                              {l.status.replace('_', ' ')}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                    {(filteredSearchResults.formations?.length ?? 0) > 0 && (
+                      <div className="mb-1">
+                        <p className="px-2 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+                          Formations
+                        </p>
+                        {filteredSearchResults.formations!.map((f) => (
+                          <button
+                            key={f.id}
+                            onClick={() => go(`/formations/${f.id}`)}
+                            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-foreground transition-colors hover:bg-muted"
+                          >
+                            <GraduationCap className="h-4 w-4 shrink-0 text-muted-foreground" />
+                            <div className="min-w-0 flex-1 text-left">
+                              <span className="truncate block">{f.title}</span>
+                              {f.description && (
+                                <span className="text-xs text-muted-foreground truncate block">{f.description}</span>
+                              )}
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                    {(filteredSearchResults.messages?.length ?? 0) > 0 && (
+                      <div className="mb-1">
+                        <p className="px-2 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+                          Messages
+                        </p>
+                        {filteredSearchResults.messages!.map((m) => (
+                          <button
+                            key={m.id}
+                            onClick={() => go(`/messaging?channel=${m.channel_id}`)}
+                            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-foreground transition-colors hover:bg-muted"
+                          >
+                            <MessageCircle className="h-4 w-4 shrink-0 text-muted-foreground" />
+                            <div className="min-w-0 flex-1 text-left">
+                              <div className="flex items-center gap-2">
+                                <Hash className="h-3 w-3 text-muted-foreground" />
+                                <span className="text-xs font-medium">{m.channel_name}</span>
+                                <span className="text-xs text-muted-foreground">par {m.sender_name}</span>
+                              </div>
+                              <span className="text-xs text-muted-foreground truncate block">{m.content}</span>
+                            </div>
                           </button>
                         ))}
                       </div>
@@ -321,9 +442,17 @@ export function CommandPalette() {
                   <p className="py-6 text-center text-sm text-muted-foreground">Recherche...</p>
                 )}
 
-                {query.length >= 2 && !searching && !searchResults && allItems.length === 0 && (
+                {query.length >= 2 && !searching && !hasSearchResults && (searchCategory !== 'all' || allItems.length === 0) && (
                   <p className="py-6 text-center text-sm text-muted-foreground">
                     Aucun résultat pour « {query} »
+                    {searchCategory !== 'all' && (
+                      <button
+                        onClick={() => setSearchCategory('all')}
+                        className="block mx-auto mt-2 text-primary hover:underline"
+                      >
+                        Rechercher partout
+                      </button>
+                    )}
                   </p>
                 )}
               </div>

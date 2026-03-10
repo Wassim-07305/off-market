@@ -240,6 +240,18 @@ export interface MessageRead {
   last_read_at: string
 }
 
+export interface MessageReaction {
+  id: string
+  message_id: string
+  user_id: string
+  emoji: string
+  created_at: string
+}
+
+export interface MessageReactionWithUser extends MessageReaction {
+  user?: Pick<Profile, 'id' | 'full_name' | 'avatar_url'>
+}
+
 // Formation types
 export interface Formation {
   id: string
@@ -460,6 +472,29 @@ export interface DashboardStats {
 export interface GlobalSearchResult {
   clients: Array<{ id: string; name: string; email: string | null; status: string }>
   leads: Array<{ id: string; name: string; email: string | null; status: string }>
+  formations?: Array<{ id: string; title: string; description: string | null }>
+  messages?: Array<{ id: string; content: string; channel_name: string; channel_id: string; sender_name: string }>
+}
+
+// Announcements
+export interface Announcement {
+  id: string
+  title: string
+  content: string
+  type: 'info' | 'warning' | 'success' | 'update'
+  target_roles: AppRole[] | null
+  is_active: boolean
+  starts_at: string | null
+  ends_at: string | null
+  created_by: string | null
+  created_at: string
+}
+
+export interface AnnouncementDismissal {
+  id: string
+  announcement_id: string
+  user_id: string
+  dismissed_at: string
 }
 
 // Gamification types
