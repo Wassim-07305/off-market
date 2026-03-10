@@ -5,9 +5,11 @@ import { useUIStore } from '@/stores/ui-store'
 import { usePresence } from '@/hooks/usePresence'
 import { useAuth } from '@/hooks/useAuth'
 import { useNotifications } from '@/hooks/useNotifications'
+import { useTheme } from '@/hooks/useTheme'
 import { Sidebar } from '@/components/layout/Sidebar'
 import { Header } from '@/components/layout/Header'
 import { CommandPalette } from '@/components/layout/CommandPalette'
+import { KeyboardShortcuts } from '@/components/layout/KeyboardShortcuts'
 import { NotificationsPanel } from '@/components/notifications/NotificationsPanel'
 import { AnnouncementBanner } from '@/components/announcements/AnnouncementBanner'
 import { DemoDataButton } from '@/components/admin/DemoDataButton'
@@ -17,6 +19,7 @@ export function Layout() {
   const location = useLocation()
   const { user } = useAuth()
   usePresence()
+  useTheme() // Apply theme to document
   // Charger les notifications et activer les souscriptions realtime
   useNotifications(user?.id)
 
@@ -72,6 +75,7 @@ export function Layout() {
 
       {/* Global overlays */}
       <CommandPalette />
+      <KeyboardShortcuts />
       <NotificationsPanel />
       <DemoDataButton />
     </div>

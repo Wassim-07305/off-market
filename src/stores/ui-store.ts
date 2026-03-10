@@ -1,12 +1,16 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
+export type Theme = 'light' | 'dark' | 'system'
+
 interface UIState {
   sidebarCollapsed: boolean
   sidebarMobileOpen: boolean
   searchQuery: string
   commandPaletteOpen: boolean
   notificationsPanelOpen: boolean
+  keyboardShortcutsOpen: boolean
+  theme: Theme
   toggleSidebar: () => void
   setSidebarCollapsed: (collapsed: boolean) => void
   toggleMobileSidebar: () => void
@@ -14,6 +18,8 @@ interface UIState {
   setSearchQuery: (query: string) => void
   setCommandPaletteOpen: (open: boolean) => void
   setNotificationsPanelOpen: (open: boolean) => void
+  setKeyboardShortcutsOpen: (open: boolean) => void
+  setTheme: (theme: Theme) => void
 }
 
 export const useUIStore = create<UIState>()(
@@ -24,6 +30,8 @@ export const useUIStore = create<UIState>()(
       searchQuery: '',
       commandPaletteOpen: false,
       notificationsPanelOpen: false,
+      keyboardShortcutsOpen: false,
+      theme: 'light' as Theme,
       toggleSidebar: () => set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
       setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),
       toggleMobileSidebar: () => set((state) => ({ sidebarMobileOpen: !state.sidebarMobileOpen })),
@@ -31,10 +39,12 @@ export const useUIStore = create<UIState>()(
       setSearchQuery: (query) => set({ searchQuery: query }),
       setCommandPaletteOpen: (open) => set({ commandPaletteOpen: open }),
       setNotificationsPanelOpen: (open) => set({ notificationsPanelOpen: open }),
+      setKeyboardShortcutsOpen: (open) => set({ keyboardShortcutsOpen: open }),
+      setTheme: (theme) => set({ theme }),
     }),
     {
       name: 'ui-store',
-      partialize: (state) => ({ sidebarCollapsed: state.sidebarCollapsed }),
+      partialize: (state) => ({ sidebarCollapsed: state.sidebarCollapsed, theme: state.theme }),
     }
   )
 )

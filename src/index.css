@@ -55,6 +55,39 @@
   --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.05), 0 8px 10px -6px rgb(0 0 0 / 0.03);
 }
 
+/* Dark mode theme */
+.dark {
+  --color-background: hsl(222 47% 8%);
+  --color-foreground: hsl(210 40% 98%);
+
+  --color-card: hsl(222 47% 11%);
+  --color-card-foreground: hsl(210 40% 98%);
+  --color-surface: hsl(222 47% 11%);
+
+  --color-primary: hsl(0 72% 55%);
+  --color-primary-foreground: hsl(0 0% 100%);
+  --color-primary-light: hsl(0 50% 15%);
+
+  --color-secondary: hsl(217 33% 17%);
+  --color-secondary-foreground: hsl(210 40% 98%);
+
+  --color-muted: hsl(217 33% 17%);
+  --color-muted-foreground: hsl(215 20% 65%);
+
+  --color-accent: hsl(217 33% 17%);
+  --color-accent-foreground: hsl(210 40% 98%);
+
+  --color-destructive: hsl(0 72% 55%);
+  --color-success: hsl(142 72% 40%);
+  --color-warning: hsl(38 92% 55%);
+
+  --color-border: hsl(217 33% 20%);
+  --color-ring: hsl(0 72% 55%);
+
+  --color-sidebar-from: #0a0d14;
+  --color-sidebar-to: #06080c;
+}
+
 @layer base {
   body {
     font-family: var(--font-sans);
@@ -97,10 +130,26 @@
     background-clip: content-box;
   }
 
+  /* Dark mode scrollbar */
+  .dark ::-webkit-scrollbar-thumb {
+    background: hsl(217 33% 30%);
+    background-clip: content-box;
+  }
+
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background: hsl(217 33% 40%);
+    background-clip: content-box;
+  }
+
   /* Selection */
   ::selection {
     background: hsl(0 72% 51% / 0.15);
     color: hsl(0 72% 35%);
+  }
+
+  .dark ::selection {
+    background: hsl(0 72% 55% / 0.3);
+    color: hsl(0 72% 80%);
   }
 }
 
