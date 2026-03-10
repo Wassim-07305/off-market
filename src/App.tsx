@@ -36,6 +36,8 @@ const RitualsPage = lazy(() => import('@/pages/RitualsPage'))
 const JournalPage = lazy(() => import('@/pages/JournalPage'))
 const GamificationPage = lazy(() => import('@/pages/GamificationPage'))
 const FormsPage = lazy(() => import('@/pages/FormsPage'))
+const CoachingPage = lazy(() => import('@/pages/CoachingPage'))
+const AIAssistantPage = lazy(() => import('@/pages/AIAssistantPage'))
 const DocumentationPage = lazy(() => import('@/pages/DocumentationPage'))
 
 function PageLoader() {
@@ -130,6 +132,15 @@ function App() {
                     </RoleGuard>
                   }
                 />
+                <Route
+                  path="/coaching"
+                  element={
+                    <RoleGuard module="coaching">
+                      <CoachingPage />
+                    </RoleGuard>
+                  }
+                />
+                <Route path="/assistant" element={<AIAssistantPage />} />
                 <Route path="/settings" element={<SettingsPage />} />
                 <Route path="/documentation" element={<DocumentationPage />} />
                 <Route

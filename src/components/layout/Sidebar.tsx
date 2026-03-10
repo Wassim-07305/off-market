@@ -24,6 +24,8 @@ import {
   BookMarked,
   Trophy,
   FileText,
+  Crosshair,
+  Bot,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { cn, getInitials } from '@/lib/utils'
@@ -64,6 +66,8 @@ const NAV_SECTIONS: NavSection[] = [
       { label: 'Journal', icon: BookMarked, path: '/journal', module: 'journal' },
       { label: 'Progression', icon: Trophy, path: '/progression', module: 'gamification' },
       { label: 'Formulaires', icon: FileText, path: '/formulaires', module: 'forms' },
+      { label: 'Coaching', icon: Crosshair, path: '/coaching', module: 'coaching' },
+      { label: 'Assistant IA', icon: Bot, path: '/assistant', module: 'assistant' },
     ],
   },
   {

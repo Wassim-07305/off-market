@@ -551,3 +551,51 @@ export interface FormSubmission {
 }
 
 export type FormWithFields = Form & { fields: FormField[] }
+
+// Coaching types
+export interface CoachingGoal {
+  id: string
+  client_id: string | null
+  set_by: string | null
+  title: string
+  description: string | null
+  target_value: number
+  current_value: number
+  unit: string | null
+  deadline: string | null
+  status: string
+  created_at: string
+  updated_at: string
+}
+
+export interface StudentTask {
+  id: string
+  student_id: string | null
+  assigned_by: string | null
+  title: string
+  description: string | null
+  due_date: string | null
+  status: string
+  priority: string
+  created_at: string
+  completed_at: string | null
+}
+
+// AI Assistant types
+export interface AIConversation {
+  id: string
+  user_id: string
+  title: string | null
+  context: Record<string, unknown> | null
+  created_at: string
+  updated_at: string
+}
+
+export interface AIMessage {
+  id: string
+  conversation_id: string
+  role: 'user' | 'assistant'
+  content: string
+  metadata: Record<string, unknown> | null
+  created_at: string
+}

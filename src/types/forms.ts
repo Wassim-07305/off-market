@@ -205,3 +205,24 @@ export const moduleItemSchema = z.object({
   duration: z.coerce.number().int().min(0).optional(),
 })
 export type ModuleItemFormData = z.infer<typeof moduleItemSchema>
+
+// Coaching goal forms
+export const coachingGoalSchema = z.object({
+  title: z.string().min(1, 'Le titre est requis'),
+  description: z.string().optional().or(z.literal('')),
+  target_value: z.coerce.number().min(0, 'La valeur cible doit être positive'),
+  unit: z.string().optional().or(z.literal('')),
+  deadline: z.string().optional().or(z.literal('')),
+  status: z.enum(['en_cours', 'atteint', 'abandonné']),
+})
+export type CoachingGoalFormData = z.infer<typeof coachingGoalSchema>
+
+// Student task forms
+export const studentTaskSchema = z.object({
+  title: z.string().min(1, 'Le titre est requis'),
+  description: z.string().optional().or(z.literal('')),
+  due_date: z.string().optional().or(z.literal('')),
+  priority: z.enum(['haute', 'moyenne', 'basse']),
+  status: z.enum(['a_faire', 'en_cours', 'termine']),
+})
+export type StudentTaskFormData = z.infer<typeof studentTaskSchema>
