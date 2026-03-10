@@ -15,6 +15,10 @@ import {
   LogOut,
   BarChart3,
   UserCog,
+  PhoneCall,
+  Film,
+  Instagram,
+  BookOpen,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { cn, getInitials } from '@/lib/utils'
@@ -47,6 +51,9 @@ const NAV_SECTIONS: NavSection[] = [
       { label: 'Pipeline', icon: Target, path: '/pipeline', module: 'pipeline' },
       { label: 'Calendrier', icon: Calendar, path: '/calendrier', module: 'calendrier' },
       { label: 'Activite', icon: Activity, path: '/activite', module: 'activite' },
+      { label: 'CA & Calls', icon: PhoneCall, path: '/closer-calls', module: 'closer-calls' },
+      { label: 'Social', icon: Film, path: '/social-content', module: 'social-content' },
+      { label: 'Instagram', icon: Instagram, path: '/instagram', module: 'instagram' },
     ],
   },
   {
@@ -61,6 +68,7 @@ const NAV_SECTIONS: NavSection[] = [
     label: 'Compte',
     items: [
       { label: 'Parametres', icon: Settings, path: '/settings', module: 'settings' },
+      { label: 'Documentation', icon: BookOpen, path: '/documentation', module: 'documentation' },
     ],
   },
 ]

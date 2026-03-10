@@ -110,6 +110,63 @@ export const RECURRENCE_LABELS: Record<RecurrenceType, string> = {
   annuel: 'Annuel',
 }
 
+// Closer call statuses
+export const CLOSER_CALL_STATUSES = ['closé', 'non_closé'] as const
+export type CloserCallStatus = (typeof CLOSER_CALL_STATUSES)[number]
+
+export const CLOSER_CALL_STATUS_LABELS: Record<CloserCallStatus, string> = {
+  closé: 'Closé',
+  non_closé: 'Non closé',
+}
+
+export const CLOSER_CALL_STATUS_COLORS: Record<CloserCallStatus, string> = {
+  closé: 'bg-green-100 text-green-700',
+  non_closé: 'bg-red-100 text-red-700',
+}
+
+// Social content statuses
+export const SOCIAL_CONTENT_STATUSES = ['idée', 'a_tourner', 'en_cours', 'publié', 'reporté'] as const
+export type SocialContentStatus = (typeof SOCIAL_CONTENT_STATUSES)[number]
+
+export const SOCIAL_CONTENT_STATUS_LABELS: Record<SocialContentStatus, string> = {
+  idée: 'Idée',
+  a_tourner: 'À tourner',
+  en_cours: 'En cours',
+  publié: 'Publié',
+  reporté: 'Reporté',
+}
+
+export const SOCIAL_CONTENT_STATUS_COLORS: Record<SocialContentStatus, string> = {
+  idée: 'bg-slate-100 text-slate-700',
+  a_tourner: 'bg-amber-100 text-amber-700',
+  en_cours: 'bg-blue-100 text-blue-700',
+  publié: 'bg-green-100 text-green-700',
+  reporté: 'bg-orange-100 text-orange-700',
+}
+
+export const SOCIAL_FORMATS = ['reel', 'story', 'carrousel', 'post'] as const
+export type SocialFormat = (typeof SOCIAL_FORMATS)[number]
+
+export const SOCIAL_FORMAT_LABELS: Record<SocialFormat, string> = {
+  reel: 'Reel',
+  story: 'Story',
+  carrousel: 'Carrousel',
+  post: 'Post',
+}
+
+export const VIDEO_TYPES = ['react', 'b-roll', 'video_virale', 'preuve_sociale', 'facecam', 'talking_head', 'vlog'] as const
+export type VideoType = (typeof VIDEO_TYPES)[number]
+
+export const VIDEO_TYPE_LABELS: Record<VideoType, string> = {
+  react: 'React',
+  'b-roll': 'B-Roll',
+  video_virale: 'Vidéo virale',
+  preuve_sociale: 'Preuve sociale',
+  facecam: 'Facecam',
+  talking_head: 'Talking Head',
+  vlog: 'Vlog',
+}
+
 export const NOTIFICATION_TYPES = ['lead_status', 'new_call', 'call_closed', 'general'] as const
 
 export const RITUAL_FREQUENCIES = ['quotidien', 'hebdomadaire', 'mensuel'] as const

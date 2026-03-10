@@ -25,6 +25,10 @@ import SettingsPage from '@/pages/SettingsPage'
 import AnalyticsPage from '@/pages/AnalyticsPage'
 import NotFoundPage from '@/pages/NotFoundPage'
 import CSMLandingPage from '@/pages/CSMLandingPage'
+import CloserCallsPage from '@/pages/CloserCallsPage'
+import SocialContentPage from '@/pages/SocialContentPage'
+import InstagramPage from '@/pages/InstagramPage'
+import DocumentationPage from '@/pages/DocumentationPage'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -71,6 +75,31 @@ function App() {
                 }
               />
               <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/documentation" element={<DocumentationPage />} />
+              <Route
+                path="/closer-calls"
+                element={
+                  <RoleGuard module="closer-calls">
+                    <CloserCallsPage />
+                  </RoleGuard>
+                }
+              />
+              <Route
+                path="/social-content"
+                element={
+                  <RoleGuard module="social-content">
+                    <SocialContentPage />
+                  </RoleGuard>
+                }
+              />
+              <Route
+                path="/instagram"
+                element={
+                  <RoleGuard module="instagram">
+                    <InstagramPage />
+                  </RoleGuard>
+                }
+              />
               <Route
                 path="/analytics"
                 element={

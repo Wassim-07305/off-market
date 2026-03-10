@@ -100,6 +100,60 @@ export const setterActivitySchema = z.object({
 })
 export type SetterActivityFormData = z.infer<typeof setterActivitySchema>
 
+// Closer calls forms
+export const closerCallSchema = z.object({
+  client_id: z.string().uuid('Sélectionnez un client'),
+  lead_id: z.string().uuid().optional().nullable(),
+  closer_id: z.string().uuid().optional().nullable(),
+  date: z.string().min(1, 'La date est requise'),
+  status: z.enum(['closé', 'non_closé']).default('non_closé'),
+  revenue: z.coerce.number().min(0).default(0),
+  nombre_paiements: z.coerce.number().int().min(0).default(1),
+  link: z.string().url().optional().or(z.literal('')),
+  debrief: z.string().optional().or(z.literal('')),
+  notes: z.string().optional().or(z.literal('')),
+})
+export type CloserCallFormData = z.infer<typeof closerCallSchema>
+
+// Social content forms
+export const socialContentSchema = z.object({
+  client_id: z.string().uuid('Sélectionnez un client'),
+  title: z.string().min(1, 'Le titre est requis'),
+  status: z.enum(['idée', 'a_tourner', 'en_cours', 'publié', 'reporté']).default('idée'),
+  format: z.enum(['reel', 'story', 'carrousel', 'post']).optional().nullable(),
+  video_type: z.enum(['react', 'b-roll', 'video_virale', 'preuve_sociale', 'facecam', 'talking_head', 'vlog']).optional().nullable(),
+  link: z.string().url().optional().or(z.literal('')),
+  is_validated: z.boolean().default(false),
+  text_content: z.string().optional().or(z.literal('')),
+  planned_date: z.string().optional().or(z.literal('')),
+})
+export type SocialContentFormData = z.infer<typeof socialContentSchema>
+
+// Instagram account forms
+export const instagramAccountSchema = z.object({
+  client_id: z.string().uuid('Sélectionnez un client'),
+  username: z.string().min(1, "Le nom d'utilisateur est requis"),
+  followers: z.coerce.number().int().min(0).default(0),
+  following: z.coerce.number().int().min(0).default(0),
+  media_count: z.coerce.number().int().min(0).default(0),
+})
+export type InstagramAccountFormData = z.infer<typeof instagramAccountSchema>
+
+// Instagram post stat forms
+export const instagramPostStatSchema = z.object({
+  account_id: z.string().uuid('Sélectionnez un compte'),
+  post_url: z.string().url().optional().or(z.literal('')),
+  likes: z.coerce.number().int().min(0).default(0),
+  comments: z.coerce.number().int().min(0).default(0),
+  shares: z.coerce.number().int().min(0).default(0),
+  saves: z.coerce.number().int().min(0).default(0),
+  reach: z.coerce.number().int().min(0).default(0),
+  impressions: z.coerce.number().int().min(0).default(0),
+  engagement_rate: z.coerce.number().min(0).default(0),
+  posted_at: z.string().optional().or(z.literal('')),
+})
+export type InstagramPostStatFormData = z.infer<typeof instagramPostStatSchema>
+
 // Channel forms
 export const channelSchema = z.object({
   name: z.string().min(1, 'Le nom est requis'),

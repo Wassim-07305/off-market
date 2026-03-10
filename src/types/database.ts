@@ -118,6 +118,63 @@ export interface Notification {
   created_at: string
 }
 
+export interface CloserCall {
+  id: string
+  client_id: string | null
+  lead_id: string | null
+  closer_id: string | null
+  date: string
+  status: 'closé' | 'non_closé'
+  revenue: number
+  nombre_paiements: number
+  link: string | null
+  debrief: string | null
+  notes: string | null
+  created_at: string
+}
+
+export interface SocialContent {
+  id: string
+  client_id: string | null
+  title: string
+  status: 'idée' | 'a_tourner' | 'en_cours' | 'publié' | 'reporté'
+  format: 'reel' | 'story' | 'carrousel' | 'post' | null
+  video_type: 'react' | 'b-roll' | 'video_virale' | 'preuve_sociale' | 'facecam' | 'talking_head' | 'vlog' | null
+  link: string | null
+  is_validated: boolean
+  text_content: string | null
+  planned_date: string | null
+  sort_order: number
+  created_at: string
+  updated_at: string
+}
+
+export interface InstagramAccount {
+  id: string
+  client_id: string | null
+  username: string
+  followers: number
+  following: number
+  media_count: number
+  last_synced_at: string | null
+  created_at: string
+}
+
+export interface InstagramPostStat {
+  id: string
+  account_id: string
+  post_url: string | null
+  likes: number
+  comments: number
+  shares: number
+  saves: number
+  reach: number
+  impressions: number
+  engagement_rate: number
+  posted_at: string | null
+  created_at: string
+}
+
 export interface Ritual {
   id: string
   client_id: string | null
@@ -269,6 +326,20 @@ export interface CallCalendarWithRelations extends CallCalendar {
   assigned_profile?: Profile
 }
 
+export interface CloserCallWithRelations extends CloserCall {
+  client?: Client
+  lead?: Lead
+  closer_profile?: Profile
+}
+
+export interface SocialContentWithRelations extends SocialContent {
+  client?: Client
+}
+
+export interface InstagramAccountWithRelations extends InstagramAccount {
+  client?: Client
+}
+
 export interface ClientAssignmentWithRelations extends ClientAssignment {
   profile?: Profile
   client?: Client
@@ -297,6 +368,10 @@ export interface Database {
       formation_modules: { Row: FormationModule; Insert: Partial<FormationModule> & { formation_id: string; title: string }; Update: Partial<FormationModule>; Relationships: [] }
       module_items: { Row: ModuleItem; Insert: Partial<ModuleItem> & { module_id: string; title: string }; Update: Partial<ModuleItem>; Relationships: [] }
       item_completions: { Row: ItemCompletion; Insert: Partial<ItemCompletion> & { item_id: string; user_id: string }; Update: Partial<ItemCompletion>; Relationships: [] }
+      closer_calls: { Row: CloserCall; Insert: Partial<CloserCall> & { date: string }; Update: Partial<CloserCall>; Relationships: [] }
+      social_content: { Row: SocialContent; Insert: Partial<SocialContent> & { title: string }; Update: Partial<SocialContent>; Relationships: [] }
+      instagram_accounts: { Row: InstagramAccount; Insert: Partial<InstagramAccount> & { username: string }; Update: Partial<InstagramAccount>; Relationships: [] }
+      instagram_post_stats: { Row: InstagramPostStat; Insert: Partial<InstagramPostStat> & { account_id: string }; Update: Partial<InstagramPostStat>; Relationships: [] }
     }
     Views: {
       [_ in never]: never
