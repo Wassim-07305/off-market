@@ -26,7 +26,7 @@ export default function NotFoundPage() {
         </h1>
 
         <p className="mb-8 max-w-md text-muted-foreground">
-          La page que vous recherchez n'existe pas ou a ete deplacee.
+          La page que vous recherchez n'existe pas ou a été déplacée.
         </p>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">

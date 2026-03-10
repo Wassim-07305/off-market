@@ -247,7 +247,7 @@ function AdminDashboard() {
             value={formatCurrency(stats.ca_total)}
             icon={DollarSign}
             trend={caTrend}
-            trendLabel="vs mois precedent"
+            trendLabel="vs mois précédent"
             accent="emerald"
             index={0}
           />
@@ -256,7 +256,7 @@ function AdminDashboard() {
             value={String(stats.nb_calls)}
             icon={Phone}
             trend={callsTrend}
-            trendLabel="vs mois precedent"
+            trendLabel="vs mois précédent"
             accent="blue"
             index={1}
           />
@@ -265,7 +265,7 @@ function AdminDashboard() {
             value={formatPercent(stats.taux_closing)}
             icon={TrendingUp}
             trend={closingTrend}
-            trendLabel="vs mois precedent"
+            trendLabel="vs mois précédent"
             accent="red"
             index={2}
           />
@@ -274,7 +274,7 @@ function AdminDashboard() {
             value={String(stats.messages_sent)}
             icon={MessageSquare}
             trend={messagesTrend}
-            trendLabel="vs mois precedent"
+            trendLabel="vs mois précédent"
             accent="amber"
             index={3}
           />
@@ -291,7 +291,7 @@ function AdminDashboard() {
             </p>
             <p className="text-xs text-destructive/80">
               Votre taux de closing est actuellement de {formatPercent(stats!.taux_closing)}.
-              Un taux inferieur a 30% necessite une attention particuliere.
+              Un taux inférieur à 30% nécessite une attention particulière.
             </p>
           </div>
         </div>

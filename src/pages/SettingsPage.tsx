@@ -74,7 +74,7 @@ export default function SettingsPage() {
         password: data.newPassword,
       })
       if (error) throw error
-      toast.success('Mot de passe mis a jour')
+      toast.success('Mot de passe mis à jour')
       resetPassword()
     } catch {
       toast.error('Erreur lors du changement de mot de passe')
@@ -103,9 +103,9 @@ export default function SettingsPage() {
         .getPublicUrl(filePath)
 
       await updateProfile.mutateAsync({ id: user.id, avatar_url: publicUrl })
-      toast.success('Photo de profil mise a jour')
+      toast.success('Photo de profil mise à jour')
     } catch {
-      toast.error('Erreur lors du telechargement')
+      toast.error('Erreur lors du téléchargement')
     } finally {
       setAvatarUploading(false)
     }
@@ -114,14 +114,14 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl sm:text-2xl font-bold text-foreground">Parametres</h1>
-        <p className="text-sm text-muted-foreground">Gerez votre profil et vos preferences</p>
+        <h1 className="text-xl sm:text-2xl font-bold text-foreground">Paramètres</h1>
+        <p className="text-sm text-muted-foreground">Gérez votre profil et vos préférences</p>
       </div>
 
       <TabsList
         tabs={[
           { value: 'profile', label: <><User className="mr-2 h-4 w-4" />Profil</> },
-          { value: 'security', label: <><Lock className="mr-2 h-4 w-4" />Securite</> },
+          { value: 'security', label: <><Lock className="mr-2 h-4 w-4" />Sécurité</> },
           { value: 'notifications', label: <><Bell className="mr-2 h-4 w-4" />Notifications</> },
         ]}
         value={activeTab}
@@ -163,7 +163,7 @@ export default function SettingsPage() {
                 <p className="mt-3 text-sm font-medium text-foreground">{profile?.full_name}</p>
                 <p className="text-xs text-muted-foreground">{profile?.email}</p>
                 {avatarUploading && (
-                  <p className="mt-2 text-xs text-primary">Telechargement...</p>
+                  <p className="mt-2 text-xs text-primary">Téléchargement...</p>
                 )}
               </CardContent>
             </Card>
@@ -172,7 +172,7 @@ export default function SettingsPage() {
             <Card className="lg:col-span-2">
               <CardHeader>
                 <CardTitle>Informations personnelles</CardTitle>
-                <CardDescription>Mettez a jour vos informations</CardDescription>
+                <CardDescription>Mettez à jour vos informations</CardDescription>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleProfileSubmit(onProfileSubmit)} className="space-y-4">
@@ -188,7 +188,7 @@ export default function SettingsPage() {
                     className="opacity-60"
                   />
                   <Input
-                    label="Telephone"
+                    label="Téléphone"
                     {...registerProfile('phone')}
                     placeholder="+33 6 00 00 00 00"
                     error={profileErrors.phone?.message}
@@ -241,7 +241,7 @@ export default function SettingsPage() {
                     loading={passwordChanging}
                     icon={<Lock className="h-4 w-4" />}
                   >
-                    Mettre a jour
+                    Mettre à jour
                   </Button>
                 </div>
               </form>
