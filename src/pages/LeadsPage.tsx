@@ -1,8 +1,9 @@
 import { useState, useCallback } from 'react'
-import { Plus, Download, Upload, LayoutList, Columns } from 'lucide-react'
+import { Plus, Download, Upload, LayoutList, Columns, Trash2 } from 'lucide-react'
+import { AnimatePresence, motion } from 'framer-motion'
 import type { LeadWithRelations } from '@/types/database'
 import type { LeadStatus } from '@/lib/constants'
-import { useLeads, useAllLeads, useUpdateLead, useBulkCreateLeads } from '@/hooks/useLeads'
+import { useLeads, useAllLeads, useUpdateLead, useBulkCreateLeads, useBulkDeleteLeads, useBulkUpdateLeads } from '@/hooks/useLeads'
 import { useClients } from '@/hooks/useClients'
 import { LeadKPIs } from '@/components/leads/LeadKPIs'
 import { LeadsTable } from '@/components/leads/LeadsTable'
@@ -46,8 +47,11 @@ export default function LeadsPage() {
   const [editingLead, setEditingLead] = useState<LeadWithRelations | null>(null)
   const [viewMode, setViewMode] = useState<'table' | 'kanban'>('table')
   const [importOpen, setImportOpen] = useState(false)
+  const [selectedIds, setSelectedIds] = useState<string[]>([])
 
   const bulkCreate = useBulkCreateLeads()
+  const bulkDelete = useBulkDeleteLeads()
+  const bulkUpdate = useBulkUpdateLeads()
 
   const filters = {
     search: search || undefined,
@@ -102,6 +106,23 @@ export default function LeadsPage() {
     },
     [bulkCreate]
   )
+
+  const handleSelectionChange = useCallback((ids: string[]) => {
+    setSelectedIds(ids)
+  }, [])
+
+  const handleBulkDelete = useCallback(async () => {
+    if (selectedIds.length === 0) return
+    if (!confirm(`Supprimer ${selectedIds.length} lead${selectedIds.length > 1 ? 's' : ''} ?`)) return
+    await bulkDelete.mutateAsync(selectedIds)
+    setSelectedIds([])
+  }, [selectedIds, bulkDelete])
+
+  const handleBulkStatusChange = useCallback(async (newStatus: LeadStatus) => {
+    if (selectedIds.length === 0) return
+    await bulkUpdate.mutateAsync({ ids: selectedIds, data: { status: newStatus } })
+    setSelectedIds([])
+  }, [selectedIds, bulkUpdate])
 
   const handleExport = useCallback(() => {
     if (!data?.data) return
@@ -256,10 +277,55 @@ export default function LeadsPage() {
             />
           </div>
 
+          {/* Bulk actions bar */}
+          <AnimatePresence>
+            {selectedIds.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="flex items-center gap-3 rounded-lg border border-primary/20 bg-primary/5 px-4 py-2"
+              >
+                <span className="text-sm font-medium text-primary">
+                  {selectedIds.length} sélectionné{selectedIds.length > 1 ? 's' : ''}
+                </span>
+                <div className="flex items-center gap-2">
+                  <Select
+                    options={[
+                      { value: '', label: 'Changer le statut...' },
+                      ...LEAD_STATUSES.map((s) => ({ value: s, label: LEAD_STATUS_LABELS[s] })),
+                    ]}
+                    value=""
+                    onChange={(val) => {
+                      if (val) handleBulkStatusChange(val as LeadStatus)
+                    }}
+                    className="w-44"
+                  />
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    icon={<Trash2 className="h-4 w-4" />}
+                    onClick={handleBulkDelete}
+                    disabled={bulkDelete.isPending}
+                  >
+                    Supprimer
+                  </Button>
+                </div>
+                <button
+                  onClick={() => setSelectedIds([])}
+                  className="ml-auto text-sm text-muted-foreground hover:text-foreground"
+                >
+                  Annuler
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           <LeadsTable
             data={data?.data ?? []}
             isLoading={isLoading}
             onEdit={handleEdit}
+            onSelectionChange={handleSelectionChange}
           />
 
           <Pagination

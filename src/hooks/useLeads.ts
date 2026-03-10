@@ -169,6 +169,44 @@ export function useBulkCreateLeads() {
   })
 }
 
+export function useBulkDeleteLeads() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (ids: string[]) => {
+      const { error } = await supabase.from('leads').delete().in('id', ids)
+      if (error) throw error
+      return ids.length
+    },
+    onSuccess: (count) => {
+      queryClient.invalidateQueries({ queryKey: ['leads'] })
+      toast.success(`${count} lead${count > 1 ? 's' : ''} supprimé${count > 1 ? 's' : ''}`)
+    },
+    onError: (error: Error) => {
+      toast.error(`Erreur: ${error.message}`)
+    },
+  })
+}
+
+export function useBulkUpdateLeads() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async ({ ids, data }: { ids: string[]; data: Partial<Lead> }) => {
+      const { error } = await supabase.from('leads').update(data).in('id', ids)
+      if (error) throw error
+      return ids.length
+    },
+    onSuccess: (count) => {
+      queryClient.invalidateQueries({ queryKey: ['leads'] })
+      toast.success(`${count} lead${count > 1 ? 's' : ''} mis à jour`)
+    },
+    onError: (error: Error) => {
+      toast.error(`Erreur: ${error.message}`)
+    },
+  })
+}
+
 export function useLeadStats(clientId?: string) {
   return useQuery({
     queryKey: ['lead-stats', clientId],

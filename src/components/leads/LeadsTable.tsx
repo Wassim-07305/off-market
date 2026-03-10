@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useEffect } from 'react'
 import {
   useReactTable,
   getCoreRowModel,
@@ -6,12 +6,13 @@ import {
   flexRender,
   createColumnHelper,
 } from '@tanstack/react-table'
-import type { SortingState } from '@tanstack/react-table'
+import type { SortingState, RowSelectionState } from '@tanstack/react-table'
 import { useState } from 'react'
 import { ArrowUpDown, Pencil, Trash2 } from 'lucide-react'
 import type { LeadWithRelations } from '@/types/database'
 import { useUpdateLead, useDeleteLead } from '@/hooks/useLeads'
 import { Badge } from '@/components/ui/badge'
+import { Checkbox } from '@/components/ui/checkbox'
 import { InlineEdit } from '@/components/ui/inline-edit'
 import { Skeleton } from '@/components/ui/skeleton'
 import { EmptyState } from '@/components/ui/empty-state'
@@ -28,17 +29,50 @@ interface LeadsTableProps {
   data: LeadWithRelations[]
   isLoading: boolean
   onEdit?: (lead: LeadWithRelations) => void
+  onSelectionChange?: (selectedIds: string[]) => void
 }
 
 const columnHelper = createColumnHelper<LeadWithRelations>()
 
-export function LeadsTable({ data, isLoading, onEdit }: LeadsTableProps) {
+export function LeadsTable({ data, isLoading, onEdit, onSelectionChange }: LeadsTableProps) {
   const [sorting, setSorting] = useState<SortingState>([])
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
   const updateLead = useUpdateLead()
   const deleteLead = useDeleteLead()
 
+  // Notify parent of selection changes
+  useEffect(() => {
+    if (onSelectionChange) {
+      const selectedIds = Object.keys(rowSelection)
+        .filter((key) => rowSelection[key])
+        .map((index) => data[parseInt(index)]?.id)
+        .filter(Boolean) as string[]
+      onSelectionChange(selectedIds)
+    }
+  }, [rowSelection, data, onSelectionChange])
+
+  // Reset selection when data changes
+  useEffect(() => {
+    setRowSelection({})
+  }, [data])
+
   const columns = useMemo(
     () => [
+      columnHelper.display({
+        id: 'select',
+        header: ({ table }) => (
+          <Checkbox
+            checked={table.getIsAllPageRowsSelected()}
+            onChange={table.getToggleAllPageRowsSelectedHandler()}
+          />
+        ),
+        cell: ({ row }) => (
+          <Checkbox
+            checked={row.getIsSelected()}
+            onChange={row.getToggleSelectedHandler()}
+          />
+        ),
+      }),
       columnHelper.accessor('created_at', {
         header: ({ column }) => (
           <button
@@ -251,8 +285,10 @@ export function LeadsTable({ data, isLoading, onEdit }: LeadsTableProps) {
   const table = useReactTable({
     data,
     columns,
-    state: { sorting },
+    state: { sorting, rowSelection },
     onSortingChange: setSorting,
+    onRowSelectionChange: setRowSelection,
+    enableRowSelection: true,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
   })
