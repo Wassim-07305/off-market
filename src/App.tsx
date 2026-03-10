@@ -43,6 +43,7 @@ const AIAssistantPage = lazy(() => import('@/pages/AIAssistantPage'))
 const DocumentationPage = lazy(() => import('@/pages/DocumentationPage'))
 const FormEditorPage = lazy(() => import('@/pages/FormEditorPage'))
 const OnboardingPage = lazy(() => import('@/pages/OnboardingPage'))
+const ResetPasswordPage = lazy(() => import('@/pages/ResetPasswordPage'))
 
 function PageLoader() {
   return (
@@ -81,6 +82,7 @@ function App() {
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path="/recrutement-csm" element={<CSMLandingPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
 
             {/* Protected routes */}
             <Route element={<RouteGuard />}>

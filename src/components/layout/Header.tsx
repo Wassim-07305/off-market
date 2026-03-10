@@ -81,7 +81,7 @@ export function Header() {
           <DropdownMenuSeparator />
           <DropdownMenuItem
             icon={<User className="h-4 w-4" />}
-            onClick={() => navigate('/profile')}
+            onClick={() => navigate('/settings')}
           >
             Mon profil
           </DropdownMenuItem>
