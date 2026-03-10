@@ -2,8 +2,10 @@ import { useNavigate } from 'react-router-dom'
 import { Home, ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { OffMarketLogo } from '@/components/ui/OffMarketLogo'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 export default function NotFoundPage() {
+  usePageTitle('Page introuvable')
   const navigate = useNavigate()
 
   return (

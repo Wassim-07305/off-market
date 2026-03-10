@@ -18,6 +18,7 @@ import {
 import { useAuthStore } from '@/stores/auth-store'
 import type { FeedPost, FeedComment } from '@/types/database'
 import { ITEMS_PER_PAGE } from '@/lib/constants'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 // ─── Composeur de post ───────────────────────────────────────────
 
@@ -308,6 +309,7 @@ function PostSkeleton() {
 // ─── Page Feed ───────────────────────────────────────────────────
 
 export default function FeedPage() {
+  usePageTitle('Communauté')
   const [page, setPage] = useState(1)
   const { data, isLoading, isPending } = useFeedPosts(page)
   const { data: likedPostIds = [] } = useMyLikes()

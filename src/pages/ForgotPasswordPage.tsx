@@ -10,6 +10,7 @@ import { OffMarketLogo } from '@/components/ui/OffMarketLogo'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 const forgotPasswordSchema = z.object({
   email: z.email('Adresse email invalide'),
@@ -18,6 +19,7 @@ const forgotPasswordSchema = z.object({
 type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>
 
 export default function ForgotPasswordPage() {
+  usePageTitle('Mot de passe oublié')
   const { resetPassword } = useAuth()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [emailSent, setEmailSent] = useState(false)

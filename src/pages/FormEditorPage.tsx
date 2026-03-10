@@ -40,6 +40,7 @@ import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { cn, formatDate } from '@/lib/utils'
 import { exportToCSV } from '@/lib/csv'
 import type { FormField } from '@/types/database'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 // ── Types de champ disponibles ───────────────────────────────
 
@@ -417,6 +418,7 @@ function SubmissionsTab({ formId, fields }: { formId: string; fields: FormField[
 // ── Page principale ──────────────────────────────────────────
 
 export default function FormEditorPage() {
+  usePageTitle('Éditeur de formulaire')
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { data: form, isLoading } = useFormWithFields(id)

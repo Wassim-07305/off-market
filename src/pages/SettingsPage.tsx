@@ -16,6 +16,7 @@ import { TabsList, TabsContent } from '@/components/ui/tabs'
 import { getInitials } from '@/lib/utils'
 import { DEFAULT_NOTIFICATION_PREFERENCES } from '@/types/database'
 import type { NotificationPreferences } from '@/types/database'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 const profileSchema = z.object({
   full_name: z.string().min(2, 'Nom requis'),
@@ -35,6 +36,7 @@ type ProfileFormData = z.infer<typeof profileSchema>
 type PasswordFormData = z.infer<typeof passwordSchema>
 
 export default function SettingsPage() {
+  usePageTitle('Paramètres')
   const { user, profile } = useAuth()
   const updateProfile = useUpdateProfile()
   const [activeTab, setActiveTab] = useState('profile')

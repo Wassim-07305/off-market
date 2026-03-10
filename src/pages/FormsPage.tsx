@@ -16,6 +16,7 @@ import { DropdownMenu, DropdownMenuItem } from '@/components/ui/dropdown-menu'
 import { ITEMS_PER_PAGE } from '@/lib/constants'
 import { cn, formatDate } from '@/lib/utils'
 import type { Form } from '@/types/database'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 const STATUS_OPTIONS = [
   { value: '', label: 'Tous les statuts' },
@@ -37,6 +38,7 @@ const FORM_STATUS_LABELS: Record<string, string> = {
 }
 
 export default function FormsPage() {
+  usePageTitle('Formulaires')
   const navigate = useNavigate()
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('')

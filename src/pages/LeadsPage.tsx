@@ -23,6 +23,7 @@ import {
   LEAD_SOURCE_LABELS,
   ITEMS_PER_PAGE,
 } from '@/lib/constants'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 const LEAD_IMPORT_COLUMNS: CSVColumn<'name' | 'email' | 'phone' | 'source' | 'status' | 'notes' | 'ca_contracté'>[] = [
   { key: 'name', label: 'Nom', required: true },
@@ -35,6 +36,7 @@ const LEAD_IMPORT_COLUMNS: CSVColumn<'name' | 'email' | 'phone' | 'source' | 'st
 ]
 
 export default function LeadsPage() {
+  usePageTitle('Pipeline')
   const [search, setSearch] = useState('')
   const [status, setStatus] = useState('')
   const [source, setSource] = useState('')

@@ -19,8 +19,10 @@ import {
   CALL_STATUSES,
   CALL_STATUS_LABELS,
 } from '@/lib/constants'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 export default function CallCalendarPage() {
+  usePageTitle('Calendrier')
   const [currentWeek, setCurrentWeek] = useState(new Date())
   const [activeTab, setActiveTab] = useState('week')
   const [clientId, setClientId] = useState('')

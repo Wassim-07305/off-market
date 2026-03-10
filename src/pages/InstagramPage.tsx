@@ -9,8 +9,10 @@ import { InstagramAccountFormModal } from '@/components/instagram/InstagramAccou
 import { Select } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 export default function InstagramPage() {
+  usePageTitle('Instagram')
   const [clientFilter, setClientFilter] = useState<string>('')
   const [selectedAccountId, setSelectedAccountId] = useState<string | null>(null)
   const [modalOpen, setModalOpen] = useState(false)

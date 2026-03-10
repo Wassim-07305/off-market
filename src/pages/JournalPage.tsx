@@ -19,6 +19,7 @@ import { TabsList, TabsContent } from '@/components/ui/tabs'
 import { cn, formatDate, formatCurrency } from '@/lib/utils'
 import { ITEMS_PER_PAGE } from '@/lib/constants'
 import type { JournalEntry } from '@/types/database'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 const MOOD_EMOJIS: Record<number, string> = {
   1: '😢',
@@ -42,6 +43,7 @@ const TABS = [
 ]
 
 export default function JournalPage() {
+  usePageTitle('Journal')
   const [activeTab, setActiveTab] = useState('journal')
   const [journalPage, setJournalPage] = useState(1)
   const [checkinPage, setCheckinPage] = useState(1)

@@ -16,6 +16,7 @@ import { exportToCSV } from '@/lib/csv'
 import { FINANCIAL_TYPES, FINANCIAL_TYPE_LABELS, ITEMS_PER_PAGE } from '@/lib/constants'
 import type { FinancialEntry, PaymentSchedule } from '@/types/database'
 import { toast } from 'sonner'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 const FINANCE_TABS = [
   { value: 'entries', label: 'Entrées' },
@@ -24,6 +25,7 @@ const FINANCE_TABS = [
 ]
 
 export default function FinancesPage() {
+  usePageTitle('Finances')
   const [activeTab, setActiveTab] = useState('entries')
   const [clientFilter, setClientFilter] = useState<string>('')
   const [typeFilter, setTypeFilter] = useState<string>('')

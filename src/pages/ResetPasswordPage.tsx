@@ -10,6 +10,7 @@ import { OffMarketLogo } from '@/components/ui/OffMarketLogo'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 const resetSchema = z.object({
   password: z.string().min(6, 'Minimum 6 caractères'),
@@ -22,6 +23,7 @@ const resetSchema = z.object({
 type ResetFormData = z.infer<typeof resetSchema>
 
 export default function ResetPasswordPage() {
+  usePageTitle('Nouveau mot de passe')
   const navigate = useNavigate()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [success, setSuccess] = useState(false)

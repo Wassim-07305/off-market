@@ -21,6 +21,7 @@ import { DropdownMenu, DropdownMenuItem } from '@/components/ui/dropdown-menu'
 import { ITEMS_PER_PAGE } from '@/lib/constants'
 import { formatDate, cn } from '@/lib/utils'
 import type { CoachingGoal, StudentTask } from '@/types/database'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
@@ -82,6 +83,7 @@ const TASK_STATUS_LABELS: Record<string, string> = {
 // ─── Component ──────────────────────────────────────────────────────────────
 
 export default function CoachingPage() {
+  usePageTitle('Coaching')
   const [activeTab, setActiveTab] = useState('objectifs')
 
   // Goals state

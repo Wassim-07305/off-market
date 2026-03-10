@@ -35,6 +35,7 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import type { TimePeriod } from '@/components/shared/TimeFilter'
 import { TimeFilter } from '@/components/shared/TimeFilter'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 const COLORS = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899']
 
@@ -59,6 +60,7 @@ const STATUS_LABELS: Record<string, string> = {
 }
 
 export default function AnalyticsPage() {
+  usePageTitle('Analytics')
   const [period, setPeriod] = useState<TimePeriod>('month')
   const { isAdmin } = useRole()
   const { data: stats, isLoading: statsLoading } = useDashboardStats()

@@ -31,6 +31,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
 import { formatRelativeDate } from '@/lib/utils'
 import type { LevelConfig, GamificationBadge } from '@/types/database'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 // --- Icones dynamiques ---
 
@@ -541,6 +542,7 @@ const TABS = [
 ]
 
 export default function GamificationPage() {
+  usePageTitle('Progression')
   const [activeTab, setActiveTab] = useState('badges')
   const { data: xp, isLoading: loadingXp } = useMyXp()
   const { data: levels, isLoading: loadingLevels } = useLevels()

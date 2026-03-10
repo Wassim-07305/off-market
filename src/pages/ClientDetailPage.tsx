@@ -30,6 +30,7 @@ import type { TabItem } from '@/components/ui/tabs'
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 import type { Lead } from '@/types/database'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 const TABS: TabItem[] = [
   { value: 'overview', label: <span className="inline-flex items-center gap-1.5"><LayoutDashboard className="hidden h-4 w-4 sm:block" />{"Vue d'ensemble"}</span> },
@@ -73,6 +74,7 @@ function useEleveStats(userId: string | undefined) {
 }
 
 export default function ClientDetailPage() {
+  usePageTitle('Détail client')
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
 

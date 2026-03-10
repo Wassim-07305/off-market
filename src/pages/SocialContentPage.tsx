@@ -15,8 +15,10 @@ import {
 } from '@/lib/constants'
 import type { SocialContent } from '@/types/database'
 import type { SocialContentStatus } from '@/lib/constants'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 export default function SocialContentPage() {
+  usePageTitle('Contenus Social')
   const [clientFilter, setClientFilter] = useState<string>('')
   const [statusFilter, setStatusFilter] = useState<string>('')
   const [formatFilter, setFormatFilter] = useState<string>('')

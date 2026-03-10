@@ -10,6 +10,7 @@ import { OffMarketLogo } from '@/components/ui/OffMarketLogo'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 const loginSchema = z.object({
   email: z.email('Adresse email invalide'),
@@ -19,6 +20,7 @@ const loginSchema = z.object({
 type LoginFormData = z.infer<typeof loginSchema>
 
 export default function LoginPage() {
+  usePageTitle('Connexion')
   const { signIn } = useAuth()
   const navigate = useNavigate()
   const [isSubmitting, setIsSubmitting] = useState(false)

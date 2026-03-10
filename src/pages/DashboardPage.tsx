@@ -19,6 +19,7 @@ import { LeadsChart } from '@/components/dashboard/LeadsChart'
 import { SetterActivityChart } from '@/components/dashboard/SetterActivityChart'
 import { cn } from '@/lib/utils'
 import type { TimePeriod } from '@/components/shared/TimeFilter'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 function computeTrend(current: number, previous: number): number {
   if (previous === 0) return current > 0 ? 100 : 0
@@ -322,6 +323,7 @@ function AdminDashboard() {
 
 // ─── Main Dashboard ───
 export default function DashboardPage() {
+  usePageTitle('Tableau de bord')
   const [period, setPeriod] = useState<TimePeriod>('month')
   const { isProspect } = useRole()
 

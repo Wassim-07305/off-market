@@ -18,6 +18,7 @@ import { CLIENT_STATUS_COLORS, ITEMS_PER_PAGE } from '@/lib/constants'
 import { formatDate } from '@/lib/utils'
 import type { Client } from '@/types/database'
 import { toast } from 'sonner'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 const CLIENT_IMPORT_COLUMNS: CSVColumn<'name' | 'email' | 'phone' | 'status' | 'notes'>[] = [
   { key: 'name', label: 'Nom', required: true },
@@ -35,6 +36,7 @@ const STATUS_OPTIONS = [
 ]
 
 export default function ClientsManagePage() {
+  usePageTitle('Clients')
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
   const [page, setPage] = useState(1)

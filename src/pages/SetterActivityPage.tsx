@@ -4,8 +4,10 @@ import { useSetterActivities } from '@/hooks/useSetterActivities'
 import { SetterStats } from '@/components/setter/SetterStats'
 import { SetterForm } from '@/components/setter/SetterForm'
 import { SetterHistory } from '@/components/setter/SetterHistory'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 export default function SetterActivityPage() {
+  usePageTitle('Activité')
   const { user } = useAuth()
   const { isAdmin } = useRole()
   const userId = user?.id

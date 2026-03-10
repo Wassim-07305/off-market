@@ -15,6 +15,7 @@ import {
   useDeleteConversation,
 } from '@/hooks/useAIChat'
 import type { AIConversation } from '@/types/database'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 function MessageSkeleton() {
   return (
@@ -52,6 +53,7 @@ function ConversationSkeleton() {
 }
 
 export default function AIAssistantPage() {
+  usePageTitle('Assistant IA')
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [input, setInput] = useState('')
   const [showSidebar, setShowSidebar] = useState(true)

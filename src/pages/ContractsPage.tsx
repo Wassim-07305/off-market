@@ -17,6 +17,7 @@ import { TabsList, TabsContent } from '@/components/ui/tabs'
 import { formatDate, formatCurrency, cn } from '@/lib/utils'
 import { ITEMS_PER_PAGE } from '@/lib/constants'
 import type { Contract, Invoice } from '@/types/database'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 // ── Constantes ─────────────────────────────────────────────
 
@@ -72,6 +73,7 @@ const TABS = [
 // ── Composant principal ────────────────────────────────────
 
 export default function ContractsPage() {
+  usePageTitle('Contrats')
   const [activeTab, setActiveTab] = useState('contrats')
 
   // Charger les clients pour résoudre les noms

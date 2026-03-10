@@ -8,8 +8,10 @@ import { FormationFormModal } from '@/components/formations/FormationFormModal'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { EmptyState } from '@/components/ui/empty-state'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 export default function FormationsPage() {
+  usePageTitle('Formations')
   const navigate = useNavigate()
   const { isAdmin, isProspect } = useRole()
   const { data: formations, isLoading } = useFormations(isProspect)

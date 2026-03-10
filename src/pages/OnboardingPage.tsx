@@ -16,6 +16,7 @@ import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/stores/auth-store'
 import { OffMarketLogo } from '@/components/ui/OffMarketLogo'
 import { cn } from '@/lib/utils'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 // ── Types ────────────────────────────────────────────────────
 
@@ -203,6 +204,7 @@ function MultiSelectButton({
 // ── Page principale ──────────────────────────────────────────
 
 export default function OnboardingPage() {
+  usePageTitle('Bienvenue')
   const navigate = useNavigate()
   const profile = useAuthStore((s) => s.profile)
   const setProfile = useAuthStore((s) => s.setProfile)

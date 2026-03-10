@@ -1,5 +1,6 @@
 import { BookOpen, Rocket, Grid3x3, Shield } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 const steps = [
   'Connectez-vous avec vos identifiants',
@@ -28,6 +29,7 @@ const roles = [
 ]
 
 export default function DocumentationPage() {
+  usePageTitle('Documentation')
   return (
     <div className="space-y-8">
       {/* En-tête */}

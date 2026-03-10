@@ -10,6 +10,7 @@ import { OffMarketLogo } from '@/components/ui/OffMarketLogo'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 const registerSchema = z
   .object({
@@ -34,6 +35,7 @@ const registerSchema = z
 type RegisterFormData = z.infer<typeof registerSchema>
 
 export default function RegisterPage() {
+  usePageTitle('Inscription')
   const { signUp } = useAuth()
   const navigate = useNavigate()
   const [isSubmitting, setIsSubmitting] = useState(false)

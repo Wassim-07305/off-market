@@ -12,8 +12,10 @@ import { exportToCSV } from '@/lib/csv'
 import { CLOSER_CALL_STATUSES, CLOSER_CALL_STATUS_LABELS, ITEMS_PER_PAGE } from '@/lib/constants'
 import type { CloserCall } from '@/types/database'
 import { toast } from 'sonner'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 export default function CloserCallsPage() {
+  usePageTitle('CA & Appels')
   const [clientFilter, setClientFilter] = useState<string>('')
   const [statusFilter, setStatusFilter] = useState<string>('')
   const [dateFrom, setDateFrom] = useState<string>('')

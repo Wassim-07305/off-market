@@ -14,6 +14,7 @@ import { DropdownMenu, DropdownMenuItem } from '@/components/ui/dropdown-menu'
 import { ITEMS_PER_PAGE, RITUAL_FREQUENCY_LABELS, RITUAL_FREQUENCY_COLORS } from '@/lib/constants'
 import { formatDate } from '@/lib/utils'
 import type { Ritual } from '@/types/database'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 const FREQUENCY_OPTIONS = [
   { value: '', label: 'Toutes les fréquences' },
@@ -23,6 +24,7 @@ const FREQUENCY_OPTIONS = [
 ]
 
 export default function RitualsPage() {
+  usePageTitle('Rituels')
   const [search, setSearch] = useState('')
   const [frequencyFilter, setFrequencyFilter] = useState('')
   const [page, setPage] = useState(1)

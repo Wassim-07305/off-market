@@ -1,6 +1,8 @@
 import { Briefcase, Calendar, Phone, TrendingUp, Users, Euro, Gift, CheckCircle } from 'lucide-react'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 export default function CSMLandingPage() {
+  usePageTitle('Recrutement CSM')
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       {/* Hero Section */}
