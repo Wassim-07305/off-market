@@ -41,6 +41,7 @@ const FeedPage = lazy(() => import('@/pages/FeedPage'))
 const ContractsPage = lazy(() => import('@/pages/ContractsPage'))
 const AIAssistantPage = lazy(() => import('@/pages/AIAssistantPage'))
 const DocumentationPage = lazy(() => import('@/pages/DocumentationPage'))
+const FormEditorPage = lazy(() => import('@/pages/FormEditorPage'))
 const OnboardingPage = lazy(() => import('@/pages/OnboardingPage'))
 
 function PageLoader() {
@@ -135,6 +136,14 @@ function App() {
                   element={
                     <RoleGuard module="forms">
                       <FormsPage />
+                    </RoleGuard>
+                  }
+                />
+                <Route
+                  path="/formulaires/:id"
+                  element={
+                    <RoleGuard module="forms">
+                      <FormEditorPage />
                     </RoleGuard>
                   }
                 />

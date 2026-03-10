@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Plus, FileText, MoreVertical, Pencil, Copy, Trash2 } from 'lucide-react'
 import { useForms, useDeleteForm, useCreateForm } from '@/hooks/useForms'
 import { FormCreateModal } from '@/components/forms/FormCreateModal'
@@ -36,6 +37,7 @@ const FORM_STATUS_LABELS: Record<string, string> = {
 }
 
 export default function FormsPage() {
+  const navigate = useNavigate()
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
   const [page, setPage] = useState(1)
@@ -134,7 +136,7 @@ export default function FormsPage() {
         <>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {forms.map((form) => (
-              <Card key={form.id} className="relative group">
+              <Card key={form.id} className="relative group cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate(`/formulaires/${form.id}`)}>
                 <CardContent className="p-5 space-y-3">
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex items-center gap-2.5 min-w-0">
@@ -148,12 +150,12 @@ export default function FormsPage() {
                     <DropdownMenu
                       align="right"
                       trigger={
-                        <button className="rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors cursor-pointer">
+                        <button onClick={(e) => e.stopPropagation()} className="rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors cursor-pointer">
                           <MoreVertical className="h-4 w-4" />
                         </button>
                       }
                     >
-                      <DropdownMenuItem onClick={() => {/* TODO: naviguer vers l'éditeur */}} icon={<Pencil className="h-4 w-4" />}>
+                      <DropdownMenuItem onClick={() => navigate(`/formulaires/${form.id}`)} icon={<Pencil className="h-4 w-4" />}>
                         Modifier
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => handleDuplicate(form)} icon={<Copy className="h-4 w-4" />}>
