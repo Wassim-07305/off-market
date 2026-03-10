@@ -1,5 +1,19 @@
 export type AppRole = 'admin' | 'coach' | 'prospect'
 
+export interface NotificationPreferences {
+  new_messages: boolean
+  new_leads: boolean
+  call_reminders: boolean
+  formation_progress: boolean
+}
+
+export const DEFAULT_NOTIFICATION_PREFERENCES: NotificationPreferences = {
+  new_messages: true,
+  new_leads: true,
+  call_reminders: true,
+  formation_progress: false,
+}
+
 export interface Profile {
   id: string
   email: string
@@ -9,6 +23,7 @@ export interface Profile {
   phone: string | null
   last_seen_at: string | null
   onboarding_completed: boolean
+  notification_preferences: NotificationPreferences | null
   created_at: string
   updated_at: string
 }
