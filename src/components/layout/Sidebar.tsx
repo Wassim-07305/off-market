@@ -26,6 +26,8 @@ import {
   FileText,
   Crosshair,
   Bot,
+  Heart,
+  FileSignature,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { cn, getInitials } from '@/lib/utils'
@@ -68,6 +70,8 @@ const NAV_SECTIONS: NavSection[] = [
       { label: 'Formulaires', icon: FileText, path: '/formulaires', module: 'forms' },
       { label: 'Coaching', icon: Crosshair, path: '/coaching', module: 'coaching' },
       { label: 'Assistant IA', icon: Bot, path: '/assistant', module: 'assistant' },
+      { label: 'Communauté', icon: Heart, path: '/communaute', module: 'feed' },
+      { label: 'Contrats', icon: FileSignature, path: '/contrats', module: 'contracts' },
     ],
   },
   {

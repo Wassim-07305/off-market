@@ -23,6 +23,8 @@ export type Module =
   | 'forms'
   | 'coaching'
   | 'assistant'
+  | 'feed'
+  | 'contracts'
   | 'documentation'
 
 const PERMISSIONS: Record<Module, AppRole[]> = {
@@ -48,6 +50,8 @@ const PERMISSIONS: Record<Module, AppRole[]> = {
   forms: ['admin', 'coach'],
   coaching: ['admin', 'coach'],
   assistant: ['admin', 'coach', 'prospect'],
+  feed: ['admin', 'coach', 'prospect'],
+  contracts: ['admin', 'coach'],
   documentation: ['admin', 'coach', 'prospect'],
 }
 

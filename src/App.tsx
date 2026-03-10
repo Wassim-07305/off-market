@@ -37,6 +37,8 @@ const JournalPage = lazy(() => import('@/pages/JournalPage'))
 const GamificationPage = lazy(() => import('@/pages/GamificationPage'))
 const FormsPage = lazy(() => import('@/pages/FormsPage'))
 const CoachingPage = lazy(() => import('@/pages/CoachingPage'))
+const FeedPage = lazy(() => import('@/pages/FeedPage'))
+const ContractsPage = lazy(() => import('@/pages/ContractsPage'))
 const AIAssistantPage = lazy(() => import('@/pages/AIAssistantPage'))
 const DocumentationPage = lazy(() => import('@/pages/DocumentationPage'))
 
@@ -141,6 +143,15 @@ function App() {
                   }
                 />
                 <Route path="/assistant" element={<AIAssistantPage />} />
+                <Route path="/communaute" element={<FeedPage />} />
+                <Route
+                  path="/contrats"
+                  element={
+                    <RoleGuard module="contracts">
+                      <ContractsPage />
+                    </RoleGuard>
+                  }
+                />
                 <Route path="/settings" element={<SettingsPage />} />
                 <Route path="/documentation" element={<DocumentationPage />} />
                 <Route

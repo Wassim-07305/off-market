@@ -599,3 +599,81 @@ export interface AIMessage {
   metadata: Record<string, unknown> | null
   created_at: string
 }
+
+// Feed types
+export interface FeedPost {
+  id: string
+  author_id: string
+  content: string
+  post_type: string | null
+  media_urls: string[]
+  is_pinned: boolean
+  likes_count: number
+  comments_count: number
+  created_at: string
+  updated_at: string
+  author?: Profile
+}
+
+export interface FeedComment {
+  id: string
+  post_id: string
+  author_id: string
+  content: string
+  parent_id: string | null
+  created_at: string
+  updated_at: string
+  author?: Profile
+}
+
+export interface FeedLike {
+  id: string
+  post_id: string
+  profile_id: string
+  created_at: string
+}
+
+// Contracts & Invoicing types
+export interface Contract {
+  id: string
+  template_id: string | null
+  client_id: string | null
+  title: string
+  content: string | null
+  status: string
+  signature_data: Record<string, unknown> | null
+  sent_at: string | null
+  signed_at: string | null
+  created_by: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface ContractTemplate {
+  id: string
+  title: string
+  content: string | null
+  variables: Record<string, unknown> | null
+  is_active: boolean
+  created_by: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface Invoice {
+  id: string
+  invoice_number: string | null
+  contract_id: string | null
+  client_id: string | null
+  amount: number
+  tax: number
+  total: number
+  status: string
+  due_date: string | null
+  paid_at: string | null
+  stripe_invoice_id: string | null
+  notes: string | null
+  created_by: string | null
+  created_at: string
+  updated_at: string
+}
