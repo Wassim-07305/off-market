@@ -15,6 +15,7 @@ import { NotificationsPanel } from '@/components/notifications/NotificationsPane
 import { AnnouncementBanner } from '@/components/announcements/AnnouncementBanner'
 import { DemoDataButton } from '@/components/admin/DemoDataButton'
 import { ScrollToTop } from '@/components/ui/scroll-to-top'
+import { MobileBottomNav } from '@/components/layout/MobileBottomNav'
 
 export function Layout() {
   const { setSidebarCollapsed, setMobileSidebarOpen, quickAddOpen, setQuickAddOpen } = useUIStore()
@@ -58,7 +59,7 @@ export function Layout() {
         <Header />
         <AnnouncementBanner />
 
-        <main className="flex-1 overflow-y-auto p-5 md:p-8 lg:p-10">
+        <main className="flex-1 overflow-y-auto p-5 pb-24 md:p-8 md:pb-8 lg:p-10 lg:pb-10">
           <div className="mx-auto max-w-[1400px]">
             <AnimatePresence mode="wait">
               <motion.div
@@ -82,6 +83,7 @@ export function Layout() {
       <NotificationsPanel />
       <DemoDataButton />
       <ScrollToTop />
+      <MobileBottomNav />
     </div>
   )
 }
