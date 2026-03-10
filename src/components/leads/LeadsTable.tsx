@@ -13,6 +13,7 @@ import type { LeadWithRelations } from '@/types/database'
 import { useUpdateLead, useDeleteLead } from '@/hooks/useLeads'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
+import { CopyButton } from '@/components/ui/copy-button'
 import { InlineEdit } from '@/components/ui/inline-edit'
 import { Skeleton } from '@/components/ui/skeleton'
 import { EmptyState } from '@/components/ui/empty-state'
@@ -109,11 +110,26 @@ export function LeadsTable({ data, isLoading, onEdit, onSelectionChange }: Leads
       }),
       columnHelper.accessor('email', {
         header: 'Email',
-        cell: (info) => (
-          <span className="text-sm text-muted-foreground">
-            {info.getValue() ?? '-'}
-          </span>
-        ),
+        cell: (info) => {
+          const email = info.getValue()
+          if (!email) return <span className="text-sm text-muted-foreground">-</span>
+          return (
+            <span className="inline-flex items-center gap-1 text-sm text-muted-foreground">
+              <a
+                href={`mailto:${email}`}
+                className="hover:text-primary hover:underline"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {email}
+              </a>
+              <CopyButton
+                value={email}
+                successMessage={`Email "${email}" copié`}
+                className="opacity-0 group-hover/row:opacity-100"
+              />
+            </span>
+          )
+        },
       }),
       columnHelper.accessor('source', {
         header: 'Source',
@@ -335,7 +351,7 @@ export function LeadsTable({ data, isLoading, onEdit, onSelectionChange }: Leads
           {table.getRowModel().rows.map((row) => (
             <tr
               key={row.id}
-              className="border-b border-border transition-colors hover:bg-secondary/30"
+              className="group/row border-b border-border transition-colors hover:bg-secondary/30"
             >
               {row.getVisibleCells().map((cell) => (
                 <td key={cell.id} className="px-4 py-3">
