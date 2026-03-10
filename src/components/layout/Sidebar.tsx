@@ -21,6 +21,9 @@ import {
   BookOpen,
   Building2,
   ListChecks,
+  BookMarked,
+  Trophy,
+  FileText,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { cn, getInitials } from '@/lib/utils'
@@ -58,6 +61,9 @@ const NAV_SECTIONS: NavSection[] = [
       { label: 'Instagram', icon: Instagram, path: '/instagram', module: 'instagram' },
       { label: 'Clients', icon: Building2, path: '/clients', module: 'clients' },
       { label: 'Rituels', icon: ListChecks, path: '/rituels', module: 'rituals' },
+      { label: 'Journal', icon: BookMarked, path: '/journal', module: 'journal' },
+      { label: 'Progression', icon: Trophy, path: '/progression', module: 'gamification' },
+      { label: 'Formulaires', icon: FileText, path: '/formulaires', module: 'forms' },
     ],
   },
   {

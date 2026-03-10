@@ -18,6 +18,9 @@ export type Module =
   | 'instagram'
   | 'clients'
   | 'rituals'
+  | 'journal'
+  | 'gamification'
+  | 'forms'
   | 'documentation'
 
 const PERMISSIONS: Record<Module, AppRole[]> = {
@@ -38,6 +41,9 @@ const PERMISSIONS: Record<Module, AppRole[]> = {
   instagram: ['admin', 'coach'],
   clients: ['admin', 'coach'],
   rituals: ['admin', 'coach'],
+  journal: ['admin', 'coach', 'prospect'],
+  gamification: ['admin', 'coach', 'prospect'],
+  forms: ['admin', 'coach'],
   documentation: ['admin', 'coach', 'prospect'],
 }
 

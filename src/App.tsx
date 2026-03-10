@@ -33,6 +33,9 @@ const SocialContentPage = lazy(() => import('@/pages/SocialContentPage'))
 const InstagramPage = lazy(() => import('@/pages/InstagramPage'))
 const ClientsManagePage = lazy(() => import('@/pages/ClientsManagePage'))
 const RitualsPage = lazy(() => import('@/pages/RitualsPage'))
+const JournalPage = lazy(() => import('@/pages/JournalPage'))
+const GamificationPage = lazy(() => import('@/pages/GamificationPage'))
+const FormsPage = lazy(() => import('@/pages/FormsPage'))
 const DocumentationPage = lazy(() => import('@/pages/DocumentationPage'))
 
 function PageLoader() {
@@ -107,6 +110,23 @@ function App() {
                   element={
                     <RoleGuard module="rituals">
                       <RitualsPage />
+                    </RoleGuard>
+                  }
+                />
+                <Route path="/journal" element={<JournalPage />} />
+                <Route
+                  path="/progression"
+                  element={
+                    <RoleGuard module="gamification">
+                      <GamificationPage />
+                    </RoleGuard>
+                  }
+                />
+                <Route
+                  path="/formulaires"
+                  element={
+                    <RoleGuard module="forms">
+                      <FormsPage />
                     </RoleGuard>
                   }
                 />

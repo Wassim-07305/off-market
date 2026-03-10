@@ -345,6 +345,34 @@ export interface ClientAssignmentWithRelations extends ClientAssignment {
   client?: Client
 }
 
+// Journal & Check-ins types
+export interface JournalEntry {
+  id: string
+  author_id: string
+  title: string | null
+  content: string | null
+  mood: number | null
+  tags: string[]
+  is_private: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface WeeklyCheckin {
+  id: string
+  client_id: string | null
+  week_start: string
+  revenue: number
+  prospection_count: number
+  win: string | null
+  blocker: string | null
+  goal_next_week: string | null
+  mood: number | null
+  coach_feedback: string | null
+  created_at: string
+  updated_at: string
+}
+
 // Supabase Database type for typed client
 export interface Database {
   public: {
@@ -415,3 +443,111 @@ export interface GlobalSearchResult {
   clients: Array<{ id: string; name: string; email: string | null; status: string }>
   leads: Array<{ id: string; name: string; email: string | null; status: string }>
 }
+
+// Gamification types
+export interface XpTransaction {
+  id: string
+  profile_id: string
+  action: string
+  xp_amount: number
+  metadata: Record<string, unknown>
+  created_at: string
+}
+
+export interface GamificationBadge {
+  id: string
+  name: string
+  description: string | null
+  icon: string | null
+  category: string
+  rarity: string | null
+  condition: Record<string, unknown> | null
+  xp_reward: number
+  is_active: boolean
+  created_at: string
+}
+
+export interface UserBadge {
+  id: string
+  profile_id: string
+  badge_id: string
+  earned_at: string
+  badge?: GamificationBadge
+}
+
+export interface LevelConfig {
+  level: number
+  name: string
+  min_xp: number
+  icon: string | null
+  color: string | null
+}
+
+export interface Challenge {
+  id: string
+  title: string
+  description: string | null
+  challenge_type: string
+  condition: Record<string, unknown> | null
+  xp_reward: number
+  badge_reward: string | null
+  starts_at: string | null
+  ends_at: string | null
+  is_active: boolean
+  created_by: string | null
+  created_at: string
+}
+
+export interface ChallengeParticipant {
+  id: string
+  challenge_id: string
+  profile_id: string
+  progress: number
+  completed: boolean
+  completed_at: string | null
+  joined_at: string
+}
+
+// Forms types
+export interface Form {
+  id: string
+  title: string
+  description: string | null
+  status: string
+  created_by: string
+  cover_image_url: string | null
+  thank_you_message: string | null
+  is_anonymous: boolean
+  allow_multiple_submissions: boolean
+  closes_at: string | null
+  target_audience: string | null
+  target_student_ids: string[] | null
+  notification_on_submit: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface FormField {
+  id: string
+  form_id: string
+  field_type: string
+  label: string
+  description: string | null
+  placeholder: string | null
+  is_required: boolean
+  options: Record<string, unknown> | null
+  validation: Record<string, unknown> | null
+  conditional_logic: Record<string, unknown> | null
+  sort_order: number
+  created_at: string
+}
+
+export interface FormSubmission {
+  id: string
+  form_id: string
+  respondent_id: string | null
+  answers: Record<string, unknown>
+  submitted_at: string
+}
+
+export type FormWithFields = Form & { fields: FormField[] }
