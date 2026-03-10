@@ -13,6 +13,12 @@ import {
   Activity,
   Plus,
   Phone,
+  PhoneCall,
+  Film,
+  Instagram,
+  BookOpen,
+  BarChart3,
+  Settings,
 } from 'lucide-react'
 import { useUIStore } from '@/stores/ui-store'
 import { useRole } from '@/hooks/useRole'
@@ -106,11 +112,19 @@ export function CommandPalette() {
     { id: 'nav-calendrier', label: 'Calendrier', icon: Calendar, action: () => go('/calendrier'), group: 'Navigation', module: 'calendrier' },
     { id: 'nav-activite', label: 'Activité', icon: Activity, action: () => go('/activite'), group: 'Navigation', module: 'activite' },
     { id: 'nav-finances', label: 'Finances', icon: DollarSign, action: () => go('/finances'), group: 'Navigation', module: 'finances' },
+    { id: 'nav-closer', label: 'CA & Calls', icon: PhoneCall, action: () => go('/closer-calls'), group: 'Navigation', module: 'closer-calls' },
+    { id: 'nav-social', label: 'Contenus Social', icon: Film, action: () => go('/social-content'), group: 'Navigation', module: 'social-content' },
+    { id: 'nav-instagram', label: 'Instagram', icon: Instagram, action: () => go('/instagram'), group: 'Navigation', module: 'instagram' },
+    { id: 'nav-analytics', label: 'Analytics', icon: BarChart3, action: () => go('/analytics'), group: 'Navigation', module: 'analytics' },
+    { id: 'nav-settings', label: 'Paramètres', icon: Settings, action: () => go('/settings'), group: 'Navigation', module: 'settings' },
+    { id: 'nav-doc', label: 'Documentation', icon: BookOpen, action: () => go('/documentation'), group: 'Navigation', module: 'documentation' },
   ]
 
   const quickActions: CommandItem[] = [
     { id: 'action-lead', label: 'Nouveau lead', icon: Plus, action: () => go('/pipeline?action=new'), group: 'Actions rapides', module: 'pipeline' },
     { id: 'action-call', label: 'Nouveau call', icon: Phone, action: () => go('/calendrier?action=new'), group: 'Actions rapides', module: 'calendrier' },
+    { id: 'action-closer', label: 'Nouvel appel closer', icon: PhoneCall, action: () => go('/closer-calls?action=new'), group: 'Actions rapides', module: 'closer-calls' },
+    { id: 'action-content', label: 'Nouveau contenu', icon: Film, action: () => go('/social-content?action=new'), group: 'Actions rapides', module: 'social-content' },
   ]
 
   const filteredNavItems = navigationItems.filter(item =>
