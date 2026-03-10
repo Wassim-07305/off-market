@@ -50,6 +50,20 @@ const INVOICE_STATUS_COLORS: Record<string, string> = {
   en_retard: 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300',
 }
 
+const CONTRACT_STATUS_LABELS: Record<string, string> = {
+  brouillon: 'Brouillon',
+  envoye: 'Envoyé',
+  signe: 'Signé',
+  expire: 'Expiré',
+}
+
+const INVOICE_STATUS_LABELS: Record<string, string> = {
+  brouillon: 'Brouillon',
+  envoyee: 'Envoyée',
+  payee: 'Payée',
+  en_retard: 'En retard',
+}
+
 const TABS = [
   { value: 'contrats', label: 'Contrats' },
   { value: 'factures', label: 'Factures' },
@@ -198,7 +212,7 @@ function ContractsTab({ clientsMap }: { clientsMap: Map<string, string> }) {
                     </td>
                     <td className="px-4 py-3">
                       <Badge className={cn(CONTRACT_STATUS_COLORS[contract.status])}>
-                        {contract.status}
+                        {CONTRACT_STATUS_LABELS[contract.status] ?? contract.status}
                       </Badge>
                     </td>
                     <td className="px-4 py-3 text-muted-foreground hidden lg:table-cell">
@@ -380,7 +394,7 @@ function InvoicesTab({ clientsMap }: { clientsMap: Map<string, string> }) {
                     </td>
                     <td className="px-4 py-3">
                       <Badge className={cn(INVOICE_STATUS_COLORS[invoice.status])}>
-                        {invoice.status === 'en_retard' ? 'En retard' : invoice.status}
+                        {INVOICE_STATUS_LABELS[invoice.status] ?? invoice.status}
                       </Badge>
                     </td>
                     <td className="px-4 py-3 text-muted-foreground hidden lg:table-cell">

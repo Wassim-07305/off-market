@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { MessageSquare, Plus, SendHorizontal, Bot, Trash2, ArrowLeft } from 'lucide-react'
+import { toast } from 'sonner'
 import { formatRelativeDate } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -72,10 +73,14 @@ export default function AIAssistantPage() {
   }, [messages, scrollToBottom])
 
   const handleNewConversation = async () => {
-    const conversation = await createConversation.mutateAsync(undefined)
-    setSelectedId(conversation.id)
-    setShowSidebar(false)
-    textareaRef.current?.focus()
+    try {
+      const conversation = await createConversation.mutateAsync(undefined)
+      setSelectedId(conversation.id)
+      setShowSidebar(false)
+      textareaRef.current?.focus()
+    } catch {
+      toast.error('Impossible de créer la conversation.')
+    }
   }
 
   const handleSelectConversation = (conversation: AIConversation) => {
@@ -85,9 +90,13 @@ export default function AIAssistantPage() {
 
   const handleDeleteConversation = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation()
-    await deleteConversation.mutateAsync(id)
-    if (selectedId === id) {
-      setSelectedId(null)
+    try {
+      await deleteConversation.mutateAsync(id)
+      if (selectedId === id) {
+        setSelectedId(null)
+      }
+    } catch {
+      toast.error('Impossible de supprimer la conversation.')
     }
   }
 
@@ -96,7 +105,12 @@ export default function AIAssistantPage() {
     if (!content || !selectedId || sendMessage.isPending) return
 
     setInput('')
-    await sendMessage.mutateAsync({ conversationId: selectedId, content })
+    try {
+      await sendMessage.mutateAsync({ conversationId: selectedId, content })
+    } catch {
+      toast.error('Erreur lors de l\'envoi du message.')
+      setInput(content)
+    }
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {

@@ -1,5 +1,3 @@
-'use client'
-
 import { useState, useCallback } from 'react'
 import { Heart, MessageCircle, Pin, Send, Trash2 } from 'lucide-react'
 import { cn } from '@/lib/utils'

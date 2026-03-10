@@ -82,15 +82,15 @@ const RARITY_STYLES: Record<string, { badge: string; border: string; bg: string 
 const RARITY_LABELS: Record<string, string> = {
   commun: 'Commun',
   rare: 'Rare',
-  epique: 'Epique',
-  legendaire: 'Legendaire',
+  epique: 'Épique',
+  legendaire: 'Légendaire',
 }
 
 // --- Helpers niveau ---
 
 function getCurrentLevel(xp: number, levels: LevelConfig[]): LevelConfig {
   const sorted = [...levels].sort((a, b) => b.min_xp - a.min_xp)
-  return sorted.find((l) => xp >= l.min_xp) ?? levels[0] ?? { level: 1, name: 'Debutant', min_xp: 0, icon: 'star', color: null }
+  return sorted.find((l) => xp >= l.min_xp) ?? levels[0] ?? { level: 1, name: 'Débutant', min_xp: 0, icon: 'star', color: null }
 }
 
 function getNextLevel(current: LevelConfig, levels: LevelConfig[]): LevelConfig | null {
@@ -108,15 +108,15 @@ function getProgressPercent(xp: number, current: LevelConfig, next: LevelConfig 
 // --- XP action labels ---
 
 const ACTION_LABELS: Record<string, string> = {
-  lead_created: 'Nouveau lead cree',
-  call_completed: 'Appel realise',
-  deal_closed: 'Deal close',
-  message_sent: 'Message envoye',
-  formation_completed: 'Formation terminee',
-  ritual_completed: 'Rituel complete',
+  lead_created: 'Nouveau lead créé',
+  call_completed: 'Appel réalisé',
+  deal_closed: 'Deal conclu',
+  message_sent: 'Message envoyé',
+  formation_completed: 'Formation terminée',
+  ritual_completed: 'Rituel complété',
   daily_login: 'Connexion quotidienne',
   badge_earned: 'Badge obtenu',
-  challenge_completed: 'Defi termine',
+  challenge_completed: 'Défi terminé',
 }
 
 const ACTION_ICONS: Record<string, LucideIcon> = {
@@ -198,7 +198,7 @@ function StatsCards({ xp, level, badgesCount }: { xp: number; level: LevelConfig
       bgLight: 'bg-blue-50',
     },
     {
-      label: 'Badges gagnes',
+      label: 'Badges gagnés',
       value: badgesCount.toString(),
       icon: Medal,
       color: 'text-purple-500',
@@ -324,7 +324,7 @@ function BadgesTab() {
   return (
     <div>
       <p className="text-sm text-muted-foreground mb-4">
-        {earnedIds.size} / {allBadges.length} badges debloques
+        {earnedIds.size} / {allBadges.length} badges débloqués
       </p>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {sorted.map((badge) => (
@@ -364,7 +364,7 @@ function ChallengesTab() {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
         <Target className="h-12 w-12 mb-3 opacity-40" />
-        <p className="text-sm">Aucun defi actif pour le moment.</p>
+        <p className="text-sm">Aucun défi actif pour le moment.</p>
       </div>
     )
   }
@@ -388,7 +388,7 @@ function ChallengesTab() {
                     <div className="flex items-center gap-2 mb-1">
                       <p className="font-semibold text-foreground">{challenge.title}</p>
                       {participation?.completed && (
-                        <Badge variant="success" className="text-[10px]">Termine</Badge>
+                        <Badge variant="success" className="text-[10px]">Terminé</Badge>
                       )}
                     </div>
                     {challenge.description && (
@@ -514,7 +514,7 @@ function HistoryTab() {
             disabled={page <= 1}
             className="rounded-lg px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
           >
-            Precedent
+            Précédent
           </button>
           <span className="text-sm text-muted-foreground">
             {page} / {totalPages}
@@ -536,7 +536,7 @@ function HistoryTab() {
 
 const TABS = [
   { value: 'badges', label: 'Badges' },
-  { value: 'defis', label: 'Defis' },
+  { value: 'defis', label: 'Défis' },
   { value: 'historique', label: 'Historique XP' },
 ]
 
@@ -550,7 +550,7 @@ export default function GamificationPage() {
   const totalXp = xp ?? 0
   const currentLevel = levels?.length
     ? getCurrentLevel(totalXp, levels)
-    : { level: 1, name: 'Debutant', min_xp: 0, icon: 'star', color: null }
+    : { level: 1, name: 'Débutant', min_xp: 0, icon: 'star', color: null }
 
   return (
     <div className="space-y-8">
@@ -558,7 +558,7 @@ export default function GamificationPage() {
       <div>
         <h1 className="text-xl sm:text-2xl font-bold text-foreground">Progression</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Gagnez de l&apos;XP, debloquez des badges et relevez des defis.
+          Gagnez de l&apos;XP, débloquez des badges et relevez des défis.
         </p>
       </div>
 
