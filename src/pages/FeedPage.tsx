@@ -1,7 +1,6 @@
 import { useState, useCallback } from 'react'
 import { Heart, MessageCircle, Pin, Send, Trash2 } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { formatRelativeDate, getInitials } from '@/lib/utils'
+import { cn, formatRelativeDate, getInitials } from '@/lib/utils'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
@@ -242,20 +241,12 @@ function PostCard({
       </CardContent>
 
       {/* Compteurs */}
-      {(post.likes_count > 0 || post.comments_count > 0) && (
-        <div className="flex items-center justify-between px-6 pb-2 text-xs text-muted-foreground">
-          <span>
-            {post.likes_count > 0
-              ? `${post.likes_count} j'aime${post.likes_count > 1 ? '' : ''}`
-              : ''}
-          </span>
-          <span>
-            {post.comments_count > 0
-              ? `${post.comments_count} commentaire${post.comments_count > 1 ? 's' : ''}`
-              : ''}
-          </span>
-        </div>
-      )}
+      <div className="flex items-center justify-between px-6 pb-2 text-xs text-muted-foreground">
+        <span>{post.likes_count} j&apos;aime</span>
+        <span>
+          {post.comments_count} commentaire{post.comments_count !== 1 ? 's' : ''}
+        </span>
+      </div>
 
       {/* Boutons d'interaction */}
       <div className="flex items-center border-t border-border/50 px-2">
