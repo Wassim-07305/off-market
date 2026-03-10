@@ -16,6 +16,7 @@ export type Module =
   | 'closer-calls'
   | 'social-content'
   | 'instagram'
+  | 'clients'
   | 'documentation'
 
 const PERMISSIONS: Record<Module, AppRole[]> = {
@@ -34,6 +35,7 @@ const PERMISSIONS: Record<Module, AppRole[]> = {
   'closer-calls': ['admin', 'coach'],
   'social-content': ['admin', 'coach'],
   instagram: ['admin', 'coach'],
+  clients: ['admin', 'coach'],
   documentation: ['admin', 'coach', 'prospect'],
 }
 

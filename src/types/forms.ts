@@ -31,7 +31,7 @@ export const clientSchema = z.object({
   email: z.string().email('Email invalide').optional().or(z.literal('')),
   phone: z.string().optional().or(z.literal('')),
   notes: z.string().optional().or(z.literal('')),
-  status: z.enum(['actif', 'inactif', 'archivé']).default('actif'),
+  status: z.enum(['actif', 'inactif', 'archivé']),
 })
 export type ClientFormData = z.infer<typeof clientSchema>
 
