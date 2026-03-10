@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useCallNote } from "@/hooks/use-pipeline";
+import { useCallNoteTemplates } from "@/hooks/use-calls";
 import {
   CALL_MOOD_CONFIG,
   CALL_OUTCOME_CONFIG,
@@ -18,6 +19,7 @@ import {
   CheckCircle,
   Circle,
   Trash2,
+  LayoutTemplate,
 } from "lucide-react";
 
 interface CallNotesFormProps {
@@ -26,6 +28,7 @@ interface CallNotesFormProps {
 
 export function CallNotesForm({ callId }: CallNotesFormProps) {
   const { note, isLoading, saveNote } = useCallNote(callId);
+  const { data: templates } = useCallNoteTemplates();
 
   const [summary, setSummary] = useState("");
   const [mood, setMood] = useState<CallNoteMood | "">("");
@@ -89,6 +92,33 @@ export function CallNotesForm({ callId }: CallNotesFormProps) {
         <FileText className="w-4 h-4" />
         Notes post-appel
       </h3>
+
+      {/* Template selector */}
+      {templates && templates.length > 0 && !note && (
+        <div>
+          <label className="block text-xs font-medium text-foreground mb-1.5 flex items-center gap-1.5">
+            <LayoutTemplate className="w-3.5 h-3.5" />
+            Utiliser un modele
+          </label>
+          <div className="flex flex-wrap gap-1.5">
+            {templates.map((tpl) => (
+              <button
+                key={tpl.id}
+                type="button"
+                onClick={() => {
+                  const sections = tpl.structure
+                    .map((s: { section: string; placeholder: string }) => `## ${s.section}\n${s.placeholder}`)
+                    .join("\n\n");
+                  setSummary(sections);
+                }}
+                className="h-7 px-2.5 rounded-lg text-xs font-medium border border-border text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+              >
+                {tpl.title}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Summary */}
       <div>

@@ -32,9 +32,30 @@ export interface CallCalendar {
   started_at: string | null;
   ended_at: string | null;
   actual_duration_seconds: number | null;
+  reschedule_reason: string | null;
+  original_date: string | null;
+  original_time: string | null;
+  satisfaction_rating: number | null;
   created_at: string;
   updated_at: string;
 }
+
+export interface CallNoteTemplate {
+  id: string;
+  title: string;
+  structure: { section: string; placeholder: string }[];
+  is_active: boolean;
+  created_by: string | null;
+  created_at: string;
+}
+
+export const SATISFACTION_CONFIG: Record<number, { label: string; emoji: string; color: string }> = {
+  1: { label: "Tres insatisfait", emoji: "😠", color: "text-red-500" },
+  2: { label: "Insatisfait", emoji: "😕", color: "text-orange-500" },
+  3: { label: "Neutre", emoji: "😐", color: "text-amber-500" },
+  4: { label: "Satisfait", emoji: "😊", color: "text-emerald-500" },
+  5: { label: "Tres satisfait", emoji: "🤩", color: "text-green-500" },
+};
 
 export interface CallCalendarWithRelations extends CallCalendar {
   client?: { id: string; full_name: string; avatar_url: string | null } | null;

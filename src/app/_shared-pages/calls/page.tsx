@@ -15,6 +15,7 @@ import {
   useGoogleCalendarEvents,
 } from "@/hooks/use-google-calendar";
 import Link from "next/link";
+import { CallMetrics } from "@/components/calls/call-metrics";
 import {
   Phone,
   Plus,
@@ -23,10 +24,11 @@ import {
   Calendar,
   List,
   Video,
+  BarChart3,
 } from "lucide-react";
 
 export default function CallsPage() {
-  const [view, setView] = useState<"week" | "list">("week");
+  const [view, setView] = useState<"week" | "list" | "metrics">("week");
   const [weekStart, setWeekStart] = useState(() => {
     const now = new Date();
     const day = now.getDay();
@@ -164,6 +166,16 @@ export default function CallsPage() {
               <List className="w-3.5 h-3.5" />
               Liste
             </button>
+            <button
+              onClick={() => setView("metrics")}
+              className={cn(
+                "h-9 px-3 flex items-center gap-1.5 text-xs font-medium transition-all",
+                view === "metrics" ? "bg-foreground text-background" : "bg-surface text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <BarChart3 className="w-3.5 h-3.5" />
+              Stats
+            </button>
           </div>
           <button
             onClick={handleNewCall}
@@ -206,7 +218,9 @@ export default function CallsPage() {
 
       {/* Content */}
       <motion.div variants={staggerItem}>
-        {view === "week" ? (
+        {view === "metrics" ? (
+          <CallMetrics />
+        ) : view === "week" ? (
           <WeekView
             calls={calls}
             weekStart={weekStart}

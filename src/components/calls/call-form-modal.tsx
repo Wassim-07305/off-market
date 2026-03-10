@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, Loader2, Phone, Trash2 } from "lucide-react";
+import { X, Loader2, Phone, Trash2, CalendarClock, Star } from "lucide-react";
 import { toast } from "sonner";
 import { useCalls } from "@/hooks/use-calls";
 import { useSupabase } from "@/hooks/use-supabase";
-import { CALL_TYPES, CALL_STATUSES, type CallCalendarWithRelations } from "@/types/calls";
+import { CALL_TYPES, CALL_STATUSES, SATISFACTION_CONFIG, type CallCalendarWithRelations } from "@/types/calls";
 import { CallNotesForm } from "@/components/calls/call-notes-form";
+import { cn } from "@/lib/utils";
 
 interface CallFormModalProps {
   open: boolean;
@@ -22,7 +23,7 @@ interface ProfileOption {
 }
 
 export function CallFormModal({ open, onClose, editCall, defaultDate, defaultTime }: CallFormModalProps) {
-  const { createCall, updateCall, deleteCall } = useCalls();
+  const { createCall, updateCall, deleteCall, rescheduleCall, rateSatisfaction } = useCalls();
   const supabase = useSupabase();
   const [title, setTitle] = useState("");
   const [clientId, setClientId] = useState<string>("");
@@ -35,6 +36,11 @@ export function CallFormModal({ open, onClose, editCall, defaultDate, defaultTim
   const [notes, setNotes] = useState("");
   const [clients, setClients] = useState<ProfileOption[]>([]);
   const [saving, setSaving] = useState(false);
+  const [showReschedule, setShowReschedule] = useState(false);
+  const [rescheduleDate, setRescheduleDate] = useState("");
+  const [rescheduleTime, setRescheduleTime] = useState("09:00");
+  const [rescheduleReason, setRescheduleReason] = useState("");
+  const [satisfaction, setSatisfaction] = useState<number>(0);
 
   useEffect(() => {
     if (!open) return;
@@ -57,6 +63,11 @@ export function CallFormModal({ open, onClose, editCall, defaultDate, defaultTim
       setStatus(editCall.status);
       setLink(editCall.link ?? "");
       setNotes(editCall.notes ?? "");
+      setSatisfaction(editCall.satisfaction_rating ?? 0);
+      setShowReschedule(false);
+      setRescheduleDate("");
+      setRescheduleTime("09:00");
+      setRescheduleReason("");
     } else {
       setTitle("");
       setClientId("");
@@ -67,6 +78,8 @@ export function CallFormModal({ open, onClose, editCall, defaultDate, defaultTim
       setStatus("planifie");
       setLink("");
       setNotes("");
+      setSatisfaction(0);
+      setShowReschedule(false);
     }
   }, [editCall, open, defaultDate, defaultTime]);
 
@@ -125,6 +138,36 @@ export function CallFormModal({ open, onClose, editCall, defaultDate, defaultTim
       toast.error("Erreur");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleReschedule = async () => {
+    if (!editCall || !rescheduleDate || !rescheduleReason.trim()) return;
+    setSaving(true);
+    try {
+      await rescheduleCall.mutateAsync({
+        id: editCall.id,
+        newDate: rescheduleDate,
+        newTime: rescheduleTime,
+        reason: rescheduleReason,
+      });
+      toast.success("Appel reporte");
+      onClose();
+    } catch {
+      toast.error("Erreur lors du report");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleSatisfaction = async (rating: number) => {
+    if (!editCall) return;
+    setSatisfaction(rating);
+    try {
+      await rateSatisfaction.mutateAsync({ id: editCall.id, rating });
+      toast.success("Note de satisfaction enregistree");
+    } catch {
+      toast.error("Erreur");
     }
   };
 
@@ -268,6 +311,113 @@ export function CallFormModal({ open, onClose, editCall, defaultDate, defaultTim
               className="w-full px-4 py-3 bg-muted/50 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none transition-shadow"
             />
           </div>
+
+          {/* Reschedule section */}
+          {editCall && editCall.status === "planifie" && (
+            <div className="pt-4 border-t border-border/50">
+              {!showReschedule ? (
+                <button
+                  type="button"
+                  onClick={() => setShowReschedule(true)}
+                  className="flex items-center gap-2 text-xs text-amber-600 hover:text-amber-700 font-medium transition-colors"
+                >
+                  <CalendarClock className="w-3.5 h-3.5" />
+                  Reporter cet appel
+                </button>
+              ) : (
+                <div className="space-y-3 bg-amber-500/5 border border-amber-500/10 rounded-xl p-4">
+                  <h4 className="text-xs font-semibold text-amber-700 flex items-center gap-2">
+                    <CalendarClock className="w-3.5 h-3.5" />
+                    Reporter l&apos;appel
+                  </h4>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className={labelClass}>Nouvelle date *</label>
+                      <input
+                        type="date"
+                        value={rescheduleDate}
+                        onChange={(e) => setRescheduleDate(e.target.value)}
+                        className={inputClass}
+                      />
+                    </div>
+                    <div>
+                      <label className={labelClass}>Nouvelle heure *</label>
+                      <input
+                        type="time"
+                        value={rescheduleTime}
+                        onChange={(e) => setRescheduleTime(e.target.value)}
+                        className={inputClass}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className={labelClass}>Raison du report *</label>
+                    <input
+                      value={rescheduleReason}
+                      onChange={(e) => setRescheduleReason(e.target.value)}
+                      placeholder="Client indisponible, urgence..."
+                      className={inputClass}
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowReschedule(false)}
+                      className="h-8 px-3 rounded-lg text-xs text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      Annuler
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleReschedule}
+                      disabled={saving || !rescheduleDate || !rescheduleReason.trim()}
+                      className="h-8 px-4 rounded-lg bg-amber-500 text-white text-xs font-medium hover:bg-amber-600 transition-colors disabled:opacity-50 flex items-center gap-1.5"
+                    >
+                      {saving && <Loader2 className="w-3 h-3 animate-spin" />}
+                      Confirmer le report
+                    </button>
+                  </div>
+                </div>
+              )}
+              {editCall.original_date && (
+                <p className="text-[10px] text-muted-foreground mt-2">
+                  Initialement prevu le {editCall.original_date} a {editCall.original_time?.slice(0, 5)}
+                  {editCall.reschedule_reason && ` — ${editCall.reschedule_reason}`}
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* Satisfaction rating (post-call) */}
+          {editCall && editCall.status === "realise" && (
+            <div className="pt-4 border-t border-border/50">
+              <label className="block text-xs font-semibold text-foreground mb-2 flex items-center gap-2">
+                <Star className="w-3.5 h-3.5 text-yellow-500" />
+                Satisfaction client
+              </label>
+              <div className="flex gap-1.5">
+                {([1, 2, 3, 4, 5] as const).map((rating) => {
+                  const config = SATISFACTION_CONFIG[rating];
+                  return (
+                    <button
+                      key={rating}
+                      type="button"
+                      onClick={() => handleSatisfaction(rating)}
+                      className={cn(
+                        "flex-1 flex flex-col items-center gap-0.5 p-2 rounded-lg border transition-colors",
+                        satisfaction === rating
+                          ? "border-primary bg-primary/5"
+                          : "border-border hover:bg-muted/50"
+                      )}
+                    >
+                      <span className="text-lg">{config.emoji}</span>
+                      <span className="text-[9px] text-muted-foreground">{config.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           {/* Post-call notes (only when editing a completed/done call) */}
           {editCall && (editCall.status === "realise" || editCall.status === "no_show") && (

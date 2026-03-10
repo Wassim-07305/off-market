@@ -7,6 +7,7 @@ import { staggerContainer, fadeInUp, defaultTransition } from "@/lib/animations"
 import { useBillingStats } from "@/hooks/use-invoices";
 import { useContracts } from "@/hooks/use-contracts";
 import { useInvoices } from "@/hooks/use-invoices";
+import { usePaymentReminders, REMINDER_LABELS } from "@/hooks/use-payment-reminders";
 import {
   CreditCard,
   FileText,
@@ -16,6 +17,8 @@ import {
   CheckCircle,
   Clock,
   Send,
+  Bell,
+  MailCheck,
 } from "lucide-react";
 
 function formatEUR(amount: number) {
@@ -26,6 +29,7 @@ export default function BillingOverviewPage() {
   const { data: stats, isLoading: statsLoading } = useBillingStats();
   const { contracts, isLoading: contractsLoading } = useContracts({ limit: 5 });
   const { invoices, isLoading: invoicesLoading } = useInvoices({ limit: 5 });
+  const { pendingReminders, upcomingReminders, markAsSent } = usePaymentReminders();
 
   const isLoading = statsLoading || contractsLoading || invoicesLoading;
 
@@ -208,6 +212,82 @@ export default function BillingOverviewPage() {
           )}
         </motion.div>
       </div>
+
+      {/* Payment reminders section */}
+      {(pendingReminders.length > 0 || upcomingReminders.length > 0) && (
+        <motion.div
+          variants={fadeInUp}
+          transition={defaultTransition}
+          className="bg-surface border border-border rounded-xl p-6"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-sm font-semibold text-foreground flex items-center gap-2">
+              <Bell className="w-4 h-4 text-amber-500" />
+              Relances de paiement
+            </h2>
+            {pendingReminders.length > 0 && (
+              <span className="text-xs font-medium bg-red-500/10 text-red-600 px-2 py-0.5 rounded-full">
+                {pendingReminders.length} a envoyer
+              </span>
+            )}
+          </div>
+
+          {/* Pending (to send now) */}
+          {pendingReminders.length > 0 && (
+            <div className="mb-4">
+              <p className="text-xs font-medium text-red-500 mb-2">A envoyer maintenant</p>
+              <div className="space-y-2">
+                {pendingReminders.slice(0, 5).map((r) => {
+                  const config = REMINDER_LABELS[r.reminder_type];
+                  return (
+                    <div key={r.id} className="flex items-center justify-between p-3 bg-red-500/5 rounded-lg border border-red-500/10">
+                      <div>
+                        <p className={`text-xs font-medium ${config?.severity ?? "text-red-500"}`}>
+                          {config?.label ?? r.reminder_type}
+                        </p>
+                        <p className="text-[10px] text-muted-foreground">
+                          Prevue le {new Date(r.scheduled_at).toLocaleDateString("fr-FR")}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => markAsSent.mutate(r.id)}
+                        disabled={markAsSent.isPending}
+                        className="flex items-center gap-1.5 text-xs font-medium text-primary hover:underline disabled:opacity-50"
+                      >
+                        <MailCheck className="w-3.5 h-3.5" />
+                        Marquer envoyee
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Upcoming */}
+          {upcomingReminders.length > 0 && (
+            <div>
+              <p className="text-xs font-medium text-muted-foreground mb-2">Prochaines relances</p>
+              <div className="space-y-1.5">
+                {upcomingReminders.slice(0, 5).map((r) => {
+                  const config = REMINDER_LABELS[r.reminder_type];
+                  return (
+                    <div key={r.id} className="flex items-center justify-between p-2.5 rounded-lg hover:bg-muted/30 transition-colors">
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-3.5 h-3.5 text-muted-foreground" />
+                        <span className="text-xs text-foreground">{config?.label ?? r.reminder_type}</span>
+                      </div>
+                      <span className="text-[10px] text-muted-foreground">
+                        {new Date(r.scheduled_at).toLocaleDateString("fr-FR")}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </motion.div>
+      )}
     </motion.div>
   );
 }
