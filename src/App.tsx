@@ -32,6 +32,7 @@ const CloserCallsPage = lazy(() => import('@/pages/CloserCallsPage'))
 const SocialContentPage = lazy(() => import('@/pages/SocialContentPage'))
 const InstagramPage = lazy(() => import('@/pages/InstagramPage'))
 const ClientsManagePage = lazy(() => import('@/pages/ClientsManagePage'))
+const RitualsPage = lazy(() => import('@/pages/RitualsPage'))
 const DocumentationPage = lazy(() => import('@/pages/DocumentationPage'))
 
 function PageLoader() {
@@ -98,6 +99,14 @@ function App() {
                   element={
                     <RoleGuard module="clients">
                       <ClientsManagePage />
+                    </RoleGuard>
+                  }
+                />
+                <Route
+                  path="/rituels"
+                  element={
+                    <RoleGuard module="rituals">
+                      <RitualsPage />
                     </RoleGuard>
                   }
                 />

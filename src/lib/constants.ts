@@ -170,5 +170,18 @@ export const VIDEO_TYPE_LABELS: Record<VideoType, string> = {
 export const NOTIFICATION_TYPES = ['lead_status', 'new_call', 'call_closed', 'general'] as const
 
 export const RITUAL_FREQUENCIES = ['quotidien', 'hebdomadaire', 'mensuel'] as const
+export type RitualFrequency = (typeof RITUAL_FREQUENCIES)[number]
+
+export const RITUAL_FREQUENCY_LABELS: Record<RitualFrequency, string> = {
+  quotidien: 'Quotidien',
+  hebdomadaire: 'Hebdomadaire',
+  mensuel: 'Mensuel',
+}
+
+export const RITUAL_FREQUENCY_COLORS: Record<RitualFrequency, string> = {
+  quotidien: 'bg-blue-100 text-blue-700',
+  hebdomadaire: 'bg-purple-100 text-purple-700',
+  mensuel: 'bg-amber-100 text-amber-700',
+}
 
 export const ITEMS_PER_PAGE = 20

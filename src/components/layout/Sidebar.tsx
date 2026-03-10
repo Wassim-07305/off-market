@@ -20,6 +20,7 @@ import {
   Instagram,
   BookOpen,
   Building2,
+  ListChecks,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { cn, getInitials } from '@/lib/utils'
@@ -56,6 +57,7 @@ const NAV_SECTIONS: NavSection[] = [
       { label: 'Social', icon: Film, path: '/social-content', module: 'social-content' },
       { label: 'Instagram', icon: Instagram, path: '/instagram', module: 'instagram' },
       { label: 'Clients', icon: Building2, path: '/clients', module: 'clients' },
+      { label: 'Rituels', icon: ListChecks, path: '/rituels', module: 'rituals' },
     ],
   },
   {

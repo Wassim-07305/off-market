@@ -154,6 +154,14 @@ export const instagramPostStatSchema = z.object({
 })
 export type InstagramPostStatFormData = z.infer<typeof instagramPostStatSchema>
 
+// Ritual forms
+export const ritualSchema = z.object({
+  title: z.string().min(1, 'Le titre est requis'),
+  description: z.string().optional().or(z.literal('')),
+  frequency: z.enum(['quotidien', 'hebdomadaire', 'mensuel']).optional().nullable(),
+})
+export type RitualFormData = z.infer<typeof ritualSchema>
+
 // Channel forms
 export const channelSchema = z.object({
   name: z.string().min(1, 'Le nom est requis'),
