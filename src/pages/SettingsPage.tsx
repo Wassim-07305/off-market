@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Switch } from '@/components/ui/switch'
 import { TabsList, TabsContent } from '@/components/ui/tabs'
 import { getInitials } from '@/lib/utils'
 import { DEFAULT_NOTIFICATION_PREFERENCES } from '@/types/database'
@@ -305,25 +306,15 @@ function NotificationsTab() {
       <CardContent>
         <div className="space-y-4">
           {NOTIFICATION_ITEMS.map((item) => (
-            <div key={item.key} className="flex items-center justify-between rounded-lg border border-border p-4">
-              <div>
-                <p className="text-sm font-medium text-foreground">{item.label}</p>
-                <p className="text-xs text-muted-foreground">{item.description}</p>
-              </div>
-              <button
-                type="button"
+            <div key={item.key} className="rounded-lg border border-border p-4">
+              <Switch
+                label={item.label}
+                description={item.description}
+                checked={currentPrefs[item.key]}
+                onCheckedChange={() => handleToggle(item.key)}
                 disabled={updatePrefs.isPending}
-                onClick={() => handleToggle(item.key)}
-                className={`relative h-6 w-11 rounded-full transition-colors cursor-pointer disabled:opacity-50 ${
-                  currentPrefs[item.key] ? 'bg-primary' : 'bg-muted'
-                }`}
-              >
-                <span
-                  className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform ${
-                    currentPrefs[item.key] ? 'translate-x-5' : 'translate-x-0.5'
-                  }`}
-                />
-              </button>
+                wrapperClassName="w-full"
+              />
             </div>
           ))}
         </div>
