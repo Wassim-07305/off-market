@@ -6,6 +6,7 @@ import { Toaster } from 'sonner'
 import { Layout } from '@/components/layout/Layout'
 import { RouteGuard } from '@/components/auth/RouteGuard'
 import { RoleGuard } from '@/components/auth/RoleGuard'
+import { ErrorBoundary } from '@/components/shared/ErrorBoundary'
 import { useAuth } from '@/hooks/useAuth'
 import { Skeleton } from '@/components/ui/skeleton'
 
@@ -73,6 +74,7 @@ function App() {
   useAuth()
 
   return (
+    <ErrorBoundary>
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <Suspense fallback={<PageLoader />}>
@@ -219,6 +221,7 @@ function App() {
         }}
       />
     </QueryClientProvider>
+    </ErrorBoundary>
   )
 }
 
