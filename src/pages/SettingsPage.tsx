@@ -72,7 +72,7 @@ export default function SettingsPage() {
       if (error) throw error
       toast.success('Mot de passe mis a jour')
       resetPassword()
-    } catch (error) {
+    } catch {
       toast.error('Erreur lors du changement de mot de passe')
     } finally {
       setPasswordChanging(false)
@@ -100,7 +100,7 @@ export default function SettingsPage() {
 
       await updateProfile.mutateAsync({ id: user.id, avatar_url: publicUrl })
       toast.success('Photo de profil mise a jour')
-    } catch (error) {
+    } catch {
       toast.error('Erreur lors du telechargement')
     } finally {
       setAvatarUploading(false)

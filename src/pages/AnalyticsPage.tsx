@@ -63,10 +63,12 @@ export default function AnalyticsPage() {
   const { isAdmin } = useRole()
   const { data: stats, isLoading: statsLoading } = useDashboardStats()
   const { data: leadsData, isLoading: leadsLoading } = useLeads()
-  const leads = leadsData?.data ?? []
   const { data: calls, isLoading: callsLoading } = useCallCalendar()
 
   const isLoading = statsLoading || leadsLoading || callsLoading
+
+  // Memoize leads array
+  const leads = useMemo(() => leadsData?.data ?? [], [leadsData?.data])
 
   // Leads by status
   const leadsByStatus = useMemo(() => {

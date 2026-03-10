@@ -38,7 +38,7 @@ export default function FinancesPage() {
   const [editSchedule, setEditSchedule] = useState<PaymentSchedule | null>(null)
 
   const { data: clientsData } = useClients()
-  const clients = clientsData?.data ?? []
+  const clients = useMemo(() => clientsData?.data ?? [], [clientsData?.data])
 
   const entryFilters = useMemo(
     () => ({
@@ -56,7 +56,7 @@ export default function FinancesPage() {
     clientFilter || undefined
   )
 
-  const entries = entriesResult?.data ?? []
+  const entries = useMemo(() => entriesResult?.data ?? [], [entriesResult?.data])
   const totalEntries = entriesResult?.count ?? 0
   const totalPages = Math.ceil(totalEntries / ITEMS_PER_PAGE)
 
