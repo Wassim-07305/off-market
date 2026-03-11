@@ -25,7 +25,7 @@ export function usePipelineContacts(stage?: PipelineStage) {
       let query = supabase
         .from("crm_contacts")
         .select(
-          "*, assigned_profile:profiles!crm_contacts_assigned_to_fkey(id, full_name)"
+          "*, assigned_profile:profiles!crm_contacts_assigned_to_fkey(id, full_name)",
         )
         .order("sort_order", { ascending: true })
         .order("updated_at", { ascending: false });
@@ -138,13 +138,7 @@ export function useUpdateContactStage() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({
-      id,
-      stage,
-    }: {
-      id: string;
-      stage: PipelineStage;
-    }) => {
+    mutationFn: async ({ id, stage }: { id: string; stage: PipelineStage }) => {
       const { error } = await supabase
         .from("crm_contacts")
         .update({ stage })
@@ -171,7 +165,7 @@ export function useContactInteractions(contactId: string | null) {
       const { data, error } = await supabase
         .from("contact_interactions")
         .select(
-          "*, author:profiles!contact_interactions_created_by_fkey(full_name, avatar_url)"
+          "*, author:profiles!contact_interactions_created_by_fkey(full_name, avatar_url)",
         )
         .eq("contact_id", contactId!)
         .order("created_at", { ascending: false });
@@ -222,7 +216,8 @@ export function useAddInteraction() {
         .from("crm_contacts")
         .update({
           last_interaction_at: new Date().toISOString(),
-          interaction_count: ((currentContact?.interaction_count as number) ?? 0) + 1,
+          interaction_count:
+            ((currentContact?.interaction_count as number) ?? 0) + 1,
         })
         .eq("id", contact_id);
 

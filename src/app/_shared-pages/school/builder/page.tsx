@@ -18,7 +18,12 @@ export default function CourseBuilderPage() {
     Array<{
       id: string;
       title: string;
-      lessons: Array<{ id: string; title: string; type: string; videoUrl?: string }>;
+      lessons: Array<{
+        id: string;
+        title: string;
+        type: string;
+        videoUrl?: string;
+      }>;
     }>
   >([]);
 
@@ -44,8 +49,8 @@ export default function CourseBuilderPage() {
                 { id: crypto.randomUUID(), title: "", type: "text" },
               ],
             }
-          : m
-      )
+          : m,
+      ),
     );
   };
 
@@ -82,7 +87,9 @@ export default function CourseBuilderPage() {
           title: lesson.title,
           content_type: lesson.type,
           sort_order: j,
-          content: lesson.videoUrl ? { url: lesson.videoUrl, video_url: lesson.videoUrl } : undefined,
+          content: lesson.videoUrl
+            ? { url: lesson.videoUrl, video_url: lesson.videoUrl }
+            : undefined,
         });
       }
     }
@@ -91,7 +98,8 @@ export default function CourseBuilderPage() {
     router.push(`${prefix}/school`);
   };
 
-  const inputClass = "w-full h-10 px-4 bg-muted/50 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-shadow";
+  const inputClass =
+    "w-full h-10 px-4 bg-muted/50 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-shadow";
 
   return (
     <div className="max-w-3xl mx-auto space-y-8">
@@ -113,7 +121,10 @@ export default function CourseBuilderPage() {
         </button>
       </div>
 
-      <div className="bg-surface rounded-2xl p-6 space-y-5" style={{ boxShadow: "var(--shadow-card)" }}>
+      <div
+        className="bg-surface rounded-2xl p-6 space-y-5"
+        style={{ boxShadow: "var(--shadow-card)" }}
+      >
         <h2 className="text-xl font-display font-bold text-foreground tracking-tight">
           Nouveau cours
         </h2>
@@ -147,7 +158,9 @@ export default function CourseBuilderPage() {
       {/* Modules */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-display font-semibold text-foreground">Modules</h3>
+          <h3 className="text-sm font-display font-semibold text-foreground">
+            Modules
+          </h3>
           <button
             onClick={addModule}
             className="h-8 px-3 rounded-xl text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center gap-1.5"
@@ -171,8 +184,8 @@ export default function CourseBuilderPage() {
                 onChange={(e) =>
                   setModules(
                     modules.map((m) =>
-                      m.id === mod.id ? { ...m, title: e.target.value } : m
-                    )
+                      m.id === mod.id ? { ...m, title: e.target.value } : m,
+                    ),
                   )
                 }
                 placeholder={`Module ${mi + 1}`}
@@ -200,11 +213,11 @@ export default function CourseBuilderPage() {
                                 lessons: m.lessons.map((l) =>
                                   l.id === lesson.id
                                     ? { ...l, title: e.target.value }
-                                    : l
+                                    : l,
                                 ),
                               }
-                            : m
-                        )
+                            : m,
+                        ),
                       )
                     }
                     placeholder={`Lecon ${li + 1}`}
@@ -221,11 +234,11 @@ export default function CourseBuilderPage() {
                                 lessons: m.lessons.map((l) =>
                                   l.id === lesson.id
                                     ? { ...l, type: e.target.value }
-                                    : l
+                                    : l,
                                 ),
                               }
-                            : m
-                        )
+                            : m,
+                        ),
                       )
                     }
                     className="h-8 px-2 bg-background rounded-lg text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-shadow"
@@ -250,11 +263,11 @@ export default function CourseBuilderPage() {
                                   lessons: m.lessons.map((l) =>
                                     l.id === lesson.id
                                       ? { ...l, videoUrl: e.target.value }
-                                      : l
+                                      : l,
                                   ),
                                 }
-                              : m
-                          )
+                              : m,
+                          ),
                         )
                       }
                       placeholder="URL de la video (YouTube, Vimeo, etc.)"

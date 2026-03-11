@@ -53,8 +53,11 @@ export function useCreateKpiGoal() {
 
   return useMutation({
     mutationFn: async (
-      goal: Pick<KpiGoal, "title" | "metric" | "target_value" | "unit" | "period"> &
-        Partial<Pick<KpiGoal, "description" | "end_date">>
+      goal: Pick<
+        KpiGoal,
+        "title" | "metric" | "target_value" | "unit" | "period"
+      > &
+        Partial<Pick<KpiGoal, "description" | "end_date">>,
     ) => {
       const { data, error } = await supabase
         .from("kpi_goals")

@@ -25,7 +25,9 @@ export function useCallNotifications() {
         // Read store state at callback time (not closure time)
         const { phase } = useCallStore.getState();
         if (phase === "idle" || phase === "ended") {
-          useCallStore.getState().setIncomingCall(payload.callId, payload.callerName);
+          useCallStore
+            .getState()
+            .setIncomingCall(payload.callId, payload.callerName);
         }
       })
       .subscribe();

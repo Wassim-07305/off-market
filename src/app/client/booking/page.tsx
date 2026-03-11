@@ -1,7 +1,11 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { staggerContainer, fadeInUp, defaultTransition } from "@/lib/animations";
+import {
+  staggerContainer,
+  fadeInUp,
+  defaultTransition,
+} from "@/lib/animations";
 import { BookingCalendar } from "@/components/calls/booking-calendar";
 import { CalendarCheck } from "lucide-react";
 
@@ -19,7 +23,8 @@ export default function BookingPage() {
           Reserver un appel
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Choisissez un creneau disponible pour planifier un appel avec votre coach
+          Choisissez un creneau disponible pour planifier un appel avec votre
+          coach
         </p>
       </motion.div>
 

@@ -70,7 +70,8 @@ export function ConversionFunnel() {
       ) : (
         <div className="space-y-2">
           {(stages ?? []).map((stage, i) => {
-            const widthPercent = maxCount > 0 ? (stage.count / maxCount) * 100 : 0;
+            const widthPercent =
+              maxCount > 0 ? (stage.count / maxCount) * 100 : 0;
             const convRate =
               i > 0 && stages && stages[i - 1].count > 0
                 ? Math.round((stage.count / stages[i - 1].count) * 100)
@@ -83,8 +84,14 @@ export function ConversionFunnel() {
                 </span>
                 <div className="flex-1 h-7 bg-muted/50 rounded-lg overflow-hidden relative">
                   <div
-                    className={cn("h-full rounded-lg transition-all duration-700", stage.color)}
-                    style={{ width: `${Math.max(widthPercent, 4)}%`, opacity: 0.85 }}
+                    className={cn(
+                      "h-full rounded-lg transition-all duration-700",
+                      stage.color,
+                    )}
+                    style={{
+                      width: `${Math.max(widthPercent, 4)}%`,
+                      opacity: 0.85,
+                    }}
                   />
                   <span className="absolute inset-0 flex items-center px-2 text-[11px] font-semibold text-foreground">
                     {stage.count}
@@ -107,7 +114,9 @@ export function ConversionFunnel() {
             <span className="text-muted-foreground">Taux global</span>
             <span className="font-semibold text-foreground">
               {stages[0].count > 0
-                ? Math.round((stages[stages.length - 1].count / stages[0].count) * 100)
+                ? Math.round(
+                    (stages[stages.length - 1].count / stages[0].count) * 100,
+                  )
                 : 0}
               %
             </span>

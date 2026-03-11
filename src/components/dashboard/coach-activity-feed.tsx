@@ -87,7 +87,7 @@ export function CoachActivityFeed() {
       let query = supabase
         .from("student_activities")
         .select(
-          "*, student:profiles!student_activities_student_id_fkey(full_name, avatar_url)"
+          "*, student:profiles!student_activities_student_id_fkey(full_name, avatar_url)",
         )
         .order("created_at", { ascending: false })
         .limit(100);
@@ -163,7 +163,7 @@ export function CoachActivityFeed() {
                     "w-full text-left px-3 py-1.5 text-[13px] hover:bg-muted transition-colors",
                     typeFilter === opt.value
                       ? "text-primary font-medium"
-                      : "text-foreground"
+                      : "text-foreground",
                   )}
                 >
                   {opt.label}
@@ -188,8 +188,7 @@ export function CoachActivityFeed() {
             </div>
           ) : (
             displayedActivities.map((activity) => {
-              const Icon =
-                activityIcons[activity.activity_type] || BookOpen;
+              const Icon = activityIcons[activity.activity_type] || BookOpen;
               const dotColor =
                 activityDotColors[activity.activity_type] || "bg-primary";
 
@@ -199,9 +198,7 @@ export function CoachActivityFeed() {
                   className="flex items-start gap-3 relative group hover:bg-muted/30 -mx-2 px-2 py-1.5 rounded-lg transition-colors duration-200"
                 >
                   <div className="relative z-10 w-8 h-8 rounded-full bg-surface flex items-center justify-center shrink-0">
-                    <div
-                      className={cn("w-2.5 h-2.5 rounded-full", dotColor)}
-                    />
+                    <div className={cn("w-2.5 h-2.5 rounded-full", dotColor)} />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-[13px] text-foreground">

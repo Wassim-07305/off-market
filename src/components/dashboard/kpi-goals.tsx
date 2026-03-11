@@ -1,24 +1,32 @@
 "use client";
 
 import { useState } from "react";
-import { useKpiGoals, useCreateKpiGoal, useUpdateKpiGoal, useDeleteKpiGoal } from "@/hooks/use-kpi-goals";
+import {
+  useKpiGoals,
+  useCreateKpiGoal,
+  useUpdateKpiGoal,
+  useDeleteKpiGoal,
+} from "@/hooks/use-kpi-goals";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
-import {
-  Target,
-  Plus,
-  X,
-  Loader2,
-  Trash2,
-  TrendingUp,
-} from "lucide-react";
+import { Target, Plus, X, Loader2, Trash2, TrendingUp } from "lucide-react";
 
 const METRIC_OPTIONS = [
   { value: "revenue", label: "Revenus", unit: "€", color: "text-emerald-600" },
   { value: "clients", label: "Clients", unit: "", color: "text-blue-600" },
-  { value: "retention", label: "Retention", unit: "%", color: "text-violet-600" },
+  {
+    value: "retention",
+    label: "Retention",
+    unit: "%",
+    color: "text-violet-600",
+  },
   { value: "calls", label: "Appels", unit: "", color: "text-amber-600" },
-  { value: "completions", label: "Formations", unit: "", color: "text-pink-600" },
+  {
+    value: "completions",
+    label: "Formations",
+    unit: "",
+    color: "text-pink-600",
+  },
   { value: "checkins", label: "Check-ins", unit: "", color: "text-teal-600" },
 ] as const;
 
@@ -30,7 +38,9 @@ const PERIOD_LABELS: Record<string, string> = {
 };
 
 function getMetricColor(metric: string) {
-  return METRIC_OPTIONS.find((m) => m.value === metric)?.color ?? "text-primary";
+  return (
+    METRIC_OPTIONS.find((m) => m.value === metric)?.color ?? "text-primary"
+  );
 }
 
 function getProgressColor(percent: number) {
@@ -54,7 +64,9 @@ export function KpiGoalsWidget() {
   const [title, setTitle] = useState("");
   const [metric, setMetric] = useState("revenue");
   const [targetValue, setTargetValue] = useState("");
-  const [period, setPeriod] = useState<"weekly" | "monthly" | "quarterly" | "yearly">("monthly");
+  const [period, setPeriod] = useState<
+    "weekly" | "monthly" | "quarterly" | "yearly"
+  >("monthly");
 
   if (!isStaff) return null;
 
@@ -94,7 +106,9 @@ export function KpiGoalsWidget() {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Target className="w-4 h-4 text-muted-foreground" />
-          <h3 className="text-sm font-semibold text-foreground">Objectifs KPI</h3>
+          <h3 className="text-sm font-semibold text-foreground">
+            Objectifs KPI
+          </h3>
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
@@ -173,16 +187,17 @@ export function KpiGoalsWidget() {
       ) : !goals || goals.length === 0 ? (
         <div className="py-8 text-center">
           <TrendingUp className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
-          <p className="text-xs text-muted-foreground">
-            Aucun objectif defini
-          </p>
+          <p className="text-xs text-muted-foreground">Aucun objectif defini</p>
         </div>
       ) : (
         <div className="space-y-2.5">
           {goals.slice(0, 5).map((goal) => {
             const percent =
               goal.target_value > 0
-                ? Math.min(Math.round((goal.current_value / goal.target_value) * 100), 100)
+                ? Math.min(
+                    Math.round((goal.current_value / goal.target_value) * 100),
+                    100,
+                  )
                 : 0;
             const metricColor = getMetricColor(goal.metric);
 
@@ -194,7 +209,10 @@ export function KpiGoalsWidget() {
                 <div className="flex items-center justify-between mb-1.5">
                   <div className="flex items-center gap-2 min-w-0">
                     <span className={cn("text-xs font-semibold", metricColor)}>
-                      {METRIC_OPTIONS.find((m) => m.value === goal.metric)?.label}
+                      {
+                        METRIC_OPTIONS.find((m) => m.value === goal.metric)
+                          ?.label
+                      }
                     </span>
                     <span className="text-xs text-foreground font-medium truncate">
                       {goal.title}
@@ -216,7 +234,10 @@ export function KpiGoalsWidget() {
                 <div className="flex items-center gap-2">
                   <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
                     <div
-                      className={cn("h-full rounded-full transition-all duration-500", getProgressColor(percent))}
+                      className={cn(
+                        "h-full rounded-full transition-all duration-500",
+                        getProgressColor(percent),
+                      )}
                       style={{ width: `${percent}%` }}
                     />
                   </div>
@@ -226,9 +247,15 @@ export function KpiGoalsWidget() {
                         autoFocus
                         type="number"
                         defaultValue={goal.current_value}
-                        onBlur={(e) => handleUpdateValue(goal.id, e.target.value)}
+                        onBlur={(e) =>
+                          handleUpdateValue(goal.id, e.target.value)
+                        }
                         onKeyDown={(e) => {
-                          if (e.key === "Enter") handleUpdateValue(goal.id, (e.target as HTMLInputElement).value);
+                          if (e.key === "Enter")
+                            handleUpdateValue(
+                              goal.id,
+                              (e.target as HTMLInputElement).value,
+                            );
                           if (e.key === "Escape") setEditingId(null);
                         }}
                         className="w-14 h-5 px-1 bg-muted border border-border rounded text-[11px] text-foreground text-right focus:outline-none focus:ring-1 focus:ring-primary/30"
@@ -243,14 +270,15 @@ export function KpiGoalsWidget() {
                       </button>
                     )}
                     <span className="text-[11px] text-muted-foreground">
-                      / {goal.target_value}{goal.unit}
+                      / {goal.target_value}
+                      {goal.unit}
                     </span>
                     <span
                       className={cn(
                         "text-[10px] font-semibold px-1.5 py-0.5 rounded-full",
                         percent >= 100
                           ? "bg-emerald-100 text-emerald-700"
-                          : "bg-muted text-muted-foreground"
+                          : "bg-muted text-muted-foreground",
                       )}
                     >
                       {percent}%

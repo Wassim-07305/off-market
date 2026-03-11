@@ -75,7 +75,7 @@ const STEPS: Step[] = [
   },
 ];
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 
 // ─── Animated background (same pattern as Rivia/ScalingFlow) ─────
 function AnimatedBackground() {
@@ -101,11 +101,7 @@ export default function OnboardingPage() {
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
 
   const { user, profile } = useAuth();
-  const {
-    completeOnboarding,
-    updateProfile,
-    uploadAvatar,
-  } = useOnboarding();
+  const { completeOnboarding, updateProfile, uploadAvatar } = useOnboarding();
 
   const role = profile?.role ?? "client";
   const firstName = profile?.full_name?.split(" ")[0] ?? "";
@@ -181,7 +177,7 @@ export default function OnboardingPage() {
         // Error handled by mutation
       }
     },
-    [uploadAvatar]
+    [uploadAvatar],
   );
 
   // Auto-focus inputs

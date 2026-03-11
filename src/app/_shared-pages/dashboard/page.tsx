@@ -11,14 +11,13 @@ import { KpiGoalsWidget } from "@/components/dashboard/kpi-goals";
 import { ConversionFunnel } from "@/components/dashboard/conversion-funnel";
 import { useDashboardStats } from "@/hooks/use-dashboard-stats";
 import { useAuth } from "@/hooks/use-auth";
-import {
-  Users,
-  DollarSign,
-  GraduationCap,
-  CalendarCheck,
-} from "lucide-react";
+import { Users, DollarSign, GraduationCap, CalendarCheck } from "lucide-react";
 import { motion } from "framer-motion";
-import { staggerContainer, staggerItem, defaultTransition } from "@/lib/animations";
+import {
+  staggerContainer,
+  staggerItem,
+  defaultTransition,
+} from "@/lib/animations";
 
 export default function DashboardPage() {
   const { stats, isLoading } = useDashboardStats();
@@ -54,7 +53,11 @@ export default function DashboardPage() {
       >
         {isLoading ? (
           Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="bg-surface rounded-2xl p-6 animate-shimmer" style={{ boxShadow: "var(--shadow-card)" }}>
+            <div
+              key={i}
+              className="bg-surface rounded-2xl p-6 animate-shimmer"
+              style={{ boxShadow: "var(--shadow-card)" }}
+            >
               <div className="h-4 w-24 bg-muted rounded-lg mb-4" />
               <div className="h-8 w-16 bg-muted rounded-lg" />
             </div>

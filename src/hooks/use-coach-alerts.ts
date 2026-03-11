@@ -16,7 +16,9 @@ export function useCoachAlerts(resolved?: boolean) {
     queryFn: async () => {
       let query = supabase
         .from("coach_alerts")
-        .select("*, client:profiles!coach_alerts_client_id_fkey(id, full_name, avatar_url)")
+        .select(
+          "*, client:profiles!coach_alerts_client_id_fkey(id, full_name, avatar_url)",
+        )
         .order("created_at", { ascending: false })
         .limit(100);
 

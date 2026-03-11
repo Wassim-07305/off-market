@@ -49,7 +49,10 @@ export interface CallNoteTemplate {
   created_at: string;
 }
 
-export const SATISFACTION_CONFIG: Record<number, { label: string; emoji: string; color: string }> = {
+export const SATISFACTION_CONFIG: Record<
+  number,
+  { label: string; emoji: string; color: string }
+> = {
   1: { label: "Tres insatisfait", emoji: "😠", color: "text-red-500" },
   2: { label: "Insatisfait", emoji: "😕", color: "text-orange-500" },
   3: { label: "Neutre", emoji: "😐", color: "text-amber-500" },
@@ -63,7 +66,12 @@ export interface CallCalendarWithRelations extends CallCalendar {
 }
 
 export type CallType = "manuel" | "iclosed" | "calendly" | "booking" | "autre";
-export type CallStatus = "planifie" | "realise" | "no_show" | "annule" | "reporte";
+export type CallStatus =
+  | "planifie"
+  | "realise"
+  | "no_show"
+  | "annule"
+  | "reporte";
 
 export const CALL_TYPES: { value: CallType; label: string }[] = [
   { value: "manuel", label: "Manuel" },
@@ -76,9 +84,12 @@ export const CALL_TYPES: { value: CallType; label: string }[] = [
 export const CALL_TYPE_COLORS: Record<CallType, string> = {
   manuel: "bg-zinc-100 text-zinc-700 dark:bg-zinc-800/30 dark:text-zinc-400",
   iclosed: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
-  calendly: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
-  booking: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400",
-  autre: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400",
+  calendly:
+    "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
+  booking:
+    "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400",
+  autre:
+    "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400",
 };
 
 export const CALL_STATUSES: { value: CallStatus; label: string }[] = [

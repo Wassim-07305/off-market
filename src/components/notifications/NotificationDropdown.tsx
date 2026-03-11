@@ -1,25 +1,29 @@
-import { useRef, useEffect, useCallback } from 'react'
-import { CheckCheck, Bell } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { useNotificationStore } from '@/stores/notification-store'
-import { useMarkAsRead, useMarkAllAsRead } from '@/hooks/useNotifications'
-import { useAuth } from '@/hooks/useAuth'
-import type { Notification } from '@/types/database'
-import { Button } from '@/components/ui/button'
-import { EmptyState } from '@/components/ui/empty-state'
-import { NotificationItem } from './NotificationItem'
+import { useRef, useEffect, useCallback } from "react";
+import { CheckCheck, Bell } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { useNotificationStore } from "@/stores/notification-store";
+import { useMarkAsRead, useMarkAllAsRead } from "@/hooks/useNotifications";
+import { useAuth } from "@/hooks/useAuth";
+import type { Notification } from "@/types/database";
+import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
+import { NotificationItem } from "./NotificationItem";
 
 interface NotificationDropdownProps {
-  open: boolean
-  onClose: () => void
+  open: boolean;
+  onClose: () => void;
 }
 
-export function NotificationDropdown({ open, onClose }: NotificationDropdownProps) {
-  const { user } = useAuth()
-  const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotificationStore()
-  const markAsReadMutation = useMarkAsRead()
-  const markAllAsReadMutation = useMarkAllAsRead()
-  const dropdownRef = useRef<HTMLDivElement>(null)
+export function NotificationDropdown({
+  open,
+  onClose,
+}: NotificationDropdownProps) {
+  const { user } = useAuth();
+  const { notifications, unreadCount, markAsRead, markAllAsRead } =
+    useNotificationStore();
+  const markAsReadMutation = useMarkAsRead();
+  const markAllAsReadMutation = useMarkAllAsRead();
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const handleClickOutside = useCallback(
     (e: MouseEvent) => {
@@ -27,58 +31,56 @@ export function NotificationDropdown({ open, onClose }: NotificationDropdownProp
         dropdownRef.current &&
         !dropdownRef.current.contains(e.target as Node)
       ) {
-        onClose()
+        onClose();
       }
     },
-    [onClose]
-  )
+    [onClose],
+  );
 
   const handleEscape = useCallback(
     (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose()
+      if (e.key === "Escape") onClose();
     },
-    [onClose]
-  )
+    [onClose],
+  );
 
   useEffect(() => {
     if (open) {
-      document.addEventListener('mousedown', handleClickOutside)
-      document.addEventListener('keydown', handleEscape)
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("keydown", handleEscape);
     }
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-      document.removeEventListener('keydown', handleEscape)
-    }
-  }, [open, handleClickOutside, handleEscape])
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [open, handleClickOutside, handleEscape]);
 
   const handleNotificationClick = (notification: Notification) => {
     if (!notification.is_read) {
-      markAsRead(notification.id)
-      markAsReadMutation.mutate(notification.id)
+      markAsRead(notification.id);
+      markAsReadMutation.mutate(notification.id);
     }
-  }
+  };
 
   const handleMarkAllAsRead = () => {
-    if (!user?.id) return
-    markAllAsRead()
-    markAllAsReadMutation.mutate(user.id)
-  }
+    if (!user?.id) return;
+    markAllAsRead();
+    markAllAsReadMutation.mutate(user.id);
+  };
 
-  if (!open) return null
+  if (!open) return null;
 
   return (
     <div
       ref={dropdownRef}
       className={cn(
-        'absolute right-0 top-full z-50 mt-2 w-80 overflow-hidden rounded-lg border border-border bg-background shadow-xl sm:w-96',
-        'animate-in fade-in-0 zoom-in-95'
+        "absolute right-0 top-full z-50 mt-2 w-80 overflow-hidden rounded-lg border border-border bg-background shadow-xl sm:w-96",
+        "animate-in fade-in-0 zoom-in-95",
       )}
     >
       {/* Header */}
       <div className="flex items-center justify-between border-b border-border px-4 py-3">
-        <h3 className="text-sm font-semibold text-foreground">
-          Notifications
-        </h3>
+        <h3 className="text-sm font-semibold text-foreground">Notifications</h3>
         {unreadCount > 0 && (
           <Button
             variant="ghost"
@@ -114,5 +116,5 @@ export function NotificationDropdown({ open, onClose }: NotificationDropdownProp
         )}
       </div>
     </div>
-  )
+  );
 }

@@ -24,7 +24,10 @@ export function RetentionChart({ clients }: RetentionChartProps) {
     const now = new Date();
     // Group clients by cohort month (creation month)
     // Then compute how many are still active at each month offset
-    const cohorts = new Map<string, { total: number; activeByMonth: Map<number, number> }>();
+    const cohorts = new Map<
+      string,
+      { total: number; activeByMonth: Map<number, number> }
+    >();
 
     for (const c of clients) {
       const created = new Date(c.created_at);
@@ -42,7 +45,7 @@ export function RetentionChart({ clients }: RetentionChartProps) {
       const monthsActive = Math.max(
         0,
         (lastSeen.getFullYear() - created.getFullYear()) * 12 +
-          (lastSeen.getMonth() - created.getMonth())
+          (lastSeen.getMonth() - created.getMonth()),
       );
 
       // Mark active for each month up to monthsActive
@@ -117,7 +120,10 @@ export function RetentionChart({ clients }: RetentionChartProps) {
               fontSize: 12,
               boxShadow: "var(--shadow-elevated)",
             }}
-            formatter={(value: number | undefined) => [`${value ?? 0}%`, "Retention"]}
+            formatter={(value: number | undefined) => [
+              `${value ?? 0}%`,
+              "Retention",
+            ]}
           />
           <Area
             type="monotone"

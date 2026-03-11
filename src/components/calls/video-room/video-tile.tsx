@@ -28,7 +28,8 @@ export function VideoTile({
     }
   }, [stream]);
 
-  const hasVideo = stream?.getVideoTracks().some((t) => t.enabled) && !isCameraOff;
+  const hasVideo =
+    stream?.getVideoTracks().some((t) => t.enabled) && !isCameraOff;
 
   return (
     <div className="relative bg-zinc-900 rounded-2xl overflow-hidden flex items-center justify-center aspect-video">

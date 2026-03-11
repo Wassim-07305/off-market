@@ -53,7 +53,10 @@ export default function LoginPage() {
 
       <div
         className="backdrop-blur-2xl bg-white/[0.04] border border-white/[0.08] rounded-2xl p-8"
-        style={{ boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05)" }}
+        style={{
+          boxShadow:
+            "0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05)",
+        }}
       >
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -118,7 +121,10 @@ export default function LoginPage() {
             type="submit"
             disabled={loading}
             className="w-full h-11 bg-primary hover:bg-primary-hover text-white font-medium rounded-xl transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm mt-6"
-            style={{ boxShadow: "0 0 20px rgba(196, 30, 58, 0.25), 0 4px 12px rgba(0, 0, 0, 0.3)" }}
+            style={{
+              boxShadow:
+                "0 0 20px rgba(196, 30, 58, 0.25), 0 4px 12px rgba(0, 0, 0, 0.3)",
+            }}
           >
             {loading && <Loader2 className="w-4 h-4 animate-spin" />}
             Se connecter

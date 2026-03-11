@@ -14,11 +14,36 @@ import {
 } from "lucide-react";
 
 const mobileNavItems = [
-  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, roles: ["admin", "coach", "setter", "closer"] },
-  { name: "CRM", href: "/crm", icon: Users, roles: ["admin", "coach", "setter", "closer"] },
-  { name: "Messages", href: "/messaging", icon: MessageSquare, roles: ["admin", "coach", "setter", "closer", "client"] },
-  { name: "Formation", href: "/school", icon: GraduationCap, roles: ["admin", "coach", "client"] },
-  { name: "Forms", href: "/forms", icon: FileText, roles: ["admin", "coach", "client"] },
+  {
+    name: "Dashboard",
+    href: "/dashboard",
+    icon: LayoutDashboard,
+    roles: ["admin", "coach", "setter", "closer"],
+  },
+  {
+    name: "CRM",
+    href: "/crm",
+    icon: Users,
+    roles: ["admin", "coach", "setter", "closer"],
+  },
+  {
+    name: "Messages",
+    href: "/messaging",
+    icon: MessageSquare,
+    roles: ["admin", "coach", "setter", "closer", "client"],
+  },
+  {
+    name: "Formation",
+    href: "/school",
+    icon: GraduationCap,
+    roles: ["admin", "coach", "client"],
+  },
+  {
+    name: "Forms",
+    href: "/forms",
+    icon: FileText,
+    roles: ["admin", "coach", "client"],
+  },
 ] as const;
 
 export function MobileNav() {
@@ -27,7 +52,7 @@ export function MobileNav() {
   const role = profile?.role ?? "admin";
 
   const filtered = mobileNavItems.filter((item) =>
-    (item.roles as readonly string[]).includes(role)
+    (item.roles as readonly string[]).includes(role),
   );
 
   return (
@@ -42,9 +67,7 @@ export function MobileNav() {
               href={item.href}
               className={cn(
                 "flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-colors",
-                isActive
-                  ? "text-primary"
-                  : "text-muted-foreground"
+                isActive ? "text-primary" : "text-muted-foreground",
               )}
             >
               <item.icon className="w-5 h-5" />

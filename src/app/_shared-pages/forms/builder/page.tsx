@@ -109,7 +109,7 @@ export default function FormBuilderPage() {
 
   // Fields that can be referenced in conditions (only input fields, not structural)
   const inputFields = fields.filter(
-    (f) => !["heading", "paragraph", "divider"].includes(f.field_type)
+    (f) => !["heading", "paragraph", "divider"].includes(f.field_type),
   );
 
   // Get conditional logic for selected field (or empty default)
@@ -164,7 +164,7 @@ export default function FormBuilderPage() {
 
           {fields.map((field) => {
             const typeConfig = FORM_FIELD_TYPES.find(
-              (t) => t.value === field.field_type
+              (t) => t.value === field.field_type,
             );
             const logic = getLogic(field);
             const hasCondition = logic.enabled;
@@ -176,7 +176,7 @@ export default function FormBuilderPage() {
                   "bg-surface border rounded-xl p-4 cursor-pointer transition-all",
                   selectedId === field.id
                     ? "border-primary shadow-sm"
-                    : "border-border hover:border-border/80"
+                    : "border-border hover:border-border/80",
                 )}
               >
                 <div className="flex items-center gap-2 mb-2">
@@ -295,7 +295,8 @@ export default function FormBuilderPage() {
               </label>
 
               {/* ─── Conditional Logic ─── */}
-              {inputFields.filter((f) => f.id !== selectedField.id).length > 0 && (
+              {inputFields.filter((f) => f.id !== selectedField.id).length >
+                0 && (
                 <div className="pt-3 border-t border-border/50">
                   <label className="flex items-center gap-2 cursor-pointer mb-3">
                     <input
@@ -312,7 +313,9 @@ export default function FormBuilderPage() {
                     />
                     <div className="flex items-center gap-1.5">
                       <GitBranch className="w-3.5 h-3.5 text-muted-foreground" />
-                      <span className="text-sm text-foreground">Logique conditionnelle</span>
+                      <span className="text-sm text-foreground">
+                        Logique conditionnelle
+                      </span>
                     </div>
                   </label>
 
@@ -320,7 +323,9 @@ export default function FormBuilderPage() {
                     <ConditionalLogicEditor
                       logic={getLogic(selectedField)}
                       onChange={(logic) => updateLogic(selectedField.id, logic)}
-                      availableFields={inputFields.filter((f) => f.id !== selectedField.id)}
+                      availableFields={inputFields.filter(
+                        (f) => f.id !== selectedField.id,
+                      )}
                     />
                   )}
                 </div>
@@ -350,7 +355,7 @@ function ConditionalLogicEditor({
 }) {
   const updateRule = (idx: number, updates: Partial<ConditionalRule>) => {
     const newRules = logic.rules.map((r, i) =>
-      i === idx ? { ...r, ...updates } : r
+      i === idx ? { ...r, ...updates } : r,
     );
     onChange({ ...logic, rules: newRules });
   };
@@ -376,7 +381,9 @@ function ConditionalLogicEditor({
       <div className="flex items-center gap-2">
         <select
           value={logic.action}
-          onChange={(e) => onChange({ ...logic, action: e.target.value as "show" | "hide" })}
+          onChange={(e) =>
+            onChange({ ...logic, action: e.target.value as "show" | "hide" })
+          }
           className="h-8 px-2 bg-muted border border-border rounded-lg text-xs text-foreground focus:outline-none"
         >
           <option value="show">Afficher si</option>
@@ -385,7 +392,9 @@ function ConditionalLogicEditor({
         {logic.rules.length > 1 && (
           <select
             value={logic.logic}
-            onChange={(e) => onChange({ ...logic, logic: e.target.value as "and" | "or" })}
+            onChange={(e) =>
+              onChange({ ...logic, logic: e.target.value as "and" | "or" })
+            }
             className="h-8 px-2 bg-muted border border-border rounded-lg text-xs text-foreground focus:outline-none"
           >
             <option value="and">toutes les conditions</option>
@@ -396,9 +405,14 @@ function ConditionalLogicEditor({
 
       {/* Rules */}
       {logic.rules.map((rule, idx) => {
-        const operatorConfig = CONDITIONAL_OPERATORS.find((o) => o.value === rule.operator);
+        const operatorConfig = CONDITIONAL_OPERATORS.find(
+          (o) => o.value === rule.operator,
+        );
         return (
-          <div key={idx} className="space-y-1.5 p-2.5 bg-muted/50 rounded-lg border border-border/30">
+          <div
+            key={idx}
+            className="space-y-1.5 p-2.5 bg-muted/50 rounded-lg border border-border/30"
+          >
             {/* Field selector */}
             <select
               value={rule.fieldId}
@@ -416,7 +430,11 @@ function ConditionalLogicEditor({
             {/* Operator */}
             <select
               value={rule.operator}
-              onChange={(e) => updateRule(idx, { operator: e.target.value as ConditionalRule["operator"] })}
+              onChange={(e) =>
+                updateRule(idx, {
+                  operator: e.target.value as ConditionalRule["operator"],
+                })
+              }
               className="w-full h-8 px-2 bg-surface border border-border rounded-lg text-xs text-foreground focus:outline-none"
             >
               {CONDITIONAL_OPERATORS.map((op) => (

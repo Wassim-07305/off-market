@@ -1,32 +1,24 @@
-import { useEffect } from 'react'
-import { supabase } from '@/lib/supabase'
-import { useAuthStore } from '@/stores/auth-store'
-import type { AppRole } from '@/types/database'
+import { useEffect } from "react";
+import { supabase } from "@/lib/supabase";
+import { useAuthStore } from "@/stores/auth-store";
+import type { AppRole } from "@/types/database";
 
 async function fetchProfileAndRole(userId: string) {
   const [profileResult, roleResult] = await Promise.all([
-    supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single(),
-    supabase
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', userId)
-      .single(),
-  ])
+    supabase.from("profiles").select("*").eq("id", userId).single(),
+    supabase.from("user_roles").select("role").eq("user_id", userId).single(),
+  ]);
 
-  const profile = profileResult.data ?? null
+  const profile = profileResult.data ?? null;
   // Si le champ onboarding_completed n'existe pas encore en DB, considérer comme complété
   if (profile && profile.onboarding_completed === undefined) {
-    profile.onboarding_completed = true
+    profile.onboarding_completed = true;
   }
 
   return {
     profile,
     role: (roleResult.data?.role as AppRole) ?? null,
-  }
+  };
 }
 
 export function useAuth() {
@@ -41,51 +33,51 @@ export function useAuth() {
     setRole,
     setLoading,
     reset,
-  } = useAuthStore()
+  } = useAuthStore();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
+      setSession(session);
 
       if (session?.user) {
         fetchProfileAndRole(session.user.id).then(({ profile, role }) => {
-          setProfile(profile)
-          setRole(role)
-          setLoading(false)
-        })
+          setProfile(profile);
+          setRole(role);
+          setLoading(false);
+        });
       } else {
-        setLoading(false)
+        setLoading(false);
       }
-    })
+    });
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session)
+      setSession(session);
 
       if (session?.user) {
         fetchProfileAndRole(session.user.id).then(({ profile, role }) => {
-          setProfile(profile)
-          setRole(role)
-          setLoading(false)
-        })
+          setProfile(profile);
+          setRole(role);
+          setLoading(false);
+        });
       } else {
-        reset()
-        setLoading(false)
+        reset();
+        setLoading(false);
       }
-    })
+    });
 
     return () => {
-      subscription.unsubscribe()
-    }
-  }, [setSession, setProfile, setRole, setLoading, reset])
+      subscription.unsubscribe();
+    };
+  }, [setSession, setProfile, setRole, setLoading, reset]);
 
   async function signIn(email: string, password: string) {
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
-    })
-    if (error) throw error
+    });
+    if (error) throw error;
   }
 
   async function signUp(email: string, password: string, fullName: string) {
@@ -95,21 +87,21 @@ export function useAuth() {
       options: {
         data: { full_name: fullName },
       },
-    })
-    if (error) throw error
+    });
+    if (error) throw error;
   }
 
   async function signOut() {
-    const { error } = await supabase.auth.signOut()
-    if (error) throw error
-    reset()
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
+    reset();
   }
 
   async function resetPassword(email: string) {
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/reset-password`,
-    })
-    if (error) throw error
+    });
+    if (error) throw error;
   }
 
   return {
@@ -122,5 +114,5 @@ export function useAuth() {
     signUp,
     signOut,
     resetPassword,
-  }
+  };
 }

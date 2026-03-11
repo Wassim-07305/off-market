@@ -1,16 +1,16 @@
-import { ShieldAlert } from 'lucide-react'
-import { useAuthStore } from '@/stores/auth-store'
-import { canAccess } from '@/lib/permissions'
-import type { Module } from '@/lib/permissions'
-import type { ReactNode } from 'react'
+import { ShieldAlert } from "lucide-react";
+import { useAuthStore } from "@/stores/auth-store";
+import { canAccess } from "@/lib/permissions";
+import type { Module } from "@/lib/permissions";
+import type { ReactNode } from "react";
 
 interface RoleGuardProps {
-  module: Module
-  children: ReactNode
+  module: Module;
+  children: ReactNode;
 }
 
 export function RoleGuard({ module, children }: RoleGuardProps) {
-  const role = useAuthStore((state) => state.role)
+  const role = useAuthStore((state) => state.role);
 
   if (!canAccess(role, module)) {
     return (
@@ -28,8 +28,8 @@ export function RoleGuard({ module, children }: RoleGuardProps) {
           </p>
         </div>
       </div>
-    )
+    );
   }
 
-  return <>{children}</>
+  return <>{children}</>;
 }

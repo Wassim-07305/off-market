@@ -46,7 +46,9 @@ export function ChannelSettingsModal({
   isOnline,
 }: ChannelSettingsModalProps) {
   const { user } = useAuth();
-  const { data: members, isLoading } = useChannelMembers(open ? channel.id : null);
+  const { data: members, isLoading } = useChannelMembers(
+    open ? channel.id : null,
+  );
   const [tab, setTab] = useState<"info" | "members">("info");
 
   if (!open) return null;
@@ -56,7 +58,10 @@ export function ChannelSettingsModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center animate-in fade-in duration-150">
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" onClick={onClose} />
+      <div
+        className="absolute inset-0 bg-black/40 backdrop-blur-[2px]"
+        onClick={onClose}
+      />
 
       <div className="relative bg-surface border border-border/60 rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden animate-in zoom-in-95 slide-in-from-bottom-3 duration-200">
         {/* Header */}
@@ -72,7 +77,9 @@ export function ChannelSettingsModal({
                   />
                 ) : (
                   <span className="text-sm font-semibold text-primary">
-                    {channel.dmPartner ? getInitials(channel.dmPartner.full_name) : "?"}
+                    {channel.dmPartner
+                      ? getInitials(channel.dmPartner.full_name)
+                      : "?"}
                   </span>
                 )}
               </div>
@@ -83,7 +90,9 @@ export function ChannelSettingsModal({
             )}
             <div>
               <h3 className="text-sm font-semibold text-foreground">
-                {isDM ? channel.dmPartner?.full_name ?? channel.name : channel.name}
+                {isDM
+                  ? (channel.dmPartner?.full_name ?? channel.name)
+                  : channel.name}
               </h3>
               {channel.description && (
                 <p className="text-xs text-muted-foreground truncate max-w-[240px]">
@@ -109,7 +118,7 @@ export function ChannelSettingsModal({
                 "flex-1 flex items-center justify-center gap-2 py-2.5 text-xs font-medium transition-colors",
                 tab === "info"
                   ? "text-primary border-b-2 border-primary"
-                  : "text-muted-foreground hover:text-foreground"
+                  : "text-muted-foreground hover:text-foreground",
               )}
             >
               <Settings className="w-3.5 h-3.5" />
@@ -121,7 +130,7 @@ export function ChannelSettingsModal({
                 "flex-1 flex items-center justify-center gap-2 py-2.5 text-xs font-medium transition-colors",
                 tab === "members"
                   ? "text-primary border-b-2 border-primary"
-                  : "text-muted-foreground hover:text-foreground"
+                  : "text-muted-foreground hover:text-foreground",
               )}
             >
               <Users className="w-3.5 h-3.5" />
@@ -132,7 +141,7 @@ export function ChannelSettingsModal({
 
         {/* Content */}
         <div className="max-h-80 overflow-y-auto">
-          {(tab === "info" && !isDM) && (
+          {tab === "info" && !isDM && (
             <div className="p-5 space-y-4">
               <div>
                 <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
@@ -145,7 +154,9 @@ export function ChannelSettingsModal({
                   <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
                     Description
                   </label>
-                  <p className="mt-1 text-sm text-foreground">{channel.description}</p>
+                  <p className="mt-1 text-sm text-foreground">
+                    {channel.description}
+                  </p>
                 </div>
               )}
               <div>
@@ -154,7 +165,9 @@ export function ChannelSettingsModal({
                 </label>
                 <div className="mt-1 flex items-center gap-2">
                   <ChannelIcon className="w-3.5 h-3.5 text-muted-foreground" />
-                  <span className="text-sm text-foreground capitalize">{channel.type}</span>
+                  <span className="text-sm text-foreground capitalize">
+                    {channel.type}
+                  </span>
                 </div>
               </div>
               <div>
@@ -177,7 +190,10 @@ export function ChannelSettingsModal({
               {isLoading ? (
                 <div className="space-y-2 px-4 py-2">
                   {Array.from({ length: 3 }).map((_, i) => (
-                    <div key={i} className="flex items-center gap-3 animate-pulse">
+                    <div
+                      key={i}
+                      className="flex items-center gap-3 animate-pulse"
+                    >
                       <div className="w-8 h-8 rounded-full bg-muted" />
                       <div className="flex-1 space-y-1">
                         <div className="h-3 w-24 bg-muted rounded" />
@@ -228,7 +244,9 @@ export function ChannelSettingsModal({
                             {profile.full_name}
                           </span>
                           {profile.id === user?.id && (
-                            <span className="text-[10px] text-muted-foreground">(toi)</span>
+                            <span className="text-[10px] text-muted-foreground">
+                              (toi)
+                            </span>
                           )}
                         </div>
                         <div className="flex items-center gap-1.5">
@@ -239,9 +257,13 @@ export function ChannelSettingsModal({
                         </div>
                       </div>
                       {online ? (
-                        <span className="text-[10px] text-emerald-500 font-medium">En ligne</span>
+                        <span className="text-[10px] text-emerald-500 font-medium">
+                          En ligne
+                        </span>
                       ) : (
-                        <span className="text-[10px] text-muted-foreground">Hors ligne</span>
+                        <span className="text-[10px] text-muted-foreground">
+                          Hors ligne
+                        </span>
                       )}
                     </div>
                   );

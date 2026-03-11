@@ -3,7 +3,11 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
-import type { Contract, ContractTemplate, ContractStatus } from "@/types/billing";
+import type {
+  Contract,
+  ContractTemplate,
+  ContractStatus,
+} from "@/types/billing";
 
 interface UseContractsOptions {
   status?: ContractStatus;
@@ -23,7 +27,9 @@ export function useContracts(options: UseContractsOptions = {}) {
     queryFn: async () => {
       let query = supabase
         .from("contracts")
-        .select("*, client:profiles!contracts_client_id_fkey(id, full_name, email, avatar_url)")
+        .select(
+          "*, client:profiles!contracts_client_id_fkey(id, full_name, email, avatar_url)",
+        )
         .order("created_at", { ascending: false })
         .limit(limit);
 
@@ -58,7 +64,10 @@ export function useContracts(options: UseContractsOptions = {}) {
   });
 
   const updateContract = useMutation({
-    mutationFn: async ({ id, ...updates }: Partial<Contract> & { id: string }) => {
+    mutationFn: async ({
+      id,
+      ...updates
+    }: Partial<Contract> & { id: string }) => {
       const { error } = await supabase
         .from("contracts")
         .update(updates)
@@ -84,7 +93,15 @@ export function useContracts(options: UseContractsOptions = {}) {
   });
 
   const signContract = useMutation({
-    mutationFn: async ({ id, signatureData, signatureImage }: { id: string; signatureData: { ip_address: string; user_agent: string }; signatureImage?: string }) => {
+    mutationFn: async ({
+      id,
+      signatureData,
+      signatureImage,
+    }: {
+      id: string;
+      signatureData: { ip_address: string; user_agent: string };
+      signatureImage?: string;
+    }) => {
       const now = new Date().toISOString();
       const { error } = await supabase
         .from("contracts")
@@ -121,7 +138,9 @@ export function useContract(id: string) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("contracts")
-        .select("*, client:profiles!contracts_client_id_fkey(id, full_name, email, avatar_url)")
+        .select(
+          "*, client:profiles!contracts_client_id_fkey(id, full_name, email, avatar_url)",
+        )
         .eq("id", id)
         .single();
       if (error) throw error;
@@ -171,7 +190,10 @@ export function useContractTemplates() {
   });
 
   const updateTemplate = useMutation({
-    mutationFn: async ({ id, ...updates }: Partial<ContractTemplate> & { id: string }) => {
+    mutationFn: async ({
+      id,
+      ...updates
+    }: Partial<ContractTemplate> & { id: string }) => {
       const { error } = await supabase
         .from("contract_templates")
         .update(updates)

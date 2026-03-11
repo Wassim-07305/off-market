@@ -22,7 +22,10 @@ export interface WeeklyCheckin {
 
 export type Energy = 1 | 2 | 3 | 4 | 5;
 
-export const ENERGY_CONFIG: Record<Energy, { label: string; emoji: string; color: string }> = {
+export const ENERGY_CONFIG: Record<
+  Energy,
+  { label: string; emoji: string; color: string }
+> = {
   1: { label: "Epuise", emoji: "🪫", color: "text-red-500" },
   2: { label: "Fatigue", emoji: "😴", color: "text-orange-500" },
   3: { label: "Normal", emoji: "⚡", color: "text-amber-500" },
@@ -32,7 +35,10 @@ export const ENERGY_CONFIG: Record<Energy, { label: string; emoji: string; color
 
 export type Mood = 1 | 2 | 3 | 4 | 5;
 
-export const MOOD_CONFIG: Record<Mood, { label: string; emoji: string; color: string }> = {
+export const MOOD_CONFIG: Record<
+  Mood,
+  { label: string; emoji: string; color: string }
+> = {
   1: { label: "Tres mal", emoji: "😫", color: "text-red-500" },
   2: { label: "Pas top", emoji: "😕", color: "text-orange-500" },
   3: { label: "Neutre", emoji: "😐", color: "text-amber-500" },
@@ -54,7 +60,12 @@ export interface JournalEntry {
   updated_at: string;
 }
 
-export type JournalTemplate = "free" | "gratitude" | "reflection" | "goals" | "wins";
+export type JournalTemplate =
+  | "free"
+  | "gratitude"
+  | "reflection"
+  | "goals"
+  | "wins";
 
 export const JOURNAL_TEMPLATES: Record<
   JournalTemplate,
@@ -183,14 +194,20 @@ export type AlertType =
 
 export type AlertSeverity = "low" | "medium" | "high" | "critical";
 
-export const ALERT_SEVERITY_CONFIG: Record<AlertSeverity, { label: string; color: string }> = {
+export const ALERT_SEVERITY_CONFIG: Record<
+  AlertSeverity,
+  { label: string; color: string }
+> = {
   low: { label: "Faible", color: "bg-blue-500/10 text-blue-600" },
   medium: { label: "Moyen", color: "bg-amber-500/10 text-amber-600" },
   high: { label: "Eleve", color: "bg-orange-500/10 text-orange-600" },
   critical: { label: "Critique", color: "bg-red-500/10 text-red-600" },
 };
 
-export const ALERT_TYPE_CONFIG: Record<AlertType, { label: string; icon: string }> = {
+export const ALERT_TYPE_CONFIG: Record<
+  AlertType,
+  { label: string; icon: string }
+> = {
   no_checkin: { label: "Pas de check-in", icon: "📋" },
   revenue_drop: { label: "Baisse de CA", icon: "📉" },
   inactive_7d: { label: "Inactif 7j", icon: "⏰" },

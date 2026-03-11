@@ -20,7 +20,7 @@ export function ImageLightbox({ src, alt, onClose }: ImageLightboxProps) {
       if (e.key === "-") setZoom((z) => Math.max(z - 0.25, 0.5));
       if (e.key === "r") setRotation((r) => r + 90);
     },
-    [onClose]
+    [onClose],
   );
 
   useEffect(() => {

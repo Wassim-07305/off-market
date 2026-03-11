@@ -52,7 +52,11 @@ export function useOnboarding() {
   });
 
   const updateProfile = useMutation({
-    mutationFn: async (data: { phone?: string | null; bio?: string | null; avatar_url?: string | null }) => {
+    mutationFn: async (data: {
+      phone?: string | null;
+      bio?: string | null;
+      avatar_url?: string | null;
+    }) => {
       if (!user) throw new Error("Not authenticated");
       const { error } = await supabase
         .from("profiles")
@@ -143,7 +147,9 @@ export function useClientOnboarding(clientId: string) {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["client-onboarding", clientId] });
+      queryClient.invalidateQueries({
+        queryKey: ["client-onboarding", clientId],
+      });
     },
   });
 

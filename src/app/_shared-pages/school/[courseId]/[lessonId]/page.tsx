@@ -4,7 +4,11 @@ import { use, useMemo, useState, useRef, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRoutePrefix } from "@/hooks/use-route-prefix";
-import { useCourse, useLessonProgress, useMarkLessonComplete } from "@/hooks/use-courses";
+import {
+  useCourse,
+  useLessonProgress,
+  useMarkLessonComplete,
+} from "@/hooks/use-courses";
 import { useQuery } from "@tanstack/react-query";
 import { useSupabase } from "@/hooks/use-supabase";
 import { toast } from "sonner";
@@ -35,7 +39,7 @@ import {
 
 function getYouTubeId(url: string): string | null {
   const match = url.match(
-    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
   );
   return match?.[1] ?? null;
 }
@@ -52,10 +56,14 @@ function getLoomId(url: string): string | null {
 
 function getAttachmentIcon(type: string) {
   switch (type) {
-    case "video": return Video;
-    case "audio": return Headphones;
-    case "document": return FileText;
-    default: return File;
+    case "video":
+      return Video;
+    case "audio":
+      return Headphones;
+    case "document":
+      return FileText;
+    default:
+      return File;
   }
 }
 
@@ -66,7 +74,7 @@ function getAttachmentIcon(type: string) {
 function isLessonUnlocked(
   lesson: Lesson,
   allLessons: Lesson[],
-  completedIds: Set<string>
+  completedIds: Set<string>,
 ): boolean {
   const idx = allLessons.findIndex((l) => l.id === lesson.id);
   if (idx <= 0) return true;
@@ -114,7 +122,7 @@ export default function LessonPage({
     return course.modules
       .sort((a, b) => a.sort_order - b.sort_order)
       .flatMap((mod) =>
-        (mod.lessons ?? []).sort((a, b) => a.sort_order - b.sort_order)
+        (mod.lessons ?? []).sort((a, b) => a.sort_order - b.sort_order),
       );
   }, [course]);
 
@@ -128,10 +136,13 @@ export default function LessonPage({
 
   const currentIndex = allLessons.findIndex((l) => l.id === lessonId);
   const prevLesson = currentIndex > 0 ? allLessons[currentIndex - 1] : null;
-  const nextLesson = currentIndex < allLessons.length - 1 ? allLessons[currentIndex + 1] : null;
+  const nextLesson =
+    currentIndex < allLessons.length - 1 ? allLessons[currentIndex + 1] : null;
 
   const isCompleted = completedIds.has(lessonId);
-  const completedCount = allLessons.filter((l) => completedIds.has(l.id)).length;
+  const completedCount = allLessons.filter((l) =>
+    completedIds.has(l.id),
+  ).length;
 
   const isNextUnlocked = nextLesson
     ? isLessonUnlocked(nextLesson, allLessons, completedIds) || isCompleted
@@ -167,7 +178,10 @@ export default function LessonPage({
     return (
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="h-5 w-28 bg-muted rounded-lg animate-shimmer" />
-        <div className="bg-surface rounded-2xl p-8" style={{ boxShadow: "var(--shadow-card)" }}>
+        <div
+          className="bg-surface rounded-2xl p-8"
+          style={{ boxShadow: "var(--shadow-card)" }}
+        >
           <div className="h-7 w-64 bg-muted rounded-lg animate-shimmer mb-6" />
           <div className="aspect-video bg-muted rounded-xl animate-shimmer" />
         </div>
@@ -176,14 +190,19 @@ export default function LessonPage({
   }
 
   if (!lesson) {
-    return <p className="text-center text-muted-foreground py-16">Lecon non trouvee</p>;
+    return (
+      <p className="text-center text-muted-foreground py-16">
+        Lecon non trouvee
+      </p>
+    );
   }
 
   const content = lesson.content as Record<string, string>;
   const videoUrl = lesson.video_url ?? content?.video_url ?? content?.url;
   const youtubeId = videoUrl ? getYouTubeId(videoUrl) : null;
   const vimeoId = videoUrl && !youtubeId ? getVimeoId(videoUrl) : null;
-  const loomId = videoUrl && !youtubeId && !vimeoId ? getLoomId(videoUrl) : null;
+  const loomId =
+    videoUrl && !youtubeId && !vimeoId ? getLoomId(videoUrl) : null;
   const isDirectVideo = videoUrl && !youtubeId && !vimeoId && !loomId;
 
   const htmlContent = lesson.content_html ?? content?.html;
@@ -208,7 +227,8 @@ export default function LessonPage({
             Lecon verrouillee
           </h2>
           <p className="text-sm text-muted-foreground max-w-md">
-            Vous devez terminer la lecon precedente avant d&apos;acceder a celle-ci.
+            Vous devez terminer la lecon precedente avant d&apos;acceder a
+            celle-ci.
           </p>
           {prevLesson && (
             <Link
@@ -241,14 +261,19 @@ export default function LessonPage({
         )}
       </div>
 
-      <div className="bg-surface rounded-2xl p-8" style={{ boxShadow: "var(--shadow-card)" }}>
+      <div
+        className="bg-surface rounded-2xl p-8"
+        style={{ boxShadow: "var(--shadow-card)" }}
+      >
         <div className="flex items-start justify-between gap-4 mb-6">
           <div>
             <h1 className="text-2xl font-display font-bold text-foreground tracking-tight">
               {lesson.title}
             </h1>
             {lesson.description && (
-              <p className="text-sm text-muted-foreground mt-1">{lesson.description}</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                {lesson.description}
+              </p>
             )}
           </div>
           {isCompleted && (
@@ -261,7 +286,10 @@ export default function LessonPage({
 
         {/* YouTube */}
         {youtubeId && (
-          <div className="aspect-video bg-black rounded-2xl overflow-hidden mb-6" style={{ boxShadow: "var(--shadow-elevated)" }}>
+          <div
+            className="aspect-video bg-black rounded-2xl overflow-hidden mb-6"
+            style={{ boxShadow: "var(--shadow-elevated)" }}
+          >
             <iframe
               src={`https://www.youtube.com/embed/${youtubeId}`}
               title={lesson.title}
@@ -274,7 +302,10 @@ export default function LessonPage({
 
         {/* Vimeo */}
         {vimeoId && (
-          <div className="aspect-video bg-black rounded-2xl overflow-hidden mb-6" style={{ boxShadow: "var(--shadow-elevated)" }}>
+          <div
+            className="aspect-video bg-black rounded-2xl overflow-hidden mb-6"
+            style={{ boxShadow: "var(--shadow-elevated)" }}
+          >
             <iframe
               src={`https://player.vimeo.com/video/${vimeoId}`}
               title={lesson.title}
@@ -287,7 +318,10 @@ export default function LessonPage({
 
         {/* Loom */}
         {loomId && (
-          <div className="aspect-video bg-black rounded-2xl overflow-hidden mb-6" style={{ boxShadow: "var(--shadow-elevated)" }}>
+          <div
+            className="aspect-video bg-black rounded-2xl overflow-hidden mb-6"
+            style={{ boxShadow: "var(--shadow-elevated)" }}
+          >
             <iframe
               src={`https://www.loom.com/embed/${loomId}`}
               title={lesson.title}
@@ -299,8 +333,17 @@ export default function LessonPage({
 
         {/* Direct video with auto-complete */}
         {isDirectVideo && (
-          <div className="aspect-video bg-black rounded-2xl overflow-hidden mb-6" style={{ boxShadow: "var(--shadow-elevated)" }}>
-            <video ref={videoRef} src={videoUrl} controls className="w-full h-full" onTimeUpdate={handleTimeUpdate} />
+          <div
+            className="aspect-video bg-black rounded-2xl overflow-hidden mb-6"
+            style={{ boxShadow: "var(--shadow-elevated)" }}
+          >
+            <video
+              ref={videoRef}
+              src={videoUrl}
+              controls
+              className="w-full h-full"
+              onTimeUpdate={handleTimeUpdate}
+            />
           </div>
         )}
 
@@ -313,18 +356,19 @@ export default function LessonPage({
         )}
 
         {/* Quiz */}
-        {lesson.content_type === "quiz" && (lesson.content as unknown as QuizConfig)?.questions && (
-          <QuizPlayer
-            lessonId={lesson.id}
-            config={lesson.content as unknown as QuizConfig}
-            onComplete={(passed) => {
-              if (passed) {
-                markComplete.mutate(lesson.id);
-                toast.success("Quiz reussi ! Lecon marquee comme completee.");
-              }
-            }}
-          />
-        )}
+        {lesson.content_type === "quiz" &&
+          (lesson.content as unknown as QuizConfig)?.questions && (
+            <QuizPlayer
+              lessonId={lesson.id}
+              config={lesson.content as unknown as QuizConfig}
+              onComplete={(passed) => {
+                if (passed) {
+                  markComplete.mutate(lesson.id);
+                  toast.success("Quiz reussi ! Lecon marquee comme completee.");
+                }
+              }}
+            />
+          )}
 
         {/* Assignment */}
         {lesson.content_type === "assignment" && (
@@ -339,11 +383,16 @@ export default function LessonPage({
         )}
 
         {/* Coach/Admin: Quiz & Exercise Stats */}
-        {isStaff && (lesson.content_type === "quiz" || lesson.content_type === "assignment") && (
-          <div className="mt-6 pt-6 border-t border-border">
-            <QuizExerciseStats lessonId={lesson.id} contentType={lesson.content_type} />
-          </div>
-        )}
+        {isStaff &&
+          (lesson.content_type === "quiz" ||
+            lesson.content_type === "assignment") && (
+            <div className="mt-6 pt-6 border-t border-border">
+              <QuizExerciseStats
+                lessonId={lesson.id}
+                contentType={lesson.content_type}
+              />
+            </div>
+          )}
 
         {/* Coach/Admin: Exercise Review */}
         {isStaff && lesson.content_type === "assignment" && (
@@ -355,7 +404,9 @@ export default function LessonPage({
         {/* Attachments */}
         {attachments.length > 0 && (
           <div className="mt-6 pt-6 border-t border-border">
-            <h3 className="text-sm font-semibold text-foreground mb-3">Ressources</h3>
+            <h3 className="text-sm font-semibold text-foreground mb-3">
+              Ressources
+            </h3>
             <div className="space-y-2">
               {attachments.map((att) => {
                 const Icon = getAttachmentIcon(att.type);
@@ -368,7 +419,9 @@ export default function LessonPage({
                     className="flex items-center gap-3 p-3 bg-muted/30 rounded-xl hover:bg-muted/50 transition-colors group"
                   >
                     <Icon className="w-5 h-5 text-muted-foreground shrink-0" />
-                    <span className="text-sm text-foreground flex-1 truncate">{att.name}</span>
+                    <span className="text-sm text-foreground flex-1 truncate">
+                      {att.name}
+                    </span>
                     <ExternalLink className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                   </a>
                 );

@@ -2,7 +2,11 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { staggerContainer, fadeInUp, defaultTransition } from "@/lib/animations";
+import {
+  staggerContainer,
+  fadeInUp,
+  defaultTransition,
+} from "@/lib/animations";
 import { useContracts, useContractTemplates } from "@/hooks/use-contracts";
 import { useAuth } from "@/hooks/use-auth";
 import { useStudents } from "@/hooks/use-students";
@@ -39,19 +43,22 @@ const STATUS_TABS: { label: string; value: ContractStatus | "all" }[] = [
 
 export default function ContractsPage() {
   const { user } = useAuth();
-  const [statusFilter, setStatusFilter] = useState<ContractStatus | "all">("all");
+  const [statusFilter, setStatusFilter] = useState<ContractStatus | "all">(
+    "all",
+  );
   const [search, setSearch] = useState("");
   const [showCreateModal, setShowCreateModal] = useState(false);
 
-  const { contracts, isLoading, createContract, sendContract, updateContract } = useContracts({
-    status: statusFilter === "all" ? undefined : statusFilter,
-  });
+  const { contracts, isLoading, createContract, sendContract, updateContract } =
+    useContracts({
+      status: statusFilter === "all" ? undefined : statusFilter,
+    });
 
   const filtered = search
     ? contracts.filter(
         (c) =>
           c.title.toLowerCase().includes(search.toLowerCase()) ||
-          c.client?.full_name?.toLowerCase().includes(search.toLowerCase())
+          c.client?.full_name?.toLowerCase().includes(search.toLowerCase()),
       )
     : contracts;
 
@@ -130,7 +137,9 @@ export default function ContractsPage() {
         ) : filtered.length === 0 ? (
           <div className="p-12 text-center">
             <FileText className="w-10 h-10 text-muted-foreground/40 mx-auto mb-3" />
-            <p className="text-sm text-muted-foreground">Aucun contrat trouve</p>
+            <p className="text-sm text-muted-foreground">
+              Aucun contrat trouve
+            </p>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -161,7 +170,9 @@ export default function ContractsPage() {
                     className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors"
                   >
                     <td className="px-4 py-3">
-                      <p className="text-sm font-medium text-foreground">{contract.title}</p>
+                      <p className="text-sm font-medium text-foreground">
+                        {contract.title}
+                      </p>
                     </td>
                     <td className="px-4 py-3">
                       <p className="text-sm text-foreground">
@@ -198,7 +209,10 @@ export default function ContractsPage() {
                         {contract.status === "sent" && (
                           <button
                             onClick={() =>
-                              updateContract.mutate({ id: contract.id, status: "cancelled" })
+                              updateContract.mutate({
+                                id: contract.id,
+                                status: "cancelled",
+                              })
                             }
                             className="p-2 rounded-lg hover:bg-muted transition-colors text-red-500"
                             title="Annuler"
@@ -223,7 +237,7 @@ export default function ContractsPage() {
           onCreate={(data) => {
             createContract.mutate(
               { ...data, created_by: user?.id ?? "" },
-              { onSuccess: () => setShowCreateModal(false) }
+              { onSuccess: () => setShowCreateModal(false) },
             );
           }}
           isCreating={createContract.isPending}
@@ -242,7 +256,9 @@ function StatusBadge({ status }: { status: string }) {
   };
   const c = config[status] ?? config.draft;
   return (
-    <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${c.className}`}>
+    <span
+      className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${c.className}`}
+    >
       {c.label}
     </span>
   );
@@ -254,12 +270,18 @@ function CreateContractModal({
   isCreating,
 }: {
   onClose: () => void;
-  onCreate: (data: { client_id: string; title: string; content: string; template_id?: string }) => void;
+  onCreate: (data: {
+    client_id: string;
+    title: string;
+    content: string;
+    template_id?: string;
+  }) => void;
   isCreating: boolean;
 }) {
   const { templates } = useContractTemplates();
   const { students: clients } = useStudents();
-  const [selectedTemplate, setSelectedTemplate] = useState<ContractTemplate | null>(null);
+  const [selectedTemplate, setSelectedTemplate] =
+    useState<ContractTemplate | null>(null);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [clientId, setClientId] = useState("");
@@ -298,8 +320,13 @@ function CreateContractModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
       <div className="bg-surface border border-border rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto m-4">
         <div className="flex items-center justify-between p-6 border-b border-border">
-          <h2 className="text-lg font-semibold text-foreground">Nouveau contrat</h2>
-          <button onClick={onClose} className="p-2 rounded-lg hover:bg-muted transition-colors">
+          <h2 className="text-lg font-semibold text-foreground">
+            Nouveau contrat
+          </h2>
+          <button
+            onClick={onClose}
+            className="p-2 rounded-lg hover:bg-muted transition-colors"
+          >
             <X className="w-4 h-4" />
           </button>
         </div>
@@ -331,7 +358,9 @@ function CreateContractModal({
 
           {/* Client */}
           <div>
-            <label className="block text-sm font-medium text-foreground mb-1.5">Client</label>
+            <label className="block text-sm font-medium text-foreground mb-1.5">
+              Client
+            </label>
             <select
               value={clientId}
               onChange={(e) => setClientId(e.target.value)}
@@ -348,7 +377,9 @@ function CreateContractModal({
 
           {/* Title */}
           <div>
-            <label className="block text-sm font-medium text-foreground mb-1.5">Titre</label>
+            <label className="block text-sm font-medium text-foreground mb-1.5">
+              Titre
+            </label>
             <input
               type="text"
               value={title}
@@ -361,14 +392,29 @@ function CreateContractModal({
           {/* Template variables */}
           {selectedTemplate && selectedTemplate.variables.length > 0 && (
             <div className="space-y-3">
-              <p className="text-sm font-medium text-foreground">Variables du modele</p>
+              <p className="text-sm font-medium text-foreground">
+                Variables du modele
+              </p>
               {selectedTemplate.variables.map((v) => (
                 <div key={v.key}>
-                  <label className="block text-xs text-muted-foreground mb-1">{v.label}</label>
+                  <label className="block text-xs text-muted-foreground mb-1">
+                    {v.label}
+                  </label>
                   <input
-                    type={v.type === "number" ? "number" : v.type === "date" ? "date" : "text"}
+                    type={
+                      v.type === "number"
+                        ? "number"
+                        : v.type === "date"
+                          ? "date"
+                          : "text"
+                    }
                     value={variables[v.key] ?? ""}
-                    onChange={(e) => setVariables((prev) => ({ ...prev, [v.key]: e.target.value }))}
+                    onChange={(e) =>
+                      setVariables((prev) => ({
+                        ...prev,
+                        [v.key]: e.target.value,
+                      }))
+                    }
                     className="w-full h-9 px-3 bg-surface border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
                   />
                 </div>
@@ -378,7 +424,9 @@ function CreateContractModal({
 
           {/* Content */}
           <div>
-            <label className="block text-sm font-medium text-foreground mb-1.5">Contenu</label>
+            <label className="block text-sm font-medium text-foreground mb-1.5">
+              Contenu
+            </label>
             <textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}

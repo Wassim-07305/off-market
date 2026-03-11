@@ -22,7 +22,7 @@ export function useMessages(channelId: string | null) {
           `*,
           sender:profiles!messages_sender_id_fkey(id, full_name, avatar_url, role),
           reactions:message_reactions(id, emoji, profile_id),
-          attachments:message_attachments(id, file_name, file_url, file_type, file_size)`
+          attachments:message_attachments(id, file_name, file_url, file_type, file_size)`,
         )
         .eq("channel_id", channelId)
         .is("deleted_at", null)
@@ -47,12 +47,14 @@ export function useMessages(channelId: string | null) {
           table: "messages",
           filter: `channel_id=eq.${channelId}`,
         },
-        () => queryClient.invalidateQueries({ queryKey: ["messages", channelId] })
+        () =>
+          queryClient.invalidateQueries({ queryKey: ["messages", channelId] }),
       )
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "message_reactions" },
-        () => queryClient.invalidateQueries({ queryKey: ["messages", channelId] })
+        () =>
+          queryClient.invalidateQueries({ queryKey: ["messages", channelId] }),
       )
       .subscribe();
 
@@ -95,7 +97,10 @@ export function useMessages(channelId: string | null) {
       // Cancel in-flight fetches
       await queryClient.cancelQueries({ queryKey: ["messages", channelId] });
 
-      const previousMessages = queryClient.getQueryData<EnrichedMessage[]>(["messages", channelId]);
+      const previousMessages = queryClient.getQueryData<EnrichedMessage[]>([
+        "messages",
+        channelId,
+      ]);
 
       // Create optimistic message
       const optimisticMsg: EnrichedMessage = {
@@ -124,17 +129,20 @@ export function useMessages(channelId: string | null) {
         reply_message: null,
       };
 
-      queryClient.setQueryData<EnrichedMessage[]>(["messages", channelId], (old) => [
-        ...(old ?? []),
-        optimisticMsg,
-      ]);
+      queryClient.setQueryData<EnrichedMessage[]>(
+        ["messages", channelId],
+        (old) => [...(old ?? []), optimisticMsg],
+      );
 
       scrollLockRef.current = true;
       return { previousMessages };
     },
     onError: (_err, _vars, context) => {
       if (context?.previousMessages) {
-        queryClient.setQueryData(["messages", channelId], context.previousMessages);
+        queryClient.setQueryData(
+          ["messages", channelId],
+          context.previousMessages,
+        );
       }
     },
     onSettled: () => {
@@ -148,21 +156,33 @@ export function useMessages(channelId: string | null) {
     mutationFn: async ({ id, content }: { id: string; content: string }) => {
       const { error } = await supabase
         .from("messages")
-        .update({ content, is_edited: true, updated_at: new Date().toISOString() })
+        .update({
+          content,
+          is_edited: true,
+          updated_at: new Date().toISOString(),
+        })
         .eq("id", id);
       if (error) throw error;
     },
     onMutate: async ({ id, content }) => {
       await queryClient.cancelQueries({ queryKey: ["messages", channelId] });
-      const previous = queryClient.getQueryData<EnrichedMessage[]>(["messages", channelId]);
+      const previous = queryClient.getQueryData<EnrichedMessage[]>([
+        "messages",
+        channelId,
+      ]);
 
-      queryClient.setQueryData<EnrichedMessage[]>(["messages", channelId], (old) =>
-        (old ?? []).map((m) => (m.id === id ? { ...m, content, is_edited: true } : m))
+      queryClient.setQueryData<EnrichedMessage[]>(
+        ["messages", channelId],
+        (old) =>
+          (old ?? []).map((m) =>
+            m.id === id ? { ...m, content, is_edited: true } : m,
+          ),
       );
       return { previous };
     },
     onError: (_err, _vars, ctx) => {
-      if (ctx?.previous) queryClient.setQueryData(["messages", channelId], ctx.previous);
+      if (ctx?.previous)
+        queryClient.setQueryData(["messages", channelId], ctx.previous);
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["messages", channelId] });
@@ -180,15 +200,20 @@ export function useMessages(channelId: string | null) {
     },
     onMutate: async (id) => {
       await queryClient.cancelQueries({ queryKey: ["messages", channelId] });
-      const previous = queryClient.getQueryData<EnrichedMessage[]>(["messages", channelId]);
+      const previous = queryClient.getQueryData<EnrichedMessage[]>([
+        "messages",
+        channelId,
+      ]);
 
-      queryClient.setQueryData<EnrichedMessage[]>(["messages", channelId], (old) =>
-        (old ?? []).filter((m) => m.id !== id)
+      queryClient.setQueryData<EnrichedMessage[]>(
+        ["messages", channelId],
+        (old) => (old ?? []).filter((m) => m.id !== id),
       );
       return { previous };
     },
     onError: (_err, _vars, ctx) => {
-      if (ctx?.previous) queryClient.setQueryData(["messages", channelId], ctx.previous);
+      if (ctx?.previous)
+        queryClient.setQueryData(["messages", channelId], ctx.previous);
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["messages", channelId] });
@@ -205,15 +230,23 @@ export function useMessages(channelId: string | null) {
     },
     onMutate: async ({ id, pinned }) => {
       await queryClient.cancelQueries({ queryKey: ["messages", channelId] });
-      const previous = queryClient.getQueryData<EnrichedMessage[]>(["messages", channelId]);
+      const previous = queryClient.getQueryData<EnrichedMessage[]>([
+        "messages",
+        channelId,
+      ]);
 
-      queryClient.setQueryData<EnrichedMessage[]>(["messages", channelId], (old) =>
-        (old ?? []).map((m) => (m.id === id ? { ...m, is_pinned: !pinned } : m))
+      queryClient.setQueryData<EnrichedMessage[]>(
+        ["messages", channelId],
+        (old) =>
+          (old ?? []).map((m) =>
+            m.id === id ? { ...m, is_pinned: !pinned } : m,
+          ),
       );
       return { previous };
     },
     onError: (_err, _vars, ctx) => {
-      if (ctx?.previous) queryClient.setQueryData(["messages", channelId], ctx.previous);
+      if (ctx?.previous)
+        queryClient.setQueryData(["messages", channelId], ctx.previous);
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["messages", channelId] });
@@ -222,7 +255,13 @@ export function useMessages(channelId: string | null) {
 
   // --- Optimistic reactions ---
   const toggleReaction = useMutation({
-    mutationFn: async ({ messageId, emoji }: { messageId: string; emoji: string }) => {
+    mutationFn: async ({
+      messageId,
+      emoji,
+    }: {
+      messageId: string;
+      emoji: string;
+    }) => {
       if (!user) throw new Error("Not authenticated");
 
       const { data: existing } = await supabase
@@ -249,28 +288,47 @@ export function useMessages(channelId: string | null) {
     onMutate: async ({ messageId, emoji }) => {
       if (!user) return;
       await queryClient.cancelQueries({ queryKey: ["messages", channelId] });
-      const previous = queryClient.getQueryData<EnrichedMessage[]>(["messages", channelId]);
+      const previous = queryClient.getQueryData<EnrichedMessage[]>([
+        "messages",
+        channelId,
+      ]);
 
-      queryClient.setQueryData<EnrichedMessage[]>(["messages", channelId], (old) =>
-        (old ?? []).map((m) => {
-          if (m.id !== messageId) return m;
-          const existing = m.reactions?.find((r) => r.emoji === emoji && r.profile_id === user.id);
-          if (existing) {
-            return { ...m, reactions: (m.reactions ?? []).filter((r) => r.id !== existing.id) };
-          }
-          return {
-            ...m,
-            reactions: [
-              ...(m.reactions ?? []),
-              { id: `opt-${Date.now()}`, emoji, profile_id: user.id, message_id: messageId, created_at: new Date().toISOString() },
-            ],
-          };
-        })
+      queryClient.setQueryData<EnrichedMessage[]>(
+        ["messages", channelId],
+        (old) =>
+          (old ?? []).map((m) => {
+            if (m.id !== messageId) return m;
+            const existing = m.reactions?.find(
+              (r) => r.emoji === emoji && r.profile_id === user.id,
+            );
+            if (existing) {
+              return {
+                ...m,
+                reactions: (m.reactions ?? []).filter(
+                  (r) => r.id !== existing.id,
+                ),
+              };
+            }
+            return {
+              ...m,
+              reactions: [
+                ...(m.reactions ?? []),
+                {
+                  id: `opt-${Date.now()}`,
+                  emoji,
+                  profile_id: user.id,
+                  message_id: messageId,
+                  created_at: new Date().toISOString(),
+                },
+              ],
+            };
+          }),
       );
       return { previous };
     },
     onError: (_err, _vars, ctx) => {
-      if (ctx?.previous) queryClient.setQueryData(["messages", channelId], ctx.previous);
+      if (ctx?.previous)
+        queryClient.setQueryData(["messages", channelId], ctx.previous);
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["messages", channelId] });
@@ -342,7 +400,7 @@ export function useThreadMessages(parentId: string | null) {
           `*,
           sender:profiles!messages_sender_id_fkey(id, full_name, avatar_url, role),
           reactions:message_reactions(id, emoji, profile_id),
-          attachments:message_attachments(id, file_name, file_url, file_type, file_size)`
+          attachments:message_attachments(id, file_name, file_url, file_type, file_size)`,
         )
         .eq("reply_to", parentId)
         .is("deleted_at", null)
@@ -360,8 +418,13 @@ export function useThreadMessages(parentId: string | null) {
       .channel(`thread-${parentId}`)
       .on(
         "postgres_changes",
-        { event: "*", schema: "public", table: "messages", filter: `reply_to=eq.${parentId}` },
-        () => queryClient.invalidateQueries({ queryKey: ["thread", parentId] })
+        {
+          event: "*",
+          schema: "public",
+          table: "messages",
+          filter: `reply_to=eq.${parentId}`,
+        },
+        () => queryClient.invalidateQueries({ queryKey: ["thread", parentId] }),
       )
       .subscribe();
 

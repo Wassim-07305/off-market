@@ -63,7 +63,7 @@ export function FileUpload({
         setUploading(false);
       }
     },
-    [bucket, path, maxSizeMB, onUpload, supabase]
+    [bucket, path, maxSizeMB, onUpload, supabase],
   );
 
   const handleDrop = useCallback(
@@ -73,7 +73,7 @@ export function FileUpload({
       const file = e.dataTransfer.files[0];
       if (file) uploadFile(file);
     },
-    [uploadFile]
+    [uploadFile],
   );
 
   const handleChange = useCallback(
@@ -83,7 +83,7 @@ export function FileUpload({
       // Reset input so same file can be selected again
       e.target.value = "";
     },
-    [uploadFile]
+    [uploadFile],
   );
 
   // If there's a current file and preview is enabled
@@ -125,9 +125,11 @@ export function FileUpload({
     <div
       className={cn(
         "relative border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-colors",
-        dragOver ? "border-primary bg-primary/5" : "border-border hover:border-primary/40",
+        dragOver
+          ? "border-primary bg-primary/5"
+          : "border-border hover:border-primary/40",
         uploading && "pointer-events-none opacity-60",
-        className
+        className,
       )}
       onClick={() => inputRef.current?.click()}
       onDragOver={(e) => {
@@ -147,14 +149,18 @@ export function FileUpload({
       {uploading ? (
         <div className="flex flex-col items-center gap-2">
           <Loader2 className="w-6 h-6 text-primary animate-spin" />
-          <span className="text-xs text-muted-foreground">Telechargement...</span>
+          <span className="text-xs text-muted-foreground">
+            Telechargement...
+          </span>
         </div>
       ) : (
         <div className="flex flex-col items-center gap-2">
           <Upload className="w-6 h-6 text-muted-foreground" />
           <span className="text-xs text-muted-foreground">{label}</span>
           {maxSizeMB < 100 && (
-            <span className="text-[10px] text-muted-foreground/60">Max {maxSizeMB} Mo</span>
+            <span className="text-[10px] text-muted-foreground/60">
+              Max {maxSizeMB} Mo
+            </span>
           )}
         </div>
       )}

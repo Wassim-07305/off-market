@@ -28,7 +28,14 @@ interface MessageBubbleProps {
   onOpenThread?: () => void;
 }
 
-const QUICK_REACTIONS = ["\u{1F44D}", "\u{2764}\u{FE0F}", "\u{1F602}", "\u{1F389}", "\u{1F525}", "\u{2705}"];
+const QUICK_REACTIONS = [
+  "\u{1F44D}",
+  "\u{2764}\u{FE0F}",
+  "\u{1F602}",
+  "\u{1F389}",
+  "\u{1F525}",
+  "\u{2705}",
+];
 
 export function MessageBubble({
   message,
@@ -86,7 +93,7 @@ export function MessageBubble({
         "group relative flex gap-3 px-1.5 -mx-1.5 rounded-lg transition-colors duration-150",
         isFirstInGroup ? "pt-2" : "pt-0.5",
         showActions && "bg-muted/30",
-        isOptimistic && "opacity-50"
+        isOptimistic && "opacity-50",
       )}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -96,7 +103,11 @@ export function MessageBubble({
         {isFirstInGroup && (
           <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
             {sender?.avatar_url ? (
-              <img src={sender.avatar_url} alt="" className="w-9 h-9 rounded-full object-cover" />
+              <img
+                src={sender.avatar_url}
+                alt=""
+                className="w-9 h-9 rounded-full object-cover"
+              />
             ) : (
               <span className="text-xs font-semibold text-primary">
                 {sender ? getInitials(sender.full_name) : "?"}
@@ -115,7 +126,7 @@ export function MessageBubble({
                 "text-[13px] font-semibold",
                 sender?.role === "admin" || sender?.role === "coach"
                   ? "text-primary"
-                  : "text-foreground"
+                  : "text-foreground",
               )}
             >
               {sender?.full_name ?? "Inconnu"}
@@ -127,7 +138,9 @@ export function MessageBubble({
               <Pin className="w-3 h-3 text-amber-500 fill-amber-500" />
             )}
             {message.is_edited && (
-              <span className="text-[10px] text-muted-foreground italic">(modifie)</span>
+              <span className="text-[10px] text-muted-foreground italic">
+                (modifie)
+              </span>
             )}
           </div>
         )}
@@ -164,7 +177,9 @@ export function MessageBubble({
             <div className="flex items-center gap-2 text-[11px]">
               <span className="text-muted-foreground">Echap pour annuler</span>
               <span className="text-muted-foreground">&middot;</span>
-              <span className="text-muted-foreground">Entree pour sauvegarder</span>
+              <span className="text-muted-foreground">
+                Entree pour sauvegarder
+              </span>
             </div>
           </div>
         ) : (
@@ -198,7 +213,7 @@ export function MessageBubble({
           "absolute -top-3 right-2 flex items-center bg-surface border border-border/60 rounded-lg shadow-sm overflow-hidden z-10 transition-all duration-150",
           showActions && !editing
             ? "opacity-100 translate-y-0 pointer-events-auto"
-            : "opacity-0 translate-y-1 pointer-events-none"
+            : "opacity-0 translate-y-1 pointer-events-none",
         )}
       >
         <button
@@ -242,7 +257,7 @@ export function MessageBubble({
             "w-7 h-7 flex items-center justify-center transition-colors",
             message.is_pinned
               ? "text-amber-500 hover:bg-muted"
-              : "text-muted-foreground hover:text-foreground hover:bg-muted"
+              : "text-muted-foreground hover:text-foreground hover:bg-muted",
           )}
           title={message.is_pinned ? "Desepingler" : "Epingler"}
         >
@@ -265,7 +280,7 @@ export function MessageBubble({
           "absolute -top-10 right-2 flex items-center gap-0.5 bg-surface border border-border/60 rounded-lg shadow-md p-1 z-20 transition-all duration-150 origin-bottom-right",
           showQuickReact
             ? "opacity-100 scale-100 pointer-events-auto"
-            : "opacity-0 scale-90 pointer-events-none"
+            : "opacity-0 scale-90 pointer-events-none",
         )}
       >
         {QUICK_REACTIONS.map((emoji) => (

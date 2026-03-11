@@ -58,7 +58,13 @@ export function useChallenges() {
 
   // Update progress
   const updateProgress = useMutation({
-    mutationFn: async ({ challengeId, progress }: { challengeId: string; progress: number }) => {
+    mutationFn: async ({
+      challengeId,
+      progress,
+    }: {
+      challengeId: string;
+      progress: number;
+    }) => {
       if (!user) throw new Error("Not authenticated");
       const updates: Record<string, unknown> = { progress };
       if (progress >= 100) {

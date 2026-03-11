@@ -59,7 +59,10 @@ export function CoachMetrics() {
         const d = new Date(fourteenDaysAgo);
         d.setDate(fourteenDaysAgo.getDate() + i);
         const dateStr = d.toISOString().split("T")[0];
-        const dayLabel = d.toLocaleDateString("fr-FR", { weekday: "short", day: "numeric" });
+        const dayLabel = d.toLocaleDateString("fr-FR", {
+          weekday: "short",
+          day: "numeric",
+        });
         days.push({ date: dateStr, label: dayLabel, count: 0 });
       }
 

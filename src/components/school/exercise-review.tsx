@@ -20,11 +20,30 @@ import {
   User,
 } from "lucide-react";
 
-const STATUS_CONFIG: Record<string, { label: string; color: string; icon: typeof Clock }> = {
-  draft: { label: "Brouillon", color: "text-muted-foreground bg-muted/50", icon: FileText },
-  submitted: { label: "En attente", color: "text-amber-600 bg-amber-500/10", icon: Clock },
-  reviewed: { label: "Corrige", color: "text-emerald-600 bg-emerald-500/10", icon: CheckCircle },
-  revision_requested: { label: "Revision demandee", color: "text-red-600 bg-red-500/10", icon: AlertCircle },
+const STATUS_CONFIG: Record<
+  string,
+  { label: string; color: string; icon: typeof Clock }
+> = {
+  draft: {
+    label: "Brouillon",
+    color: "text-muted-foreground bg-muted/50",
+    icon: FileText,
+  },
+  submitted: {
+    label: "En attente",
+    color: "text-amber-600 bg-amber-500/10",
+    icon: Clock,
+  },
+  reviewed: {
+    label: "Corrige",
+    color: "text-emerald-600 bg-emerald-500/10",
+    icon: CheckCircle,
+  },
+  revision_requested: {
+    label: "Revision demandee",
+    color: "text-red-600 bg-red-500/10",
+    icon: AlertCircle,
+  },
 };
 
 interface ExerciseReviewProps {
@@ -32,12 +51,22 @@ interface ExerciseReviewProps {
   lessonTitle?: string;
 }
 
-function ReviewCard({ submission, lessonId }: { submission: ExerciseSubmission; lessonId: string }) {
+function ReviewCard({
+  submission,
+  lessonId,
+}: {
+  submission: ExerciseSubmission;
+  lessonId: string;
+}) {
   const reviewExercise = useReviewExercise();
   const [expanded, setExpanded] = useState(submission.status === "submitted");
   const [feedback, setFeedback] = useState(submission.coach_feedback ?? "");
-  const [grade, setGrade] = useState<string>(submission.grade !== null ? String(submission.grade) : "");
-  const [action, setAction] = useState<SubmissionStatus | "">(submission.status === "submitted" ? "" : submission.status);
+  const [grade, setGrade] = useState<string>(
+    submission.grade !== null ? String(submission.grade) : "",
+  );
+  const [action, setAction] = useState<SubmissionStatus | "">(
+    submission.status === "submitted" ? "" : submission.status,
+  );
 
   const handleReview = async (status: SubmissionStatus) => {
     if (status === "reviewed" && !grade) {
@@ -53,7 +82,9 @@ function ReviewCard({ submission, lessonId }: { submission: ExerciseSubmission; 
         coach_feedback: feedback || undefined,
         grade: grade ? Number(grade) : undefined,
       });
-      toast.success(status === "reviewed" ? "Exercice corrige !" : "Revision demandee");
+      toast.success(
+        status === "reviewed" ? "Exercice corrige !" : "Revision demandee",
+      );
     } catch {
       toast.error("Erreur lors de la correction");
     }
@@ -61,12 +92,15 @@ function ReviewCard({ submission, lessonId }: { submission: ExerciseSubmission; 
 
   const statusCfg = STATUS_CONFIG[submission.status];
   const StatusIcon = statusCfg.icon;
-  const submittedDate = new Date(submission.submitted_at).toLocaleDateString("fr-FR", {
-    day: "numeric",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  const submittedDate = new Date(submission.submitted_at).toLocaleDateString(
+    "fr-FR",
+    {
+      day: "numeric",
+      month: "short",
+      hour: "2-digit",
+      minute: "2-digit",
+    },
+  );
 
   return (
     <div className="bg-surface border border-border rounded-xl overflow-hidden">
@@ -84,7 +118,12 @@ function ReviewCard({ submission, lessonId }: { submission: ExerciseSubmission; 
           </p>
           <p className="text-[10px] text-muted-foreground">{submittedDate}</p>
         </div>
-        <span className={cn("inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium", statusCfg.color)}>
+        <span
+          className={cn(
+            "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium",
+            statusCfg.color,
+          )}
+        >
           <StatusIcon className="w-3 h-3" />
           {statusCfg.label}
         </span>
@@ -94,7 +133,11 @@ function ReviewCard({ submission, lessonId }: { submission: ExerciseSubmission; 
             {submission.grade}/100
           </span>
         )}
-        {expanded ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
+        {expanded ? (
+          <ChevronUp className="w-4 h-4 text-muted-foreground" />
+        ) : (
+          <ChevronDown className="w-4 h-4 text-muted-foreground" />
+        )}
       </button>
 
       {/* Expanded content */}
@@ -102,38 +145,51 @@ function ReviewCard({ submission, lessonId }: { submission: ExerciseSubmission; 
         <div className="border-t border-border/50 p-4 space-y-4">
           {/* Student's response */}
           <div>
-            <h5 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Reponse de l&apos;eleve</h5>
+            <h5 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+              Reponse de l&apos;eleve
+            </h5>
             <div className="bg-muted/30 rounded-lg p-3">
-              <p className="text-sm text-foreground whitespace-pre-wrap">{submission.content}</p>
+              <p className="text-sm text-foreground whitespace-pre-wrap">
+                {submission.content}
+              </p>
             </div>
           </div>
 
           {/* Attachments */}
-          {submission.attachments && (submission.attachments as { name: string; url: string }[]).length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {(submission.attachments as { name: string; url: string }[]).map((att, i) => (
-                <a
-                  key={i}
-                  href={att.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-muted/50 rounded-lg text-xs text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <Paperclip className="w-3 h-3" />
-                  {att.name}
-                </a>
-              ))}
-            </div>
-          )}
+          {submission.attachments &&
+            (submission.attachments as { name: string; url: string }[]).length >
+              0 && (
+              <div className="flex flex-wrap gap-2">
+                {(
+                  submission.attachments as { name: string; url: string }[]
+                ).map((att, i) => (
+                  <a
+                    key={i}
+                    href={att.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-muted/50 rounded-lg text-xs text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <Paperclip className="w-3 h-3" />
+                    {att.name}
+                  </a>
+                ))}
+              </div>
+            )}
 
           {/* Review form (only for submitted or revision_requested) */}
-          {(submission.status === "submitted" || submission.status === "revision_requested") && (
+          {(submission.status === "submitted" ||
+            submission.status === "revision_requested") && (
             <div className="pt-3 border-t border-border/50 space-y-3">
-              <h5 className="text-xs font-semibold text-foreground">Correction</h5>
+              <h5 className="text-xs font-semibold text-foreground">
+                Correction
+              </h5>
 
               {/* Grade */}
               <div className="flex items-center gap-3">
-                <label className="text-xs text-muted-foreground w-12">Note</label>
+                <label className="text-xs text-muted-foreground w-12">
+                  Note
+                </label>
                 <div className="flex items-center gap-1.5">
                   <input
                     type="number"
@@ -186,8 +242,12 @@ function ReviewCard({ submission, lessonId }: { submission: ExerciseSubmission; 
           {/* Already reviewed */}
           {submission.status === "reviewed" && submission.coach_feedback && (
             <div className="pt-3 border-t border-border/50">
-              <h5 className="text-xs font-semibold text-foreground mb-2">Votre feedback</h5>
-              <p className="text-sm text-muted-foreground whitespace-pre-wrap">{submission.coach_feedback}</p>
+              <h5 className="text-xs font-semibold text-foreground mb-2">
+                Votre feedback
+              </h5>
+              <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                {submission.coach_feedback}
+              </p>
             </div>
           )}
         </div>
@@ -200,13 +260,16 @@ export function ExerciseReview({ lessonId, lessonTitle }: ExerciseReviewProps) {
   const { data: submissions, isLoading } = useExerciseSubmissions(lessonId);
   const [filter, setFilter] = useState<"all" | "submitted" | "reviewed">("all");
 
-  const filtered = submissions?.filter((s) => {
-    if (filter === "all") return true;
-    if (filter === "submitted") return s.status === "submitted" || s.status === "revision_requested";
-    return s.status === "reviewed";
-  }) ?? [];
+  const filtered =
+    submissions?.filter((s) => {
+      if (filter === "all") return true;
+      if (filter === "submitted")
+        return s.status === "submitted" || s.status === "revision_requested";
+      return s.status === "reviewed";
+    }) ?? [];
 
-  const pendingCount = submissions?.filter((s) => s.status === "submitted").length ?? 0;
+  const pendingCount =
+    submissions?.filter((s) => s.status === "submitted").length ?? 0;
 
   if (isLoading) {
     return (
@@ -226,19 +289,25 @@ export function ExerciseReview({ lessonId, lessonTitle }: ExerciseReviewProps) {
             Soumissions {lessonTitle && `— ${lessonTitle}`}
           </h3>
           <p className="text-xs text-muted-foreground mt-0.5">
-            {submissions?.length ?? 0} soumission{(submissions?.length ?? 0) > 1 ? "s" : ""}
+            {submissions?.length ?? 0} soumission
+            {(submissions?.length ?? 0) > 1 ? "s" : ""}
             {pendingCount > 0 && (
-              <span className="text-amber-600 font-medium"> · {pendingCount} en attente</span>
+              <span className="text-amber-600 font-medium">
+                {" "}
+                · {pendingCount} en attente
+              </span>
             )}
           </p>
         </div>
 
         <div className="flex rounded-lg overflow-hidden border border-border">
-          {([
-            { key: "all", label: "Tous" },
-            { key: "submitted", label: "En attente" },
-            { key: "reviewed", label: "Corriges" },
-          ] as const).map((f) => (
+          {(
+            [
+              { key: "all", label: "Tous" },
+              { key: "submitted", label: "En attente" },
+              { key: "reviewed", label: "Corriges" },
+            ] as const
+          ).map((f) => (
             <button
               key={f.key}
               onClick={() => setFilter(f.key)}
@@ -246,7 +315,7 @@ export function ExerciseReview({ lessonId, lessonTitle }: ExerciseReviewProps) {
                 "h-7 px-2.5 text-[10px] font-medium transition-colors",
                 filter === f.key
                   ? "bg-foreground text-background"
-                  : "bg-surface text-muted-foreground hover:text-foreground"
+                  : "bg-surface text-muted-foreground hover:text-foreground",
               )}
             >
               {f.label}
@@ -263,7 +332,11 @@ export function ExerciseReview({ lessonId, lessonTitle }: ExerciseReviewProps) {
       ) : (
         <div className="space-y-3">
           {filtered.map((submission) => (
-            <ReviewCard key={submission.id} submission={submission} lessonId={lessonId} />
+            <ReviewCard
+              key={submission.id}
+              submission={submission}
+              lessonId={lessonId}
+            />
           ))}
         </div>
       )}

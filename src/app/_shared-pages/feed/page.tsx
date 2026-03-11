@@ -38,15 +38,17 @@ function timeAgo(date: string) {
   if (hours < 24) return `il y a ${hours}h`;
   const days = Math.floor(hours / 24);
   if (days < 7) return `il y a ${days}j`;
-  return new Date(date).toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
+  return new Date(date).toLocaleDateString("fr-FR", {
+    day: "numeric",
+    month: "short",
+  });
 }
 
 export default function FeedPage() {
   const { user, profile } = useAuth();
   const [typeFilter, setTypeFilter] = useState<PostType | "all">("all");
-  const { posts, isLoading, createPost, deletePost, togglePin, toggleLike } = useFeed(
-    typeFilter === "all" ? undefined : typeFilter
-  );
+  const { posts, isLoading, createPost, deletePost, togglePin, toggleLike } =
+    useFeed(typeFilter === "all" ? undefined : typeFilter);
 
   const isStaff = profile?.role === "admin" || profile?.role === "coach";
 
@@ -59,7 +61,9 @@ export default function FeedPage() {
     >
       {/* Header */}
       <motion.div variants={staggerItem}>
-        <h1 className="text-2xl font-display font-bold text-foreground tracking-tight">Feed</h1>
+        <h1 className="text-2xl font-display font-bold text-foreground tracking-tight">
+          Feed
+        </h1>
         <p className="text-sm text-muted-foreground mt-1">
           Partagez vos victoires et echangez avec la communaute
         </p>
@@ -68,7 +72,9 @@ export default function FeedPage() {
       {/* Composer */}
       <motion.div variants={staggerItem}>
         <PostComposer
-          onSubmit={(content, postType) => createPost.mutate({ content, post_type: postType })}
+          onSubmit={(content, postType) =>
+            createPost.mutate({ content, post_type: postType })
+          }
           isSubmitting={createPost.isPending}
         />
       </motion.div>
@@ -98,7 +104,11 @@ export default function FeedPage() {
       {isLoading ? (
         <div className="space-y-4">
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="bg-surface rounded-2xl p-6" style={{ boxShadow: "var(--shadow-card)" }}>
+            <div
+              key={i}
+              className="bg-surface rounded-2xl p-6"
+              style={{ boxShadow: "var(--shadow-card)" }}
+            >
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 rounded-full bg-muted animate-shimmer" />
                 <div className="space-y-1.5">
@@ -140,9 +150,17 @@ export default function FeedPage() {
                   isStaff={isStaff}
                   currentUserId={user?.id}
                   onLike={() =>
-                    toggleLike.mutate({ postId: post.id, isLiked: post.is_liked ?? false })
+                    toggleLike.mutate({
+                      postId: post.id,
+                      isLiked: post.is_liked ?? false,
+                    })
                   }
-                  onPin={() => togglePin.mutate({ postId: post.id, isPinned: post.is_pinned })}
+                  onPin={() =>
+                    togglePin.mutate({
+                      postId: post.id,
+                      isPinned: post.is_pinned,
+                    })
+                  }
                   onDelete={() => deletePost.mutate(post.id)}
                 />
               </motion.div>
@@ -175,7 +193,10 @@ function PostComposer({
   };
 
   return (
-    <div className="bg-surface rounded-2xl p-4" style={{ boxShadow: "var(--shadow-card)" }}>
+    <div
+      className="bg-surface rounded-2xl p-4"
+      style={{ boxShadow: "var(--shadow-card)" }}
+    >
       <textarea
         value={content}
         onChange={(e) => {
@@ -191,19 +212,24 @@ function PostComposer({
       {expanded && (
         <div className="flex items-center justify-between mt-3 pt-3 border-t border-border/50">
           <div className="flex gap-1">
-            {(Object.entries(POST_TYPE_CONFIG) as [PostType, typeof POST_TYPE_CONFIG.general][]).map(
-              ([type, config]) => (
-                <button
-                  key={type}
-                  onClick={() => setPostType(type)}
-                  className={`px-2.5 py-1 rounded-full text-[11px] font-medium transition-all ${
-                    postType === type ? config.color : "text-muted-foreground hover:bg-muted"
-                  }`}
-                >
-                  {config.emoji} {config.label}
-                </button>
-              )
-            )}
+            {(
+              Object.entries(POST_TYPE_CONFIG) as [
+                PostType,
+                typeof POST_TYPE_CONFIG.general,
+              ][]
+            ).map(([type, config]) => (
+              <button
+                key={type}
+                onClick={() => setPostType(type)}
+                className={`px-2.5 py-1 rounded-full text-[11px] font-medium transition-all ${
+                  postType === type
+                    ? config.color
+                    : "text-muted-foreground hover:bg-muted"
+                }`}
+              >
+                {config.emoji} {config.label}
+              </button>
+            ))}
           </div>
           <button
             onClick={handleSubmit}
@@ -241,7 +267,10 @@ function PostCard({
   const typeConfig = POST_TYPE_CONFIG[post.post_type];
 
   return (
-    <div className="bg-surface rounded-2xl" style={{ boxShadow: "var(--shadow-card)" }}>
+    <div
+      className="bg-surface rounded-2xl"
+      style={{ boxShadow: "var(--shadow-card)" }}
+    >
       {/* Pinned indicator */}
       {post.is_pinned && (
         <div className="px-4 pt-3 flex items-center gap-1 text-xs text-amber-600">
@@ -270,15 +299,21 @@ function PostCard({
                 <p className="text-sm font-medium text-foreground">
                   {post.author?.full_name ?? "Utilisateur"}
                 </p>
-                {post.author?.role && (post.author.role === "admin" || post.author.role === "coach") && (
-                  <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-primary/10 text-primary">
-                    {post.author.role === "admin" ? "Admin" : "Coach"}
-                  </span>
-                )}
+                {post.author?.role &&
+                  (post.author.role === "admin" ||
+                    post.author.role === "coach") && (
+                    <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-primary/10 text-primary">
+                      {post.author.role === "admin" ? "Admin" : "Coach"}
+                    </span>
+                  )}
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground font-mono">{timeAgo(post.created_at)}</span>
-                <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${typeConfig.color}`}>
+                <span className="text-xs text-muted-foreground font-mono">
+                  {timeAgo(post.created_at)}
+                </span>
+                <span
+                  className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${typeConfig.color}`}
+                >
                   {typeConfig.emoji} {typeConfig.label}
                 </span>
               </div>
@@ -296,8 +331,14 @@ function PostCard({
               </button>
               {showMenu && (
                 <>
-                  <div className="fixed inset-0 z-10" onClick={() => setShowMenu(false)} />
-                  <div className="absolute right-0 top-8 z-20 bg-surface rounded-xl py-1 min-w-[140px]" style={{ boxShadow: "var(--shadow-elevated)" }}>
+                  <div
+                    className="fixed inset-0 z-10"
+                    onClick={() => setShowMenu(false)}
+                  />
+                  <div
+                    className="absolute right-0 top-8 z-20 bg-surface rounded-xl py-1 min-w-[140px]"
+                    style={{ boxShadow: "var(--shadow-elevated)" }}
+                  >
                     {isStaff && (
                       <button
                         onClick={() => {
@@ -344,24 +385,28 @@ function PostCard({
                 : "text-muted-foreground hover:text-red-500"
             }`}
           >
-            <Heart className={`w-4 h-4 transition-transform ${post.is_liked ? "fill-current scale-110" : ""}`} />
-            {post.likes_count > 0 && <span className="font-mono text-xs">{post.likes_count}</span>}
+            <Heart
+              className={`w-4 h-4 transition-transform ${post.is_liked ? "fill-current scale-110" : ""}`}
+            />
+            {post.likes_count > 0 && (
+              <span className="font-mono text-xs">{post.likes_count}</span>
+            )}
           </button>
           <button
             onClick={() => setShowComments(!showComments)}
             className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             <MessageCircle className="w-4 h-4" />
-            {post.comments_count > 0 && <span className="font-mono text-xs">{post.comments_count}</span>}
+            {post.comments_count > 0 && (
+              <span className="font-mono text-xs">{post.comments_count}</span>
+            )}
             {showComments ? (
               <ChevronUp className="w-3 h-3" />
             ) : (
               <ChevronDown className="w-3 h-3" />
             )}
           </button>
-          {!isAuthor && (
-            <ReportButton postId={post.id} />
-          )}
+          {!isAuthor && <ReportButton postId={post.id} />}
         </div>
       </div>
 
@@ -377,7 +422,8 @@ function PostCard({
 
 // ─── Comments Section ─────────────────
 function CommentsSection({ postId }: { postId: string }) {
-  const { comments, isLoading, addComment, deleteComment } = useComments(postId);
+  const { comments, isLoading, addComment, deleteComment } =
+    useComments(postId);
   const { user } = useAuth();
   const [newComment, setNewComment] = useState("");
   const [replyTo, setReplyTo] = useState<string | null>(null);
@@ -391,7 +437,7 @@ function CommentsSection({ postId }: { postId: string }) {
           setNewComment("");
           setReplyTo(null);
         },
-      }
+      },
     );
   };
 
@@ -435,7 +481,10 @@ function CommentsSection({ postId }: { postId: string }) {
           {replyTo && (
             <div className="flex items-center gap-1 text-xs text-muted-foreground mb-1">
               Reponse a un commentaire
-              <button onClick={() => setReplyTo(null)} className="text-error hover:text-error/80">
+              <button
+                onClick={() => setReplyTo(null)}
+                className="text-error hover:text-error/80"
+              >
                 <X className="w-3 h-3" />
               </button>
             </div>
@@ -445,7 +494,9 @@ function CommentsSection({ postId }: { postId: string }) {
               type="text"
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSubmit()}
+              onKeyDown={(e) =>
+                e.key === "Enter" && !e.shiftKey && handleSubmit()
+              }
               placeholder="Ecrire un commentaire..."
               className="flex-1 h-9 px-3 bg-muted/50 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-shadow"
             />
@@ -496,7 +547,9 @@ function CommentItem({
             <p className="text-xs font-medium text-foreground">
               {comment.author?.full_name ?? "Utilisateur"}
             </p>
-            <span className="text-[10px] text-muted-foreground font-mono">{timeAgo(comment.created_at)}</span>
+            <span className="text-[10px] text-muted-foreground font-mono">
+              {timeAgo(comment.created_at)}
+            </span>
           </div>
           <p className="text-sm text-foreground mt-0.5">{comment.content}</p>
         </div>

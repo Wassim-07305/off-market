@@ -2,11 +2,21 @@
 
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { staggerContainer, fadeInUp, staggerItem, defaultTransition } from "@/lib/animations";
+import {
+  staggerContainer,
+  fadeInUp,
+  staggerItem,
+  defaultTransition,
+} from "@/lib/animations";
 import { useXp } from "@/hooks/use-xp";
 import { useBadges } from "@/hooks/use-badges";
 import { RARITY_CONFIG, CATEGORY_CONFIG } from "@/types/gamification";
-import type { BadgeCategory, BadgeRarity, Badge, XpTransaction } from "@/types/gamification";
+import type {
+  BadgeCategory,
+  BadgeRarity,
+  Badge,
+  XpTransaction,
+} from "@/types/gamification";
 import {
   Trophy,
   Star,
@@ -43,7 +53,10 @@ function timeAgo(date: string) {
 }
 
 function formatShortDate(date: string) {
-  return new Date(date).toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
+  return new Date(date).toLocaleDateString("fr-FR", {
+    day: "numeric",
+    month: "short",
+  });
 }
 
 // ─── XP ACTION LABELS ─────────────────
@@ -67,10 +80,34 @@ function getActionLabel(action: string) {
 // ─── LEVEL DATA (matches seed) ────────
 const LEVELS = [
   { level: 1, name: "Debutant", min_xp: 0, icon: "🌱", color: "#71717A" },
-  { level: 2, name: "Freelance Active", min_xp: 200, icon: "⚡", color: "#3B82F6" },
-  { level: 3, name: "Closer en Herbe", min_xp: 500, icon: "🔥", color: "#F59E0B" },
-  { level: 4, name: "Machine a Cash", min_xp: 1200, icon: "💰", color: "#22C55E" },
-  { level: 5, name: "Legende des 10K", min_xp: 2500, icon: "👑", color: "#AF0000" },
+  {
+    level: 2,
+    name: "Freelance Active",
+    min_xp: 200,
+    icon: "⚡",
+    color: "#3B82F6",
+  },
+  {
+    level: 3,
+    name: "Closer en Herbe",
+    min_xp: 500,
+    icon: "🔥",
+    color: "#F59E0B",
+  },
+  {
+    level: 4,
+    name: "Machine a Cash",
+    min_xp: 1200,
+    icon: "💰",
+    color: "#22C55E",
+  },
+  {
+    level: 5,
+    name: "Legende des 10K",
+    min_xp: 2500,
+    icon: "👑",
+    color: "#AF0000",
+  },
 ];
 
 export default function ClientProgressPage() {
@@ -91,7 +128,7 @@ export default function ClientProgressPage() {
         acc[cat].push(badge);
         return acc;
       }, {}),
-    [allBadges]
+    [allBadges],
   );
 
   // XP chart data — cumulative XP by day
@@ -125,12 +162,15 @@ export default function ClientProgressPage() {
   // Unique action types for filter
   const actionTypes = useMemo(
     () => Array.from(new Set(transactions.map((t) => t.action))),
-    [transactions]
+    [transactions],
   );
 
   // Filtered transactions
   const filteredTx = useMemo(() => {
-    const list = xpFilter === "all" ? transactions : transactions.filter((t) => t.action === xpFilter);
+    const list =
+      xpFilter === "all"
+        ? transactions
+        : transactions.filter((t) => t.action === xpFilter);
     return showAllTx ? list : list.slice(0, 15);
   }, [transactions, xpFilter, showAllTx]);
 
@@ -155,7 +195,11 @@ export default function ClientProgressPage() {
         return age >= week && age < 2 * week;
       })
       .reduce((s, t) => s + t.xp_amount, 0);
-    return { last7, prev7, trend: prev7 > 0 ? Math.round(((last7 - prev7) / prev7) * 100) : 0 };
+    return {
+      last7,
+      prev7,
+      trend: prev7 > 0 ? Math.round(((last7 - prev7) / prev7) * 100) : 0,
+    };
   }, [transactions]);
 
   return (
@@ -167,7 +211,9 @@ export default function ClientProgressPage() {
     >
       {/* Header */}
       <motion.div variants={fadeInUp} transition={defaultTransition}>
-        <h1 className="text-3xl font-semibold text-foreground">Ma Progression</h1>
+        <h1 className="text-3xl font-semibold text-foreground">
+          Ma Progression
+        </h1>
         <p className="text-sm text-muted-foreground mt-1">
           XP, niveau, badges et historique complet
         </p>
@@ -190,7 +236,9 @@ export default function ClientProgressPage() {
             <div className="flex items-center gap-4 mb-6">
               <div
                 className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl"
-                style={{ backgroundColor: (summary.level.color ?? "#71717A") + "1A" }}
+                style={{
+                  backgroundColor: (summary.level.color ?? "#71717A") + "1A",
+                }}
               >
                 {summary.level.icon ?? "🌱"}
               </div>
@@ -221,20 +269,24 @@ export default function ClientProgressPage() {
                 <div className="w-full h-3 bg-muted rounded-full overflow-hidden">
                   <motion.div
                     className="h-full rounded-full"
-                    style={{ backgroundColor: summary.level.color ?? "#71717A" }}
+                    style={{
+                      backgroundColor: summary.level.color ?? "#71717A",
+                    }}
                     initial={{ width: 0 }}
                     animate={{ width: `${summary.progressToNext}%` }}
                     transition={{ duration: 1, ease: "easeOut" }}
                   />
                 </div>
                 <p className="text-xs text-muted-foreground mt-1.5 text-center">
-                  Encore {summary.nextLevel.min_xp - summary.totalXp} XP pour {summary.nextLevel.name}{" "}
-                  {summary.nextLevel.icon}
+                  Encore {summary.nextLevel.min_xp - summary.totalXp} XP pour{" "}
+                  {summary.nextLevel.name} {summary.nextLevel.icon}
                 </p>
               </div>
             ) : (
               <div className="text-center py-2">
-                <p className="text-sm font-medium text-foreground">Niveau maximum atteint ! 🎉</p>
+                <p className="text-sm font-medium text-foreground">
+                  Niveau maximum atteint ! 🎉
+                </p>
               </div>
             )}
           </motion.div>
@@ -274,7 +326,11 @@ export default function ClientProgressPage() {
               <p className="text-xs text-muted-foreground">
                 XP / 7j
                 {xpVelocity.trend !== 0 && (
-                  <span className={xpVelocity.trend > 0 ? "text-emerald-500" : "text-red-500"}>
+                  <span
+                    className={
+                      xpVelocity.trend > 0 ? "text-emerald-500" : "text-red-500"
+                    }
+                  >
                     {" "}
                     {xpVelocity.trend > 0 ? "+" : ""}
                     {xpVelocity.trend}%
@@ -308,8 +364,14 @@ export default function ClientProgressPage() {
                             : "opacity-30 grayscale"
                         } ${isCurrent ? "scale-110" : ""}`}
                         style={{
-                          backgroundColor: reached ? lvl.color + "1A" : undefined,
-                          ...(isCurrent ? { boxShadow: `0 0 0 2px var(--color-surface), 0 0 0 4px ${lvl.color}` } : {}),
+                          backgroundColor: reached
+                            ? lvl.color + "1A"
+                            : undefined,
+                          ...(isCurrent
+                            ? {
+                                boxShadow: `0 0 0 2px var(--color-surface), 0 0 0 4px ${lvl.color}`,
+                              }
+                            : {}),
                         }}
                       >
                         {lvl.icon}
@@ -321,7 +383,9 @@ export default function ClientProgressPage() {
                       >
                         {lvl.name}
                       </p>
-                      <p className="text-[10px] text-muted-foreground">{lvl.min_xp} XP</p>
+                      <p className="text-[10px] text-muted-foreground">
+                        {lvl.min_xp} XP
+                      </p>
                     </div>
                     {i < LEVELS.length - 1 && (
                       <div className="flex-shrink-0 w-6 flex items-center -mt-6">
@@ -355,20 +419,43 @@ export default function ClientProgressPage() {
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={chartData}>
                     <defs>
-                      <linearGradient id="xpGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={summary.level.color ?? "#71717A"} stopOpacity={0.3} />
-                        <stop offset="95%" stopColor={summary.level.color ?? "#71717A"} stopOpacity={0} />
+                      <linearGradient
+                        id="xpGradient"
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2="1"
+                      >
+                        <stop
+                          offset="5%"
+                          stopColor={summary.level.color ?? "#71717A"}
+                          stopOpacity={0.3}
+                        />
+                        <stop
+                          offset="95%"
+                          stopColor={summary.level.color ?? "#71717A"}
+                          stopOpacity={0}
+                        />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="var(--color-border)"
+                    />
                     <XAxis
                       dataKey="date"
-                      tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }}
+                      tick={{
+                        fontSize: 11,
+                        fill: "var(--color-muted-foreground)",
+                      }}
                       tickLine={false}
                       axisLine={false}
                     />
                     <YAxis
-                      tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }}
+                      tick={{
+                        fontSize: 11,
+                        fill: "var(--color-muted-foreground)",
+                      }}
                       tickLine={false}
                       axisLine={false}
                       width={40}
@@ -380,7 +467,10 @@ export default function ClientProgressPage() {
                         borderRadius: "8px",
                         fontSize: "12px",
                       }}
-                      formatter={(value: number | undefined) => [`${value ?? 0} XP`, "Total"]}
+                      formatter={(value: number | undefined) => [
+                        `${value ?? 0} XP`,
+                        "Total",
+                      ]}
                     />
                     <Area
                       type="monotone"
@@ -408,18 +498,27 @@ export default function ClientProgressPage() {
               </h2>
               <div className="space-y-2">
                 {xpByAction.map(({ action, xp }) => {
-                  const pct = summary.totalXp > 0 ? Math.round((xp / summary.totalXp) * 100) : 0;
+                  const pct =
+                    summary.totalXp > 0
+                      ? Math.round((xp / summary.totalXp) * 100)
+                      : 0;
                   return (
                     <div key={action} className="flex items-center gap-3">
-                      <p className="text-xs text-foreground w-32 truncate">{getActionLabel(action)}</p>
+                      <p className="text-xs text-foreground w-32 truncate">
+                        {getActionLabel(action)}
+                      </p>
                       <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
                         <div
                           className="h-full rounded-full bg-primary/60"
                           style={{ width: `${pct}%` }}
                         />
                       </div>
-                      <p className="text-xs text-muted-foreground w-16 text-right">{xp} XP</p>
-                      <p className="text-[10px] text-muted-foreground w-10 text-right">{pct}%</p>
+                      <p className="text-xs text-muted-foreground w-16 text-right">
+                        {xp} XP
+                      </p>
+                      <p className="text-[10px] text-muted-foreground w-10 text-right">
+                        {pct}%
+                      </p>
                     </div>
                   );
                 })}
@@ -442,11 +541,19 @@ export default function ClientProgressPage() {
                 const conf = CATEGORY_CONFIG[category];
                 const pct = total > 0 ? Math.round((earned / total) * 100) : 0;
                 return (
-                  <div key={category} className="bg-surface border border-border rounded-lg p-2.5 text-center">
+                  <div
+                    key={category}
+                    className="bg-surface border border-border rounded-lg p-2.5 text-center"
+                  >
                     <span className="text-lg">{conf.emoji}</span>
-                    <p className="text-[11px] font-medium text-foreground mt-0.5">{conf.label}</p>
+                    <p className="text-[11px] font-medium text-foreground mt-0.5">
+                      {conf.label}
+                    </p>
                     <div className="w-full h-1.5 bg-muted rounded-full mt-1 overflow-hidden">
-                      <div className="h-full rounded-full bg-primary" style={{ width: `${pct}%` }} />
+                      <div
+                        className="h-full rounded-full bg-primary"
+                        style={{ width: `${pct}%` }}
+                      />
                     </div>
                     <p className="text-[10px] text-muted-foreground mt-0.5">
                       {earned}/{total}
@@ -468,24 +575,33 @@ export default function ClientProgressPage() {
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
                       {badges.map((badge) => {
                         const earned = earnedBadgeIds.has(badge.id);
-                        const rarityConfig = RARITY_CONFIG[badge.rarity as BadgeRarity];
+                        const rarityConfig =
+                          RARITY_CONFIG[badge.rarity as BadgeRarity];
                         return (
                           <button
                             key={badge.id}
                             onClick={() => setSelectedBadge(badge)}
                             className={`relative bg-surface border border-border rounded-xl p-3 text-center transition-all text-left ${
-                              earned ? "ring-1 ring-primary/20 hover:ring-primary/40" : "opacity-40 grayscale hover:opacity-60"
+                              earned
+                                ? "ring-1 ring-primary/20 hover:ring-primary/40"
+                                : "opacity-40 grayscale hover:opacity-60"
                             }`}
                           >
-                            <span className="text-2xl block mb-1">{badge.icon ?? "🏅"}</span>
-                            <p className="text-xs font-medium text-foreground truncate">{badge.name}</p>
+                            <span className="text-2xl block mb-1">
+                              {badge.icon ?? "🏅"}
+                            </span>
+                            <p className="text-xs font-medium text-foreground truncate">
+                              {badge.name}
+                            </p>
                             <span
                               className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${rarityConfig.color} ${rarityConfig.bg}`}
                             >
                               {rarityConfig.label}
                             </span>
                             {badge.xp_reward > 0 && (
-                              <p className="text-[10px] text-muted-foreground mt-1">+{badge.xp_reward} XP</p>
+                              <p className="text-[10px] text-muted-foreground mt-1">
+                                +{badge.xp_reward} XP
+                              </p>
                             )}
                             {!earned && (
                               <div className="absolute top-2 right-2">
@@ -528,12 +644,21 @@ export default function ClientProgressPage() {
               </div>
               <div className="bg-surface border border-border rounded-xl divide-y divide-border">
                 {filteredTx.map((tx) => (
-                  <div key={tx.id} className="flex items-center justify-between px-4 py-3">
+                  <div
+                    key={tx.id}
+                    className="flex items-center justify-between px-4 py-3"
+                  >
                     <div>
-                      <p className="text-sm font-medium text-foreground">{getActionLabel(tx.action)}</p>
-                      <p className="text-xs text-muted-foreground">{timeAgo(tx.created_at)}</p>
+                      <p className="text-sm font-medium text-foreground">
+                        {getActionLabel(tx.action)}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {timeAgo(tx.created_at)}
+                      </p>
                     </div>
-                    <span className="text-sm font-semibold text-emerald-500">+{tx.xp_amount} XP</span>
+                    <span className="text-sm font-semibold text-emerald-500">
+                      +{tx.xp_amount} XP
+                    </span>
                   </div>
                 ))}
               </div>
@@ -552,7 +677,10 @@ export default function ClientProgressPage() {
 
       {/* Badge Detail Modal */}
       {selectedBadge && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => setSelectedBadge(null)}>
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+          onClick={() => setSelectedBadge(null)}
+        >
           <div
             className="bg-surface border border-border rounded-2xl w-full max-w-sm m-4 p-6"
             onClick={(e) => e.stopPropagation()}
@@ -561,7 +689,9 @@ export default function ClientProgressPage() {
               <div className="flex items-center gap-3">
                 <span className="text-4xl">{selectedBadge.icon ?? "🏅"}</span>
                 <div>
-                  <h3 className="text-base font-semibold text-foreground">{selectedBadge.name}</h3>
+                  <h3 className="text-base font-semibold text-foreground">
+                    {selectedBadge.name}
+                  </h3>
                   <span
                     className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${
                       RARITY_CONFIG[selectedBadge.rarity as BadgeRarity].color
@@ -571,13 +701,18 @@ export default function ClientProgressPage() {
                   </span>
                 </div>
               </div>
-              <button onClick={() => setSelectedBadge(null)} className="p-1.5 rounded-lg hover:bg-muted transition-colors">
+              <button
+                onClick={() => setSelectedBadge(null)}
+                className="p-1.5 rounded-lg hover:bg-muted transition-colors"
+              >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             {selectedBadge.description && (
-              <p className="text-sm text-muted-foreground mb-4">{selectedBadge.description}</p>
+              <p className="text-sm text-muted-foreground mb-4">
+                {selectedBadge.description}
+              </p>
             )}
 
             <div className="space-y-2 text-sm">
@@ -591,7 +726,9 @@ export default function ClientProgressPage() {
               {selectedBadge.xp_reward > 0 && (
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Recompense</span>
-                  <span className="text-emerald-500 font-medium">+{selectedBadge.xp_reward} XP</span>
+                  <span className="text-emerald-500 font-medium">
+                    +{selectedBadge.xp_reward} XP
+                  </span>
                 </div>
               )}
               <div className="flex items-center justify-between">

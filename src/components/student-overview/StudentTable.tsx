@@ -1,9 +1,9 @@
-import type { StudentOverview } from '@/types/database'
-import { StudentRow } from './StudentRow'
+import type { StudentOverview } from "@/types/database";
+import { StudentRow } from "./StudentRow";
 
 interface StudentTableProps {
-  students: StudentOverview[]
-  onSelect: (student: StudentOverview) => void
+  students: StudentOverview[];
+  onSelect: (student: StudentOverview) => void;
 }
 
 export function StudentTable({ students, onSelect }: StudentTableProps) {
@@ -40,5 +40,5 @@ export function StudentTable({ students, onSelect }: StudentTableProps) {
         </tbody>
       </table>
     </div>
-  )
+  );
 }

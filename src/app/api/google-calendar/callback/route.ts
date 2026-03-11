@@ -25,21 +25,19 @@ export async function GET(request: NextRequest) {
 
     // Store tokens in DB via admin client (bypasses RLS)
     const admin = createAdminClient();
-    const { error } = await admin
-      .from("google_calendar_tokens")
-      .upsert(
-        {
-          user_id: state,
-          access_token: tokens.access_token!,
-          refresh_token: tokens.refresh_token ?? null,
-          token_expiry: tokens.expiry_date
-            ? new Date(tokens.expiry_date).toISOString()
-            : null,
-          google_email: googleEmail,
-          is_active: true,
-        },
-        { onConflict: "user_id" }
-      );
+    const { error } = await admin.from("google_calendar_tokens").upsert(
+      {
+        user_id: state,
+        access_token: tokens.access_token!,
+        refresh_token: tokens.refresh_token ?? null,
+        token_expiry: tokens.expiry_date
+          ? new Date(tokens.expiry_date).toISOString()
+          : null,
+        google_email: googleEmail,
+        is_active: true,
+      },
+      { onConflict: "user_id" },
+    );
 
     if (error) {
       console.error("Failed to store Google Calendar tokens:", error);
@@ -64,7 +62,7 @@ export async function GET(request: NextRequest) {
 function redirectToSettings(
   request: NextRequest,
   status: "success" | "error",
-  role: string
+  role: string,
 ) {
   const base = new URL(request.url).origin;
   const prefix = role === "setter" || role === "closer" ? "sales" : role;

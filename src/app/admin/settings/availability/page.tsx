@@ -1,7 +1,11 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { staggerContainer, fadeInUp, defaultTransition } from "@/lib/animations";
+import {
+  staggerContainer,
+  fadeInUp,
+  defaultTransition,
+} from "@/lib/animations";
 import { AvailabilityManager } from "@/components/calls/availability-manager";
 import { Clock } from "lucide-react";
 
@@ -19,7 +23,8 @@ export default function AvailabilitySettingsPage() {
           Disponibilites
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Configurez vos creneaux de disponibilite pour les reservations de vos clients
+          Configurez vos creneaux de disponibilite pour les reservations de vos
+          clients
         </p>
       </motion.div>
 

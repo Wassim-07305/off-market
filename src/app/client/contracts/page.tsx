@@ -3,7 +3,12 @@
 import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { staggerContainer, fadeInUp, staggerItem, defaultTransition } from "@/lib/animations";
+import {
+  staggerContainer,
+  fadeInUp,
+  staggerItem,
+  defaultTransition,
+} from "@/lib/animations";
 import { useContracts } from "@/hooks/use-contracts";
 import { useAuth } from "@/hooks/use-auth";
 import type { ContractStatus } from "@/types/billing";
@@ -26,11 +31,30 @@ function formatDate(date: string | null) {
   });
 }
 
-const STATUS_CONFIG: Record<string, { label: string; className: string; icon: typeof Clock }> = {
-  draft: { label: "Brouillon", className: "bg-muted text-muted-foreground", icon: FileText },
-  sent: { label: "A signer", className: "bg-amber-500/10 text-amber-600", icon: PenLine },
-  signed: { label: "Signe", className: "bg-emerald-500/10 text-emerald-600", icon: CheckCircle },
-  cancelled: { label: "Annule", className: "bg-red-500/10 text-red-600", icon: XCircle },
+const STATUS_CONFIG: Record<
+  string,
+  { label: string; className: string; icon: typeof Clock }
+> = {
+  draft: {
+    label: "Brouillon",
+    className: "bg-muted text-muted-foreground",
+    icon: FileText,
+  },
+  sent: {
+    label: "A signer",
+    className: "bg-amber-500/10 text-amber-600",
+    icon: PenLine,
+  },
+  signed: {
+    label: "Signe",
+    className: "bg-emerald-500/10 text-emerald-600",
+    icon: CheckCircle,
+  },
+  cancelled: {
+    label: "Annule",
+    className: "bg-red-500/10 text-red-600",
+    icon: XCircle,
+  },
 };
 
 export default function ClientContractsPage() {
@@ -61,13 +85,21 @@ export default function ClientContractsPage() {
       </motion.div>
 
       {/* Stats */}
-      <motion.div variants={fadeInUp} transition={defaultTransition} className="grid grid-cols-3 gap-4">
+      <motion.div
+        variants={fadeInUp}
+        transition={defaultTransition}
+        className="grid grid-cols-3 gap-4"
+      >
         <div className="bg-surface border border-border rounded-xl p-4 text-center">
-          <p className="text-2xl font-semibold text-foreground">{contracts.length}</p>
+          <p className="text-2xl font-semibold text-foreground">
+            {contracts.length}
+          </p>
           <p className="text-xs text-muted-foreground mt-1">Total</p>
         </div>
         <div className="bg-surface border border-border rounded-xl p-4 text-center">
-          <p className="text-2xl font-semibold text-amber-600">{pendingCount}</p>
+          <p className="text-2xl font-semibold text-amber-600">
+            {pendingCount}
+          </p>
           <p className="text-xs text-muted-foreground mt-1">A signer</p>
         </div>
         <div className="bg-surface border border-border rounded-xl p-4 text-center">
@@ -111,7 +143,11 @@ export default function ClientContractsPage() {
           ))}
         </div>
       ) : filtered.length === 0 ? (
-        <motion.div variants={fadeInUp} transition={defaultTransition} className="bg-surface border border-border rounded-xl p-12 text-center">
+        <motion.div
+          variants={fadeInUp}
+          transition={defaultTransition}
+          className="bg-surface border border-border rounded-xl p-12 text-center"
+        >
           <FileText className="w-10 h-10 text-muted-foreground/40 mx-auto mb-3" />
           <p className="text-sm text-muted-foreground">Aucun contrat</p>
         </motion.div>
@@ -130,13 +166,18 @@ export default function ClientContractsPage() {
                     <FileText className="w-5 h-5 text-muted-foreground" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-foreground truncate">{contract.title}</p>
+                    <p className="text-sm font-medium text-foreground truncate">
+                      {contract.title}
+                    </p>
                     <p className="text-xs text-muted-foreground mt-0.5">
                       {formatDate(contract.created_at)}
-                      {contract.signed_at && ` · Signe le ${formatDate(contract.signed_at)}`}
+                      {contract.signed_at &&
+                        ` · Signe le ${formatDate(contract.signed_at)}`}
                     </p>
                   </div>
-                  <span className={`text-[11px] font-medium px-2.5 py-1 rounded-full flex items-center gap-1 ${conf.className}`}>
+                  <span
+                    className={`text-[11px] font-medium px-2.5 py-1 rounded-full flex items-center gap-1 ${conf.className}`}
+                  >
                     <Icon className="w-3 h-3" />
                     {conf.label}
                   </span>

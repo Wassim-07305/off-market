@@ -62,7 +62,9 @@ export function ActivityFeed() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("student_activities")
-        .select("*, student:profiles!student_activities_student_id_fkey(full_name, avatar_url)")
+        .select(
+          "*, student:profiles!student_activities_student_id_fkey(full_name, avatar_url)",
+        )
         .order("created_at", { ascending: false })
         .limit(15);
       if (error) throw error;
@@ -109,18 +111,24 @@ export function ActivityFeed() {
         )}
 
         <div className="space-y-4">
-          {(!activities || activities.length === 0) ? (
+          {!activities || activities.length === 0 ? (
             <p className="text-sm text-muted-foreground text-center py-8">
               Aucune activite recente
             </p>
           ) : (
             activities.map((activity) => {
-              const Icon =
-                activityIcons[activity.activity_type] || BookOpen;
-              const student = activity.student as { full_name: string; avatar_url: string | null } | null;
-              const dotColor = activityDotColors[activity.activity_type] || "bg-primary";
+              const Icon = activityIcons[activity.activity_type] || BookOpen;
+              const student = activity.student as {
+                full_name: string;
+                avatar_url: string | null;
+              } | null;
+              const dotColor =
+                activityDotColors[activity.activity_type] || "bg-primary";
               return (
-                <div key={activity.id} className="flex items-start gap-3 relative group hover:bg-muted/30 -mx-2 px-2 py-1 rounded-lg transition-colors duration-200">
+                <div
+                  key={activity.id}
+                  className="flex items-start gap-3 relative group hover:bg-muted/30 -mx-2 px-2 py-1 rounded-lg transition-colors duration-200"
+                >
                   <div className="relative z-10 w-8 h-8 rounded-full bg-surface flex items-center justify-center shrink-0">
                     <div className={cn("w-2.5 h-2.5 rounded-full", dotColor)} />
                   </div>
@@ -130,7 +138,8 @@ export function ActivityFeed() {
                         {student?.full_name ?? "Utilisateur"}
                       </span>{" "}
                       <span className="text-muted-foreground">
-                        {activityLabels[activity.activity_type] ?? activity.activity_type}
+                        {activityLabels[activity.activity_type] ??
+                          activity.activity_type}
                       </span>
                     </p>
                     <p className="text-[11px] text-muted-foreground font-mono mt-0.5">

@@ -1,15 +1,15 @@
-import { create } from 'zustand'
-import type { Notification } from '@/types/database'
+import { create } from "zustand";
+import type { Notification } from "@/types/database";
 
 interface NotificationState {
-  notifications: Notification[]
-  unreadCount: number
-  setNotifications: (notifications: Notification[]) => void
-  setUnreadCount: (count: number) => void
-  addNotification: (notification: Notification) => void
-  markAsRead: (id: string) => void
-  markAllAsRead: () => void
-  clearNotifications: () => void
+  notifications: Notification[];
+  unreadCount: number;
+  setNotifications: (notifications: Notification[]) => void;
+  setUnreadCount: (count: number) => void;
+  addNotification: (notification: Notification) => void;
+  markAsRead: (id: string) => void;
+  markAllAsRead: () => void;
+  clearNotifications: () => void;
 }
 
 export const useNotificationStore = create<NotificationState>()((set) => ({
@@ -29,7 +29,7 @@ export const useNotificationStore = create<NotificationState>()((set) => ({
   markAsRead: (id) =>
     set((state) => ({
       notifications: state.notifications.map((n) =>
-        n.id === id ? { ...n, is_read: true } : n
+        n.id === id ? { ...n, is_read: true } : n,
       ),
       unreadCount: Math.max(0, state.unreadCount - 1),
     })),
@@ -39,4 +39,4 @@ export const useNotificationStore = create<NotificationState>()((set) => ({
       unreadCount: 0,
     })),
   clearNotifications: () => set({ notifications: [], unreadCount: 0 }),
-}))
+}));

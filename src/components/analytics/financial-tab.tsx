@@ -54,7 +54,11 @@ export function FinancialTab({ range }: FinancialTabProps) {
       <div className="space-y-6">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="bg-surface rounded-2xl p-6 animate-shimmer" style={{ boxShadow: "var(--shadow-card)" }}>
+            <div
+              key={i}
+              className="bg-surface rounded-2xl p-6 animate-shimmer"
+              style={{ boxShadow: "var(--shadow-card)" }}
+            >
               <div className="h-3 w-20 bg-muted rounded-lg mb-3" />
               <div className="h-8 w-24 bg-muted rounded-lg" />
             </div>
@@ -78,7 +82,11 @@ export function FinancialTab({ range }: FinancialTabProps) {
     exportToCSV(
       "revenus.csv",
       ["Mois", "Revenus (EUR)", "Nb factures"],
-      data.revenueByMonth.map((m) => [m.label, String(m.revenue), String(m.invoiceCount)])
+      data.revenueByMonth.map((m) => [
+        m.label,
+        String(m.revenue),
+        String(m.invoiceCount),
+      ]),
     );
   };
 
@@ -119,7 +127,9 @@ export function FinancialTab({ range }: FinancialTabProps) {
         >
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="text-[13px] font-semibold text-foreground">Evolution des revenus</h3>
+              <h3 className="text-[13px] font-semibold text-foreground">
+                Evolution des revenus
+              </h3>
               <p className="text-xs text-muted-foreground mt-0.5">
                 ARR estim&eacute; : {formatCurrency(data.arr)}
               </p>
@@ -142,28 +152,60 @@ export function FinancialTab({ range }: FinancialTabProps) {
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={data.revenueByMonth}>
                   <defs>
-                    <linearGradient id="finRevenueGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.15} />
-                      <stop offset="100%" stopColor="var(--primary)" stopOpacity={0} />
+                    <linearGradient
+                      id="finRevenueGrad"
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
+                      <stop
+                        offset="0%"
+                        stopColor="var(--primary)"
+                        stopOpacity={0.15}
+                      />
+                      <stop
+                        offset="100%"
+                        stopColor="var(--primary)"
+                        stopOpacity={0}
+                      />
                     </linearGradient>
                   </defs>
                   <XAxis
                     dataKey="label"
                     axisLine={false}
                     tickLine={false}
-                    tick={{ fill: "var(--muted-foreground)", fontSize: 11, fontFamily: "var(--font-mono)" }}
+                    tick={{
+                      fill: "var(--muted-foreground)",
+                      fontSize: 11,
+                      fontFamily: "var(--font-mono)",
+                    }}
                     dy={8}
                   />
                   <YAxis
                     axisLine={false}
                     tickLine={false}
-                    tick={{ fill: "var(--muted-foreground)", fontSize: 11, fontFamily: "var(--font-mono)" }}
+                    tick={{
+                      fill: "var(--muted-foreground)",
+                      fontSize: 11,
+                      fontFamily: "var(--font-mono)",
+                    }}
                     tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
                     width={45}
                   />
                   <Tooltip
-                    contentStyle={{ backgroundColor: "var(--surface)", border: "none", borderRadius: "12px", fontSize: "13px", boxShadow: "var(--shadow-elevated)", padding: "8px 12px" }}
-                    formatter={(v) => [`${Number(v).toLocaleString("fr-FR")} EUR`, "Revenus"]}
+                    contentStyle={{
+                      backgroundColor: "var(--surface)",
+                      border: "none",
+                      borderRadius: "12px",
+                      fontSize: "13px",
+                      boxShadow: "var(--shadow-elevated)",
+                      padding: "8px 12px",
+                    }}
+                    formatter={(v) => [
+                      `${Number(v).toLocaleString("fr-FR")} EUR`,
+                      "Revenus",
+                    ]}
                   />
                   <Area
                     type="monotone"
@@ -172,7 +214,12 @@ export function FinancialTab({ range }: FinancialTabProps) {
                     strokeWidth={2.5}
                     fill="url(#finRevenueGrad)"
                     dot={false}
-                    activeDot={{ r: 5, fill: "var(--primary)", stroke: "var(--surface)", strokeWidth: 2 }}
+                    activeDot={{
+                      r: 5,
+                      fill: "var(--primary)",
+                      stroke: "var(--surface)",
+                      strokeWidth: 2,
+                    }}
                   />
                 </AreaChart>
               </ResponsiveContainer>
@@ -185,7 +232,9 @@ export function FinancialTab({ range }: FinancialTabProps) {
           className="bg-surface rounded-2xl p-6"
           style={{ boxShadow: "var(--shadow-card)" }}
         >
-          <h3 className="text-[13px] font-semibold text-foreground mb-4">Statut des factures</h3>
+          <h3 className="text-[13px] font-semibold text-foreground mb-4">
+            Statut des factures
+          </h3>
           {pieData.length === 0 ? (
             <div className="h-52 flex flex-col items-center justify-center text-muted-foreground">
               <FileText className="w-8 h-8 mb-2 opacity-20" />
@@ -211,7 +260,14 @@ export function FinancialTab({ range }: FinancialTabProps) {
                       ))}
                     </Pie>
                     <Tooltip
-                      contentStyle={{ backgroundColor: "var(--surface)", border: "none", borderRadius: "12px", fontSize: "13px", boxShadow: "var(--shadow-elevated)", padding: "8px 12px" }}
+                      contentStyle={{
+                        backgroundColor: "var(--surface)",
+                        border: "none",
+                        borderRadius: "12px",
+                        fontSize: "13px",
+                        boxShadow: "var(--shadow-elevated)",
+                        padding: "8px 12px",
+                      }}
                     />
                   </PieChart>
                 </ResponsiveContainer>
@@ -219,8 +275,13 @@ export function FinancialTab({ range }: FinancialTabProps) {
               <div className="flex flex-wrap gap-3 mt-2">
                 {pieData.map((entry) => (
                   <div key={entry.name} className="flex items-center gap-1.5">
-                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: entry.color }} />
-                    <span className="text-[11px] text-muted-foreground">{entry.name} ({entry.value})</span>
+                    <div
+                      className="w-2.5 h-2.5 rounded-full"
+                      style={{ backgroundColor: entry.color }}
+                    />
+                    <span className="text-[11px] text-muted-foreground">
+                      {entry.name} ({entry.value})
+                    </span>
                   </div>
                 ))}
               </div>
@@ -231,17 +292,38 @@ export function FinancialTab({ range }: FinancialTabProps) {
 
       {/* Bottom stats */}
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-        <div className="bg-surface rounded-2xl p-5" style={{ boxShadow: "var(--shadow-card)" }}>
-          <p className="text-[11px] text-muted-foreground uppercase tracking-wider mb-1">Valeur moyenne / facture</p>
-          <p className="text-xl font-display font-bold text-foreground">{formatCurrency(data.avgDealValue)}</p>
+        <div
+          className="bg-surface rounded-2xl p-5"
+          style={{ boxShadow: "var(--shadow-card)" }}
+        >
+          <p className="text-[11px] text-muted-foreground uppercase tracking-wider mb-1">
+            Valeur moyenne / facture
+          </p>
+          <p className="text-xl font-display font-bold text-foreground">
+            {formatCurrency(data.avgDealValue)}
+          </p>
         </div>
-        <div className="bg-surface rounded-2xl p-5" style={{ boxShadow: "var(--shadow-card)" }}>
-          <p className="text-[11px] text-muted-foreground uppercase tracking-wider mb-1">Factures payees</p>
-          <p className="text-xl font-display font-bold text-foreground">{data.invoiceStatus.paid}</p>
+        <div
+          className="bg-surface rounded-2xl p-5"
+          style={{ boxShadow: "var(--shadow-card)" }}
+        >
+          <p className="text-[11px] text-muted-foreground uppercase tracking-wider mb-1">
+            Factures payees
+          </p>
+          <p className="text-xl font-display font-bold text-foreground">
+            {data.invoiceStatus.paid}
+          </p>
         </div>
-        <div className="bg-surface rounded-2xl p-5" style={{ boxShadow: "var(--shadow-card)" }}>
-          <p className="text-[11px] text-muted-foreground uppercase tracking-wider mb-1">Factures en retard</p>
-          <p className="text-xl font-display font-bold text-error">{data.invoiceStatus.overdue}</p>
+        <div
+          className="bg-surface rounded-2xl p-5"
+          style={{ boxShadow: "var(--shadow-card)" }}
+        >
+          <p className="text-[11px] text-muted-foreground uppercase tracking-wider mb-1">
+            Factures en retard
+          </p>
+          <p className="text-xl font-display font-bold text-error">
+            {data.invoiceStatus.overdue}
+          </p>
         </div>
       </div>
     </div>

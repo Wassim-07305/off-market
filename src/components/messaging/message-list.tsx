@@ -37,7 +37,9 @@ export function MessageList({
   const initialLoadRef = useRef(true);
 
   const scrollToBottom = useCallback((instant = false) => {
-    endRef.current?.scrollIntoView({ behavior: instant ? "instant" : "smooth" });
+    endRef.current?.scrollIntoView({
+      behavior: instant ? "instant" : "smooth",
+    });
   }, []);
 
   // Scroll on new messages — instant on first load, smooth on subsequent
@@ -80,7 +82,9 @@ export function MessageList({
                 <div className="h-2.5 w-12 bg-muted/60 rounded animate-shimmer" />
               </div>
               <div className="h-3.5 w-3/4 bg-muted rounded animate-shimmer" />
-              {i % 2 === 0 && <div className="h-3.5 w-1/2 bg-muted rounded animate-shimmer" />}
+              {i % 2 === 0 && (
+                <div className="h-3.5 w-1/2 bg-muted rounded animate-shimmer" />
+              )}
             </div>
           </div>
         ))}
@@ -103,12 +107,14 @@ export function MessageList({
   const groups = groupMessages(messages);
 
   return (
-    <div ref={containerRef} className="flex-1 overflow-y-auto px-4 py-3 scroll-smooth">
+    <div
+      ref={containerRef}
+      className="flex-1 overflow-y-auto px-4 py-3 scroll-smooth"
+    >
       {groups.map((group, gi) => {
         const prevGroup = groups[gi - 1];
         const showDateSep =
-          gi === 0 ||
-          (prevGroup && !isSameDay(prevGroup.date, group.date));
+          gi === 0 || (prevGroup && !isSameDay(prevGroup.date, group.date));
 
         return (
           <div key={`${group.senderId}-${group.date}-${gi}`}>
@@ -127,7 +133,9 @@ export function MessageList({
                   onEdit={onEdit}
                   onDelete={() => onDelete(msg.id)}
                   onPin={() => onPin(msg.id, msg.is_pinned)}
-                  onOpenThread={onOpenThread ? () => onOpenThread(msg) : undefined}
+                  onOpenThread={
+                    onOpenThread ? () => onOpenThread(msg) : undefined
+                  }
                 />
               ))}
             </div>

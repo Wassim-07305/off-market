@@ -20,8 +20,18 @@ import { STUDENT_TAGS, ACTIVITY_TYPES } from "@/lib/constants";
 /* ─── Helpers ─── */
 
 const MONTH_LABELS = [
-  "Jan", "Fev", "Mar", "Avr", "Mai", "Juin",
-  "Juil", "Aout", "Sep", "Oct", "Nov", "Dec",
+  "Jan",
+  "Fev",
+  "Mar",
+  "Avr",
+  "Mai",
+  "Juin",
+  "Juil",
+  "Aout",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
 ];
 
 export function periodToDateRange(preset: PeriodPreset): DateRange {
@@ -34,13 +44,19 @@ export function periodToDateRange(preset: PeriodPreset): DateRange {
       from = new Date(now.getTime() - 7 * 86400000).toISOString().split("T")[0];
       break;
     case "30d":
-      from = new Date(now.getTime() - 30 * 86400000).toISOString().split("T")[0];
+      from = new Date(now.getTime() - 30 * 86400000)
+        .toISOString()
+        .split("T")[0];
       break;
     case "90d":
-      from = new Date(now.getTime() - 90 * 86400000).toISOString().split("T")[0];
+      from = new Date(now.getTime() - 90 * 86400000)
+        .toISOString()
+        .split("T")[0];
       break;
     case "12m":
-      from = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate()).toISOString().split("T")[0];
+      from = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate())
+        .toISOString()
+        .split("T")[0];
       break;
     case "ytd":
       from = `${now.getFullYear()}-01-01`;
@@ -91,7 +107,10 @@ export function useFinancialReport(range: DateRange) {
       };
 
       const paidInvoices = rows.filter((i) => i.status === "paid");
-      const totalRevenue = paidInvoices.reduce((s, i) => s + Number(i.total ?? 0), 0);
+      const totalRevenue = paidInvoices.reduce(
+        (s, i) => s + Number(i.total ?? 0),
+        0,
+      );
       const pendingAmount = rows
         .filter((i) => i.status === "sent")
         .reduce((s, i) => s + Number(i.total ?? 0), 0);
@@ -120,14 +139,14 @@ export function useFinancialReport(range: DateRange) {
         }
       }
 
-      const revenueByMonth: MonthlyRevenue[] = Array.from(monthMap.entries()).map(
-        ([key, val]) => ({
-          month: key,
-          label: monthLabel(key),
-          revenue: Math.round(val.revenue * 100) / 100,
-          invoiceCount: val.count,
-        })
-      );
+      const revenueByMonth: MonthlyRevenue[] = Array.from(
+        monthMap.entries(),
+      ).map(([key, val]) => ({
+        month: key,
+        label: monthLabel(key),
+        revenue: Math.round(val.revenue * 100) / 100,
+        invoiceCount: val.count,
+      }));
 
       // MRR: average of last 3 months revenue
       const last3 = revenueByMonth.slice(-3);
@@ -141,9 +160,15 @@ export function useFinancialReport(range: DateRange) {
       const mid = Math.floor(revenueByMonth.length / 2);
       const firstHalf = revenueByMonth.slice(0, mid || 1);
       const secondHalf = revenueByMonth.slice(mid || 1);
-      const firstSum = firstHalf.reduce((s, m) => s + m.revenue, 0) / (firstHalf.length || 1);
-      const secondSum = secondHalf.reduce((s, m) => s + m.revenue, 0) / (secondHalf.length || 1);
-      const revenueTrend = firstSum > 0 ? Math.round(((secondSum - firstSum) / firstSum) * 100) : 0;
+      const firstSum =
+        firstHalf.reduce((s, m) => s + m.revenue, 0) / (firstHalf.length || 1);
+      const secondSum =
+        secondHalf.reduce((s, m) => s + m.revenue, 0) /
+        (secondHalf.length || 1);
+      const revenueTrend =
+        firstSum > 0
+          ? Math.round(((secondSum - firstSum) / firstSum) * 100)
+          : 0;
 
       const avgDealValue =
         paidInvoices.length > 0
@@ -178,12 +203,12 @@ export function useCallMetrics(range: DateRange) {
       const [callsRes, notesRes] = await Promise.all([
         supabase
           .from("call_calendar")
-          .select("id, date, time, duration_minutes, call_type, status, actual_duration_seconds")
+          .select(
+            "id, date, time, duration_minutes, call_type, status, actual_duration_seconds",
+          )
           .gte("date", range.from)
           .lte("date", range.to),
-        supabase
-          .from("call_notes")
-          .select("client_mood, outcome, created_at"),
+        supabase.from("call_notes").select("client_mood, outcome, created_at"),
       ]);
 
       if (callsRes.error) throw callsRes.error;
@@ -194,10 +219,14 @@ export function useCallMetrics(range: DateRange) {
       const completedCalls = calls.filter((c) => c.status === "realise").length;
       const noShowCalls = calls.filter((c) => c.status === "no_show").length;
       const cancelledCalls = calls.filter((c) => c.status === "annule").length;
-      const rescheduledCalls = calls.filter((c) => c.status === "reporte").length;
+      const rescheduledCalls = calls.filter(
+        (c) => c.status === "reporte",
+      ).length;
 
-      const completionRate = totalCalls > 0 ? Math.round((completedCalls / totalCalls) * 100) : 0;
-      const noShowRate = totalCalls > 0 ? Math.round((noShowCalls / totalCalls) * 100) : 0;
+      const completionRate =
+        totalCalls > 0 ? Math.round((completedCalls / totalCalls) * 100) : 0;
+      const noShowRate =
+        totalCalls > 0 ? Math.round((noShowCalls / totalCalls) * 100) : 0;
 
       // Average duration (from actual_duration_seconds if available, else duration_minutes)
       const completedWithDuration = calls.filter((c) => c.status === "realise");
@@ -223,14 +252,19 @@ export function useCallMetrics(range: DateRange) {
         booking: "Reservation",
         autre: "Autre",
       };
-      const callsByType = Array.from(typeMap.entries()).map(([type, count]) => ({
-        type,
-        label: callTypeLabels[type] ?? type,
-        count,
-      }));
+      const callsByType = Array.from(typeMap.entries()).map(
+        ([type, count]) => ({
+          type,
+          label: callTypeLabels[type] ?? type,
+          count,
+        }),
+      );
 
       // Calls by month
-      const callMonthMap = new Map<string, { count: number; completed: number }>();
+      const callMonthMap = new Map<
+        string,
+        { count: number; completed: number }
+      >();
       for (const c of calls) {
         const key = c.date.slice(0, 7); // "YYYY-MM"
         const entry = callMonthMap.get(key) ?? { count: 0, completed: 0 };
@@ -245,7 +279,8 @@ export function useCallMetrics(range: DateRange) {
       // Mood distribution from call notes
       const moodMap = new Map<string, number>();
       for (const n of notes) {
-        if (n.client_mood) moodMap.set(n.client_mood, (moodMap.get(n.client_mood) ?? 0) + 1);
+        if (n.client_mood)
+          moodMap.set(n.client_mood, (moodMap.get(n.client_mood) ?? 0) + 1);
       }
       const moodColors: Record<string, string> = {
         tres_positif: "#22c55e",
@@ -254,17 +289,20 @@ export function useCallMetrics(range: DateRange) {
         negatif: "#fbbf24",
         tres_negatif: "#ef4444",
       };
-      const moodDistribution = Object.entries(CALL_MOOD_CONFIG).map(([mood, cfg]) => ({
-        mood,
-        label: cfg.label,
-        count: moodMap.get(mood) ?? 0,
-        color: moodColors[mood] ?? "#a1a1aa",
-      }));
+      const moodDistribution = Object.entries(CALL_MOOD_CONFIG).map(
+        ([mood, cfg]) => ({
+          mood,
+          label: cfg.label,
+          count: moodMap.get(mood) ?? 0,
+          color: moodColors[mood] ?? "#a1a1aa",
+        }),
+      );
 
       // Outcome distribution
       const outcomeMap = new Map<string, number>();
       for (const n of notes) {
-        if (n.outcome) outcomeMap.set(n.outcome, (outcomeMap.get(n.outcome) ?? 0) + 1);
+        if (n.outcome)
+          outcomeMap.set(n.outcome, (outcomeMap.get(n.outcome) ?? 0) + 1);
       }
       const outcomeLabels: Record<string, string> = {
         interested: "Interesse",
@@ -327,7 +365,10 @@ export function usePipelineReport() {
           stage: stage.value,
           label: stage.label,
           count: stageContacts.length,
-          totalValue: stageContacts.reduce((s, c) => s + Number(c.estimated_value ?? 0), 0),
+          totalValue: stageContacts.reduce(
+            (s, c) => s + Number(c.estimated_value ?? 0),
+            0,
+          ),
           color: stage.color,
         };
       });
@@ -335,15 +376,18 @@ export function usePipelineReport() {
       // Conversion rate: prospect → client
       const prospects = rows.filter((c) => c.stage !== "perdu").length;
       const converted = rows.filter((c) => c.stage === "client").length;
-      const conversionRate = prospects > 0 ? Math.round((converted / prospects) * 100) : 0;
+      const conversionRate =
+        prospects > 0 ? Math.round((converted / prospects) * 100) : 0;
 
       // Average deal value (clients only)
       const clientContacts = rows.filter((c) => c.stage === "client");
       const avgDealValue =
         clientContacts.length > 0
           ? Math.round(
-              clientContacts.reduce((s, c) => s + Number(c.estimated_value ?? 0), 0) /
-                clientContacts.length
+              clientContacts.reduce(
+                (s, c) => s + Number(c.estimated_value ?? 0),
+                0,
+              ) / clientContacts.length,
             )
           : 0;
 
@@ -357,10 +401,10 @@ export function usePipelineReport() {
       // Recently converted / lost (last 30 days)
       const thirtyDaysAgo = new Date(Date.now() - 30 * 86400000).toISOString();
       const recentlyConverted = rows.filter(
-        (c) => c.stage === "client" && c.updated_at >= thirtyDaysAgo
+        (c) => c.stage === "client" && c.updated_at >= thirtyDaysAgo,
       ).length;
       const recentlyLost = rows.filter(
-        (c) => c.stage === "perdu" && c.updated_at >= thirtyDaysAgo
+        (c) => c.stage === "perdu" && c.updated_at >= thirtyDaysAgo,
       ).length;
 
       return {
@@ -387,25 +431,26 @@ export function useEngagementReport(range: DateRange) {
     queryKey: ["engagement-report", range.from, range.to],
     enabled: !!user,
     queryFn: async (): Promise<EngagementReport> => {
-      const [profilesRes, detailsRes, activitiesRes, checkinsRes] = await Promise.all([
-        supabase
-          .from("profiles")
-          .select("id, created_at")
-          .eq("role", "client"),
-        supabase
-          .from("student_details")
-          .select("profile_id, tag, health_score, last_engagement_at"),
-        supabase
-          .from("student_activities")
-          .select("activity_type, created_at")
-          .gte("created_at", range.from)
-          .lte("created_at", range.to + "T23:59:59"),
-        supabase
-          .from("weekly_checkins")
-          .select("mood, created_at")
-          .gte("created_at", range.from)
-          .lte("created_at", range.to + "T23:59:59"),
-      ]);
+      const [profilesRes, detailsRes, activitiesRes, checkinsRes] =
+        await Promise.all([
+          supabase
+            .from("profiles")
+            .select("id, created_at")
+            .eq("role", "client"),
+          supabase
+            .from("student_details")
+            .select("profile_id, tag, health_score, last_engagement_at"),
+          supabase
+            .from("student_activities")
+            .select("activity_type, created_at")
+            .gte("created_at", range.from)
+            .lte("created_at", range.to + "T23:59:59"),
+          supabase
+            .from("weekly_checkins")
+            .select("mood, created_at")
+            .gte("created_at", range.from)
+            .lte("created_at", range.to + "T23:59:59"),
+        ]);
 
       if (profilesRes.error) throw profilesRes.error;
       const profiles = profilesRes.data ?? [];
@@ -416,9 +461,11 @@ export function useEngagementReport(range: DateRange) {
       const totalClients = profiles.length;
 
       // Active = engaged in last 14 days
-      const fourteenDaysAgo = new Date(Date.now() - 14 * 86400000).toISOString();
+      const fourteenDaysAgo = new Date(
+        Date.now() - 14 * 86400000,
+      ).toISOString();
       const activeClients = details.filter(
-        (d) => d.last_engagement_at && d.last_engagement_at >= fourteenDaysAgo
+        (d) => d.last_engagement_at && d.last_engagement_at >= fourteenDaysAgo,
       ).length;
 
       const churnedClients = details.filter((d) => d.tag === "churned").length;
@@ -429,7 +476,8 @@ export function useEngagementReport(range: DateRange) {
 
       // New clients in period
       const newClientsInPeriod = profiles.filter(
-        (p) => p.created_at >= range.from && p.created_at <= range.to + "T23:59:59"
+        (p) =>
+          p.created_at >= range.from && p.created_at <= range.to + "T23:59:59",
       ).length;
 
       // Tag distribution
@@ -443,7 +491,10 @@ export function useEngagementReport(range: DateRange) {
       // Activity by type
       const activityTypeMap = new Map<string, number>();
       for (const a of activities) {
-        activityTypeMap.set(a.activity_type, (activityTypeMap.get(a.activity_type) ?? 0) + 1);
+        activityTypeMap.set(
+          a.activity_type,
+          (activityTypeMap.get(a.activity_type) ?? 0) + 1,
+        );
       }
       const activityByType = ACTIVITY_TYPES.map((t) => ({
         type: t.value,
@@ -471,13 +522,20 @@ export function useEngagementReport(range: DateRange) {
       // Avg health score
       const avgHealthScore =
         details.length > 0
-          ? Math.round(details.reduce((s, d) => s + (d.health_score ?? 0), 0) / details.length)
+          ? Math.round(
+              details.reduce((s, d) => s + (d.health_score ?? 0), 0) /
+                details.length,
+            )
           : 0;
 
       // Avg mood
       const avgMood =
         checkins.length > 0
-          ? Math.round((checkins.reduce((s, c) => s + (c.mood ?? 0), 0) / checkins.length) * 10) / 10
+          ? Math.round(
+              (checkins.reduce((s, c) => s + (c.mood ?? 0), 0) /
+                checkins.length) *
+                10,
+            ) / 10
           : 0;
 
       return {
@@ -499,9 +557,17 @@ export function useEngagementReport(range: DateRange) {
 
 /* ─── CSV Export utility ─── */
 
-export function exportToCSV(filename: string, headers: string[], rows: string[][]) {
+export function exportToCSV(
+  filename: string,
+  headers: string[],
+  rows: string[][],
+) {
   const bom = "\uFEFF"; // UTF-8 BOM for Excel
-  const csv = bom + [headers, ...rows].map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n");
+  const csv =
+    bom +
+    [headers, ...rows]
+      .map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(","))
+      .join("\n");
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");

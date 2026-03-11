@@ -6,7 +6,7 @@ import type { ConditionalLogic, ConditionalRule } from "@/types/database";
  */
 export function evaluateConditionalLogic(
   logic: ConditionalLogic | Record<string, never>,
-  answers: Record<string, string>
+  answers: Record<string, string>,
 ): boolean {
   // No conditional logic or not enabled → always visible
   if (!logic || !("enabled" in logic) || !logic.enabled) return true;
@@ -14,14 +14,16 @@ export function evaluateConditionalLogic(
 
   const results = logic.rules.map((rule) => evaluateRule(rule, answers));
 
-  const match = logic.logic === "or"
-    ? results.some(Boolean)
-    : results.every(Boolean);
+  const match =
+    logic.logic === "or" ? results.some(Boolean) : results.every(Boolean);
 
   return logic.action === "show" ? match : !match;
 }
 
-function evaluateRule(rule: ConditionalRule, answers: Record<string, string>): boolean {
+function evaluateRule(
+  rule: ConditionalRule,
+  answers: Record<string, string>,
+): boolean {
   const answer = answers[rule.fieldId] ?? "";
 
   switch (rule.operator) {
@@ -46,7 +48,11 @@ function evaluateRule(rule: ConditionalRule, answers: Record<string, string>): b
   }
 }
 
-export const CONDITIONAL_OPERATORS: { value: ConditionalRule["operator"]; label: string; needsValue: boolean }[] = [
+export const CONDITIONAL_OPERATORS: {
+  value: ConditionalRule["operator"];
+  label: string;
+  needsValue: boolean;
+}[] = [
   { value: "equals", label: "est egal a", needsValue: true },
   { value: "not_equals", label: "est different de", needsValue: true },
   { value: "contains", label: "contient", needsValue: true },

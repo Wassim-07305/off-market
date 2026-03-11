@@ -61,7 +61,9 @@ export function ThreadPanel({
       <div className="flex items-center justify-between px-4 py-3 border-b border-border">
         <div className="flex items-center gap-2">
           <MessageSquare className="w-4 h-4 text-muted-foreground" />
-          <h3 className="text-sm font-semibold text-foreground">Fil de discussion</h3>
+          <h3 className="text-sm font-semibold text-foreground">
+            Fil de discussion
+          </h3>
           <span className="text-xs text-muted-foreground">
             {replies.length} reponse{replies.length !== 1 ? "s" : ""}
           </span>
@@ -81,7 +83,11 @@ export function ThreadPanel({
           <div className="flex items-start gap-2.5">
             <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
               {parentSender?.avatar_url ? (
-                <img src={parentSender.avatar_url} alt="" className="w-8 h-8 rounded-full object-cover" />
+                <img
+                  src={parentSender.avatar_url}
+                  alt=""
+                  className="w-8 h-8 rounded-full object-cover"
+                />
               ) : (
                 <span className="text-xs font-semibold text-primary">
                   {parentSender ? getInitials(parentSender.full_name) : "?"}
@@ -98,13 +104,14 @@ export function ThreadPanel({
                 </span>
               </div>
               <MessageContent message={parentMessage} />
-              {parentMessage.reactions && parentMessage.reactions.length > 0 && (
-                <MessageReactions
-                  reactions={parentMessage.reactions}
-                  currentUserId={user?.id ?? ""}
-                  onToggle={(emoji) => onReact(parentMessage.id, emoji)}
-                />
-              )}
+              {parentMessage.reactions &&
+                parentMessage.reactions.length > 0 && (
+                  <MessageReactions
+                    reactions={parentMessage.reactions}
+                    currentUserId={user?.id ?? ""}
+                    onToggle={(emoji) => onReact(parentMessage.id, emoji)}
+                  />
+                )}
             </div>
           </div>
         </div>
@@ -131,7 +138,11 @@ export function ThreadPanel({
             <div key={reply.id} className="flex items-start gap-2.5">
               <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                 {sender?.avatar_url ? (
-                  <img src={sender.avatar_url} alt="" className="w-7 h-7 rounded-full object-cover" />
+                  <img
+                    src={sender.avatar_url}
+                    alt=""
+                    className="w-7 h-7 rounded-full object-cover"
+                  />
                 ) : (
                   <span className="text-[10px] font-semibold text-primary">
                     {sender ? getInitials(sender.full_name) : "?"}
@@ -147,7 +158,9 @@ export function ThreadPanel({
                     {formatMessageTime(reply.created_at)}
                   </span>
                   {reply.is_edited && (
-                    <span className="text-[9px] text-muted-foreground italic">(modifie)</span>
+                    <span className="text-[9px] text-muted-foreground italic">
+                      (modifie)
+                    </span>
                   )}
                 </div>
                 <div className="text-sm text-foreground/90">

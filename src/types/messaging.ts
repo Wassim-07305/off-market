@@ -1,4 +1,11 @@
-import type { Message, Channel, ChannelMember, MessageReaction, MessageAttachment, Profile } from "./database";
+import type {
+  Message,
+  Channel,
+  ChannelMember,
+  MessageReaction,
+  MessageAttachment,
+  Profile,
+} from "./database";
 
 export interface MessageSender {
   id: string;
@@ -7,7 +14,10 @@ export interface MessageSender {
   role: string;
 }
 
-export type EnrichedMessage = Omit<Message, "sender" | "reactions" | "attachments" | "reply_message"> & {
+export type EnrichedMessage = Omit<
+  Message,
+  "sender" | "reactions" | "attachments" | "reply_message"
+> & {
   sender: MessageSender | null;
   reactions: MessageReaction[];
   attachments: MessageAttachment[];

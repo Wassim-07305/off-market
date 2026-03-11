@@ -1,3 +1,222 @@
+export type AppRole = "admin" | "coach" | "prospect";
+
+export type UserRole = {
+  id: string;
+  user_id: string;
+  role: AppRole;
+  created_at: string;
+};
+
+export interface CallCalendar {
+  id: string;
+  title: string;
+  date: string;
+  time: string;
+  duration_minutes: number;
+  call_type: string;
+  status: string;
+  link: string | null;
+  notes: string | null;
+  client_id: string | null;
+  assigned_to: string;
+  created_at: string;
+  updated_at: string;
+  client?: Profile;
+  assigned_user?: Profile;
+}
+
+export type CallCalendarWithRelations = CallCalendar & {
+  client?: Profile;
+  assigned_user?: Profile;
+};
+
+export interface ChannelWithDetails extends Channel {
+  members?: ChannelMember[];
+  unread_count?: number;
+  last_message?: Message;
+}
+
+export interface ClientAssignment {
+  id: string;
+  coach_id: string;
+  client_id: string;
+  status: "active" | "paused" | "ended";
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ClientAssignmentWithRelations extends ClientAssignment {
+  coach?: Profile;
+  client?: Profile;
+}
+
+export interface DashboardStats {
+  total_clients: number;
+  total_leads: number;
+  total_revenue: number;
+  active_calls: number;
+  conversion_rate: number;
+  [key: string]: unknown;
+}
+
+export type Formation = Course;
+export type FormationProgress = LessonProgress;
+export type FormationModule = Module;
+export type ModuleItem = Lesson;
+export type ItemCompletion = LessonProgress;
+
+export interface XpTransaction {
+  id: string;
+  user_id: string;
+  amount: number;
+  reason: string;
+  metadata: Record<string, unknown>;
+  created_at: string;
+}
+
+export interface GamificationBadge {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  criteria: Record<string, unknown>;
+  category: string;
+  created_at: string;
+}
+
+export interface UserBadge {
+  id: string;
+  user_id: string;
+  badge_id: string;
+  earned_at: string;
+  badge?: GamificationBadge;
+}
+
+export interface LevelConfig {
+  level: number;
+  xp_required: number;
+  title: string;
+}
+
+export interface Challenge {
+  id: string;
+  title: string;
+  description: string;
+  type: string;
+  target: number;
+  reward_xp: number;
+  starts_at: string;
+  ends_at: string;
+  created_at: string;
+}
+
+export interface ChallengeParticipant {
+  id: string;
+  challenge_id: string;
+  user_id: string;
+  progress: number;
+  completed_at: string | null;
+  joined_at: string;
+}
+
+export interface InstagramAccount {
+  id: string;
+  user_id: string;
+  username: string;
+  account_id: string;
+  access_token: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface InstagramAccountWithRelations extends InstagramAccount {
+  user?: Profile;
+}
+
+export interface InstagramPostStat {
+  id: string;
+  account_id: string;
+  post_id: string;
+  likes: number;
+  comments: number;
+  shares: number;
+  impressions: number;
+  reach: number;
+  created_at: string;
+}
+
+export interface MessageReactionWithUser extends MessageReaction {
+  profile: Profile;
+}
+
+export interface MessageWithSender extends Message {
+  sender: Profile;
+}
+
+export interface SetterActivity {
+  id: string;
+  user_id: string;
+  date: string;
+  messages_sent: number;
+  leads_generated: number;
+  calls_booked: number;
+  notes: string | null;
+  created_at: string;
+}
+
+export interface SocialContent {
+  id: string;
+  user_id: string;
+  title: string;
+  content: string;
+  platform: string;
+  status: "draft" | "scheduled" | "published";
+  scheduled_at: string | null;
+  published_at: string | null;
+  media_urls: string[];
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SocialContentWithRelations extends SocialContent {
+  user?: Profile;
+}
+
+export interface StudentOverview {
+  user_id: string;
+  full_name: string;
+  email: string;
+  avatar_url: string | null;
+  last_seen_at: string | null;
+  messages_count: number;
+  created_at: string;
+  last_message_at: string | null;
+  formations: Array<{
+    formation_id: string;
+    title: string;
+    progress?: {
+      completed_items: number;
+      total_items: number;
+    };
+  }>;
+}
+
+export interface Announcement {
+  id: string;
+  title: string;
+  content: string;
+  type: "info" | "warning" | "success" | "urgent" | "update";
+  is_active: boolean;
+  target_roles: string[] | null;
+  starts_at: string | null;
+  ends_at: string | null;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Profile {
   id: string;
   email: string;
@@ -154,7 +373,6 @@ export interface Module {
   lessons?: Lesson[];
 }
 
-
 export interface LessonAttachment {
   name: string;
   url: string;
@@ -221,7 +439,15 @@ export interface Form {
   _count?: { submissions: number };
 }
 
-export type ConditionalOperator = "equals" | "not_equals" | "contains" | "not_contains" | "is_empty" | "is_not_empty" | "gt" | "lt";
+export type ConditionalOperator =
+  | "equals"
+  | "not_equals"
+  | "contains"
+  | "not_contains"
+  | "is_empty"
+  | "is_not_empty"
+  | "gt"
+  | "lt";
 
 export interface ConditionalRule {
   fieldId: string;
@@ -262,7 +488,13 @@ export interface FormSubmission {
   respondent?: Profile;
 }
 
-export type NotificationCategory = "general" | "messaging" | "billing" | "coaching" | "gamification" | "system";
+export type NotificationCategory =
+  | "general"
+  | "messaging"
+  | "billing"
+  | "coaching"
+  | "gamification"
+  | "system";
 
 export interface Notification {
   id: string;
@@ -331,7 +563,12 @@ export interface AIMessage {
 
 export interface AIInsight {
   id: string;
-  type: "student_risk" | "engagement_drop" | "content_suggestion" | "revenue_insight" | "weekly_summary";
+  type:
+    | "student_risk"
+    | "engagement_drop"
+    | "content_suggestion"
+    | "revenue_insight"
+    | "weekly_summary";
   title: string;
   description: string;
   data: Record<string, unknown>;
@@ -369,7 +606,11 @@ export interface Database {
     Tables: {
       profiles: {
         Row: Profile;
-        Insert: Partial<Profile> & { id: string; email: string; full_name: string };
+        Insert: Partial<Profile> & {
+          id: string;
+          email: string;
+          full_name: string;
+        };
         Update: Partial<Profile>;
       };
       student_details: {
@@ -379,12 +620,19 @@ export interface Database {
       };
       student_activities: {
         Row: StudentActivity;
-        Insert: Partial<StudentActivity> & { student_id: string; activity_type: string };
+        Insert: Partial<StudentActivity> & {
+          student_id: string;
+          activity_type: string;
+        };
         Update: Partial<StudentActivity>;
       };
       student_notes: {
         Row: StudentNote;
-        Insert: Partial<StudentNote> & { student_id: string; author_id: string; content: string };
+        Insert: Partial<StudentNote> & {
+          student_id: string;
+          author_id: string;
+          content: string;
+        };
         Update: Partial<StudentNote>;
       };
       student_tasks: {
@@ -399,22 +647,38 @@ export interface Database {
       };
       channel_members: {
         Row: ChannelMember;
-        Insert: Partial<ChannelMember> & { channel_id: string; profile_id: string };
+        Insert: Partial<ChannelMember> & {
+          channel_id: string;
+          profile_id: string;
+        };
         Update: Partial<ChannelMember>;
       };
       messages: {
         Row: Message;
-        Insert: Partial<Message> & { channel_id: string; sender_id: string; content: string };
+        Insert: Partial<Message> & {
+          channel_id: string;
+          sender_id: string;
+          content: string;
+        };
         Update: Partial<Message>;
       };
       message_reactions: {
         Row: MessageReaction;
-        Insert: Partial<MessageReaction> & { message_id: string; profile_id: string; emoji: string };
+        Insert: Partial<MessageReaction> & {
+          message_id: string;
+          profile_id: string;
+          emoji: string;
+        };
         Update: Partial<MessageReaction>;
       };
       message_attachments: {
         Row: MessageAttachment;
-        Insert: Partial<MessageAttachment> & { message_id: string; file_name: string; file_url: string; file_type: string };
+        Insert: Partial<MessageAttachment> & {
+          message_id: string;
+          file_name: string;
+          file_url: string;
+          file_type: string;
+        };
         Update: Partial<MessageAttachment>;
       };
       courses: {
@@ -429,17 +693,28 @@ export interface Database {
       };
       lessons: {
         Row: Lesson;
-        Insert: Partial<Lesson> & { module_id: string; title: string; content_type: string };
+        Insert: Partial<Lesson> & {
+          module_id: string;
+          title: string;
+          content_type: string;
+        };
         Update: Partial<Lesson>;
       };
       lesson_progress: {
         Row: LessonProgress;
-        Insert: Partial<LessonProgress> & { lesson_id: string; student_id: string };
+        Insert: Partial<LessonProgress> & {
+          lesson_id: string;
+          student_id: string;
+        };
         Update: Partial<LessonProgress>;
       };
       lesson_comments: {
         Row: LessonComment;
-        Insert: Partial<LessonComment> & { lesson_id: string; author_id: string; content: string };
+        Insert: Partial<LessonComment> & {
+          lesson_id: string;
+          author_id: string;
+          content: string;
+        };
         Update: Partial<LessonComment>;
       };
       forms: {
@@ -449,7 +724,11 @@ export interface Database {
       };
       form_fields: {
         Row: FormField;
-        Insert: Partial<FormField> & { form_id: string; field_type: string; label: string };
+        Insert: Partial<FormField> & {
+          form_id: string;
+          field_type: string;
+          label: string;
+        };
         Update: Partial<FormField>;
       };
       form_submissions: {
@@ -459,7 +738,11 @@ export interface Database {
       };
       notifications: {
         Row: Notification;
-        Insert: Partial<Notification> & { recipient_id: string; type: string; title: string };
+        Insert: Partial<Notification> & {
+          recipient_id: string;
+          type: string;
+          title: string;
+        };
         Update: Partial<Notification>;
       };
       ai_conversations: {
@@ -469,12 +752,20 @@ export interface Database {
       };
       ai_messages: {
         Row: AIMessage;
-        Insert: Partial<AIMessage> & { conversation_id: string; role: string; content: string };
+        Insert: Partial<AIMessage> & {
+          conversation_id: string;
+          role: string;
+          content: string;
+        };
         Update: Partial<AIMessage>;
       };
       ai_insights: {
         Row: AIInsight;
-        Insert: Partial<AIInsight> & { type: string; title: string; description: string };
+        Insert: Partial<AIInsight> & {
+          type: string;
+          title: string;
+          description: string;
+        };
         Update: Partial<AIInsight>;
       };
     };

@@ -3,15 +3,28 @@
 import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
-import { staggerContainer, fadeInUp, defaultTransition } from "@/lib/animations";
+import {
+  staggerContainer,
+  fadeInUp,
+  defaultTransition,
+} from "@/lib/animations";
 import { useInvoices } from "@/hooks/use-invoices";
 import { useAuth } from "@/hooks/use-auth";
-import { Receipt, CheckCircle, Clock, AlertTriangle, Download } from "lucide-react";
+import {
+  Receipt,
+  CheckCircle,
+  Clock,
+  AlertTriangle,
+  Download,
+} from "lucide-react";
 import { StripePayButton } from "@/components/billing/stripe-pay-button";
 import { toast } from "sonner";
 
 function formatEUR(amount: number) {
-  return new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(amount);
+  return new Intl.NumberFormat("fr-FR", {
+    style: "currency",
+    currency: "EUR",
+  }).format(amount);
 }
 
 function formatDate(date: string | null) {
@@ -29,14 +42,18 @@ export default function ClientInvoicesPage() {
   const searchParams = useSearchParams();
 
   const paid = invoices.filter((i) => i.status === "paid");
-  const pending = invoices.filter((i) => i.status === "sent" || i.status === "overdue");
+  const pending = invoices.filter(
+    (i) => i.status === "sent" || i.status === "overdue",
+  );
 
   // Handle Stripe redirect feedback
   useEffect(() => {
     const payment = searchParams.get("payment");
     const invoiceNumber = searchParams.get("invoice");
     if (payment === "success") {
-      toast.success(`Paiement de la facture ${invoiceNumber ?? ""} effectue avec succes !`);
+      toast.success(
+        `Paiement de la facture ${invoiceNumber ?? ""} effectue avec succes !`,
+      );
       window.history.replaceState({}, "", "/client/invoices");
     } else if (payment === "cancelled") {
       toast.info("Paiement annule");
@@ -44,7 +61,10 @@ export default function ClientInvoicesPage() {
     }
   }, [searchParams]);
 
-  const handleDownloadPDF = async (invoiceId: string, invoiceNumber: string) => {
+  const handleDownloadPDF = async (
+    invoiceId: string,
+    invoiceNumber: string,
+  ) => {
     try {
       const res = await fetch(`/api/invoices/${invoiceId}/pdf`);
       if (!res.ok) throw new Error("Erreur");
@@ -82,7 +102,9 @@ export default function ClientInvoicesPage() {
       >
         <div className="bg-surface border border-border rounded-xl p-5 text-center">
           <Receipt className="w-5 h-5 text-muted-foreground mx-auto mb-2" />
-          <p className="text-2xl font-semibold text-foreground">{invoices.length}</p>
+          <p className="text-2xl font-semibold text-foreground">
+            {invoices.length}
+          </p>
           <p className="text-xs text-muted-foreground">Total factures</p>
         </div>
         <div className="bg-surface border border-border rounded-xl p-5 text-center">
@@ -140,7 +162,9 @@ export default function ClientInvoicesPage() {
                           : "bg-amber-500/10 text-amber-600"
                       }`}
                     >
-                      {invoice.status === "overdue" ? "En retard" : "En attente"}
+                      {invoice.status === "overdue"
+                        ? "En retard"
+                        : "En attente"}
                     </span>
                   </div>
                   <StripePayButton
@@ -197,7 +221,9 @@ export default function ClientInvoicesPage() {
                     <InvoiceStatusBadge status={invoice.status} />
                   </div>
                   <button
-                    onClick={() => handleDownloadPDF(invoice.id, invoice.invoice_number)}
+                    onClick={() =>
+                      handleDownloadPDF(invoice.id, invoice.invoice_number)
+                    }
                     className="p-2 rounded-lg hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
                     title="Telecharger PDF"
                   >
@@ -219,11 +245,16 @@ function InvoiceStatusBadge({ status }: { status: string }) {
     sent: { label: "En attente", className: "bg-amber-500/10 text-amber-600" },
     paid: { label: "Payee", className: "bg-emerald-500/10 text-emerald-600" },
     overdue: { label: "En retard", className: "bg-red-500/10 text-red-600" },
-    cancelled: { label: "Annulee", className: "bg-muted text-muted-foreground" },
+    cancelled: {
+      label: "Annulee",
+      className: "bg-muted text-muted-foreground",
+    },
   };
   const c = config[status] ?? config.draft;
   return (
-    <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${c.className}`}>
+    <span
+      className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${c.className}`}
+    >
       {c.label}
     </span>
   );

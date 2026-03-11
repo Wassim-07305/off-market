@@ -17,7 +17,7 @@ export function useSessions(clientId?: string) {
       let query = supabase
         .from("sessions")
         .select(
-          "*, client:profiles!sessions_client_id_fkey(id, full_name, avatar_url), coach:profiles!sessions_coach_id_fkey(id, full_name, avatar_url)"
+          "*, client:profiles!sessions_client_id_fkey(id, full_name, avatar_url), coach:profiles!sessions_coach_id_fkey(id, full_name, avatar_url)",
         )
         .order("scheduled_at", { ascending: false })
         .limit(50);
@@ -53,7 +53,10 @@ export function useSessions(clientId?: string) {
   });
 
   const updateSession = useMutation({
-    mutationFn: async ({ id, ...updates }: Partial<Session> & { id: string }) => {
+    mutationFn: async ({
+      id,
+      ...updates
+    }: Partial<Session> & { id: string }) => {
       const { error } = await supabase
         .from("sessions")
         .update(updates)
@@ -92,7 +95,9 @@ export function useSessions(clientId?: string) {
 
   return {
     sessions: sessionsQuery.data ?? [],
-    upcoming: (sessionsQuery.data ?? []).filter((s) => s.status === "scheduled"),
+    upcoming: (sessionsQuery.data ?? []).filter(
+      (s) => s.status === "scheduled",
+    ),
     isLoading: sessionsQuery.isLoading,
     createSession,
     updateSession,

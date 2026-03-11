@@ -36,7 +36,7 @@ export function RoleLayout({ variant, children }: RoleLayoutProps) {
       <div
         className={cn(
           "transition-all duration-300",
-          sidebarCollapsed ? "lg:ml-[72px]" : "lg:ml-[260px]"
+          sidebarCollapsed ? "lg:ml-[72px]" : "lg:ml-[260px]",
         )}
       >
         <Header />

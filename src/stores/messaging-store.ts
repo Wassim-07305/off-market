@@ -11,7 +11,9 @@ interface MessagingState {
 
   replyToMessageId: string | null;
   replyToMessage: { id: string; content: string; senderName: string } | null;
-  setReplyTo: (msg: { id: string; content: string; senderName: string } | null) => void;
+  setReplyTo: (
+    msg: { id: string; content: string; senderName: string } | null,
+  ) => void;
 
   editingMessageId: string | null;
   setEditingMessageId: (id: string | null) => void;

@@ -49,7 +49,10 @@ export function useJournal() {
   });
 
   const updateEntry = useMutation({
-    mutationFn: async ({ id, ...updates }: Partial<JournalEntry> & { id: string }) => {
+    mutationFn: async ({
+      id,
+      ...updates
+    }: Partial<JournalEntry> & { id: string }) => {
       const { error } = await supabase
         .from("journal_entries")
         .update(updates)
@@ -63,7 +66,10 @@ export function useJournal() {
 
   const deleteEntry = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("journal_entries").delete().eq("id", id);
+      const { error } = await supabase
+        .from("journal_entries")
+        .delete()
+        .eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {

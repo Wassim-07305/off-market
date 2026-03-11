@@ -18,12 +18,35 @@ interface ChatPanelProps {
   messages: EnrichedMessage[];
   isLoading: boolean;
   user: User | null;
-  sendMessage: UseMutationResult<{ id: string }, Error, { content: string; contentType?: string; replyTo?: string; scheduledAt?: string }>;
+  sendMessage: UseMutationResult<
+    { id: string },
+    Error,
+    {
+      content: string;
+      contentType?: string;
+      replyTo?: string;
+      scheduledAt?: string;
+    }
+  >;
   editMessage: UseMutationResult<void, Error, { id: string; content: string }>;
   deleteMessage: UseMutationResult<void, Error, string>;
   togglePin: UseMutationResult<void, Error, { id: string; pinned: boolean }>;
-  toggleReaction: UseMutationResult<void, Error, { messageId: string; emoji: string }>;
-  addAttachment: UseMutationResult<void, Error, { messageId: string; fileName: string; fileUrl: string; fileType: string; fileSize: number }>;
+  toggleReaction: UseMutationResult<
+    void,
+    Error,
+    { messageId: string; emoji: string }
+  >;
+  addAttachment: UseMutationResult<
+    void,
+    Error,
+    {
+      messageId: string;
+      fileName: string;
+      fileUrl: string;
+      fileType: string;
+      fileSize: number;
+    }
+  >;
   onOpenMembers: () => void;
   onOpenMobileSidebar: () => void;
   isOnline?: (userId: string) => boolean;
@@ -51,8 +74,17 @@ export function ChatPanel({
   stopTyping,
 }: ChatPanelProps) {
   const supabase = useSupabase();
-  const { replyToMessage, setReplyTo, showSearchPanel, setShowSearchPanel, searchQuery, setSearchQuery } = useMessagingStore();
-  const [threadMessage, setThreadMessage] = useState<EnrichedMessage | null>(null);
+  const {
+    replyToMessage,
+    setReplyTo,
+    showSearchPanel,
+    setShowSearchPanel,
+    searchQuery,
+    setSearchQuery,
+  } = useMessagingStore();
+  const [threadMessage, setThreadMessage] = useState<EnrichedMessage | null>(
+    null,
+  );
 
   const handleSend = useCallback(
     async (content: string, scheduledAt?: string) => {
@@ -67,7 +99,7 @@ export function ChatPanel({
         toast.success("Message programme");
       }
     },
-    [sendMessage, replyToMessage, setReplyTo]
+    [sendMessage, replyToMessage, setReplyTo],
   );
 
   const handleThreadReply = useCallback(
@@ -77,7 +109,7 @@ export function ChatPanel({
         replyTo,
       });
     },
-    [sendMessage]
+    [sendMessage],
   );
 
   const handleFileUpload = useCallback(
@@ -128,14 +160,26 @@ export function ChatPanel({
       setReplyTo(null);
       toast.success("Fichier envoye");
     },
-    [supabase, user, channel, sendMessage, addAttachment, replyToMessage, setReplyTo]
+    [
+      supabase,
+      user,
+      channel,
+      sendMessage,
+      addAttachment,
+      replyToMessage,
+      setReplyTo,
+    ],
   );
 
   const handleVoiceSend = useCallback(
     async (blob: Blob, duration: number) => {
       if (!user || !channel) return;
 
-      const ext = blob.type.includes("mp4") ? "m4a" : blob.type.includes("ogg") ? "ogg" : "webm";
+      const ext = blob.type.includes("mp4")
+        ? "m4a"
+        : blob.type.includes("ogg")
+          ? "ogg"
+          : "webm";
       const filePath = `${channel.id}/${Date.now()}.${ext}`;
       const { error: uploadError } = await supabase.storage
         .from("message-attachments")
@@ -167,12 +211,14 @@ export function ChatPanel({
 
       toast.success("Message vocal envoye");
     },
-    [supabase, user, channel, sendMessage, addAttachment]
+    [supabase, user, channel, sendMessage, addAttachment],
   );
 
   // Filter messages by search
   const displayedMessages = searchQuery
-    ? messages.filter((m) => m.content.toLowerCase().includes(searchQuery.toLowerCase()))
+    ? messages.filter((m) =>
+        m.content.toLowerCase().includes(searchQuery.toLowerCase()),
+      )
     : messages;
 
   return (
@@ -197,7 +243,9 @@ export function ChatPanel({
           messages={displayedMessages}
           isLoading={isLoading}
           currentUserId={user?.id ?? ""}
-          onReact={(messageId, emoji) => toggleReaction.mutate({ messageId, emoji })}
+          onReact={(messageId, emoji) =>
+            toggleReaction.mutate({ messageId, emoji })
+          }
           onReply={(msg) =>
             setReplyTo({
               id: msg.id,
@@ -222,8 +270,12 @@ export function ChatPanel({
           replyTo={replyToMessage}
           onCancelReply={() => setReplyTo(null)}
           isSending={sendMessage.isPending}
-          onTyping={() => broadcastTyping(user?.user_metadata?.full_name ?? "Quelqu'un")}
-          onStopTyping={() => stopTyping(user?.user_metadata?.full_name ?? "Quelqu'un")}
+          onTyping={() =>
+            broadcastTyping(user?.user_metadata?.full_name ?? "Quelqu'un")
+          }
+          onStopTyping={() =>
+            stopTyping(user?.user_metadata?.full_name ?? "Quelqu'un")
+          }
           channelId={channel.id}
         />
       </div>
@@ -236,7 +288,9 @@ export function ChatPanel({
           user={user}
           onClose={() => setThreadMessage(null)}
           onSendReply={handleThreadReply}
-          onReact={(messageId, emoji) => toggleReaction.mutate({ messageId, emoji })}
+          onReact={(messageId, emoji) =>
+            toggleReaction.mutate({ messageId, emoji })
+          }
         />
       )}
     </div>

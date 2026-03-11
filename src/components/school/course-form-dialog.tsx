@@ -8,12 +8,23 @@ import type { Course } from "@/types/database";
 interface CourseFormDialogProps {
   open: boolean;
   onClose: () => void;
-  onSave: (data: { title: string; description: string; cover_image_url?: string; status: Course["status"] }) => void;
+  onSave: (data: {
+    title: string;
+    description: string;
+    cover_image_url?: string;
+    status: Course["status"];
+  }) => void;
   course?: Course | null;
   isPending?: boolean;
 }
 
-export function CourseFormDialog({ open, onClose, onSave, course, isPending }: CourseFormDialogProps) {
+export function CourseFormDialog({
+  open,
+  onClose,
+  onSave,
+  course,
+  isPending,
+}: CourseFormDialogProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [coverUrl, setCoverUrl] = useState<string | null>(null);
@@ -51,7 +62,10 @@ export function CourseFormDialog({ open, onClose, onSave, course, isPending }: C
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+      <div
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+        onClick={onClose}
+      />
       <div
         className="relative w-full max-w-lg bg-surface rounded-2xl p-6 space-y-5"
         style={{ boxShadow: "var(--shadow-elevated)" }}
@@ -149,7 +163,11 @@ export function CourseFormDialog({ open, onClose, onSave, course, isPending }: C
               disabled={!title.trim() || isPending}
               className="h-9 px-4 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-all active:scale-[0.98] disabled:opacity-50"
             >
-              {isPending ? "Enregistrement..." : course ? "Sauvegarder" : "Creer"}
+              {isPending
+                ? "Enregistrement..."
+                : course
+                  ? "Sauvegarder"
+                  : "Creer"}
             </button>
           </div>
         </form>

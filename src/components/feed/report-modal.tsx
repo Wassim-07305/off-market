@@ -76,7 +76,9 @@ function ReportModal({
         style={{ boxShadow: "var(--shadow-elevated)" }}
       >
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-foreground">Signaler le contenu</h2>
+          <h2 className="text-lg font-semibold text-foreground">
+            Signaler le contenu
+          </h2>
           <button
             onClick={onClose}
             className="p-1.5 rounded-lg hover:bg-muted transition-colors text-muted-foreground"
@@ -86,7 +88,9 @@ function ReportModal({
         </div>
 
         <div className="space-y-2">
-          <p className="text-sm text-muted-foreground">Pourquoi signalez-vous ce contenu ?</p>
+          <p className="text-sm text-muted-foreground">
+            Pourquoi signalez-vous ce contenu ?
+          </p>
           <div className="space-y-1.5">
             {REPORT_REASONS.map((r) => (
               <button

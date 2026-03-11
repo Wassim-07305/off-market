@@ -8,7 +8,9 @@ const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const DB_URL = process.env.DATABASE_URL;
 
 if (!SUPABASE_URL || !SERVICE_ROLE_KEY || !DB_URL) {
-  console.error("Missing env vars in .env.local (NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, DATABASE_URL)");
+  console.error(
+    "Missing env vars in .env.local (NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, DATABASE_URL)",
+  );
   process.exit(1);
 }
 
@@ -24,7 +26,7 @@ async function main() {
   console.log("Connected to database.");
 
   const tablesResult = await client.query(
-    "SELECT tablename FROM pg_tables WHERE schemaname = 'public' ORDER BY tablename;"
+    "SELECT tablename FROM pg_tables WHERE schemaname = 'public' ORDER BY tablename;",
   );
 
   const tables = tablesResult.rows.map((r) => r.tablename);
@@ -74,7 +76,10 @@ async function main() {
   for (const user of allUsers) {
     const { error } = await supabase.auth.admin.deleteUser(user.id);
     if (error) {
-      console.error("Failed to delete user " + user.email + " (" + user.id + "):", error.message);
+      console.error(
+        "Failed to delete user " + user.email + " (" + user.id + "):",
+        error.message,
+      );
     } else {
       console.log("Deleted user: " + user.email + " (" + user.id + ")");
     }
@@ -98,7 +103,9 @@ async function main() {
     process.exit(1);
   }
 
-  console.log("Admin user created: " + newUser.user.email + " (" + newUser.user.id + ")");
+  console.log(
+    "Admin user created: " + newUser.user.email + " (" + newUser.user.id + ")",
+  );
 
   // Step 4: Update profile to set role=admin
   console.log("\n=== STEP 4: Update profile to role=admin ===\n");
@@ -115,7 +122,7 @@ async function main() {
   if (profileCheckError) {
     console.log(
       "Profile not found by trigger, inserting manually...",
-      profileCheckError.message
+      profileCheckError.message,
     );
     const { error: insertError } = await supabase.from("profiles").insert({
       id: newUser.user.id,

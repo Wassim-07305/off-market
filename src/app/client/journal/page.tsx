@@ -2,7 +2,12 @@
 
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { staggerContainer, staggerItem, fadeInUp, defaultTransition } from "@/lib/animations";
+import {
+  staggerContainer,
+  staggerItem,
+  fadeInUp,
+  defaultTransition,
+} from "@/lib/animations";
 import { useJournal } from "@/hooks/use-journal";
 import { MOOD_CONFIG, JOURNAL_TEMPLATES } from "@/types/coaching";
 import type { Mood, JournalTemplate, JournalEntry } from "@/types/coaching";
@@ -55,7 +60,7 @@ function getStreak(entries: JournalEntry[]): number {
       const d = new Date(e.created_at);
       d.setHours(0, 0, 0, 0);
       return d.getTime();
-    })
+    }),
   );
 
   // Check today first
@@ -74,9 +79,7 @@ function getStreak(entries: JournalEntry[]): number {
 }
 
 function getMoodTrend(entries: JournalEntry[]): number | null {
-  const recent = entries
-    .filter((e) => e.mood !== null)
-    .slice(0, 7);
+  const recent = entries.filter((e) => e.mood !== null).slice(0, 7);
   if (recent.length < 2) return null;
   const avg = recent.reduce((s, e) => s + (e.mood ?? 0), 0) / recent.length;
   return Math.round(avg * 10) / 10;
@@ -85,7 +88,8 @@ function getMoodTrend(entries: JournalEntry[]): number | null {
 export default function JournalPage() {
   const { entries, isLoading, createEntry, deleteEntry } = useJournal();
   const [showComposer, setShowComposer] = useState(false);
-  const [selectedTemplate, setSelectedTemplate] = useState<JournalTemplate | null>(null);
+  const [selectedTemplate, setSelectedTemplate] =
+    useState<JournalTemplate | null>(null);
   const [search, setSearch] = useState("");
   const [filterMood, setFilterMood] = useState<FilterMood>("all");
   const [showFilters, setShowFilters] = useState(false);
@@ -102,7 +106,7 @@ export default function JournalPage() {
         (e) =>
           e.title.toLowerCase().includes(q) ||
           e.content.toLowerCase().includes(q) ||
-          e.tags.some((t) => t.toLowerCase().includes(q))
+          e.tags.some((t) => t.toLowerCase().includes(q)),
       );
     }
     if (filterMood !== "all") {
@@ -115,7 +119,7 @@ export default function JournalPage() {
     const text = entries
       .map(
         (e) =>
-          `# ${e.title}\n${formatDate(e.created_at)}${e.mood ? ` | ${MOOD_CONFIG[e.mood as Mood]?.emoji}` : ""}${e.tags.length > 0 ? ` | ${e.tags.map((t) => `#${t}`).join(" ")}` : ""}\n\n${e.content}\n\n---\n`
+          `# ${e.title}\n${formatDate(e.created_at)}${e.mood ? ` | ${MOOD_CONFIG[e.mood as Mood]?.emoji}` : ""}${e.tags.length > 0 ? ` | ${e.tags.map((t) => `#${t}`).join(" ")}` : ""}\n\n${e.content}\n\n---\n`,
       )
       .join("\n");
     const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
@@ -176,25 +180,30 @@ export default function JournalPage() {
       </motion.div>
 
       {/* Stats */}
-      <motion.div
-        variants={staggerItem}
-        className="grid grid-cols-3 gap-3"
-      >
+      <motion.div variants={staggerItem} className="grid grid-cols-3 gap-3">
         <div
           className="bg-surface rounded-2xl p-4 text-center"
           style={{ boxShadow: "var(--shadow-card)" }}
         >
           <FileText className="w-5 h-5 text-primary mx-auto mb-1" />
-          <p className="text-lg font-display font-bold text-foreground">{totalEntries}</p>
-          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Entrees</p>
+          <p className="text-lg font-display font-bold text-foreground">
+            {totalEntries}
+          </p>
+          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+            Entrees
+          </p>
         </div>
         <div
           className="bg-surface rounded-2xl p-4 text-center"
           style={{ boxShadow: "var(--shadow-card)" }}
         >
           <Flame className="w-5 h-5 text-orange-500 mx-auto mb-1" />
-          <p className="text-lg font-display font-bold text-foreground">{streak}</p>
-          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Jours de suite</p>
+          <p className="text-lg font-display font-bold text-foreground">
+            {streak}
+          </p>
+          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+            Jours de suite
+          </p>
         </div>
         <div
           className="bg-surface rounded-2xl p-4 text-center"
@@ -204,28 +213,35 @@ export default function JournalPage() {
           <p className="text-lg font-display font-bold text-foreground">
             {moodTrend !== null ? `${moodTrend}/5` : "—"}
           </p>
-          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Humeur moy.</p>
+          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+            Humeur moy.
+          </p>
         </div>
       </motion.div>
 
       {/* Templates */}
       {!showComposer && (
         <motion.div variants={staggerItem}>
-          <p className="text-xs font-medium text-muted-foreground mb-2">Demarrer avec un template</p>
+          <p className="text-xs font-medium text-muted-foreground mb-2">
+            Demarrer avec un template
+          </p>
           <div className="flex gap-2 overflow-x-auto pb-1">
-            {(Object.entries(JOURNAL_TEMPLATES) as [JournalTemplate, typeof JOURNAL_TEMPLATES[JournalTemplate]][]).map(
-              ([key, tpl]) => (
-                <button
-                  key={key}
-                  onClick={() => startFromTemplate(key)}
-                  className="flex items-center gap-2 h-9 px-3.5 rounded-xl bg-surface border border-border hover:border-primary/30 hover:bg-primary/5 transition-all text-xs font-medium text-foreground whitespace-nowrap shrink-0"
-                  style={{ boxShadow: "var(--shadow-card)" }}
-                >
-                  <span>{tpl.icon}</span>
-                  {tpl.label}
-                </button>
-              )
-            )}
+            {(
+              Object.entries(JOURNAL_TEMPLATES) as [
+                JournalTemplate,
+                (typeof JOURNAL_TEMPLATES)[JournalTemplate],
+              ][]
+            ).map(([key, tpl]) => (
+              <button
+                key={key}
+                onClick={() => startFromTemplate(key)}
+                className="flex items-center gap-2 h-9 px-3.5 rounded-xl bg-surface border border-border hover:border-primary/30 hover:bg-primary/5 transition-all text-xs font-medium text-foreground whitespace-nowrap shrink-0"
+                style={{ boxShadow: "var(--shadow-card)" }}
+              >
+                <span>{tpl.icon}</span>
+                {tpl.label}
+              </button>
+            ))}
           </div>
         </motion.div>
       )}
@@ -277,7 +293,7 @@ export default function JournalPage() {
                 "h-9 px-3 rounded-xl border text-xs font-medium flex items-center gap-1.5 transition-all",
                 showFilters || filterMood !== "all"
                   ? "border-primary bg-primary/5 text-primary"
-                  : "border-border text-muted-foreground hover:text-foreground"
+                  : "border-border text-muted-foreground hover:text-foreground",
               )}
             >
               <Filter className="w-3.5 h-3.5" />
@@ -294,7 +310,7 @@ export default function JournalPage() {
                   "h-7 px-2.5 rounded-full text-xs font-medium transition-all",
                   filterMood === "all"
                     ? "bg-foreground text-background"
-                    : "bg-muted text-muted-foreground"
+                    : "bg-muted text-muted-foreground",
                 )}
               >
                 Toutes
@@ -307,7 +323,7 @@ export default function JournalPage() {
                     "h-7 w-7 rounded-full flex items-center justify-center transition-all",
                     filterMood === m
                       ? "bg-foreground text-background scale-110"
-                      : "bg-muted hover:scale-105"
+                      : "bg-muted hover:scale-105",
                   )}
                 >
                   <span className="text-sm">{MOOD_CONFIG[m].emoji}</span>
@@ -358,7 +374,10 @@ export default function JournalPage() {
                     </h3>
                     {entry.template && (
                       <span className="text-xs">
-                        {JOURNAL_TEMPLATES[entry.template as JournalTemplate]?.icon}
+                        {
+                          JOURNAL_TEMPLATES[entry.template as JournalTemplate]
+                            ?.icon
+                        }
                       </span>
                     )}
                   </div>
@@ -368,7 +387,10 @@ export default function JournalPage() {
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   {entry.mood && (
-                    <span className="text-lg" title={MOOD_CONFIG[entry.mood as Mood]?.label}>
+                    <span
+                      className="text-lg"
+                      title={MOOD_CONFIG[entry.mood as Mood]?.label}
+                    >
                       {MOOD_CONFIG[entry.mood as Mood]?.emoji}
                     </span>
                   )}
@@ -431,7 +453,7 @@ function JournalComposer({
   const [content, setContent] = useState(
     tpl && tpl.prompts.length > 0
       ? tpl.prompts.map((p) => `${p}\n`).join("\n")
-      : ""
+      : "",
   );
   const [mood, setMood] = useState<Mood | null>(null);
   const [tagsInput, setTagsInput] = useState("");
@@ -460,7 +482,9 @@ function JournalComposer({
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <h3 className="text-sm font-semibold text-foreground">Nouvelle entree</h3>
+          <h3 className="text-sm font-semibold text-foreground">
+            Nouvelle entree
+          </h3>
           {tpl && (
             <span className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
               {tpl.icon} {tpl.label}
@@ -476,7 +500,9 @@ function JournalComposer({
       </div>
 
       {tpl && tpl.description && (
-        <p className="text-xs text-muted-foreground italic">{tpl.description}</p>
+        <p className="text-xs text-muted-foreground italic">
+          {tpl.description}
+        </p>
       )}
 
       <input
@@ -504,7 +530,9 @@ function JournalComposer({
             onClick={() => setMood(mood === m ? null : m)}
             className={cn(
               "text-xl transition-all",
-              mood === m ? "scale-125" : "opacity-40 hover:opacity-80 hover:scale-110"
+              mood === m
+                ? "scale-125"
+                : "opacity-40 hover:opacity-80 hover:scale-110",
             )}
             title={MOOD_CONFIG[m].label}
           >
@@ -527,7 +555,11 @@ function JournalComposer({
           onClick={() => setIsPrivate(!isPrivate)}
           className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
         >
-          {isPrivate ? <Lock className="w-3.5 h-3.5" /> : <Globe className="w-3.5 h-3.5" />}
+          {isPrivate ? (
+            <Lock className="w-3.5 h-3.5" />
+          ) : (
+            <Globe className="w-3.5 h-3.5" />
+          )}
           {isPrivate ? "Prive" : "Visible par le coach"}
         </button>
         <button

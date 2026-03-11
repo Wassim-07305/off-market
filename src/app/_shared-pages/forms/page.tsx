@@ -7,7 +7,11 @@ import { useForms } from "@/hooks/use-forms";
 import { useAuth } from "@/hooks/use-auth";
 import { cn, formatDate } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { staggerContainer, fadeInUp, defaultTransition } from "@/lib/animations";
+import {
+  staggerContainer,
+  fadeInUp,
+  defaultTransition,
+} from "@/lib/animations";
 import {
   FileText,
   Plus,
@@ -43,13 +47,12 @@ export default function FormsPage() {
         className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
       >
         <div>
-          <h1
-            className="text-3xl font-semibold text-foreground font-bold"
-          >
+          <h1 className="text-3xl font-semibold text-foreground font-bold">
             Formulaires
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            {forms?.length ?? 0} formulaire{(forms?.length ?? 0) !== 1 ? "s" : ""}
+            {forms?.length ?? 0} formulaire
+            {(forms?.length ?? 0) !== 1 ? "s" : ""}
           </p>
         </div>
         {isStaff && (
@@ -76,7 +79,7 @@ export default function FormsPage() {
               "h-8 px-3 rounded-full text-xs font-medium transition-colors",
               statusFilter === f.value
                 ? "bg-foreground text-background"
-                : "bg-muted text-muted-foreground hover:text-foreground"
+                : "bg-muted text-muted-foreground hover:text-foreground",
             )}
           >
             {f.label}
@@ -91,7 +94,10 @@ export default function FormsPage() {
       >
         {isLoading ? (
           Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="bg-surface border border-border rounded-xl p-5 animate-pulse space-y-3">
+            <div
+              key={i}
+              className="bg-surface border border-border rounded-xl p-5 animate-pulse space-y-3"
+            >
               <div className="h-4 w-2/3 bg-muted rounded" />
               <div className="h-3 w-full bg-muted rounded" />
               <div className="h-3 w-1/2 bg-muted rounded" />
@@ -100,9 +106,7 @@ export default function FormsPage() {
         ) : !forms || forms.length === 0 ? (
           <div className="col-span-full py-16 text-center">
             <FileText className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
-            <p className="text-sm text-muted-foreground">
-              Aucun formulaire
-            </p>
+            <p className="text-sm text-muted-foreground">Aucun formulaire</p>
           </div>
         ) : (
           forms.map((form) => {
@@ -124,7 +128,7 @@ export default function FormsPage() {
                         ? "bg-success/10 text-success"
                         : form.status === "draft"
                           ? "bg-muted text-muted-foreground"
-                          : "bg-zinc-200 text-zinc-600"
+                          : "bg-zinc-200 text-zinc-600",
                     )}
                   >
                     {form.status === "active"

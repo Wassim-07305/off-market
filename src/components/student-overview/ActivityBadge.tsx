@@ -1,10 +1,10 @@
 interface ActivityBadgeProps {
-  lastSeenAt: string | null
+  lastSeenAt: string | null;
 }
 
 function getHoursAgo(lastSeenAt: string): number {
-  const seen = new Date(lastSeenAt).getTime()
-  return (Date.now() - seen) / (1000 * 60 * 60)
+  const seen = new Date(lastSeenAt).getTime();
+  return (Date.now() - seen) / (1000 * 60 * 60);
 }
 
 export function ActivityBadge({ lastSeenAt }: ActivityBadgeProps) {
@@ -14,10 +14,10 @@ export function ActivityBadge({ lastSeenAt }: ActivityBadgeProps) {
         <span className="h-1.5 w-1.5 rounded-full bg-gray-400" />
         Jamais connecté
       </span>
-    )
+    );
   }
 
-  const hoursAgo = getHoursAgo(lastSeenAt)
+  const hoursAgo = getHoursAgo(lastSeenAt);
 
   if (hoursAgo < 24) {
     return (
@@ -25,7 +25,7 @@ export function ActivityBadge({ lastSeenAt }: ActivityBadgeProps) {
         <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
         Actif
       </span>
-    )
+    );
   }
 
   if (hoursAgo < 72) {
@@ -34,7 +34,7 @@ export function ActivityBadge({ lastSeenAt }: ActivityBadgeProps) {
         <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
         Récemment
       </span>
-    )
+    );
   }
 
   return (
@@ -42,5 +42,5 @@ export function ActivityBadge({ lastSeenAt }: ActivityBadgeProps) {
       <span className="h-1.5 w-1.5 rounded-full bg-red-500" />
       Inactif
     </span>
-  )
+  );
 }

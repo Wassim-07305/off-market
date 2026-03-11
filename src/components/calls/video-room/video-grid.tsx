@@ -9,9 +9,18 @@ interface VideoGridProps {
   localName: string;
 }
 
-export function VideoGrid({ localStream, remoteStream, localName }: VideoGridProps) {
-  const { isMicOn, isCameraOn, isScreenSharing, remoteUserName, isRemoteConnected } =
-    useCallStore();
+export function VideoGrid({
+  localStream,
+  remoteStream,
+  localName,
+}: VideoGridProps) {
+  const {
+    isMicOn,
+    isCameraOn,
+    isScreenSharing,
+    remoteUserName,
+    isRemoteConnected,
+  } = useCallStore();
 
   return (
     <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3 p-4 min-h-0">

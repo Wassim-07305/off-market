@@ -5,7 +5,10 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function formatDate(date: string | Date, format: "short" | "long" | "relative" = "short"): string {
+export function formatDate(
+  date: string | Date,
+  format: "short" | "long" | "relative" = "short",
+): string {
   const d = new Date(date);
   const now = new Date();
   const diff = now.getTime() - d.getTime();
@@ -53,6 +56,10 @@ export function getInitials(name: string): string {
     .join("")
     .toUpperCase()
     .slice(0, 2);
+}
+
+export function formatRelativeDate(date: string | Date): string {
+  return formatDate(date, "relative");
 }
 
 export function truncate(str: string, length: number): string {

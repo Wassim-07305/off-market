@@ -14,6 +14,6 @@ self.addEventListener("activate", (event) => {
       .then((clients) => {
         clients.forEach((client) => client.navigate(client.url));
       })
-      .then(() => self.registration.unregister())
+      .then(() => self.registration.unregister()),
   );
 });

@@ -2,7 +2,11 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { staggerContainer, fadeInUp, defaultTransition } from "@/lib/animations";
+import {
+  staggerContainer,
+  fadeInUp,
+  defaultTransition,
+} from "@/lib/animations";
 import { useInvoices } from "@/hooks/use-invoices";
 import { useContracts } from "@/hooks/use-contracts";
 import { useAuth } from "@/hooks/use-auth";
@@ -20,7 +24,10 @@ import {
 import { toast } from "sonner";
 
 function formatEUR(amount: number) {
-  return new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(amount);
+  return new Intl.NumberFormat("fr-FR", {
+    style: "currency",
+    currency: "EUR",
+  }).format(amount);
 }
 
 function formatDate(date: string | null) {
@@ -43,15 +50,21 @@ const STATUS_TABS: { label: string; value: InvoiceStatus | "all" }[] = [
 
 export default function InvoicesPage() {
   const { user } = useAuth();
-  const [statusFilter, setStatusFilter] = useState<InvoiceStatus | "all">("all");
+  const [statusFilter, setStatusFilter] = useState<InvoiceStatus | "all">(
+    "all",
+  );
   const [search, setSearch] = useState("");
   const [showCreateModal, setShowCreateModal] = useState(false);
 
-  const { invoices, isLoading, createInvoice, sendInvoice, markAsPaid } = useInvoices({
-    status: statusFilter === "all" ? undefined : statusFilter,
-  });
+  const { invoices, isLoading, createInvoice, sendInvoice, markAsPaid } =
+    useInvoices({
+      status: statusFilter === "all" ? undefined : statusFilter,
+    });
 
-  const handleDownloadPDF = async (invoiceId: string, invoiceNumber: string) => {
+  const handleDownloadPDF = async (
+    invoiceId: string,
+    invoiceNumber: string,
+  ) => {
     try {
       const res = await fetch(`/api/invoices/${invoiceId}/pdf`);
       if (!res.ok) throw new Error("Erreur");
@@ -71,7 +84,7 @@ export default function InvoicesPage() {
     ? invoices.filter(
         (i) =>
           i.invoice_number.toLowerCase().includes(search.toLowerCase()) ||
-          i.client?.full_name?.toLowerCase().includes(search.toLowerCase())
+          i.client?.full_name?.toLowerCase().includes(search.toLowerCase()),
       )
     : invoices;
 
@@ -150,7 +163,9 @@ export default function InvoicesPage() {
         ) : filtered.length === 0 ? (
           <div className="p-12 text-center">
             <Receipt className="w-10 h-10 text-muted-foreground/40 mx-auto mb-3" />
-            <p className="text-sm text-muted-foreground">Aucune facture trouvee</p>
+            <p className="text-sm text-muted-foreground">
+              Aucune facture trouvee
+            </p>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -220,7 +235,8 @@ export default function InvoicesPage() {
                             <Send className="w-4 h-4" />
                           </button>
                         )}
-                        {(invoice.status === "sent" || invoice.status === "overdue") && (
+                        {(invoice.status === "sent" ||
+                          invoice.status === "overdue") && (
                           <button
                             onClick={() => markAsPaid.mutate(invoice.id)}
                             className="p-2 rounded-lg hover:bg-muted transition-colors text-emerald-500"
@@ -230,7 +246,12 @@ export default function InvoicesPage() {
                           </button>
                         )}
                         <button
-                          onClick={() => handleDownloadPDF(invoice.id, invoice.invoice_number)}
+                          onClick={() =>
+                            handleDownloadPDF(
+                              invoice.id,
+                              invoice.invoice_number,
+                            )
+                          }
                           className="p-2 rounded-lg hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
                           title="Telecharger PDF"
                         >
@@ -253,7 +274,7 @@ export default function InvoicesPage() {
           onCreate={(data) => {
             createInvoice.mutate(
               { ...data, created_by: user?.id ?? "" },
-              { onSuccess: () => setShowCreateModal(false) }
+              { onSuccess: () => setShowCreateModal(false) },
             );
           }}
           isCreating={createInvoice.isPending}
@@ -269,11 +290,16 @@ function InvoiceStatusBadge({ status }: { status: string }) {
     sent: { label: "Envoyee", className: "bg-blue-500/10 text-blue-600" },
     paid: { label: "Payee", className: "bg-emerald-500/10 text-emerald-600" },
     overdue: { label: "En retard", className: "bg-red-500/10 text-red-600" },
-    cancelled: { label: "Annulee", className: "bg-muted text-muted-foreground" },
+    cancelled: {
+      label: "Annulee",
+      className: "bg-muted text-muted-foreground",
+    },
   };
   const c = config[status] ?? config.draft;
   return (
-    <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${c.className}`}>
+    <span
+      className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${c.className}`}
+    >
       {c.label}
     </span>
   );
@@ -326,8 +352,13 @@ function CreateInvoiceModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
       <div className="bg-surface border border-border rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto m-4">
         <div className="flex items-center justify-between p-6 border-b border-border">
-          <h2 className="text-lg font-semibold text-foreground">Nouvelle facture</h2>
-          <button onClick={onClose} className="p-2 rounded-lg hover:bg-muted transition-colors">
+          <h2 className="text-lg font-semibold text-foreground">
+            Nouvelle facture
+          </h2>
+          <button
+            onClick={onClose}
+            className="p-2 rounded-lg hover:bg-muted transition-colors"
+          >
             <X className="w-4 h-4" />
           </button>
         </div>
@@ -335,7 +366,9 @@ function CreateInvoiceModal({
         <div className="p-6 space-y-4">
           {/* Client */}
           <div>
-            <label className="block text-sm font-medium text-foreground mb-1.5">Client</label>
+            <label className="block text-sm font-medium text-foreground mb-1.5">
+              Client
+            </label>
             <select
               value={clientId}
               onChange={(e) => setClientId(e.target.value)}

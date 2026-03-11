@@ -25,7 +25,8 @@ export default function ClientError({
           Erreur — Espace Client
         </h2>
         <p className="max-w-md text-sm text-zinc-500 dark:text-zinc-400">
-          Une erreur est survenue. Veuillez réessayer ou retourner au tableau de bord.
+          Une erreur est survenue. Veuillez réessayer ou retourner au tableau de
+          bord.
         </p>
         {error.digest && (
           <p className="text-xs text-zinc-400 dark:text-zinc-500">

@@ -2,7 +2,11 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { staggerContainer, fadeInUp, defaultTransition } from "@/lib/animations";
+import {
+  staggerContainer,
+  fadeInUp,
+  defaultTransition,
+} from "@/lib/animations";
 import { useCoachAlerts } from "@/hooks/use-coach-alerts";
 import { ALERT_SEVERITY_CONFIG, ALERT_TYPE_CONFIG } from "@/types/coaching";
 import type { AlertSeverity, AlertType } from "@/types/coaching";
@@ -21,7 +25,9 @@ function timeAgo(date: string) {
 
 export default function CoachAlertsPage() {
   const [showResolved, setShowResolved] = useState(false);
-  const { alerts, isLoading, resolveAlert } = useCoachAlerts(showResolved ? undefined : false);
+  const { alerts, isLoading, resolveAlert } = useCoachAlerts(
+    showResolved ? undefined : false,
+  );
 
   const bySeverity = {
     critical: alerts.filter((a) => a.severity === "critical" && !a.is_resolved),
@@ -70,19 +76,27 @@ export default function CoachAlertsPage() {
         transition={defaultTransition}
         className="grid grid-cols-4 gap-3"
       >
-        {(["critical", "high", "medium", "low"] as AlertSeverity[]).map((severity) => {
-          const config = ALERT_SEVERITY_CONFIG[severity];
-          const count = bySeverity[severity].length;
-          return (
-            <div
-              key={severity}
-              className="bg-surface border border-border rounded-xl p-4 text-center"
-            >
-              <p className="text-2xl font-semibold text-foreground">{count}</p>
-              <p className={`text-xs font-medium ${config.color.split(" ")[1]}`}>{config.label}</p>
-            </div>
-          );
-        })}
+        {(["critical", "high", "medium", "low"] as AlertSeverity[]).map(
+          (severity) => {
+            const config = ALERT_SEVERITY_CONFIG[severity];
+            const count = bySeverity[severity].length;
+            return (
+              <div
+                key={severity}
+                className="bg-surface border border-border rounded-xl p-4 text-center"
+              >
+                <p className="text-2xl font-semibold text-foreground">
+                  {count}
+                </p>
+                <p
+                  className={`text-xs font-medium ${config.color.split(" ")[1]}`}
+                >
+                  {config.label}
+                </p>
+              </div>
+            );
+          },
+        )}
       </motion.div>
 
       {/* Alert list */}
@@ -108,7 +122,8 @@ export default function CoachAlertsPage() {
           className="space-y-2"
         >
           {alerts.map((alert) => {
-            const severityConfig = ALERT_SEVERITY_CONFIG[alert.severity as AlertSeverity];
+            const severityConfig =
+              ALERT_SEVERITY_CONFIG[alert.severity as AlertSeverity];
             const typeConfig = ALERT_TYPE_CONFIG[alert.alert_type as AlertType];
 
             return (
@@ -118,10 +133,14 @@ export default function CoachAlertsPage() {
                   alert.is_resolved ? "opacity-50" : ""
                 }`}
               >
-                <span className="text-xl shrink-0">{typeConfig?.icon ?? "⚠️"}</span>
+                <span className="text-xl shrink-0">
+                  {typeConfig?.icon ?? "⚠️"}
+                </span>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-0.5">
-                    <p className="text-sm font-medium text-foreground">{alert.title}</p>
+                    <p className="text-sm font-medium text-foreground">
+                      {alert.title}
+                    </p>
                     <span
                       className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${severityConfig.color}`}
                     >
@@ -137,7 +156,9 @@ export default function CoachAlertsPage() {
                     </span>
                   </div>
                   {alert.description && (
-                    <p className="text-xs text-muted-foreground mt-1">{alert.description}</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {alert.description}
+                    </p>
                   )}
                 </div>
                 {!alert.is_resolved && (

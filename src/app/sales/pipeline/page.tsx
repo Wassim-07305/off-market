@@ -72,7 +72,7 @@ function StatsBar({ contacts }: { contacts: CrmContact[] }) {
     totalContacts > 0
       ? Math.round(
           contacts.reduce((sum, c) => sum + (c.lead_score ?? 0), 0) /
-            totalContacts
+            totalContacts,
         )
       : 0;
 
@@ -104,7 +104,10 @@ function StatsBar({ contacts }: { contacts: CrmContact[] }) {
         </p>
       </div>
       {perStage.slice(0, 2).map((s) => (
-        <div key={s.value} className="bg-surface border border-border rounded-xl p-3">
+        <div
+          key={s.value}
+          className="bg-surface border border-border rounded-xl p-3"
+        >
           <div className="flex items-center gap-2 text-muted-foreground mb-1">
             <BarChart3 className="w-3.5 h-3.5" />
             <span className="text-[10px] font-medium uppercase tracking-wider">
@@ -153,11 +156,19 @@ function ContactCard({
       <div className="flex items-center gap-2 mb-1.5">
         <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
           <div
-            className={cn("h-full rounded-full transition-all", getScoreColor(score))}
+            className={cn(
+              "h-full rounded-full transition-all",
+              getScoreColor(score),
+            )}
             style={{ width: `${score}%` }}
           />
         </div>
-        <span className={cn("text-[10px] font-mono font-medium", getScoreTextColor(score))}>
+        <span
+          className={cn(
+            "text-[10px] font-mono font-medium",
+            getScoreTextColor(score),
+          )}
+        >
           {score}
         </span>
       </div>
@@ -194,7 +205,7 @@ function StageColumn({
 }) {
   const total = contacts.reduce(
     (sum, c) => sum + Number(c.estimated_value ?? 0),
-    0
+    0,
   );
 
   return (
@@ -259,7 +270,7 @@ function ContactDetailDrawer({
       setLocalScore(score);
       updateLeadScore.mutate({ id: contact.id, lead_score: score });
     },
-    [contact.id, updateLeadScore]
+    [contact.id, updateLeadScore],
   );
 
   const handleStageChange = useCallback(
@@ -267,7 +278,7 @@ function ContactDetailDrawer({
       setLocalStage(stage);
       updateStage.mutate({ id: contact.id, stage });
     },
-    [contact.id, updateStage]
+    [contact.id, updateStage],
   );
 
   const handleAddInteraction = useCallback(() => {
@@ -282,7 +293,7 @@ function ContactDetailDrawer({
         onSuccess: () => {
           setNewContent("");
         },
-      }
+      },
     );
   }, [contact.id, newType, newContent, addInteraction]);
 
@@ -349,7 +360,12 @@ function ContactDetailDrawer({
             </h3>
             <div className="bg-muted/50 rounded-xl p-3">
               <div className="flex items-center justify-between mb-2">
-                <span className={cn("text-lg font-semibold font-mono", getScoreTextColor(localScore))}>
+                <span
+                  className={cn(
+                    "text-lg font-semibold font-mono",
+                    getScoreTextColor(localScore),
+                  )}
+                >
                   {localScore}
                 </span>
                 <span className="text-[10px] text-muted-foreground">/100</span>
@@ -378,8 +394,12 @@ function ContactDetailDrawer({
                   className={cn(
                     "px-2.5 py-1 rounded-lg text-xs font-medium border transition-all",
                     localStage === s.value
-                      ? cn(s.bg, s.color, "ring-1 ring-offset-1 ring-primary/20")
-                      : "text-muted-foreground border-border hover:border-primary/30"
+                      ? cn(
+                          s.bg,
+                          s.color,
+                          "ring-1 ring-offset-1 ring-primary/20",
+                        )
+                      : "text-muted-foreground border-border hover:border-primary/30",
                   )}
                 >
                   {s.label}
@@ -405,7 +425,7 @@ function ContactDetailDrawer({
                         "flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-medium border transition-all",
                         newType === t.value
                           ? "bg-primary text-white border-primary"
-                          : "text-muted-foreground border-border hover:border-primary/30"
+                          : "text-muted-foreground border-border hover:border-primary/30",
                       )}
                     >
                       <Icon className="w-2.5 h-2.5" />
@@ -456,7 +476,7 @@ function ContactDetailDrawer({
                   const Icon =
                     INTERACTION_ICON_MAP[interaction.type] ?? FileText;
                   const typeConfig = INTERACTION_TYPES.find(
-                    (t) => t.value === interaction.type
+                    (t) => t.value === interaction.type,
                   );
                   return (
                     <div
@@ -642,7 +662,7 @@ export default function SalesPipelinePage() {
   const [search, setSearch] = useState("");
   const [showAdd, setShowAdd] = useState(false);
   const [selectedContact, setSelectedContact] = useState<CrmContact | null>(
-    null
+    null,
   );
 
   // Filter contacts by search
@@ -654,7 +674,7 @@ export default function SalesPipelinePage() {
         c.full_name.toLowerCase().includes(term) ||
         c.email?.toLowerCase().includes(term) ||
         c.company?.toLowerCase().includes(term) ||
-        c.phone?.includes(term)
+        c.phone?.includes(term),
     );
   }, [contacts, search]);
 

@@ -8,7 +8,7 @@
  */
 export function toCSV(
   rows: Record<string, unknown>[],
-  columns: { key: string; label: string }[]
+  columns: { key: string; label: string }[],
 ): string {
   const escape = (val: unknown): string => {
     const str = val === null || val === undefined ? "" : String(val);
@@ -50,7 +50,7 @@ export function downloadCSV(csv: string, filename: string) {
 export function exportToCSV(
   rows: Record<string, unknown>[],
   columns: { key: string; label: string }[],
-  filename: string
+  filename: string,
 ) {
   const csv = toCSV(rows, columns);
   downloadCSV(csv, filename);
@@ -77,7 +77,7 @@ export function exportToPDF(config: {
             ${s.rows.map((r) => `<tr><td class="label">${r.label}</td><td class="value">${r.value}</td></tr>`).join("")}
           </tbody>
         </table>
-      </div>`
+      </div>`,
     )
     .join("");
 
@@ -135,13 +135,11 @@ export function exportTableToPDF(config: {
   columns: { key: string; label: string }[];
   rows: Record<string, unknown>[];
 }) {
-  const thHtml = config.columns
-    .map((c) => `<th>${c.label}</th>`)
-    .join("");
+  const thHtml = config.columns.map((c) => `<th>${c.label}</th>`).join("");
   const bodyHtml = config.rows
     .map(
       (row) =>
-        `<tr>${config.columns.map((c) => `<td>${row[c.key] ?? "—"}</td>`).join("")}</tr>`
+        `<tr>${config.columns.map((c) => `<td>${row[c.key] ?? "—"}</td>`).join("")}</tr>`,
     )
     .join("");
 

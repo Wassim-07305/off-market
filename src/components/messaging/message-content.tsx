@@ -1,7 +1,15 @@
 "use client";
 
 import { formatFileSize } from "@/lib/messaging-utils";
-import { FileText, Download, Play, Pause, FileArchive, FileSpreadsheet, FileImage } from "lucide-react";
+import {
+  FileText,
+  Download,
+  Play,
+  Pause,
+  FileArchive,
+  FileSpreadsheet,
+  FileImage,
+} from "lucide-react";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { ImageLightbox } from "./image-lightbox";
 import type { EnrichedMessage } from "@/types/messaging";
@@ -43,7 +51,8 @@ function TextContent({ content }: { content: string }) {
 }
 
 function renderRichText(text: string): React.ReactNode[] {
-  const pattern = /(@[\w\s]+?)(?=\s|$)|(\*\*(.+?)\*\*)|(_(.+?)_)|(~~(.+?)~~)|(`(.+?)`)|(\[(.+?)\]\((.+?)\))|(https?:\/\/[^\s]+)/g;
+  const pattern =
+    /(@[\w\s]+?)(?=\s|$)|(\*\*(.+?)\*\*)|(_(.+?)_)|(~~(.+?)~~)|(`(.+?)`)|(\[(.+?)\]\((.+?)\))|(https?:\/\/[^\s]+)/g;
 
   const parts: React.ReactNode[] = [];
   let lastIdx = 0;
@@ -56,31 +65,59 @@ function renderRichText(text: string): React.ReactNode[] {
 
     if (match[1]) {
       parts.push(
-        <span key={match.index} className="px-0.5 py-px rounded bg-primary/10 text-primary font-medium text-[13px]">
+        <span
+          key={match.index}
+          className="px-0.5 py-px rounded bg-primary/10 text-primary font-medium text-[13px]"
+        >
           {match[1]}
-        </span>
+        </span>,
       );
     } else if (match[2]) {
-      parts.push(<strong key={match.index} className="font-semibold">{match[3]}</strong>);
+      parts.push(
+        <strong key={match.index} className="font-semibold">
+          {match[3]}
+        </strong>,
+      );
     } else if (match[4]) {
       parts.push(<em key={match.index}>{match[5]}</em>);
     } else if (match[6]) {
-      parts.push(<del key={match.index} className="text-muted-foreground">{match[7]}</del>);
+      parts.push(
+        <del key={match.index} className="text-muted-foreground">
+          {match[7]}
+        </del>,
+      );
     } else if (match[8]) {
       parts.push(
-        <code key={match.index} className="px-1 py-0.5 rounded bg-muted text-[13px] font-mono text-foreground">{match[9]}</code>
+        <code
+          key={match.index}
+          className="px-1 py-0.5 rounded bg-muted text-[13px] font-mono text-foreground"
+        >
+          {match[9]}
+        </code>,
       );
     } else if (match[10]) {
       parts.push(
-        <a key={match.index} href={match[12]} target="_blank" rel="noopener noreferrer" className="text-primary underline underline-offset-2 hover:text-primary/80">
+        <a
+          key={match.index}
+          href={match[12]}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-primary underline underline-offset-2 hover:text-primary/80"
+        >
           {match[11]}
-        </a>
+        </a>,
       );
     } else if (match[13]) {
       parts.push(
-        <a key={match.index} href={match[13]} target="_blank" rel="noopener noreferrer" className="text-primary underline underline-offset-2 hover:text-primary/80">
+        <a
+          key={match.index}
+          href={match[13]}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-primary underline underline-offset-2 hover:text-primary/80"
+        >
           {match[13]}
-        </a>
+        </a>,
       );
     }
 
@@ -104,13 +141,18 @@ function InlineImage({ url }: { url: string }) {
         className="mt-1 max-w-xs max-h-64 rounded-xl border border-border/40 object-cover cursor-pointer hover:opacity-90 transition-opacity"
         onClick={() => setShowLightbox(true)}
       />
-      {showLightbox && <ImageLightbox src={url} onClose={() => setShowLightbox(false)} />}
+      {showLightbox && (
+        <ImageLightbox src={url} onClose={() => setShowLightbox(false)} />
+      )}
     </>
   );
 }
 
 function ImageContent({ message }: { message: EnrichedMessage }) {
-  const url = message.attachments?.[0]?.file_url ?? message.content.match(/\((.*?)\)/)?.[1] ?? message.content;
+  const url =
+    message.attachments?.[0]?.file_url ??
+    message.content.match(/\((.*?)\)/)?.[1] ??
+    message.content;
   const [showLightbox, setShowLightbox] = useState(false);
 
   return (
@@ -122,7 +164,11 @@ function ImageContent({ message }: { message: EnrichedMessage }) {
         onClick={() => setShowLightbox(true)}
       />
       {showLightbox && (
-        <ImageLightbox src={url} alt={message.attachments?.[0]?.file_name} onClose={() => setShowLightbox(false)} />
+        <ImageLightbox
+          src={url}
+          alt={message.attachments?.[0]?.file_name}
+          onClose={() => setShowLightbox(false)}
+        />
       )}
     </>
   );
@@ -132,13 +178,20 @@ function VideoContent({ message }: { message: EnrichedMessage }) {
   const url = message.attachments?.[0]?.file_url ?? message.content;
   return (
     <div className="mt-1 max-w-sm">
-      <video src={url} controls className="w-full rounded-xl border border-border/40" />
+      <video
+        src={url}
+        controls
+        className="w-full rounded-xl border border-border/40"
+      />
     </div>
   );
 }
 
 // Pre-compute bar heights once (deterministic waveform shape)
-const WAVEFORM_BARS = Array.from({ length: 30 }, (_, i) => Math.max(Math.sin(i * 0.6 + 1) * 0.5 + 0.5, 0.15) * 100);
+const WAVEFORM_BARS = Array.from(
+  { length: 30 },
+  (_, i) => Math.max(Math.sin(i * 0.6 + 1) * 0.5 + 0.5, 0.15) * 100,
+);
 
 function AudioContent({ message }: { message: EnrichedMessage }) {
   const url = message.attachments?.[0]?.file_url ?? message.content;
@@ -209,13 +262,21 @@ function AudioContent({ message }: { message: EnrichedMessage }) {
           const el = audioRef.current;
           if (el && isFinite(el.duration)) setDuration(el.duration);
         }}
-        onEnded={() => { setPlaying(false); setProgress(0); setCurrentTime(0); }}
+        onEnded={() => {
+          setPlaying(false);
+          setProgress(0);
+          setCurrentTime(0);
+        }}
       />
       <button
         onClick={togglePlay}
         className="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center shrink-0 hover:bg-primary/90 transition-all active:scale-95"
       >
-        {playing ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5 ml-0.5" />}
+        {playing ? (
+          <Pause className="w-3.5 h-3.5" />
+        ) : (
+          <Play className="w-3.5 h-3.5 ml-0.5" />
+        )}
       </button>
 
       {/* Waveform — dual-layer with GPU-accelerated clipPath for smooth sweep */}
@@ -223,7 +284,11 @@ function AudioContent({ message }: { message: EnrichedMessage }) {
         {/* Background layer (inactive bars) */}
         <div className="absolute inset-0 flex items-center gap-px">
           {WAVEFORM_BARS.map((h, i) => (
-            <div key={i} className="flex-1 rounded-full bg-border" style={{ height: `${h}%` }} />
+            <div
+              key={i}
+              className="flex-1 rounded-full bg-border"
+              style={{ height: `${h}%` }}
+            />
           ))}
         </div>
         {/* Foreground layer (active bars) — clipped to progress */}
@@ -232,7 +297,11 @@ function AudioContent({ message }: { message: EnrichedMessage }) {
           style={{ clipPath: `inset(0 ${100 - progress * 100}% 0 0)` }}
         >
           {WAVEFORM_BARS.map((h, i) => (
-            <div key={i} className="flex-1 rounded-full bg-primary" style={{ height: `${h}%` }} />
+            <div
+              key={i}
+              className="flex-1 rounded-full bg-primary"
+              style={{ height: `${h}%` }}
+            />
           ))}
         </div>
       </div>
@@ -252,13 +321,16 @@ function FileContent({ message }: { message: EnrichedMessage }) {
   const fileSize = attachment?.file_size;
   const fileType = attachment?.file_type ?? "";
 
-  const FileIcon = fileType.includes("zip") || fileType.includes("rar")
-    ? FileArchive
-    : fileType.includes("sheet") || fileType.includes("csv") || fileType.includes("excel")
-      ? FileSpreadsheet
-      : fileType.includes("image")
-        ? FileImage
-        : FileText;
+  const FileIcon =
+    fileType.includes("zip") || fileType.includes("rar")
+      ? FileArchive
+      : fileType.includes("sheet") ||
+          fileType.includes("csv") ||
+          fileType.includes("excel")
+        ? FileSpreadsheet
+        : fileType.includes("image")
+          ? FileImage
+          : FileText;
 
   return (
     <a
@@ -271,8 +343,14 @@ function FileContent({ message }: { message: EnrichedMessage }) {
         <FileIcon className="w-4 h-4 text-primary" />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-medium text-foreground truncate">{fileName}</p>
-        {fileSize && <p className="text-[11px] text-muted-foreground">{formatFileSize(fileSize)}</p>}
+        <p className="text-sm font-medium text-foreground truncate">
+          {fileName}
+        </p>
+        {fileSize && (
+          <p className="text-[11px] text-muted-foreground">
+            {formatFileSize(fileSize)}
+          </p>
+        )}
       </div>
       <Download className="w-4 h-4 text-muted-foreground shrink-0 group-hover:text-foreground transition-colors" />
     </a>

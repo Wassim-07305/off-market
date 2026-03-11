@@ -30,7 +30,7 @@ export function ChatHeader({
   const isDM = channel.type === "dm";
   const partner = channel.dmPartner;
   const ChannelIcon = channel.type === "private" ? Lock : Hash;
-  const partnerOnline = partner ? isOnline?.(partner.id) ?? false : false;
+  const partnerOnline = partner ? (isOnline?.(partner.id) ?? false) : false;
 
   return (
     <div className="shrink-0 border-b border-border/40">
@@ -48,9 +48,15 @@ export function ChatHeader({
               <div className="relative shrink-0">
                 <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
                   {partner.avatar_url ? (
-                    <img src={partner.avatar_url} alt="" className="w-8 h-8 rounded-full object-cover" />
+                    <img
+                      src={partner.avatar_url}
+                      alt=""
+                      className="w-8 h-8 rounded-full object-cover"
+                    />
                   ) : (
-                    <span className="text-xs font-medium text-primary">{getInitials(partner.full_name)}</span>
+                    <span className="text-xs font-medium text-primary">
+                      {getInitials(partner.full_name)}
+                    </span>
                   )}
                 </div>
                 {partnerOnline && (
@@ -58,10 +64,14 @@ export function ChatHeader({
                 )}
               </div>
               <div className="min-w-0">
-                <h3 className="text-sm font-semibold text-foreground truncate">{partner.full_name}</h3>
+                <h3 className="text-sm font-semibold text-foreground truncate">
+                  {partner.full_name}
+                </h3>
                 <p className="text-[10px] text-muted-foreground">
                   {partnerOnline ? (
-                    <span className="text-emerald-500 font-medium">En ligne</span>
+                    <span className="text-emerald-500 font-medium">
+                      En ligne
+                    </span>
                   ) : (
                     <span className="capitalize">{partner.role}</span>
                   )}
@@ -74,9 +84,13 @@ export function ChatHeader({
                 <ChannelIcon className="w-4 h-4 text-muted-foreground" />
               </div>
               <div className="min-w-0">
-                <h3 className="text-sm font-semibold text-foreground truncate">{channel.name}</h3>
+                <h3 className="text-sm font-semibold text-foreground truncate">
+                  {channel.name}
+                </h3>
                 {channel.description && (
-                  <p className="text-[10px] text-muted-foreground truncate">{channel.description}</p>
+                  <p className="text-[10px] text-muted-foreground truncate">
+                    {channel.description}
+                  </p>
                 )}
               </div>
             </>
@@ -88,7 +102,9 @@ export function ChatHeader({
             onClick={onToggleSearch}
             className={cn(
               "w-8 h-8 rounded-lg flex items-center justify-center transition-colors",
-              showSearch ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground hover:bg-muted"
+              showSearch
+                ? "text-primary bg-primary/10"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted",
             )}
           >
             <Search className="w-4 h-4" />
@@ -118,7 +134,10 @@ export function ChatHeader({
             </span>
           )}
           <button
-            onClick={() => { onSearchChange(""); onToggleSearch(); }}
+            onClick={() => {
+              onSearchChange("");
+              onToggleSearch();
+            }}
             className="w-6 h-6 rounded flex items-center justify-center text-muted-foreground hover:text-foreground"
           >
             <X className="w-3.5 h-3.5" />

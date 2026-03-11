@@ -7,7 +7,9 @@ import type { GoogleCalendarEvent } from "@/types/google-calendar";
 
 export async function GET(request: NextRequest) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) {
     return NextResponse.json({ error: "Non autorise" }, { status: 401 });
@@ -20,7 +22,7 @@ export async function GET(request: NextRequest) {
   if (!timeMin || !timeMax) {
     return NextResponse.json(
       { error: "timeMin et timeMax requis" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -35,7 +37,7 @@ export async function GET(request: NextRequest) {
   if (tokenError || !tokenRow) {
     return NextResponse.json(
       { error: "Google Calendar non connecte" },
-      { status: 404 }
+      { status: 404 },
     );
   }
 
@@ -96,7 +98,8 @@ export async function GET(request: NextRequest) {
     // If token is revoked/invalid, deactivate
     const isAuthError =
       err instanceof Error &&
-      ("code" in err && (err as { code: number }).code === 401);
+      "code" in err &&
+      (err as { code: number }).code === 401;
     if (isAuthError) {
       const admin = createAdminClient();
       await admin
@@ -105,13 +108,13 @@ export async function GET(request: NextRequest) {
         .eq("user_id", user.id);
       return NextResponse.json(
         { error: "Token Google revoque. Veuillez reconnecter." },
-        { status: 401 }
+        { status: 401 },
       );
     }
     console.error("Google Calendar events fetch error:", err);
     return NextResponse.json(
       { error: "Erreur lors de la recuperation des evenements" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

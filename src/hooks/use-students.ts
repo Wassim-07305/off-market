@@ -34,9 +34,7 @@ export function useStudents(options: UseStudentsOptions = {}) {
         .limit(limit);
 
       if (search) {
-        query = query.or(
-          `full_name.ilike.%${search}%,email.ilike.%${search}%`
-        );
+        query = query.or(`full_name.ilike.%${search}%,email.ilike.%${search}%`);
       }
 
       const { data, error } = await query;
@@ -45,9 +43,7 @@ export function useStudents(options: UseStudentsOptions = {}) {
       let results = data as StudentWithDetails[];
 
       if (tag && tag !== "all") {
-        results = results.filter(
-          (s) => s.student_details?.[0]?.tag === tag
-        );
+        results = results.filter((s) => s.student_details?.[0]?.tag === tag);
       }
 
       return results;
@@ -63,14 +59,14 @@ export function useStudents(options: UseStudentsOptions = {}) {
         { event: "*", schema: "public", table: "profiles" },
         () => {
           queryClient.invalidateQueries({ queryKey: ["students"] });
-        }
+        },
       )
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "student_details" },
         () => {
           queryClient.invalidateQueries({ queryKey: ["students"] });
-        }
+        },
       )
       .subscribe();
 
@@ -172,7 +168,9 @@ export function useStudentNotes(studentId: string) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("student_notes")
-        .select("*, author:profiles!student_notes_author_id_fkey(full_name, avatar_url)")
+        .select(
+          "*, author:profiles!student_notes_author_id_fkey(full_name, avatar_url)",
+        )
         .eq("student_id", studentId)
         .order("is_pinned", { ascending: false })
         .order("created_at", { ascending: false });

@@ -1,22 +1,58 @@
 export const STUDENT_TAGS = [
-  { value: "vip", label: "VIP", color: "bg-amber-100 text-amber-800 border-amber-200" },
-  { value: "standard", label: "Standard", color: "bg-zinc-100 text-zinc-800 border-zinc-200" },
-  { value: "new", label: "Nouveau", color: "bg-emerald-100 text-emerald-800 border-emerald-200" },
-  { value: "at_risk", label: "A risque", color: "bg-red-100 text-red-800 border-red-200" },
-  { value: "churned", label: "Perdu", color: "bg-zinc-200 text-zinc-500 border-zinc-300" },
+  {
+    value: "vip",
+    label: "VIP",
+    color: "bg-amber-100 text-amber-800 border-amber-200",
+  },
+  {
+    value: "standard",
+    label: "Standard",
+    color: "bg-zinc-100 text-zinc-800 border-zinc-200",
+  },
+  {
+    value: "new",
+    label: "Nouveau",
+    color: "bg-emerald-100 text-emerald-800 border-emerald-200",
+  },
+  {
+    value: "at_risk",
+    label: "A risque",
+    color: "bg-red-100 text-red-800 border-red-200",
+  },
+  {
+    value: "churned",
+    label: "Perdu",
+    color: "bg-zinc-200 text-zinc-500 border-zinc-300",
+  },
 ] as const;
 
 export const ACTIVITY_TYPES = [
   { value: "module_started", label: "Module commenc\u00e9", icon: "BookOpen" },
-  { value: "module_completed", label: "Module termin\u00e9", icon: "CheckCircle" },
-  { value: "lesson_completed", label: "Le\u00e7on termin\u00e9e", icon: "Check" },
+  {
+    value: "module_completed",
+    label: "Module termin\u00e9",
+    icon: "CheckCircle",
+  },
+  {
+    value: "lesson_completed",
+    label: "Le\u00e7on termin\u00e9e",
+    icon: "Check",
+  },
   { value: "form_submitted", label: "Formulaire soumis", icon: "FileText" },
-  { value: "message_sent", label: "Message envoy\u00e9", icon: "MessageSquare" },
+  {
+    value: "message_sent",
+    label: "Message envoy\u00e9",
+    icon: "MessageSquare",
+  },
   { value: "login", label: "Connexion", icon: "LogIn" },
   { value: "milestone_reached", label: "Jalon atteint", icon: "Flag" },
   { value: "note_added", label: "Note ajout\u00e9e", icon: "StickyNote" },
   { value: "call_scheduled", label: "Appel planifi\u00e9", icon: "Phone" },
-  { value: "payment_received", label: "Paiement re\u00e7u", icon: "CreditCard" },
+  {
+    value: "payment_received",
+    label: "Paiement re\u00e7u",
+    icon: "CreditCard",
+  },
 ] as const;
 
 export const NOTIFICATION_TYPES = [

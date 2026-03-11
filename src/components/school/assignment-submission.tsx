@@ -21,11 +21,30 @@ import {
   MessageSquare,
 } from "lucide-react";
 
-const STATUS_CONFIG: Record<string, { label: string; color: string; icon: typeof Clock }> = {
-  draft: { label: "Brouillon", color: "text-muted-foreground bg-muted/50", icon: FileText },
-  submitted: { label: "Soumis", color: "text-amber-600 bg-amber-500/10", icon: Clock },
-  reviewed: { label: "Corrige", color: "text-emerald-600 bg-emerald-500/10", icon: CheckCircle },
-  revision_requested: { label: "Revision demandee", color: "text-red-600 bg-red-500/10", icon: AlertCircle },
+const STATUS_CONFIG: Record<
+  string,
+  { label: string; color: string; icon: typeof Clock }
+> = {
+  draft: {
+    label: "Brouillon",
+    color: "text-muted-foreground bg-muted/50",
+    icon: FileText,
+  },
+  submitted: {
+    label: "Soumis",
+    color: "text-amber-600 bg-amber-500/10",
+    icon: Clock,
+  },
+  reviewed: {
+    label: "Corrige",
+    color: "text-emerald-600 bg-emerald-500/10",
+    icon: CheckCircle,
+  },
+  revision_requested: {
+    label: "Revision demandee",
+    color: "text-red-600 bg-red-500/10",
+    icon: AlertCircle,
+  },
 };
 
 interface AssignmentSubmissionProps {
@@ -34,18 +53,28 @@ interface AssignmentSubmissionProps {
   onComplete?: () => void;
 }
 
-export function AssignmentSubmission({ lessonId, instructions, onComplete }: AssignmentSubmissionProps) {
+export function AssignmentSubmission({
+  lessonId,
+  instructions,
+  onComplete,
+}: AssignmentSubmissionProps) {
   const { user } = useAuth();
   const supabase = useSupabase();
-  const { data: submissions, isLoading } = useExerciseSubmissions(lessonId, user?.id);
+  const { data: submissions, isLoading } = useExerciseSubmissions(
+    lessonId,
+    user?.id,
+  );
   const submitExercise = useSubmitExercise();
 
   const [content, setContent] = useState("");
-  const [attachments, setAttachments] = useState<{ name: string; url: string }[]>([]);
+  const [attachments, setAttachments] = useState<
+    { name: string; url: string }[]
+  >([]);
   const [uploading, setUploading] = useState(false);
 
   const latestSubmission = submissions?.[0];
-  const canSubmit = !latestSubmission || latestSubmission.status === "revision_requested";
+  const canSubmit =
+    !latestSubmission || latestSubmission.status === "revision_requested";
   const isReviewed = latestSubmission?.status === "reviewed";
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -72,7 +101,10 @@ export function AssignmentSubmission({ lessonId, instructions, onComplete }: Ass
           .from("attachments")
           .getPublicUrl(path);
 
-        setAttachments((prev) => [...prev, { name: file.name, url: urlData.publicUrl }]);
+        setAttachments((prev) => [
+          ...prev,
+          { name: file.name, url: urlData.publicUrl },
+        ]);
       }
     } catch {
       toast.error("Erreur lors de l'upload");
@@ -118,8 +150,12 @@ export function AssignmentSubmission({ lessonId, instructions, onComplete }: Ass
       {/* Instructions */}
       {instructions && (
         <div className="bg-primary/5 border border-primary/10 rounded-xl p-4">
-          <h3 className="text-sm font-semibold text-foreground mb-1">Instructions</h3>
-          <p className="text-sm text-muted-foreground whitespace-pre-wrap">{instructions}</p>
+          <h3 className="text-sm font-semibold text-foreground mb-1">
+            Instructions
+          </h3>
+          <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+            {instructions}
+          </p>
         </div>
       )}
 
@@ -127,12 +163,19 @@ export function AssignmentSubmission({ lessonId, instructions, onComplete }: Ass
       {latestSubmission && (
         <div className="bg-surface border border-border rounded-xl overflow-hidden">
           <div className="flex items-center justify-between p-4 border-b border-border/50">
-            <h4 className="text-sm font-semibold text-foreground">Derniere soumission</h4>
+            <h4 className="text-sm font-semibold text-foreground">
+              Derniere soumission
+            </h4>
             {(() => {
               const cfg = STATUS_CONFIG[latestSubmission.status];
               const Icon = cfg.icon;
               return (
-                <span className={cn("inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium", cfg.color)}>
+                <span
+                  className={cn(
+                    "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium",
+                    cfg.color,
+                  )}
+                >
                   <Icon className="w-3 h-3" />
                   {cfg.label}
                 </span>
@@ -141,11 +184,18 @@ export function AssignmentSubmission({ lessonId, instructions, onComplete }: Ass
           </div>
 
           <div className="p-4 space-y-3">
-            <p className="text-sm text-foreground whitespace-pre-wrap">{latestSubmission.content}</p>
+            <p className="text-sm text-foreground whitespace-pre-wrap">
+              {latestSubmission.content}
+            </p>
 
             {latestSubmission.attachments?.length > 0 && (
               <div className="flex flex-wrap gap-2">
-                {(latestSubmission.attachments as { name: string; url: string }[]).map((att, i) => (
+                {(
+                  latestSubmission.attachments as {
+                    name: string;
+                    url: string;
+                  }[]
+                ).map((att, i) => (
                   <a
                     key={i}
                     href={att.url}
@@ -165,7 +215,9 @@ export function AssignmentSubmission({ lessonId, instructions, onComplete }: Ass
               <div className="mt-3 pt-3 border-t border-border/50">
                 <div className="flex items-center gap-2 mb-2">
                   <MessageSquare className="w-3.5 h-3.5 text-primary" />
-                  <span className="text-xs font-semibold text-foreground">Retour du coach</span>
+                  <span className="text-xs font-semibold text-foreground">
+                    Retour du coach
+                  </span>
                   {latestSubmission.grade !== null && (
                     <span className="inline-flex items-center gap-1 ml-auto text-xs font-medium text-amber-600">
                       <Star className="w-3 h-3" />
@@ -218,7 +270,11 @@ export function AssignmentSubmission({ lessonId, instructions, onComplete }: Ass
                   <Paperclip className="w-3 h-3" />
                   {att.name}
                   <button
-                    onClick={() => setAttachments((prev) => prev.filter((_, idx) => idx !== i))}
+                    onClick={() =>
+                      setAttachments((prev) =>
+                        prev.filter((_, idx) => idx !== i),
+                      )
+                    }
                     className="ml-0.5 text-muted-foreground hover:text-foreground"
                   >
                     <X className="w-3 h-3" />
@@ -258,17 +314,21 @@ export function AssignmentSubmission({ lessonId, instructions, onComplete }: Ass
       )}
 
       {/* Success state */}
-      {isReviewed && latestSubmission.grade !== null && latestSubmission.grade >= 50 && (
-        <div className="flex items-center gap-3 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
-          <CheckCircle className="w-5 h-5 text-emerald-600 shrink-0" />
-          <div>
-            <p className="text-sm font-medium text-emerald-700">Exercice valide !</p>
-            <p className="text-xs text-emerald-600/80">
-              Note : {latestSubmission.grade}/100
-            </p>
+      {isReviewed &&
+        latestSubmission.grade !== null &&
+        latestSubmission.grade >= 50 && (
+          <div className="flex items-center gap-3 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
+            <CheckCircle className="w-5 h-5 text-emerald-600 shrink-0" />
+            <div>
+              <p className="text-sm font-medium text-emerald-700">
+                Exercice valide !
+              </p>
+              <p className="text-xs text-emerald-600/80">
+                Note : {latestSubmission.grade}/100
+              </p>
+            </div>
           </div>
-        </div>
-      )}
+        )}
     </div>
   );
 }

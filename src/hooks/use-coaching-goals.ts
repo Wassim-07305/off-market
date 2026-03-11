@@ -17,7 +17,9 @@ export function useCoachingGoals(clientId?: string) {
     queryFn: async () => {
       let query = supabase
         .from("coaching_goals")
-        .select("*, client:profiles!coaching_goals_client_id_fkey(id, full_name, avatar_url)")
+        .select(
+          "*, client:profiles!coaching_goals_client_id_fkey(id, full_name, avatar_url)",
+        )
         .order("created_at", { ascending: false });
 
       if (effectiveClientId) query = query.eq("client_id", effectiveClientId);
@@ -53,7 +55,10 @@ export function useCoachingGoals(clientId?: string) {
   });
 
   const updateGoal = useMutation({
-    mutationFn: async ({ id, ...updates }: Partial<CoachingGoal> & { id: string }) => {
+    mutationFn: async ({
+      id,
+      ...updates
+    }: Partial<CoachingGoal> & { id: string }) => {
       const { error } = await supabase
         .from("coaching_goals")
         .update(updates)
@@ -66,7 +71,13 @@ export function useCoachingGoals(clientId?: string) {
   });
 
   const updateProgress = useMutation({
-    mutationFn: async ({ id, currentValue }: { id: string; currentValue: number }) => {
+    mutationFn: async ({
+      id,
+      currentValue,
+    }: {
+      id: string;
+      currentValue: number;
+    }) => {
       const { error } = await supabase
         .from("coaching_goals")
         .update({ current_value: currentValue })

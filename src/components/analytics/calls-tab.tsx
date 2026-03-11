@@ -1,13 +1,7 @@
 "use client";
 
 import { StatCard } from "@/components/dashboard/stat-card";
-import {
-  Phone,
-  PhoneOff,
-  Clock,
-  CheckCircle,
-  Download,
-} from "lucide-react";
+import { Phone, PhoneOff, Clock, CheckCircle, Download } from "lucide-react";
 import {
   BarChart,
   Bar,
@@ -34,7 +28,11 @@ export function CallsTab({ range }: CallsTabProps) {
       <div className="space-y-6">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="bg-surface rounded-2xl p-6 animate-shimmer" style={{ boxShadow: "var(--shadow-card)" }}>
+            <div
+              key={i}
+              className="bg-surface rounded-2xl p-6 animate-shimmer"
+              style={{ boxShadow: "var(--shadow-card)" }}
+            >
               <div className="h-3 w-20 bg-muted rounded-lg mb-3" />
               <div className="h-8 w-24 bg-muted rounded-lg" />
             </div>
@@ -50,7 +48,11 @@ export function CallsTab({ range }: CallsTabProps) {
     exportToCSV(
       "appels.csv",
       ["Mois", "Total", "Realises"],
-      data.callsByMonth.map((m) => [m.label, String(m.count), String(m.completed)])
+      data.callsByMonth.map((m) => [
+        m.label,
+        String(m.count),
+        String(m.completed),
+      ]),
     );
   };
 
@@ -59,18 +61,35 @@ export function CallsTab({ range }: CallsTabProps) {
       {/* KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard title="Total appels" value={data.totalCalls} icon={Phone} />
-        <StatCard title="Taux completion" value={`${data.completionRate}%`} icon={CheckCircle} />
-        <StatCard title="Taux no-show" value={`${data.noShowRate}%`} icon={PhoneOff} />
-        <StatCard title="Duree moyenne" value={`${data.avgDurationMinutes} min`} icon={Clock} />
+        <StatCard
+          title="Taux completion"
+          value={`${data.completionRate}%`}
+          icon={CheckCircle}
+        />
+        <StatCard
+          title="Taux no-show"
+          value={`${data.noShowRate}%`}
+          icon={PhoneOff}
+        />
+        <StatCard
+          title="Duree moyenne"
+          value={`${data.avgDurationMinutes} min`}
+          icon={Clock}
+        />
       </div>
 
       {/* Charts row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Calls by month */}
-        <div className="bg-surface rounded-2xl p-6" style={{ boxShadow: "var(--shadow-card)" }}>
+        <div
+          className="bg-surface rounded-2xl p-6"
+          style={{ boxShadow: "var(--shadow-card)" }}
+        >
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="text-[13px] font-semibold text-foreground">Appels par mois</h3>
+              <h3 className="text-[13px] font-semibold text-foreground">
+                Appels par mois
+              </h3>
               <p className="text-xs text-muted-foreground mt-0.5">
                 {data.totalDurationHours}h au total
               </p>
@@ -96,20 +115,48 @@ export function CallsTab({ range }: CallsTabProps) {
                     dataKey="label"
                     axisLine={false}
                     tickLine={false}
-                    tick={{ fill: "var(--muted-foreground)", fontSize: 11, fontFamily: "var(--font-mono)" }}
+                    tick={{
+                      fill: "var(--muted-foreground)",
+                      fontSize: 11,
+                      fontFamily: "var(--font-mono)",
+                    }}
                     dy={8}
                   />
                   <YAxis
                     axisLine={false}
                     tickLine={false}
-                    tick={{ fill: "var(--muted-foreground)", fontSize: 11, fontFamily: "var(--font-mono)" }}
+                    tick={{
+                      fill: "var(--muted-foreground)",
+                      fontSize: 11,
+                      fontFamily: "var(--font-mono)",
+                    }}
                     width={30}
                   />
                   <Tooltip
-                    contentStyle={{ backgroundColor: "var(--surface)", border: "none", borderRadius: "12px", fontSize: "13px", boxShadow: "var(--shadow-elevated)", padding: "8px 12px" }}
+                    contentStyle={{
+                      backgroundColor: "var(--surface)",
+                      border: "none",
+                      borderRadius: "12px",
+                      fontSize: "13px",
+                      boxShadow: "var(--shadow-elevated)",
+                      padding: "8px 12px",
+                    }}
                   />
-                  <Bar dataKey="count" name="Total" fill="var(--primary)" radius={[6, 6, 0, 0]} barSize={24} opacity={0.3} />
-                  <Bar dataKey="completed" name="Realises" fill="var(--primary)" radius={[6, 6, 0, 0]} barSize={24} />
+                  <Bar
+                    dataKey="count"
+                    name="Total"
+                    fill="var(--primary)"
+                    radius={[6, 6, 0, 0]}
+                    barSize={24}
+                    opacity={0.3}
+                  />
+                  <Bar
+                    dataKey="completed"
+                    name="Realises"
+                    fill="var(--primary)"
+                    radius={[6, 6, 0, 0]}
+                    barSize={24}
+                  />
                 </BarChart>
               </ResponsiveContainer>
             )}
@@ -117,8 +164,13 @@ export function CallsTab({ range }: CallsTabProps) {
         </div>
 
         {/* Mood distribution */}
-        <div className="bg-surface rounded-2xl p-6" style={{ boxShadow: "var(--shadow-card)" }}>
-          <h3 className="text-[13px] font-semibold text-foreground mb-6">Humeur post-appel</h3>
+        <div
+          className="bg-surface rounded-2xl p-6"
+          style={{ boxShadow: "var(--shadow-card)" }}
+        >
+          <h3 className="text-[13px] font-semibold text-foreground mb-6">
+            Humeur post-appel
+          </h3>
           {data.moodDistribution.every((m) => m.count === 0) ? (
             <div className="h-64 flex flex-col items-center justify-center text-muted-foreground">
               <p className="text-sm">Aucune note d&apos;appel</p>
@@ -145,7 +197,14 @@ export function CallsTab({ range }: CallsTabProps) {
                         ))}
                     </Pie>
                     <Tooltip
-                      contentStyle={{ backgroundColor: "var(--surface)", border: "none", borderRadius: "12px", fontSize: "13px", boxShadow: "var(--shadow-elevated)", padding: "8px 12px" }}
+                      contentStyle={{
+                        backgroundColor: "var(--surface)",
+                        border: "none",
+                        borderRadius: "12px",
+                        fontSize: "13px",
+                        boxShadow: "var(--shadow-elevated)",
+                        padding: "8px 12px",
+                      }}
                     />
                   </PieChart>
                 </ResponsiveContainer>
@@ -155,8 +214,13 @@ export function CallsTab({ range }: CallsTabProps) {
                   .filter((m) => m.count > 0)
                   .map((m) => (
                     <div key={m.mood} className="flex items-center gap-1.5">
-                      <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: m.color }} />
-                      <span className="text-[11px] text-muted-foreground">{m.label} ({m.count})</span>
+                      <div
+                        className="w-2.5 h-2.5 rounded-full"
+                        style={{ backgroundColor: m.color }}
+                      />
+                      <span className="text-[11px] text-muted-foreground">
+                        {m.label} ({m.count})
+                      </span>
                     </div>
                   ))}
               </div>
@@ -168,16 +232,28 @@ export function CallsTab({ range }: CallsTabProps) {
       {/* Bottom: call types + outcomes */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Call types breakdown */}
-        <div className="bg-surface rounded-2xl p-6" style={{ boxShadow: "var(--shadow-card)" }}>
-          <h3 className="text-[13px] font-semibold text-foreground mb-4">Par type d&apos;appel</h3>
+        <div
+          className="bg-surface rounded-2xl p-6"
+          style={{ boxShadow: "var(--shadow-card)" }}
+        >
+          <h3 className="text-[13px] font-semibold text-foreground mb-4">
+            Par type d&apos;appel
+          </h3>
           <div className="space-y-3">
             {data.callsByType.map((t) => {
-              const pct = data.totalCalls > 0 ? Math.round((t.count / data.totalCalls) * 100) : 0;
+              const pct =
+                data.totalCalls > 0
+                  ? Math.round((t.count / data.totalCalls) * 100)
+                  : 0;
               return (
                 <div key={t.type}>
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-[13px] text-foreground">{t.label}</span>
-                    <span className="text-[11px] text-muted-foreground font-mono">{t.count} ({pct}%)</span>
+                    <span className="text-[13px] text-foreground">
+                      {t.label}
+                    </span>
+                    <span className="text-[11px] text-muted-foreground font-mono">
+                      {t.count} ({pct}%)
+                    </span>
                   </div>
                   <div className="h-1.5 bg-muted rounded-full overflow-hidden">
                     <div
@@ -195,17 +271,29 @@ export function CallsTab({ range }: CallsTabProps) {
         </div>
 
         {/* Outcomes */}
-        <div className="bg-surface rounded-2xl p-6" style={{ boxShadow: "var(--shadow-card)" }}>
-          <h3 className="text-[13px] font-semibold text-foreground mb-4">Resultats des appels</h3>
+        <div
+          className="bg-surface rounded-2xl p-6"
+          style={{ boxShadow: "var(--shadow-card)" }}
+        >
+          <h3 className="text-[13px] font-semibold text-foreground mb-4">
+            Resultats des appels
+          </h3>
           <div className="space-y-3">
             {data.outcomeDistribution.map((o) => {
-              const total = data.outcomeDistribution.reduce((s, x) => s + x.count, 0);
+              const total = data.outcomeDistribution.reduce(
+                (s, x) => s + x.count,
+                0,
+              );
               const pct = total > 0 ? Math.round((o.count / total) * 100) : 0;
               return (
                 <div key={o.outcome}>
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-[13px] text-foreground">{o.label}</span>
-                    <span className="text-[11px] text-muted-foreground font-mono">{o.count} ({pct}%)</span>
+                    <span className="text-[13px] text-foreground">
+                      {o.label}
+                    </span>
+                    <span className="text-[11px] text-muted-foreground font-mono">
+                      {o.count} ({pct}%)
+                    </span>
                   </div>
                   <div className="h-1.5 bg-muted rounded-full overflow-hidden">
                     <div
@@ -217,7 +305,9 @@ export function CallsTab({ range }: CallsTabProps) {
               );
             })}
             {data.outcomeDistribution.every((o) => o.count === 0) && (
-              <p className="text-sm text-muted-foreground">Aucune note d&apos;appel enregistree</p>
+              <p className="text-sm text-muted-foreground">
+                Aucune note d&apos;appel enregistree
+              </p>
             )}
           </div>
         </div>

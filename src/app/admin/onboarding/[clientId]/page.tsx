@@ -3,7 +3,11 @@
 import { use } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { staggerContainer, fadeInUp, defaultTransition } from "@/lib/animations";
+import {
+  staggerContainer,
+  fadeInUp,
+  defaultTransition,
+} from "@/lib/animations";
 import { useClientOnboarding } from "@/hooks/use-onboarding";
 import { useContracts } from "@/hooks/use-contracts";
 import { useInvoices } from "@/hooks/use-invoices";
@@ -11,11 +15,7 @@ import { useCoachingGoals } from "@/hooks/use-coaching-goals";
 import { useCheckins } from "@/hooks/use-checkins";
 import { ONBOARDING_STEPS } from "@/types/billing";
 import type { OnboardingStep } from "@/types/billing";
-import {
-  ArrowLeft,
-  Check,
-  ChevronRight,
-} from "lucide-react";
+import { ArrowLeft, Check, ChevronRight } from "lucide-react";
 
 export default function ClientOnboardingPage({
   params,
@@ -23,7 +23,8 @@ export default function ClientOnboardingPage({
   params: Promise<{ clientId: string }>;
 }) {
   const { clientId } = use(params);
-  const { client, isLoading, currentStep, setStep } = useClientOnboarding(clientId);
+  const { client, isLoading, currentStep, setStep } =
+    useClientOnboarding(clientId);
   const { contracts } = useContracts({ clientId });
   const { invoices } = useInvoices({ clientId });
   const { goals } = useCoachingGoals(clientId);
@@ -75,7 +76,9 @@ export default function ClientOnboardingPage({
             </div>
           )}
           <div>
-            <h1 className="text-2xl font-semibold text-foreground">{client.full_name}</h1>
+            <h1 className="text-2xl font-semibold text-foreground">
+              {client.full_name}
+            </h1>
             <p className="text-sm text-muted-foreground">{client.email}</p>
           </div>
         </div>
@@ -85,7 +88,9 @@ export default function ClientOnboardingPage({
       <motion.div variants={fadeInUp} transition={defaultTransition}>
         <div className="bg-surface border border-border rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold text-foreground">Progression onboarding</h2>
+            <h2 className="text-sm font-semibold text-foreground">
+              Progression onboarding
+            </h2>
             <span className="text-sm text-muted-foreground">
               Etape {currentStep + 1} / {ONBOARDING_STEPS.length}
             </span>
@@ -106,8 +111,8 @@ export default function ClientOnboardingPage({
                     isCurrent
                       ? "bg-primary/5 border border-primary/20"
                       : isDone || isComplete
-                      ? "bg-emerald-500/5 hover:bg-emerald-500/10"
-                      : "hover:bg-muted/50"
+                        ? "bg-emerald-500/5 hover:bg-emerald-500/10"
+                        : "hover:bg-muted/50"
                   }`}
                 >
                   <div
@@ -115,11 +120,15 @@ export default function ClientOnboardingPage({
                       isDone || isComplete
                         ? "bg-emerald-500 text-white"
                         : isCurrent
-                        ? "bg-primary text-white"
-                        : "bg-muted text-muted-foreground"
+                          ? "bg-primary text-white"
+                          : "bg-muted text-muted-foreground"
                     }`}
                   >
-                    {isDone || isComplete ? <Check className="w-4 h-4" /> : i + 1}
+                    {isDone || isComplete ? (
+                      <Check className="w-4 h-4" />
+                    ) : (
+                      i + 1
+                    )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p
@@ -127,15 +136,19 @@ export default function ClientOnboardingPage({
                         isDone || isComplete
                           ? "text-emerald-600"
                           : isCurrent
-                          ? "text-foreground"
-                          : "text-muted-foreground"
+                            ? "text-foreground"
+                            : "text-muted-foreground"
                       }`}
                     >
                       {s.label}
                     </p>
-                    <p className="text-xs text-muted-foreground">{s.description}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {s.description}
+                    </p>
                   </div>
-                  {isCurrent && <ChevronRight className="w-4 h-4 text-primary shrink-0" />}
+                  {isCurrent && (
+                    <ChevronRight className="w-4 h-4 text-primary shrink-0" />
+                  )}
                 </button>
               );
             })}
@@ -150,15 +163,22 @@ export default function ClientOnboardingPage({
         className="grid grid-cols-1 sm:grid-cols-2 gap-4"
       >
         <div className="bg-surface border border-border rounded-xl p-5">
-          <h3 className="text-sm font-semibold text-foreground mb-2">Contrats</h3>
+          <h3 className="text-sm font-semibold text-foreground mb-2">
+            Contrats
+          </h3>
           {contracts.length === 0 ? (
             <p className="text-sm text-muted-foreground">Aucun contrat</p>
           ) : (
             <div className="space-y-1">
               {contracts.map((c) => (
-                <div key={c.id} className="flex items-center justify-between text-sm">
+                <div
+                  key={c.id}
+                  className="flex items-center justify-between text-sm"
+                >
                   <span className="text-foreground">{c.title}</span>
-                  <span className="text-xs text-muted-foreground capitalize">{c.status}</span>
+                  <span className="text-xs text-muted-foreground capitalize">
+                    {c.status}
+                  </span>
                 </div>
               ))}
             </div>
@@ -166,15 +186,24 @@ export default function ClientOnboardingPage({
         </div>
 
         <div className="bg-surface border border-border rounded-xl p-5">
-          <h3 className="text-sm font-semibold text-foreground mb-2">Factures</h3>
+          <h3 className="text-sm font-semibold text-foreground mb-2">
+            Factures
+          </h3>
           {invoices.length === 0 ? (
             <p className="text-sm text-muted-foreground">Aucune facture</p>
           ) : (
             <div className="space-y-1">
               {invoices.map((inv) => (
-                <div key={inv.id} className="flex items-center justify-between text-sm">
-                  <span className="text-foreground font-mono">{inv.invoice_number}</span>
-                  <span className="text-xs text-muted-foreground capitalize">{inv.status}</span>
+                <div
+                  key={inv.id}
+                  className="flex items-center justify-between text-sm"
+                >
+                  <span className="text-foreground font-mono">
+                    {inv.invoice_number}
+                  </span>
+                  <span className="text-xs text-muted-foreground capitalize">
+                    {inv.status}
+                  </span>
                 </div>
               ))}
             </div>
@@ -182,15 +211,24 @@ export default function ClientOnboardingPage({
         </div>
 
         <div className="bg-surface border border-border rounded-xl p-5">
-          <h3 className="text-sm font-semibold text-foreground mb-2">Objectifs</h3>
+          <h3 className="text-sm font-semibold text-foreground mb-2">
+            Objectifs
+          </h3>
           {goals.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Aucun objectif defini</p>
+            <p className="text-sm text-muted-foreground">
+              Aucun objectif defini
+            </p>
           ) : (
             <div className="space-y-1">
               {goals.map((g) => (
-                <div key={g.id} className="flex items-center justify-between text-sm">
+                <div
+                  key={g.id}
+                  className="flex items-center justify-between text-sm"
+                >
                   <span className="text-foreground truncate">{g.title}</span>
-                  <span className="text-xs text-muted-foreground capitalize">{g.status}</span>
+                  <span className="text-xs text-muted-foreground capitalize">
+                    {g.status}
+                  </span>
                 </div>
               ))}
             </div>
@@ -198,12 +236,16 @@ export default function ClientOnboardingPage({
         </div>
 
         <div className="bg-surface border border-border rounded-xl p-5">
-          <h3 className="text-sm font-semibold text-foreground mb-2">Check-ins</h3>
+          <h3 className="text-sm font-semibold text-foreground mb-2">
+            Check-ins
+          </h3>
           {checkins.length === 0 ? (
             <p className="text-sm text-muted-foreground">Aucun check-in</p>
           ) : (
             <div className="space-y-1">
-              <p className="text-sm text-foreground">{checkins.length} check-in{checkins.length > 1 ? "s" : ""}</p>
+              <p className="text-sm text-foreground">
+                {checkins.length} check-in{checkins.length > 1 ? "s" : ""}
+              </p>
               {checkins[0]?.mood && (
                 <p className="text-xs text-muted-foreground">
                   Dernier mood : {checkins[0].mood}/5

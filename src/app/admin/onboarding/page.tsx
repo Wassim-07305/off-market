@@ -2,7 +2,11 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { staggerContainer, fadeInUp, defaultTransition } from "@/lib/animations";
+import {
+  staggerContainer,
+  fadeInUp,
+  defaultTransition,
+} from "@/lib/animations";
 import { useStudents } from "@/hooks/use-students";
 import { ONBOARDING_STEPS } from "@/types/billing";
 import { Users, CheckCircle, ArrowRight } from "lucide-react";
@@ -12,7 +16,9 @@ export default function OnboardingListPage() {
 
   const withOnboarding = clients.map((c) => ({
     ...c,
-    onboarding_step: ((c as unknown as Record<string, unknown>).onboarding_step as number) ?? 0,
+    onboarding_step:
+      ((c as unknown as Record<string, unknown>).onboarding_step as number) ??
+      0,
   }));
 
   const incomplete = withOnboarding.filter((c) => c.onboarding_step < 7);
@@ -26,7 +32,9 @@ export default function OnboardingListPage() {
       className="space-y-6"
     >
       <motion.div variants={fadeInUp} transition={defaultTransition}>
-        <h1 className="text-3xl font-semibold text-foreground">Onboarding clients</h1>
+        <h1 className="text-3xl font-semibold text-foreground">
+          Onboarding clients
+        </h1>
         <p className="text-sm text-muted-foreground mt-1">
           Suivi de l&apos;integration des nouveaux clients
         </p>
@@ -71,8 +79,12 @@ export default function OnboardingListPage() {
                     </div>
                   )}
                   <div>
-                    <p className="text-sm font-medium text-foreground">{client.full_name}</p>
-                    <p className="text-xs text-muted-foreground">{client.email}</p>
+                    <p className="text-sm font-medium text-foreground">
+                      {client.full_name}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {client.email}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -110,8 +122,12 @@ export default function OnboardingListPage() {
                     </div>
                   )}
                   <div>
-                    <p className="text-sm font-medium text-foreground">{client.full_name}</p>
-                    <p className="text-xs text-muted-foreground">{client.email}</p>
+                    <p className="text-sm font-medium text-foreground">
+                      {client.full_name}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {client.email}
+                    </p>
                   </div>
                 </div>
                 <CheckCircle className="w-5 h-5 text-emerald-500" />
@@ -132,8 +148,12 @@ function OnboardingProgress({ step }: { step: number }) {
   return (
     <div className="flex items-center gap-3">
       <div className="text-right">
-        <span className="text-xs text-muted-foreground block">{current.label}</span>
-        <span className="text-[10px] font-mono text-muted-foreground">{pct}%</span>
+        <span className="text-xs text-muted-foreground block">
+          {current.label}
+        </span>
+        <span className="text-[10px] font-mono text-muted-foreground">
+          {pct}%
+        </span>
       </div>
       <div className="w-20 h-1.5 bg-border rounded-full overflow-hidden">
         <div

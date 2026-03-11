@@ -47,7 +47,7 @@ export function VideoRoom({ callId }: VideoRoomProps) {
         el.srcObject = previewStream;
       }
     },
-    [previewStream]
+    [previewStream],
   );
   const analyserRef = useRef<AnalyserNode | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
@@ -61,8 +61,14 @@ export function VideoRoom({ callId }: VideoRoomProps) {
 
     async function getPreview() {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        if (cancelled) { stream.getTracks().forEach((t) => t.stop()); return; }
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: true,
+        });
+        if (cancelled) {
+          stream.getTracks().forEach((t) => t.stop());
+          return;
+        }
         setPreviewStream(stream);
 
         // Audio analyser for mic level indicator
@@ -76,13 +82,20 @@ export function VideoRoom({ callId }: VideoRoomProps) {
       } catch {
         // Try audio-only
         try {
-          const stream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
-          if (cancelled) { stream.getTracks().forEach((t) => t.stop()); return; }
+          const stream = await navigator.mediaDevices.getUserMedia({
+            video: false,
+            audio: true,
+          });
+          if (cancelled) {
+            stream.getTracks().forEach((t) => t.stop());
+            return;
+          }
           setPreviewStream(stream);
           setPreviewCamera(false);
           setPreviewError("Camera indisponible, audio uniquement");
         } catch {
-          if (!cancelled) setPreviewError("Impossible d'acceder au micro et a la camera");
+          if (!cancelled)
+            setPreviewError("Impossible d'acceder au micro et a la camera");
         }
       }
     }
@@ -114,13 +127,17 @@ export function VideoRoom({ callId }: VideoRoomProps) {
 
   // Toggle preview mic
   const togglePreviewMic = useCallback(() => {
-    previewStream?.getAudioTracks().forEach((t) => { t.enabled = !t.enabled; });
+    previewStream?.getAudioTracks().forEach((t) => {
+      t.enabled = !t.enabled;
+    });
     setPreviewMic((v) => !v);
   }, [previewStream]);
 
   // Toggle preview camera
   const togglePreviewCamera = useCallback(() => {
-    previewStream?.getVideoTracks().forEach((t) => { t.enabled = !t.enabled; });
+    previewStream?.getVideoTracks().forEach((t) => {
+      t.enabled = !t.enabled;
+    });
     setPreviewCamera((v) => !v);
   }, [previewStream]);
 
@@ -155,12 +172,15 @@ export function VideoRoom({ callId }: VideoRoomProps) {
     broadcastTranscript,
   } = useWebRTC({ callId });
 
-  const { isSupported: isTranscriptionSupported, startTranscription, stopTranscription } =
-    useTranscription({
-      speakerId: user?.id ?? "",
-      speakerName: myName,
-      onEntry: (entry) => broadcastTranscript(entry),
-    });
+  const {
+    isSupported: isTranscriptionSupported,
+    startTranscription,
+    stopTranscription,
+  } = useTranscription({
+    speakerId: user?.id ?? "",
+    speakerName: myName,
+    onEntry: (entry) => broadcastTranscript(entry),
+  });
 
   // Join the call
   const handleJoin = useCallback(async () => {
@@ -183,7 +203,8 @@ export function VideoRoom({ callId }: VideoRoomProps) {
     });
 
     // Notify the other participant via one-shot broadcast
-    const peerId = call.assigned_to === user.id ? call.client_id : call.assigned_to;
+    const peerId =
+      call.assigned_to === user.id ? call.client_id : call.assigned_to;
     if (peerId) {
       const notifyChannel = supabase.channel(`call-notify-${peerId}`, {
         config: { broadcast: { self: false } },
@@ -201,7 +222,18 @@ export function VideoRoom({ callId }: VideoRoomProps) {
     }
 
     await joinCall();
-  }, [call, user, callId, myName, joinCall, updateRoomStatus, supabase, cleanupPreview, previewMic, previewCamera]);
+  }, [
+    call,
+    user,
+    callId,
+    myName,
+    joinCall,
+    updateRoomStatus,
+    supabase,
+    cleanupPreview,
+    previewMic,
+    previewCamera,
+  ]);
 
   // Leave / hang up
   const handleHangUp = useCallback(async () => {
@@ -314,7 +346,8 @@ export function VideoRoom({ callId }: VideoRoomProps) {
 
   // Pre-join lobby with camera/mic preview
   if (!hasJoined) {
-    const hasVideoTrack = previewStream?.getVideoTracks().some((t) => t.enabled) && previewCamera;
+    const hasVideoTrack =
+      previewStream?.getVideoTracks().some((t) => t.enabled) && previewCamera;
 
     return (
       <div className="flex-1 flex items-center justify-center bg-zinc-950 p-4">
@@ -363,7 +396,10 @@ export function VideoRoom({ callId }: VideoRoomProps) {
                       className="w-1 rounded-full transition-all duration-75"
                       style={{
                         height: `${40 + i * 15}%`,
-                        backgroundColor: previewAudioLevel >= threshold ? "#4ade80" : "#3f3f46",
+                        backgroundColor:
+                          previewAudioLevel >= threshold
+                            ? "#4ade80"
+                            : "#3f3f46",
                       }}
                     />
                   ))}
@@ -388,7 +424,11 @@ export function VideoRoom({ callId }: VideoRoomProps) {
               }`}
               title={previewMic ? "Couper le micro" : "Activer le micro"}
             >
-              {previewMic ? <Mic className="w-5 h-5" /> : <MicOff className="w-5 h-5" />}
+              {previewMic ? (
+                <Mic className="w-5 h-5" />
+              ) : (
+                <MicOff className="w-5 h-5" />
+              )}
             </button>
 
             <button
@@ -401,7 +441,11 @@ export function VideoRoom({ callId }: VideoRoomProps) {
               }`}
               title={previewCamera ? "Couper la camera" : "Activer la camera"}
             >
-              {previewCamera ? <Video className="w-5 h-5" /> : <VideoOff className="w-5 h-5" />}
+              {previewCamera ? (
+                <Video className="w-5 h-5" />
+              ) : (
+                <VideoOff className="w-5 h-5" />
+              )}
             </button>
 
             <button
@@ -414,8 +458,9 @@ export function VideoRoom({ callId }: VideoRoomProps) {
 
           {!isTranscriptionSupported && (
             <p className="text-[11px] text-yellow-500/70 text-center">
-              La transcription en direct n&apos;est pas disponible sur votre navigateur.
-              Utilisez Chrome, Edge ou Safari pour cette fonctionnalite.
+              La transcription en direct n&apos;est pas disponible sur votre
+              navigateur. Utilisez Chrome, Edge ou Safari pour cette
+              fonctionnalite.
             </p>
           )}
         </div>
@@ -431,7 +476,9 @@ export function VideoRoom({ callId }: VideoRoomProps) {
         <div className="flex items-center justify-between px-4 py-2 bg-zinc-950/80 backdrop-blur-md border-b border-white/5">
           <div className="flex items-center gap-3">
             <ConnectionStatus />
-            <span className="text-xs text-zinc-400 hidden sm:inline">{call.title}</span>
+            <span className="text-xs text-zinc-400 hidden sm:inline">
+              {call.title}
+            </span>
           </div>
           <CallTimer />
         </div>

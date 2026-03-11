@@ -10,7 +10,11 @@ interface StripePayButtonProps {
   className?: string;
 }
 
-export function StripePayButton({ invoiceId, amount, className }: StripePayButtonProps) {
+export function StripePayButton({
+  invoiceId,
+  amount,
+  className,
+}: StripePayButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   const handlePayment = async () => {
@@ -33,7 +37,9 @@ export function StripePayButton({ invoiceId, amount, className }: StripePayButto
         window.location.href = data.url;
       }
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Erreur lors du paiement");
+      toast.error(
+        error instanceof Error ? error.message : "Erreur lors du paiement",
+      );
       setIsLoading(false);
     }
   };

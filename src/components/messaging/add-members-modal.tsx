@@ -22,7 +22,12 @@ interface ProfileItem {
   role: string;
 }
 
-export function AddMembersModal({ open, onClose, channelId, existingMemberIds }: AddMembersModalProps) {
+export function AddMembersModal({
+  open,
+  onClose,
+  channelId,
+  existingMemberIds,
+}: AddMembersModalProps) {
   const supabase = useSupabase();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
@@ -48,7 +53,7 @@ export function AddMembersModal({ open, onClose, channelId, existingMemberIds }:
   const filtered = profiles.filter(
     (p) =>
       p.full_name?.toLowerCase().includes(search.toLowerCase()) ||
-      p.email?.toLowerCase().includes(search.toLowerCase())
+      p.email?.toLowerCase().includes(search.toLowerCase()),
   );
 
   const handleToggle = async (profileId: string) => {
@@ -72,7 +77,9 @@ export function AddMembersModal({ open, onClose, channelId, existingMemberIds }:
         toast.success("Membre ajoute");
       }
       queryClient.invalidateQueries({ queryKey: ["channels"] });
-      queryClient.invalidateQueries({ queryKey: ["channel-members", channelId] });
+      queryClient.invalidateQueries({
+        queryKey: ["channel-members", channelId],
+      });
     } catch {
       toast.error("Erreur");
     } finally {
@@ -84,7 +91,9 @@ export function AddMembersModal({ open, onClose, channelId, existingMemberIds }:
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
       <div className="bg-surface border border-border rounded-2xl max-w-md w-full mx-4 max-h-[70vh] flex flex-col">
         <div className="flex items-center justify-between p-4 border-b border-border">
-          <h3 className="text-sm font-semibold text-foreground">Gerer les membres</h3>
+          <h3 className="text-sm font-semibold text-foreground">
+            Gerer les membres
+          </h3>
           <button
             onClick={onClose}
             className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
@@ -111,7 +120,9 @@ export function AddMembersModal({ open, onClose, channelId, existingMemberIds }:
               <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
             </div>
           ) : filtered.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-8">Aucun resultat</p>
+            <p className="text-sm text-muted-foreground text-center py-8">
+              Aucun resultat
+            </p>
           ) : (
             filtered.map((profile) => {
               const isMember = existingMemberIds.includes(profile.id);
@@ -122,15 +133,19 @@ export function AddMembersModal({ open, onClose, channelId, existingMemberIds }:
                   disabled={adding === profile.id}
                   className={cn(
                     "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors",
-                    isMember ? "bg-primary/5" : "hover:bg-muted"
+                    isMember ? "bg-primary/5" : "hover:bg-muted",
                   )}
                 >
                   <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-xs text-primary font-medium shrink-0">
                     {getInitials(profile.full_name)}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-foreground truncate">{profile.full_name}</p>
-                    <p className="text-xs text-muted-foreground truncate">{profile.email}</p>
+                    <p className="text-sm font-medium text-foreground truncate">
+                      {profile.full_name}
+                    </p>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {profile.email}
+                    </p>
                   </div>
                   {adding === profile.id ? (
                     <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />

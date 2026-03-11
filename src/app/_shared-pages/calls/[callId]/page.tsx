@@ -3,7 +3,11 @@
 import { use } from "react";
 import { VideoRoom } from "@/components/calls/video-room/video-room";
 
-export default function CallRoomPage({ params }: { params: Promise<{ callId: string }> }) {
+export default function CallRoomPage({
+  params,
+}: {
+  params: Promise<{ callId: string }>;
+}) {
   const { callId } = use(params);
 
   return (

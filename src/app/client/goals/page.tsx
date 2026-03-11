@@ -1,14 +1,22 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { staggerContainer, fadeInUp, defaultTransition } from "@/lib/animations";
+import {
+  staggerContainer,
+  fadeInUp,
+  defaultTransition,
+} from "@/lib/animations";
 import { useCoachingGoals } from "@/hooks/use-coaching-goals";
 import type { CoachingGoal } from "@/types/coaching";
 import { Target, CheckCircle, Pause, XCircle } from "lucide-react";
 
 function formatDate(date: string | null) {
   if (!date) return null;
-  return new Date(date).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" });
+  return new Date(date).toLocaleDateString("fr-FR", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
 }
 
 export default function GoalsPage() {
@@ -16,7 +24,9 @@ export default function GoalsPage() {
 
   const active = goals.filter((g) => g.status === "active");
   const completed = goals.filter((g) => g.status === "completed");
-  const other = goals.filter((g) => g.status === "paused" || g.status === "abandoned");
+  const other = goals.filter(
+    (g) => g.status === "paused" || g.status === "abandoned",
+  );
 
   return (
     <motion.div
@@ -26,7 +36,9 @@ export default function GoalsPage() {
       className="max-w-2xl mx-auto space-y-6"
     >
       <motion.div variants={fadeInUp} transition={defaultTransition}>
-        <h1 className="text-3xl font-semibold text-foreground">Mes objectifs</h1>
+        <h1 className="text-3xl font-semibold text-foreground">
+          Mes objectifs
+        </h1>
         <p className="text-sm text-muted-foreground mt-1">
           Suivez votre progression vers vos objectifs
         </p>
@@ -82,9 +94,13 @@ export default function GoalsPage() {
               >
                 <CheckCircle className="w-5 h-5 text-emerald-500 shrink-0" />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-foreground">{goal.title}</p>
+                  <p className="text-sm font-medium text-foreground">
+                    {goal.title}
+                  </p>
                   {goal.description && (
-                    <p className="text-xs text-muted-foreground truncate">{goal.description}</p>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {goal.description}
+                    </p>
                   )}
                 </div>
               </div>
@@ -109,8 +125,12 @@ export default function GoalsPage() {
                   <XCircle className="w-5 h-5 text-muted-foreground shrink-0" />
                 )}
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-foreground">{goal.title}</p>
-                  <p className="text-xs text-muted-foreground capitalize">{goal.status === "paused" ? "En pause" : "Abandonne"}</p>
+                  <p className="text-sm font-medium text-foreground">
+                    {goal.title}
+                  </p>
+                  <p className="text-xs text-muted-foreground capitalize">
+                    {goal.status === "paused" ? "En pause" : "Abandonne"}
+                  </p>
                 </div>
               </div>
             ))}
@@ -131,16 +151,25 @@ function GoalCard({
   onComplete: () => void;
 }) {
   const progress = goal.target_value
-    ? Math.min(Math.round((Number(goal.current_value) / Number(goal.target_value)) * 100), 100)
+    ? Math.min(
+        Math.round(
+          (Number(goal.current_value) / Number(goal.target_value)) * 100,
+        ),
+        100,
+      )
     : 0;
 
   return (
     <div className="bg-surface border border-border rounded-xl p-5">
       <div className="flex items-start justify-between mb-3">
         <div>
-          <h3 className="text-sm font-semibold text-foreground">{goal.title}</h3>
+          <h3 className="text-sm font-semibold text-foreground">
+            {goal.title}
+          </h3>
           {goal.description && (
-            <p className="text-xs text-muted-foreground mt-0.5">{goal.description}</p>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {goal.description}
+            </p>
           )}
         </div>
         {goal.deadline && (
@@ -155,7 +184,8 @@ function GoalCard({
         <div className="mb-3">
           <div className="flex items-center justify-between text-xs mb-1">
             <span className="text-muted-foreground">
-              {Number(goal.current_value).toLocaleString("fr-FR")} / {Number(goal.target_value).toLocaleString("fr-FR")}
+              {Number(goal.current_value).toLocaleString("fr-FR")} /{" "}
+              {Number(goal.target_value).toLocaleString("fr-FR")}
               {goal.unit ? ` ${goal.unit}` : ""}
             </span>
             <span className="font-medium text-foreground">{progress}%</span>

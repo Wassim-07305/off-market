@@ -7,7 +7,10 @@ interface TranscriptEntryProps {
   callStartTime: number;
 }
 
-export function TranscriptEntryComponent({ entry, callStartTime }: TranscriptEntryProps) {
+export function TranscriptEntryComponent({
+  entry,
+  callStartTime,
+}: TranscriptEntryProps) {
   const relativeMs = entry.timestamp_ms - callStartTime;
   const totalSec = Math.max(0, Math.floor(relativeMs / 1000));
   const min = Math.floor(totalSec / 60);

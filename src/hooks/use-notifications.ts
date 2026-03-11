@@ -51,11 +51,13 @@ export function useNotifications(options?: UseNotificationsOptions) {
           table: "notifications",
           filter: `recipient_id=eq.${user.id}`,
         },
-        () => queryClient.invalidateQueries({ queryKey: ["notifications"] })
+        () => queryClient.invalidateQueries({ queryKey: ["notifications"] }),
       )
       .subscribe();
 
-    return () => { supabase.removeChannel(channel); };
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [supabase, user, queryClient]);
 
   const markAsRead = useMutation({
@@ -66,7 +68,8 @@ export function useNotifications(options?: UseNotificationsOptions) {
         .eq("id", notificationId);
       if (error) throw error;
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["notifications"] }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["notifications"] }),
   });
 
   const markAllAsRead = useMutation({
@@ -85,7 +88,8 @@ export function useNotifications(options?: UseNotificationsOptions) {
       const { error } = await query;
       if (error) throw error;
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["notifications"] }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["notifications"] }),
   });
 
   const archiveNotification = useMutation({
@@ -96,7 +100,8 @@ export function useNotifications(options?: UseNotificationsOptions) {
         .eq("id", notificationId);
       if (error) throw error;
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["notifications"] }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["notifications"] }),
   });
 
   const archiveAllRead = useMutation({
@@ -110,7 +115,8 @@ export function useNotifications(options?: UseNotificationsOptions) {
         .eq("is_archived", false);
       if (error) throw error;
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["notifications"] }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["notifications"] }),
   });
 
   const deleteNotification = useMutation({
@@ -121,18 +127,22 @@ export function useNotifications(options?: UseNotificationsOptions) {
         .eq("id", notificationId);
       if (error) throw error;
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["notifications"] }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["notifications"] }),
   });
 
   const notifications = notificationsQuery.data ?? [];
   const unreadCount = notifications.filter((n) => !n.is_read).length;
 
-  const countByCategory = notifications.reduce<Record<string, number>>((acc, n) => {
-    if (!n.is_read) {
-      acc[n.category] = (acc[n.category] ?? 0) + 1;
-    }
-    return acc;
-  }, {});
+  const countByCategory = notifications.reduce<Record<string, number>>(
+    (acc, n) => {
+      if (!n.is_read) {
+        acc[n.category] = (acc[n.category] ?? 0) + 1;
+      }
+      return acc;
+    },
+    {},
+  );
 
   return {
     notifications,

@@ -3,7 +3,11 @@
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { staggerContainer, fadeInUp, defaultTransition } from "@/lib/animations";
+import {
+  staggerContainer,
+  fadeInUp,
+  defaultTransition,
+} from "@/lib/animations";
 import { useContract, useContracts } from "@/hooks/use-contracts";
 import { SignaturePad } from "@/components/contracts/signature-pad";
 import {
@@ -75,13 +79,17 @@ export default function ClientContractDetailPage() {
       <h1>${contract.title}</h1>
       <div class="meta">Cree le ${formatDate(contract.created_at)}</div>
       <div class="content">${contract.content}</div>
-      ${contract.status === "signed" ? `
+      ${
+        contract.status === "signed"
+          ? `
         <div class="signature-section">
           <strong>Signature electronique</strong>
           ${contract.signature_image ? `<br><img src="${contract.signature_image}" alt="Signature">` : ""}
           <div class="signature-meta">Signe le ${formatDate(contract.signed_at)}</div>
         </div>
-      ` : ""}
+      `
+          : ""
+      }
     </body></html>`);
     w.document.close();
     w.onload = () => w.print();
@@ -116,7 +124,11 @@ export default function ClientContractDetailPage() {
       className="space-y-6 max-w-3xl mx-auto"
     >
       {/* Header */}
-      <motion.div variants={fadeInUp} transition={defaultTransition} className="flex items-center gap-4">
+      <motion.div
+        variants={fadeInUp}
+        transition={defaultTransition}
+        className="flex items-center gap-4"
+      >
         <button
           onClick={() => router.back()}
           className="p-2 rounded-lg hover:bg-muted transition-colors"
@@ -124,7 +136,9 @@ export default function ClientContractDetailPage() {
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div className="flex-1">
-          <h1 className="text-2xl font-semibold text-foreground">{contract.title}</h1>
+          <h1 className="text-2xl font-semibold text-foreground">
+            {contract.title}
+          </h1>
           <div className="flex items-center gap-3 mt-1">
             <span className="text-xs text-muted-foreground flex items-center gap-1">
               <Calendar className="w-3 h-3" />
@@ -164,9 +178,12 @@ export default function ClientContractDetailPage() {
             <PenLine className="w-5 h-5 text-amber-600" />
           </div>
           <div className="flex-1">
-            <p className="text-sm font-medium text-foreground">Ce contrat attend votre signature</p>
+            <p className="text-sm font-medium text-foreground">
+              Ce contrat attend votre signature
+            </p>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Veuillez lire le contrat ci-dessous puis signez-le electroniquement
+              Veuillez lire le contrat ci-dessous puis signez-le
+              electroniquement
             </p>
           </div>
           <button
@@ -201,7 +218,9 @@ export default function ClientContractDetailPage() {
               <CheckCircle className="w-5 h-5 text-emerald-600" />
             </div>
             <div className="flex-1">
-              <p className="text-sm font-medium text-foreground">Contrat signe</p>
+              <p className="text-sm font-medium text-foreground">
+                Contrat signe
+              </p>
               <p className="text-xs text-muted-foreground mt-0.5">
                 Signe le {formatDate(contract.signed_at)}
               </p>

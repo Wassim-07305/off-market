@@ -32,7 +32,8 @@ export function CallControls({
   showTranscript,
   isTranscriptionSupported,
 }: CallControlsProps) {
-  const { isMicOn, isCameraOn, isScreenSharing, isTranscribing } = useCallStore();
+  const { isMicOn, isCameraOn, isScreenSharing, isTranscribing } =
+    useCallStore();
 
   return (
     <div className="flex items-center justify-center gap-2 py-4 px-4 bg-zinc-950/50 backdrop-blur-md">
@@ -119,7 +120,7 @@ function ControlButton({
           ? "bg-red-600/20 text-red-400 hover:bg-red-600/30"
           : active && highlightWhenActive
             ? "bg-primary/20 text-primary hover:bg-primary/30"
-            : "bg-white/10 text-white hover:bg-white/20"
+            : "bg-white/10 text-white hover:bg-white/20",
       )}
     >
       <Icon className="w-5 h-5" />

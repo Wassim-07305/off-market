@@ -16,13 +16,15 @@ export function useFeedReports(status?: ReportStatus) {
     queryFn: async () => {
       let query = supabase
         .from("feed_reports")
-        .select(`
+        .select(
+          `
           *,
           reporter:profiles!feed_reports_reporter_id_fkey(id, full_name, avatar_url),
           post:feed_posts(id, content, post_type, author_id),
           comment:feed_comments(id, content, author_id),
           reviewer:profiles!feed_reports_reviewed_by_fkey(id, full_name)
-        `)
+        `,
+        )
         .order("created_at", { ascending: false });
 
       if (status) query = query.eq("status", status);
@@ -94,11 +96,17 @@ export function useFeedReports(status?: ReportStatus) {
     }) => {
       // Delete the content
       if (postId) {
-        const { error } = await supabase.from("feed_posts").delete().eq("id", postId);
+        const { error } = await supabase
+          .from("feed_posts")
+          .delete()
+          .eq("id", postId);
         if (error) throw error;
       }
       if (commentId) {
-        const { error } = await supabase.from("feed_comments").delete().eq("id", commentId);
+        const { error } = await supabase
+          .from("feed_comments")
+          .delete()
+          .eq("id", commentId);
         if (error) throw error;
       }
 

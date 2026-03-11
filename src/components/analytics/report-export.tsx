@@ -12,7 +12,11 @@ interface ReportExportProps {
   }[];
 }
 
-export function ReportExportButton({ title, period, sections }: ReportExportProps) {
+export function ReportExportButton({
+  title,
+  period,
+  sections,
+}: ReportExportProps) {
   const [generating, setGenerating] = useState(false);
 
   const handleExport = () => {
@@ -28,7 +32,7 @@ export function ReportExportButton({ title, period, sections }: ReportExportProp
               ${s.rows.map((r) => `<tr><td class="label">${r.label}</td><td class="value">${r.value}</td></tr>`).join("")}
             </tbody>
           </table>
-        </div>`
+        </div>`,
       )
       .join("");
 

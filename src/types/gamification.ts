@@ -41,18 +41,37 @@ export interface Badge {
   created_at: string;
 }
 
-export type BadgeCategory = "learning" | "engagement" | "revenue" | "social" | "special";
+export type BadgeCategory =
+  | "learning"
+  | "engagement"
+  | "revenue"
+  | "social"
+  | "special";
 export type BadgeRarity = "common" | "uncommon" | "rare" | "epic" | "legendary";
 
-export const RARITY_CONFIG: Record<BadgeRarity, { label: string; color: string; bg: string }> = {
+export const RARITY_CONFIG: Record<
+  BadgeRarity,
+  { label: string; color: string; bg: string }
+> = {
   common: { label: "Commun", color: "text-zinc-500", bg: "bg-zinc-500/10" },
-  uncommon: { label: "Peu commun", color: "text-emerald-500", bg: "bg-emerald-500/10" },
+  uncommon: {
+    label: "Peu commun",
+    color: "text-emerald-500",
+    bg: "bg-emerald-500/10",
+  },
   rare: { label: "Rare", color: "text-blue-500", bg: "bg-blue-500/10" },
   epic: { label: "Epique", color: "text-purple-500", bg: "bg-purple-500/10" },
-  legendary: { label: "Legendaire", color: "text-amber-500", bg: "bg-amber-500/10" },
+  legendary: {
+    label: "Legendaire",
+    color: "text-amber-500",
+    bg: "bg-amber-500/10",
+  },
 };
 
-export const CATEGORY_CONFIG: Record<BadgeCategory, { label: string; emoji: string }> = {
+export const CATEGORY_CONFIG: Record<
+  BadgeCategory,
+  { label: string; emoji: string }
+> = {
   learning: { label: "Formation", emoji: "📚" },
   engagement: { label: "Engagement", emoji: "🔥" },
   revenue: { label: "Chiffre d'affaires", emoji: "💰" },
@@ -92,10 +111,25 @@ export interface Challenge {
 
 export type ChallengeType = "weekly" | "monthly" | "community";
 
-export const CHALLENGE_TYPE_CONFIG: Record<ChallengeType, { label: string; color: string; icon: string }> = {
-  weekly: { label: "Hebdomadaire", color: "text-blue-500 bg-blue-500/10", icon: "📅" },
-  monthly: { label: "Mensuel", color: "text-purple-500 bg-purple-500/10", icon: "🗓️" },
-  community: { label: "Communautaire", color: "text-amber-500 bg-amber-500/10", icon: "🌍" },
+export const CHALLENGE_TYPE_CONFIG: Record<
+  ChallengeType,
+  { label: string; color: string; icon: string }
+> = {
+  weekly: {
+    label: "Hebdomadaire",
+    color: "text-blue-500 bg-blue-500/10",
+    icon: "📅",
+  },
+  monthly: {
+    label: "Mensuel",
+    color: "text-purple-500 bg-purple-500/10",
+    icon: "🗓️",
+  },
+  community: {
+    label: "Communautaire",
+    color: "text-amber-500 bg-amber-500/10",
+    icon: "🌍",
+  },
 };
 
 // ─── CHALLENGE PARTICIPANTS ──────────

@@ -3,7 +3,11 @@
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { staggerContainer, fadeInUp, defaultTransition } from "@/lib/animations";
+import {
+  staggerContainer,
+  fadeInUp,
+  defaultTransition,
+} from "@/lib/animations";
 import { useContract, useContracts } from "@/hooks/use-contracts";
 import {
   ArrowLeft,
@@ -29,11 +33,30 @@ function formatDate(date: string | null) {
   });
 }
 
-const STATUS_CONFIG: Record<string, { label: string; className: string; icon: typeof Clock }> = {
-  draft: { label: "Brouillon", className: "bg-muted text-muted-foreground", icon: FileText },
-  sent: { label: "Envoye", className: "bg-blue-500/10 text-blue-600", icon: Send },
-  signed: { label: "Signe", className: "bg-emerald-500/10 text-emerald-600", icon: CheckCircle },
-  cancelled: { label: "Annule", className: "bg-red-500/10 text-red-600", icon: XCircle },
+const STATUS_CONFIG: Record<
+  string,
+  { label: string; className: string; icon: typeof Clock }
+> = {
+  draft: {
+    label: "Brouillon",
+    className: "bg-muted text-muted-foreground",
+    icon: FileText,
+  },
+  sent: {
+    label: "Envoye",
+    className: "bg-blue-500/10 text-blue-600",
+    icon: Send,
+  },
+  signed: {
+    label: "Signe",
+    className: "bg-emerald-500/10 text-emerald-600",
+    icon: CheckCircle,
+  },
+  cancelled: {
+    label: "Annule",
+    className: "bg-red-500/10 text-red-600",
+    icon: XCircle,
+  },
 };
 
 export default function ContractDetailPage() {
@@ -70,7 +93,9 @@ export default function ContractDetailPage() {
         ${contract.status === "signed" ? ` &bull; Signe le ${formatDate(contract.signed_at)}` : ""}
       </div>
       <div class="content">${contract.content}</div>
-      ${contract.status === "signed" ? `
+      ${
+        contract.status === "signed"
+          ? `
         <div class="signature-section">
           <strong>Signature electronique</strong>
           ${contract.signature_image ? `<br><img src="${contract.signature_image}" alt="Signature">` : ""}
@@ -79,7 +104,9 @@ export default function ContractDetailPage() {
             ${contract.signature_data?.ip_address ? ` &bull; IP: ${contract.signature_data.ip_address}` : ""}
           </div>
         </div>
-      ` : ""}
+      `
+          : ""
+      }
     </body></html>`);
     w.document.close();
     w.onload = () => w.print();
@@ -109,8 +136,18 @@ export default function ContractDetailPage() {
   // Build timeline events
   const timeline = [
     { date: contract.created_at, label: "Contrat cree", icon: FileText },
-    ...(contract.sent_at ? [{ date: contract.sent_at, label: "Envoye au client", icon: Send }] : []),
-    ...(contract.signed_at ? [{ date: contract.signed_at, label: "Signe par le client", icon: PenLine }] : []),
+    ...(contract.sent_at
+      ? [{ date: contract.sent_at, label: "Envoye au client", icon: Send }]
+      : []),
+    ...(contract.signed_at
+      ? [
+          {
+            date: contract.signed_at,
+            label: "Signe par le client",
+            icon: PenLine,
+          },
+        ]
+      : []),
     ...(contract.status === "cancelled"
       ? [{ date: contract.updated_at, label: "Contrat annule", icon: XCircle }]
       : []),
@@ -124,7 +161,11 @@ export default function ContractDetailPage() {
       className="space-y-6"
     >
       {/* Header */}
-      <motion.div variants={fadeInUp} transition={defaultTransition} className="flex items-center gap-4">
+      <motion.div
+        variants={fadeInUp}
+        transition={defaultTransition}
+        className="flex items-center gap-4"
+      >
         <button
           onClick={() => router.back()}
           className="p-2 rounded-lg hover:bg-muted transition-colors"
@@ -132,12 +173,16 @@ export default function ContractDetailPage() {
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div className="flex-1">
-          <h1 className="text-2xl font-semibold text-foreground">{contract.title}</h1>
+          <h1 className="text-2xl font-semibold text-foreground">
+            {contract.title}
+          </h1>
           <p className="text-sm text-muted-foreground mt-0.5">
             {contract.client?.full_name ?? "Client inconnu"}
           </p>
         </div>
-        <span className={`text-xs font-medium px-3 py-1 rounded-full flex items-center gap-1.5 ${statusConf.className}`}>
+        <span
+          className={`text-xs font-medium px-3 py-1 rounded-full flex items-center gap-1.5 ${statusConf.className}`}
+        >
           <StatusIcon className="w-3.5 h-3.5" />
           {statusConf.label}
         </span>
@@ -145,11 +190,17 @@ export default function ContractDetailPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main content */}
-        <motion.div variants={fadeInUp} transition={defaultTransition} className="lg:col-span-2 space-y-6">
+        <motion.div
+          variants={fadeInUp}
+          transition={defaultTransition}
+          className="lg:col-span-2 space-y-6"
+        >
           {/* Contract content */}
           <div className="bg-surface border border-border rounded-xl p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-sm font-medium text-foreground">Contenu du contrat</h2>
+              <h2 className="text-sm font-medium text-foreground">
+                Contenu du contrat
+              </h2>
               <button
                 onClick={handlePrint}
                 className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
@@ -166,7 +217,9 @@ export default function ContractDetailPage() {
           {/* Signature section */}
           {contract.status === "signed" && (
             <div className="bg-surface border border-border rounded-xl p-6">
-              <h2 className="text-sm font-medium text-foreground mb-4">Signature electronique</h2>
+              <h2 className="text-sm font-medium text-foreground mb-4">
+                Signature electronique
+              </h2>
               <div className="flex items-start gap-6">
                 {contract.signature_image && (
                   <div className="bg-white border border-border rounded-lg p-3">
@@ -198,26 +251,40 @@ export default function ContractDetailPage() {
         </motion.div>
 
         {/* Sidebar */}
-        <motion.div variants={fadeInUp} transition={defaultTransition} className="space-y-6">
+        <motion.div
+          variants={fadeInUp}
+          transition={defaultTransition}
+          className="space-y-6"
+        >
           {/* Info card */}
           <div className="bg-surface border border-border rounded-xl p-5 space-y-4">
-            <h3 className="text-sm font-medium text-foreground">Informations</h3>
+            <h3 className="text-sm font-medium text-foreground">
+              Informations
+            </h3>
             <div className="space-y-3">
               <div className="flex items-center gap-3 text-sm">
                 <User className="w-4 h-4 text-muted-foreground" />
                 <div>
-                  <p className="text-foreground">{contract.client?.full_name ?? "-"}</p>
-                  <p className="text-xs text-muted-foreground">{contract.client?.email ?? ""}</p>
+                  <p className="text-foreground">
+                    {contract.client?.full_name ?? "-"}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {contract.client?.email ?? ""}
+                  </p>
                 </div>
               </div>
               <div className="flex items-center gap-3 text-sm">
                 <Calendar className="w-4 h-4 text-muted-foreground" />
-                <p className="text-muted-foreground">Cree le {formatDate(contract.created_at)}</p>
+                <p className="text-muted-foreground">
+                  Cree le {formatDate(contract.created_at)}
+                </p>
               </div>
               {contract.expires_at && (
                 <div className="flex items-center gap-3 text-sm">
                   <Clock className="w-4 h-4 text-muted-foreground" />
-                  <p className="text-muted-foreground">Expire le {formatDate(contract.expires_at)}</p>
+                  <p className="text-muted-foreground">
+                    Expire le {formatDate(contract.expires_at)}
+                  </p>
                 </div>
               )}
             </div>
@@ -236,7 +303,12 @@ export default function ContractDetailPage() {
               )}
               {contract.status === "sent" && (
                 <button
-                  onClick={() => updateContract.mutate({ id: contract.id, status: "cancelled" })}
+                  onClick={() =>
+                    updateContract.mutate({
+                      id: contract.id,
+                      status: "cancelled",
+                    })
+                  }
                   disabled={updateContract.isPending}
                   className="w-full h-9 bg-red-500/10 text-red-600 rounded-lg text-sm font-medium hover:bg-red-500/20 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
                 >
@@ -249,7 +321,9 @@ export default function ContractDetailPage() {
 
           {/* Timeline */}
           <div className="bg-surface border border-border rounded-xl p-5">
-            <h3 className="text-sm font-medium text-foreground mb-4">Historique</h3>
+            <h3 className="text-sm font-medium text-foreground mb-4">
+              Historique
+            </h3>
             <div className="space-y-0">
               {timeline.map((event, i) => {
                 const Icon = event.icon;
@@ -263,7 +337,9 @@ export default function ContractDetailPage() {
                     </div>
                     <div className="pb-4">
                       <p className="text-sm text-foreground">{event.label}</p>
-                      <p className="text-xs text-muted-foreground">{formatDate(event.date)}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {formatDate(event.date)}
+                      </p>
                     </div>
                   </div>
                 );

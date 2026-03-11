@@ -36,13 +36,48 @@ interface CategoryConfig {
 }
 
 const CATEGORIES: CategoryConfig[] = [
-  { value: "all", label: "Toutes", icon: Inbox, color: "bg-muted text-muted-foreground" },
-  { value: "messaging", label: "Messages", icon: MessageSquare, color: "bg-blue-500/10 text-blue-500" },
-  { value: "billing", label: "Facturation", icon: CreditCard, color: "bg-emerald-500/10 text-emerald-500" },
-  { value: "coaching", label: "Coaching", icon: GraduationCap, color: "bg-violet-500/10 text-violet-500" },
-  { value: "gamification", label: "Gamification", icon: Trophy, color: "bg-amber-500/10 text-amber-500" },
-  { value: "system", label: "Systeme", icon: Settings, color: "bg-slate-500/10 text-slate-500" },
-  { value: "general", label: "General", icon: Bell, color: "bg-primary/10 text-primary" },
+  {
+    value: "all",
+    label: "Toutes",
+    icon: Inbox,
+    color: "bg-muted text-muted-foreground",
+  },
+  {
+    value: "messaging",
+    label: "Messages",
+    icon: MessageSquare,
+    color: "bg-blue-500/10 text-blue-500",
+  },
+  {
+    value: "billing",
+    label: "Facturation",
+    icon: CreditCard,
+    color: "bg-emerald-500/10 text-emerald-500",
+  },
+  {
+    value: "coaching",
+    label: "Coaching",
+    icon: GraduationCap,
+    color: "bg-violet-500/10 text-violet-500",
+  },
+  {
+    value: "gamification",
+    label: "Gamification",
+    icon: Trophy,
+    color: "bg-amber-500/10 text-amber-500",
+  },
+  {
+    value: "system",
+    label: "Systeme",
+    icon: Settings,
+    color: "bg-slate-500/10 text-slate-500",
+  },
+  {
+    value: "general",
+    label: "General",
+    icon: Bell,
+    color: "bg-primary/10 text-primary",
+  },
 ];
 
 const CATEGORY_ICON_MAP: Record<NotificationCategory, typeof Bell> = {
@@ -68,7 +103,9 @@ type ReadFilter = "all" | "unread" | "read";
 // ─── Component ───────────────────────────────────────────
 
 export default function NotificationsPage() {
-  const [activeCategory, setActiveCategory] = useState<NotificationCategory | "all">("all");
+  const [activeCategory, setActiveCategory] = useState<
+    NotificationCategory | "all"
+  >("all");
   const [readFilter, setReadFilter] = useState<ReadFilter>("all");
 
   const categoryForHook = activeCategory === "all" ? undefined : activeCategory;
@@ -121,7 +158,8 @@ export default function NotificationsPage() {
 
   const handleMarkAllAsRead = () => {
     markAllAsRead.mutate(undefined, {
-      onSuccess: () => toast.success("Toutes les notifications marquees comme lues"),
+      onSuccess: () =>
+        toast.success("Toutes les notifications marquees comme lues"),
     });
   };
 
@@ -193,7 +231,9 @@ export default function NotificationsPage() {
         <div className="flex items-center gap-4 overflow-x-auto">
           <div className="flex items-center gap-2 pr-4 border-r border-border">
             <Bell className="w-4 h-4 text-muted-foreground" />
-            <span className="text-sm font-medium text-foreground">{unreadCount}</span>
+            <span className="text-sm font-medium text-foreground">
+              {unreadCount}
+            </span>
             <span className="text-xs text-muted-foreground">non lues</span>
           </div>
           {CATEGORIES.filter((c) => c.value !== "all").map((cat) => {
@@ -201,10 +241,17 @@ export default function NotificationsPage() {
             if (count === 0) return null;
             const Icon = cat.icon;
             return (
-              <div key={cat.value} className="flex items-center gap-1.5 shrink-0">
+              <div
+                key={cat.value}
+                className="flex items-center gap-1.5 shrink-0"
+              >
                 <Icon className="w-3.5 h-3.5 text-muted-foreground" />
-                <span className="text-xs font-medium text-foreground">{count}</span>
-                <span className="text-xs text-muted-foreground">{cat.label}</span>
+                <span className="text-xs font-medium text-foreground">
+                  {count}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  {cat.label}
+                </span>
               </div>
             );
           })}
@@ -212,10 +259,16 @@ export default function NotificationsPage() {
       </motion.div>
 
       {/* Category filter tabs */}
-      <motion.div variants={staggerItem} className="flex gap-1.5 overflow-x-auto pb-1">
+      <motion.div
+        variants={staggerItem}
+        className="flex gap-1.5 overflow-x-auto pb-1"
+      >
         {CATEGORIES.map((cat) => {
           const Icon = cat.icon;
-          const count = cat.value === "all" ? unreadCount : (countByCategory[cat.value] ?? 0);
+          const count =
+            cat.value === "all"
+              ? unreadCount
+              : (countByCategory[cat.value] ?? 0);
           return (
             <button
               key={cat.value}
@@ -224,7 +277,7 @@ export default function NotificationsPage() {
                 "px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all flex items-center gap-1.5",
                 activeCategory === cat.value
                   ? "bg-primary text-white"
-                  : "bg-muted text-muted-foreground hover:text-foreground"
+                  : "bg-muted text-muted-foreground hover:text-foreground",
               )}
             >
               <Icon className="w-3.5 h-3.5" />
@@ -235,7 +288,7 @@ export default function NotificationsPage() {
                     "ml-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-semibold",
                     activeCategory === cat.value
                       ? "bg-white/20 text-white"
-                      : "bg-primary/10 text-primary"
+                      : "bg-primary/10 text-primary",
                   )}
                 >
                   {count}
@@ -262,7 +315,7 @@ export default function NotificationsPage() {
               "px-3 py-1 rounded-lg text-xs font-medium transition-all",
               readFilter === f.value
                 ? "bg-foreground text-background"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted",
             )}
           >
             {f.label}
@@ -307,7 +360,9 @@ export default function NotificationsPage() {
           <motion.div variants={staggerItem} className="space-y-1.5">
             {filtered.map((notification) => {
               const Icon = CATEGORY_ICON_MAP[notification.category] ?? Bell;
-              const colorClass = CATEGORY_COLOR_MAP[notification.category] ?? "bg-muted text-muted-foreground";
+              const colorClass =
+                CATEGORY_COLOR_MAP[notification.category] ??
+                "bg-muted text-muted-foreground";
 
               return (
                 <motion.div
@@ -324,7 +379,7 @@ export default function NotificationsPage() {
                       "w-full flex items-start gap-3 p-4 rounded-2xl text-left transition-all",
                       notification.is_read
                         ? "bg-surface hover:bg-muted/30"
-                        : "bg-primary/[0.03] hover:bg-primary/[0.06] border border-primary/10"
+                        : "bg-primary/[0.03] hover:bg-primary/[0.06] border border-primary/10",
                     )}
                     style={{ boxShadow: "var(--shadow-card)" }}
                   >
@@ -332,7 +387,7 @@ export default function NotificationsPage() {
                     <div
                       className={cn(
                         "w-10 h-10 rounded-xl flex items-center justify-center shrink-0",
-                        colorClass
+                        colorClass,
                       )}
                     >
                       <Icon className="w-4.5 h-4.5" />
@@ -346,7 +401,7 @@ export default function NotificationsPage() {
                             "text-sm leading-snug",
                             notification.is_read
                               ? "text-foreground"
-                              : "text-foreground font-medium"
+                              : "text-foreground font-medium",
                           )}
                         >
                           {notification.title}

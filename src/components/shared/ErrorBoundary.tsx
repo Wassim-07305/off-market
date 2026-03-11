@@ -1,43 +1,43 @@
-import { Component } from 'react'
-import type { ReactNode, ErrorInfo } from 'react'
-import { AlertTriangle, RefreshCw, Home } from 'lucide-react'
+import { Component } from "react";
+import type { ReactNode, ErrorInfo } from "react";
+import { AlertTriangle, RefreshCw, Home } from "lucide-react";
 
 interface Props {
-  children: ReactNode
-  fallback?: ReactNode
+  children: ReactNode;
+  fallback?: ReactNode;
 }
 
 interface State {
-  hasError: boolean
-  error: Error | null
+  hasError: boolean;
+  error: Error | null;
 }
 
 export class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
-    super(props)
-    this.state = { hasError: false, error: null }
+    super(props);
+    this.state = { hasError: false, error: null };
   }
 
   static getDerivedStateFromError(error: Error): State {
-    return { hasError: true, error }
+    return { hasError: true, error };
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('[ErrorBoundary]', error, errorInfo)
+    console.error("[ErrorBoundary]", error, errorInfo);
   }
 
   handleReload = () => {
-    window.location.reload()
-  }
+    window.location.reload();
+  };
 
   handleGoHome = () => {
-    window.location.href = '/'
-  }
+    window.location.href = "/";
+  };
 
   render() {
     if (this.state.hasError) {
       if (this.props.fallback) {
-        return this.props.fallback
+        return this.props.fallback;
       }
 
       return (
@@ -51,8 +51,8 @@ export class ErrorBoundary extends Component<Props, State> {
               Une erreur est survenue
             </h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              L'application a rencontré un problème inattendu.
-              Essayez de recharger la page.
+              L'application a rencontré un problème inattendu. Essayez de
+              recharger la page.
             </p>
 
             {this.state.error && (
@@ -81,9 +81,9 @@ export class ErrorBoundary extends Component<Props, State> {
             </div>
           </div>
         </div>
-      )
+      );
     }
 
-    return this.props.children
+    return this.props.children;
   }
 }

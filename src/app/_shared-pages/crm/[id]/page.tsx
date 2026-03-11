@@ -3,7 +3,12 @@
 import { use, useState } from "react";
 import Link from "next/link";
 import { useRoutePrefix } from "@/hooks/use-route-prefix";
-import { useStudent, useStudentActivities, useStudentNotes, useStudentTasks } from "@/hooks/use-students";
+import {
+  useStudent,
+  useStudentActivities,
+  useStudentNotes,
+  useStudentTasks,
+} from "@/hooks/use-students";
 import { useAuth } from "@/hooks/use-auth";
 import { STUDENT_TAGS, ACTIVITY_TYPES } from "@/lib/constants";
 import { getInitials, formatDate, formatCurrency, cn } from "@/lib/utils";
@@ -63,7 +68,10 @@ export default function StudentDetailPage({
     return (
       <div className="text-center py-16">
         <p className="text-muted-foreground">Eleve non trouve</p>
-        <Link href={`${prefix}/crm`} className="text-primary text-sm mt-2 inline-block">
+        <Link
+          href={`${prefix}/crm`}
+          className="text-primary text-sm mt-2 inline-block"
+        >
           Retour au CRM
         </Link>
       </div>
@@ -130,7 +138,7 @@ export default function StudentDetailPage({
                 <span
                   className={cn(
                     "inline-flex items-center h-6 px-2.5 rounded-full text-xs font-medium border",
-                    tag.color
+                    tag.color,
                   )}
                 >
                   {tag.label}
@@ -166,9 +174,7 @@ export default function StudentDetailPage({
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div className="bg-surface border border-border rounded-xl p-4 text-center">
           <p className="text-xs text-muted-foreground mb-1">Score</p>
-          <p
-            className="text-2xl font-semibold font-bold"
-          >
+          <p className="text-2xl font-semibold font-bold">
             <span
               className={
                 score >= 70
@@ -184,9 +190,7 @@ export default function StudentDetailPage({
         </div>
         <div className="bg-surface border border-border rounded-xl p-4 text-center">
           <p className="text-xs text-muted-foreground mb-1">Revenus</p>
-          <p
-            className="text-2xl font-semibold text-foreground font-bold"
-          >
+          <p className="text-2xl font-semibold text-foreground font-bold">
             {formatCurrency(Number(details?.revenue ?? 0))}
           </p>
         </div>
@@ -199,7 +203,9 @@ export default function StudentDetailPage({
           </p>
         </div>
         <div className="bg-surface border border-border rounded-xl p-4 text-center">
-          <p className="text-xs text-muted-foreground mb-1">Derniere activite</p>
+          <p className="text-xs text-muted-foreground mb-1">
+            Derniere activite
+          </p>
           <p className="text-sm font-medium text-foreground mt-1">
             {details?.last_engagement_at
               ? formatDate(details.last_engagement_at, "relative")
@@ -219,7 +225,7 @@ export default function StudentDetailPage({
                 "px-4 py-2.5 text-sm font-medium transition-colors relative",
                 activeTab === tab.key
                   ? "text-primary"
-                  : "text-muted-foreground hover:text-foreground"
+                  : "text-muted-foreground hover:text-foreground",
               )}
             >
               {tab.label}
@@ -263,7 +269,7 @@ export default function StudentDetailPage({
             ) : (
               activities.map((activity) => {
                 const typeConfig = ACTIVITY_TYPES.find(
-                  (t) => t.value === activity.activity_type
+                  (t) => t.value === activity.activity_type,
                 );
                 return (
                   <div
@@ -329,7 +335,7 @@ export default function StudentDetailPage({
                         "w-7 h-7 rounded flex items-center justify-center transition-colors shrink-0",
                         note.is_pinned
                           ? "text-primary"
-                          : "text-muted-foreground opacity-0 group-hover:opacity-100"
+                          : "text-muted-foreground opacity-0 group-hover:opacity-100",
                       )}
                     >
                       <Pin className="w-3.5 h-3.5" />
@@ -383,7 +389,7 @@ export default function StudentDetailPage({
                       "w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors",
                       task.status === "done"
                         ? "bg-success border-success"
-                        : "border-border hover:border-primary"
+                        : "border-border hover:border-primary",
                     )}
                   >
                     {task.status === "done" && (
@@ -396,7 +402,7 @@ export default function StudentDetailPage({
                         "text-sm",
                         task.status === "done"
                           ? "text-muted-foreground line-through"
-                          : "text-foreground"
+                          : "text-foreground",
                       )}
                     >
                       {task.title}
@@ -415,7 +421,7 @@ export default function StudentDetailPage({
                         ? "bg-error/10 text-error"
                         : task.priority === "high"
                           ? "bg-warning/10 text-warning"
-                          : "bg-muted text-muted-foreground"
+                          : "bg-muted text-muted-foreground",
                     )}
                   >
                     {task.priority}

@@ -1,7 +1,12 @@
 "use client";
 
 import { useEffect } from "react";
-import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from "@tanstack/react-query";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  useInfiniteQuery,
+} from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
 import type { FeedPost, FeedComment, PostType } from "@/types/feed";
@@ -19,7 +24,9 @@ export function useFeed(postType?: PostType) {
     queryFn: async () => {
       let query = supabase
         .from("feed_posts")
-        .select("*, author:profiles!feed_posts_author_id_fkey(id, full_name, avatar_url, role)")
+        .select(
+          "*, author:profiles!feed_posts_author_id_fkey(id, full_name, avatar_url, role)",
+        )
         .order("is_pinned", { ascending: false })
         .order("created_at", { ascending: false })
         .limit(PAGE_SIZE);
@@ -38,8 +45,13 @@ export function useFeed(postType?: PostType) {
           .eq("profile_id", user.id)
           .in("post_id", postIds);
 
-        const likedSet = new Set((likes ?? []).map((l: { post_id: string }) => l.post_id));
-        return data.map((p: FeedPost) => ({ ...p, is_liked: likedSet.has(p.id) })) as FeedPost[];
+        const likedSet = new Set(
+          (likes ?? []).map((l: { post_id: string }) => l.post_id),
+        );
+        return data.map((p: FeedPost) => ({
+          ...p,
+          is_liked: likedSet.has(p.id),
+        })) as FeedPost[];
       }
 
       return data as FeedPost[];
@@ -55,7 +67,7 @@ export function useFeed(postType?: PostType) {
         { event: "*", schema: "public", table: "feed_posts" },
         () => {
           queryClient.invalidateQueries({ queryKey: ["feed-posts"] });
-        }
+        },
       )
       .subscribe();
 
@@ -74,7 +86,9 @@ export function useFeed(postType?: PostType) {
       const { data, error } = await supabase
         .from("feed_posts")
         .insert({ ...post, author_id: user.id })
-        .select("*, author:profiles!feed_posts_author_id_fkey(id, full_name, avatar_url, role)")
+        .select(
+          "*, author:profiles!feed_posts_author_id_fkey(id, full_name, avatar_url, role)",
+        )
         .single();
       if (error) throw error;
       return data as FeedPost;
@@ -86,7 +100,10 @@ export function useFeed(postType?: PostType) {
 
   const deletePost = useMutation({
     mutationFn: async (postId: string) => {
-      const { error } = await supabase.from("feed_posts").delete().eq("id", postId);
+      const { error } = await supabase
+        .from("feed_posts")
+        .delete()
+        .eq("id", postId);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -95,7 +112,13 @@ export function useFeed(postType?: PostType) {
   });
 
   const togglePin = useMutation({
-    mutationFn: async ({ postId, isPinned }: { postId: string; isPinned: boolean }) => {
+    mutationFn: async ({
+      postId,
+      isPinned,
+    }: {
+      postId: string;
+      isPinned: boolean;
+    }) => {
       const { error } = await supabase
         .from("feed_posts")
         .update({ is_pinned: !isPinned })
@@ -108,7 +131,13 @@ export function useFeed(postType?: PostType) {
   });
 
   const toggleLike = useMutation({
-    mutationFn: async ({ postId, isLiked }: { postId: string; isLiked: boolean }) => {
+    mutationFn: async ({
+      postId,
+      isLiked,
+    }: {
+      postId: string;
+      isLiked: boolean;
+    }) => {
       if (!user) throw new Error("Not authenticated");
       if (isLiked) {
         const { error } = await supabase
@@ -150,7 +179,9 @@ export function useComments(postId: string) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("feed_comments")
-        .select("*, author:profiles!feed_comments_author_id_fkey(id, full_name, avatar_url, role)")
+        .select(
+          "*, author:profiles!feed_comments_author_id_fkey(id, full_name, avatar_url, role)",
+        )
         .eq("post_id", postId)
         .order("created_at", { ascending: true });
       if (error) throw error;
@@ -185,11 +216,18 @@ export function useComments(postId: string) {
       .channel(`comments-${postId}`)
       .on(
         "postgres_changes",
-        { event: "*", schema: "public", table: "feed_comments", filter: `post_id=eq.${postId}` },
+        {
+          event: "*",
+          schema: "public",
+          table: "feed_comments",
+          filter: `post_id=eq.${postId}`,
+        },
         () => {
-          queryClient.invalidateQueries({ queryKey: ["feed-comments", postId] });
+          queryClient.invalidateQueries({
+            queryKey: ["feed-comments", postId],
+          });
           queryClient.invalidateQueries({ queryKey: ["feed-posts"] });
-        }
+        },
       )
       .subscribe();
 
@@ -199,7 +237,13 @@ export function useComments(postId: string) {
   }, [supabase, queryClient, postId]);
 
   const addComment = useMutation({
-    mutationFn: async ({ content, parentId }: { content: string; parentId?: string }) => {
+    mutationFn: async ({
+      content,
+      parentId,
+    }: {
+      content: string;
+      parentId?: string;
+    }) => {
       if (!user) throw new Error("Not authenticated");
       const { data, error } = await supabase
         .from("feed_comments")
@@ -209,7 +253,9 @@ export function useComments(postId: string) {
           content,
           parent_id: parentId ?? null,
         })
-        .select("*, author:profiles!feed_comments_author_id_fkey(id, full_name, avatar_url, role)")
+        .select(
+          "*, author:profiles!feed_comments_author_id_fkey(id, full_name, avatar_url, role)",
+        )
         .single();
       if (error) throw error;
       return data as FeedComment;
@@ -222,7 +268,10 @@ export function useComments(postId: string) {
 
   const deleteComment = useMutation({
     mutationFn: async (commentId: string) => {
-      const { error } = await supabase.from("feed_comments").delete().eq("id", commentId);
+      const { error } = await supabase
+        .from("feed_comments")
+        .delete()
+        .eq("id", commentId);
       if (error) throw error;
     },
     onSuccess: () => {

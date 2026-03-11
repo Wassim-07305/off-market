@@ -1,16 +1,16 @@
-import { useMemo } from 'react'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { useMemo } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface PaginationProps {
-  currentPage: number
-  totalPages: number
-  onPageChange: (page: number) => void
-  itemsPerPage?: number
-  onItemsPerPageChange?: (count: number) => void
-  itemsPerPageOptions?: number[]
-  totalItems?: number
-  className?: string
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+  itemsPerPage?: number;
+  onItemsPerPageChange?: (count: number) => void;
+  itemsPerPageOptions?: number[];
+  totalItems?: number;
+  className?: string;
 }
 
 function Pagination({
@@ -24,46 +24,49 @@ function Pagination({
   className,
 }: PaginationProps) {
   const pages = useMemo(() => {
-    const result: (number | 'ellipsis')[] = []
-    const maxVisible = 5
+    const result: (number | "ellipsis")[] = [];
+    const maxVisible = 5;
 
     if (totalPages <= maxVisible + 2) {
       for (let i = 1; i <= totalPages; i++) {
-        result.push(i)
+        result.push(i);
       }
-      return result
+      return result;
     }
 
-    result.push(1)
+    result.push(1);
 
-    const start = Math.max(2, currentPage - 1)
-    const end = Math.min(totalPages - 1, currentPage + 1)
+    const start = Math.max(2, currentPage - 1);
+    const end = Math.min(totalPages - 1, currentPage + 1);
 
     if (start > 2) {
-      result.push('ellipsis')
+      result.push("ellipsis");
     }
 
     for (let i = start; i <= end; i++) {
-      result.push(i)
+      result.push(i);
     }
 
     if (end < totalPages - 1) {
-      result.push('ellipsis')
+      result.push("ellipsis");
     }
 
-    result.push(totalPages)
+    result.push(totalPages);
 
-    return result
-  }, [currentPage, totalPages])
+    return result;
+  }, [currentPage, totalPages]);
 
-  if (totalPages <= 1) return null
+  if (totalPages <= 1) return null;
 
   return (
-    <div className={cn('flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between', className)}>
+    <div
+      className={cn(
+        "flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between",
+        className,
+      )}
+    >
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
-        {totalItems !== undefined && (
-          <span>{totalItems} éléments</span>
-        )}
+        {totalItems !== undefined && <span>{totalItems} éléments</span>}
         {onItemsPerPageChange && itemsPerPage && (
           <div className="flex items-center gap-1.5">
             <span className="hidden sm:inline">|</span>
@@ -71,10 +74,10 @@ function Pagination({
               value={itemsPerPage}
               onChange={(e) => onItemsPerPageChange(Number(e.target.value))}
               className={cn(
-                'h-8 rounded-md border border-border bg-background px-2 text-sm',
-                'transition-all duration-200',
-                'focus:outline-none focus:ring-2 focus:ring-ring',
-                'cursor-pointer'
+                "h-8 rounded-md border border-border bg-background px-2 text-sm",
+                "transition-all duration-200",
+                "focus:outline-none focus:ring-2 focus:ring-ring",
+                "cursor-pointer",
               )}
             >
               {itemsPerPageOptions.map((opt) => (
@@ -93,11 +96,11 @@ function Pagination({
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage <= 1}
           className={cn(
-            'inline-flex h-8 w-8 items-center justify-center rounded-md text-sm',
-            'transition-all duration-200',
-            'hover:bg-secondary',
-            'disabled:pointer-events-none disabled:opacity-50',
-            'cursor-pointer'
+            "inline-flex h-8 w-8 items-center justify-center rounded-md text-sm",
+            "transition-all duration-200",
+            "hover:bg-secondary",
+            "disabled:pointer-events-none disabled:opacity-50",
+            "cursor-pointer",
           )}
           aria-label="Page précédente"
         >
@@ -105,7 +108,7 @@ function Pagination({
         </button>
 
         {pages.map((page, idx) =>
-          page === 'ellipsis' ? (
+          page === "ellipsis" ? (
             <span
               key={`ellipsis-${idx}`}
               className="inline-flex h-8 w-8 items-center justify-center text-sm text-muted-foreground"
@@ -118,17 +121,17 @@ function Pagination({
               type="button"
               onClick={() => onPageChange(page)}
               className={cn(
-                'inline-flex h-8 w-8 items-center justify-center rounded-md text-sm font-medium',
-                'transition-all duration-200',
-                'cursor-pointer',
+                "inline-flex h-8 w-8 items-center justify-center rounded-md text-sm font-medium",
+                "transition-all duration-200",
+                "cursor-pointer",
                 currentPage === page
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-foreground hover:bg-secondary'
+                  ? "bg-primary text-primary-foreground"
+                  : "text-foreground hover:bg-secondary",
               )}
             >
               {page}
             </button>
-          )
+          ),
         )}
 
         <button
@@ -136,11 +139,11 @@ function Pagination({
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage >= totalPages}
           className={cn(
-            'inline-flex h-8 w-8 items-center justify-center rounded-md text-sm',
-            'transition-all duration-200',
-            'hover:bg-secondary',
-            'disabled:pointer-events-none disabled:opacity-50',
-            'cursor-pointer'
+            "inline-flex h-8 w-8 items-center justify-center rounded-md text-sm",
+            "transition-all duration-200",
+            "hover:bg-secondary",
+            "disabled:pointer-events-none disabled:opacity-50",
+            "cursor-pointer",
           )}
           aria-label="Page suivante"
         >
@@ -148,8 +151,8 @@ function Pagination({
         </button>
       </div>
     </div>
-  )
+  );
 }
 
-export { Pagination }
-export type { PaginationProps }
+export { Pagination };
+export type { PaginationProps };

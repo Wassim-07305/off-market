@@ -21,19 +21,24 @@ export async function POST(req: NextRequest) {
     // Fetch the invoice
     const { data: invoice, error: invoiceError } = await supabase
       .from("invoices")
-      .select("*, client:profiles!invoices_client_id_fkey(id, full_name, email, stripe_customer_id)")
+      .select(
+        "*, client:profiles!invoices_client_id_fkey(id, full_name, email, stripe_customer_id)",
+      )
       .eq("id", invoiceId)
       .single();
 
     if (invoiceError || !invoice) {
-      return NextResponse.json({ error: "Facture introuvable" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Facture introuvable" },
+        { status: 404 },
+      );
     }
 
     // Only allow payment on sent/overdue invoices
     if (!["sent", "overdue"].includes(invoice.status)) {
       return NextResponse.json(
         { error: "Cette facture ne peut pas etre payee" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -55,7 +60,10 @@ export async function POST(req: NextRequest) {
     }
 
     // Build the origin URL
-    const origin = req.headers.get("origin") ?? process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+    const origin =
+      req.headers.get("origin") ??
+      process.env.NEXT_PUBLIC_APP_URL ??
+      "http://localhost:3000";
 
     // Create Checkout Session
     const session = await getStripeServer().checkout.sessions.create({
@@ -94,7 +102,7 @@ export async function POST(req: NextRequest) {
     console.error("Stripe checkout error:", error);
     return NextResponse.json(
       { error: "Erreur lors de la creation du paiement" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

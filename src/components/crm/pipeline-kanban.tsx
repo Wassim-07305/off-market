@@ -47,7 +47,7 @@ function ContactCard({
     <div
       className={cn(
         "bg-surface border border-border rounded-xl p-3 group transition-shadow",
-        isDragging ? "shadow-lg opacity-90 rotate-2" : "hover:shadow-sm"
+        isDragging ? "shadow-lg opacity-90 rotate-2" : "hover:shadow-sm",
       )}
     >
       <div className="flex items-start gap-2">
@@ -155,7 +155,7 @@ function StageColumn({
       ref={setNodeRef}
       className={cn(
         "flex flex-col min-w-[260px] w-[260px] shrink-0",
-        isOver && "ring-2 ring-primary/30 rounded-xl"
+        isOver && "ring-2 ring-primary/30 rounded-xl",
       )}
     >
       <div className={cn("rounded-xl px-3 py-2 mb-2 border", stage.bg)}>
@@ -336,7 +336,7 @@ export function PipelineKanban() {
   const [activeId, setActiveId] = useState<string | null>(null);
 
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
   );
 
   // Group contacts by stage
@@ -351,7 +351,7 @@ export function PipelineKanban() {
   }, [contacts]);
 
   const activeContact = activeId
-    ? contacts.find((c) => c.id === activeId) ?? null
+    ? (contacts.find((c) => c.id === activeId) ?? null)
     : null;
 
   const handleDragStart = (event: DragStartEvent) => {
@@ -426,7 +426,7 @@ export function PipelineKanban() {
             const stageContacts = contactsByStage.get(stage.value) ?? [];
             const stageTotal = stageContacts.reduce(
               (sum, c) => sum + Number(c.estimated_value),
-              0
+              0,
             );
             return (
               <StageColumn

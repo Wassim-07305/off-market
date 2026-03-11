@@ -1,148 +1,180 @@
-import { z } from 'zod'
+import { z } from "zod";
 
 // Auth forms
 export const loginSchema = z.object({
-  email: z.string().email('Email invalide'),
-  password: z.string().min(6, 'Minimum 6 caractères'),
-})
-export type LoginFormData = z.infer<typeof loginSchema>
+  email: z.string().email("Email invalide"),
+  password: z.string().min(6, "Minimum 6 caractères"),
+});
+export type LoginFormData = z.infer<typeof loginSchema>;
 
 export const registerSchema = z
   .object({
-    full_name: z.string().min(2, 'Minimum 2 caractères'),
-    email: z.string().email('Email invalide'),
-    password: z.string().min(6, 'Minimum 6 caractères'),
+    full_name: z.string().min(2, "Minimum 2 caractères"),
+    email: z.string().email("Email invalide"),
+    password: z.string().min(6, "Minimum 6 caractères"),
     confirm_password: z.string(),
   })
   .refine((data) => data.password === data.confirm_password, {
-    message: 'Les mots de passe ne correspondent pas',
-    path: ['confirm_password'],
-  })
-export type RegisterFormData = z.infer<typeof registerSchema>
+    message: "Les mots de passe ne correspondent pas",
+    path: ["confirm_password"],
+  });
+export type RegisterFormData = z.infer<typeof registerSchema>;
 
 export const forgotPasswordSchema = z.object({
-  email: z.string().email('Email invalide'),
-})
-export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>
+  email: z.string().email("Email invalide"),
+});
+export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
 
 // Client forms
 export const clientSchema = z.object({
-  name: z.string().min(1, 'Le nom est requis'),
-  email: z.string().email('Email invalide').optional().or(z.literal('')),
-  phone: z.string().optional().or(z.literal('')),
-  notes: z.string().optional().or(z.literal('')),
-  status: z.enum(['actif', 'inactif', 'archivé']),
-})
-export type ClientFormData = z.infer<typeof clientSchema>
+  name: z.string().min(1, "Le nom est requis"),
+  email: z.string().email("Email invalide").optional().or(z.literal("")),
+  phone: z.string().optional().or(z.literal("")),
+  notes: z.string().optional().or(z.literal("")),
+  status: z.enum(["actif", "inactif", "archivé"]),
+});
+export type ClientFormData = z.infer<typeof clientSchema>;
 
 // Lead forms
 export const leadSchema = z.object({
-  name: z.string().min(1, 'Le nom est requis'),
-  email: z.string().email('Email invalide').optional().or(z.literal('')),
-  phone: z.string().optional().or(z.literal('')),
-  source: z.enum(['instagram', 'linkedin', 'tiktok', 'referral', 'ads', 'autre']).optional(),
-  status: z.enum(['premier_message', 'en_discussion', 'qualifie', 'loom_envoye', 'call_planifie', 'close', 'perdu']).default('premier_message'),
+  name: z.string().min(1, "Le nom est requis"),
+  email: z.string().email("Email invalide").optional().or(z.literal("")),
+  phone: z.string().optional().or(z.literal("")),
+  source: z
+    .enum(["instagram", "linkedin", "tiktok", "referral", "ads", "autre"])
+    .optional(),
+  status: z
+    .enum([
+      "premier_message",
+      "en_discussion",
+      "qualifie",
+      "loom_envoye",
+      "call_planifie",
+      "close",
+      "perdu",
+    ])
+    .default("premier_message"),
   client_id: z.string().uuid().optional().nullable(),
   assigned_to: z.string().uuid().optional().nullable(),
   ca_contracté: z.coerce.number().min(0).default(0),
   ca_collecté: z.coerce.number().min(0).default(0),
   commission_setter: z.coerce.number().min(0).default(0),
   commission_closer: z.coerce.number().min(0).default(0),
-  notes: z.string().optional().or(z.literal('')),
-})
-export type LeadFormData = z.infer<typeof leadSchema>
+  notes: z.string().optional().or(z.literal("")),
+});
+export type LeadFormData = z.infer<typeof leadSchema>;
 
 // Call calendar forms
 export const callCalendarSchema = z.object({
-  client_id: z.string().uuid('Sélectionnez un client'),
+  client_id: z.string().uuid("Sélectionnez un client"),
   lead_id: z.string().uuid().optional().nullable(),
   assigned_to: z.string().uuid().optional().nullable(),
-  date: z.string().min(1, 'La date est requise'),
+  date: z.string().min(1, "La date est requise"),
   time: z.string().min(1, "L'heure est requise"),
-  type: z.enum(['manuel', 'iclosed', 'calendly', 'coaching', 'closing', 'autre']).default('manuel'),
-  status: z.enum(['planifié', 'réalisé', 'no_show', 'annulé', 'reporté']).default('planifié'),
-  link: z.string().url().optional().or(z.literal('')),
-  notes: z.string().optional().or(z.literal('')),
-})
-export type CallCalendarFormData = z.infer<typeof callCalendarSchema>
+  type: z
+    .enum(["manuel", "iclosed", "calendly", "coaching", "closing", "autre"])
+    .default("manuel"),
+  status: z
+    .enum(["planifié", "réalisé", "no_show", "annulé", "reporté"])
+    .default("planifié"),
+  link: z.string().url().optional().or(z.literal("")),
+  notes: z.string().optional().or(z.literal("")),
+});
+export type CallCalendarFormData = z.infer<typeof callCalendarSchema>;
 
 // Financial entry forms
 export const financialEntrySchema = z.object({
-  client_id: z.string().uuid('Sélectionnez un client'),
-  type: z.enum(['ca', 'récurrent', 'charge', 'prestataire']),
-  label: z.string().min(1, 'Le libellé est requis'),
-  amount: z.coerce.number().min(0, 'Le montant doit être positif'),
-  prestataire: z.string().optional().or(z.literal('')),
+  client_id: z.string().uuid("Sélectionnez un client"),
+  type: z.enum(["ca", "récurrent", "charge", "prestataire"]),
+  label: z.string().min(1, "Le libellé est requis"),
+  amount: z.coerce.number().min(0, "Le montant doit être positif"),
+  prestataire: z.string().optional().or(z.literal("")),
   is_paid: z.boolean().default(false),
-  date: z.string().min(1, 'La date est requise'),
-  recurrence: z.enum(['mensuel', 'trimestriel', 'annuel']).optional().nullable(),
-})
-export type FinancialEntryFormData = z.infer<typeof financialEntrySchema>
+  date: z.string().min(1, "La date est requise"),
+  recurrence: z
+    .enum(["mensuel", "trimestriel", "annuel"])
+    .optional()
+    .nullable(),
+});
+export type FinancialEntryFormData = z.infer<typeof financialEntrySchema>;
 
 // Payment schedule forms
 export const paymentScheduleSchema = z.object({
   financial_entry_id: z.string().uuid().optional().nullable(),
-  client_id: z.string().uuid('Sélectionnez un client'),
+  client_id: z.string().uuid("Sélectionnez un client"),
   amount: z.coerce.number().min(0),
   due_date: z.string().min(1, "La date d'échéance est requise"),
   is_paid: z.boolean().default(false),
-})
-export type PaymentScheduleFormData = z.infer<typeof paymentScheduleSchema>
+});
+export type PaymentScheduleFormData = z.infer<typeof paymentScheduleSchema>;
 
 // Activity forms (prospection)
 export const setterActivitySchema = z.object({
   client_id: z.string().uuid().optional().nullable(),
-  date: z.string().min(1, 'La date est requise'),
+  date: z.string().min(1, "La date est requise"),
   messages_sent: z.coerce.number().int().min(0).default(0),
   calls_made: z.coerce.number().int().min(0).default(0),
   looms_sent: z.coerce.number().int().min(0).default(0),
-  notes: z.string().optional().or(z.literal('')),
-})
-export type SetterActivityFormData = z.infer<typeof setterActivitySchema>
+  notes: z.string().optional().or(z.literal("")),
+});
+export type SetterActivityFormData = z.infer<typeof setterActivitySchema>;
 
 // Closer calls forms
 export const closerCallSchema = z.object({
-  client_id: z.string().uuid('Sélectionnez un client'),
+  client_id: z.string().uuid("Sélectionnez un client"),
   lead_id: z.string().uuid().optional().nullable(),
   closer_id: z.string().uuid().optional().nullable(),
-  date: z.string().min(1, 'La date est requise'),
-  status: z.enum(['closé', 'non_closé']).default('non_closé'),
+  date: z.string().min(1, "La date est requise"),
+  status: z.enum(["closé", "non_closé"]).default("non_closé"),
   revenue: z.coerce.number().min(0).default(0),
   nombre_paiements: z.coerce.number().int().min(0).default(1),
-  link: z.string().url().optional().or(z.literal('')),
-  debrief: z.string().optional().or(z.literal('')),
-  notes: z.string().optional().or(z.literal('')),
-})
-export type CloserCallFormData = z.infer<typeof closerCallSchema>
+  link: z.string().url().optional().or(z.literal("")),
+  debrief: z.string().optional().or(z.literal("")),
+  notes: z.string().optional().or(z.literal("")),
+});
+export type CloserCallFormData = z.infer<typeof closerCallSchema>;
 
 // Social content forms
 export const socialContentSchema = z.object({
-  client_id: z.string().uuid('Sélectionnez un client'),
-  title: z.string().min(1, 'Le titre est requis'),
-  status: z.enum(['idée', 'a_tourner', 'en_cours', 'publié', 'reporté']).default('idée'),
-  format: z.enum(['reel', 'story', 'carrousel', 'post']).optional().nullable(),
-  video_type: z.enum(['react', 'b-roll', 'video_virale', 'preuve_sociale', 'facecam', 'talking_head', 'vlog']).optional().nullable(),
-  link: z.string().url().optional().or(z.literal('')),
+  client_id: z.string().uuid("Sélectionnez un client"),
+  title: z.string().min(1, "Le titre est requis"),
+  status: z
+    .enum(["idée", "a_tourner", "en_cours", "publié", "reporté"])
+    .default("idée"),
+  format: z.enum(["reel", "story", "carrousel", "post"]).optional().nullable(),
+  video_type: z
+    .enum([
+      "react",
+      "b-roll",
+      "video_virale",
+      "preuve_sociale",
+      "facecam",
+      "talking_head",
+      "vlog",
+    ])
+    .optional()
+    .nullable(),
+  link: z.string().url().optional().or(z.literal("")),
   is_validated: z.boolean().default(false),
-  text_content: z.string().optional().or(z.literal('')),
-  planned_date: z.string().optional().or(z.literal('')),
-})
-export type SocialContentFormData = z.infer<typeof socialContentSchema>
+  text_content: z.string().optional().or(z.literal("")),
+  planned_date: z.string().optional().or(z.literal("")),
+});
+export type SocialContentFormData = z.infer<typeof socialContentSchema>;
 
 // Instagram account forms
 export const instagramAccountSchema = z.object({
-  client_id: z.string().uuid('Sélectionnez un client'),
+  client_id: z.string().uuid("Sélectionnez un client"),
   username: z.string().min(1, "Le nom d'utilisateur est requis"),
   followers: z.coerce.number().int().min(0).default(0),
   following: z.coerce.number().int().min(0).default(0),
   media_count: z.coerce.number().int().min(0).default(0),
-})
-export type InstagramAccountFormData = z.infer<typeof instagramAccountSchema>
+});
+export type InstagramAccountFormData = z.infer<typeof instagramAccountSchema>;
 
 // Instagram post stat forms
 export const instagramPostStatSchema = z.object({
-  account_id: z.string().uuid('Sélectionnez un compte'),
-  post_url: z.string().url().optional().or(z.literal('')),
+  account_id: z.string().uuid("Sélectionnez un compte"),
+  post_url: z.string().url().optional().or(z.literal("")),
   likes: z.coerce.number().int().min(0).default(0),
   comments: z.coerce.number().int().min(0).default(0),
   shares: z.coerce.number().int().min(0).default(0),
@@ -150,79 +182,82 @@ export const instagramPostStatSchema = z.object({
   reach: z.coerce.number().int().min(0).default(0),
   impressions: z.coerce.number().int().min(0).default(0),
   engagement_rate: z.coerce.number().min(0).default(0),
-  posted_at: z.string().optional().or(z.literal('')),
-})
-export type InstagramPostStatFormData = z.infer<typeof instagramPostStatSchema>
+  posted_at: z.string().optional().or(z.literal("")),
+});
+export type InstagramPostStatFormData = z.infer<typeof instagramPostStatSchema>;
 
 // Ritual forms
 export const ritualSchema = z.object({
-  title: z.string().min(1, 'Le titre est requis'),
-  description: z.string().optional().or(z.literal('')),
-  frequency: z.enum(['quotidien', 'hebdomadaire', 'mensuel']).optional().nullable(),
-})
-export type RitualFormData = z.infer<typeof ritualSchema>
+  title: z.string().min(1, "Le titre est requis"),
+  description: z.string().optional().or(z.literal("")),
+  frequency: z
+    .enum(["quotidien", "hebdomadaire", "mensuel"])
+    .optional()
+    .nullable(),
+});
+export type RitualFormData = z.infer<typeof ritualSchema>;
 
 // Channel forms
 export const channelSchema = z.object({
-  name: z.string().min(1, 'Le nom est requis'),
-  type: z.enum(['direct', 'group']).default('group'),
-  write_mode: z.enum(['all', 'admin_only']).default('all'),
-  member_ids: z.array(z.string().uuid()).min(1, 'Au moins un membre requis'),
-})
-export type ChannelFormData = z.infer<typeof channelSchema>
+  name: z.string().min(1, "Le nom est requis"),
+  type: z.enum(["direct", "group"]).default("group"),
+  write_mode: z.enum(["all", "admin_only"]).default("all"),
+  member_ids: z.array(z.string().uuid()).min(1, "Au moins un membre requis"),
+});
+export type ChannelFormData = z.infer<typeof channelSchema>;
 
 // Message forms
 export const messageSchema = z.object({
-  content: z.string().min(1, 'Le message ne peut pas être vide'),
-  file_url: z.string().url().optional().or(z.literal('')),
-  file_name: z.string().optional().or(z.literal('')),
-})
-export type MessageFormData = z.infer<typeof messageSchema>
+  content: z.string().min(1, "Le message ne peut pas être vide"),
+  file_url: z.string().url().optional().or(z.literal("")),
+  file_name: z.string().optional().or(z.literal("")),
+});
+export type MessageFormData = z.infer<typeof messageSchema>;
 
 // Formation forms
 export const formationSchema = z.object({
-  title: z.string().min(1, 'Le titre est requis'),
-  description: z.string().optional().or(z.literal('')),
-  thumbnail_url: z.string().url().optional().or(z.literal('')),
+  title: z.string().min(1, "Le titre est requis"),
+  description: z.string().optional().or(z.literal("")),
+  thumbnail_url: z.string().url().optional().or(z.literal("")),
   is_published: z.boolean().default(false),
-})
-export type FormationFormData = z.infer<typeof formationSchema>
+});
+export type FormationFormData = z.infer<typeof formationSchema>;
 
 // Formation module forms
 export const formationModuleSchema = z.object({
   formation_id: z.string().uuid(),
-  title: z.string().min(1, 'Le titre est requis'),
-  description: z.string().optional().or(z.literal('')),
-})
-export type FormationModuleFormData = z.infer<typeof formationModuleSchema>
+  title: z.string().min(1, "Le titre est requis"),
+  description: z.string().optional().or(z.literal("")),
+});
+export type FormationModuleFormData = z.infer<typeof formationModuleSchema>;
 
 // Module item forms
 export const moduleItemSchema = z.object({
   module_id: z.string().uuid(),
-  title: z.string().min(1, 'Le titre est requis'),
-  type: z.enum(['video', 'document']).default('video'),
-  url: z.string().url().optional().or(z.literal('')),
+  title: z.string().min(1, "Le titre est requis"),
+  type: z.enum(["video", "document"]).default("video"),
+  url: z.string().url().optional().or(z.literal("")),
   duration: z.coerce.number().int().min(0).optional(),
-})
-export type ModuleItemFormData = z.infer<typeof moduleItemSchema>
+});
+export type ModuleItemFormData = z.infer<typeof moduleItemSchema>;
 
 // Coaching goal forms
 export const coachingGoalSchema = z.object({
-  title: z.string().min(1, 'Le titre est requis'),
-  description: z.string().optional().or(z.literal('')),
-  target_value: z.coerce.number().min(0, 'La valeur cible doit être positive'),
-  unit: z.string().optional().or(z.literal('')),
-  deadline: z.string().optional().or(z.literal('')),
-  status: z.enum(['en_cours', 'atteint', 'abandonné']),
-})
-export type CoachingGoalFormData = z.infer<typeof coachingGoalSchema>
+  title: z.string().min(1, "Le titre est requis"),
+  description: z.string().optional().or(z.literal("")),
+  target_value: z.coerce.number().min(0, "La valeur cible doit être positive"),
+  unit: z.string().optional().or(z.literal("")),
+  deadline: z.string().optional().or(z.literal("")),
+  status: z.enum(["en_cours", "atteint", "abandonné"]),
+});
+export type CoachingGoalFormData = z.infer<typeof coachingGoalSchema>;
 
 // Student task forms
 export const studentTaskSchema = z.object({
-  title: z.string().min(1, 'Le titre est requis'),
-  description: z.string().optional().or(z.literal('')),
-  due_date: z.string().optional().or(z.literal('')),
-  priority: z.enum(['haute', 'moyenne', 'basse']),
-  status: z.enum(['a_faire', 'en_cours', 'termine']),
-})
-export type StudentTaskFormData = z.infer<typeof studentTaskSchema>
+  title: z.string().min(1, "Le titre est requis"),
+  description: z.string().optional().or(z.literal("")),
+  due_date: z.string().optional().or(z.literal("")),
+  priority: z.enum(["haute", "moyenne", "basse"]),
+  status: z.enum(["a_faire", "en_cours", "termine"]),
+});
+export type StudentTaskFormData = z.infer<typeof studentTaskSchema>;

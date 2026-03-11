@@ -2,7 +2,14 @@
 
 import { useState, useMemo } from "react";
 import { useBookableSlots, useBookCall } from "@/hooks/use-booking";
-import { ChevronLeft, ChevronRight, CalendarCheck, Clock, User, Loader2 } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  CalendarCheck,
+  Clock,
+  User,
+  Loader2,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { BookableSlot } from "@/types/streaks";
 
@@ -27,7 +34,11 @@ export function BookingCalendar() {
       const dateStr = d.toISOString().split("T")[0];
       days.push({
         date: dateStr,
-        label: d.toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short" }),
+        label: d.toLocaleDateString("fr-FR", {
+          weekday: "short",
+          day: "numeric",
+          month: "short",
+        }),
         isToday: dateStr === new Date().toISOString().split("T")[0],
       });
     }
@@ -42,7 +53,9 @@ export function BookingCalendar() {
   const { data: slots, isLoading } = useBookableSlots(startDate, endDate);
   const bookCall = useBookCall();
   const [selectedSlot, setSelectedSlot] = useState<BookableSlot | null>(null);
-  const [confirmingSlot, setConfirmingSlot] = useState<BookableSlot | null>(null);
+  const [confirmingSlot, setConfirmingSlot] = useState<BookableSlot | null>(
+    null,
+  );
 
   // Group slots by date
   const slotsByDate = useMemo(() => {
@@ -129,10 +142,12 @@ export function BookingCalendar() {
 
             return (
               <div key={day.date}>
-                <h4 className={cn(
-                  "text-xs font-semibold mb-2 uppercase tracking-wider",
-                  day.isToday ? "text-primary" : "text-muted-foreground"
-                )}>
+                <h4
+                  className={cn(
+                    "text-xs font-semibold mb-2 uppercase tracking-wider",
+                    day.isToday ? "text-primary" : "text-muted-foreground",
+                  )}
+                >
                   {day.label}
                   {day.isToday && " (aujourd'hui)"}
                 </h4>
@@ -145,7 +160,7 @@ export function BookingCalendar() {
                         "h-10 px-4 rounded-xl text-sm font-mono border transition-all",
                         selectedSlot === slot
                           ? "border-primary bg-primary/5 text-primary"
-                          : "border-border bg-surface text-foreground hover:border-primary/50 hover:bg-primary/5"
+                          : "border-border bg-surface text-foreground hover:border-primary/50 hover:bg-primary/5",
                       )}
                     >
                       <span className="flex items-center gap-2">
@@ -168,7 +183,10 @@ export function BookingCalendar() {
       {/* Confirmation modal */}
       {confirmingSlot && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-surface rounded-2xl p-6 max-w-sm w-full" style={{ boxShadow: "var(--shadow-elevated)" }}>
+          <div
+            className="bg-surface rounded-2xl p-6 max-w-sm w-full"
+            style={{ boxShadow: "var(--shadow-elevated)" }}
+          >
             <h3 className="text-lg font-display font-semibold text-foreground mb-4">
               Confirmer la reservation
             </h3>
@@ -185,7 +203,10 @@ export function BookingCalendar() {
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <Clock className="w-4 h-4 text-muted-foreground" />
-                <span>{confirmingSlot.time.slice(0, 5)} ({confirmingSlot.duration_minutes} min)</span>
+                <span>
+                  {confirmingSlot.time.slice(0, 5)} (
+                  {confirmingSlot.duration_minutes} min)
+                </span>
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <User className="w-4 h-4 text-muted-foreground" />

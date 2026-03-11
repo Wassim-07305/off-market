@@ -33,13 +33,17 @@ function getGreeting(): string {
 export default function CoachDashboardPage() {
   const { profile } = useAuth();
   const { students, isLoading: studentsLoading } = useStudents({ limit: 200 });
-  const { alerts, isLoading: alertsLoading, resolveAlert } = useCoachAlerts(false);
+  const {
+    alerts,
+    isLoading: alertsLoading,
+    resolveAlert,
+  } = useCoachAlerts(false);
   const { upcoming, isLoading: sessionsLoading } = useSessions();
 
   const stats = useMemo(() => {
     const totalStudents = students.length;
     const atRiskCount = students.filter(
-      (s) => s.student_details?.[0]?.tag === "at_risk"
+      (s) => s.student_details?.[0]?.tag === "at_risk",
     ).length;
     const upcomingSessions = upcoming.length;
     const avgHealth =
@@ -47,8 +51,8 @@ export default function CoachDashboardPage() {
         ? Math.round(
             students.reduce(
               (sum, s) => sum + (s.student_details?.[0]?.health_score ?? 0),
-              0
-            ) / totalStudents
+              0,
+            ) / totalStudents,
           )
         : 0;
 
@@ -148,7 +152,8 @@ export default function CoachDashboardPage() {
                       <span
                         className={cn(
                           "inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium shrink-0",
-                          severityConfig?.color ?? "bg-muted text-muted-foreground"
+                          severityConfig?.color ??
+                            "bg-muted text-muted-foreground",
                         )}
                       >
                         {severityConfig?.label ?? alert.severity}

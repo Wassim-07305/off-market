@@ -26,7 +26,9 @@ export function QuizPlayer({ lessonId, config, onComplete }: QuizPlayerProps) {
 
   const [started, setStarted] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [answers, setAnswers] = useState<Map<string, string | number>>(new Map());
+  const [answers, setAnswers] = useState<Map<string, string | number>>(
+    new Map(),
+  );
   const [showResults, setShowResults] = useState(false);
   const [results, setResults] = useState<{
     score: number;
@@ -122,9 +124,16 @@ export function QuizPlayer({ lessonId, config, onComplete }: QuizPlayerProps) {
         onSuccess: () => {
           if (passed) onComplete?.(true);
         },
-      }
+      },
     );
-  }, [answers, questions, config.passing_score, lessonId, onComplete, submitQuiz]);
+  }, [
+    answers,
+    questions,
+    config.passing_score,
+    lessonId,
+    onComplete,
+    submitQuiz,
+  ]);
 
   // Timer countdown
   useEffect(() => {
@@ -163,7 +172,8 @@ export function QuizPlayer({ lessonId, config, onComplete }: QuizPlayerProps) {
         <div>
           <h3 className="text-lg font-semibold text-foreground">Quiz</h3>
           <p className="text-sm text-muted-foreground mt-1">
-            {questions.length} question{questions.length > 1 ? "s" : ""} — Score minimum : {config.passing_score}%
+            {questions.length} question{questions.length > 1 ? "s" : ""} — Score
+            minimum : {config.passing_score}%
             {config.time_limit && (
               <span className="block mt-0.5">
                 <Timer className="w-3.5 h-3.5 inline mr-1" />
@@ -210,7 +220,9 @@ export function QuizPlayer({ lessonId, config, onComplete }: QuizPlayerProps) {
             results.passed ? "bg-emerald-500/10" : "bg-red-500/10"
           }`}
         >
-          <div className="text-4xl font-bold text-foreground mb-1">{results.score}%</div>
+          <div className="text-4xl font-bold text-foreground mb-1">
+            {results.score}%
+          </div>
           <p className="text-sm font-medium text-foreground">
             {results.correct}/{results.total} reponses correctes
           </p>
@@ -256,9 +268,13 @@ export function QuizPlayer({ lessonId, config, onComplete }: QuizPlayerProps) {
                       <XCircle className="w-4 h-4 text-red-500 mt-0.5 shrink-0" />
                     )}
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground">{q.question}</p>
+                      <p className="text-sm font-medium text-foreground">
+                        {q.question}
+                      </p>
                       {q.explanation && (
-                        <p className="text-xs text-muted-foreground mt-1">{q.explanation}</p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {q.explanation}
+                        </p>
                       )}
                     </div>
                   </div>
@@ -316,7 +332,8 @@ export function QuizPlayer({ lessonId, config, onComplete }: QuizPlayerProps) {
                 }`}
               >
                 <Timer className="w-3 h-3" />
-                {Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, "0")}
+                {Math.floor(timeLeft / 60)}:
+                {String(timeLeft % 60).padStart(2, "0")}
               </span>
             )}
             <span className="text-xs text-muted-foreground">
@@ -326,29 +343,32 @@ export function QuizPlayer({ lessonId, config, onComplete }: QuizPlayerProps) {
         </div>
 
         {/* Question */}
-        <h3 className="text-lg font-medium text-foreground">{currentQuestion.question}</h3>
+        <h3 className="text-lg font-medium text-foreground">
+          {currentQuestion.question}
+        </h3>
 
         {/* Answer options */}
-        {currentQuestion.type === "multiple_choice" && currentQuestion.options && (
-          <div className="space-y-2">
-            {currentQuestion.options.map((option, i) => (
-              <button
-                key={i}
-                onClick={() => selectAnswer(currentQuestion.id, i)}
-                className={`w-full text-left p-3 rounded-lg border text-sm transition-colors ${
-                  answers.get(currentQuestion.id) === i
-                    ? "bg-primary/10 border-primary text-foreground"
-                    : "bg-surface border-border text-foreground hover:border-primary/50"
-                }`}
-              >
-                <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-muted text-xs font-medium mr-3">
-                  {String.fromCharCode(65 + i)}
-                </span>
-                {option}
-              </button>
-            ))}
-          </div>
-        )}
+        {currentQuestion.type === "multiple_choice" &&
+          currentQuestion.options && (
+            <div className="space-y-2">
+              {currentQuestion.options.map((option, i) => (
+                <button
+                  key={i}
+                  onClick={() => selectAnswer(currentQuestion.id, i)}
+                  className={`w-full text-left p-3 rounded-lg border text-sm transition-colors ${
+                    answers.get(currentQuestion.id) === i
+                      ? "bg-primary/10 border-primary text-foreground"
+                      : "bg-surface border-border text-foreground hover:border-primary/50"
+                  }`}
+                >
+                  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-muted text-xs font-medium mr-3">
+                    {String.fromCharCode(65 + i)}
+                  </span>
+                  {option}
+                </button>
+              ))}
+            </div>
+          )}
 
         {currentQuestion.type === "true_false" && (
           <div className="flex gap-3">
@@ -395,7 +415,9 @@ export function QuizPlayer({ lessonId, config, onComplete }: QuizPlayerProps) {
           {isLast ? (
             <button
               onClick={handleSubmit}
-              disabled={answeredCount < questions.length || submitQuiz.isPending}
+              disabled={
+                answeredCount < questions.length || submitQuiz.isPending
+              }
               className="inline-flex items-center gap-2 h-9 px-5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
             >
               {submitQuiz.isPending ? (
@@ -407,7 +429,11 @@ export function QuizPlayer({ lessonId, config, onComplete }: QuizPlayerProps) {
             </button>
           ) : (
             <button
-              onClick={() => setCurrentIndex(Math.min(questions.length - 1, currentIndex + 1))}
+              onClick={() =>
+                setCurrentIndex(
+                  Math.min(questions.length - 1, currentIndex + 1),
+                )
+              }
               disabled={!answeredCurrent}
               className="inline-flex items-center gap-1 h-9 px-3 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
             >

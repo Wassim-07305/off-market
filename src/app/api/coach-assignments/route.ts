@@ -34,7 +34,7 @@ export async function GET(request: Request) {
   let query = supabase
     .from("coach_assignments")
     .select(
-      "*, coach:profiles!coach_assignments_coach_id_fkey(id, full_name, email, avatar_url), client:profiles!coach_assignments_client_id_fkey(id, full_name, email, avatar_url)"
+      "*, coach:profiles!coach_assignments_coach_id_fkey(id, full_name, email, avatar_url), client:profiles!coach_assignments_client_id_fkey(id, full_name, email, avatar_url)",
     )
     .order("assigned_at", { ascending: false });
 
@@ -48,7 +48,8 @@ export async function GET(request: Request) {
   }
 
   if (status) query = query.eq("status", status);
-  if (coachId && profile.role === "admin") query = query.eq("coach_id", coachId);
+  if (coachId && profile.role === "admin")
+    query = query.eq("coach_id", coachId);
   if (clientId) query = query.eq("client_id", clientId);
 
   const { data, error } = await query;
@@ -80,7 +81,7 @@ export async function POST(request: Request) {
   if (profile?.role !== "admin") {
     return NextResponse.json(
       { error: "Seuls les administrateurs peuvent créer des assignations" },
-      { status: 403 }
+      { status: 403 },
     );
   }
 
@@ -89,8 +90,11 @@ export async function POST(request: Request) {
 
   if (!parsed.success) {
     return NextResponse.json(
-      { error: "Données invalides", details: parsed.error.flatten().fieldErrors },
-      { status: 400 }
+      {
+        error: "Données invalides",
+        details: parsed.error.flatten().fieldErrors,
+      },
+      { status: 400 },
     );
   }
 
@@ -104,7 +108,7 @@ export async function POST(request: Request) {
   if (coachProfile?.role !== "coach") {
     return NextResponse.json(
       { error: "L'utilisateur spécifié n'est pas un coach" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -118,7 +122,7 @@ export async function POST(request: Request) {
   if (clientProfile?.role !== "client") {
     return NextResponse.json(
       { error: "L'utilisateur spécifié n'est pas un client" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -130,7 +134,7 @@ export async function POST(request: Request) {
       notes: parsed.data.notes ?? null,
     })
     .select(
-      "*, coach:profiles!coach_assignments_coach_id_fkey(id, full_name, email, avatar_url), client:profiles!coach_assignments_client_id_fkey(id, full_name, email, avatar_url)"
+      "*, coach:profiles!coach_assignments_coach_id_fkey(id, full_name, email, avatar_url), client:profiles!coach_assignments_client_id_fkey(id, full_name, email, avatar_url)",
     )
     .single();
 
@@ -138,7 +142,7 @@ export async function POST(request: Request) {
     if (error.code === "23505") {
       return NextResponse.json(
         { error: "Ce client est déjà assigné à ce coach" },
-        { status: 409 }
+        { status: 409 },
       );
     }
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -173,8 +177,11 @@ export async function PATCH(request: Request) {
 
   if (!parsed.success) {
     return NextResponse.json(
-      { error: "Données invalides", details: parsed.error.flatten().fieldErrors },
-      { status: 400 }
+      {
+        error: "Données invalides",
+        details: parsed.error.flatten().fieldErrors,
+      },
+      { status: 400 },
     );
   }
 
@@ -195,7 +202,7 @@ export async function PATCH(request: Request) {
 
   const { data, error } = await query
     .select(
-      "*, coach:profiles!coach_assignments_coach_id_fkey(id, full_name, email, avatar_url), client:profiles!coach_assignments_client_id_fkey(id, full_name, email, avatar_url)"
+      "*, coach:profiles!coach_assignments_coach_id_fkey(id, full_name, email, avatar_url), client:profiles!coach_assignments_client_id_fkey(id, full_name, email, avatar_url)",
     )
     .single();
 
@@ -204,7 +211,10 @@ export async function PATCH(request: Request) {
   }
 
   if (!data) {
-    return NextResponse.json({ error: "Assignation introuvable" }, { status: 404 });
+    return NextResponse.json(
+      { error: "Assignation introuvable" },
+      { status: 404 },
+    );
   }
 
   return NextResponse.json(data);

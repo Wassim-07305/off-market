@@ -16,7 +16,8 @@ export default function FormResponsesPage({
 }) {
   const { formId } = use(params);
   const { data: form, isLoading: formLoading } = useForm(formId);
-  const { data: submissions, isLoading: subsLoading } = useFormSubmissions(formId);
+  const { data: submissions, isLoading: subsLoading } =
+    useFormSubmissions(formId);
   const prefix = useRoutePrefix();
 
   if (formLoading) {
@@ -24,10 +25,15 @@ export default function FormResponsesPage({
   }
 
   if (!form) {
-    return <p className="text-center text-muted-foreground py-16">Formulaire non trouve</p>;
+    return (
+      <p className="text-center text-muted-foreground py-16">
+        Formulaire non trouve
+      </p>
+    );
   }
 
-  const fields = form.form_fields?.sort((a, b) => a.sort_order - b.sort_order) ?? [];
+  const fields =
+    form.form_fields?.sort((a, b) => a.sort_order - b.sort_order) ?? [];
 
   const exportColumns = [
     { key: "respondent", label: "Repondant" },
@@ -74,8 +80,16 @@ export default function FormResponsesPage({
           {submissions && submissions.length > 0 && (
             <ExportDropdown
               options={[
-                { label: "Exporter CSV", icon: Table, onClick: handleExportCSV },
-                { label: "Exporter PDF", icon: FileText, onClick: handleExportPDF },
+                {
+                  label: "Exporter CSV",
+                  icon: Table,
+                  onClick: handleExportCSV,
+                },
+                {
+                  label: "Exporter PDF",
+                  icon: FileText,
+                  onClick: handleExportPDF,
+                },
               ]}
             />
           )}
@@ -99,10 +113,13 @@ export default function FormResponsesPage({
       <div className="bg-surface border border-border rounded-xl p-6">
         <h1 className="text-xl font-semibold text-foreground">{form.title}</h1>
         {form.description && (
-          <p className="text-sm text-muted-foreground mt-1">{form.description}</p>
+          <p className="text-sm text-muted-foreground mt-1">
+            {form.description}
+          </p>
         )}
         <p className="text-xs text-muted-foreground mt-3">
-          {submissions?.length ?? 0} reponse{(submissions?.length ?? 0) !== 1 ? "s" : ""}
+          {submissions?.length ?? 0} reponse
+          {(submissions?.length ?? 0) !== 1 ? "s" : ""}
         </p>
       </div>
 
@@ -143,7 +160,10 @@ export default function FormResponsesPage({
                 {submissions.map((sub) => {
                   const answers = sub.answers as Record<string, unknown>;
                   return (
-                    <tr key={sub.id} className="border-b border-border last:border-0 hover:bg-muted/50">
+                    <tr
+                      key={sub.id}
+                      className="border-b border-border last:border-0 hover:bg-muted/50"
+                    >
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
                           <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-[10px] text-primary font-medium">

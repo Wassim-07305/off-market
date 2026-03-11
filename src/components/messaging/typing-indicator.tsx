@@ -24,7 +24,8 @@ export function TypingIndicator({ typingUsers }: TypingIndicatorProps) {
         <span className="w-[5px] h-[5px] rounded-full bg-primary/60 animate-[typing-dot_1.4s_ease-in-out_0.4s_infinite]" />
       </div>
       <span className="text-xs text-muted-foreground">
-        <strong className="font-medium text-foreground/70">{names}</strong> {verb}...
+        <strong className="font-medium text-foreground/70">{names}</strong>{" "}
+        {verb}...
       </span>
     </div>
   );

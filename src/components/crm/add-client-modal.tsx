@@ -60,8 +60,12 @@ export function AddClientModal({ open, onClose }: AddClientModalProps) {
               <UserPlus className="w-5 h-5 text-primary" />
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-foreground">Ajouter un client</h3>
-              <p className="text-xs text-muted-foreground">Creer un nouveau compte client</p>
+              <h3 className="text-sm font-semibold text-foreground">
+                Ajouter un client
+              </h3>
+              <p className="text-xs text-muted-foreground">
+                Creer un nouveau compte client
+              </p>
             </div>
           </div>
           <button

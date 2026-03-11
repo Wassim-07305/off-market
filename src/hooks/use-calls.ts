@@ -4,7 +4,12 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
 import { useMemo } from "react";
-import type { CallCalendarWithRelations, RoomStatus, TranscriptEntry, CallNoteTemplate } from "@/types/calls";
+import type {
+  CallCalendarWithRelations,
+  RoomStatus,
+  TranscriptEntry,
+  CallNoteTemplate,
+} from "@/types/calls";
 
 export function useCalls(weekStart?: Date) {
   const supabase = useSupabase();
@@ -16,7 +21,9 @@ export function useCalls(weekStart?: Date) {
     queryFn: async () => {
       let query = supabase
         .from("call_calendar")
-        .select("*, client:profiles!call_calendar_client_id_fkey(id, full_name, avatar_url), assigned_profile:profiles!call_calendar_assigned_to_fkey(id, full_name)")
+        .select(
+          "*, client:profiles!call_calendar_client_id_fkey(id, full_name, avatar_url), assigned_profile:profiles!call_calendar_assigned_to_fkey(id, full_name)",
+        )
         .order("date", { ascending: true })
         .order("time", { ascending: true });
 
@@ -62,7 +69,10 @@ export function useCalls(weekStart?: Date) {
   });
 
   const updateCall = useMutation({
-    mutationFn: async ({ id, ...updates }: { id: string } & Record<string, unknown>) => {
+    mutationFn: async ({
+      id,
+      ...updates
+    }: { id: string } & Record<string, unknown>) => {
       const { error } = await supabase
         .from("call_calendar")
         .update(updates)
@@ -100,7 +110,8 @@ export function useCalls(weekStart?: Date) {
       const updates: Record<string, unknown> = { room_status };
       if (started_at) updates.started_at = started_at;
       if (ended_at) updates.ended_at = ended_at;
-      if (actual_duration_seconds !== undefined) updates.actual_duration_seconds = actual_duration_seconds;
+      if (actual_duration_seconds !== undefined)
+        updates.actual_duration_seconds = actual_duration_seconds;
       const { error } = await supabase
         .from("call_calendar")
         .update(updates)
@@ -223,7 +234,9 @@ export function useCallMetrics(dateRange?: { from: string; to: string }) {
     queryFn: async () => {
       let query = supabase
         .from("call_calendar")
-        .select("status, duration_minutes, actual_duration_seconds, satisfaction_rating, call_type, date");
+        .select(
+          "status, duration_minutes, actual_duration_seconds, satisfaction_rating, call_type, date",
+        );
 
       if (dateRange) {
         query = query.gte("date", dateRange.from).lte("date", dateRange.to);
@@ -238,22 +251,30 @@ export function useCallMetrics(dateRange?: { from: string; to: string }) {
       const annule = data.filter((c) => c.status === "annule");
       const reporte = data.filter((c) => c.status === "reporte");
 
-      const completionRate = total > 0 ? Math.round((realise.length / total) * 100) : 0;
-      const noShowRate = total > 0 ? Math.round((noShow.length / total) * 100) : 0;
+      const completionRate =
+        total > 0 ? Math.round((realise.length / total) * 100) : 0;
+      const noShowRate =
+        total > 0 ? Math.round((noShow.length / total) * 100) : 0;
 
       const durations = realise
         .map((c) => c.actual_duration_seconds)
         .filter((d): d is number => d !== null);
-      const avgDuration = durations.length > 0
-        ? Math.round(durations.reduce((a, b) => a + b, 0) / durations.length / 60)
-        : 0;
+      const avgDuration =
+        durations.length > 0
+          ? Math.round(
+              durations.reduce((a, b) => a + b, 0) / durations.length / 60,
+            )
+          : 0;
 
       const ratings = data
         .map((c) => c.satisfaction_rating)
         .filter((r): r is number => r !== null);
-      const avgSatisfaction = ratings.length > 0
-        ? Math.round((ratings.reduce((a, b) => a + b, 0) / ratings.length) * 10) / 10
-        : 0;
+      const avgSatisfaction =
+        ratings.length > 0
+          ? Math.round(
+              (ratings.reduce((a, b) => a + b, 0) / ratings.length) * 10,
+            ) / 10
+          : 0;
 
       // Calls by type
       const byType: Record<string, number> = {};
@@ -300,7 +321,7 @@ export function useCallById(callId: string | null) {
       const { data, error } = await supabase
         .from("call_calendar")
         .select(
-          "*, client:profiles!call_calendar_client_id_fkey(id, full_name, avatar_url), assigned_profile:profiles!call_calendar_assigned_to_fkey(id, full_name)"
+          "*, client:profiles!call_calendar_client_id_fkey(id, full_name, avatar_url), assigned_profile:profiles!call_calendar_assigned_to_fkey(id, full_name)",
         )
         .eq("id", callId!)
         .single();

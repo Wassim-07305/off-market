@@ -23,7 +23,12 @@ import { ModuleFormDialog } from "./module-form-dialog";
 import { LessonFormDialog } from "./lesson-form-dialog";
 import { CourseFormDialog } from "./course-form-dialog";
 import { FileUpload } from "./file-upload";
-import type { Course, Module, Lesson, LessonAttachment } from "@/types/database";
+import type {
+  Course,
+  Module,
+  Lesson,
+  LessonAttachment,
+} from "@/types/database";
 import {
   ArrowLeft,
   ChevronDown,
@@ -66,8 +71,14 @@ function SortableLessonItem({
   onSelect: () => void;
   onDelete: () => void;
 }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
-    useSortable({ id: lesson.id });
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: lesson.id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -81,7 +92,7 @@ function SortableLessonItem({
       className={cn(
         "flex items-center gap-1 px-2 py-1.5 cursor-pointer hover:bg-muted/50 transition-colors border-b border-border last:border-0",
         isSelected && "bg-primary/5",
-        isDragging && "opacity-50 bg-primary/5"
+        isDragging && "opacity-50 bg-primary/5",
       )}
       onClick={onSelect}
     >
@@ -94,7 +105,9 @@ function SortableLessonItem({
         <GripVertical className="w-2.5 h-2.5" />
       </button>
       <Play className="w-3 h-3 text-muted-foreground/50 shrink-0" />
-      <span className="text-xs text-foreground truncate flex-1">{lesson.title}</span>
+      <span className="text-xs text-foreground truncate flex-1">
+        {lesson.title}
+      </span>
       {lesson.estimated_duration && (
         <span className="text-[10px] text-muted-foreground shrink-0">
           {lesson.estimated_duration}min
@@ -146,14 +159,22 @@ function SortableModuleItem({
   selectedLessonId: string | null;
   lessons: Lesson[];
 }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
-    useSortable({ id: mod.id });
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: mod.id });
 
   const lessonSensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
   );
 
-  const sortedLessons = [...lessons].sort((a, b) => a.sort_order - b.sort_order);
+  const sortedLessons = [...lessons].sort(
+    (a, b) => a.sort_order - b.sort_order,
+  );
 
   const handleLessonDragEnd = useCallback(
     (event: DragEndEvent) => {
@@ -162,9 +183,12 @@ function SortableModuleItem({
       const oldIndex = sortedLessons.findIndex((l) => l.id === active.id);
       const newIndex = sortedLessons.findIndex((l) => l.id === over.id);
       const reordered = arrayMove(sortedLessons, oldIndex, newIndex);
-      onReorderLessons(mod.id, reordered.map((l) => l.id));
+      onReorderLessons(
+        mod.id,
+        reordered.map((l) => l.id),
+      );
     },
-    [sortedLessons, mod.id, onReorderLessons]
+    [sortedLessons, mod.id, onReorderLessons],
   );
 
   const style = {
@@ -178,8 +202,10 @@ function SortableModuleItem({
       style={style}
       className={cn(
         "rounded-xl border transition-all",
-        isDragging ? "opacity-50 border-primary/30 bg-primary/5" : "border-border",
-        isSelected && !isDragging ? "ring-2 ring-primary/20" : ""
+        isDragging
+          ? "opacity-50 border-primary/30 bg-primary/5"
+          : "border-border",
+        isSelected && !isDragging ? "ring-2 ring-primary/20" : "",
       )}
     >
       {/* Module header */}
@@ -192,7 +218,11 @@ function SortableModuleItem({
           <GripVertical className="w-3.5 h-3.5" />
         </button>
         <button onClick={onToggle} className="shrink-0 text-muted-foreground">
-          {isExpanded ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
+          {isExpanded ? (
+            <ChevronDown className="w-3.5 h-3.5" />
+          ) : (
+            <ChevronRight className="w-3.5 h-3.5" />
+          )}
         </button>
         <button
           onClick={onSelect}
@@ -220,8 +250,15 @@ function SortableModuleItem({
       {/* Lessons with DnD */}
       {isExpanded && (
         <div className="border-t border-border">
-          <DndContext sensors={lessonSensors} collisionDetection={closestCenter} onDragEnd={handleLessonDragEnd}>
-            <SortableContext items={sortedLessons.map((l) => l.id)} strategy={verticalListSortingStrategy}>
+          <DndContext
+            sensors={lessonSensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleLessonDragEnd}
+          >
+            <SortableContext
+              items={sortedLessons.map((l) => l.id)}
+              strategy={verticalListSortingStrategy}
+            >
               {sortedLessons.map((lesson) => (
                 <SortableLessonItem
                   key={lesson.id}
@@ -268,10 +305,15 @@ function LessonEditorPanel({
   const [title, setTitle] = useState(lesson.title);
   const [description, setDescription] = useState(lesson.description ?? "");
   const [videoUrl, setVideoUrl] = useState(
-    lesson.video_url ?? (lesson.content as Record<string, string>)?.video_url ?? (lesson.content as Record<string, string>)?.url ?? ""
+    lesson.video_url ??
+      (lesson.content as Record<string, string>)?.video_url ??
+      (lesson.content as Record<string, string>)?.url ??
+      "",
   );
   const [contentHtml, setContentHtml] = useState(
-    lesson.content_html ?? (lesson.content as Record<string, string>)?.html ?? ""
+    lesson.content_html ??
+      (lesson.content as Record<string, string>)?.html ??
+      "",
   );
   const [duration, setDuration] = useState(lesson.estimated_duration ?? 0);
   const [contentType, setContentType] = useState(lesson.content_type);
@@ -280,10 +322,15 @@ function LessonEditorPanel({
     setTitle(lesson.title);
     setDescription(lesson.description ?? "");
     setVideoUrl(
-      lesson.video_url ?? (lesson.content as Record<string, string>)?.video_url ?? (lesson.content as Record<string, string>)?.url ?? ""
+      lesson.video_url ??
+        (lesson.content as Record<string, string>)?.video_url ??
+        (lesson.content as Record<string, string>)?.url ??
+        "",
     );
     setContentHtml(
-      lesson.content_html ?? (lesson.content as Record<string, string>)?.html ?? ""
+      lesson.content_html ??
+        (lesson.content as Record<string, string>)?.html ??
+        "",
     );
     setDuration(lesson.estimated_duration ?? 0);
     setContentType(lesson.content_type);
@@ -321,16 +368,26 @@ function LessonEditorPanel({
         {moduleTitle && (
           <p className="text-xs text-muted-foreground mb-1">{moduleTitle}</p>
         )}
-        <h2 className="text-xl font-display font-semibold text-foreground">{lesson.title}</h2>
+        <h2 className="text-xl font-display font-semibold text-foreground">
+          {lesson.title}
+        </h2>
       </div>
 
       {/* Card 1: Informations generales */}
-      <div className="bg-surface rounded-2xl border border-border p-6 space-y-4" style={{ boxShadow: "var(--shadow-card)" }}>
+      <div
+        className="bg-surface rounded-2xl border border-border p-6 space-y-4"
+        style={{ boxShadow: "var(--shadow-card)" }}
+      >
         <div>
           <label className="block text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
             Titre
           </label>
-          <input value={title} onChange={(e) => setTitle(e.target.value)} className={inputClass} placeholder="Titre de la lecon" />
+          <input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className={inputClass}
+            placeholder="Titre de la lecon"
+          />
         </div>
 
         <div>
@@ -374,12 +431,14 @@ function LessonEditorPanel({
                 <button
                   key={t.value}
                   type="button"
-                  onClick={() => setContentType(t.value as Lesson["content_type"])}
+                  onClick={() =>
+                    setContentType(t.value as Lesson["content_type"])
+                  }
                   className={cn(
                     "h-8 px-3 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-all",
                     contentType === t.value
                       ? "bg-foreground text-background"
-                      : "bg-muted text-muted-foreground hover:text-foreground"
+                      : "bg-muted text-muted-foreground hover:text-foreground",
                   )}
                 >
                   <t.icon className="w-3 h-3" />
@@ -403,15 +462,22 @@ function LessonEditorPanel({
       </div>
 
       {/* Card 2: Video */}
-      <div className="bg-surface rounded-2xl border border-border p-6 space-y-4" style={{ boxShadow: "var(--shadow-card)" }}>
+      <div
+        className="bg-surface rounded-2xl border border-border p-6 space-y-4"
+        style={{ boxShadow: "var(--shadow-card)" }}
+      >
         <div className="flex items-center gap-2 mb-2">
           <Video className="w-4 h-4 text-muted-foreground" />
-          <span className="text-base font-display font-semibold text-foreground">Video</span>
+          <span className="text-base font-display font-semibold text-foreground">
+            Video
+          </span>
         </div>
 
         {videoUrl && (
           <div className="rounded-xl border border-border bg-muted/30 p-3 space-y-2">
-            <p className="text-xs font-medium text-muted-foreground">Video actuelle :</p>
+            <p className="text-xs font-medium text-muted-foreground">
+              Video actuelle :
+            </p>
             <p className="text-sm truncate">{videoUrl}</p>
             <button
               onClick={() => setVideoUrl("")}
@@ -452,10 +518,15 @@ function LessonEditorPanel({
       </div>
 
       {/* Card 3: Pieces jointes */}
-      <div className="bg-surface rounded-2xl border border-border p-6 space-y-4" style={{ boxShadow: "var(--shadow-card)" }}>
+      <div
+        className="bg-surface rounded-2xl border border-border p-6 space-y-4"
+        style={{ boxShadow: "var(--shadow-card)" }}
+      >
         <div className="flex items-center gap-2 mb-2">
           <FileText className="w-4 h-4 text-muted-foreground" />
-          <span className="text-base font-display font-semibold text-foreground">Pieces jointes</span>
+          <span className="text-base font-display font-semibold text-foreground">
+            Pieces jointes
+          </span>
         </div>
 
         {attachments.length > 0 && (
@@ -468,7 +539,9 @@ function LessonEditorPanel({
                 <FileText className="w-4 h-4 text-muted-foreground shrink-0" />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm truncate">{att.name}</p>
-                  <p className="text-xs text-muted-foreground uppercase">{att.type}</p>
+                  <p className="text-xs text-muted-foreground uppercase">
+                    {att.type}
+                  </p>
                 </div>
                 <a
                   href={att.url}
@@ -499,7 +572,8 @@ function LessonEditorPanel({
             let type = "document";
             if (["mp4", "webm", "mov"].includes(ext)) type = "video";
             if (["mp3", "wav", "ogg"].includes(ext)) type = "audio";
-            if (["jpg", "jpeg", "png", "gif", "webp"].includes(ext)) type = "image";
+            if (["jpg", "jpeg", "png", "gif", "webp"].includes(ext))
+              type = "image";
             onAddAttachment({ name, url, type });
           }}
         />
@@ -507,10 +581,15 @@ function LessonEditorPanel({
 
       {/* Card 4: Text/HTML Content */}
       {contentType === "text" && (
-        <div className="bg-surface rounded-2xl border border-border p-6 space-y-4" style={{ boxShadow: "var(--shadow-card)" }}>
+        <div
+          className="bg-surface rounded-2xl border border-border p-6 space-y-4"
+          style={{ boxShadow: "var(--shadow-card)" }}
+        >
           <div className="flex items-center gap-2 mb-2">
             <FileText className="w-4 h-4 text-muted-foreground" />
-            <span className="text-base font-display font-semibold text-foreground">Contenu texte</span>
+            <span className="text-base font-display font-semibold text-foreground">
+              Contenu texte
+            </span>
           </div>
           <textarea
             value={contentHtml}
@@ -524,13 +603,22 @@ function LessonEditorPanel({
 
       {/* Card 5: Quiz Builder */}
       {contentType === "quiz" && (
-        <div className="bg-surface rounded-2xl border border-border p-6 space-y-4" style={{ boxShadow: "var(--shadow-card)" }}>
+        <div
+          className="bg-surface rounded-2xl border border-border p-6 space-y-4"
+          style={{ boxShadow: "var(--shadow-card)" }}
+        >
           <div className="flex items-center gap-2 mb-2">
             <HelpCircle className="w-4 h-4 text-muted-foreground" />
-            <span className="text-base font-display font-semibold text-foreground">Quiz</span>
+            <span className="text-base font-display font-semibold text-foreground">
+              Quiz
+            </span>
           </div>
           <QuizBuilder
-            initialConfig={(lesson.content as unknown as QuizConfig)?.questions ? (lesson.content as unknown as QuizConfig) : undefined}
+            initialConfig={
+              (lesson.content as unknown as QuizConfig)?.questions
+                ? (lesson.content as unknown as QuizConfig)
+                : undefined
+            }
             onSave={(quizConfig) => {
               onSave({
                 content_type: "quiz",
@@ -577,19 +665,30 @@ function ModuleEditorPanel({
           <BookOpen className="w-3 h-3" />
           Module
         </span>
-        <h2 className="text-xl font-display font-semibold text-foreground">{mod.title}</h2>
+        <h2 className="text-xl font-display font-semibold text-foreground">
+          {mod.title}
+        </h2>
         <p className="text-sm text-muted-foreground mt-1">
-          {(mod.lessons?.length ?? 0)} lecon{(mod.lessons?.length ?? 0) > 1 ? "s" : ""}
+          {mod.lessons?.length ?? 0} lecon
+          {(mod.lessons?.length ?? 0) > 1 ? "s" : ""}
         </p>
       </div>
 
       {/* Card */}
-      <div className="bg-surface rounded-2xl border border-border p-6 space-y-4" style={{ boxShadow: "var(--shadow-card)" }}>
+      <div
+        className="bg-surface rounded-2xl border border-border p-6 space-y-4"
+        style={{ boxShadow: "var(--shadow-card)" }}
+      >
         <div>
           <label className="block text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
             Titre
           </label>
-          <input value={title} onChange={(e) => setTitle(e.target.value)} className={inputClass} placeholder="Titre du module" />
+          <input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className={inputClass}
+            placeholder="Titre du module"
+          />
         </div>
 
         <div>
@@ -634,12 +733,14 @@ export function CourseEditor({ course, routePrefix }: CourseEditorProps) {
 
   // Local state for modules (for optimistic DnD reordering)
   const [modules, setModules] = useState(
-    [...(course.modules ?? [])].sort((a, b) => a.sort_order - b.sort_order)
+    [...(course.modules ?? [])].sort((a, b) => a.sort_order - b.sort_order),
   );
 
   // Update modules when course data changes (e.g. after mutation)
   useEffect(() => {
-    setModules([...(course.modules ?? [])].sort((a, b) => a.sort_order - b.sort_order));
+    setModules(
+      [...(course.modules ?? [])].sort((a, b) => a.sort_order - b.sort_order),
+    );
   }, [course.modules]);
 
   const [expandedModules, setExpandedModules] = useState<Set<string>>(() => {
@@ -655,14 +756,16 @@ export function CourseEditor({ course, routePrefix }: CourseEditorProps) {
   const [showModuleDialog, setShowModuleDialog] = useState(false);
   const [editingModule, setEditingModule] = useState<Module | null>(null);
   const [showLessonDialog, setShowLessonDialog] = useState(false);
-  const [addLessonModuleId, setAddLessonModuleId] = useState<string | null>(null);
+  const [addLessonModuleId, setAddLessonModuleId] = useState<string | null>(
+    null,
+  );
 
   // Mobile sidebar
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // DnD
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
   );
 
   const handleModuleDragEnd = useCallback(
@@ -677,10 +780,10 @@ export function CourseEditor({ course, routePrefix }: CourseEditorProps) {
 
       mutations.reorderModules.mutate(
         { courseId: course.id, orderedIds: reordered.map((m) => m.id) },
-        { onError: () => toast.error("Erreur lors du reordonnancement") }
+        { onError: () => toast.error("Erreur lors du reordonnancement") },
       );
     },
-    [modules, mutations.reorderModules, course.id]
+    [modules, mutations.reorderModules, course.id],
   );
 
   const toggleModule = (id: string) => {
@@ -694,14 +797,19 @@ export function CourseEditor({ course, routePrefix }: CourseEditorProps) {
 
   // Find selected entities
   const selectedModule = selectedModuleId
-    ? modules.find((m) => m.id === selectedModuleId) ?? null
+    ? (modules.find((m) => m.id === selectedModuleId) ?? null)
     : null;
   const selectedLesson = selectedLessonId
-    ? modules.flatMap((m) => m.lessons ?? []).find((l) => l.id === selectedLessonId) ?? null
+    ? (modules
+        .flatMap((m) => m.lessons ?? [])
+        .find((l) => l.id === selectedLessonId) ?? null)
     : null;
 
   // Stats
-  const totalLessons = modules.reduce((acc, m) => acc + (m.lessons?.length ?? 0), 0);
+  const totalLessons = modules.reduce(
+    (acc, m) => acc + (m.lessons?.length ?? 0),
+    0,
+  );
 
   // Sidebar content
   const sidebarContent = (
@@ -739,8 +847,15 @@ export function CourseEditor({ course, routePrefix }: CourseEditorProps) {
 
       {/* Modules list */}
       <div className="flex-1 overflow-y-auto p-3 space-y-2">
-        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleModuleDragEnd}>
-          <SortableContext items={modules.map((m) => m.id)} strategy={verticalListSortingStrategy}>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleModuleDragEnd}
+        >
+          <SortableContext
+            items={modules.map((m) => m.id)}
+            strategy={verticalListSortingStrategy}
+          >
             {modules.map((mod) => (
               <SortableModuleItem
                 key={mod.id}
@@ -758,7 +873,11 @@ export function CourseEditor({ course, routePrefix }: CourseEditorProps) {
                   setShowModuleDialog(true);
                 }}
                 onDelete={() => {
-                  if (confirm(`Supprimer le module "${mod.title}" et toutes ses lecons ?`)) {
+                  if (
+                    confirm(
+                      `Supprimer le module "${mod.title}" et toutes ses lecons ?`,
+                    )
+                  ) {
                     mutations.deleteModule.mutate(mod.id, {
                       onSuccess: () => {
                         toast.success("Module supprime");
@@ -794,7 +913,10 @@ export function CourseEditor({ course, routePrefix }: CourseEditorProps) {
                 onReorderLessons={(moduleId, orderedIds) => {
                   mutations.reorderLessons.mutate(
                     { moduleId, orderedIds },
-                    { onError: () => toast.error("Erreur lors du reordonnancement") }
+                    {
+                      onError: () =>
+                        toast.error("Erreur lors du reordonnancement"),
+                    },
                   );
                 }}
                 selectedLessonId={selectedLessonId}
@@ -834,7 +956,10 @@ export function CourseEditor({ course, routePrefix }: CourseEditorProps) {
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div className="lg:hidden fixed inset-0 z-50">
-          <div className="absolute inset-0 bg-black/50" onClick={() => setSidebarOpen(false)} />
+          <div
+            className="absolute inset-0 bg-black/50"
+            onClick={() => setSidebarOpen(false)}
+          />
           <div className="absolute left-0 top-0 bottom-0 w-80 bg-surface border-r border-border">
             {sidebarContent}
           </div>
@@ -852,7 +977,11 @@ export function CourseEditor({ course, routePrefix }: CourseEditorProps) {
           <LessonEditorPanel
             key={selectedLesson.id}
             lesson={selectedLesson}
-            moduleTitle={modules.find((m) => (m.lessons ?? []).some((l) => l.id === selectedLesson.id))?.title}
+            moduleTitle={
+              modules.find((m) =>
+                (m.lessons ?? []).some((l) => l.id === selectedLesson.id),
+              )?.title
+            }
             isPending={mutations.updateLesson.isPending}
             onSave={(updates) => {
               mutations.updateLesson.mutate(
@@ -860,7 +989,7 @@ export function CourseEditor({ course, routePrefix }: CourseEditorProps) {
                 {
                   onSuccess: () => toast.success("Lecon mise a jour"),
                   onError: () => toast.error("Erreur lors de la sauvegarde"),
-                }
+                },
               );
             }}
             onAddAttachment={(att) => {
@@ -869,7 +998,7 @@ export function CourseEditor({ course, routePrefix }: CourseEditorProps) {
                 {
                   onSuccess: () => toast.success("Fichier ajoute"),
                   onError: () => toast.error("Erreur"),
-                }
+                },
               );
             }}
             onRemoveAttachment={(url) => {
@@ -878,7 +1007,7 @@ export function CourseEditor({ course, routePrefix }: CourseEditorProps) {
                 {
                   onSuccess: () => toast.success("Fichier supprime"),
                   onError: () => toast.error("Erreur"),
-                }
+                },
               );
             }}
           />
@@ -893,7 +1022,7 @@ export function CourseEditor({ course, routePrefix }: CourseEditorProps) {
                 {
                   onSuccess: () => toast.success("Module mis a jour"),
                   onError: () => toast.error("Erreur lors de la sauvegarde"),
-                }
+                },
               );
             }}
           />
@@ -906,7 +1035,8 @@ export function CourseEditor({ course, routePrefix }: CourseEditorProps) {
               Selectionnez un element
             </h3>
             <p className="text-sm text-muted-foreground max-w-xs">
-              Cliquez sur un module ou une lecon dans le panneau de gauche pour modifier son contenu.
+              Cliquez sur un module ou une lecon dans le panneau de gauche pour
+              modifier son contenu.
             </p>
           </div>
         )}
@@ -927,7 +1057,7 @@ export function CourseEditor({ course, routePrefix }: CourseEditorProps) {
                 setShowCourseDialog(false);
               },
               onError: () => toast.error("Erreur"),
-            }
+            },
           );
         }}
       />
@@ -940,7 +1070,11 @@ export function CourseEditor({ course, routePrefix }: CourseEditorProps) {
         }}
         initialTitle={editingModule?.title ?? ""}
         initialDescription={editingModule?.description ?? ""}
-        isPending={editingModule ? mutations.updateModule.isPending : mutations.createModule.isPending}
+        isPending={
+          editingModule
+            ? mutations.updateModule.isPending
+            : mutations.createModule.isPending
+        }
         onSave={(data) => {
           if (editingModule) {
             mutations.updateModule.mutate(
@@ -952,20 +1086,30 @@ export function CourseEditor({ course, routePrefix }: CourseEditorProps) {
                   setEditingModule(null);
                 },
                 onError: () => toast.error("Erreur"),
-              }
+              },
             );
           } else {
-            const maxSort = modules.reduce((max, m) => Math.max(max, m.sort_order), -1);
+            const maxSort = modules.reduce(
+              (max, m) => Math.max(max, m.sort_order),
+              -1,
+            );
             mutations.createModule.mutate(
-              { course_id: course.id, title: data.title, description: data.description, sort_order: maxSort + 1 },
+              {
+                course_id: course.id,
+                title: data.title,
+                description: data.description,
+                sort_order: maxSort + 1,
+              },
               {
                 onSuccess: (newModule) => {
                   toast.success("Module cree");
                   setShowModuleDialog(false);
-                  setExpandedModules((prev) => new Set([...prev, newModule.id]));
+                  setExpandedModules(
+                    (prev) => new Set([...prev, newModule.id]),
+                  );
                 },
                 onError: () => toast.error("Erreur"),
-              }
+              },
             );
           }
         }}
@@ -981,7 +1125,10 @@ export function CourseEditor({ course, routePrefix }: CourseEditorProps) {
         onSave={(data) => {
           if (!addLessonModuleId) return;
           const targetModule = modules.find((m) => m.id === addLessonModuleId);
-          const maxSort = (targetModule?.lessons ?? []).reduce((max, l) => Math.max(max, l.sort_order), -1);
+          const maxSort = (targetModule?.lessons ?? []).reduce(
+            (max, l) => Math.max(max, l.sort_order),
+            -1,
+          );
           mutations.createLesson.mutate(
             {
               module_id: addLessonModuleId,
@@ -998,7 +1145,7 @@ export function CourseEditor({ course, routePrefix }: CourseEditorProps) {
                 setSelectedModuleId(null);
               },
               onError: () => toast.error("Erreur"),
-            }
+            },
           );
         }}
       />

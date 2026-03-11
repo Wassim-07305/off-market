@@ -10,7 +10,10 @@ interface CallEndedSummaryProps {
   onDownloadTranscript: () => void;
 }
 
-export function CallEndedSummary({ callTitle, onDownloadTranscript }: CallEndedSummaryProps) {
+export function CallEndedSummary({
+  callTitle,
+  onDownloadTranscript,
+}: CallEndedSummaryProps) {
   const { transcriptEntries, callStartTime } = useCallStore();
   const prefix = useRoutePrefix();
 
@@ -21,9 +24,10 @@ export function CallEndedSummary({ callTitle, onDownloadTranscript }: CallEndedS
   const minutes = Math.floor((durationSeconds % 3600) / 60);
   const seconds = durationSeconds % 60;
   const pad = (n: number) => n.toString().padStart(2, "0");
-  const durationStr = hours > 0
-    ? `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`
-    : `${pad(minutes)}:${pad(seconds)}`;
+  const durationStr =
+    hours > 0
+      ? `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`
+      : `${pad(minutes)}:${pad(seconds)}`;
 
   return (
     <div className="flex-1 flex items-center justify-center bg-zinc-950">
@@ -39,7 +43,9 @@ export function CallEndedSummary({ callTitle, onDownloadTranscript }: CallEndedS
 
         <div className="flex items-center justify-center gap-6 text-sm text-zinc-400">
           <div>
-            <span className="block font-mono text-lg text-white tabular-nums">{durationStr}</span>
+            <span className="block font-mono text-lg text-white tabular-nums">
+              {durationStr}
+            </span>
             <span className="text-xs">Duree</span>
           </div>
           {transcriptEntries.length > 0 && (
@@ -67,14 +73,16 @@ export function CallEndedSummary({ callTitle, onDownloadTranscript }: CallEndedS
             <div className="bg-zinc-900 rounded-xl p-3 max-h-40 overflow-y-auto text-left">
               {transcriptEntries.slice(-5).map((entry, i) => (
                 <div key={i} className="text-xs py-1">
-                  <span className="text-zinc-500 font-medium">{entry.speaker_name}:</span>
+                  <span className="text-zinc-500 font-medium">
+                    {entry.speaker_name}:
+                  </span>
                   <span className="text-zinc-300 ml-1">{entry.text}</span>
                 </div>
               ))}
               {transcriptEntries.length > 5 && (
                 <p className="text-[11px] text-zinc-600 mt-1 flex items-center gap-1">
-                  <ScrollText className="w-3 h-3" />
-                  +{transcriptEntries.length - 5} autres lignes
+                  <ScrollText className="w-3 h-3" />+
+                  {transcriptEntries.length - 5} autres lignes
                 </p>
               )}
             </div>

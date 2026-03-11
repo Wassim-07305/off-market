@@ -9,17 +9,20 @@ interface MessageReactionsProps {
   onToggle: (emoji: string) => void;
 }
 
-export function MessageReactions({ reactions, currentUserId, onToggle }: MessageReactionsProps) {
+export function MessageReactions({
+  reactions,
+  currentUserId,
+  onToggle,
+}: MessageReactionsProps) {
   // Group reactions by emoji
-  const grouped = reactions.reduce<Record<string, { count: number; hasMe: boolean }>>(
-    (acc, r) => {
-      if (!acc[r.emoji]) acc[r.emoji] = { count: 0, hasMe: false };
-      acc[r.emoji].count++;
-      if (r.profile_id === currentUserId) acc[r.emoji].hasMe = true;
-      return acc;
-    },
-    {}
-  );
+  const grouped = reactions.reduce<
+    Record<string, { count: number; hasMe: boolean }>
+  >((acc, r) => {
+    if (!acc[r.emoji]) acc[r.emoji] = { count: 0, hasMe: false };
+    acc[r.emoji].count++;
+    if (r.profile_id === currentUserId) acc[r.emoji].hasMe = true;
+    return acc;
+  }, {});
 
   return (
     <div className="flex flex-wrap items-center gap-1 mt-1">
@@ -31,7 +34,7 @@ export function MessageReactions({ reactions, currentUserId, onToggle }: Message
             "inline-flex items-center gap-1 h-6 px-1.5 rounded-full text-xs border transition-all duration-150 active:scale-90",
             hasMe
               ? "bg-primary/10 border-primary/30 text-primary hover:bg-primary/15"
-              : "bg-muted/40 border-border/40 text-muted-foreground hover:bg-muted hover:border-border"
+              : "bg-muted/40 border-border/40 text-muted-foreground hover:bg-muted hover:border-border",
           )}
         >
           <span>{emoji}</span>

@@ -30,7 +30,10 @@ function generateInvoicePDF(invoice: {
   };
 
   const formatEUR = (n: number) =>
-    new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(n);
+    new Intl.NumberFormat("fr-FR", {
+      style: "currency",
+      currency: "EUR",
+    }).format(n);
 
   const statusLabels: Record<string, string> = {
     draft: "Brouillon",
@@ -45,14 +48,17 @@ function generateInvoicePDF(invoice: {
   const invoiceNum = escapePDF(invoice.invoice_number);
   const dateCreated = escapePDF(formatDate(invoice.created_at));
   const dateDue = escapePDF(formatDate(invoice.due_date));
-  const datePaid = invoice.paid_at ? escapePDF(formatDate(invoice.paid_at)) : null;
+  const datePaid = invoice.paid_at
+    ? escapePDF(formatDate(invoice.paid_at))
+    : null;
   const status = escapePDF(statusLabels[invoice.status] ?? invoice.status);
   const amountHT = escapePDF(formatEUR(Number(invoice.amount)));
   const taxAmount = escapePDF(formatEUR(Number(invoice.tax)));
   const totalTTC = escapePDF(formatEUR(Number(invoice.total)));
-  const taxRate = Number(invoice.amount) > 0
-    ? ((Number(invoice.tax) / Number(invoice.amount)) * 100).toFixed(1)
-    : "0";
+  const taxRate =
+    Number(invoice.amount) > 0
+      ? ((Number(invoice.tax) / Number(invoice.amount)) * 100).toFixed(1)
+      : "0";
   const notes = invoice.notes ? escapePDF(invoice.notes) : null;
 
   // Build PDF content streams
@@ -185,7 +191,13 @@ BT
 ET
 `;
 
-  const pageContent = headerStream + invoiceInfoStream + clientInfoStream + tableStream + notesStream + footerStream;
+  const pageContent =
+    headerStream +
+    invoiceInfoStream +
+    clientInfoStream +
+    tableStream +
+    notesStream +
+    footerStream;
 
   // Build the PDF structure
   const objects: string[] = [];
@@ -198,23 +210,23 @@ ET
 
   // Obj 3: Page
   objects.push(
-    "3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents 4 0 R /Resources << /Font << /F1 5 0 R /F2 6 0 R >> >> >>\nendobj"
+    "3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents 4 0 R /Resources << /Font << /F1 5 0 R /F2 6 0 R >> >> >>\nendobj",
   );
 
   // Obj 4: Content stream
   const streamBytes = Buffer.from(pageContent, "latin1");
   objects.push(
-    `4 0 obj\n<< /Length ${streamBytes.length} >>\nstream\n${pageContent}\nendstream\nendobj`
+    `4 0 obj\n<< /Length ${streamBytes.length} >>\nstream\n${pageContent}\nendstream\nendobj`,
   );
 
   // Obj 5: Helvetica-Bold font
   objects.push(
-    "5 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>\nendobj"
+    "5 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>\nendobj",
   );
 
   // Obj 6: Helvetica font
   objects.push(
-    "6 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>\nendobj"
+    "6 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>\nendobj",
   );
 
   // Assemble PDF
@@ -245,7 +257,7 @@ ET
 
 export async function GET(
   _req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -262,13 +274,16 @@ export async function GET(
     const { data: invoice, error } = await supabase
       .from("invoices")
       .select(
-        "*, client:profiles!invoices_client_id_fkey(id, full_name, email)"
+        "*, client:profiles!invoices_client_id_fkey(id, full_name, email)",
       )
       .eq("id", id)
       .single();
 
     if (error || !invoice) {
-      return NextResponse.json({ error: "Facture introuvable" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Facture introuvable" },
+        { status: 404 },
+      );
     }
 
     const pdfBuffer = generateInvoicePDF(invoice);
@@ -284,7 +299,7 @@ export async function GET(
     console.error("PDF generation error:", error);
     return NextResponse.json(
       { error: "Erreur lors de la generation du PDF" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

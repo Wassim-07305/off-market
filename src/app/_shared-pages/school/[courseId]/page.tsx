@@ -3,7 +3,11 @@
 import { use, useState, useRef, useMemo, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { useRoutePrefix } from "@/hooks/use-route-prefix";
-import { useCourse, useLessonProgress, useMarkLessonComplete } from "@/hooks/use-courses";
+import {
+  useCourse,
+  useLessonProgress,
+  useMarkLessonComplete,
+} from "@/hooks/use-courses";
 import { CourseCompletion } from "@/components/school/course-completion";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
@@ -33,7 +37,10 @@ import {
 // Video helpers
 // ---------------------------------------------------------------------------
 
-function getVideoEmbed(url: string): { type: "iframe" | "video" | "none"; src: string } {
+function getVideoEmbed(url: string): {
+  type: "iframe" | "video" | "none";
+  src: string;
+} {
   if (!url) return { type: "none", src: "" };
 
   // YouTube
@@ -42,15 +49,21 @@ function getVideoEmbed(url: string): { type: "iframe" | "video" | "none"; src: s
     if (url.includes("youtu.be")) {
       id = url.split("/").pop()?.split("?")[0];
     } else {
-      try { id = new URL(url).searchParams.get("v"); } catch { id = null; }
+      try {
+        id = new URL(url).searchParams.get("v");
+      } catch {
+        id = null;
+      }
     }
-    if (id) return { type: "iframe", src: `https://www.youtube.com/embed/${id}` };
+    if (id)
+      return { type: "iframe", src: `https://www.youtube.com/embed/${id}` };
   }
 
   // Vimeo
   if (url.includes("vimeo.com")) {
     const id = url.split("/").pop()?.split("?")[0];
-    if (id) return { type: "iframe", src: `https://player.vimeo.com/video/${id}` };
+    if (id)
+      return { type: "iframe", src: `https://player.vimeo.com/video/${id}` };
   }
 
   // Loom
@@ -63,7 +76,12 @@ function getVideoEmbed(url: string): { type: "iframe" | "video" | "none"; src: s
 }
 
 function getAttachmentIcon(type: string) {
-  if (type.includes("pdf") || type.includes("document") || type.includes("text")) return FileText;
+  if (
+    type.includes("pdf") ||
+    type.includes("document") ||
+    type.includes("text")
+  )
+    return FileText;
   if (type.includes("video")) return Video;
   if (type.includes("audio")) return Headphones;
   return File;
@@ -92,11 +110,13 @@ export default function CourseViewPage({
     return course.modules
       .sort((a, b) => a.sort_order - b.sort_order)
       .flatMap((mod) =>
-        (mod.lessons ?? []).sort((a, b) => a.sort_order - b.sort_order).map((l) => ({
-          ...l,
-          moduleId: mod.id,
-          moduleTitle: mod.title,
-        }))
+        (mod.lessons ?? [])
+          .sort((a, b) => a.sort_order - b.sort_order)
+          .map((l) => ({
+            ...l,
+            moduleId: mod.id,
+            moduleTitle: mod.title,
+          })),
       );
   }, [course]);
 
@@ -109,8 +129,11 @@ export default function CourseViewPage({
   }, [progress]);
 
   const totalLessons = flatLessons.length;
-  const completedCount = flatLessons.filter((l) => completedIds.has(l.id)).length;
-  const progressPercent = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
+  const completedCount = flatLessons.filter((l) =>
+    completedIds.has(l.id),
+  ).length;
+  const progressPercent =
+    totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
 
   // Sequential unlock
   const isLessonUnlocked = useCallback(
@@ -120,7 +143,7 @@ export default function CourseViewPage({
       if (idx <= 0) return true;
       return completedIds.has(flatLessons[idx - 1].id);
     },
-    [flatLessons, completedIds, isStaff]
+    [flatLessons, completedIds, isStaff],
   );
 
   // Find first incomplete lesson
@@ -142,16 +165,18 @@ export default function CourseViewPage({
 
   const selectedLesson = useMemo(
     () => flatLessons.find((l) => l.id === selectedLessonId) ?? null,
-    [flatLessons, selectedLessonId]
+    [flatLessons, selectedLessonId],
   );
 
   const selectedLessonIndex = useMemo(
     () => flatLessons.findIndex((l) => l.id === selectedLessonId),
-    [flatLessons, selectedLessonId]
+    [flatLessons, selectedLessonId],
   );
 
   // Expanded modules
-  const [expandedModules, setExpandedModules] = useState<Set<string>>(() => new Set());
+  const [expandedModules, setExpandedModules] = useState<Set<string>>(
+    () => new Set(),
+  );
 
   // Auto-expand modules with progress
   useEffect(() => {
@@ -216,7 +241,8 @@ export default function CourseViewPage({
   }
 
   function navigateLesson(direction: "prev" | "next") {
-    const newIndex = direction === "prev" ? selectedLessonIndex - 1 : selectedLessonIndex + 1;
+    const newIndex =
+      direction === "prev" ? selectedLessonIndex - 1 : selectedLessonIndex + 1;
     if (newIndex < 0 || newIndex >= flatLessons.length) return;
     const target = flatLessons[newIndex];
     if (!isLessonUnlocked(target.id)) return;
@@ -233,7 +259,11 @@ export default function CourseViewPage({
   }
 
   if (!course) {
-    return <p className="text-center text-muted-foreground py-16">Cours non trouve</p>;
+    return (
+      <p className="text-center text-muted-foreground py-16">
+        Cours non trouve
+      </p>
+    );
   }
 
   // ---------------------------------------------------------------------------
@@ -284,10 +314,10 @@ export default function CourseViewPage({
               .map((mod) => {
                 const isExpanded = expandedModules.has(mod.id);
                 const sortedLessons = (mod.lessons ?? []).sort(
-                  (a, b) => a.sort_order - b.sort_order
+                  (a, b) => a.sort_order - b.sort_order,
                 );
                 const moduleCompletedCount = sortedLessons.filter((l) =>
-                  completedIds.has(l.id)
+                  completedIds.has(l.id),
                 ).length;
 
                 return (
@@ -325,9 +355,10 @@ export default function CourseViewPage({
                               onClick={() => selectLesson(lesson.id)}
                               className={cn(
                                 "w-full flex items-center gap-3 pl-7 pr-4 py-2.5 text-left transition-colors relative",
-                                isActive && "bg-primary/10 border-l-2 border-primary",
+                                isActive &&
+                                  "bg-primary/10 border-l-2 border-primary",
                                 !isActive && unlocked && "hover:bg-muted/50",
-                                !unlocked && "opacity-40 cursor-not-allowed"
+                                !unlocked && "opacity-40 cursor-not-allowed",
                               )}
                             >
                               <span className="shrink-0">
@@ -347,8 +378,13 @@ export default function CourseViewPage({
                                   className={cn(
                                     "text-sm truncate",
                                     isActive && "font-medium text-foreground",
-                                    completed && !isActive && "text-muted-foreground",
-                                    !completed && !isActive && unlocked && "text-foreground"
+                                    completed &&
+                                      !isActive &&
+                                      "text-muted-foreground",
+                                    !completed &&
+                                      !isActive &&
+                                      unlocked &&
+                                      "text-foreground",
                                   )}
                                 >
                                   {lesson.title}
@@ -377,7 +413,8 @@ export default function CourseViewPage({
   // Lesson content helpers
   // ---------------------------------------------------------------------------
   const content = selectedLesson?.content as Record<string, string> | undefined;
-  const videoUrl = selectedLesson?.video_url ?? content?.video_url ?? content?.url;
+  const videoUrl =
+    selectedLesson?.video_url ?? content?.video_url ?? content?.url;
   // NOTE: content_html is admin-authored content stored in DB, not user-generated
   const htmlContent = selectedLesson?.content_html ?? content?.html;
   const attachments = (selectedLesson?.attachments ?? []) as Array<{
@@ -431,7 +468,13 @@ export default function CourseViewPage({
           {selectedLesson ? (
             <>
               {/* Video */}
-              {videoUrl && <VideoPlayer videoUrl={videoUrl} videoRef={videoRef} onTimeUpdate={handleTimeUpdate} />}
+              {videoUrl && (
+                <VideoPlayer
+                  videoUrl={videoUrl}
+                  videoRef={videoRef}
+                  onTimeUpdate={handleTimeUpdate}
+                />
+              )}
 
               {/* Lesson title */}
               <h1 className="text-2xl font-display font-bold text-foreground tracking-tight mt-6">
@@ -502,7 +545,9 @@ export default function CourseViewPage({
                     ) : (
                       <CheckCircle className="h-4 w-4" />
                     )}
-                    {markComplete.isPending ? "Enregistrement..." : "Marquer comme termine"}
+                    {markComplete.isPending
+                      ? "Enregistrement..."
+                      : "Marquer comme termine"}
                   </button>
                 )}
 
@@ -521,7 +566,9 @@ export default function CourseViewPage({
                     className="h-9 px-3 rounded-xl text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
                     disabled={
                       selectedLessonIndex >= flatLessons.length - 1 ||
-                      !isLessonUnlocked(flatLessons[selectedLessonIndex + 1]?.id ?? "")
+                      !isLessonUnlocked(
+                        flatLessons[selectedLessonIndex + 1]?.id ?? "",
+                      )
                     }
                     onClick={() => navigateLesson("next")}
                   >
@@ -569,7 +616,10 @@ function VideoPlayer({
 
   if (embed.type === "iframe") {
     return (
-      <div className="aspect-video rounded-xl overflow-hidden bg-black" style={{ boxShadow: "var(--shadow-elevated)" }}>
+      <div
+        className="aspect-video rounded-xl overflow-hidden bg-black"
+        style={{ boxShadow: "var(--shadow-elevated)" }}
+      >
         <iframe
           src={embed.src}
           className="w-full h-full"
@@ -581,7 +631,10 @@ function VideoPlayer({
   }
 
   return (
-    <div className="aspect-video rounded-xl overflow-hidden bg-black" style={{ boxShadow: "var(--shadow-elevated)" }}>
+    <div
+      className="aspect-video rounded-xl overflow-hidden bg-black"
+      style={{ boxShadow: "var(--shadow-elevated)" }}
+    >
       <video
         ref={videoRef}
         src={embed.src}

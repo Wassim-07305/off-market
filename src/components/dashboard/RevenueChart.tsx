@@ -6,22 +6,22 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-} from 'recharts'
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
-import { EmptyState } from '@/components/ui/empty-state'
-import { useRevenueChart } from '@/hooks/useDashboardStats'
-import { formatCurrency } from '@/lib/utils'
-import { BarChart3 } from 'lucide-react'
+} from "recharts";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { EmptyState } from "@/components/ui/empty-state";
+import { useRevenueChart } from "@/hooks/useDashboardStats";
+import { formatCurrency } from "@/lib/utils";
+import { BarChart3 } from "lucide-react";
 
 function formatMonth(monthStr: string): string {
-  const [year, month] = monthStr.split('-')
-  const date = new Date(Number(year), Number(month) - 1)
-  return date.toLocaleDateString('fr-FR', { month: 'short', year: '2-digit' })
+  const [year, month] = monthStr.split("-");
+  const date = new Date(Number(year), Number(month) - 1);
+  return date.toLocaleDateString("fr-FR", { month: "short", year: "2-digit" });
 }
 
 export function RevenueChart() {
-  const { data, isLoading } = useRevenueChart()
+  const { data, isLoading } = useRevenueChart();
 
   return (
     <Card>
@@ -41,29 +41,32 @@ export function RevenueChart() {
           />
         ) : (
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={data} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
+            <BarChart
+              data={data}
+              margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
+            >
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(220 13% 91%)" />
               <XAxis
                 dataKey="month"
                 tickFormatter={formatMonth}
-                tick={{ fill: 'hsl(220 9% 46%)', fontSize: 12 }}
-                axisLine={{ stroke: 'hsl(220 13% 91%)' }}
+                tick={{ fill: "hsl(220 9% 46%)", fontSize: 12 }}
+                axisLine={{ stroke: "hsl(220 13% 91%)" }}
                 tickLine={false}
               />
               <YAxis
                 tickFormatter={(v: number) => `${(v / 1000).toFixed(0)}k`}
-                tick={{ fill: 'hsl(220 9% 46%)', fontSize: 12 }}
+                tick={{ fill: "hsl(220 9% 46%)", fontSize: 12 }}
                 axisLine={false}
                 tickLine={false}
               />
               <Tooltip
-                formatter={(value: any) => [formatCurrency(value), 'CA']}
+                formatter={(value: any) => [formatCurrency(value), "CA"]}
                 labelFormatter={(monthStr: any) => formatMonth(monthStr)}
                 contentStyle={{
-                  backgroundColor: 'hsl(0 0% 100%)',
-                  border: '1px solid hsl(220 13% 91%)',
-                  borderRadius: '0.5rem',
-                  fontSize: '0.875rem',
+                  backgroundColor: "hsl(0 0% 100%)",
+                  border: "1px solid hsl(220 13% 91%)",
+                  borderRadius: "0.5rem",
+                  fontSize: "0.875rem",
                 }}
               />
               <Bar
@@ -77,5 +80,5 @@ export function RevenueChart() {
         )}
       </CardContent>
     </Card>
-  )
+  );
 }

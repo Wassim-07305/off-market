@@ -6,7 +6,9 @@ const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!SUPABASE_URL || !SERVICE_ROLE_KEY) {
-  console.error("Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in .env.local");
+  console.error(
+    "Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in .env.local",
+  );
   process.exit(1);
 }
 
@@ -46,10 +48,26 @@ async function seed() {
   console.log("Seeding demo data...\n");
 
   // 1. Create users
-  const coachId = await createUser("coach@offmarket.fr", "Sophie Martin", "coach");
-  const setterId = await createUser("setter@offmarket.fr", "Lucas Dubois", "setter");
-  const client1Id = await createUser("marie@client.fr", "Marie Leroy", "client");
-  const client2Id = await createUser("pierre@client.fr", "Pierre Bernard", "client");
+  const coachId = await createUser(
+    "coach@offmarket.fr",
+    "Sophie Martin",
+    "coach",
+  );
+  const setterId = await createUser(
+    "setter@offmarket.fr",
+    "Lucas Dubois",
+    "setter",
+  );
+  const client1Id = await createUser(
+    "marie@client.fr",
+    "Marie Leroy",
+    "client",
+  );
+  const client2Id = await createUser(
+    "pierre@client.fr",
+    "Pierre Bernard",
+    "client",
+  );
   const client3Id = await createUser("emma@client.fr", "Emma Petit", "client");
 
   // Get admin id
@@ -71,7 +89,8 @@ async function seed() {
     .from("courses")
     .insert({
       title: "Freelance: De 0 a 5K/mois",
-      description: "Formation complete pour lancer ton activite freelance et atteindre 5K EUR/mois.",
+      description:
+        "Formation complete pour lancer ton activite freelance et atteindre 5K EUR/mois.",
       status: "published",
       is_published: true,
       created_by: adminId,
@@ -82,7 +101,11 @@ async function seed() {
   if (course) {
     const { data: mod1 } = await admin
       .from("modules")
-      .insert({ course_id: course.id, title: "Module 1: Les Fondamentaux", sort_order: 0 })
+      .insert({
+        course_id: course.id,
+        title: "Module 1: Les Fondamentaux",
+        sort_order: 0,
+      })
       .select()
       .single();
 
@@ -92,21 +115,28 @@ async function seed() {
           module_id: mod1.id,
           title: "Choisir sa niche",
           content_type: "video",
-          content: { url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", video_url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
+          content: {
+            url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+            video_url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+          },
           sort_order: 0,
         },
         {
           module_id: mod1.id,
           title: "Definir son offre",
           content_type: "text",
-          content: { html: "<h2>Comment definir ton offre</h2><p>L'offre est la base de tout. Sans offre claire, pas de client. Voici les 3 etapes...</p><ul><li>Identifie le probleme que tu resous</li><li>Cree une promesse de resultat</li><li>Fixe un prix base sur la valeur</li></ul>" },
+          content: {
+            html: "<h2>Comment definir ton offre</h2><p>L'offre est la base de tout. Sans offre claire, pas de client. Voici les 3 etapes...</p><ul><li>Identifie le probleme que tu resous</li><li>Cree une promesse de resultat</li><li>Fixe un prix base sur la valeur</li></ul>",
+          },
           sort_order: 1,
         },
         {
           module_id: mod1.id,
           title: "Fixer ses tarifs",
           content_type: "text",
-          content: { html: "<h2>La strategie de prix</h2><p>Ne vends jamais a l'heure. Vends un resultat. Voici les methodes de pricing les plus efficaces pour les freelances...</p>" },
+          content: {
+            html: "<h2>La strategie de prix</h2><p>Ne vends jamais a l'heure. Vends un resultat. Voici les methodes de pricing les plus efficaces pour les freelances...</p>",
+          },
           sort_order: 2,
         },
       ]);
@@ -114,7 +144,11 @@ async function seed() {
 
     const { data: mod2 } = await admin
       .from("modules")
-      .insert({ course_id: course.id, title: "Module 2: Acquisition", sort_order: 1 })
+      .insert({
+        course_id: course.id,
+        title: "Module 2: Acquisition",
+        sort_order: 1,
+      })
       .select()
       .single();
 
@@ -124,14 +158,19 @@ async function seed() {
           module_id: mod2.id,
           title: "Prospection LinkedIn",
           content_type: "video",
-          content: { url: "https://www.youtube.com/watch?v=jNQXAC9IVRw", video_url: "https://www.youtube.com/watch?v=jNQXAC9IVRw" },
+          content: {
+            url: "https://www.youtube.com/watch?v=jNQXAC9IVRw",
+            video_url: "https://www.youtube.com/watch?v=jNQXAC9IVRw",
+          },
           sort_order: 0,
         },
         {
           module_id: mod2.id,
           title: "Cold Email qui convertit",
           content_type: "text",
-          content: { html: "<h2>L'art du cold email</h2><p>Un bon cold email fait 3-4 lignes. Il est personnalise, il montre que tu comprends le probleme du prospect, et il propose un appel de 15 min.</p>" },
+          content: {
+            html: "<h2>L'art du cold email</h2><p>Un bon cold email fait 3-4 lignes. Il est personnalise, il montre que tu comprends le probleme du prospect, et il propose un appel de 15 min.</p>",
+          },
           sort_order: 1,
         },
       ]);
@@ -152,21 +191,50 @@ async function seed() {
     .single();
 
   if (generalChannel) {
-    const memberIds = [adminId, coachId, client1Id, client2Id, client3Id].filter(Boolean);
+    const memberIds = [
+      adminId,
+      coachId,
+      client1Id,
+      client2Id,
+      client3Id,
+    ].filter(Boolean);
     await admin.from("channel_members").insert(
       memberIds.map((id) => ({
         channel_id: generalChannel.id,
         profile_id: id,
         role: id === adminId ? "admin" : "member",
-      }))
+      })),
     );
 
     await admin.from("messages").insert([
-      { channel_id: generalChannel.id, sender_id: adminId, content: "Bienvenue sur Off Market ! N'hesitez pas a poser vos questions ici." },
-      { channel_id: generalChannel.id, sender_id: client1Id, content: "Merci ! Hate de commencer la formation." },
-      { channel_id: generalChannel.id, sender_id: coachId, content: "Bienvenue Marie ! Je suis ton coach, n'hesite pas si tu as besoin d'aide." },
-      { channel_id: generalChannel.id, sender_id: client2Id, content: "Salut tout le monde ! Pierre ici, je me lance en freelance web dev." },
-      { channel_id: generalChannel.id, sender_id: client3Id, content: "Hello ! Emma, freelance graphiste. Contente d'etre la !" },
+      {
+        channel_id: generalChannel.id,
+        sender_id: adminId,
+        content:
+          "Bienvenue sur Off Market ! N'hesitez pas a poser vos questions ici.",
+      },
+      {
+        channel_id: generalChannel.id,
+        sender_id: client1Id,
+        content: "Merci ! Hate de commencer la formation.",
+      },
+      {
+        channel_id: generalChannel.id,
+        sender_id: coachId,
+        content:
+          "Bienvenue Marie ! Je suis ton coach, n'hesite pas si tu as besoin d'aide.",
+      },
+      {
+        channel_id: generalChannel.id,
+        sender_id: client2Id,
+        content:
+          "Salut tout le monde ! Pierre ici, je me lance en freelance web dev.",
+      },
+      {
+        channel_id: generalChannel.id,
+        sender_id: client3Id,
+        content: "Hello ! Emma, freelance graphiste. Contente d'etre la !",
+      },
     ]);
     console.log("Channel 'general' created with 5 messages");
   }
@@ -300,19 +368,22 @@ async function seed() {
     await admin.from("feed_posts").insert([
       {
         author_id: client1Id,
-        content: "Je viens de signer mon premier client a 2000 EUR ! Merci a la formation Off Market, les techniques de cold email marchent vraiment. Hate de continuer !",
+        content:
+          "Je viens de signer mon premier client a 2000 EUR ! Merci a la formation Off Market, les techniques de cold email marchent vraiment. Hate de continuer !",
         post_type: "victory",
         likes_count: 3,
       },
       {
         author_id: client2Id,
-        content: "Question pour les devs: est-ce que vous proposez de la maintenance en plus de vos prestations ? Comment vous structurez ca ?",
+        content:
+          "Question pour les devs: est-ce que vous proposez de la maintenance en plus de vos prestations ? Comment vous structurez ca ?",
         post_type: "question",
         likes_count: 1,
       },
       {
         author_id: client3Id,
-        content: "Premier mois en freelance termine. 1500 EUR de CA. C'est pas encore l'objectif mais c'est un debut. On lache rien !",
+        content:
+          "Premier mois en freelance termine. 1500 EUR de CA. C'est pas encore l'objectif mais c'est un debut. On lache rien !",
         post_type: "experience",
         likes_count: 5,
       },

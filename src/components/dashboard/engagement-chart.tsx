@@ -14,7 +14,9 @@ import { Activity } from "lucide-react";
 export function EngagementChart() {
   const { data: chartData, isLoading } = useEngagementChart();
 
-  const hasData = (chartData ?? []).some((d) => d.messages > 0 || d.checkins > 0);
+  const hasData = (chartData ?? []).some(
+    (d) => d.messages > 0 || d.checkins > 0,
+  );
 
   return (
     <div
@@ -23,7 +25,9 @@ export function EngagementChart() {
     >
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h3 className="text-[13px] font-semibold text-foreground">Engagement</h3>
+          <h3 className="text-[13px] font-semibold text-foreground">
+            Engagement
+          </h3>
           <p className="text-xs text-muted-foreground mt-0.5">Cette semaine</p>
         </div>
         <div className="flex items-center gap-4">
@@ -46,7 +50,9 @@ export function EngagementChart() {
           <div className="h-full flex flex-col items-center justify-center text-muted-foreground">
             <Activity className="w-8 h-8 mb-2 opacity-20" />
             <p className="text-sm">Aucune activite cette semaine</p>
-            <p className="text-xs mt-1 text-muted-foreground/60">L&apos;engagement de tes clients apparaitra ici</p>
+            <p className="text-xs mt-1 text-muted-foreground/60">
+              L&apos;engagement de tes clients apparaitra ici
+            </p>
           </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
@@ -55,13 +61,21 @@ export function EngagementChart() {
                 dataKey="day"
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: "var(--muted-foreground)", fontSize: 11, fontFamily: "var(--font-mono)" }}
+                tick={{
+                  fill: "var(--muted-foreground)",
+                  fontSize: 11,
+                  fontFamily: "var(--font-mono)",
+                }}
                 dy={8}
               />
               <YAxis
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: "var(--muted-foreground)", fontSize: 11, fontFamily: "var(--font-mono)" }}
+                tick={{
+                  fill: "var(--muted-foreground)",
+                  fontSize: 11,
+                  fontFamily: "var(--font-mono)",
+                }}
                 width={30}
               />
               <Tooltip

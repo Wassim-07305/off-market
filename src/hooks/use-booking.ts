@@ -4,7 +4,11 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
 import { toast } from "sonner";
-import type { AvailabilitySlot, AvailabilityOverride, BookableSlot } from "@/types/streaks";
+import type {
+  AvailabilitySlot,
+  AvailabilityOverride,
+  BookableSlot,
+} from "@/types/streaks";
 
 // ─── Coach/Admin: Manage availability ────────────────────────
 
@@ -68,7 +72,13 @@ export function useAvailabilitySlots(coachId?: string) {
   });
 
   const toggleSlot = useMutation({
-    mutationFn: async ({ id, is_active }: { id: string; is_active: boolean }) => {
+    mutationFn: async ({
+      id,
+      is_active,
+    }: {
+      id: string;
+      is_active: boolean;
+    }) => {
       const { error } = await supabase
         .from("availability_slots")
         .update({ is_active })
@@ -120,12 +130,14 @@ export function useAvailabilityOverrides(coachId?: string) {
       is_blocked?: boolean;
       reason?: string;
     }) => {
-      const { error } = await supabase
-        .from("availability_overrides")
-        .upsert(
-          { ...override, coach_id: user!.id, is_blocked: override.is_blocked ?? true },
-          { onConflict: "coach_id,override_date" }
-        );
+      const { error } = await supabase.from("availability_overrides").upsert(
+        {
+          ...override,
+          coach_id: user!.id,
+          is_blocked: override.is_blocked ?? true,
+        },
+        { onConflict: "coach_id,override_date" },
+      );
       if (error) throw error;
     },
     onSuccess: () => {
@@ -169,7 +181,9 @@ export function useBookableSlots(startDate: string, endDate: string) {
       // 1. Get all active availability slots from all coaches
       const { data: slots, error: slotsErr } = await supabase
         .from("availability_slots")
-        .select("*, coach:profiles!availability_slots_coach_id_fkey(id, full_name)")
+        .select(
+          "*, coach:profiles!availability_slots_coach_id_fkey(id, full_name)",
+        )
         .eq("is_active", true);
       if (slotsErr) throw slotsErr;
 
@@ -194,7 +208,8 @@ export function useBookableSlots(startDate: string, endDate: string) {
       const blockedDates = new Map<string, Set<string>>();
       (overrides as AvailabilityOverride[]).forEach((o) => {
         if (o.is_blocked) {
-          if (!blockedDates.has(o.coach_id)) blockedDates.set(o.coach_id, new Set());
+          if (!blockedDates.has(o.coach_id))
+            blockedDates.set(o.coach_id, new Set());
           blockedDates.get(o.coach_id)!.add(o.override_date);
         }
       });
@@ -214,7 +229,11 @@ export function useBookableSlots(startDate: string, endDate: string) {
         const dateStr = d.toISOString().split("T")[0];
         const dayOfWeek = d.getDay();
 
-        (slots as (AvailabilitySlot & { coach: { id: string; full_name: string } | null })[]).forEach((slot) => {
+        (
+          slots as (AvailabilitySlot & {
+            coach: { id: string; full_name: string } | null;
+          })[]
+        ).forEach((slot) => {
           if (slot.day_of_week !== dayOfWeek) return;
           if (!slot.coach) return;
 
@@ -227,13 +246,20 @@ export function useBookableSlots(startDate: string, endDate: string) {
           const startMin = startParts[0] * 60 + startParts[1];
           const endMin = endParts[0] * 60 + endParts[1];
 
-          for (let m = startMin; m + slot.slot_duration_minutes <= endMin; m += slot.slot_duration_minutes) {
-            const hours = Math.floor(m / 60).toString().padStart(2, "0");
+          for (
+            let m = startMin;
+            m + slot.slot_duration_minutes <= endMin;
+            m += slot.slot_duration_minutes
+          ) {
+            const hours = Math.floor(m / 60)
+              .toString()
+              .padStart(2, "0");
             const mins = (m % 60).toString().padStart(2, "0");
             const timeStr = `${hours}:${mins}:00`;
 
             // Check if already taken
-            if (takenSlots.has(`${slot.coach_id}|${dateStr}|${timeStr}`)) return;
+            if (takenSlots.has(`${slot.coach_id}|${dateStr}|${timeStr}`))
+              return;
 
             // Don't show past slots
             const now = new Date();
@@ -252,7 +278,9 @@ export function useBookableSlots(startDate: string, endDate: string) {
       }
 
       // Sort by date then time
-      bookable.sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
+      bookable.sort(
+        (a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time),
+      );
       return bookable;
     },
     enabled: !!user && !!startDate && !!endDate,

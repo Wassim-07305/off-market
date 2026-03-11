@@ -41,7 +41,9 @@ export function TranscriptPanel({ onClose }: TranscriptPanelProps) {
       <div className="flex items-center justify-between px-4 py-3 border-b border-border/40">
         <div className="flex items-center gap-2">
           <ScrollText className="w-4 h-4 text-primary" />
-          <h3 className="text-sm font-semibold text-foreground">Transcription</h3>
+          <h3 className="text-sm font-semibold text-foreground">
+            Transcription
+          </h3>
           <span className="text-[11px] text-muted-foreground font-mono tabular-nums">
             {entries.length}
           </span>

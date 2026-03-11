@@ -38,7 +38,11 @@ export function PipelineTab() {
       <div className="space-y-6">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="bg-surface rounded-2xl p-6 animate-shimmer" style={{ boxShadow: "var(--shadow-card)" }}>
+            <div
+              key={i}
+              className="bg-surface rounded-2xl p-6 animate-shimmer"
+              style={{ boxShadow: "var(--shadow-card)" }}
+            >
               <div className="h-3 w-20 bg-muted rounded-lg mb-3" />
               <div className="h-8 w-24 bg-muted rounded-lg" />
             </div>
@@ -54,7 +58,11 @@ export function PipelineTab() {
     exportToCSV(
       "pipeline.csv",
       ["Etape", "Contacts", "Valeur (EUR)"],
-      data.contactsByStage.map((s) => [s.label, String(s.count), String(s.totalValue)])
+      data.contactsByStage.map((s) => [
+        s.label,
+        String(s.count),
+        String(s.totalValue),
+      ]),
     );
   };
 
@@ -62,17 +70,38 @@ export function PipelineTab() {
     <div className="space-y-6">
       {/* KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard title="Contacts total" value={data.totalContacts} icon={Users} />
-        <StatCard title="Valeur pipeline" value={formatCurrency(data.totalPipelineValue)} icon={Target} />
-        <StatCard title="Taux conversion" value={`${data.conversionRate}%`} icon={TrendingUp} />
-        <StatCard title="Deal moyen" value={formatCurrency(data.avgDealValue)} icon={Target} />
+        <StatCard
+          title="Contacts total"
+          value={data.totalContacts}
+          icon={Users}
+        />
+        <StatCard
+          title="Valeur pipeline"
+          value={formatCurrency(data.totalPipelineValue)}
+          icon={Target}
+        />
+        <StatCard
+          title="Taux conversion"
+          value={`${data.conversionRate}%`}
+          icon={TrendingUp}
+        />
+        <StatCard
+          title="Deal moyen"
+          value={formatCurrency(data.avgDealValue)}
+          icon={Target}
+        />
       </div>
 
       {/* Pipeline funnel chart */}
-      <div className="bg-surface rounded-2xl p-6" style={{ boxShadow: "var(--shadow-card)" }}>
+      <div
+        className="bg-surface rounded-2xl p-6"
+        style={{ boxShadow: "var(--shadow-card)" }}
+      >
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h3 className="text-[13px] font-semibold text-foreground">Pipeline par etape</h3>
+            <h3 className="text-[13px] font-semibold text-foreground">
+              Pipeline par etape
+            </h3>
             <p className="text-xs text-muted-foreground mt-0.5">
               Repartition des contacts dans le pipeline
             </p>
@@ -104,17 +133,33 @@ export function PipelineTab() {
                 <YAxis
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: "var(--muted-foreground)", fontSize: 11, fontFamily: "var(--font-mono)" }}
+                  tick={{
+                    fill: "var(--muted-foreground)",
+                    fontSize: 11,
+                    fontFamily: "var(--font-mono)",
+                  }}
                   width={30}
                 />
                 <Tooltip
-                  contentStyle={{ backgroundColor: "var(--surface)", border: "none", borderRadius: "12px", fontSize: "13px", boxShadow: "var(--shadow-elevated)", padding: "8px 12px" }}
+                  contentStyle={{
+                    backgroundColor: "var(--surface)",
+                    border: "none",
+                    borderRadius: "12px",
+                    fontSize: "13px",
+                    boxShadow: "var(--shadow-elevated)",
+                    padding: "8px 12px",
+                  }}
                   formatter={(v, name) => {
                     if (name === "count") return [v, "Contacts"];
                     return [formatCurrency(Number(v)), "Valeur"];
                   }}
                 />
-                <Bar dataKey="count" name="count" radius={[8, 8, 0, 0]} barSize={40}>
+                <Bar
+                  dataKey="count"
+                  name="count"
+                  radius={[8, 8, 0, 0]}
+                  barSize={40}
+                >
                   {data.contactsByStage.map((_, idx) => (
                     <Cell key={idx} fill={STAGE_CHART_COLORS[idx]} />
                   ))}
@@ -128,19 +173,31 @@ export function PipelineTab() {
       {/* Bottom: sources + recent activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Sources */}
-        <div className="bg-surface rounded-2xl p-6" style={{ boxShadow: "var(--shadow-card)" }}>
-          <h3 className="text-[13px] font-semibold text-foreground mb-4">Sources d&apos;acquisition</h3>
+        <div
+          className="bg-surface rounded-2xl p-6"
+          style={{ boxShadow: "var(--shadow-card)" }}
+        >
+          <h3 className="text-[13px] font-semibold text-foreground mb-4">
+            Sources d&apos;acquisition
+          </h3>
           <div className="space-y-3">
             {data.contactsBySource
               .filter((s) => s.count > 0)
               .sort((a, b) => b.count - a.count)
               .map((src) => {
-                const pct = data.totalContacts > 0 ? Math.round((src.count / data.totalContacts) * 100) : 0;
+                const pct =
+                  data.totalContacts > 0
+                    ? Math.round((src.count / data.totalContacts) * 100)
+                    : 0;
                 return (
                   <div key={src.source}>
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-[13px] text-foreground">{src.label}</span>
-                      <span className="text-[11px] text-muted-foreground font-mono">{src.count} ({pct}%)</span>
+                      <span className="text-[13px] text-foreground">
+                        {src.label}
+                      </span>
+                      <span className="text-[11px] text-muted-foreground font-mono">
+                        {src.count} ({pct}%)
+                      </span>
                     </div>
                     <div className="h-1.5 bg-muted rounded-full overflow-hidden">
                       <div
@@ -158,16 +215,25 @@ export function PipelineTab() {
         </div>
 
         {/* Recent conversions/losses */}
-        <div className="bg-surface rounded-2xl p-6" style={{ boxShadow: "var(--shadow-card)" }}>
-          <h3 className="text-[13px] font-semibold text-foreground mb-4">30 derniers jours</h3>
+        <div
+          className="bg-surface rounded-2xl p-6"
+          style={{ boxShadow: "var(--shadow-card)" }}
+        >
+          <h3 className="text-[13px] font-semibold text-foreground mb-4">
+            30 derniers jours
+          </h3>
           <div className="space-y-4">
             <div className="flex items-center gap-4 p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/10">
               <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
                 <UserCheck className="w-5 h-5 text-emerald-600" />
               </div>
               <div>
-                <p className="text-2xl font-display font-bold text-foreground">{data.recentlyConverted}</p>
-                <p className="text-xs text-muted-foreground">Convertis en clients</p>
+                <p className="text-2xl font-display font-bold text-foreground">
+                  {data.recentlyConverted}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Convertis en clients
+                </p>
               </div>
             </div>
             <div className="flex items-center gap-4 p-4 rounded-xl bg-red-500/5 border border-red-500/10">
@@ -175,7 +241,9 @@ export function PipelineTab() {
                 <UserMinus className="w-5 h-5 text-red-600" />
               </div>
               <div>
-                <p className="text-2xl font-display font-bold text-foreground">{data.recentlyLost}</p>
+                <p className="text-2xl font-display font-bold text-foreground">
+                  {data.recentlyLost}
+                </p>
                 <p className="text-xs text-muted-foreground">Perdus</p>
               </div>
             </div>

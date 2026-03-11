@@ -52,9 +52,17 @@ const VISIBILITY_OPTIONS = [
 function getFileIcon(type: string) {
   if (type.startsWith("image/")) return FileImage;
   if (type.startsWith("video/")) return FileVideo;
-  if (type.includes("spreadsheet") || type.includes("csv") || type.includes("excel"))
+  if (
+    type.includes("spreadsheet") ||
+    type.includes("csv") ||
+    type.includes("excel")
+  )
     return FileSpreadsheet;
-  if (type.includes("pdf") || type.includes("document") || type.includes("text"))
+  if (
+    type.includes("pdf") ||
+    type.includes("document") ||
+    type.includes("text")
+  )
     return FileText;
   return File;
 }
@@ -83,7 +91,9 @@ export default function ResourcesPage() {
   const [uploadTitle, setUploadTitle] = useState("");
   const [uploadDesc, setUploadDesc] = useState("");
   const [uploadCategory, setUploadCategory] = useState("general");
-  const [uploadVisibility, setUploadVisibility] = useState<"all" | "staff" | "clients">("all");
+  const [uploadVisibility, setUploadVisibility] = useState<
+    "all" | "staff" | "clients"
+  >("all");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const filtered = useMemo(() => {
@@ -94,7 +104,7 @@ export default function ResourcesPage() {
       (r) =>
         r.title.toLowerCase().includes(q) ||
         r.file_name.toLowerCase().includes(q) ||
-        r.description?.toLowerCase().includes(q)
+        r.description?.toLowerCase().includes(q),
     );
   }, [resources, search]);
 
@@ -119,7 +129,11 @@ export default function ResourcesPage() {
     resetUpload();
   };
 
-  const handleDownload = (resource: { id: string; file_url: string; file_name: string }) => {
+  const handleDownload = (resource: {
+    id: string;
+    file_url: string;
+    file_name: string;
+  }) => {
     trackDownload.mutate(resource.id);
     const a = document.createElement("a");
     a.href = resource.file_url;
@@ -168,8 +182,13 @@ export default function ResourcesPage() {
           style={{ boxShadow: "var(--shadow-card)" }}
         >
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-foreground">Nouvelle ressource</h2>
-            <button onClick={resetUpload} className="text-muted-foreground hover:text-foreground">
+            <h2 className="text-sm font-semibold text-foreground">
+              Nouvelle ressource
+            </h2>
+            <button
+              onClick={resetUpload}
+              className="text-muted-foreground hover:text-foreground"
+            >
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -181,15 +200,19 @@ export default function ResourcesPage() {
               "border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-colors",
               uploadFile
                 ? "border-primary/30 bg-primary/5"
-                : "border-border hover:border-primary/30 hover:bg-muted/30"
+                : "border-border hover:border-primary/30 hover:bg-muted/30",
             )}
           >
             {uploadFile ? (
               <div className="flex items-center justify-center gap-3">
                 <FileText className="w-5 h-5 text-primary" />
                 <div className="text-left">
-                  <p className="text-sm font-medium text-foreground">{uploadFile.name}</p>
-                  <p className="text-xs text-muted-foreground">{formatFileSize(uploadFile.size)}</p>
+                  <p className="text-sm font-medium text-foreground">
+                    {uploadFile.name}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {formatFileSize(uploadFile.size)}
+                  </p>
                 </div>
                 <button
                   onClick={(e) => {
@@ -222,7 +245,8 @@ export default function ResourcesPage() {
                     return;
                   }
                   setUploadFile(f);
-                  if (!uploadTitle) setUploadTitle(f.name.replace(/\.[^.]+$/, ""));
+                  if (!uploadTitle)
+                    setUploadTitle(f.name.replace(/\.[^.]+$/, ""));
                 }
               }}
               className="hidden"
@@ -231,7 +255,9 @@ export default function ResourcesPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-foreground mb-1">Titre</label>
+              <label className="block text-xs font-medium text-foreground mb-1">
+                Titre
+              </label>
               <input
                 value={uploadTitle}
                 onChange={(e) => setUploadTitle(e.target.value)}
@@ -240,7 +266,9 @@ export default function ResourcesPage() {
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-foreground mb-1">Categorie</label>
+              <label className="block text-xs font-medium text-foreground mb-1">
+                Categorie
+              </label>
               <select
                 value={uploadCategory}
                 onChange={(e) => setUploadCategory(e.target.value)}
@@ -268,17 +296,21 @@ export default function ResourcesPage() {
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-foreground mb-1">Visibilite</label>
+            <label className="block text-xs font-medium text-foreground mb-1">
+              Visibilite
+            </label>
             <div className="flex gap-2">
               {VISIBILITY_OPTIONS.map((v) => (
                 <button
                   key={v.value}
-                  onClick={() => setUploadVisibility(v.value as typeof uploadVisibility)}
+                  onClick={() =>
+                    setUploadVisibility(v.value as typeof uploadVisibility)
+                  }
                   className={cn(
                     "h-8 px-3 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5",
                     uploadVisibility === v.value
                       ? "bg-foreground text-background"
-                      : "bg-muted text-muted-foreground hover:text-foreground"
+                      : "bg-muted text-muted-foreground hover:text-foreground",
                   )}
                 >
                   <v.icon className="w-3 h-3" />
@@ -290,7 +322,9 @@ export default function ResourcesPage() {
 
           <button
             onClick={handleUpload}
-            disabled={uploadResource.isPending || !uploadFile || !uploadTitle.trim()}
+            disabled={
+              uploadResource.isPending || !uploadFile || !uploadTitle.trim()
+            }
             className="h-9 px-4 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-hover transition-colors disabled:opacity-50 flex items-center gap-2"
           >
             {uploadResource.isPending ? (
@@ -317,7 +351,7 @@ export default function ResourcesPage() {
                 "h-8 px-3 rounded-full text-xs font-medium transition-all whitespace-nowrap",
                 category === c.value
                   ? "bg-foreground text-background"
-                  : "bg-muted text-muted-foreground hover:text-foreground"
+                  : "bg-muted text-muted-foreground hover:text-foreground",
               )}
             >
               {c.label}
@@ -347,7 +381,10 @@ export default function ResourcesPage() {
             />
           ))
         ) : filtered.length === 0 ? (
-          <div className="bg-surface rounded-2xl p-12 text-center" style={{ boxShadow: "var(--shadow-card)" }}>
+          <div
+            className="bg-surface rounded-2xl p-12 text-center"
+            style={{ boxShadow: "var(--shadow-card)" }}
+          >
             <FolderOpen className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
             <p className="text-sm text-muted-foreground">
               {search.trim() ? "Aucun resultat" : "Aucune ressource disponible"}
@@ -356,11 +393,14 @@ export default function ResourcesPage() {
         ) : (
           filtered.map((resource) => {
             const IconComponent = getFileIcon(resource.file_type);
-            const date = new Date(resource.created_at).toLocaleDateString("fr-FR", {
-              day: "numeric",
-              month: "short",
-              year: "numeric",
-            });
+            const date = new Date(resource.created_at).toLocaleDateString(
+              "fr-FR",
+              {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+              },
+            );
 
             return (
               <div
@@ -396,12 +436,16 @@ export default function ResourcesPage() {
                       {resource.download_count > 0 && (
                         <>
                           <span aria-hidden="true">&middot;</span>
-                          <span>{resource.download_count} telechargement{resource.download_count > 1 ? "s" : ""}</span>
+                          <span>
+                            {resource.download_count} telechargement
+                            {resource.download_count > 1 ? "s" : ""}
+                          </span>
                         </>
                       )}
                       <span aria-hidden="true">&middot;</span>
                       <span className="capitalize">
-                        {CATEGORIES.find((c) => c.value === resource.category)?.label ?? resource.category}
+                        {CATEGORIES.find((c) => c.value === resource.category)
+                          ?.label ?? resource.category}
                       </span>
                     </div>
                     {resource.description && (
@@ -424,7 +468,11 @@ export default function ResourcesPage() {
                     {isStaff && (
                       <div className="relative">
                         <button
-                          onClick={() => setMenuOpen(menuOpen === resource.id ? null : resource.id)}
+                          onClick={() =>
+                            setMenuOpen(
+                              menuOpen === resource.id ? null : resource.id,
+                            )
+                          }
                           className="h-8 w-8 rounded-lg hover:bg-muted flex items-center justify-center transition-colors opacity-0 group-hover:opacity-100"
                         >
                           <MoreVertical className="w-4 h-4 text-muted-foreground" />
@@ -449,7 +497,8 @@ export default function ResourcesPage() {
                               >
                                 {resource.is_pinned ? (
                                   <>
-                                    <PinOff className="w-3.5 h-3.5" /> Desepingler
+                                    <PinOff className="w-3.5 h-3.5" />{" "}
+                                    Desepingler
                                   </>
                                 ) : (
                                   <>

@@ -5,7 +5,10 @@ import { useCalls } from "@/hooks/use-calls";
 import { WeekView } from "@/components/calls/week-view";
 import { CallFormModal } from "@/components/calls/call-form-modal";
 import { CallTypeBadge } from "@/components/calls/call-type-badge";
-import { CALL_STATUS_COLORS, type CallCalendarWithRelations } from "@/types/calls";
+import {
+  CALL_STATUS_COLORS,
+  type CallCalendarWithRelations,
+} from "@/types/calls";
 import { motion } from "framer-motion";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 import { cn } from "@/lib/utils";
@@ -38,7 +41,9 @@ export default function CallsPage() {
     return monday;
   });
   const [showForm, setShowForm] = useState(false);
-  const [editCall, setEditCall] = useState<CallCalendarWithRelations | null>(null);
+  const [editCall, setEditCall] = useState<CallCalendarWithRelations | null>(
+    null,
+  );
   const [defaultDate, setDefaultDate] = useState<string>();
   const [defaultTime, setDefaultTime] = useState<string>();
 
@@ -50,7 +55,7 @@ export default function CallsPage() {
   const isGoogleConnected = googleStatus.data?.connected ?? false;
   const googleEvents = useGoogleCalendarEvents(
     weekStart,
-    isGoogleConnected && showGoogle
+    isGoogleConnected && showGoogle,
   );
 
   /** An appointment is joinable 15 min before → 30 min after its scheduled time */
@@ -84,7 +89,20 @@ export default function CallsPage() {
   weekEnd.setDate(weekEnd.getDate() + 6);
 
   const formatWeekRange = () => {
-    const months = ["Jan", "Fev", "Mar", "Avr", "Mai", "Juin", "Juil", "Aout", "Sep", "Oct", "Nov", "Dec"];
+    const months = [
+      "Jan",
+      "Fev",
+      "Mar",
+      "Avr",
+      "Mai",
+      "Juin",
+      "Juil",
+      "Aout",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
     return `${weekStart.getDate()} ${months[weekStart.getMonth()]} — ${weekEnd.getDate()} ${months[weekEnd.getMonth()]} ${weekEnd.getFullYear()}`;
   };
 
@@ -136,7 +154,7 @@ export default function CallsPage() {
                 "h-9 px-3 rounded-xl text-xs font-medium flex items-center gap-1.5 transition-all",
                 showGoogle
                   ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-                  : "bg-surface text-muted-foreground hover:text-foreground"
+                  : "bg-surface text-muted-foreground hover:text-foreground",
               )}
               style={{ boxShadow: "var(--shadow-xs)" }}
             >
@@ -145,12 +163,17 @@ export default function CallsPage() {
             </button>
           )}
           {/* View toggle */}
-          <div className="flex rounded-xl overflow-hidden" style={{ boxShadow: "var(--shadow-xs)" }}>
+          <div
+            className="flex rounded-xl overflow-hidden"
+            style={{ boxShadow: "var(--shadow-xs)" }}
+          >
             <button
               onClick={() => setView("week")}
               className={cn(
                 "h-9 px-3 flex items-center gap-1.5 text-xs font-medium transition-all",
-                view === "week" ? "bg-foreground text-background" : "bg-surface text-muted-foreground hover:text-foreground"
+                view === "week"
+                  ? "bg-foreground text-background"
+                  : "bg-surface text-muted-foreground hover:text-foreground",
               )}
             >
               <Calendar className="w-3.5 h-3.5" />
@@ -160,7 +183,9 @@ export default function CallsPage() {
               onClick={() => setView("list")}
               className={cn(
                 "h-9 px-3 flex items-center gap-1.5 text-xs font-medium transition-all",
-                view === "list" ? "bg-foreground text-background" : "bg-surface text-muted-foreground hover:text-foreground"
+                view === "list"
+                  ? "bg-foreground text-background"
+                  : "bg-surface text-muted-foreground hover:text-foreground",
               )}
             >
               <List className="w-3.5 h-3.5" />
@@ -170,7 +195,9 @@ export default function CallsPage() {
               onClick={() => setView("metrics")}
               className={cn(
                 "h-9 px-3 flex items-center gap-1.5 text-xs font-medium transition-all",
-                view === "metrics" ? "bg-foreground text-background" : "bg-surface text-muted-foreground hover:text-foreground"
+                view === "metrics"
+                  ? "bg-foreground text-background"
+                  : "bg-surface text-muted-foreground hover:text-foreground",
               )}
             >
               <BarChart3 className="w-3.5 h-3.5" />
@@ -188,10 +215,7 @@ export default function CallsPage() {
       </motion.div>
 
       {/* Week navigation */}
-      <motion.div
-        variants={staggerItem}
-        className="flex items-center gap-3"
-      >
+      <motion.div variants={staggerItem} className="flex items-center gap-3">
         <button
           onClick={() => navigateWeek(-1)}
           className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
@@ -230,11 +254,17 @@ export default function CallsPage() {
             googleEvents={showGoogle ? googleEvents.data : undefined}
           />
         ) : (
-          <div className="bg-surface rounded-2xl divide-y divide-border/30" style={{ boxShadow: "var(--shadow-card)" }}>
+          <div
+            className="bg-surface rounded-2xl divide-y divide-border/30"
+            style={{ boxShadow: "var(--shadow-card)" }}
+          >
             {isLoading ? (
               <div className="p-4 space-y-3">
                 {Array.from({ length: 5 }).map((_, i) => (
-                  <div key={i} className="h-12 bg-muted rounded-lg animate-shimmer" />
+                  <div
+                    key={i}
+                    className="h-12 bg-muted rounded-lg animate-shimmer"
+                  />
                 ))}
               </div>
             ) : calls.length === 0 ? (
@@ -251,14 +281,26 @@ export default function CallsPage() {
                   onClick={() => handleCallClick(call)}
                   className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted/50 transition-colors text-left group"
                 >
-                  <div className={cn("w-2.5 h-2.5 rounded-full shrink-0", CALL_STATUS_COLORS[call.status])} />
+                  <div
+                    className={cn(
+                      "w-2.5 h-2.5 rounded-full shrink-0",
+                      CALL_STATUS_COLORS[call.status],
+                    )}
+                  />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <p className="text-sm font-medium text-foreground truncate">{call.title}</p>
+                      <p className="text-sm font-medium text-foreground truncate">
+                        {call.title}
+                      </p>
                       <CallTypeBadge type={call.call_type} />
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      <span className="font-mono">{call.date}</span> a <span className="font-mono">{call.time.slice(0, 5)}</span> · <span className="font-mono">{call.duration_minutes} min</span>
+                      <span className="font-mono">{call.date}</span> a{" "}
+                      <span className="font-mono">{call.time.slice(0, 5)}</span>{" "}
+                      ·{" "}
+                      <span className="font-mono">
+                        {call.duration_minutes} min
+                      </span>
                       {call.client && ` · ${call.client.full_name}`}
                     </p>
                   </div>

@@ -20,7 +20,10 @@ interface QuizBuilderProps {
   isSaving?: boolean;
 }
 
-const QUESTION_TYPE_LABELS: Record<QuestionType, { label: string; icon: typeof HelpCircle }> = {
+const QUESTION_TYPE_LABELS: Record<
+  QuestionType,
+  { label: string; icon: typeof HelpCircle }
+> = {
   multiple_choice: { label: "Choix multiple", icon: CheckCircle },
   true_false: { label: "Vrai / Faux", icon: ToggleLeft },
   open_ended: { label: "Reponse libre", icon: MessageSquare },
@@ -36,22 +39,29 @@ function createEmptyQuestion(type: QuestionType): QuizQuestion {
     type,
     question: "",
     options: type === "multiple_choice" ? ["", "", "", ""] : undefined,
-    correct_answer: type === "true_false" ? "true" : type === "multiple_choice" ? 0 : "",
+    correct_answer:
+      type === "true_false" ? "true" : type === "multiple_choice" ? 0 : "",
     explanation: "",
     points: 1,
   };
 }
 
-export function QuizBuilder({ initialConfig, onSave, isSaving }: QuizBuilderProps) {
+export function QuizBuilder({
+  initialConfig,
+  onSave,
+  isSaving,
+}: QuizBuilderProps) {
   const [questions, setQuestions] = useState<QuizQuestion[]>(
-    initialConfig?.questions ?? [createEmptyQuestion("multiple_choice")]
+    initialConfig?.questions ?? [createEmptyQuestion("multiple_choice")],
   );
-  const [passingScore, setPassingScore] = useState(initialConfig?.passing_score ?? 70);
+  const [passingScore, setPassingScore] = useState(
+    initialConfig?.passing_score ?? 70,
+  );
   const [showCorrectAnswers, setShowCorrectAnswers] = useState(
-    initialConfig?.show_correct_answers ?? true
+    initialConfig?.show_correct_answers ?? true,
   );
   const [shuffleQuestions, setShuffleQuestions] = useState(
-    initialConfig?.shuffle_questions ?? false
+    initialConfig?.shuffle_questions ?? false,
   );
 
   const addQuestion = (type: QuestionType) => {
@@ -67,7 +77,9 @@ export function QuizBuilder({ initialConfig, onSave, isSaving }: QuizBuilderProp
   };
 
   const updateQuestion = (id: string, updates: Partial<QuizQuestion>) => {
-    setQuestions(questions.map((q) => (q.id === id ? { ...q, ...updates } : q)));
+    setQuestions(
+      questions.map((q) => (q.id === id ? { ...q, ...updates } : q)),
+    );
   };
 
   const handleSave = () => {
@@ -98,7 +110,9 @@ export function QuizBuilder({ initialConfig, onSave, isSaving }: QuizBuilderProp
     <div className="space-y-6">
       {/* Settings */}
       <div className="bg-surface border border-border rounded-xl p-4 space-y-4">
-        <h3 className="text-sm font-semibold text-foreground">Parametres du quiz</h3>
+        <h3 className="text-sm font-semibold text-foreground">
+          Parametres du quiz
+        </h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
             <label className="block text-xs font-medium text-muted-foreground mb-1">
@@ -120,7 +134,9 @@ export function QuizBuilder({ initialConfig, onSave, isSaving }: QuizBuilderProp
               onChange={(e) => setShowCorrectAnswers(e.target.checked)}
               className="rounded border-border"
             />
-            <span className="text-sm text-foreground">Afficher les reponses correctes</span>
+            <span className="text-sm text-foreground">
+              Afficher les reponses correctes
+            </span>
           </label>
           <label className="flex items-center gap-2 cursor-pointer">
             <input
@@ -129,7 +145,9 @@ export function QuizBuilder({ initialConfig, onSave, isSaving }: QuizBuilderProp
               onChange={(e) => setShuffleQuestions(e.target.checked)}
               className="rounded border-border"
             />
-            <span className="text-sm text-foreground">Melanger les questions</span>
+            <span className="text-sm text-foreground">
+              Melanger les questions
+            </span>
           </label>
         </div>
       </div>
@@ -149,18 +167,21 @@ export function QuizBuilder({ initialConfig, onSave, isSaving }: QuizBuilderProp
 
       {/* Add question */}
       <div className="flex flex-wrap gap-2">
-        {(Object.entries(QUESTION_TYPE_LABELS) as [QuestionType, { label: string; icon: typeof HelpCircle }][]).map(
-          ([type, { label, icon: Icon }]) => (
-            <button
-              key={type}
-              onClick={() => addQuestion(type)}
-              className="inline-flex items-center gap-2 h-9 px-3 bg-muted hover:bg-muted/80 rounded-lg text-sm text-foreground transition-colors"
-            >
-              <Icon className="w-4 h-4" />
-              {label}
-            </button>
-          )
-        )}
+        {(
+          Object.entries(QUESTION_TYPE_LABELS) as [
+            QuestionType,
+            { label: string; icon: typeof HelpCircle },
+          ][]
+        ).map(([type, { label, icon: Icon }]) => (
+          <button
+            key={type}
+            onClick={() => addQuestion(type)}
+            className="inline-flex items-center gap-2 h-9 px-3 bg-muted hover:bg-muted/80 rounded-lg text-sm text-foreground transition-colors"
+          >
+            <Icon className="w-4 h-4" />
+            {label}
+          </button>
+        ))}
       </div>
 
       {/* Save */}
@@ -208,11 +229,15 @@ function QuestionEditor({
           <input
             type="number"
             value={question.points}
-            onChange={(e) => onUpdate({ points: Math.max(1, Number(e.target.value)) })}
+            onChange={(e) =>
+              onUpdate({ points: Math.max(1, Number(e.target.value)) })
+            }
             min={1}
             className="w-16 h-7 px-2 bg-surface border border-border rounded text-xs text-foreground text-center focus:outline-none focus:ring-2 focus:ring-primary/20"
           />
-          <span className="text-xs text-muted-foreground">pt{question.points > 1 ? "s" : ""}</span>
+          <span className="text-xs text-muted-foreground">
+            pt{question.points > 1 ? "s" : ""}
+          </span>
         </div>
         <button
           onClick={onRemove}
@@ -226,7 +251,9 @@ function QuestionEditor({
       <div className="p-4 space-y-4">
         {/* Question text */}
         <div>
-          <label className="block text-xs font-medium text-muted-foreground mb-1">Enonce</label>
+          <label className="block text-xs font-medium text-muted-foreground mb-1">
+            Enonce
+          </label>
           <textarea
             value={question.question}
             onChange={(e) => onUpdate({ question: e.target.value })}

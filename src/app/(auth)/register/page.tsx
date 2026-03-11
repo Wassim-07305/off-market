@@ -52,7 +52,11 @@ function RegisterContent() {
     }
 
     setLoading(true);
-    const { error } = await signUp(invite!.email!, password, invite!.full_name!);
+    const { error } = await signUp(
+      invite!.email!,
+      password,
+      invite!.full_name!,
+    );
     setLoading(false);
 
     if (error) {
@@ -74,8 +78,8 @@ function RegisterContent() {
         </div>
         <h1 className="text-xl font-bold text-white mb-2">Lien invalide</h1>
         <p className="text-white/40 text-sm mb-6">
-          Aucun code d&apos;invitation trouve. Vous avez besoin d&apos;une invitation pour
-          creer un compte.
+          Aucun code d&apos;invitation trouve. Vous avez besoin d&apos;une
+          invitation pour creer un compte.
         </p>
         <Link
           href="/login"
@@ -92,7 +96,9 @@ function RegisterContent() {
     return (
       <div className="animate-fade-in text-center py-12">
         <Loader2 className="w-8 h-8 text-primary animate-spin mx-auto mb-4" />
-        <p className="text-white/40 text-sm">Verification de l&apos;invitation...</p>
+        <p className="text-white/40 text-sm">
+          Verification de l&apos;invitation...
+        </p>
       </div>
     );
   }

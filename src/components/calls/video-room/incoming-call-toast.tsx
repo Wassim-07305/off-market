@@ -15,7 +15,12 @@ export function IncomingCallToast() {
 
   return (
     <div className="fixed top-4 right-4 z-[100] animate-slide-in-right">
-      <div className="bg-surface rounded-2xl p-4 min-w-[280px]" style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.2), 0 0 0 1px rgba(0,0,0,0.05)" }}>
+      <div
+        className="bg-surface rounded-2xl p-4 min-w-[280px]"
+        style={{
+          boxShadow: "0 8px 40px rgba(0,0,0,0.2), 0 0 0 1px rgba(0,0,0,0.05)",
+        }}
+      >
         <div className="flex items-start gap-3">
           {/* Animated call icon */}
           <div className="w-10 h-10 rounded-full bg-green-500/15 flex items-center justify-center shrink-0">
@@ -23,7 +28,9 @@ export function IncomingCallToast() {
           </div>
 
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-foreground">{incomingCallerName}</p>
+            <p className="text-sm font-semibold text-foreground">
+              {incomingCallerName}
+            </p>
             <p className="text-xs text-muted-foreground">Appel entrant...</p>
 
             <div className="flex items-center gap-2 mt-3">

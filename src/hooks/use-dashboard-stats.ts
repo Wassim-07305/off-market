@@ -13,9 +13,21 @@ export function useDashboardStats() {
     enabled: !!user,
     queryFn: async () => {
       const now = new Date();
-      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
-      const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString();
-      const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0).toISOString();
+      const startOfMonth = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        1,
+      ).toISOString();
+      const startOfLastMonth = new Date(
+        now.getFullYear(),
+        now.getMonth() - 1,
+        1,
+      ).toISOString();
+      const endOfLastMonth = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        0,
+      ).toISOString();
 
       // Get Monday of current week
       const dayOfWeek = now.getDay();
@@ -24,32 +36,73 @@ export function useDashboardStats() {
       monday.setHours(0, 0, 0, 0);
       const weekStart = monday.toISOString().split("T")[0];
 
-      const [clientsRes, clientsLastRes, revenueRes, revenueLastRes, coursesRes, checkinsRes] = await Promise.all([
+      const [
+        clientsRes,
+        clientsLastRes,
+        revenueRes,
+        revenueLastRes,
+        coursesRes,
+        checkinsRes,
+      ] = await Promise.all([
         // Total clients
-        supabase.from("profiles").select("id", { count: "exact", head: true }).eq("role", "client"),
+        supabase
+          .from("profiles")
+          .select("id", { count: "exact", head: true })
+          .eq("role", "client"),
         // Clients last month (for comparison)
-        supabase.from("profiles").select("id", { count: "exact", head: true }).eq("role", "client").lte("created_at", endOfLastMonth),
+        supabase
+          .from("profiles")
+          .select("id", { count: "exact", head: true })
+          .eq("role", "client")
+          .lte("created_at", endOfLastMonth),
         // Revenue this month (paid invoices)
-        supabase.from("invoices").select("total").eq("status", "paid").gte("created_at", startOfMonth),
+        supabase
+          .from("invoices")
+          .select("total")
+          .eq("status", "paid")
+          .gte("created_at", startOfMonth),
         // Revenue last month
-        supabase.from("invoices").select("total").eq("status", "paid").gte("created_at", startOfLastMonth).lte("created_at", endOfLastMonth),
+        supabase
+          .from("invoices")
+          .select("total")
+          .eq("status", "paid")
+          .gte("created_at", startOfLastMonth)
+          .lte("created_at", endOfLastMonth),
         // Active courses
-        supabase.from("courses").select("id", { count: "exact", head: true }).eq("status", "published"),
+        supabase
+          .from("courses")
+          .select("id", { count: "exact", head: true })
+          .eq("status", "published"),
         // Check-ins this week
-        supabase.from("weekly_checkins").select("id", { count: "exact", head: true }).gte("week_start", weekStart),
+        supabase
+          .from("weekly_checkins")
+          .select("id", { count: "exact", head: true })
+          .gte("week_start", weekStart),
       ]);
 
       const totalClients = clientsRes.count ?? 0;
       const lastMonthClients = clientsLastRes.count ?? 0;
-      const clientChange = lastMonthClients > 0
-        ? Math.round(((totalClients - lastMonthClients) / lastMonthClients) * 100)
-        : 0;
+      const clientChange =
+        lastMonthClients > 0
+          ? Math.round(
+              ((totalClients - lastMonthClients) / lastMonthClients) * 100,
+            )
+          : 0;
 
-      const revenueThisMonth = (revenueRes.data ?? []).reduce((sum, inv) => sum + Number(inv.total ?? 0), 0);
-      const revenueLastMonth = (revenueLastRes.data ?? []).reduce((sum, inv) => sum + Number(inv.total ?? 0), 0);
-      const revenueChange = revenueLastMonth > 0
-        ? Math.round(((revenueThisMonth - revenueLastMonth) / revenueLastMonth) * 100)
-        : 0;
+      const revenueThisMonth = (revenueRes.data ?? []).reduce(
+        (sum, inv) => sum + Number(inv.total ?? 0),
+        0,
+      );
+      const revenueLastMonth = (revenueLastRes.data ?? []).reduce(
+        (sum, inv) => sum + Number(inv.total ?? 0),
+        0,
+      );
+      const revenueChange =
+        revenueLastMonth > 0
+          ? Math.round(
+              ((revenueThisMonth - revenueLastMonth) / revenueLastMonth) * 100,
+            )
+          : 0;
 
       const activeCourses = coursesRes.count ?? 0;
       const weeklyCheckins = checkinsRes.count ?? 0;
@@ -96,7 +149,20 @@ export function useRevenueChart() {
         .gte("created_at", sixMonthsAgo.toISOString())
         .order("created_at", { ascending: true });
 
-      const months = ["Jan", "Fev", "Mar", "Avr", "Mai", "Juin", "Juil", "Aout", "Sep", "Oct", "Nov", "Dec"];
+      const months = [
+        "Jan",
+        "Fev",
+        "Mar",
+        "Avr",
+        "Mai",
+        "Juin",
+        "Juil",
+        "Aout",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ];
       const monthlyRevenue: Record<string, number> = {};
 
       // Initialize last 6 months
@@ -153,12 +219,12 @@ export function useEngagementChart() {
         dayDate.setDate(monday.getDate() + i);
         const dayStr = dayDate.toISOString().split("T")[0];
 
-        const msgCount = (messages ?? []).filter(
-          (m) => m.created_at.startsWith(dayStr)
+        const msgCount = (messages ?? []).filter((m) =>
+          m.created_at.startsWith(dayStr),
         ).length;
 
-        const checkinCount = (checkins ?? []).filter(
-          (c) => c.created_at.startsWith(dayStr)
+        const checkinCount = (checkins ?? []).filter((c) =>
+          c.created_at.startsWith(dayStr),
         ).length;
 
         return { day, messages: msgCount, checkins: checkinCount };

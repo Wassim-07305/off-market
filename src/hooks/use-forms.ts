@@ -24,7 +24,10 @@ export function useForms(status?: string) {
 
       const { data, error } = await query;
       if (error) throw error;
-      return data as (Form & { form_fields: FormField[]; form_submissions: Array<{ count: number }> })[];
+      return data as (Form & {
+        form_fields: FormField[];
+        form_submissions: Array<{ count: number }>;
+      })[];
     },
   });
 }
@@ -55,11 +58,15 @@ export function useFormSubmissions(formId: string) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("form_submissions")
-        .select("*, respondent:profiles!form_submissions_respondent_id_fkey(full_name, email)")
+        .select(
+          "*, respondent:profiles!form_submissions_respondent_id_fkey(full_name, email)",
+        )
         .eq("form_id", formId)
         .order("submitted_at", { ascending: false });
       if (error) throw error;
-      return data as (FormSubmission & { respondent: { full_name: string; email: string } | null })[];
+      return data as (FormSubmission & {
+        respondent: { full_name: string; email: string } | null;
+      })[];
     },
     enabled: !!formId,
   });
@@ -70,7 +77,11 @@ export function useFormMutations() {
   const queryClient = useQueryClient();
 
   const createForm = useMutation({
-    mutationFn: async (form: { title: string; description?: string; created_by: string }) => {
+    mutationFn: async (form: {
+      title: string;
+      description?: string;
+      created_by: string;
+    }) => {
       const { data, error } = await supabase
         .from("forms")
         .insert(form)
@@ -84,7 +95,10 @@ export function useFormMutations() {
 
   const updateForm = useMutation({
     mutationFn: async ({ id, ...updates }: { id: string } & Partial<Form>) => {
-      const { error } = await supabase.from("forms").update(updates).eq("id", id);
+      const { error } = await supabase
+        .from("forms")
+        .update(updates)
+        .eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["forms"] }),
@@ -102,7 +116,9 @@ export function useFormMutations() {
       if (fields.length > 0) {
         const { error } = await supabase
           .from("form_fields")
-          .insert(fields.map((f, i) => ({ ...f, form_id: formId, sort_order: i })));
+          .insert(
+            fields.map((f, i) => ({ ...f, form_id: formId, sort_order: i })),
+          );
         if (error) throw error;
       }
     },

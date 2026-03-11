@@ -27,22 +27,25 @@ function getCourseStats(
     }>;
     estimated_duration?: number | null;
   },
-  completedIds: Set<string>
+  completedIds: Set<string>,
 ) {
-  const allLessons =
-    course.modules?.flatMap((m) => m.lessons ?? []) ?? [];
+  const allLessons = course.modules?.flatMap((m) => m.lessons ?? []) ?? [];
   const totalModules = course.modules?.length ?? 0;
   const totalLessons = allLessons.length;
   const totalDuration = course.estimated_duration ?? 0;
   const completedLessons = allLessons.filter((l) =>
-    completedIds.has(l.id)
+    completedIds.has(l.id),
   ).length;
   const percent =
-    totalLessons > 0
-      ? Math.round((completedLessons / totalLessons) * 100)
-      : 0;
+    totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
 
-  return { totalModules, totalLessons, totalDuration, completedLessons, percent };
+  return {
+    totalModules,
+    totalLessons,
+    totalDuration,
+    completedLessons,
+    percent,
+  };
 }
 
 export default function SchoolPage() {
@@ -67,7 +70,7 @@ export default function SchoolPage() {
         ...c,
         stats: getCourseStats(c, completedIds),
       })),
-    [courses, completedIds]
+    [courses, completedIds],
   );
 
   const filtered = useMemo(() => {
@@ -83,14 +86,14 @@ export default function SchoolPage() {
         list = list.filter(
           (c) =>
             c.stats.completedLessons > 0 &&
-            c.stats.completedLessons < c.stats.totalLessons
+            c.stats.completedLessons < c.stats.totalLessons,
         );
         break;
       case "completed":
         list = list.filter(
           (c) =>
             c.stats.totalLessons > 0 &&
-            c.stats.completedLessons === c.stats.totalLessons
+            c.stats.completedLessons === c.stats.totalLessons,
         );
         break;
       case "not_started":
@@ -153,7 +156,7 @@ export default function SchoolPage() {
                 "h-8 px-3 rounded-full text-xs font-medium transition-all",
                 tab === t.value
                   ? "bg-foreground text-background"
-                  : "bg-muted text-muted-foreground hover:text-foreground"
+                  : "bg-muted text-muted-foreground hover:text-foreground",
               )}
             >
               {t.label}

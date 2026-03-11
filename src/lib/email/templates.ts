@@ -213,11 +213,12 @@ export function paymentReminderEmail(params: {
   daysOverdue: number;
   payUrl: string;
 }) {
-  const urgency = params.daysOverdue > 14
-    ? "Dernier rappel"
-    : params.daysOverdue > 7
-      ? "Second rappel"
-      : "Rappel";
+  const urgency =
+    params.daysOverdue > 14
+      ? "Dernier rappel"
+      : params.daysOverdue > 7
+        ? "Second rappel"
+        : "Rappel";
 
   const subject = `${urgency} — Facture ${params.invoiceNumber} en attente`;
   const html = layout(`
@@ -227,9 +228,10 @@ export function paymentReminderEmail(params: {
     </p>
     <p style="margin:0 0 20px;color:#3f3f46;font-size:14px;line-height:1.6;">
       Votre facture <strong>${params.invoiceNumber}</strong> d'un montant de <strong>${params.amount}</strong>
-      ${params.daysOverdue > 0
-        ? `est en retard de ${params.daysOverdue} jour${params.daysOverdue > 1 ? "s" : ""}.`
-        : `arrive a echeance le ${params.dueDate}.`
+      ${
+        params.daysOverdue > 0
+          ? `est en retard de ${params.daysOverdue} jour${params.daysOverdue > 1 ? "s" : ""}.`
+          : `arrive a echeance le ${params.dueDate}.`
       }
     </p>
     ${button("Payer maintenant", params.payUrl)}

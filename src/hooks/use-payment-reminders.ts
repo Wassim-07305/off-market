@@ -44,12 +44,12 @@ export function usePaymentReminders(invoiceId?: string) {
 
   // Pending reminders (not sent yet & scheduled_at <= now)
   const pendingReminders = reminders.filter(
-    (r) => !r.sent_at && new Date(r.scheduled_at) <= new Date()
+    (r) => !r.sent_at && new Date(r.scheduled_at) <= new Date(),
   );
 
   // Upcoming reminders (not sent yet & scheduled_at > now)
   const upcomingReminders = reminders.filter(
-    (r) => !r.sent_at && new Date(r.scheduled_at) > new Date()
+    (r) => !r.sent_at && new Date(r.scheduled_at) > new Date(),
   );
 
   return {
@@ -61,10 +61,16 @@ export function usePaymentReminders(invoiceId?: string) {
   };
 }
 
-export const REMINDER_LABELS: Record<string, { label: string; severity: string }> = {
+export const REMINDER_LABELS: Record<
+  string,
+  { label: string; severity: string }
+> = {
   "j-3": { label: "3 jours avant echeance", severity: "text-blue-500" },
-  "j0": { label: "Jour d'echeance", severity: "text-amber-500" },
+  j0: { label: "Jour d'echeance", severity: "text-amber-500" },
   "j+3": { label: "3 jours de retard", severity: "text-orange-500" },
   "j+7": { label: "7 jours de retard", severity: "text-red-500" },
-  "j+14": { label: "14 jours de retard — relance finale", severity: "text-red-600" },
+  "j+14": {
+    label: "14 jours de retard — relance finale",
+    severity: "text-red-600",
+  },
 };

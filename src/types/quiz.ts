@@ -44,7 +44,11 @@ export interface QuizAttempt {
 
 // ─── EXERCISE SUBMISSION ────────────────
 
-export type SubmissionStatus = "draft" | "submitted" | "reviewed" | "revision_requested";
+export type SubmissionStatus =
+  | "draft"
+  | "submitted"
+  | "reviewed"
+  | "revision_requested";
 
 export interface ExerciseSubmission {
   id: string;

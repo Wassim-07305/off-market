@@ -19,7 +19,7 @@ export function useChannels() {
         .from("channels")
         .select(
           `*,
-          channel_members!inner(profile_id, last_read_at)`
+          channel_members!inner(profile_id, last_read_at)`,
         )
         .eq("channel_members.profile_id", user?.id ?? "")
         .eq("is_archived", false)
@@ -62,8 +62,11 @@ export function useChannels() {
 
   // Fetch DM partner profiles
   const dmChannelIds = useMemo(
-    () => (channelsQuery.data ?? []).filter((c) => c.type === "dm").map((c) => c.id),
-    [channelsQuery.data]
+    () =>
+      (channelsQuery.data ?? [])
+        .filter((c) => c.type === "dm")
+        .map((c) => c.id),
+    [channelsQuery.data],
   );
 
   const dmPartnersQuery = useQuery({
@@ -79,7 +82,12 @@ export function useChannels() {
 
       const map: Record<
         string,
-        { id: string; full_name: string; avatar_url: string | null; role: string }
+        {
+          id: string;
+          full_name: string;
+          avatar_url: string | null;
+          role: string;
+        }
       > = {};
       for (const row of data ?? []) {
         const p = row.profile as unknown as {
@@ -107,12 +115,12 @@ export function useChannels() {
 
   const publicChannels = useMemo(
     () => channels.filter((c) => c.type === "public" || c.type === "private"),
-    [channels]
+    [channels],
   );
 
   const dmChannels = useMemo(
     () => channels.filter((c) => c.type === "dm"),
-    [channels]
+    [channels],
   );
 
   useEffect(() => {
@@ -121,12 +129,12 @@ export function useChannels() {
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "channels" },
-        () => queryClient.invalidateQueries({ queryKey: ["channels"] })
+        () => queryClient.invalidateQueries({ queryKey: ["channels"] }),
       )
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "channel_members" },
-        () => queryClient.invalidateQueries({ queryKey: ["channels"] })
+        () => queryClient.invalidateQueries({ queryKey: ["channels"] }),
       )
       .subscribe();
 
@@ -160,7 +168,11 @@ export function useChannels() {
         role: profileId === user?.id ? "admin" : ("member" as const),
       }));
       if (user && !memberIds.includes(user.id)) {
-        members.push({ channel_id: channel.id, profile_id: user.id, role: "admin" });
+        members.push({
+          channel_id: channel.id,
+          profile_id: user.id,
+          role: "admin",
+        });
       }
 
       const { error: memberError } = await supabase

@@ -18,7 +18,9 @@ export function useCheckins(clientId?: string) {
     queryFn: async () => {
       let query = supabase
         .from("weekly_checkins")
-        .select("*, client:profiles!weekly_checkins_client_id_fkey(id, full_name, avatar_url)")
+        .select(
+          "*, client:profiles!weekly_checkins_client_id_fkey(id, full_name, avatar_url)",
+        )
         .order("week_start", { ascending: false })
         .limit(52);
 
@@ -50,7 +52,7 @@ export function useCheckins(clientId?: string) {
         .from("weekly_checkins")
         .upsert(
           { ...checkin, client_id: user.id },
-          { onConflict: "client_id,week_start" }
+          { onConflict: "client_id,week_start" },
         )
         .select()
         .single();
@@ -63,7 +65,13 @@ export function useCheckins(clientId?: string) {
   });
 
   const addFeedback = useMutation({
-    mutationFn: async ({ checkinId, feedback }: { checkinId: string; feedback: string }) => {
+    mutationFn: async ({
+      checkinId,
+      feedback,
+    }: {
+      checkinId: string;
+      feedback: string;
+    }) => {
       const { error } = await supabase
         .from("weekly_checkins")
         .update({ coach_feedback: feedback })
@@ -79,11 +87,20 @@ export function useCheckins(clientId?: string) {
   const checkins = checkinsQuery.data ?? [];
 
   const stats = useMemo(() => {
-    if (checkins.length === 0) return { streak: 0, totalCheckins: 0, avgMood: 0, avgEnergy: 0, totalRevenue: 0 };
+    if (checkins.length === 0)
+      return {
+        streak: 0,
+        totalCheckins: 0,
+        avgMood: 0,
+        avgEnergy: 0,
+        totalRevenue: 0,
+      };
 
     // Streak: consecutive weeks with a checkin (from most recent)
     let streak = 0;
-    const sorted = [...checkins].sort((a, b) => b.week_start.localeCompare(a.week_start));
+    const sorted = [...checkins].sort((a, b) =>
+      b.week_start.localeCompare(a.week_start),
+    );
     const now = new Date();
     const currentMonday = getMonday(now);
 
@@ -99,19 +116,38 @@ export function useCheckins(clientId?: string) {
     }
 
     const moods = checkins.filter((c) => c.mood).map((c) => c.mood as number);
-    const energies = checkins.filter((c) => c.energy).map((c) => c.energy as number);
-    const avgMood = moods.length > 0 ? moods.reduce((a, b) => a + b, 0) / moods.length : 0;
-    const avgEnergy = energies.length > 0 ? energies.reduce((a, b) => a + b, 0) / energies.length : 0;
-    const totalRevenue = checkins.reduce((sum, c) => sum + Number(c.revenue), 0);
+    const energies = checkins
+      .filter((c) => c.energy)
+      .map((c) => c.energy as number);
+    const avgMood =
+      moods.length > 0 ? moods.reduce((a, b) => a + b, 0) / moods.length : 0;
+    const avgEnergy =
+      energies.length > 0
+        ? energies.reduce((a, b) => a + b, 0) / energies.length
+        : 0;
+    const totalRevenue = checkins.reduce(
+      (sum, c) => sum + Number(c.revenue),
+      0,
+    );
 
-    return { streak, totalCheckins: checkins.length, avgMood, avgEnergy, totalRevenue };
+    return {
+      streak,
+      totalCheckins: checkins.length,
+      avgMood,
+      avgEnergy,
+      totalRevenue,
+    };
   }, [checkins]);
 
   // Heatmap data: map of week_start -> mood for calendar display
   const heatmapData = useMemo(() => {
-    const map: Record<string, { mood: Mood | null; energy: Energy | null }> = {};
+    const map: Record<string, { mood: Mood | null; energy: Energy | null }> =
+      {};
     for (const c of checkins) {
-      map[c.week_start] = { mood: c.mood as Mood | null, energy: c.energy as Energy | null };
+      map[c.week_start] = {
+        mood: c.mood as Mood | null,
+        energy: c.energy as Energy | null,
+      };
     }
     return map;
   }, [checkins]);
@@ -137,7 +173,9 @@ export function useAllCheckins() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("weekly_checkins")
-        .select("*, client:profiles!weekly_checkins_client_id_fkey(id, full_name, avatar_url)")
+        .select(
+          "*, client:profiles!weekly_checkins_client_id_fkey(id, full_name, avatar_url)",
+        )
         .order("created_at", { ascending: false })
         .limit(100);
       if (error) throw error;

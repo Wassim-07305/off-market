@@ -92,12 +92,17 @@ export function useCourseProgress(courseId: string) {
       if (modErr) throw modErr;
 
       const allLessonIds = (modules ?? []).flatMap(
-        (m: { lessons: { id: string }[] }) => m.lessons.map((l) => l.id)
+        (m: { lessons: { id: string }[] }) => m.lessons.map((l) => l.id),
       );
       const totalLessons = allLessonIds.length;
 
       if (totalLessons === 0) {
-        return { totalLessons: 0, completedLessons: 0, percent: 0, isComplete: false };
+        return {
+          totalLessons: 0,
+          completedLessons: 0,
+          percent: 0,
+          isComplete: false,
+        };
       }
 
       // Get completed lessons
@@ -140,7 +145,7 @@ export function useCourseQuizAverage(courseId: string) {
 
       const quizLessonIds = (modules ?? []).flatMap(
         (m: { lessons: { id: string; content_type: string }[] }) =>
-          m.lessons.filter((l) => l.content_type === "quiz").map((l) => l.id)
+          m.lessons.filter((l) => l.content_type === "quiz").map((l) => l.id),
       );
 
       if (quizLessonIds.length === 0) return null;

@@ -101,7 +101,12 @@ export function useUpdateResource() {
     mutationFn: async ({
       id,
       ...updates
-    }: Partial<Pick<Resource, "title" | "description" | "category" | "visibility" | "is_pinned">> & {
+    }: Partial<
+      Pick<
+        Resource,
+        "title" | "description" | "category" | "visibility" | "is_pinned"
+      >
+    > & {
       id: string;
     }) => {
       const { data, error } = await supabase
@@ -130,7 +135,9 @@ export function useDeleteResource() {
       const url = new URL(resource.file_url);
       const pathMatch = url.pathname.match(/\/resources\/(.+)$/);
       if (pathMatch) {
-        await supabase.storage.from("resources").remove([decodeURIComponent(pathMatch[1])]);
+        await supabase.storage
+          .from("resources")
+          .remove([decodeURIComponent(pathMatch[1])]);
       }
 
       const { error } = await supabase
@@ -153,7 +160,9 @@ export function useTrackDownload() {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      await supabase.rpc("increment_download_count", { resource_id: id }).throwOnError();
+      await supabase
+        .rpc("increment_download_count", { resource_id: id })
+        .throwOnError();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["resources"] });

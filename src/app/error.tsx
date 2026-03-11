@@ -25,7 +25,8 @@ export default function GlobalError({
           Une erreur est survenue
         </h2>
         <p className="max-w-md text-sm text-zinc-500 dark:text-zinc-400">
-          Quelque chose s&apos;est mal passé. Veuillez réessayer ou retourner à l&apos;accueil.
+          Quelque chose s&apos;est mal passé. Veuillez réessayer ou retourner à
+          l&apos;accueil.
         </p>
         {error.digest && (
           <p className="text-xs text-zinc-400 dark:text-zinc-500">

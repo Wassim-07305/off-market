@@ -16,7 +16,10 @@ import Link from "next/link";
 type Tag = "at_risk" | "new" | "standard" | "vip" | "churned";
 type SortField = "health_score" | "last_engagement_at";
 
-const TAG_CONFIG: Record<Tag, { label: string; color: string; dotColor: string }> = {
+const TAG_CONFIG: Record<
+  Tag,
+  { label: string; color: string; dotColor: string }
+> = {
   at_risk: {
     label: "A risque",
     color: "bg-red-500/10 text-red-600",
@@ -69,16 +72,12 @@ export function CoachStudentsOverview() {
     // Search filter
     if (search.trim()) {
       const q = search.toLowerCase();
-      result = result.filter((s) =>
-        s.full_name.toLowerCase().includes(q)
-      );
+      result = result.filter((s) => s.full_name.toLowerCase().includes(q));
     }
 
     // Tag filter
     if (tagFilter !== "all") {
-      result = result.filter(
-        (s) => s.student_details?.[0]?.tag === tagFilter
-      );
+      result = result.filter((s) => s.student_details?.[0]?.tag === tagFilter);
     }
 
     // Sort
@@ -181,7 +180,7 @@ export function CoachStudentsOverview() {
                     "w-full text-left px-3 py-1.5 text-[13px] hover:bg-muted transition-colors",
                     tagFilter === opt.value
                       ? "text-primary font-medium"
-                      : "text-foreground"
+                      : "text-foreground",
                   )}
                 >
                   {opt.label}
@@ -195,7 +194,7 @@ export function CoachStudentsOverview() {
         <button
           onClick={() =>
             setSortField((f) =>
-              f === "health_score" ? "last_engagement_at" : "health_score"
+              f === "health_score" ? "last_engagement_at" : "health_score",
             )
           }
           className="flex items-center gap-1.5 px-3 py-2 text-[13px] bg-muted/50 border border-border rounded-xl text-foreground hover:bg-muted transition-colors"
@@ -258,7 +257,7 @@ export function CoachStudentsOverview() {
                     <span
                       className={cn(
                         "inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium shrink-0",
-                        config.color
+                        config.color,
                       )}
                     >
                       {config.label}
@@ -270,7 +269,7 @@ export function CoachStudentsOverview() {
                       <div
                         className={cn(
                           "h-full rounded-full transition-all duration-500",
-                          healthColor
+                          healthColor,
                         )}
                         style={{ width: `${healthScore}%` }}
                       />
@@ -281,7 +280,8 @@ export function CoachStudentsOverview() {
                   </div>
                   {lastEngagement && (
                     <p className="text-[11px] text-muted-foreground mt-1">
-                      Dernier engagement : {formatDate(lastEngagement, "relative")}
+                      Dernier engagement :{" "}
+                      {formatDate(lastEngagement, "relative")}
                     </p>
                   )}
                 </div>

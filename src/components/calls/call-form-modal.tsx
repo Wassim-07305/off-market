@@ -5,7 +5,12 @@ import { X, Loader2, Phone, Trash2, CalendarClock, Star } from "lucide-react";
 import { toast } from "sonner";
 import { useCalls } from "@/hooks/use-calls";
 import { useSupabase } from "@/hooks/use-supabase";
-import { CALL_TYPES, CALL_STATUSES, SATISFACTION_CONFIG, type CallCalendarWithRelations } from "@/types/calls";
+import {
+  CALL_TYPES,
+  CALL_STATUSES,
+  SATISFACTION_CONFIG,
+  type CallCalendarWithRelations,
+} from "@/types/calls";
 import { CallNotesForm } from "@/components/calls/call-notes-form";
 import { cn } from "@/lib/utils";
 
@@ -22,8 +27,20 @@ interface ProfileOption {
   full_name: string;
 }
 
-export function CallFormModal({ open, onClose, editCall, defaultDate, defaultTime }: CallFormModalProps) {
-  const { createCall, updateCall, deleteCall, rescheduleCall, rateSatisfaction } = useCalls();
+export function CallFormModal({
+  open,
+  onClose,
+  editCall,
+  defaultDate,
+  defaultTime,
+}: CallFormModalProps) {
+  const {
+    createCall,
+    updateCall,
+    deleteCall,
+    rescheduleCall,
+    rateSatisfaction,
+  } = useCalls();
   const supabase = useSupabase();
   const [title, setTitle] = useState("");
   const [clientId, setClientId] = useState<string>("");
@@ -171,9 +188,12 @@ export function CallFormModal({ open, onClose, editCall, defaultDate, defaultTim
     }
   };
 
-  const inputClass = "w-full h-10 px-4 bg-muted/50 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-shadow";
-  const selectClass = "w-full h-10 px-4 bg-muted/50 rounded-xl text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-shadow";
-  const labelClass = "block text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5";
+  const inputClass =
+    "w-full h-10 px-4 bg-muted/50 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-shadow";
+  const selectClass =
+    "w-full h-10 px-4 bg-muted/50 rounded-xl text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-shadow";
+  const labelClass =
+    "block text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5";
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
@@ -242,7 +262,9 @@ export function CallFormModal({ open, onClose, editCall, defaultDate, defaultTim
                 className={selectClass}
               >
                 {CALL_TYPES.map((t) => (
-                  <option key={t.value} value={t.value}>{t.label}</option>
+                  <option key={t.value} value={t.value}>
+                    {t.label}
+                  </option>
                 ))}
               </select>
             </div>
@@ -271,7 +293,9 @@ export function CallFormModal({ open, onClose, editCall, defaultDate, defaultTim
             >
               <option value="">Sans client</option>
               {clients.map((c) => (
-                <option key={c.id} value={c.id}>{c.full_name}</option>
+                <option key={c.id} value={c.id}>
+                  {c.full_name}
+                </option>
               ))}
             </select>
           </div>
@@ -285,7 +309,9 @@ export function CallFormModal({ open, onClose, editCall, defaultDate, defaultTim
                 className={selectClass}
               >
                 {CALL_STATUSES.map((s) => (
-                  <option key={s.value} value={s.value}>{s.label}</option>
+                  <option key={s.value} value={s.value}>
+                    {s.label}
+                  </option>
                 ))}
               </select>
             </div>
@@ -370,7 +396,9 @@ export function CallFormModal({ open, onClose, editCall, defaultDate, defaultTim
                     <button
                       type="button"
                       onClick={handleReschedule}
-                      disabled={saving || !rescheduleDate || !rescheduleReason.trim()}
+                      disabled={
+                        saving || !rescheduleDate || !rescheduleReason.trim()
+                      }
                       className="h-8 px-4 rounded-lg bg-amber-500 text-white text-xs font-medium hover:bg-amber-600 transition-colors disabled:opacity-50 flex items-center gap-1.5"
                     >
                       {saving && <Loader2 className="w-3 h-3 animate-spin" />}
@@ -381,8 +409,10 @@ export function CallFormModal({ open, onClose, editCall, defaultDate, defaultTim
               )}
               {editCall.original_date && (
                 <p className="text-[10px] text-muted-foreground mt-2">
-                  Initialement prevu le {editCall.original_date} a {editCall.original_time?.slice(0, 5)}
-                  {editCall.reschedule_reason && ` — ${editCall.reschedule_reason}`}
+                  Initialement prevu le {editCall.original_date} a{" "}
+                  {editCall.original_time?.slice(0, 5)}
+                  {editCall.reschedule_reason &&
+                    ` — ${editCall.reschedule_reason}`}
                 </p>
               )}
             </div>
@@ -407,11 +437,13 @@ export function CallFormModal({ open, onClose, editCall, defaultDate, defaultTim
                         "flex-1 flex flex-col items-center gap-0.5 p-2 rounded-lg border transition-colors",
                         satisfaction === rating
                           ? "border-primary bg-primary/5"
-                          : "border-border hover:bg-muted/50"
+                          : "border-border hover:bg-muted/50",
                       )}
                     >
                       <span className="text-lg">{config.emoji}</span>
-                      <span className="text-[9px] text-muted-foreground">{config.label}</span>
+                      <span className="text-[9px] text-muted-foreground">
+                        {config.label}
+                      </span>
                     </button>
                   );
                 })}
@@ -420,11 +452,13 @@ export function CallFormModal({ open, onClose, editCall, defaultDate, defaultTim
           )}
 
           {/* Post-call notes (only when editing a completed/done call) */}
-          {editCall && (editCall.status === "realise" || editCall.status === "no_show") && (
-            <div className="pt-4 border-t border-border/50">
-              <CallNotesForm callId={editCall.id} />
-            </div>
-          )}
+          {editCall &&
+            (editCall.status === "realise" ||
+              editCall.status === "no_show") && (
+              <div className="pt-4 border-t border-border/50">
+                <CallNotesForm callId={editCall.id} />
+              </div>
+            )}
 
           <div className="flex gap-3 pt-2">
             {editCall && (

@@ -19,7 +19,7 @@ export function PeriodSelector({ value, onChange }: PeriodSelectorProps) {
             "h-7 px-3 rounded-lg text-xs font-medium transition-all duration-200",
             value === preset.value
               ? "bg-foreground text-background shadow-sm"
-              : "text-muted-foreground hover:text-foreground"
+              : "text-muted-foreground hover:text-foreground",
           )}
         >
           {preset.label}

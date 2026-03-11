@@ -10,7 +10,8 @@ export function CallTimer() {
   useEffect(() => {
     if (!callStartTime) return;
 
-    const tick = () => setElapsed(Math.floor((Date.now() - callStartTime) / 1000));
+    const tick = () =>
+      setElapsed(Math.floor((Date.now() - callStartTime) / 1000));
     tick();
     const interval = setInterval(tick, 1000);
     return () => clearInterval(interval);

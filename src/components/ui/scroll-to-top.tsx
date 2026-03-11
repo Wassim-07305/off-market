@@ -1,41 +1,45 @@
-import { useState, useEffect, useCallback } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowUp } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { useState, useEffect, useCallback } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { ArrowUp } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ScrollToTopProps {
   /** The scroll container element. Defaults to the main content area. */
-  container?: HTMLElement | null
+  container?: HTMLElement | null;
   /** The scroll threshold in pixels before the button appears. Defaults to 400. */
-  threshold?: number
+  threshold?: number;
   /** Additional className for the button */
-  className?: string
+  className?: string;
 }
 
-export function ScrollToTop({ container, threshold = 400, className }: ScrollToTopProps) {
-  const [visible, setVisible] = useState(false)
+export function ScrollToTop({
+  container,
+  threshold = 400,
+  className,
+}: ScrollToTopProps) {
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const scrollContainer = container ?? document.querySelector('main')
-    if (!scrollContainer) return
+    const scrollContainer = container ?? document.querySelector("main");
+    if (!scrollContainer) return;
 
     const handleScroll = () => {
-      setVisible(scrollContainer.scrollTop > threshold)
-    }
+      setVisible(scrollContainer.scrollTop > threshold);
+    };
 
-    scrollContainer.addEventListener('scroll', handleScroll, { passive: true })
-    return () => scrollContainer.removeEventListener('scroll', handleScroll)
-  }, [container, threshold])
+    scrollContainer.addEventListener("scroll", handleScroll, { passive: true });
+    return () => scrollContainer.removeEventListener("scroll", handleScroll);
+  }, [container, threshold]);
 
   const scrollToTop = useCallback(() => {
-    const scrollContainer = container ?? document.querySelector('main')
-    if (!scrollContainer) return
+    const scrollContainer = container ?? document.querySelector("main");
+    if (!scrollContainer) return;
 
     scrollContainer.scrollTo({
       top: 0,
-      behavior: 'smooth',
-    })
-  }, [container])
+      behavior: "smooth",
+    });
+  }, [container]);
 
   return (
     <AnimatePresence>
@@ -47,11 +51,11 @@ export function ScrollToTop({ container, threshold = 400, className }: ScrollToT
           transition={{ duration: 0.2 }}
           onClick={scrollToTop}
           className={cn(
-            'fixed bottom-6 right-6 z-40 flex h-11 w-11 items-center justify-center rounded-full',
-            'bg-white shadow-lg border border-border/40 text-muted-foreground',
-            'transition-colors hover:bg-muted hover:text-foreground',
-            'dark:bg-slate-800 dark:border-slate-700 dark:hover:bg-slate-700',
-            className
+            "fixed bottom-6 right-6 z-40 flex h-11 w-11 items-center justify-center rounded-full",
+            "bg-white shadow-lg border border-border/40 text-muted-foreground",
+            "transition-colors hover:bg-muted hover:text-foreground",
+            "dark:bg-slate-800 dark:border-slate-700 dark:hover:bg-slate-700",
+            className,
           )}
           title="Retour en haut"
         >
@@ -59,5 +63,5 @@ export function ScrollToTop({ container, threshold = 400, className }: ScrollToT
         </motion.button>
       )}
     </AnimatePresence>
-  )
+  );
 }

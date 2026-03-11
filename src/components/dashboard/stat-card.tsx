@@ -27,7 +27,7 @@ export function StatCard({
     <div
       className={cn(
         "bg-surface rounded-2xl p-6 transition-all duration-300 hover:translate-y-[-2px] group",
-        className
+        className,
       )}
       style={{
         boxShadow: "var(--shadow-card)",
@@ -60,16 +60,14 @@ export function StatCard({
           <span
             className={cn(
               "text-xs font-mono font-medium",
-              isPositive ? "text-success" : "text-error"
+              isPositive ? "text-success" : "text-error",
             )}
           >
             {isPositive ? "+" : ""}
             {change}%
           </span>
           {changeLabel && (
-            <span className="text-xs text-muted-foreground">
-              {changeLabel}
-            </span>
+            <span className="text-xs text-muted-foreground">{changeLabel}</span>
           )}
         </div>
       )}

@@ -20,10 +20,15 @@ export function useAnalytics() {
         lessonsRes,
         progressRes,
       ] = await Promise.all([
-        supabase.from("profiles").select("id, created_at, role").eq("role", "client"),
+        supabase
+          .from("profiles")
+          .select("id, created_at, role")
+          .eq("role", "client"),
         supabase.from("invoices").select("total, status, created_at"),
         supabase.from("courses").select("id, title, status"),
-        supabase.from("weekly_checkins").select("id, week_start, mood, revenue"),
+        supabase
+          .from("weekly_checkins")
+          .select("id, week_start, mood, revenue"),
         supabase.from("lessons").select("id, course_id"),
         supabase.from("lesson_progress").select("id, lesson_id, completed"),
       ]);
@@ -41,7 +46,20 @@ export function useAnalytics() {
         .reduce((sum, inv) => sum + Number(inv.total ?? 0), 0);
 
       // Revenue by month (last 12 months)
-      const months = ["Jan", "Fev", "Mar", "Avr", "Mai", "Juin", "Juil", "Aout", "Sep", "Oct", "Nov", "Dec"];
+      const months = [
+        "Jan",
+        "Fev",
+        "Mar",
+        "Avr",
+        "Mai",
+        "Juin",
+        "Juil",
+        "Aout",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ];
       const now = new Date();
       const revenueByMonth = [];
       for (let i = 11; i >= 0; i--) {
@@ -54,7 +72,10 @@ export function useAnalytics() {
             return invDate >= d && invDate <= monthEnd;
           })
           .reduce((sum, inv) => sum + Number(inv.total ?? 0), 0);
-        revenueByMonth.push({ month: months[d.getMonth()], value: monthRevenue });
+        revenueByMonth.push({
+          month: months[d.getMonth()],
+          value: monthRevenue,
+        });
       }
 
       // Completion by course
@@ -62,13 +83,20 @@ export function useAnalytics() {
         .filter((c) => c.status === "published")
         .slice(0, 5)
         .map((course) => {
-          const courseLessons = lessons.filter((l) => l.course_id === course.id);
+          const courseLessons = lessons.filter(
+            (l) => l.course_id === course.id,
+          );
           const lessonIds = courseLessons.map((l) => l.id);
-          const totalProgress = progress.filter((p) => lessonIds.includes(p.lesson_id));
+          const totalProgress = progress.filter((p) =>
+            lessonIds.includes(p.lesson_id),
+          );
           const completedProgress = totalProgress.filter((p) => p.completed);
-          const rate = totalProgress.length > 0
-            ? Math.round((completedProgress.length / totalProgress.length) * 100)
-            : 0;
+          const rate =
+            totalProgress.length > 0
+              ? Math.round(
+                  (completedProgress.length / totalProgress.length) * 100,
+                )
+              : 0;
           return { name: course.title.slice(0, 20), completion: rate };
         });
 
@@ -76,15 +104,20 @@ export function useAnalytics() {
       const totalClients = clients.length;
 
       // Average mood from checkins
-      const avgMood = checkins.length > 0
-        ? (checkins.reduce((sum, c) => sum + (c.mood ?? 0), 0) / checkins.length).toFixed(1)
-        : "—";
+      const avgMood =
+        checkins.length > 0
+          ? (
+              checkins.reduce((sum, c) => sum + (c.mood ?? 0), 0) /
+              checkins.length
+            ).toFixed(1)
+          : "—";
 
       // Average completion
       const totalCompleted = progress.filter((p) => p.completed).length;
-      const completionRate = progress.length > 0
-        ? Math.round((totalCompleted / progress.length) * 100)
-        : 0;
+      const completionRate =
+        progress.length > 0
+          ? Math.round((totalCompleted / progress.length) * 100)
+          : 0;
 
       return {
         totalRevenue,

@@ -58,15 +58,29 @@ export function ChatInput({
   const { data: channelMembers } = useChannelMembers(channelId);
   const memberOptions = (channelMembers ?? [])
     .map((m) => {
-      const p = m.profile as unknown as { id: string; full_name: string; avatar_url: string | null; role: string } | null;
-      return p ? { id: p.id, full_name: p.full_name, avatar_url: p.avatar_url, role: p.role } : null;
+      const p = m.profile as unknown as {
+        id: string;
+        full_name: string;
+        avatar_url: string | null;
+        role: string;
+      } | null;
+      return p
+        ? {
+            id: p.id,
+            full_name: p.full_name,
+            avatar_url: p.avatar_url,
+            role: p.role,
+          }
+        : null;
     })
     .filter((p): p is NonNullable<typeof p> => p !== null);
 
   const handleSend = useCallback(async () => {
     const trimmed = message.trim();
     if (!trimmed || isSending) return;
-    const schedule = scheduledAt ? new Date(scheduledAt).toISOString() : undefined;
+    const schedule = scheduledAt
+      ? new Date(scheduledAt).toISOString()
+      : undefined;
     setMessage("");
     setScheduledAt("");
     setShowSchedule(false);
@@ -96,7 +110,8 @@ export function ChatInput({
     const start = ta.selectionStart;
     const end = ta.selectionEnd;
     const selected = message.slice(start, end);
-    const newText = message.slice(0, start) + prefix + selected + suffix + message.slice(end);
+    const newText =
+      message.slice(0, start) + prefix + selected + suffix + message.slice(end);
     setMessage(newText);
     setTimeout(() => {
       ta.focus();
@@ -128,7 +143,9 @@ export function ChatInput({
 
   const handleMentionSelect = (member: { id: string; full_name: string }) => {
     const before = message.slice(0, mentionStartPos);
-    const after = message.slice(textareaRef.current?.selectionStart ?? message.length);
+    const after = message.slice(
+      textareaRef.current?.selectionStart ?? message.length,
+    );
     const newText = `${before}@${member.full_name} ${after}`;
     setMessage(newText);
     setMentionQuery(null);
@@ -141,10 +158,17 @@ export function ChatInput({
         <div className="flex items-center gap-2 px-4 py-2 bg-primary/5 border-b border-primary/15 animate-fade-in">
           <CornerUpLeft className="w-3.5 h-3.5 text-primary shrink-0" />
           <div className="flex-1 min-w-0">
-            <span className="text-xs font-medium text-primary">{replyTo.senderName}</span>
-            <p className="text-xs text-muted-foreground truncate">{replyTo.content}</p>
+            <span className="text-xs font-medium text-primary">
+              {replyTo.senderName}
+            </span>
+            <p className="text-xs text-muted-foreground truncate">
+              {replyTo.content}
+            </p>
           </div>
-          <button onClick={onCancelReply} className="w-5 h-5 rounded flex items-center justify-center text-muted-foreground hover:text-foreground">
+          <button
+            onClick={onCancelReply}
+            className="w-5 h-5 rounded flex items-center justify-center text-muted-foreground hover:text-foreground"
+          >
             <X className="w-3.5 h-3.5" />
           </button>
         </div>
@@ -155,18 +179,43 @@ export function ChatInput({
           className="rounded-xl bg-muted/40 transition-all duration-200 relative cursor-text"
           onClick={(e) => {
             const target = e.target as HTMLElement;
-            if (target.closest("button, input, [role='dialog'], [data-emoji-picker]")) return;
+            if (
+              target.closest(
+                "button, input, [role='dialog'], [data-emoji-picker]",
+              )
+            )
+              return;
             textareaRef.current?.focus();
           }}
         >
           {/* Formatting toolbar */}
           <div className="flex items-center gap-0.5 px-3 pt-2 pb-0.5">
-            <FormatBtn icon={Bold} title="Gras" onClick={() => wrapSelection("**", "**")} />
-            <FormatBtn icon={Italic} title="Italique" onClick={() => wrapSelection("_", "_")} />
-            <FormatBtn icon={Strikethrough} title="Barre" onClick={() => wrapSelection("~~", "~~")} />
+            <FormatBtn
+              icon={Bold}
+              title="Gras"
+              onClick={() => wrapSelection("**", "**")}
+            />
+            <FormatBtn
+              icon={Italic}
+              title="Italique"
+              onClick={() => wrapSelection("_", "_")}
+            />
+            <FormatBtn
+              icon={Strikethrough}
+              title="Barre"
+              onClick={() => wrapSelection("~~", "~~")}
+            />
             <div className="w-px h-4 bg-border/40 mx-1" />
-            <FormatBtn icon={List} title="Liste" onClick={() => wrapSelection("\n- ", "")} />
-            <FormatBtn icon={ListOrdered} title="Liste numerotee" onClick={() => wrapSelection("\n1. ", "")} />
+            <FormatBtn
+              icon={List}
+              title="Liste"
+              onClick={() => wrapSelection("\n- ", "")}
+            />
+            <FormatBtn
+              icon={ListOrdered}
+              title="Liste numerotee"
+              onClick={() => wrapSelection("\n1. ", "")}
+            />
           </div>
 
           {/* Textarea + action buttons */}
@@ -181,7 +230,12 @@ export function ChatInput({
               onKeyDown={handleKeyDown}
             />
             <div className="flex items-center gap-0.5 shrink-0 relative">
-              <input ref={fileInputRef} type="file" onChange={handleFileChange} className="hidden" />
+              <input
+                ref={fileInputRef}
+                type="file"
+                onChange={handleFileChange}
+                className="hidden"
+              />
               <button
                 onClick={() => fileInputRef.current?.click()}
                 className="w-7 h-7 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
@@ -196,7 +250,9 @@ export function ChatInput({
                 onClick={() => setShowEmoji(!showEmoji)}
                 className={cn(
                   "w-7 h-7 rounded-lg flex items-center justify-center transition-colors",
-                  showEmoji ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground"
+                  showEmoji
+                    ? "text-primary bg-primary/10"
+                    : "text-muted-foreground hover:text-foreground",
                 )}
                 title="Emoji"
               >
@@ -219,7 +275,7 @@ export function ChatInput({
                     "w-7 h-7 rounded-lg flex items-center justify-center transition-colors",
                     scheduledAt
                       ? "text-primary bg-primary/10"
-                      : "text-muted-foreground hover:text-foreground"
+                      : "text-muted-foreground hover:text-foreground",
                   )}
                   title="Programmer"
                 >
@@ -227,7 +283,9 @@ export function ChatInput({
                 </button>
                 {showSchedule && (
                   <div className="absolute bottom-9 right-0 bg-surface border border-border rounded-xl shadow-lg p-3 z-20 w-56">
-                    <p className="text-xs font-medium text-foreground mb-2">Programmer l&apos;envoi</p>
+                    <p className="text-xs font-medium text-foreground mb-2">
+                      Programmer l&apos;envoi
+                    </p>
                     <input
                       type="datetime-local"
                       value={scheduledAt}
@@ -237,7 +295,10 @@ export function ChatInput({
                     />
                     {scheduledAt && (
                       <button
-                        onClick={() => { setScheduledAt(""); setShowSchedule(false); }}
+                        onClick={() => {
+                          setScheduledAt("");
+                          setShowSchedule(false);
+                        }}
                         className="mt-2 text-xs text-red-500 hover:underline"
                       >
                         Annuler la programmation
@@ -252,11 +313,19 @@ export function ChatInput({
                 disabled={!message.trim() || isSending}
                 className={cn(
                   "w-7 h-7 rounded-lg flex items-center justify-center text-white transition-all duration-150 active:scale-90 disabled:opacity-30 disabled:pointer-events-none disabled:scale-100 shrink-0",
-                  scheduledAt ? "bg-amber-500 hover:bg-amber-600" : "bg-primary hover:bg-primary/90"
+                  scheduledAt
+                    ? "bg-amber-500 hover:bg-amber-600"
+                    : "bg-primary hover:bg-primary/90",
                 )}
                 title={scheduledAt ? "Programmer" : "Envoyer"}
               >
-                {isSending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : scheduledAt ? <Clock className="w-3.5 h-3.5" /> : <Send className="w-3.5 h-3.5" />}
+                {isSending ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : scheduledAt ? (
+                  <Clock className="w-3.5 h-3.5" />
+                ) : (
+                  <Send className="w-3.5 h-3.5" />
+                )}
               </button>
             </div>
           </div>
@@ -276,9 +345,21 @@ export function ChatInput({
   );
 }
 
-function FormatBtn({ icon: Icon, title, onClick }: { icon: React.ComponentType<{ className?: string }>; title: string; onClick: () => void }) {
+function FormatBtn({
+  icon: Icon,
+  title,
+  onClick,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  title: string;
+  onClick: () => void;
+}) {
   return (
-    <button onClick={onClick} title={title} className="w-7 h-7 rounded flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+    <button
+      onClick={onClick}
+      title={title}
+      className="w-7 h-7 rounded flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+    >
       <Icon className="w-3.5 h-3.5" />
     </button>
   );

@@ -91,7 +91,10 @@ export default function AIPage() {
     // Call the Claude API route
     setIsStreaming(true);
     try {
-      const allMessages = [...messages, { role: "user" as const, content: message }];
+      const allMessages = [
+        ...messages,
+        { role: "user" as const, content: message },
+      ];
       const res = await fetch("/api/ai/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -115,7 +118,10 @@ export default function AIPage() {
     } catch {
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: "Erreur de connexion avec l'assistant IA." },
+        {
+          role: "assistant",
+          content: "Erreur de connexion avec l'assistant IA.",
+        },
       ]);
     } finally {
       setIsStreaming(false);
@@ -128,7 +134,10 @@ export default function AIPage() {
   };
 
   return (
-    <div className="flex h-[calc(100vh-7rem)] bg-surface rounded-2xl overflow-hidden" style={{ boxShadow: "var(--shadow-card)" }}>
+    <div
+      className="flex h-[calc(100vh-7rem)] bg-surface rounded-2xl overflow-hidden"
+      style={{ boxShadow: "var(--shadow-card)" }}
+    >
       {/* Sidebar */}
       <div className="w-64 border-r border-border/50 hidden lg:flex flex-col">
         <div className="p-3 border-b border-border/50">
@@ -152,7 +161,7 @@ export default function AIPage() {
                 "w-full text-left px-3 py-2 rounded-lg text-sm transition-colors truncate",
                 conversationId === conv.id
                   ? "bg-primary/10 text-primary"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted",
               )}
             >
               <MessageSquare className="w-3.5 h-3.5 inline mr-2" />
@@ -204,7 +213,7 @@ export default function AIPage() {
                 key={i}
                 className={cn(
                   "flex gap-3",
-                  msg.role === "user" ? "justify-end" : ""
+                  msg.role === "user" ? "justify-end" : "",
                 )}
               >
                 {msg.role === "assistant" && (
@@ -217,7 +226,7 @@ export default function AIPage() {
                     "max-w-[80%] rounded-xl px-4 py-3 text-sm",
                     msg.role === "user"
                       ? "bg-primary text-white"
-                      : "bg-muted text-foreground"
+                      : "bg-muted text-foreground",
                   )}
                 >
                   <p className="whitespace-pre-wrap">{msg.content}</p>

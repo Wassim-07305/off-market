@@ -18,16 +18,56 @@ import {
 import { cn } from "@/lib/utils";
 
 const pages = [
-  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, section: "Navigation" },
+  {
+    name: "Dashboard",
+    href: "/dashboard",
+    icon: LayoutDashboard,
+    section: "Navigation",
+  },
   { name: "CRM - Eleves", href: "/crm", icon: Users, section: "Navigation" },
-  { name: "Messagerie", href: "/messaging", icon: MessageSquare, section: "Navigation" },
-  { name: "Formation", href: "/school", icon: GraduationCap, section: "Navigation" },
-  { name: "Formulaires", href: "/forms", icon: FileText, section: "Navigation" },
+  {
+    name: "Messagerie",
+    href: "/messaging",
+    icon: MessageSquare,
+    section: "Navigation",
+  },
+  {
+    name: "Formation",
+    href: "/school",
+    icon: GraduationCap,
+    section: "Navigation",
+  },
+  {
+    name: "Formulaires",
+    href: "/forms",
+    icon: FileText,
+    section: "Navigation",
+  },
   { name: "Assistant IA", href: "/ai", icon: Bot, section: "Navigation" },
-  { name: "Analytics", href: "/analytics", icon: BarChart3, section: "Navigation" },
-  { name: "Reglages", href: "/settings", icon: Settings, section: "Navigation" },
-  { name: "Nouveau cours", href: "/school/builder", icon: Plus, section: "Actions" },
-  { name: "Nouveau formulaire", href: "/forms/builder", icon: Plus, section: "Actions" },
+  {
+    name: "Analytics",
+    href: "/analytics",
+    icon: BarChart3,
+    section: "Navigation",
+  },
+  {
+    name: "Reglages",
+    href: "/settings",
+    icon: Settings,
+    section: "Navigation",
+  },
+  {
+    name: "Nouveau cours",
+    href: "/school/builder",
+    icon: Plus,
+    section: "Actions",
+  },
+  {
+    name: "Nouveau formulaire",
+    href: "/forms/builder",
+    icon: Plus,
+    section: "Actions",
+  },
 ];
 
 export function CommandPalette() {
@@ -39,7 +79,7 @@ export function CommandPalette() {
   const filteredPages = useMemo(() => {
     if (!query) return pages;
     return pages.filter((page) =>
-      page.name.toLowerCase().includes(query.toLowerCase())
+      page.name.toLowerCase().includes(query.toLowerCase()),
     );
   }, [query]);
 
@@ -118,7 +158,7 @@ export function CommandPalette() {
               <>
                 {["Navigation", "Actions"].map((section) => {
                   const items = filteredPages.filter(
-                    (p) => p.section === section
+                    (p) => p.section === section,
                   );
                   if (items.length === 0) return null;
                   return (
@@ -136,7 +176,7 @@ export function CommandPalette() {
                               "w-full flex items-center gap-3 px-3 h-10 rounded-lg text-sm transition-colors",
                               index === selectedIndex
                                 ? "bg-primary/10 text-primary"
-                                : "text-foreground hover:bg-muted"
+                                : "text-foreground hover:bg-muted",
                             )}
                           >
                             <page.icon className="w-4 h-4" />

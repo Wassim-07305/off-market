@@ -38,11 +38,7 @@ const routeGroups = {
     "school/[courseId]/[lessonId]",
     "settings",
   ],
-  "(sales)": [
-    "dashboard",
-    "messaging",
-    "settings",
-  ],
+  "(sales)": ["dashboard", "messaging", "settings"],
   "(client)": [
     "dashboard",
     "school",
@@ -57,7 +53,9 @@ const routeGroups = {
 };
 
 // Special page: messaging/[channelId] needs role-specific redirect
-const messagingChannelRedirect = (variant) => `import { redirect } from "next/navigation";
+const messagingChannelRedirect = (
+  variant,
+) => `import { redirect } from "next/navigation";
 
 export default function ChannelPage() {
   redirect("/${variant}/messaging");

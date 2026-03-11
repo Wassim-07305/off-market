@@ -2,11 +2,22 @@
 
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { staggerContainer, fadeInUp, defaultTransition } from "@/lib/animations";
+import {
+  staggerContainer,
+  fadeInUp,
+  defaultTransition,
+} from "@/lib/animations";
 import { useAllCheckins, useCheckins } from "@/hooks/use-checkins";
 import { MOOD_CONFIG, ENERGY_CONFIG } from "@/types/coaching";
 import type { Mood, Energy, WeeklyCheckin } from "@/types/coaching";
-import { ClipboardCheck, MessageSquare, Send, Search, Filter, Zap } from "lucide-react";
+import {
+  ClipboardCheck,
+  MessageSquare,
+  Send,
+  Search,
+  Filter,
+  Zap,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 function formatWeek(dateStr: string) {
@@ -17,14 +28,19 @@ function formatWeek(dateStr: string) {
 }
 
 function formatEUR(amount: number) {
-  return new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(amount);
+  return new Intl.NumberFormat("fr-FR", {
+    style: "currency",
+    currency: "EUR",
+  }).format(amount);
 }
 
 type MoodFilter = "all" | "low" | "high";
 
 export default function CoachCheckinsPage() {
   const { checkins, isLoading } = useAllCheckins();
-  const [selectedCheckin, setSelectedCheckin] = useState<WeeklyCheckin | null>(null);
+  const [selectedCheckin, setSelectedCheckin] = useState<WeeklyCheckin | null>(
+    null,
+  );
   const [search, setSearch] = useState("");
   const [moodFilter, setMoodFilter] = useState<MoodFilter>("all");
 
@@ -33,7 +49,9 @@ export default function CoachCheckinsPage() {
     let result = checkins;
     if (search) {
       const q = search.toLowerCase();
-      result = result.filter((c) => c.client?.full_name?.toLowerCase().includes(q));
+      result = result.filter((c) =>
+        c.client?.full_name?.toLowerCase().includes(q),
+      );
     }
     if (moodFilter === "low") {
       result = result.filter((c) => c.mood && (c.mood as number) <= 2);
@@ -56,12 +74,27 @@ export default function CoachCheckinsPage() {
   // Global stats
   const globalStats = useMemo(() => {
     const moods = checkins.filter((c) => c.mood).map((c) => c.mood as number);
-    const energies = checkins.filter((c) => c.energy).map((c) => c.energy as number);
-    const avgMood = moods.length > 0 ? moods.reduce((a, b) => a + b, 0) / moods.length : 0;
-    const avgEnergy = energies.length > 0 ? energies.reduce((a, b) => a + b, 0) / energies.length : 0;
+    const energies = checkins
+      .filter((c) => c.energy)
+      .map((c) => c.energy as number);
+    const avgMood =
+      moods.length > 0 ? moods.reduce((a, b) => a + b, 0) / moods.length : 0;
+    const avgEnergy =
+      energies.length > 0
+        ? energies.reduce((a, b) => a + b, 0) / energies.length
+        : 0;
     const lowMoodCount = moods.filter((m) => m <= 2).length;
-    const totalRevenue = checkins.reduce((sum, c) => sum + Number(c.revenue), 0);
-    return { avgMood, avgEnergy, lowMoodCount, totalRevenue, total: checkins.length };
+    const totalRevenue = checkins.reduce(
+      (sum, c) => sum + Number(c.revenue),
+      0,
+    );
+    return {
+      avgMood,
+      avgEnergy,
+      lowMoodCount,
+      totalRevenue,
+      total: checkins.length,
+    };
   }, [checkins]);
 
   return (
@@ -72,41 +105,62 @@ export default function CoachCheckinsPage() {
       className="space-y-6"
     >
       <motion.div variants={fadeInUp} transition={defaultTransition}>
-        <h1 className="text-3xl font-semibold text-foreground">Check-ins clients</h1>
+        <h1 className="text-3xl font-semibold text-foreground">
+          Check-ins clients
+        </h1>
         <p className="text-sm text-muted-foreground mt-1">
           Suivi hebdomadaire de tous vos clients
         </p>
       </motion.div>
 
       {/* Stats */}
-      <motion.div variants={fadeInUp} transition={defaultTransition} className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <motion.div
+        variants={fadeInUp}
+        transition={defaultTransition}
+        className="grid grid-cols-2 sm:grid-cols-4 gap-3"
+      >
         <div className="bg-surface border border-border rounded-xl p-3">
           <p className="text-xs text-muted-foreground">Total check-ins</p>
-          <p className="text-lg font-semibold text-foreground">{globalStats.total}</p>
+          <p className="text-lg font-semibold text-foreground">
+            {globalStats.total}
+          </p>
         </div>
         <div className="bg-surface border border-border rounded-xl p-3">
           <p className="text-xs text-muted-foreground">Humeur moyenne</p>
           <p className="text-lg font-semibold text-foreground">
-            {globalStats.avgMood > 0 ? `${globalStats.avgMood.toFixed(1)}/5` : "—"}
+            {globalStats.avgMood > 0
+              ? `${globalStats.avgMood.toFixed(1)}/5`
+              : "—"}
           </p>
         </div>
         <div className="bg-surface border border-border rounded-xl p-3">
           <p className="text-xs text-muted-foreground">Energie moyenne</p>
           <p className="text-lg font-semibold text-foreground flex items-center gap-1">
             <Zap className="w-4 h-4 text-amber-500" />
-            {globalStats.avgEnergy > 0 ? `${globalStats.avgEnergy.toFixed(1)}/5` : "—"}
+            {globalStats.avgEnergy > 0
+              ? `${globalStats.avgEnergy.toFixed(1)}/5`
+              : "—"}
           </p>
         </div>
         <div className="bg-surface border border-border rounded-xl p-3">
           <p className="text-xs text-muted-foreground">Moral bas</p>
-          <p className={cn("text-lg font-semibold", globalStats.lowMoodCount > 0 ? "text-red-500" : "text-foreground")}>
+          <p
+            className={cn(
+              "text-lg font-semibold",
+              globalStats.lowMoodCount > 0 ? "text-red-500" : "text-foreground",
+            )}
+          >
             {globalStats.lowMoodCount}
           </p>
         </div>
       </motion.div>
 
       {/* Filters */}
-      <motion.div variants={fadeInUp} transition={defaultTransition} className="flex flex-col sm:flex-row gap-3">
+      <motion.div
+        variants={fadeInUp}
+        transition={defaultTransition}
+        className="flex flex-col sm:flex-row gap-3"
+      >
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
@@ -127,7 +181,7 @@ export default function CoachCheckinsPage() {
                 "h-9 px-3 rounded-lg text-xs font-medium transition-colors",
                 moodFilter === f
                   ? "bg-primary text-white"
-                  : "bg-muted/50 text-muted-foreground hover:text-foreground"
+                  : "bg-muted/50 text-muted-foreground hover:text-foreground",
               )}
             >
               {f === "all" ? "Tous" : f === "low" ? "Moral bas" : "Moral haut"}
@@ -150,7 +204,9 @@ export default function CoachCheckinsPage() {
         >
           <ClipboardCheck className="w-10 h-10 text-muted-foreground/40 mx-auto mb-3" />
           <p className="text-sm text-muted-foreground">
-            {search || moodFilter !== "all" ? "Aucun check-in correspondant" : "Aucun check-in recu"}
+            {search || moodFilter !== "all"
+              ? "Aucun check-in correspondant"
+              : "Aucun check-in recu"}
           </p>
         </motion.div>
       ) : (
@@ -174,7 +230,11 @@ export default function CoachCheckinsPage() {
                 <div
                   key={checkin.id}
                   className="px-4 py-3 hover:bg-muted/20 transition-colors cursor-pointer"
-                  onClick={() => setSelectedCheckin(selectedCheckin?.id === checkin.id ? null : checkin)}
+                  onClick={() =>
+                    setSelectedCheckin(
+                      selectedCheckin?.id === checkin.id ? null : checkin,
+                    )
+                  }
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -201,12 +261,18 @@ export default function CoachCheckinsPage() {
                     </div>
                     <div className="flex items-center gap-2">
                       {checkin.energy && (
-                        <span className="text-lg" title={`Energie: ${ENERGY_CONFIG[checkin.energy as Energy]?.label}`}>
+                        <span
+                          className="text-lg"
+                          title={`Energie: ${ENERGY_CONFIG[checkin.energy as Energy]?.label}`}
+                        >
                           {ENERGY_CONFIG[checkin.energy as Energy]?.emoji}
                         </span>
                       )}
                       {checkin.mood && (
-                        <span className="text-lg" title={`Humeur: ${MOOD_CONFIG[checkin.mood as Mood]?.label}`}>
+                        <span
+                          className="text-lg"
+                          title={`Humeur: ${MOOD_CONFIG[checkin.mood as Mood]?.label}`}
+                        >
                           {MOOD_CONFIG[checkin.mood as Mood]?.emoji}
                         </span>
                       )}
@@ -234,7 +300,10 @@ function CheckinDetail({ checkin }: { checkin: WeeklyCheckin }) {
   const [feedback, setFeedback] = useState(checkin.coach_feedback ?? "");
 
   return (
-    <div className="mt-3 pt-3 border-t border-border space-y-2" onClick={(e) => e.stopPropagation()}>
+    <div
+      className="mt-3 pt-3 border-t border-border space-y-2"
+      onClick={(e) => e.stopPropagation()}
+    >
       {checkin.win && (
         <div className="text-xs">
           <span className="text-emerald-600 font-medium">Victoire:</span>{" "}
@@ -257,7 +326,9 @@ function CheckinDetail({ checkin }: { checkin: WeeklyCheckin }) {
         <div className="text-xs">
           <span className="text-pink-500 font-medium">Gratitudes:</span>
           <ul className="ml-4 mt-0.5 list-disc text-foreground">
-            {checkin.gratitudes.map((g, i) => <li key={i}>{g}</li>)}
+            {checkin.gratitudes.map((g, i) => (
+              <li key={i}>{g}</li>
+            ))}
           </ul>
         </div>
       )}
@@ -265,7 +336,9 @@ function CheckinDetail({ checkin }: { checkin: WeeklyCheckin }) {
         <div className="text-xs">
           <span className="text-amber-500 font-medium">Objectifs du jour:</span>
           <ul className="ml-4 mt-0.5 list-disc text-foreground">
-            {checkin.daily_goals.map((g, i) => <li key={i}>{g}</li>)}
+            {checkin.daily_goals.map((g, i) => (
+              <li key={i}>{g}</li>
+            ))}
           </ul>
         </div>
       )}
@@ -286,7 +359,9 @@ function CheckinDetail({ checkin }: { checkin: WeeklyCheckin }) {
           className="flex-1 h-8 px-3 bg-muted rounded-lg text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
         />
         <button
-          onClick={() => addFeedback.mutate({ checkinId: checkin.id, feedback })}
+          onClick={() =>
+            addFeedback.mutate({ checkinId: checkin.id, feedback })
+          }
           disabled={!feedback.trim() || addFeedback.isPending}
           className="h-8 w-8 flex items-center justify-center bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50"
         >

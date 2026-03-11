@@ -35,7 +35,7 @@ export function InviteUserModal({ open, onClose }: InviteUserModalProps) {
         onSuccess: (data) => {
           setCreatedInvite(data);
         },
-      }
+      },
     );
   };
 
@@ -92,7 +92,10 @@ export function InviteUserModal({ open, onClose }: InviteUserModalProps) {
               </p>
               <p className="text-xs text-muted-foreground">
                 {createdInvite.full_name} ({createdInvite.email}) —{" "}
-                {ROLE_OPTIONS.find((r) => r.value === createdInvite.role)?.label}
+                {
+                  ROLE_OPTIONS.find((r) => r.value === createdInvite.role)
+                    ?.label
+                }
               </p>
             </div>
 
@@ -193,7 +196,9 @@ export function InviteUserModal({ open, onClose }: InviteUserModalProps) {
                 {createInvitation.isPending && (
                   <Loader2 className="w-4 h-4 animate-spin" />
                 )}
-                {createInvitation.isPending ? "Creation..." : "Creer l'invitation"}
+                {createInvitation.isPending
+                  ? "Creation..."
+                  : "Creer l'invitation"}
               </button>
             </div>
           </form>

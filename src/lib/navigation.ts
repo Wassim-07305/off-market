@@ -44,7 +44,7 @@ export const adminNavigation: NavItem[] = [
   { name: "Formation", href: "/admin/school", icon: GraduationCap },
   { name: "Formulaires", href: "/admin/forms", icon: FileText },
   { name: "Facturation", href: "/admin/billing", icon: CreditCard },
-  { name: "Onboarding", href: "/admin/onboarding", icon: UserPlus },
+
   { name: "Feed", href: "/admin/feed", icon: Rss },
   { name: "Appels", href: "/admin/calls", icon: Phone },
   { name: "Disponibilites", href: "/admin/settings/availability", icon: Clock },

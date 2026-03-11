@@ -38,15 +38,51 @@ import {
 import { usePreferences, useUpdatePreferences } from "@/hooks/use-preferences";
 
 const NOTIFICATION_TOGGLES = [
-  { key: "notify_messages", label: "Messages", description: "Nouveaux messages et mentions" },
-  { key: "notify_feed", label: "Communaute", description: "Activite sur le fil d'actualite" },
-  { key: "notify_calls", label: "Appels", description: "Rappels et confirmations d'appels" },
-  { key: "notify_badges", label: "Badges & XP", description: "Badges debloques et niveaux atteints" },
-  { key: "notify_checkins", label: "Check-ins", description: "Check-ins hebdomadaires soumis" },
-  { key: "notify_goals", label: "Objectifs", description: "Nouveaux objectifs assignes" },
-  { key: "notify_forms", label: "Formulaires", description: "Nouvelles reponses aux formulaires" },
-  { key: "notify_reports", label: "Signalements", description: "Signalements de contenu" },
-  { key: "notify_certificates", label: "Certificats", description: "Certificats obtenus" },
+  {
+    key: "notify_messages",
+    label: "Messages",
+    description: "Nouveaux messages et mentions",
+  },
+  {
+    key: "notify_feed",
+    label: "Communaute",
+    description: "Activite sur le fil d'actualite",
+  },
+  {
+    key: "notify_calls",
+    label: "Appels",
+    description: "Rappels et confirmations d'appels",
+  },
+  {
+    key: "notify_badges",
+    label: "Badges & XP",
+    description: "Badges debloques et niveaux atteints",
+  },
+  {
+    key: "notify_checkins",
+    label: "Check-ins",
+    description: "Check-ins hebdomadaires soumis",
+  },
+  {
+    key: "notify_goals",
+    label: "Objectifs",
+    description: "Nouveaux objectifs assignes",
+  },
+  {
+    key: "notify_forms",
+    label: "Formulaires",
+    description: "Nouvelles reponses aux formulaires",
+  },
+  {
+    key: "notify_reports",
+    label: "Signalements",
+    description: "Signalements de contenu",
+  },
+  {
+    key: "notify_certificates",
+    label: "Certificats",
+    description: "Certificats obtenus",
+  },
 ] as const;
 
 const DIGEST_OPTIONS = [
@@ -213,21 +249,21 @@ export default function SettingsPage() {
   const handleToggleNotification = (key: string, value: boolean) => {
     updatePreferences.mutate(
       { [key]: value },
-      { onError: () => toast.error("Erreur lors de la mise a jour") }
+      { onError: () => toast.error("Erreur lors de la mise a jour") },
     );
   };
 
   const handleDigestChange = (value: string) => {
     updatePreferences.mutate(
       { email_digest: value as "none" | "daily" | "weekly" },
-      { onError: () => toast.error("Erreur lors de la mise a jour") }
+      { onError: () => toast.error("Erreur lors de la mise a jour") },
     );
   };
 
   const handleMarketingToggle = (value: boolean) => {
     updatePreferences.mutate(
       { email_marketing: value },
-      { onError: () => toast.error("Erreur lors de la mise a jour") }
+      { onError: () => toast.error("Erreur lors de la mise a jour") },
     );
   };
 
@@ -237,8 +273,17 @@ export default function SettingsPage() {
     try {
       const [profileRes, messagesRes, checkinsRes] = await Promise.all([
         supabase.from("profiles").select("*").eq("id", user.id).single(),
-        supabase.from("messages").select("content, created_at").eq("sender_id", user.id).order("created_at", { ascending: false }).limit(500),
-        supabase.from("weekly_checkins").select("*").eq("client_id", user.id).order("week_start", { ascending: false }),
+        supabase
+          .from("messages")
+          .select("content, created_at")
+          .eq("sender_id", user.id)
+          .order("created_at", { ascending: false })
+          .limit(500),
+        supabase
+          .from("weekly_checkins")
+          .select("*")
+          .eq("client_id", user.id)
+          .order("week_start", { ascending: false }),
       ]);
       const exportData = {
         exported_at: new Date().toISOString(),
@@ -246,7 +291,9 @@ export default function SettingsPage() {
         messages: messagesRes.data ?? [],
         checkins: checkinsRes.data ?? [],
       };
-      const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
+      const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+        type: "application/json",
+      });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
@@ -303,7 +350,10 @@ export default function SettingsPage() {
       </div>
 
       {/* Profile */}
-      <div className="bg-surface rounded-2xl p-6 space-y-4" style={{ boxShadow: "var(--shadow-card)" }}>
+      <div
+        className="bg-surface rounded-2xl p-6 space-y-4"
+        style={{ boxShadow: "var(--shadow-card)" }}
+      >
         <div className="flex items-center gap-2 mb-2">
           <User className="w-4 h-4 text-muted-foreground" />
           <h2 className="text-sm font-semibold text-foreground">Profil</h2>
@@ -343,7 +393,9 @@ export default function SettingsPage() {
             />
           </div>
           <div>
-            <p className="text-sm font-medium text-foreground">{profile?.email}</p>
+            <p className="text-sm font-medium text-foreground">
+              {profile?.email}
+            </p>
             <p className="text-xs text-muted-foreground capitalize">
               {profile?.role}
             </p>
@@ -404,10 +456,15 @@ export default function SettingsPage() {
       </div>
 
       {/* Notifications */}
-      <div className="bg-surface rounded-2xl p-6 space-y-4" style={{ boxShadow: "var(--shadow-card)" }}>
+      <div
+        className="bg-surface rounded-2xl p-6 space-y-4"
+        style={{ boxShadow: "var(--shadow-card)" }}
+      >
         <div className="flex items-center gap-2 mb-2">
           <Bell className="w-4 h-4 text-muted-foreground" />
-          <h2 className="text-sm font-semibold text-foreground">Notifications</h2>
+          <h2 className="text-sm font-semibold text-foreground">
+            Notifications
+          </h2>
         </div>
         <p className="text-xs text-muted-foreground">
           Choisis les notifications que tu souhaites recevoir.
@@ -424,8 +481,12 @@ export default function SettingsPage() {
                 className="flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-muted/50 transition-colors cursor-pointer"
               >
                 <div>
-                  <p className="text-sm font-medium text-foreground">{item.label}</p>
-                  <p className="text-xs text-muted-foreground">{item.description}</p>
+                  <p className="text-sm font-medium text-foreground">
+                    {item.label}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {item.description}
+                  </p>
                 </div>
                 <button
                   role="switch"
@@ -433,13 +494,13 @@ export default function SettingsPage() {
                   onClick={() => handleToggleNotification(item.key, !checked)}
                   className={cn(
                     "relative w-10 h-6 rounded-full transition-colors shrink-0",
-                    checked ? "bg-primary" : "bg-muted-foreground/30"
+                    checked ? "bg-primary" : "bg-muted-foreground/30",
                   )}
                 >
                   <span
                     className={cn(
                       "absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform shadow-sm",
-                      checked && "translate-x-4"
+                      checked && "translate-x-4",
                     )}
                   />
                 </button>
@@ -450,7 +511,10 @@ export default function SettingsPage() {
       </div>
 
       {/* Appearance */}
-      <div className="bg-surface rounded-2xl p-6 space-y-4" style={{ boxShadow: "var(--shadow-card)" }}>
+      <div
+        className="bg-surface rounded-2xl p-6 space-y-4"
+        style={{ boxShadow: "var(--shadow-card)" }}
+      >
         <div className="flex items-center gap-2 mb-2">
           <Palette className="w-4 h-4 text-muted-foreground" />
           <h2 className="text-sm font-semibold text-foreground">Apparence</h2>
@@ -465,7 +529,7 @@ export default function SettingsPage() {
                 "flex-1 h-20 rounded-xl border-2 flex flex-col items-center justify-center gap-1.5 transition-all",
                 theme === t.value
                   ? "border-primary bg-primary/5"
-                  : "border-border hover:border-border/80"
+                  : "border-border hover:border-border/80",
               )}
             >
               <t.icon className="w-5 h-5 text-foreground" />
@@ -478,7 +542,10 @@ export default function SettingsPage() {
       </div>
 
       {/* Security */}
-      <div className="bg-surface rounded-2xl p-6 space-y-4" style={{ boxShadow: "var(--shadow-card)" }}>
+      <div
+        className="bg-surface rounded-2xl p-6 space-y-4"
+        style={{ boxShadow: "var(--shadow-card)" }}
+      >
         <div className="flex items-center gap-2 mb-2">
           <Lock className="w-4 h-4 text-muted-foreground" />
           <h2 className="text-sm font-semibold text-foreground">Securite</h2>
@@ -502,7 +569,11 @@ export default function SettingsPage() {
                 onClick={() => setShowCurrentPwd(!showCurrentPwd)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
               >
-                {showCurrentPwd ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                {showCurrentPwd ? (
+                  <EyeOff className="w-4 h-4" />
+                ) : (
+                  <Eye className="w-4 h-4" />
+                )}
               </button>
             </div>
           </div>
@@ -525,7 +596,11 @@ export default function SettingsPage() {
                   onClick={() => setShowNewPwd(!showNewPwd)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  {showNewPwd ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  {showNewPwd ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
                 </button>
               </div>
             </div>
@@ -543,9 +618,13 @@ export default function SettingsPage() {
             </div>
           </div>
 
-          {newPassword && confirmPassword && newPassword !== confirmPassword && (
-            <p className="text-xs text-error">Les mots de passe ne correspondent pas</p>
-          )}
+          {newPassword &&
+            confirmPassword &&
+            newPassword !== confirmPassword && (
+              <p className="text-xs text-error">
+                Les mots de passe ne correspondent pas
+              </p>
+            )}
 
           <button
             onClick={handleChangePassword}
@@ -563,14 +642,21 @@ export default function SettingsPage() {
       </div>
 
       {/* Email preferences */}
-      <div className="bg-surface rounded-2xl p-6 space-y-4" style={{ boxShadow: "var(--shadow-card)" }}>
+      <div
+        className="bg-surface rounded-2xl p-6 space-y-4"
+        style={{ boxShadow: "var(--shadow-card)" }}
+      >
         <div className="flex items-center gap-2 mb-2">
           <Mail className="w-4 h-4 text-muted-foreground" />
-          <h2 className="text-sm font-semibold text-foreground">Preferences email</h2>
+          <h2 className="text-sm font-semibold text-foreground">
+            Preferences email
+          </h2>
         </div>
 
         <div>
-          <p className="text-sm font-medium text-foreground mb-2">Resume par email</p>
+          <p className="text-sm font-medium text-foreground mb-2">
+            Resume par email
+          </p>
           <p className="text-xs text-muted-foreground mb-3">
             Recois un resume de ton activite par email.
           </p>
@@ -583,7 +669,7 @@ export default function SettingsPage() {
                   "h-9 px-4 rounded-xl text-xs font-medium transition-all",
                   preferences?.email_digest === opt.value
                     ? "bg-foreground text-background"
-                    : "bg-muted text-muted-foreground hover:text-foreground"
+                    : "bg-muted text-muted-foreground hover:text-foreground",
                 )}
               >
                 {opt.label}
@@ -595,22 +681,30 @@ export default function SettingsPage() {
         <div className="border-t border-border pt-4">
           <label className="flex items-center justify-between cursor-pointer">
             <div>
-              <p className="text-sm font-medium text-foreground">Emails marketing</p>
-              <p className="text-xs text-muted-foreground">Nouveautes, conseils et offres speciales</p>
+              <p className="text-sm font-medium text-foreground">
+                Emails marketing
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Nouveautes, conseils et offres speciales
+              </p>
             </div>
             <button
               role="switch"
               aria-checked={preferences?.email_marketing ?? true}
-              onClick={() => handleMarketingToggle(!(preferences?.email_marketing ?? true))}
+              onClick={() =>
+                handleMarketingToggle(!(preferences?.email_marketing ?? true))
+              }
               className={cn(
                 "relative w-10 h-6 rounded-full transition-colors shrink-0",
-                (preferences?.email_marketing ?? true) ? "bg-primary" : "bg-muted-foreground/30"
+                (preferences?.email_marketing ?? true)
+                  ? "bg-primary"
+                  : "bg-muted-foreground/30",
               )}
             >
               <span
                 className={cn(
                   "absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform shadow-sm",
-                  (preferences?.email_marketing ?? true) && "translate-x-4"
+                  (preferences?.email_marketing ?? true) && "translate-x-4",
                 )}
               />
             </button>
@@ -619,10 +713,15 @@ export default function SettingsPage() {
       </div>
 
       {/* Google Agenda */}
-      <div className="bg-surface rounded-2xl p-6 space-y-4" style={{ boxShadow: "var(--shadow-card)" }}>
+      <div
+        className="bg-surface rounded-2xl p-6 space-y-4"
+        style={{ boxShadow: "var(--shadow-card)" }}
+      >
         <div className="flex items-center gap-2 mb-2">
           <Calendar className="w-4 h-4 text-muted-foreground" />
-          <h2 className="text-sm font-semibold text-foreground">Google Agenda</h2>
+          <h2 className="text-sm font-semibold text-foreground">
+            Google Agenda
+          </h2>
         </div>
 
         {googleStatus.data?.connected ? (
@@ -654,7 +753,8 @@ export default function SettingsPage() {
         ) : (
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">
-              Connecte ton agenda Google pour voir tes evenements dans la page Appels.
+              Connecte ton agenda Google pour voir tes evenements dans la page
+              Appels.
             </p>
             <a
               href="/api/google-calendar/connect"
@@ -668,7 +768,10 @@ export default function SettingsPage() {
       </div>
 
       {/* Danger zone */}
-      <div className="bg-surface rounded-2xl p-6 space-y-4 border-l-[3px] border-l-error" style={{ boxShadow: "var(--shadow-card)" }}>
+      <div
+        className="bg-surface rounded-2xl p-6 space-y-4 border-l-[3px] border-l-error"
+        style={{ boxShadow: "var(--shadow-card)" }}
+      >
         <div className="flex items-center gap-2 mb-2">
           <Shield className="w-4 h-4 text-error" />
           <h2 className="text-sm font-semibold text-error">Zone dangereuse</h2>
@@ -682,7 +785,11 @@ export default function SettingsPage() {
             disabled={exporting}
             className="h-9 px-4 rounded-[10px] border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center gap-2"
           >
-            {exporting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
+            {exporting ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <Download className="w-3.5 h-3.5" />
+            )}
             {exporting ? "Export..." : "Exporter mes donnees"}
           </button>
           <button
@@ -703,8 +810,12 @@ export default function SettingsPage() {
                   <AlertTriangle className="w-5 h-5 text-error" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-foreground">Supprimer le compte</h3>
-                  <p className="text-xs text-muted-foreground">Cette action est irreversible</p>
+                  <h3 className="text-sm font-semibold text-foreground">
+                    Supprimer le compte
+                  </h3>
+                  <p className="text-xs text-muted-foreground">
+                    Cette action est irreversible
+                  </p>
                 </div>
               </div>
               <p className="text-sm text-muted-foreground">

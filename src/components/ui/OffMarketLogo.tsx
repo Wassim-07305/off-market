@@ -1,15 +1,20 @@
-import { cn } from '@/lib/utils'
+import { cn } from "@/lib/utils";
 
 interface OffMarketLogoProps {
-  size?: number
-  showText?: boolean
-  className?: string
-  textClassName?: string
+  size?: number;
+  showText?: boolean;
+  className?: string;
+  textClassName?: string;
 }
 
-export function OffMarketLogo({ size = 36, showText = false, className, textClassName }: OffMarketLogoProps) {
+export function OffMarketLogo({
+  size = 36,
+  showText = false,
+  className,
+  textClassName,
+}: OffMarketLogoProps) {
   return (
-    <div className={cn('flex items-center gap-3', className)}>
+    <div className={cn("flex items-center gap-3", className)}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 32 32"
@@ -37,10 +42,12 @@ export function OffMarketLogo({ size = 36, showText = false, className, textClas
         </text>
       </svg>
       {showText && (
-        <span className={cn('text-base font-bold tracking-tight', textClassName)}>
+        <span
+          className={cn("text-base font-bold tracking-tight", textClassName)}
+        >
           Off-Market
         </span>
       )}
     </div>
-  )
+  );
 }

@@ -3,7 +3,11 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
-import type { Streak, DailyActivity, RecordActivityResult } from "@/types/streaks";
+import type {
+  Streak,
+  DailyActivity,
+  RecordActivityResult,
+} from "@/types/streaks";
 
 export function useStreak() {
   const supabase = useSupabase();

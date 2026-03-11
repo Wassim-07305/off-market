@@ -17,9 +17,13 @@ interface QuizExerciseStatsProps {
   contentType: string;
 }
 
-export function QuizExerciseStats({ lessonId, contentType }: QuizExerciseStatsProps) {
+export function QuizExerciseStats({
+  lessonId,
+  contentType,
+}: QuizExerciseStatsProps) {
   if (contentType === "quiz") return <QuizStats lessonId={lessonId} />;
-  if (contentType === "assignment") return <ExerciseStats lessonId={lessonId} />;
+  if (contentType === "assignment")
+    return <ExerciseStats lessonId={lessonId} />;
   return null;
 }
 
@@ -40,7 +44,9 @@ function QuizStats({ lessonId }: { lessonId: string }) {
     return (
       <div className="text-center py-6">
         <Trophy className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
-        <p className="text-sm text-muted-foreground">Aucune tentative pour le moment</p>
+        <p className="text-sm text-muted-foreground">
+          Aucune tentative pour le moment
+        </p>
       </div>
     );
   }
@@ -62,17 +68,19 @@ function QuizStats({ lessonId }: { lessonId: string }) {
       label: "Taux de reussite",
       value: `${Math.round(stats.passRate)}%`,
       icon: TrendingUp,
-      color: stats.passRate >= 70
-        ? "text-emerald-600 bg-emerald-500/10"
-        : "text-amber-600 bg-amber-500/10",
+      color:
+        stats.passRate >= 70
+          ? "text-emerald-600 bg-emerald-500/10"
+          : "text-amber-600 bg-amber-500/10",
     },
     {
       label: "Score moyen",
       value: `${stats.averageScore}%`,
       icon: Trophy,
-      color: stats.averageScore >= 70
-        ? "text-emerald-600 bg-emerald-500/10"
-        : "text-amber-600 bg-amber-500/10",
+      color:
+        stats.averageScore >= 70
+          ? "text-emerald-600 bg-emerald-500/10"
+          : "text-amber-600 bg-amber-500/10",
     },
   ];
 
@@ -90,7 +98,9 @@ function QuizStats({ lessonId }: { lessonId: string }) {
               className="bg-surface border border-border rounded-xl p-3"
             >
               <div className="flex items-center gap-2 mb-1.5">
-                <div className={`w-6 h-6 rounded-lg flex items-center justify-center ${card.color}`}>
+                <div
+                  className={`w-6 h-6 rounded-lg flex items-center justify-center ${card.color}`}
+                >
                   <Icon className="w-3.5 h-3.5" />
                 </div>
               </div>
@@ -121,22 +131,27 @@ function ExerciseStats({ lessonId }: { lessonId: string }) {
     return (
       <div className="text-center py-6">
         <FileText className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
-        <p className="text-sm text-muted-foreground">Aucune soumission pour le moment</p>
+        <p className="text-sm text-muted-foreground">
+          Aucune soumission pour le moment
+        </p>
       </div>
     );
   }
 
   const submitted = submissions.filter((s) => s.status === "submitted").length;
   const reviewed = submissions.filter((s) => s.status === "reviewed").length;
-  const revisionRequested = submissions.filter((s) => s.status === "revision_requested").length;
-  const avgGrade = submissions.filter((s) => s.grade !== null).length > 0
-    ? Math.round(
-        submissions
-          .filter((s) => s.grade !== null)
-          .reduce((sum, s) => sum + (s.grade ?? 0), 0) /
-          submissions.filter((s) => s.grade !== null).length
-      )
-    : null;
+  const revisionRequested = submissions.filter(
+    (s) => s.status === "revision_requested",
+  ).length;
+  const avgGrade =
+    submissions.filter((s) => s.grade !== null).length > 0
+      ? Math.round(
+          submissions
+            .filter((s) => s.grade !== null)
+            .reduce((sum, s) => sum + (s.grade ?? 0), 0) /
+            submissions.filter((s) => s.grade !== null).length,
+        )
+      : null;
 
   const cards = [
     {
@@ -161,11 +176,12 @@ function ExerciseStats({ lessonId }: { lessonId: string }) {
       label: avgGrade !== null ? "Note moyenne" : "Revisions",
       value: avgGrade !== null ? `${avgGrade}/100` : revisionRequested,
       icon: avgGrade !== null ? TrendingUp : AlertCircle,
-      color: avgGrade !== null
-        ? avgGrade >= 50
-          ? "text-emerald-600 bg-emerald-500/10"
-          : "text-red-600 bg-red-500/10"
-        : "text-red-600 bg-red-500/10",
+      color:
+        avgGrade !== null
+          ? avgGrade >= 50
+            ? "text-emerald-600 bg-emerald-500/10"
+            : "text-red-600 bg-red-500/10"
+          : "text-red-600 bg-red-500/10",
     },
   ];
 
@@ -183,7 +199,9 @@ function ExerciseStats({ lessonId }: { lessonId: string }) {
               className="bg-surface border border-border rounded-xl p-3"
             >
               <div className="flex items-center gap-2 mb-1.5">
-                <div className={`w-6 h-6 rounded-lg flex items-center justify-center ${card.color}`}>
+                <div
+                  className={`w-6 h-6 rounded-lg flex items-center justify-center ${card.color}`}
+                >
                   <Icon className="w-3.5 h-3.5" />
                 </div>
               </div>

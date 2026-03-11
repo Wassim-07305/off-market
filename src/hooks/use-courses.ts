@@ -3,7 +3,12 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
-import type { Course, Module, Lesson, LessonAttachment } from "@/types/database";
+import type {
+  Course,
+  Module,
+  Lesson,
+  LessonAttachment,
+} from "@/types/database";
 
 // ---------------------------------------------------------------------------
 // Read hooks
@@ -28,7 +33,9 @@ export function useCourses(status?: string) {
 
       const { data, error } = await query;
       if (error) throw error;
-      return data as (Course & { modules: (Module & { lessons: Lesson[] })[] })[];
+      return data as (Course & {
+        modules: (Module & { lessons: Lesson[] })[];
+      })[];
     },
   });
 }
@@ -65,7 +72,12 @@ export function useCourseMutations() {
   };
 
   const createCourse = useMutation({
-    mutationFn: async (course: { title: string; description?: string; status?: string; cover_image_url?: string }) => {
+    mutationFn: async (course: {
+      title: string;
+      description?: string;
+      status?: string;
+      cover_image_url?: string;
+    }) => {
       const { data, error } = await supabase
         .from("courses")
         .insert(course)
@@ -78,8 +90,14 @@ export function useCourseMutations() {
   });
 
   const updateCourse = useMutation({
-    mutationFn: async ({ id, ...updates }: { id: string } & Partial<Course>) => {
-      const { error } = await supabase.from("courses").update(updates).eq("id", id);
+    mutationFn: async ({
+      id,
+      ...updates
+    }: { id: string } & Partial<Course>) => {
+      const { error } = await supabase
+        .from("courses")
+        .update(updates)
+        .eq("id", id);
       if (error) throw error;
     },
     onSuccess: invalidate,
@@ -111,7 +129,12 @@ export function useCourseMutations() {
   // -------------------------------------------------------------------------
 
   const createModule = useMutation({
-    mutationFn: async (mod: { course_id: string; title: string; description?: string; sort_order?: number }) => {
+    mutationFn: async (mod: {
+      course_id: string;
+      title: string;
+      description?: string;
+      sort_order?: number;
+    }) => {
       const { data, error } = await supabase
         .from("modules")
         .insert(mod)
@@ -124,8 +147,14 @@ export function useCourseMutations() {
   });
 
   const updateModule = useMutation({
-    mutationFn: async ({ id, ...updates }: { id: string } & Partial<Module>) => {
-      const { error } = await supabase.from("modules").update(updates).eq("id", id);
+    mutationFn: async ({
+      id,
+      ...updates
+    }: { id: string } & Partial<Module>) => {
+      const { error } = await supabase
+        .from("modules")
+        .update(updates)
+        .eq("id", id);
       if (error) throw error;
     },
     onSuccess: invalidate,
@@ -140,7 +169,13 @@ export function useCourseMutations() {
   });
 
   const reorderModules = useMutation({
-    mutationFn: async ({ courseId, orderedIds }: { courseId: string; orderedIds: string[] }) => {
+    mutationFn: async ({
+      courseId,
+      orderedIds,
+    }: {
+      courseId: string;
+      orderedIds: string[];
+    }) => {
       void courseId; // used contextually
       for (let i = 0; i < orderedIds.length; i++) {
         const { error } = await supabase
@@ -179,8 +214,14 @@ export function useCourseMutations() {
   });
 
   const updateLesson = useMutation({
-    mutationFn: async ({ id, ...updates }: { id: string } & Partial<Lesson>) => {
-      const { error } = await supabase.from("lessons").update(updates).eq("id", id);
+    mutationFn: async ({
+      id,
+      ...updates
+    }: { id: string } & Partial<Lesson>) => {
+      const { error } = await supabase
+        .from("lessons")
+        .update(updates)
+        .eq("id", id);
       if (error) throw error;
     },
     onSuccess: invalidate,
@@ -195,7 +236,13 @@ export function useCourseMutations() {
   });
 
   const reorderLessons = useMutation({
-    mutationFn: async ({ moduleId, orderedIds }: { moduleId: string; orderedIds: string[] }) => {
+    mutationFn: async ({
+      moduleId,
+      orderedIds,
+    }: {
+      moduleId: string;
+      orderedIds: string[];
+    }) => {
       void moduleId;
       for (let i = 0; i < orderedIds.length; i++) {
         const { error } = await supabase
@@ -209,7 +256,13 @@ export function useCourseMutations() {
   });
 
   const addAttachment = useMutation({
-    mutationFn: async ({ lessonId, attachment }: { lessonId: string; attachment: LessonAttachment }) => {
+    mutationFn: async ({
+      lessonId,
+      attachment,
+    }: {
+      lessonId: string;
+      attachment: LessonAttachment;
+    }) => {
       // Fetch current attachments
       const { data: lesson, error: fetchError } = await supabase
         .from("lessons")
@@ -229,7 +282,13 @@ export function useCourseMutations() {
   });
 
   const removeAttachment = useMutation({
-    mutationFn: async ({ lessonId, attachmentUrl }: { lessonId: string; attachmentUrl: string }) => {
+    mutationFn: async ({
+      lessonId,
+      attachmentUrl,
+    }: {
+      lessonId: string;
+      attachmentUrl: string;
+    }) => {
       const { data: lesson, error: fetchError } = await supabase
         .from("lessons")
         .select("attachments")
@@ -282,7 +341,11 @@ export function useLessonProgress() {
         .select("lesson_id, status, completed_at")
         .eq("student_id", user!.id);
       if (error) throw error;
-      return data as { lesson_id: string; status: string; completed_at: string | null }[];
+      return data as {
+        lesson_id: string;
+        status: string;
+        completed_at: string | null;
+      }[];
     },
     enabled: !!user,
   });
@@ -296,18 +359,16 @@ export function useMarkLessonComplete() {
   return useMutation({
     mutationFn: async (lessonId: string) => {
       if (!user) throw new Error("Non connecte");
-      const { error } = await supabase
-        .from("lesson_progress")
-        .upsert(
-          {
-            student_id: user.id,
-            lesson_id: lessonId,
-            status: "completed",
-            completed_at: new Date().toISOString(),
-            progress_percent: 100,
-          },
-          { onConflict: "lesson_id,student_id" }
-        );
+      const { error } = await supabase.from("lesson_progress").upsert(
+        {
+          student_id: user.id,
+          lesson_id: lessonId,
+          status: "completed",
+          completed_at: new Date().toISOString(),
+          progress_percent: 100,
+        },
+        { onConflict: "lesson_id,student_id" },
+      );
       if (error) throw error;
     },
     onSuccess: () => {

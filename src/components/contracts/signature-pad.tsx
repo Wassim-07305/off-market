@@ -9,7 +9,11 @@ interface SignaturePadProps {
   disabled?: boolean;
 }
 
-export function SignaturePad({ onSign, onCancel, disabled }: SignaturePadProps) {
+export function SignaturePad({
+  onSign,
+  onCancel,
+  disabled,
+}: SignaturePadProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [hasDrawn, setHasDrawn] = useState(false);
@@ -109,7 +113,9 @@ export function SignaturePad({ onSign, onCancel, disabled }: SignaturePadProps) 
         />
         {!hasDrawn && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <p className="text-sm text-muted-foreground">Dessinez votre signature ici</p>
+            <p className="text-sm text-muted-foreground">
+              Dessinez votre signature ici
+            </p>
           </div>
         )}
         <button

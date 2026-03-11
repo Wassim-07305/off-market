@@ -6,10 +6,7 @@ import { cn, getInitials } from "@/lib/utils";
 import { useUIStore } from "@/stores/ui-store";
 import { useAuth } from "@/hooks/use-auth";
 import { PanelLeftClose, PanelLeft, LogOut, Settings } from "lucide-react";
-import {
-  type RoleVariant,
-  getNavigationForRole,
-} from "@/lib/navigation";
+import { type RoleVariant, getNavigationForRole } from "@/lib/navigation";
 
 interface RoleSidebarProps {
   variant: RoleVariant;
@@ -38,14 +35,14 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
       className={cn(
         "fixed left-0 top-0 h-screen flex flex-col transition-all duration-300 z-40 hidden lg:flex",
         "bg-[var(--sidebar-bg)]",
-        sidebarCollapsed ? "w-[72px]" : "w-[260px]"
+        sidebarCollapsed ? "w-[72px]" : "w-[260px]",
       )}
     >
       {/* Logo */}
       <div
         className={cn(
           "h-16 flex items-center px-4 shrink-0",
-          sidebarCollapsed ? "justify-center" : "gap-3"
+          sidebarCollapsed ? "justify-center" : "gap-3",
         )}
       >
         <Link
@@ -93,7 +90,7 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
                   isActive
                     ? "bg-primary/[0.08] text-[var(--sidebar-text-active)]"
                     : "text-[var(--sidebar-text)] hover:text-[var(--sidebar-text-active)] hover:bg-white/[0.04]",
-                  sidebarCollapsed && "justify-center px-0"
+                  sidebarCollapsed && "justify-center px-0",
                 )}
               >
                 {/* Active indicator bar with glow */}
@@ -105,7 +102,7 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
                     "w-[18px] h-[18px] shrink-0 transition-all duration-200",
                     isActive
                       ? "text-primary drop-shadow-[0_0_6px_rgba(196,30,58,0.3)]"
-                      : "group-hover:text-[var(--sidebar-text-active)]"
+                      : "group-hover:text-[var(--sidebar-text-active)]",
                   )}
                 />
                 {!sidebarCollapsed && (
@@ -133,7 +130,7 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
           onClick={toggleSidebar}
           className={cn(
             "w-full h-9 rounded-xl flex items-center gap-3 transition-all duration-200 text-[var(--sidebar-text)] hover:text-[var(--sidebar-text-active)] hover:bg-white/[0.04]",
-            sidebarCollapsed ? "justify-center px-0" : "px-3"
+            sidebarCollapsed ? "justify-center px-0" : "px-3",
           )}
           title={sidebarCollapsed ? "Ouvrir le menu" : "Reduire le menu"}
         >
@@ -154,7 +151,7 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
         <div
           className={cn(
             "flex items-center gap-3 group",
-            sidebarCollapsed && "justify-center"
+            sidebarCollapsed && "justify-center",
           )}
         >
           <div className="relative shrink-0">
@@ -175,7 +172,9 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
           {!sidebarCollapsed && (
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-white truncate leading-tight">
-                {loading ? "Chargement..." : profile?.full_name ?? "Mon profil"}
+                {loading
+                  ? "Chargement..."
+                  : (profile?.full_name ?? "Mon profil")}
               </p>
               <p className="text-xs text-stone-500 capitalize truncate mt-0.5">
                 {roleLabel}
@@ -197,7 +196,7 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
           href={settingsHref}
           className={cn(
             "flex items-center gap-3 h-9 rounded-xl px-3 transition-all duration-200 text-[var(--sidebar-text)] hover:text-[var(--sidebar-text-active)] hover:bg-white/[0.04]",
-            sidebarCollapsed && "justify-center px-0"
+            sidebarCollapsed && "justify-center px-0",
           )}
         >
           <Settings className="w-[18px] h-[18px] shrink-0" />
@@ -211,7 +210,7 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
           onClick={signOut}
           className={cn(
             "w-full flex items-center gap-3 h-9 rounded-xl px-3 transition-all duration-200 text-[var(--sidebar-text)] hover:text-red-400 hover:bg-red-500/10",
-            sidebarCollapsed && "justify-center px-0"
+            sidebarCollapsed && "justify-center px-0",
           )}
         >
           <LogOut className="w-[18px] h-[18px] shrink-0" />

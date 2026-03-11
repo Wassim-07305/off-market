@@ -1,108 +1,46 @@
-import { Bell, User, LogOut, Menu, Sun, Moon, Monitor, Keyboard } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
-import { useAuth } from '@/hooks/useAuth'
-import { useNotificationStore } from '@/stores/notification-store'
-import { useUIStore } from '@/stores/ui-store'
-import { useTheme } from '@/hooks/useTheme'
-import { Avatar } from '@/components/ui/avatar'
+"use client";
+
+import { Bell, User, LogOut, Menu } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/use-auth";
+import { useUIStore } from "@/stores/ui-store";
+import { Avatar } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuLabel,
-} from '@/components/ui/dropdown-menu'
-import { Breadcrumb } from '@/components/layout/Breadcrumb'
-import { GlobalSearch } from './GlobalSearch'
-import { cn } from '@/lib/utils'
+} from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 
 export function Header() {
-  const { profile, signOut } = useAuth()
-  const { unreadCount } = useNotificationStore()
-  const { toggleMobileSidebar, setNotificationsPanelOpen, setKeyboardShortcutsOpen } = useUIStore()
-  const { theme, setTheme } = useTheme()
-  const navigate = useNavigate()
-
-  const themeIcon = theme === 'light' ? Sun : theme === 'dark' ? Moon : Monitor
-  const ThemeIcon = themeIcon
+  const { user, profile, signOut } = useAuth();
+  const { setMobileMenuOpen, setNotificationPanelOpen } = useUIStore();
+  const router = useRouter();
 
   return (
-    <header className="flex h-16 items-center justify-between border-b border-border/40 bg-white/80 dark:bg-slate-900/80 px-4 backdrop-blur-sm md:px-6">
-      {/* Left: Hamburger (mobile) + Breadcrumb */}
+    <header className="flex h-14 items-center justify-between border-b border-border/40 bg-surface px-4 md:px-6">
+      {/* Left: Hamburger (mobile) */}
       <div className="flex items-center gap-2">
         <button
           type="button"
-          onClick={toggleMobileSidebar}
+          onClick={() => setMobileMenuOpen(true)}
           className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground md:hidden"
           aria-label="Menu"
         >
           <Menu className="h-5 w-5" />
         </button>
-        <Breadcrumb />
       </div>
 
-      {/* Center: Global Search */}
-      <div className="hidden flex-1 justify-center px-8 md:flex">
-        <GlobalSearch />
-      </div>
-
-      {/* Right: Theme + Shortcuts + Notifications + User */}
+      {/* Right: Shortcuts + Notifications + User */}
       <div className="flex items-center gap-1">
-        {/* Theme toggle */}
-        <DropdownMenu
-          align="right"
-          trigger={
-            <button
-              className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-              title="Changer le thème"
-            >
-              <ThemeIcon className="h-5 w-5" />
-            </button>
-          }
-        >
-          <DropdownMenuItem
-            icon={<Sun className="h-4 w-4" />}
-            onClick={() => setTheme('light')}
-            className={cn(theme === 'light' && 'bg-muted')}
-          >
-            Clair
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            icon={<Moon className="h-4 w-4" />}
-            onClick={() => setTheme('dark')}
-            className={cn(theme === 'dark' && 'bg-muted')}
-          >
-            Sombre
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            icon={<Monitor className="h-4 w-4" />}
-            onClick={() => setTheme('system')}
-            className={cn(theme === 'system' && 'bg-muted')}
-          >
-            Système
-          </DropdownMenuItem>
-        </DropdownMenu>
-
-        {/* Keyboard shortcuts */}
-        <button
-          onClick={() => setKeyboardShortcutsOpen(true)}
-          className="hidden rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground sm:block"
-          title="Raccourcis clavier (?)"
-        >
-          <Keyboard className="h-5 w-5" />
-        </button>
-
         {/* Notification bell */}
         <button
-          onClick={() => setNotificationsPanelOpen(true)}
+          onClick={() => setNotificationPanelOpen(true)}
           className="relative rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           title="Notifications"
         >
           <Bell className="h-5 w-5" />
-          {unreadCount > 0 && (
-            <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-medium text-white">
-              {unreadCount > 99 ? '99+' : unreadCount}
-            </span>
-          )}
         </button>
 
         {/* User dropdown */}
@@ -112,7 +50,7 @@ export function Header() {
             <button className="flex items-center gap-2 rounded-xl p-1.5 transition-colors hover:bg-secondary">
               <Avatar
                 src={profile?.avatar_url}
-                name={profile?.full_name ?? 'Utilisateur'}
+                name={profile?.full_name ?? "Utilisateur"}
                 size="sm"
               />
             </button>
@@ -121,17 +59,17 @@ export function Header() {
           <DropdownMenuLabel>
             <div className="flex flex-col">
               <span className="text-sm font-medium text-foreground">
-                {profile?.full_name ?? 'Utilisateur'}
+                {profile?.full_name ?? "Utilisateur"}
               </span>
               <span className="text-xs text-muted-foreground">
-                {profile?.email ?? ''}
+                {user?.email ?? ""}
               </span>
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem
             icon={<User className="h-4 w-4" />}
-            onClick={() => navigate('/settings')}
+            onClick={() => router.push("/settings")}
           >
             Mon profil
           </DropdownMenuItem>
@@ -141,10 +79,10 @@ export function Header() {
             destructive
             onClick={signOut}
           >
-            Déconnexion
+            Deconnexion
           </DropdownMenuItem>
         </DropdownMenu>
       </div>
     </header>
-  )
+  );
 }

@@ -1,7 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { Mail, Plus, Copy, Check, Trash2, Clock, CheckCircle, XCircle } from "lucide-react";
+import {
+  Mail,
+  Plus,
+  Copy,
+  Check,
+  Trash2,
+  Clock,
+  CheckCircle,
+  XCircle,
+} from "lucide-react";
 import { useInvitations } from "@/hooks/use-invitations";
 import { InviteUserModal } from "@/components/invitations/invite-user-modal";
 import { ROLE_OPTIONS } from "@/types/invitations";
@@ -9,10 +18,25 @@ import { cn } from "@/lib/utils";
 
 type StatusFilter = "all" | "pending" | "accepted" | "expired";
 
-const STATUS_LABELS: Record<string, { label: string; color: string; icon: typeof Clock }> = {
-  pending: { label: "En attente", color: "text-amber-500 bg-amber-500/10", icon: Clock },
-  accepted: { label: "Acceptee", color: "text-emerald-500 bg-emerald-500/10", icon: CheckCircle },
-  expired: { label: "Expiree", color: "text-red-500 bg-red-500/10", icon: XCircle },
+const STATUS_LABELS: Record<
+  string,
+  { label: string; color: string; icon: typeof Clock }
+> = {
+  pending: {
+    label: "En attente",
+    color: "text-amber-500 bg-amber-500/10",
+    icon: Clock,
+  },
+  accepted: {
+    label: "Acceptee",
+    color: "text-emerald-500 bg-emerald-500/10",
+    icon: CheckCircle,
+  },
+  expired: {
+    label: "Expiree",
+    color: "text-red-500 bg-red-500/10",
+    icon: XCircle,
+  },
 };
 
 export default function InvitationsPage() {
@@ -67,20 +91,22 @@ export default function InvitationsPage() {
 
       {/* Filtres */}
       <div className="flex gap-2">
-        {(["all", "pending", "accepted", "expired"] as StatusFilter[]).map((s) => (
-          <button
-            key={s}
-            onClick={() => setFilter(s)}
-            className={cn(
-              "h-8 px-3 rounded-lg text-xs font-medium transition-colors",
-              filter === s
-                ? "bg-primary text-white"
-                : "bg-muted text-muted-foreground hover:text-foreground"
-            )}
-          >
-            {s === "all" ? "Toutes" : STATUS_LABELS[s].label} ({counts[s]})
-          </button>
-        ))}
+        {(["all", "pending", "accepted", "expired"] as StatusFilter[]).map(
+          (s) => (
+            <button
+              key={s}
+              onClick={() => setFilter(s)}
+              className={cn(
+                "h-8 px-3 rounded-lg text-xs font-medium transition-colors",
+                filter === s
+                  ? "bg-primary text-white"
+                  : "bg-muted text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {s === "all" ? "Toutes" : STATUS_LABELS[s].label} ({counts[s]})
+            </button>
+          ),
+        )}
       </div>
 
       {/* Liste */}
@@ -141,14 +167,15 @@ export default function InvitationsPage() {
                     </td>
                     <td className="px-4 py-3">
                       <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-muted text-foreground">
-                        {ROLE_OPTIONS.find((r) => r.value === invite.role)?.label ?? invite.role}
+                        {ROLE_OPTIONS.find((r) => r.value === invite.role)
+                          ?.label ?? invite.role}
                       </span>
                     </td>
                     <td className="px-4 py-3">
                       <span
                         className={cn(
                           "inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full",
-                          statusInfo?.color
+                          statusInfo?.color,
                         )}
                       >
                         <StatusIcon className="w-3 h-3" />

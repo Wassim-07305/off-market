@@ -40,7 +40,10 @@ export default function CRMPage() {
   const [bulkLoading, setBulkLoading] = useState(false);
   const prefix = useRoutePrefix();
   const supabase = useSupabase();
-  const { students, isLoading, updateStudentTag } = useStudents({ search, tag: activeTag });
+  const { students, isLoading, updateStudentTag } = useStudents({
+    search,
+    tag: activeTag,
+  });
 
   const toggleSelect = useCallback((id: string) => {
     setSelectedIds((prev) => {
@@ -89,9 +92,10 @@ export default function CRMPage() {
 
   const handleExportCSV = () => {
     const headers = ["Nom", "Email", "Tag", "Score", "Revenus", "Inscription"];
-    const targetStudents = selectedIds.size > 0
-      ? students.filter((s) => selectedIds.has(s.id))
-      : students;
+    const targetStudents =
+      selectedIds.size > 0
+        ? students.filter((s) => selectedIds.has(s.id))
+        : students;
     const rows = targetStudents.map((s) => {
       const d = s.student_details?.[0];
       return [
@@ -103,7 +107,8 @@ export default function CRMPage() {
         d?.enrollment_date ?? "",
       ];
     });
-    const csv = "\uFEFF" + [headers, ...rows].map((r) => r.join(",")).join("\n");
+    const csv =
+      "\uFEFF" + [headers, ...rows].map((r) => r.join(",")).join("\n");
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -139,22 +144,30 @@ export default function CRMPage() {
         </div>
         <div className="flex items-center gap-2">
           {/* View toggle */}
-          <div className="flex rounded-xl overflow-hidden" style={{ boxShadow: "var(--shadow-xs)" }}>
-            {([
-              { key: "clients" as const, label: "Clients", icon: List },
-              { key: "pipeline" as const, label: "Pipeline", icon: Kanban },
-              { key: "timeline" as const, label: "Timeline", icon: Clock },
-            ] as const).map((v) => {
+          <div
+            className="flex rounded-xl overflow-hidden"
+            style={{ boxShadow: "var(--shadow-xs)" }}
+          >
+            {(
+              [
+                { key: "clients" as const, label: "Clients", icon: List },
+                { key: "pipeline" as const, label: "Pipeline", icon: Kanban },
+                { key: "timeline" as const, label: "Timeline", icon: Clock },
+              ] as const
+            ).map((v) => {
               const Icon = v.icon;
               return (
                 <button
                   key={v.key}
-                  onClick={() => { setView(v.key); clearSelection(); }}
+                  onClick={() => {
+                    setView(v.key);
+                    clearSelection();
+                  }}
                   className={cn(
                     "h-9 px-3 flex items-center gap-1.5 text-xs font-medium transition-all",
                     view === v.key
                       ? "bg-foreground text-background"
-                      : "bg-surface text-muted-foreground hover:text-foreground"
+                      : "bg-surface text-muted-foreground hover:text-foreground",
                   )}
                 >
                   <Icon className="w-3.5 h-3.5" />
@@ -206,7 +219,11 @@ export default function CRMPage() {
               disabled={bulkLoading}
               className="h-8 px-3 rounded-lg border border-border text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center gap-1.5 disabled:opacity-50"
             >
-              {bulkLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Tag className="w-3 h-3" />}
+              {bulkLoading ? (
+                <Loader2 className="w-3 h-3 animate-spin" />
+              ) : (
+                <Tag className="w-3 h-3" />
+              )}
               Changer le tag
             </button>
             {bulkAction === "tag" && (
@@ -217,7 +234,12 @@ export default function CRMPage() {
                     onClick={() => handleBulkTag(tag.value)}
                     className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted transition-colors text-left"
                   >
-                    <span className={cn("w-2 h-2 rounded-full", tag.color.split(" ")[0].replace("text-", "bg-"))} />
+                    <span
+                      className={cn(
+                        "w-2 h-2 rounded-full",
+                        tag.color.split(" ")[0].replace("text-", "bg-"),
+                      )}
+                    />
                     {tag.label}
                   </button>
                 ))}
@@ -267,7 +289,7 @@ export default function CRMPage() {
                   "h-8 px-3 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-200",
                   activeTag === "all"
                     ? "bg-foreground text-background"
-                    : "bg-muted text-muted-foreground hover:text-foreground"
+                    : "bg-muted text-muted-foreground hover:text-foreground",
                 )}
               >
                 Tous
@@ -280,7 +302,7 @@ export default function CRMPage() {
                     "h-8 px-3 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-200",
                     activeTag === tag.value
                       ? "bg-foreground text-background"
-                      : "bg-muted text-muted-foreground hover:text-foreground"
+                      : "bg-muted text-muted-foreground hover:text-foreground",
                   )}
                 >
                   {tag.label}
@@ -321,7 +343,10 @@ export default function CRMPage() {
                       <th className="w-10 px-3 py-3">
                         <input
                           type="checkbox"
-                          checked={selectedIds.size === students.length && students.length > 0}
+                          checked={
+                            selectedIds.size === students.length &&
+                            students.length > 0
+                          }
                           onChange={toggleSelectAll}
                           className="w-4 h-4 rounded border-border text-primary focus:ring-primary/20 cursor-pointer"
                         />
@@ -351,7 +376,7 @@ export default function CRMPage() {
                     {students.map((student) => {
                       const details = student.student_details?.[0];
                       const tag = STUDENT_TAGS.find(
-                        (t) => t.value === details?.tag
+                        (t) => t.value === details?.tag,
                       );
                       const score = details?.health_score ?? 0;
                       const isSelected = selectedIds.has(student.id);
@@ -360,7 +385,7 @@ export default function CRMPage() {
                           key={student.id}
                           className={cn(
                             "border-b border-border/30 last:border-0 hover:bg-muted/30 transition-colors duration-200 group",
-                            isSelected && "bg-primary/5"
+                            isSelected && "bg-primary/5",
                           )}
                         >
                           <td className="px-3 py-3.5">
@@ -394,7 +419,7 @@ export default function CRMPage() {
                               <span
                                 className={cn(
                                   "inline-flex items-center h-6 px-2.5 rounded-full text-[11px] font-medium",
-                                  tag.color
+                                  tag.color,
                                 )}
                               >
                                 {tag.label}
@@ -429,7 +454,7 @@ export default function CRMPage() {
                                       ? "bg-success"
                                       : score >= 40
                                         ? "bg-warning"
-                                        : "bg-error"
+                                        : "bg-error",
                                   )}
                                 />
                                 <span className="text-[13px] text-foreground font-mono tabular-nums">
@@ -441,7 +466,10 @@ export default function CRMPage() {
                           <td className="px-5 py-3.5 hidden lg:table-cell">
                             <span className="text-[11px] text-muted-foreground font-mono">
                               {details?.last_engagement_at
-                                ? formatDate(details.last_engagement_at, "relative")
+                                ? formatDate(
+                                    details.last_engagement_at,
+                                    "relative",
+                                  )
                                 : "-"}
                             </span>
                           </td>
@@ -464,7 +492,10 @@ export default function CRMPage() {
         </>
       )}
 
-      <AddClientModal open={showAddModal} onClose={() => setShowAddModal(false)} />
+      <AddClientModal
+        open={showAddModal}
+        onClose={() => setShowAddModal(false)}
+      />
     </motion.div>
   );
 }

@@ -1,7 +1,11 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { staggerContainer, fadeInUp, defaultTransition } from "@/lib/animations";
+import {
+  staggerContainer,
+  fadeInUp,
+  defaultTransition,
+} from "@/lib/animations";
 import { useChallenges } from "@/hooks/use-challenges";
 import { CHALLENGE_TYPE_CONFIG } from "@/types/gamification";
 import type { ChallengeType, Challenge } from "@/types/gamification";
@@ -26,7 +30,9 @@ export default function ClientChallengesPage() {
 
   const myChallenges = participations.filter((p) => !p.completed);
   const completedChallenges = participations.filter((p) => p.completed);
-  const availableChallenges = challenges.filter((c) => !joinedChallengeIds.has(c.id));
+  const availableChallenges = challenges.filter(
+    (c) => !joinedChallengeIds.has(c.id),
+  );
 
   return (
     <motion.div
@@ -62,7 +68,10 @@ export default function ClientChallengesPage() {
                 {myChallenges.map((participation) => {
                   const challenge = participation.challenge;
                   if (!challenge) return null;
-                  const typeConfig = CHALLENGE_TYPE_CONFIG[challenge.challenge_type as ChallengeType];
+                  const typeConfig =
+                    CHALLENGE_TYPE_CONFIG[
+                      challenge.challenge_type as ChallengeType
+                    ];
                   const progress = Number(participation.progress) || 0;
 
                   return (
@@ -85,7 +94,9 @@ export default function ClientChallengesPage() {
                           </div>
                         </div>
                         <div className="text-right shrink-0">
-                          <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${typeConfig.color}`}>
+                          <span
+                            className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${typeConfig.color}`}
+                          >
                             {typeConfig.label}
                           </span>
                           <p className="text-[10px] text-muted-foreground mt-1 flex items-center gap-1 justify-end">
@@ -153,7 +164,10 @@ export default function ClientChallengesPage() {
                 {completedChallenges.map((participation) => {
                   const challenge = participation.challenge;
                   if (!challenge) return null;
-                  const typeConfig = CHALLENGE_TYPE_CONFIG[challenge.challenge_type as ChallengeType];
+                  const typeConfig =
+                    CHALLENGE_TYPE_CONFIG[
+                      challenge.challenge_type as ChallengeType
+                    ];
                   return (
                     <div
                       key={participation.id}
@@ -161,7 +175,9 @@ export default function ClientChallengesPage() {
                     >
                       <span className="text-xl">{typeConfig.icon}</span>
                       <div className="flex-1">
-                        <p className="text-sm font-medium text-foreground">{challenge.title}</p>
+                        <p className="text-sm font-medium text-foreground">
+                          {challenge.title}
+                        </p>
                         <p className="text-xs text-muted-foreground">
                           +{challenge.xp_reward} XP gagnes
                         </p>
@@ -188,7 +204,8 @@ function ChallengeCard({
   onJoin: () => void;
   isJoining: boolean;
 }) {
-  const typeConfig = CHALLENGE_TYPE_CONFIG[challenge.challenge_type as ChallengeType];
+  const typeConfig =
+    CHALLENGE_TYPE_CONFIG[challenge.challenge_type as ChallengeType];
 
   return (
     <div className="bg-surface border border-border rounded-xl p-4">
@@ -196,14 +213,18 @@ function ChallengeCard({
         <div className="flex items-center gap-3">
           <span className="text-xl">{typeConfig.icon}</span>
           <div>
-            <p className="text-sm font-medium text-foreground">{challenge.title}</p>
+            <p className="text-sm font-medium text-foreground">
+              {challenge.title}
+            </p>
             {challenge.description && (
               <p className="text-xs text-muted-foreground mt-0.5">
                 {challenge.description}
               </p>
             )}
             <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-foreground">
-              <span className={`font-medium px-1.5 py-0.5 rounded-full text-[10px] ${typeConfig.color}`}>
+              <span
+                className={`font-medium px-1.5 py-0.5 rounded-full text-[10px] ${typeConfig.color}`}
+              >
                 {typeConfig.label}
               </span>
               <span className="flex items-center gap-1">

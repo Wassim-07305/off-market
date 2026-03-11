@@ -19,7 +19,10 @@ export function StreakWidget() {
 
   if (isLoading) {
     return (
-      <div className="bg-surface rounded-2xl p-6 animate-shimmer" style={{ boxShadow: "var(--shadow-card)" }}>
+      <div
+        className="bg-surface rounded-2xl p-6 animate-shimmer"
+        style={{ boxShadow: "var(--shadow-card)" }}
+      >
         <div className="h-5 w-32 bg-muted rounded-lg mb-4" />
         <div className="h-12 w-20 bg-muted rounded-lg" />
       </div>
@@ -49,7 +52,10 @@ export function StreakWidget() {
   const nextMilestone = STREAK_MILESTONES.find((m) => m.days > currentStreak);
 
   return (
-    <div className="bg-surface rounded-2xl p-6" style={{ boxShadow: "var(--shadow-card)" }}>
+    <div
+      className="bg-surface rounded-2xl p-6"
+      style={{ boxShadow: "var(--shadow-card)" }}
+    >
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
@@ -90,13 +96,13 @@ export function StreakWidget() {
             <div
               className={cn(
                 "w-5 h-5 rounded-md transition-colors",
-                day.active
-                  ? "bg-orange-500"
-                  : "bg-muted/50"
+                day.active ? "bg-orange-500" : "bg-muted/50",
               )}
               title={day.date}
             />
-            <span className="text-[9px] text-muted-foreground">{day.label}</span>
+            <span className="text-[9px] text-muted-foreground">
+              {day.label}
+            </span>
           </div>
         ))}
       </div>
@@ -121,7 +127,8 @@ export function StreakWidget() {
             />
           </div>
           <p className="text-[10px] text-muted-foreground mt-1">
-            Encore {nextMilestone.days - currentStreak} jour{nextMilestone.days - currentStreak !== 1 ? "s" : ""}
+            Encore {nextMilestone.days - currentStreak} jour
+            {nextMilestone.days - currentStreak !== 1 ? "s" : ""}
           </p>
         </div>
       )}

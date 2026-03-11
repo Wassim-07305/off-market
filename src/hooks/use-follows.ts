@@ -35,7 +35,9 @@ export function useFollowStatus(targetId: string | null) {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["follow-status", user?.id, targetId] });
+      queryClient.invalidateQueries({
+        queryKey: ["follow-status", user?.id, targetId],
+      });
       queryClient.invalidateQueries({ queryKey: ["followers", targetId] });
       queryClient.invalidateQueries({ queryKey: ["following", user?.id] });
       queryClient.invalidateQueries({ queryKey: ["follow-counts", targetId] });
@@ -54,7 +56,9 @@ export function useFollowStatus(targetId: string | null) {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["follow-status", user?.id, targetId] });
+      queryClient.invalidateQueries({
+        queryKey: ["follow-status", user?.id, targetId],
+      });
       queryClient.invalidateQueries({ queryKey: ["followers", targetId] });
       queryClient.invalidateQueries({ queryKey: ["following", user?.id] });
       queryClient.invalidateQueries({ queryKey: ["follow-counts", targetId] });
@@ -110,14 +114,22 @@ export function useFollowers(userId: string | null) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("user_follows")
-        .select("follower_id, created_at, follower:profiles!user_follows_follower_id_fkey(id, full_name, avatar_url, role, bio)")
+        .select(
+          "follower_id, created_at, follower:profiles!user_follows_follower_id_fkey(id, full_name, avatar_url, role, bio)",
+        )
         .eq("following_id", userId!)
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data as unknown as {
         follower_id: string;
         created_at: string;
-        follower: { id: string; full_name: string; avatar_url: string | null; role: string; bio: string | null } | null;
+        follower: {
+          id: string;
+          full_name: string;
+          avatar_url: string | null;
+          role: string;
+          bio: string | null;
+        } | null;
       }[];
     },
   });
@@ -134,14 +146,22 @@ export function useFollowing(userId: string | null) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("user_follows")
-        .select("following_id, created_at, following:profiles!user_follows_following_id_fkey(id, full_name, avatar_url, role, bio)")
+        .select(
+          "following_id, created_at, following:profiles!user_follows_following_id_fkey(id, full_name, avatar_url, role, bio)",
+        )
         .eq("follower_id", userId!)
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data as unknown as {
         following_id: string;
         created_at: string;
-        following: { id: string; full_name: string; avatar_url: string | null; role: string; bio: string | null } | null;
+        following: {
+          id: string;
+          full_name: string;
+          avatar_url: string | null;
+          role: string;
+          bio: string | null;
+        } | null;
       }[];
     },
   });

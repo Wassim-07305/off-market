@@ -34,7 +34,10 @@ export function useTyping(channelId: string | null) {
       const users: TypingUser[] = [];
       for (const [key, presences] of Object.entries(state)) {
         if (key === user.id) continue;
-        const latest = presences[presences.length - 1] as Record<string, unknown>;
+        const latest = presences[presences.length - 1] as Record<
+          string,
+          unknown
+        >;
         if (latest?.typing) {
           users.push({
             userId: key,
@@ -77,7 +80,7 @@ export function useTyping(channelId: string | null) {
         }
       }, 3000);
     },
-    [user]
+    [user],
   );
 
   const stopTyping = useCallback(
@@ -90,7 +93,7 @@ export function useTyping(channelId: string | null) {
         typing: false,
       });
     },
-    [user]
+    [user],
   );
 
   return { typingUsers, broadcastTyping, stopTyping };

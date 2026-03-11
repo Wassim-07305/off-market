@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import type { ReactNode } from 'react'
+import { useState } from "react";
+import type { ReactNode } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -7,33 +7,33 @@ import {
   getPaginationRowModel,
   getFilteredRowModel,
   flexRender,
-} from '@tanstack/react-table'
+} from "@tanstack/react-table";
 import type {
   ColumnDef,
   SortingState,
   ColumnFiltersState,
-} from '@tanstack/react-table'
-import { ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react'
-import { cn } from '@/lib/utils'
+} from "@tanstack/react-table";
+import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface DataTableProps<TData> {
-  columns: ColumnDef<TData, unknown>[]
-  data: TData[]
-  searchable?: boolean
-  searchPlaceholder?: string
-  searchColumn?: string
-  pagination?: boolean
-  pageSize?: number
-  onRowClick?: (row: TData) => void
-  emptyState?: ReactNode
-  className?: string
+  columns: ColumnDef<TData, unknown>[];
+  data: TData[];
+  searchable?: boolean;
+  searchPlaceholder?: string;
+  searchColumn?: string;
+  pagination?: boolean;
+  pageSize?: number;
+  onRowClick?: (row: TData) => void;
+  emptyState?: ReactNode;
+  className?: string;
 }
 
 function DataTable<TData>({
   columns,
   data,
   searchable = false,
-  searchPlaceholder = 'Rechercher...',
+  searchPlaceholder = "Rechercher...",
   searchColumn,
   pagination = true,
   pageSize = 10,
@@ -41,9 +41,9 @@ function DataTable<TData>({
   emptyState,
   className,
 }: DataTableProps<TData>) {
-  const [sorting, setSorting] = useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const [globalFilter, setGlobalFilter] = useState('')
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [globalFilter, setGlobalFilter] = useState("");
 
   const table = useReactTable({
     data,
@@ -65,22 +65,22 @@ function DataTable<TData>({
         pageSize,
       },
     },
-  })
+  });
 
   const handleSearchChange = (value: string) => {
     if (searchColumn) {
-      table.getColumn(searchColumn)?.setFilterValue(value)
+      table.getColumn(searchColumn)?.setFilterValue(value);
     } else {
-      setGlobalFilter(value)
+      setGlobalFilter(value);
     }
-  }
+  };
 
   const currentSearchValue = searchColumn
-    ? (table.getColumn(searchColumn)?.getFilterValue() as string) ?? ''
-    : globalFilter
+    ? ((table.getColumn(searchColumn)?.getFilterValue() as string) ?? "")
+    : globalFilter;
 
   return (
-    <div className={cn('flex flex-col gap-4', className)}>
+    <div className={cn("flex flex-col gap-4", className)}>
       {searchable && (
         <div className="flex items-center">
           <input
@@ -88,10 +88,10 @@ function DataTable<TData>({
             value={currentSearchValue}
             onChange={(e) => handleSearchChange(e.target.value)}
             className={cn(
-              'h-9 max-w-sm rounded-xl border border-border bg-white px-3 text-sm',
-              'transition-all duration-200',
-              'placeholder:text-muted-foreground',
-              'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1'
+              "h-9 max-w-sm rounded-xl border border-border bg-white px-3 text-sm",
+              "transition-all duration-200",
+              "placeholder:text-muted-foreground",
+              "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1",
             )}
           />
         </div>
@@ -109,8 +109,9 @@ function DataTable<TData>({
                   <th
                     key={header.id}
                     className={cn(
-                      'whitespace-nowrap px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground',
-                      header.column.getCanSort() && 'cursor-pointer select-none'
+                      "whitespace-nowrap px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground",
+                      header.column.getCanSort() &&
+                        "cursor-pointer select-none",
                     )}
                     onClick={header.column.getToggleSortingHandler()}
                   >
@@ -119,13 +120,13 @@ function DataTable<TData>({
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext()
+                            header.getContext(),
                           )}
                       {header.column.getCanSort() && (
                         <span className="text-muted-foreground/50">
-                          {header.column.getIsSorted() === 'asc' ? (
+                          {header.column.getIsSorted() === "asc" ? (
                             <ArrowUp className="h-3.5 w-3.5" />
-                          ) : header.column.getIsSorted() === 'desc' ? (
+                          ) : header.column.getIsSorted() === "desc" ? (
                             <ArrowDown className="h-3.5 w-3.5" />
                           ) : (
                             <ArrowUpDown className="h-3.5 w-3.5" />
@@ -144,10 +145,10 @@ function DataTable<TData>({
                 <tr
                   key={row.id}
                   className={cn(
-                    'group border-b border-border/30 last:border-0',
-                    'transition-colors duration-150',
-                    onRowClick && 'cursor-pointer hover:bg-primary/[0.03]',
-                    !onRowClick && 'hover:bg-muted/30'
+                    "group border-b border-border/30 last:border-0",
+                    "transition-colors duration-150",
+                    onRowClick && "cursor-pointer hover:bg-primary/[0.03]",
+                    !onRowClick && "hover:bg-muted/30",
                   )}
                   onClick={() => onRowClick?.(row.original)}
                 >
@@ -155,7 +156,7 @@ function DataTable<TData>({
                     <td key={cell.id} className="px-5 py-3.5">
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </td>
                   ))}
@@ -167,7 +168,7 @@ function DataTable<TData>({
                   colSpan={columns.length}
                   className="px-4 py-12 text-center text-muted-foreground"
                 >
-                  {emptyState || 'Aucun résultat.'}
+                  {emptyState || "Aucun résultat."}
                 </td>
               </tr>
             )}
@@ -178,7 +179,7 @@ function DataTable<TData>({
       {pagination && table.getPageCount() > 1 && (
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between text-sm">
           <span className="text-muted-foreground">
-            Page {table.getState().pagination.pageIndex + 1} sur{' '}
+            Page {table.getState().pagination.pageIndex + 1} sur{" "}
             {table.getPageCount()} ({data.length} éléments)
           </span>
           <div className="flex items-center gap-2">
@@ -187,11 +188,11 @@ function DataTable<TData>({
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
               className={cn(
-                'rounded-xl border border-border px-3 py-1.5 text-sm',
-                'transition-all duration-200',
-                'hover:bg-secondary',
-                'disabled:pointer-events-none disabled:opacity-50',
-                'cursor-pointer'
+                "rounded-xl border border-border px-3 py-1.5 text-sm",
+                "transition-all duration-200",
+                "hover:bg-secondary",
+                "disabled:pointer-events-none disabled:opacity-50",
+                "cursor-pointer",
               )}
             >
               Précédent
@@ -201,11 +202,11 @@ function DataTable<TData>({
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
               className={cn(
-                'rounded-xl border border-border px-3 py-1.5 text-sm',
-                'transition-all duration-200',
-                'hover:bg-secondary',
-                'disabled:pointer-events-none disabled:opacity-50',
-                'cursor-pointer'
+                "rounded-xl border border-border px-3 py-1.5 text-sm",
+                "transition-all duration-200",
+                "hover:bg-secondary",
+                "disabled:pointer-events-none disabled:opacity-50",
+                "cursor-pointer",
               )}
             >
               Suivant
@@ -214,8 +215,8 @@ function DataTable<TData>({
         </div>
       )}
     </div>
-  )
+  );
 }
 
-export { DataTable }
-export type { DataTableProps }
+export { DataTable };
+export type { DataTableProps };

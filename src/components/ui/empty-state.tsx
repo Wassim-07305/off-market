@@ -1,20 +1,26 @@
-import type { ReactNode } from 'react'
-import { cn } from '@/lib/utils'
+import type { ReactNode } from "react";
+import { cn } from "@/lib/utils";
 
 interface EmptyStateProps {
-  icon?: ReactNode
-  title: string
-  description?: string
-  action?: ReactNode
-  className?: string
+  icon?: ReactNode;
+  title: string;
+  description?: string;
+  action?: ReactNode;
+  className?: string;
 }
 
-function EmptyState({ icon, title, description, action, className }: EmptyStateProps) {
+function EmptyState({
+  icon,
+  title,
+  description,
+  action,
+  className,
+}: EmptyStateProps) {
   return (
     <div
       className={cn(
-        'flex flex-col items-center justify-center py-16 text-center',
-        className
+        "flex flex-col items-center justify-center py-16 text-center",
+        className,
       )}
     >
       {icon && (
@@ -30,8 +36,8 @@ function EmptyState({ icon, title, description, action, className }: EmptyStateP
       )}
       {action && <div className="mt-5">{action}</div>}
     </div>
-  )
+  );
 }
 
-export { EmptyState }
-export type { EmptyStateProps }
+export { EmptyState };
+export type { EmptyStateProps };

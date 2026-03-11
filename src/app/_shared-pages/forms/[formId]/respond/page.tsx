@@ -24,18 +24,25 @@ export default function FormRespondPage({
   const prefix = useRoutePrefix();
 
   if (isLoading) {
-    return <div className="max-w-2xl mx-auto space-y-4 animate-pulse">
-      {Array.from({ length: 4 }).map((_, i) => (
-        <div key={i} className="h-20 bg-muted rounded-xl" />
-      ))}
-    </div>;
+    return (
+      <div className="max-w-2xl mx-auto space-y-4 animate-pulse">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="h-20 bg-muted rounded-xl" />
+        ))}
+      </div>
+    );
   }
 
   if (!form) {
-    return <p className="text-center text-muted-foreground py-16">Formulaire non trouve</p>;
+    return (
+      <p className="text-center text-muted-foreground py-16">
+        Formulaire non trouve
+      </p>
+    );
   }
 
-  const fields = form.form_fields?.sort((a, b) => a.sort_order - b.sort_order) ?? [];
+  const fields =
+    form.form_fields?.sort((a, b) => a.sort_order - b.sort_order) ?? [];
 
   const isFieldVisible = (fieldId: string) => {
     const field = fields.find((f) => f.id === fieldId);
@@ -45,7 +52,9 @@ export default function FormRespondPage({
 
   const handleSubmit = async () => {
     // Only validate visible required fields
-    const required = fields.filter((f) => f.is_required && isFieldVisible(f.id));
+    const required = fields.filter(
+      (f) => f.is_required && isFieldVisible(f.id),
+    );
     const missing = required.find((f) => !answers[f.id]?.trim());
     if (missing) {
       toast.error(`Le champ "${missing.label}" est requis`);
@@ -66,9 +75,7 @@ export default function FormRespondPage({
         <div className="w-16 h-16 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-6">
           <Check className="w-8 h-8 text-success" />
         </div>
-        <h1
-          className="text-2xl font-semibold text-foreground mb-2 font-bold"
-        >
+        <h1 className="text-2xl font-semibold text-foreground mb-2 font-bold">
           Merci !
         </h1>
         <p className="text-muted-foreground">
@@ -96,9 +103,7 @@ export default function FormRespondPage({
       </Link>
 
       <div className="bg-surface border border-border rounded-xl p-8">
-        <h1
-          className="text-2xl font-semibold text-foreground mb-2 font-bold"
-        >
+        <h1 className="text-2xl font-semibold text-foreground mb-2 font-bold">
           {form.title}
         </h1>
         {form.description && (
@@ -115,7 +120,10 @@ export default function FormRespondPage({
 
           if (field.field_type === "heading") {
             return (
-              <h2 key={field.id} className="text-lg font-semibold text-foreground pt-4">
+              <h2
+                key={field.id}
+                className="text-lg font-semibold text-foreground pt-4"
+              >
                 {field.label}
               </h2>
             );
@@ -132,13 +140,20 @@ export default function FormRespondPage({
           }
 
           return (
-            <div key={field.id} className="bg-surface border border-border rounded-xl p-5">
+            <div
+              key={field.id}
+              className="bg-surface border border-border rounded-xl p-5"
+            >
               <label className="block text-sm font-medium text-foreground mb-2">
                 {field.label}
-                {field.is_required && <span className="text-primary ml-1">*</span>}
+                {field.is_required && (
+                  <span className="text-primary ml-1">*</span>
+                )}
               </label>
               {field.description && (
-                <p className="text-xs text-muted-foreground mb-3">{field.description}</p>
+                <p className="text-xs text-muted-foreground mb-3">
+                  {field.description}
+                </p>
               )}
 
               {(field.field_type === "short_text" ||

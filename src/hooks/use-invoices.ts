@@ -3,7 +3,12 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
-import type { Invoice, InvoiceStatus, PaymentSchedule, BillingStats } from "@/types/billing";
+import type {
+  Invoice,
+  InvoiceStatus,
+  PaymentSchedule,
+  BillingStats,
+} from "@/types/billing";
 
 interface UseInvoicesOptions {
   status?: InvoiceStatus;
@@ -23,7 +28,9 @@ export function useInvoices(options: UseInvoicesOptions = {}) {
     queryFn: async () => {
       let query = supabase
         .from("invoices")
-        .select("*, client:profiles!invoices_client_id_fkey(id, full_name, email, avatar_url), contract:contracts(id, title)")
+        .select(
+          "*, client:profiles!invoices_client_id_fkey(id, full_name, email, avatar_url), contract:contracts(id, title)",
+        )
         .order("created_at", { ascending: false })
         .limit(limit);
 
@@ -62,7 +69,10 @@ export function useInvoices(options: UseInvoicesOptions = {}) {
   });
 
   const updateInvoice = useMutation({
-    mutationFn: async ({ id, ...updates }: Partial<Invoice> & { id: string }) => {
+    mutationFn: async ({
+      id,
+      ...updates
+    }: Partial<Invoice> & { id: string }) => {
       const { error } = await supabase
         .from("invoices")
         .update(updates)
@@ -98,7 +108,9 @@ export function useInvoices(options: UseInvoicesOptions = {}) {
       if (error) throw error;
 
       // Send email notification to client (fire-and-forget)
-      fetch(`/api/invoices/${id}/send-email`, { method: "POST" }).catch(() => {});
+      fetch(`/api/invoices/${id}/send-email`, { method: "POST" }).catch(
+        () => {},
+      );
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["invoices"] });
@@ -124,7 +136,9 @@ export function useInvoice(id: string) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("invoices")
-        .select("*, client:profiles!invoices_client_id_fkey(id, full_name, email, avatar_url), contract:contracts(id, title)")
+        .select(
+          "*, client:profiles!invoices_client_id_fkey(id, full_name, email, avatar_url), contract:contracts(id, title)",
+        )
         .eq("id", id)
         .single();
       if (error) throw error;
@@ -164,7 +178,9 @@ export function useBillingStats() {
           .filter((i) => i.status === "overdue")
           .reduce((sum, i) => sum + Number(i.total), 0),
         contractsSigned: contracts.filter((c) => c.status === "signed").length,
-        contractsPending: contracts.filter((c) => c.status === "sent" || c.status === "draft").length,
+        contractsPending: contracts.filter(
+          (c) => c.status === "sent" || c.status === "draft",
+        ).length,
         invoicesPaid: invoices.filter((i) => i.status === "paid").length,
         invoicesOverdue: invoices.filter((i) => i.status === "overdue").length,
       };
@@ -185,7 +201,9 @@ export function usePaymentSchedules(clientId?: string) {
     queryFn: async () => {
       let query = supabase
         .from("payment_schedules")
-        .select("*, client:profiles!payment_schedules_client_id_fkey(id, full_name)")
+        .select(
+          "*, client:profiles!payment_schedules_client_id_fkey(id, full_name)",
+        )
         .order("created_at", { ascending: false });
 
       if (clientId) query = query.eq("client_id", clientId);

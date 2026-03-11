@@ -1,4 +1,4 @@
-import { toast } from 'sonner'
+import { toast } from "sonner";
 
 /**
  * Copy text to clipboard and show a toast notification
@@ -6,43 +6,43 @@ import { toast } from 'sonner'
 export async function copyToClipboard(
   text: string,
   options?: {
-    successMessage?: string
-    errorMessage?: string
-    silent?: boolean
-  }
+    successMessage?: string;
+    errorMessage?: string;
+    silent?: boolean;
+  },
 ): Promise<boolean> {
   const {
-    successMessage = 'Copié dans le presse-papiers',
-    errorMessage = 'Échec de la copie',
+    successMessage = "Copié dans le presse-papiers",
+    errorMessage = "Échec de la copie",
     silent = false,
-  } = options ?? {}
+  } = options ?? {};
 
   try {
     if (navigator.clipboard && window.isSecureContext) {
-      await navigator.clipboard.writeText(text)
+      await navigator.clipboard.writeText(text);
     } else {
       // Fallback for older browsers or non-secure contexts
-      const textArea = document.createElement('textarea')
-      textArea.value = text
-      textArea.style.position = 'fixed'
-      textArea.style.left = '-999999px'
-      textArea.style.top = '-999999px'
-      document.body.appendChild(textArea)
-      textArea.focus()
-      textArea.select()
-      document.execCommand('copy')
-      textArea.remove()
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      textArea.style.position = "fixed";
+      textArea.style.left = "-999999px";
+      textArea.style.top = "-999999px";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      document.execCommand("copy");
+      textArea.remove();
     }
 
     if (!silent) {
-      toast.success(successMessage)
+      toast.success(successMessage);
     }
-    return true
+    return true;
   } catch {
     if (!silent) {
-      toast.error(errorMessage)
+      toast.error(errorMessage);
     }
-    return false
+    return false;
   }
 }
 
@@ -52,17 +52,17 @@ export async function copyToClipboard(
 export async function copyEmail(email: string): Promise<boolean> {
   return copyToClipboard(email, {
     successMessage: `Email "${email}" copié`,
-  })
+  });
 }
 
 export async function copyPhone(phone: string): Promise<boolean> {
   return copyToClipboard(phone, {
     successMessage: `Téléphone "${phone}" copié`,
-  })
+  });
 }
 
 export async function copyLink(url: string): Promise<boolean> {
   return copyToClipboard(url, {
-    successMessage: 'Lien copié',
-  })
+    successMessage: "Lien copié",
+  });
 }

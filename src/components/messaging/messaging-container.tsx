@@ -32,7 +32,8 @@ export default function MessagingContainer() {
     setMobileSidebarOpen,
   } = useMessagingStore();
 
-  const selectedChannel = channels.find((c) => c.id === activeChannelId) ?? null;
+  const selectedChannel =
+    channels.find((c) => c.id === activeChannelId) ?? null;
 
   const {
     messages,
@@ -47,7 +48,8 @@ export default function MessagingContainer() {
   } = useMessages(activeChannelId);
 
   const { isOnline } = useOnlineStatus();
-  const { typingUsers, broadcastTyping, stopTyping } = useTyping(activeChannelId);
+  const { typingUsers, broadcastTyping, stopTyping } =
+    useTyping(activeChannelId);
 
   // Auto-select first channel
   useEffect(() => {
@@ -66,7 +68,7 @@ export default function MessagingContainer() {
       setActiveChannelId(id);
       setMobileSidebarOpen(false);
     },
-    [setActiveChannelId, setMobileSidebarOpen]
+    [setActiveChannelId, setMobileSidebarOpen],
   );
 
   return (
@@ -114,7 +116,10 @@ export default function MessagingContainer() {
       )}
 
       {/* Chat area */}
-      <div className="flex-1 flex flex-col min-w-0" key={activeChannelId ?? "empty"}>
+      <div
+        className="flex-1 flex flex-col min-w-0"
+        key={activeChannelId ?? "empty"}
+      >
         {selectedChannel ? (
           <ChatPanel
             channel={selectedChannel}

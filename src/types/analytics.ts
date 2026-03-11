@@ -7,13 +7,7 @@ export interface DateRange {
 }
 
 /** Preset period shortcuts */
-export type PeriodPreset =
-  | "7d"
-  | "30d"
-  | "90d"
-  | "12m"
-  | "ytd"
-  | "all";
+export type PeriodPreset = "7d" | "30d" | "90d" | "12m" | "ytd" | "all";
 
 export const PERIOD_PRESETS: { value: PeriodPreset; label: string }[] = [
   { value: "7d", label: "7 jours" },
@@ -66,8 +60,18 @@ export interface CallMetrics {
   avgDurationMinutes: number;
   totalDurationHours: number;
   callsByType: { type: string; label: string; count: number }[];
-  callsByMonth: { month: string; label: string; count: number; completed: number }[];
-  moodDistribution: { mood: string; label: string; count: number; color: string }[];
+  callsByMonth: {
+    month: string;
+    label: string;
+    count: number;
+    completed: number;
+  }[];
+  moodDistribution: {
+    mood: string;
+    label: string;
+    count: number;
+    color: string;
+  }[];
   outcomeDistribution: { outcome: string; label: string; count: number }[];
 }
 
@@ -100,7 +104,12 @@ export interface EngagementReport {
   churnedClients: number;
   retentionRate: number; // %
   newClientsInPeriod: number;
-  tagDistribution: { tag: string; label: string; count: number; color: string }[];
+  tagDistribution: {
+    tag: string;
+    label: string;
+    count: number;
+    color: string;
+  }[];
   activityByType: { type: string; label: string; count: number }[];
   activityHeatmap: { day: number; hour: number; count: number }[]; // 0=Mon, 0-23h
   avgHealthScore: number;

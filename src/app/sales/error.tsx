@@ -25,7 +25,8 @@ export default function SalesError({
           Erreur — Espace Sales
         </h2>
         <p className="max-w-md text-sm text-zinc-500 dark:text-zinc-400">
-          Une erreur est survenue dans le portail commercial. Veuillez réessayer.
+          Une erreur est survenue dans le portail commercial. Veuillez
+          réessayer.
         </p>
         {error.digest && (
           <p className="text-xs text-zinc-400 dark:text-zinc-500">

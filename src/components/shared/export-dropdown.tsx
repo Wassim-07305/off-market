@@ -45,7 +45,7 @@ export function ExportDropdown({
         disabled={disabled}
         className={cn(
           "h-9 px-3 rounded-xl border border-border text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all flex items-center gap-2 disabled:opacity-50",
-          className
+          className,
         )}
       >
         <Icon className="w-3.5 h-3.5" />
@@ -61,12 +61,14 @@ export function ExportDropdown({
         disabled={disabled}
         className={cn(
           "h-9 px-3 rounded-xl border border-border text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all flex items-center gap-2 disabled:opacity-50",
-          className
+          className,
         )}
       >
         <Download className="w-3.5 h-3.5" />
         {label}
-        <ChevronDown className={cn("w-3 h-3 transition-transform", open && "rotate-180")} />
+        <ChevronDown
+          className={cn("w-3 h-3 transition-transform", open && "rotate-180")}
+        />
       </button>
 
       {open && (

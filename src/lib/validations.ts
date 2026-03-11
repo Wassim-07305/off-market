@@ -3,13 +3,20 @@ import { z } from "zod";
 // ─── AUTH ────────────────────────────────────────────────────
 export const loginSchema = z.object({
   email: z.string().email("Email invalide"),
-  password: z.string().min(6, "Le mot de passe doit contenir au moins 6 caractères"),
+  password: z
+    .string()
+    .min(6, "Le mot de passe doit contenir au moins 6 caractères"),
 });
 
 export const signupSchema = z.object({
   email: z.string().email("Email invalide"),
-  password: z.string().min(8, "Le mot de passe doit contenir au moins 8 caractères"),
-  fullName: z.string().min(2, "Le nom doit contenir au moins 2 caractères").max(100),
+  password: z
+    .string()
+    .min(8, "Le mot de passe doit contenir au moins 8 caractères"),
+  fullName: z
+    .string()
+    .min(2, "Le nom doit contenir au moins 2 caractères")
+    .max(100),
 });
 
 export const forgotPasswordSchema = z.object({
@@ -30,7 +37,9 @@ export const createInvoiceSchema = z.object({
   amount: z.number().positive("Le montant doit être positif"),
   tax: z.number().min(0, "La taxe ne peut pas être négative").default(0),
   total: z.number().positive("Le total doit être positif"),
-  status: z.enum(["draft", "sent", "paid", "overdue", "cancelled"]).default("draft"),
+  status: z
+    .enum(["draft", "sent", "paid", "overdue", "cancelled"])
+    .default("draft"),
   due_date: z.string().optional().nullable(),
   notes: z.string().max(2000).optional().nullable(),
 });
@@ -79,8 +88,12 @@ export const createCallSchema = z.object({
   date: z.string().min(1, "Date requise"),
   time: z.string().min(1, "Heure requise"),
   duration_minutes: z.number().int().positive().default(30),
-  call_type: z.enum(["manuel", "iclosed", "calendly", "booking", "autre"]).default("manuel"),
-  status: z.enum(["planifie", "realise", "no_show", "annule", "reporte"]).default("planifie"),
+  call_type: z
+    .enum(["manuel", "iclosed", "calendly", "booking", "autre"])
+    .default("manuel"),
+  status: z
+    .enum(["planifie", "realise", "no_show", "annule", "reporte"])
+    .default("planifie"),
   link: z.string().url().optional().nullable(),
   notes: z.string().max(5000).optional().nullable(),
 });
@@ -107,7 +120,10 @@ export const createContactSchema = z.object({
   email: z.string().email("Email invalide").optional().nullable(),
   phone: z.string().max(20).optional().nullable(),
   company: z.string().max(100).optional().nullable(),
-  source: z.enum(["instagram", "linkedin", "referral", "website", "other"]).optional().nullable(),
+  source: z
+    .enum(["instagram", "linkedin", "referral", "website", "other"])
+    .optional()
+    .nullable(),
   stage: z
     .enum(["prospect", "qualifie", "proposition", "closing", "client", "perdu"])
     .default("prospect"),
@@ -123,7 +139,14 @@ export const updateContactSchema = createContactSchema.partial().extend({
 
 export const moveContactStageSchema = z.object({
   id: z.string().uuid(),
-  stage: z.enum(["prospect", "qualifie", "proposition", "closing", "client", "perdu"]),
+  stage: z.enum([
+    "prospect",
+    "qualifie",
+    "proposition",
+    "closing",
+    "client",
+    "perdu",
+  ]),
   sort_order: z.number().int().min(0).optional(),
 });
 
@@ -131,7 +154,7 @@ export const createInteractionSchema = z.object({
   contact_id: z.string().uuid(),
   type: z.enum(["call", "email", "meeting", "note", "message"]),
   content: z.string().max(5000).optional().nullable(),
-  metadata: z.record(z.unknown()).default({}),
+  metadata: z.record(z.string(), z.unknown()).default({}),
 });
 
 // ─── COACH ASSIGNMENTS ───────────────────────────────────────
@@ -157,9 +180,7 @@ export const aiChatSchema = z.object({
 // ─── ACCOUNT DELETION ────────────────────────────────────────
 export const deleteAccountSchema = z.object({
   userId: z.string().uuid("ID utilisateur requis"),
-  confirmation: z.literal(true, {
-    errorMap: () => ({ message: "Confirmation requise" }),
-  }),
+  confirmation: z.literal(true),
 });
 
 // ─── CALL NOTES ──────────────────────────────────────────────
@@ -180,7 +201,7 @@ export const createCallNoteSchema = z.object({
       z.object({
         title: z.string(),
         done: z.boolean().default(false),
-      })
+      }),
     )
     .default([]),
 });
@@ -198,7 +219,11 @@ export type CreateCallInput = z.infer<typeof createCallSchema>;
 export type UpdateCallInput = z.infer<typeof updateCallSchema>;
 export type CreateContactInput = z.infer<typeof createContactSchema>;
 export type UpdateContactInput = z.infer<typeof updateContactSchema>;
-export type CreateCoachAssignmentInput = z.infer<typeof createCoachAssignmentSchema>;
-export type UpdateCoachAssignmentInput = z.infer<typeof updateCoachAssignmentSchema>;
+export type CreateCoachAssignmentInput = z.infer<
+  typeof createCoachAssignmentSchema
+>;
+export type UpdateCoachAssignmentInput = z.infer<
+  typeof updateCoachAssignmentSchema
+>;
 export type AiChatInput = z.infer<typeof aiChatSchema>;
 export type CreateCallNoteInput = z.infer<typeof createCallNoteSchema>;

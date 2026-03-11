@@ -34,13 +34,32 @@ import {
   X,
 } from "lucide-react";
 
-const STEP_ICONS = [Sparkles, User, FileText, CreditCard, Target, ClipboardCheck, GraduationCap, PartyPopper];
+const STEP_ICONS = [
+  Sparkles,
+  User,
+  FileText,
+  CreditCard,
+  Target,
+  ClipboardCheck,
+  GraduationCap,
+  PartyPopper,
+];
 
 export default function ClientOnboardingPage() {
   const router = useRouter();
   const { user, profile } = useAuth();
-  const { currentStep, isComplete, nextStep, prevStep, completeOnboarding, isUpdating } = useOnboarding();
-  const { contracts, signContract } = useContracts({ clientId: user?.id, status: "sent" });
+  const {
+    currentStep,
+    isComplete,
+    nextStep,
+    prevStep,
+    completeOnboarding,
+    isUpdating,
+  } = useOnboarding();
+  const { contracts, signContract } = useContracts({
+    clientId: user?.id,
+    status: "sent",
+  });
 
   const StepIcon = STEP_ICONS[currentStep] ?? Sparkles;
 
@@ -71,7 +90,8 @@ export default function ClientOnboardingPage() {
           Bienvenue chez Off Market !
         </h1>
         <p className="text-sm text-muted-foreground mb-6">
-          Votre onboarding est termine. Vous avez acces a toutes les fonctionnalites.
+          Votre onboarding est termine. Vous avez acces a toutes les
+          fonctionnalites.
         </p>
         <a
           href="/client/dashboard"
@@ -126,7 +146,9 @@ export default function ClientOnboardingPage() {
 
           {/* Step content */}
           {currentStep === 0 && <StepWelcome />}
-          {currentStep === 1 && <StepProfile userId={user?.id} profile={profile} />}
+          {currentStep === 1 && (
+            <StepProfile userId={user?.id} profile={profile} />
+          )}
           {currentStep === 2 && (
             <StepContract
               contracts={contracts}
@@ -135,7 +157,10 @@ export default function ClientOnboardingPage() {
                   id,
                   signatureData: {
                     ip_address: "client",
-                    user_agent: typeof navigator !== "undefined" ? navigator.userAgent : "unknown",
+                    user_agent:
+                      typeof navigator !== "undefined"
+                        ? navigator.userAgent
+                        : "unknown",
                   },
                 })
               }
@@ -179,24 +204,29 @@ function StepWelcome() {
   return (
     <div className="space-y-3">
       <p className="text-sm text-foreground leading-relaxed">
-        Bienvenue dans votre espace Off Market ! Nous allons configurer votre compte en quelques
-        etapes simples.
+        Bienvenue dans votre espace Off Market ! Nous allons configurer votre
+        compte en quelques etapes simples.
       </p>
       <p className="text-sm text-muted-foreground leading-relaxed">
-        Ce processus prend environ 5 minutes et vous permettra d&apos;acceder a :
+        Ce processus prend environ 5 minutes et vous permettra d&apos;acceder a
+        :
       </p>
       <ul className="space-y-2 text-sm text-muted-foreground">
         <li className="flex items-center gap-2">
-          <Check className="w-4 h-4 text-emerald-500 shrink-0" /> Votre espace de formation
+          <Check className="w-4 h-4 text-emerald-500 shrink-0" /> Votre espace
+          de formation
         </li>
         <li className="flex items-center gap-2">
-          <Check className="w-4 h-4 text-emerald-500 shrink-0" /> La messagerie avec votre coach
+          <Check className="w-4 h-4 text-emerald-500 shrink-0" /> La messagerie
+          avec votre coach
         </li>
         <li className="flex items-center gap-2">
-          <Check className="w-4 h-4 text-emerald-500 shrink-0" /> Le suivi de votre progression
+          <Check className="w-4 h-4 text-emerald-500 shrink-0" /> Le suivi de
+          votre progression
         </li>
         <li className="flex items-center gap-2">
-          <Check className="w-4 h-4 text-emerald-500 shrink-0" /> La definition de vos objectifs
+          <Check className="w-4 h-4 text-emerald-500 shrink-0" /> La definition
+          de vos objectifs
         </li>
       </ul>
     </div>
@@ -208,7 +238,11 @@ function StepProfile({
   profile,
 }: {
   userId: string | undefined;
-  profile: { full_name?: string | null; phone?: string | null; bio?: string | null } | null;
+  profile: {
+    full_name?: string | null;
+    phone?: string | null;
+    bio?: string | null;
+  } | null;
 }) {
   const supabase = useSupabase();
   const [phone, setPhone] = useState(profile?.phone ?? "");
@@ -236,7 +270,9 @@ function StepProfile({
         Completez votre profil pour que votre coach puisse mieux vous connaitre.
       </p>
       <div>
-        <label className="block text-xs font-medium text-muted-foreground mb-1.5">Nom</label>
+        <label className="block text-xs font-medium text-muted-foreground mb-1.5">
+          Nom
+        </label>
         <input
           type="text"
           value={profile?.full_name ?? ""}
@@ -245,7 +281,9 @@ function StepProfile({
         />
       </div>
       <div>
-        <label className="block text-xs font-medium text-muted-foreground mb-1.5">Telephone</label>
+        <label className="block text-xs font-medium text-muted-foreground mb-1.5">
+          Telephone
+        </label>
         <input
           type="tel"
           value={phone}
@@ -255,7 +293,9 @@ function StepProfile({
         />
       </div>
       <div>
-        <label className="block text-xs font-medium text-muted-foreground mb-1.5">Bio</label>
+        <label className="block text-xs font-medium text-muted-foreground mb-1.5">
+          Bio
+        </label>
         <textarea
           value={bio}
           onChange={(e) => setBio(e.target.value)}
@@ -288,7 +328,8 @@ function StepContract({
     return (
       <div className="space-y-3">
         <p className="text-sm text-muted-foreground leading-relaxed">
-          Aucun contrat en attente de signature. Votre coach vous enverra un contrat bientot.
+          Aucun contrat en attente de signature. Votre coach vous enverra un
+          contrat bientot.
         </p>
       </div>
     );
@@ -324,7 +365,10 @@ function StepContract({
 
 function StepPayment({ userId }: { userId: string | undefined }) {
   const { invoices, isLoading } = useInvoices({ clientId: userId });
-  const pending = invoices?.filter((inv) => inv.status === "sent" || inv.status === "overdue") ?? [];
+  const pending =
+    invoices?.filter(
+      (inv) => inv.status === "sent" || inv.status === "overdue",
+    ) ?? [];
 
   return (
     <div className="space-y-3">
@@ -336,10 +380,17 @@ function StepPayment({ userId }: { userId: string | undefined }) {
       ) : pending.length > 0 ? (
         <div className="space-y-2">
           {pending.map((inv) => (
-            <div key={inv.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+            <div
+              key={inv.id}
+              className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
+            >
               <div>
-                <p className="text-sm font-medium text-foreground">Facture #{inv.invoice_number}</p>
-                <p className="text-xs text-muted-foreground">{Number(inv.total).toFixed(2)} EUR</p>
+                <p className="text-sm font-medium text-foreground">
+                  Facture #{inv.invoice_number}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {Number(inv.total).toFixed(2)} EUR
+                </p>
               </div>
               <span className="text-xs font-medium px-2 py-1 rounded-full bg-amber-500/10 text-amber-600">
                 {inv.status === "overdue" ? "En retard" : "En attente"}
@@ -348,10 +399,13 @@ function StepPayment({ userId }: { userId: string | undefined }) {
           ))}
         </div>
       ) : (
-        <p className="text-sm text-muted-foreground">Aucune facture en attente. Tout est a jour !</p>
+        <p className="text-sm text-muted-foreground">
+          Aucune facture en attente. Tout est a jour !
+        </p>
       )}
       <p className="text-xs text-muted-foreground">
-        Retrouvez toutes vos factures dans la section Facturation de votre espace.
+        Retrouvez toutes vos factures dans la section Facturation de votre
+        espace.
       </p>
     </div>
   );
@@ -360,11 +414,9 @@ function StepPayment({ userId }: { userId: string | undefined }) {
 // ─── NEW: Step Objectifs ─────────────────
 function StepGoals({ userId }: { userId: string | undefined }) {
   const { goals, createGoal } = useCoachingGoals();
-  const [drafts, setDrafts] = useState<{ title: string; description: string }[]>(
-    goals.length > 0
-      ? []
-      : [{ title: "", description: "" }]
-  );
+  const [drafts, setDrafts] = useState<
+    { title: string; description: string }[]
+  >(goals.length > 0 ? [] : [{ title: "", description: "" }]);
 
   const addDraft = () => {
     if (drafts.length >= 3) return;
@@ -375,7 +427,11 @@ function StepGoals({ userId }: { userId: string | undefined }) {
     setDrafts(drafts.filter((_, i) => i !== index));
   };
 
-  const updateDraft = (index: number, field: "title" | "description", value: string) => {
+  const updateDraft = (
+    index: number,
+    field: "title" | "description",
+    value: string,
+  ) => {
     const updated = [...drafts];
     updated[index] = { ...updated[index], [field]: value };
     setDrafts(updated);
@@ -397,25 +453,37 @@ function StepGoals({ userId }: { userId: string | undefined }) {
       });
     }
     setDrafts([]);
-    toast.success(`${valid.length} objectif${valid.length > 1 ? "s" : ""} cree${valid.length > 1 ? "s" : ""}`);
+    toast.success(
+      `${valid.length} objectif${valid.length > 1 ? "s" : ""} cree${valid.length > 1 ? "s" : ""}`,
+    );
   };
 
   return (
     <div className="space-y-4">
       <p className="text-sm text-foreground leading-relaxed">
-        Definissez 1 a 3 objectifs pour guider votre accompagnement. Votre coach pourra les suivre et vous aider a les atteindre.
+        Definissez 1 a 3 objectifs pour guider votre accompagnement. Votre coach
+        pourra les suivre et vous aider a les atteindre.
       </p>
 
       {/* Existing goals */}
       {goals.length > 0 && (
         <div className="space-y-2">
-          <p className="text-xs font-medium text-muted-foreground">Objectifs deja definis :</p>
+          <p className="text-xs font-medium text-muted-foreground">
+            Objectifs deja definis :
+          </p>
           {goals.map((g) => (
-            <div key={g.id} className="flex items-center gap-2 p-3 bg-emerald-500/5 rounded-lg border border-emerald-500/20">
+            <div
+              key={g.id}
+              className="flex items-center gap-2 p-3 bg-emerald-500/5 rounded-lg border border-emerald-500/20"
+            >
               <Check className="w-4 h-4 text-emerald-500 shrink-0" />
               <div>
                 <p className="text-sm font-medium text-foreground">{g.title}</p>
-                {g.description && <p className="text-xs text-muted-foreground">{g.description}</p>}
+                {g.description && (
+                  <p className="text-xs text-muted-foreground">
+                    {g.description}
+                  </p>
+                )}
               </div>
             </div>
           ))}
@@ -482,7 +550,8 @@ function StepGoals({ userId }: { userId: string | undefined }) {
       </div>
 
       <p className="text-xs text-muted-foreground">
-        Vous pourrez modifier ou ajouter des objectifs plus tard depuis votre espace.
+        Vous pourrez modifier ou ajouter des objectifs plus tard depuis votre
+        espace.
       </p>
     </div>
   );
@@ -525,7 +594,9 @@ function StepCheckin({ userId }: { userId: string | undefined }) {
         <div className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center mx-auto">
           <Check className="w-6 h-6 text-emerald-500" />
         </div>
-        <p className="text-sm font-medium text-foreground">Premier check-in enregistre !</p>
+        <p className="text-sm font-medium text-foreground">
+          Premier check-in enregistre !
+        </p>
         <p className="text-xs text-muted-foreground">
           Vous recevrez un rappel chaque semaine pour completer votre bilan.
         </p>
@@ -536,7 +607,8 @@ function StepCheckin({ userId }: { userId: string | undefined }) {
   return (
     <div className="space-y-5">
       <p className="text-sm text-foreground leading-relaxed">
-        Faites votre premier bilan hebdomadaire. Ce rituel vous aidera a suivre votre progression chaque semaine.
+        Faites votre premier bilan hebdomadaire. Ce rituel vous aidera a suivre
+        votre progression chaque semaine.
       </p>
 
       {/* Mood selector */}
@@ -558,7 +630,9 @@ function StepCheckin({ userId }: { userId: string | undefined }) {
                 }`}
               >
                 <span className="text-2xl">{config.emoji}</span>
-                <span className="text-[10px] text-muted-foreground">{config.label}</span>
+                <span className="text-[10px] text-muted-foreground">
+                  {config.label}
+                </span>
               </button>
             );
           })}
@@ -619,9 +693,11 @@ function StepFormation() {
       ) : courses && courses.length > 0 ? (
         <div className="space-y-2">
           {courses.map((course) => {
-            const totalLessons = course.modules?.reduce(
-              (acc, m) => acc + (m.lessons?.length ?? 0), 0
-            ) ?? 0;
+            const totalLessons =
+              course.modules?.reduce(
+                (acc, m) => acc + (m.lessons?.length ?? 0),
+                0,
+              ) ?? 0;
             return (
               <div
                 key={course.id}
@@ -631,9 +707,13 @@ function StepFormation() {
                   <BookOpen className="w-5 h-5 text-primary" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-foreground truncate">{course.title}</p>
+                  <p className="text-sm font-medium text-foreground truncate">
+                    {course.title}
+                  </p>
                   <p className="text-xs text-muted-foreground">
-                    {course.modules?.length ?? 0} module{(course.modules?.length ?? 0) !== 1 ? "s" : ""} · {totalLessons} lecon{totalLessons !== 1 ? "s" : ""}
+                    {course.modules?.length ?? 0} module
+                    {(course.modules?.length ?? 0) !== 1 ? "s" : ""} ·{" "}
+                    {totalLessons} lecon{totalLessons !== 1 ? "s" : ""}
                   </p>
                 </div>
                 <GraduationCap className="w-4 h-4 text-muted-foreground shrink-0" />
@@ -647,7 +727,8 @@ function StepFormation() {
         </p>
       )}
       <p className="text-xs text-muted-foreground">
-        Cliquez sur &quot;Terminer&quot; pour acceder a votre dashboard et commencer votre parcours.
+        Cliquez sur &quot;Terminer&quot; pour acceder a votre dashboard et
+        commencer votre parcours.
       </p>
     </div>
   );

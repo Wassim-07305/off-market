@@ -1,16 +1,38 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { staggerContainer, fadeInUp, defaultTransition } from "@/lib/animations";
+import {
+  staggerContainer,
+  fadeInUp,
+  defaultTransition,
+} from "@/lib/animations";
 import { useLeaderboard } from "@/hooks/use-leaderboard";
 import { useXp } from "@/hooks/use-xp";
 import { useAuth } from "@/hooks/use-auth";
 import { Crown, Medal, Award, TrendingUp } from "lucide-react";
 
 const PODIUM_CONFIG = [
-  { position: 1, icon: Crown, color: "text-amber-500", bg: "bg-amber-500/10", ring: "ring-amber-500/30" },
-  { position: 2, icon: Medal, color: "text-zinc-400", bg: "bg-zinc-400/10", ring: "ring-zinc-400/30" },
-  { position: 3, icon: Award, color: "text-amber-700", bg: "bg-amber-700/10", ring: "ring-amber-700/30" },
+  {
+    position: 1,
+    icon: Crown,
+    color: "text-amber-500",
+    bg: "bg-amber-500/10",
+    ring: "ring-amber-500/30",
+  },
+  {
+    position: 2,
+    icon: Medal,
+    color: "text-zinc-400",
+    bg: "bg-zinc-400/10",
+    ring: "ring-zinc-400/30",
+  },
+  {
+    position: 3,
+    icon: Award,
+    color: "text-amber-700",
+    bg: "bg-amber-700/10",
+    ring: "ring-amber-700/30",
+  },
 ];
 
 export default function ClientLeaderboardPage() {
@@ -94,7 +116,9 @@ export default function ClientLeaderboardPage() {
               {/* Reorder: 2nd, 1st, 3rd for visual podium */}
               {[top3[1], top3[0], top3[2]].map((entry, visualIndex) => {
                 if (!entry) return <div key={visualIndex} />;
-                const podium = PODIUM_CONFIG.find((p) => p.position === entry.rank);
+                const podium = PODIUM_CONFIG.find(
+                  (p) => p.position === entry.rank,
+                );
                 const Icon = podium?.icon ?? Medal;
                 const isMe = entry.profile_id === user?.id;
 
@@ -105,7 +129,9 @@ export default function ClientLeaderboardPage() {
                       entry.rank === 1 ? "ring-2 " + (podium?.ring ?? "") : ""
                     } ${isMe ? "border-primary/30" : ""}`}
                   >
-                    <Icon className={`w-6 h-6 mx-auto mb-2 ${podium?.color ?? "text-muted-foreground"}`} />
+                    <Icon
+                      className={`w-6 h-6 mx-auto mb-2 ${podium?.color ?? "text-muted-foreground"}`}
+                    />
                     <div className="w-10 h-10 rounded-full bg-muted mx-auto mb-2 flex items-center justify-center text-sm font-medium text-foreground">
                       {entry.avatar_url ? (
                         <img
@@ -114,10 +140,12 @@ export default function ClientLeaderboardPage() {
                           className="w-10 h-10 rounded-full object-cover"
                         />
                       ) : (
-                        entry.full_name?.charAt(0)?.toUpperCase() ?? "?"
+                        (entry.full_name?.charAt(0)?.toUpperCase() ?? "?")
                       )}
                     </div>
-                    <p className={`text-xs font-medium truncate ${isMe ? "text-primary" : "text-foreground"}`}>
+                    <p
+                      className={`text-xs font-medium truncate ${isMe ? "text-primary" : "text-foreground"}`}
+                    >
                       {isMe ? "Toi" : entry.full_name}
                     </p>
                     <p className="text-lg font-semibold text-foreground font-serif mt-1">
@@ -162,11 +190,13 @@ export default function ClientLeaderboardPage() {
                           className="w-8 h-8 rounded-full object-cover"
                         />
                       ) : (
-                        entry.full_name?.charAt(0)?.toUpperCase() ?? "?"
+                        (entry.full_name?.charAt(0)?.toUpperCase() ?? "?")
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className={`text-sm font-medium truncate ${isMe ? "text-primary" : "text-foreground"}`}>
+                      <p
+                        className={`text-sm font-medium truncate ${isMe ? "text-primary" : "text-foreground"}`}
+                      >
                         {isMe ? "Toi" : entry.full_name}
                       </p>
                       {entry.badge_count > 0 && (

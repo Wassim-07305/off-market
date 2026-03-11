@@ -29,7 +29,7 @@ export function MentionAutocomplete({
   const listRef = useRef<HTMLDivElement>(null);
 
   const filtered = members.filter((m) =>
-    m.full_name.toLowerCase().includes(query.toLowerCase())
+    m.full_name.toLowerCase().includes(query.toLowerCase()),
   );
 
   useEffect(() => {
@@ -61,7 +61,9 @@ export function MentionAutocomplete({
 
   // Scroll active item into view
   useEffect(() => {
-    const el = listRef.current?.children[activeIndex] as HTMLElement | undefined;
+    const el = listRef.current?.children[activeIndex] as
+      | HTMLElement
+      | undefined;
     el?.scrollIntoView({ block: "nearest" });
   }, [activeIndex]);
 
@@ -89,12 +91,16 @@ export function MentionAutocomplete({
           onClick={() => onSelect(member)}
           className={cn(
             "w-full flex items-center gap-2.5 px-2.5 py-2 text-left transition-colors",
-            i === activeIndex ? "bg-primary/8" : "hover:bg-muted/50"
+            i === activeIndex ? "bg-primary/8" : "hover:bg-muted/50",
           )}
         >
           <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0 overflow-hidden">
             {member.avatar_url ? (
-              <img src={member.avatar_url} alt="" className="w-7 h-7 rounded-full object-cover" />
+              <img
+                src={member.avatar_url}
+                alt=""
+                className="w-7 h-7 rounded-full object-cover"
+              />
             ) : (
               <span className="text-[10px] font-semibold text-primary">
                 {getInitials(member.full_name)}
@@ -102,9 +108,16 @@ export function MentionAutocomplete({
             )}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-foreground truncate">{member.full_name}</p>
+            <p className="text-sm font-medium text-foreground truncate">
+              {member.full_name}
+            </p>
           </div>
-          <span className={cn("text-[10px] capitalize shrink-0", ROLE_COLORS[member.role] ?? "text-muted-foreground")}>
+          <span
+            className={cn(
+              "text-[10px] capitalize shrink-0",
+              ROLE_COLORS[member.role] ?? "text-muted-foreground",
+            )}
+          >
             {member.role}
           </span>
         </button>

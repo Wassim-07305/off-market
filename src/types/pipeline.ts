@@ -23,16 +23,62 @@ export interface CrmContact {
   assigned_profile?: { id: string; full_name: string } | null;
 }
 
-export type PipelineStage = "prospect" | "qualifie" | "proposition" | "closing" | "client" | "perdu";
-export type ContactSource = "instagram" | "linkedin" | "referral" | "website" | "other";
+export type PipelineStage =
+  | "prospect"
+  | "qualifie"
+  | "proposition"
+  | "closing"
+  | "client"
+  | "perdu";
+export type ContactSource =
+  | "instagram"
+  | "linkedin"
+  | "referral"
+  | "website"
+  | "other";
 
-export const PIPELINE_STAGES: { value: PipelineStage; label: string; color: string; bg: string }[] = [
-  { value: "prospect", label: "Prospect", color: "text-blue-600", bg: "bg-blue-500/10 border-blue-500/20" },
-  { value: "qualifie", label: "Qualifie", color: "text-indigo-600", bg: "bg-indigo-500/10 border-indigo-500/20" },
-  { value: "proposition", label: "Proposition", color: "text-amber-600", bg: "bg-amber-500/10 border-amber-500/20" },
-  { value: "closing", label: "Closing", color: "text-orange-600", bg: "bg-orange-500/10 border-orange-500/20" },
-  { value: "client", label: "Client", color: "text-emerald-600", bg: "bg-emerald-500/10 border-emerald-500/20" },
-  { value: "perdu", label: "Perdu", color: "text-zinc-500", bg: "bg-zinc-500/10 border-zinc-500/20" },
+export const PIPELINE_STAGES: {
+  value: PipelineStage;
+  label: string;
+  color: string;
+  bg: string;
+}[] = [
+  {
+    value: "prospect",
+    label: "Prospect",
+    color: "text-blue-600",
+    bg: "bg-blue-500/10 border-blue-500/20",
+  },
+  {
+    value: "qualifie",
+    label: "Qualifie",
+    color: "text-indigo-600",
+    bg: "bg-indigo-500/10 border-indigo-500/20",
+  },
+  {
+    value: "proposition",
+    label: "Proposition",
+    color: "text-amber-600",
+    bg: "bg-amber-500/10 border-amber-500/20",
+  },
+  {
+    value: "closing",
+    label: "Closing",
+    color: "text-orange-600",
+    bg: "bg-orange-500/10 border-orange-500/20",
+  },
+  {
+    value: "client",
+    label: "Client",
+    color: "text-emerald-600",
+    bg: "bg-emerald-500/10 border-emerald-500/20",
+  },
+  {
+    value: "perdu",
+    label: "Perdu",
+    color: "text-zinc-500",
+    bg: "bg-zinc-500/10 border-zinc-500/20",
+  },
 ];
 
 export const CONTACT_SOURCES: { value: ContactSource; label: string }[] = [
@@ -43,8 +89,18 @@ export const CONTACT_SOURCES: { value: ContactSource; label: string }[] = [
   { value: "other", label: "Autre" },
 ];
 
-export type CallNoteMood = "tres_positif" | "positif" | "neutre" | "negatif" | "tres_negatif";
-export type CallNoteOutcome = "interested" | "follow_up" | "not_interested" | "closed" | "no_show";
+export type CallNoteMood =
+  | "tres_positif"
+  | "positif"
+  | "neutre"
+  | "negatif"
+  | "tres_negatif";
+export type CallNoteOutcome =
+  | "interested"
+  | "follow_up"
+  | "not_interested"
+  | "closed"
+  | "no_show";
 
 export interface CallNote {
   id: string;
@@ -64,7 +120,10 @@ export interface CallNoteActionItem {
   done: boolean;
 }
 
-export const CALL_MOOD_CONFIG: Record<CallNoteMood, { label: string; emoji: string }> = {
+export const CALL_MOOD_CONFIG: Record<
+  CallNoteMood,
+  { label: string; emoji: string }
+> = {
   tres_positif: { label: "Tres positif", emoji: "🤩" },
   positif: { label: "Positif", emoji: "😊" },
   neutre: { label: "Neutre", emoji: "😐" },
@@ -88,7 +147,11 @@ export interface ContactInteraction {
   author?: { full_name: string; avatar_url: string | null } | null;
 }
 
-export const INTERACTION_TYPES: { value: InteractionType; label: string; icon: string }[] = [
+export const INTERACTION_TYPES: {
+  value: InteractionType;
+  label: string;
+  icon: string;
+}[] = [
   { value: "call", label: "Appel", icon: "Phone" },
   { value: "email", label: "Email", icon: "Mail" },
   { value: "meeting", label: "Reunion", icon: "Calendar" },
@@ -96,10 +159,19 @@ export const INTERACTION_TYPES: { value: InteractionType; label: string; icon: s
   { value: "message", label: "Message", icon: "MessageSquare" },
 ];
 
-export const CALL_OUTCOME_CONFIG: Record<CallNoteOutcome, { label: string; color: string }> = {
-  interested: { label: "Interesse", color: "text-emerald-600 bg-emerald-500/10" },
+export const CALL_OUTCOME_CONFIG: Record<
+  CallNoteOutcome,
+  { label: string; color: string }
+> = {
+  interested: {
+    label: "Interesse",
+    color: "text-emerald-600 bg-emerald-500/10",
+  },
   follow_up: { label: "A relancer", color: "text-amber-600 bg-amber-500/10" },
-  not_interested: { label: "Pas interesse", color: "text-red-600 bg-red-500/10" },
+  not_interested: {
+    label: "Pas interesse",
+    color: "text-red-600 bg-red-500/10",
+  },
   closed: { label: "Signe", color: "text-green-600 bg-green-500/10" },
   no_show: { label: "No show", color: "text-zinc-500 bg-zinc-500/10" },
 };

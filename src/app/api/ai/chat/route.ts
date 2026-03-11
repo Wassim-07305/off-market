@@ -30,8 +30,11 @@ export async function POST(request: Request) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     return NextResponse.json(
-      { response: "L'API Claude n'est pas encore configuree. Ajoute ANTHROPIC_API_KEY dans les variables d'environnement." },
-      { status: 200 }
+      {
+        response:
+          "L'API Claude n'est pas encore configuree. Ajoute ANTHROPIC_API_KEY dans les variables d'environnement.",
+      },
+      { status: 200 },
     );
   }
 
@@ -55,8 +58,11 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("Claude API error:", error);
     return NextResponse.json(
-      { response: "Erreur lors de la communication avec l'IA. Verifie ta cle API." },
-      { status: 200 }
+      {
+        response:
+          "Erreur lors de la communication avec l'IA. Verifie ta cle API.",
+      },
+      { status: 200 },
     );
   }
 }

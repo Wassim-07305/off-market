@@ -14,6 +14,7 @@ Plateforme de coaching et de gestion business pour freelancers et coachs. Interf
 ## Fonctionnalites
 
 ### Portails multi-roles
+
 - **Admin** : gestion complete de la plateforme, analytics, facturation, moderation
 - **Coach** : suivi des eleves, dashboard avec alertes, check-ins, appels
 - **Client** : progression, gamification, check-ins, journal, cours, communaute
@@ -21,6 +22,7 @@ Plateforme de coaching et de gestion business pour freelancers et coachs. Interf
 - **Setter / Closer** : gestion des appels commerciaux
 
 ### Modules principaux
+
 - **CRM** : pipeline Kanban 5 colonnes, scoring des leads, historique d'interactions
 - **Messaging** : temps reel, threads, reactions, mentions, messages vocaux, pieces jointes, messages programmes
 - **LMS (School)** : cours, modules, lecons, quiz, certificats
@@ -37,6 +39,7 @@ Plateforme de coaching et de gestion business pour freelancers et coachs. Interf
 ## Demarrage
 
 ### Prerequis
+
 - Node.js 18+
 - Compte Supabase
 
@@ -67,11 +70,11 @@ Ouvrir [http://localhost:3000](http://localhost:3000).
 
 ### Commandes
 
-| Commande | Description |
-|---|---|
-| `npm run dev` | Serveur de developpement |
-| `npm run build` | Build de production |
-| `npm run lint` | Linting ESLint |
+| Commande        | Description              |
+| --------------- | ------------------------ |
+| `npm run dev`   | Serveur de developpement |
+| `npm run build` | Build de production      |
+| `npm run lint`  | Linting ESLint           |
 
 ## Structure du projet
 
@@ -97,6 +100,7 @@ supabase/
 ## Base de donnees
 
 Les migrations Supabase se trouvent dans `supabase/migrations/`. Elles couvrent :
+
 - Schema initial (profiles, channels, messages, courses, etc.)
 - Systeme de roles (admin, coach, client, setter, closer, sales)
 - Facturation et contrats

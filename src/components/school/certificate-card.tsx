@@ -85,10 +85,16 @@ export function CertificateCard({ certificate }: { certificate: Certificate }) {
           <Award className="w-6 h-6 text-amber-600" />
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="text-sm font-semibold text-foreground">{certificate.course_title}</h3>
+          <h3 className="text-sm font-semibold text-foreground">
+            {certificate.course_title}
+          </h3>
           <p className="text-xs text-muted-foreground mt-0.5">
-            {certificate.total_modules} module{certificate.total_modules > 1 ? "s" : ""} · {certificate.total_lessons} lecon{certificate.total_lessons > 1 ? "s" : ""}
-            {certificate.quiz_average != null && ` · Quiz ${certificate.quiz_average}%`}
+            {certificate.total_modules} module
+            {certificate.total_modules > 1 ? "s" : ""} ·{" "}
+            {certificate.total_lessons} lecon
+            {certificate.total_lessons > 1 ? "s" : ""}
+            {certificate.quiz_average != null &&
+              ` · Quiz ${certificate.quiz_average}%`}
           </p>
           <div className="flex items-center gap-3 mt-2">
             <span className="flex items-center gap-1 text-[11px] text-muted-foreground">

@@ -9,7 +9,7 @@ import { paymentConfirmedEmail } from "@/lib/email/templates";
 function getAdminSupabase() {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
   );
 }
 
@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     event = getStripeServer().webhooks.constructEvent(
       body,
       signature,
-      process.env.STRIPE_WEBHOOK_SECRET!
+      process.env.STRIPE_WEBHOOK_SECRET!,
     );
   } catch (err) {
     console.error("Webhook signature verification failed:", err);
@@ -67,11 +67,19 @@ export async function POST(req: NextRequest) {
             .single();
 
           if (client?.email) {
-            const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+            const appUrl =
+              process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
             const formatEUR = (n: number) =>
-              new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(n);
+              new Intl.NumberFormat("fr-FR", {
+                style: "currency",
+                currency: "EUR",
+              }).format(n);
             const formatDate = (d: string) =>
-              new Date(d).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+              new Date(d).toLocaleDateString("fr-FR", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+              });
 
             const { subject, html } = paymentConfirmedEmail({
               clientName: client.full_name ?? "Client",
@@ -105,7 +113,7 @@ export async function POST(req: NextRequest) {
       const intent = event.data.object as Stripe.PaymentIntent;
       console.error(
         `Payment failed for intent ${intent.id}:`,
-        intent.last_payment_error?.message
+        intent.last_payment_error?.message,
       );
       break;
     }

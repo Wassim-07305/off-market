@@ -78,11 +78,11 @@ export function RoleMobileNav({ variant }: RoleMobileNavProps) {
             <nav className="flex-1 py-3 px-3 space-y-0.5 overflow-y-auto">
               {allItems.map((item) => {
                 const isActive =
-                  pathname === item.href || pathname.startsWith(item.href + "/");
+                  pathname === item.href ||
+                  pathname.startsWith(item.href + "/");
 
                 const showSeparator =
-                  item.name === "Reglages" ||
-                  item.name === "Feed";
+                  item.name === "Reglages" || item.name === "Feed";
 
                 return (
                   <div key={item.name}>
@@ -96,7 +96,7 @@ export function RoleMobileNav({ variant }: RoleMobileNavProps) {
                         "relative flex items-center gap-3 h-10 rounded-xl px-3 transition-all duration-200",
                         isActive
                           ? "bg-primary/[0.08] text-[var(--sidebar-text-active)]"
-                          : "text-[var(--sidebar-text)] hover:text-[var(--sidebar-text-active)] hover:bg-white/[0.04]"
+                          : "text-[var(--sidebar-text)] hover:text-[var(--sidebar-text-active)] hover:bg-white/[0.04]",
                       )}
                     >
                       {isActive && (
@@ -107,7 +107,7 @@ export function RoleMobileNav({ variant }: RoleMobileNavProps) {
                           "w-[18px] h-[18px] shrink-0",
                           isActive
                             ? "text-primary drop-shadow-[0_0_6px_rgba(196,30,58,0.3)]"
-                            : ""
+                            : "",
                         )}
                       />
                       <span className="text-[13px] font-medium truncate">
@@ -138,7 +138,9 @@ export function RoleMobileNav({ variant }: RoleMobileNavProps) {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-white truncate leading-tight">
-                    {loading ? "Chargement..." : profile?.full_name ?? "Mon profil"}
+                    {loading
+                      ? "Chargement..."
+                      : (profile?.full_name ?? "Mon profil")}
                   </p>
                   <p className="text-xs text-stone-500 capitalize truncate mt-0.5">
                     {roleLabel}
@@ -182,13 +184,13 @@ export function RoleMobileNav({ variant }: RoleMobileNavProps) {
                   "flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all duration-200 relative",
                   isActive
                     ? "text-primary"
-                    : "text-muted-foreground active:scale-95"
+                    : "text-muted-foreground active:scale-95",
                 )}
               >
                 <item.icon
                   className={cn(
                     "w-5 h-5 transition-transform duration-200",
-                    isActive && "scale-110"
+                    isActive && "scale-110",
                   )}
                 />
                 <span className="text-[10px] font-medium tracking-tight">

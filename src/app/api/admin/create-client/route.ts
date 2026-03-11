@@ -33,12 +33,13 @@ export async function POST(request: Request) {
 
   // Create auth user with a temporary password
   const tempPassword = `OffMarket_${Date.now()}!`;
-  const { data: newUser, error: createError } = await admin.auth.admin.createUser({
-    email,
-    password: tempPassword,
-    email_confirm: true,
-    user_metadata: { full_name: fullName },
-  });
+  const { data: newUser, error: createError } =
+    await admin.auth.admin.createUser({
+      email,
+      password: tempPassword,
+      email_confirm: true,
+      user_metadata: { full_name: fullName },
+    });
 
   if (createError) {
     return NextResponse.json({ error: createError.message }, { status: 500 });
@@ -72,7 +73,11 @@ export async function POST(request: Request) {
       // Add both as members
       await admin.from("channel_members").insert([
         { channel_id: dmChannel.id, profile_id: user.id, role: "admin" },
-        { channel_id: dmChannel.id, profile_id: newUser.user.id, role: "member" },
+        {
+          channel_id: dmChannel.id,
+          profile_id: newUser.user.id,
+          role: "member",
+        },
       ]);
 
       // System welcome message in DM

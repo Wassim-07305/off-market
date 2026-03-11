@@ -3,7 +3,9 @@ import { createClient } from "@/lib/supabase/server";
 
 export async function POST() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) {
     return NextResponse.json({ error: "Non autorise" }, { status: 401 });
@@ -18,7 +20,7 @@ export async function POST() {
     console.error("Failed to disconnect Google Calendar:", error);
     return NextResponse.json(
       { error: "Erreur lors de la deconnexion" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 

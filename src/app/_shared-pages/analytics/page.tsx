@@ -4,12 +4,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 import { cn } from "@/lib/utils";
-import {
-  DollarSign,
-  Phone,
-  Users,
-  Activity,
-} from "lucide-react";
+import { DollarSign, Phone, Users, Activity } from "lucide-react";
 import { PeriodSelector } from "@/components/analytics/period-selector";
 import { FinancialTab } from "@/components/analytics/financial-tab";
 import { CallsTab } from "@/components/analytics/calls-tab";
@@ -27,12 +22,13 @@ import type { PeriodPreset } from "@/types/analytics";
 
 type AnalyticsTab = "finances" | "appels" | "pipeline" | "engagement";
 
-const TABS: { value: AnalyticsTab; label: string; icon: typeof DollarSign }[] = [
-  { value: "finances", label: "Finances", icon: DollarSign },
-  { value: "appels", label: "Appels", icon: Phone },
-  { value: "pipeline", label: "Pipeline", icon: Users },
-  { value: "engagement", label: "Engagement", icon: Activity },
-];
+const TABS: { value: AnalyticsTab; label: string; icon: typeof DollarSign }[] =
+  [
+    { value: "finances", label: "Finances", icon: DollarSign },
+    { value: "appels", label: "Appels", icon: Phone },
+    { value: "pipeline", label: "Pipeline", icon: Users },
+    { value: "engagement", label: "Engagement", icon: Activity },
+  ];
 
 const PERIOD_LABELS: Record<PeriodPreset, string> = {
   "7d": "7 derniers jours",
@@ -43,7 +39,10 @@ const PERIOD_LABELS: Record<PeriodPreset, string> = {
   all: "Tout",
 };
 
-function useReportSections(activeTab: AnalyticsTab, range: ReturnType<typeof periodToDateRange>) {
+function useReportSections(
+  activeTab: AnalyticsTab,
+  range: ReturnType<typeof periodToDateRange>,
+) {
   const financial = useFinancialReport(range);
   const calls = useCallMetrics(range);
   const pipeline = usePipelineReport();
@@ -57,13 +56,28 @@ function useReportSections(activeTab: AnalyticsTab, range: ReturnType<typeof per
         {
           title: "Resume financier",
           rows: [
-            { label: "Revenus total", value: `${d.totalRevenue.toLocaleString("fr-FR")} EUR` },
+            {
+              label: "Revenus total",
+              value: `${d.totalRevenue.toLocaleString("fr-FR")} EUR`,
+            },
             { label: "MRR", value: `${d.mrr.toLocaleString("fr-FR")} EUR` },
             { label: "ARR", value: `${d.arr.toLocaleString("fr-FR")} EUR` },
-            { label: "Montant en attente", value: `${d.pendingAmount.toLocaleString("fr-FR")} EUR` },
-            { label: "Montant en retard", value: `${d.overdueAmount.toLocaleString("fr-FR")} EUR` },
-            { label: "Tendance", value: `${d.revenueTrend > 0 ? "+" : ""}${d.revenueTrend}%` },
-            { label: "Valeur moyenne / facture", value: `${d.avgDealValue.toLocaleString("fr-FR")} EUR` },
+            {
+              label: "Montant en attente",
+              value: `${d.pendingAmount.toLocaleString("fr-FR")} EUR`,
+            },
+            {
+              label: "Montant en retard",
+              value: `${d.overdueAmount.toLocaleString("fr-FR")} EUR`,
+            },
+            {
+              label: "Tendance",
+              value: `${d.revenueTrend > 0 ? "+" : ""}${d.revenueTrend}%`,
+            },
+            {
+              label: "Valeur moyenne / facture",
+              value: `${d.avgDealValue.toLocaleString("fr-FR")} EUR`,
+            },
           ],
         },
         {
@@ -118,9 +132,15 @@ function useReportSections(activeTab: AnalyticsTab, range: ReturnType<typeof per
           title: "Pipeline CRM",
           rows: [
             { label: "Contacts total", value: String(d.totalContacts) },
-            { label: "Valeur pipeline", value: `${d.totalPipelineValue.toLocaleString("fr-FR")} EUR` },
+            {
+              label: "Valeur pipeline",
+              value: `${d.totalPipelineValue.toLocaleString("fr-FR")} EUR`,
+            },
             { label: "Taux conversion", value: `${d.conversionRate}%` },
-            { label: "Deal moyen", value: `${d.avgDealValue.toLocaleString("fr-FR")} EUR` },
+            {
+              label: "Deal moyen",
+              value: `${d.avgDealValue.toLocaleString("fr-FR")} EUR`,
+            },
             { label: "Convertis (30j)", value: String(d.recentlyConverted) },
             { label: "Perdus (30j)", value: String(d.recentlyLost) },
           ],
@@ -216,7 +236,7 @@ export default function AnalyticsPage() {
                   "flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-all duration-200 border-b-2 -mb-px whitespace-nowrap",
                   activeTab === tab.value
                     ? "border-primary text-foreground"
-                    : "border-transparent text-muted-foreground hover:text-foreground"
+                    : "border-transparent text-muted-foreground hover:text-foreground",
                 )}
               >
                 <Icon className="w-4 h-4" />

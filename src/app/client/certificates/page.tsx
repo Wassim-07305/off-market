@@ -50,7 +50,8 @@ export default function CertificatesPage() {
         >
           <Award className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
           <p className="text-sm text-muted-foreground">
-            Aucun certificat pour le moment. Completez une formation pour obtenir votre premier certificat !
+            Aucun certificat pour le moment. Completez une formation pour
+            obtenir votre premier certificat !
           </p>
         </motion.div>
       ) : (

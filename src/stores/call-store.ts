@@ -3,7 +3,13 @@
 import { create } from "zustand";
 import type { TranscriptEntry } from "@/types/calls";
 
-export type CallPhase = "idle" | "joining" | "connecting" | "connected" | "reconnecting" | "ended";
+export type CallPhase =
+  | "idle"
+  | "joining"
+  | "connecting"
+  | "connected"
+  | "reconnecting"
+  | "ended";
 
 interface CallState {
   // Phase

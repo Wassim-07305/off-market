@@ -3,7 +3,11 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
-import type { QuizAttempt, ExerciseSubmission, SubmissionStatus } from "@/types/quiz";
+import type {
+  QuizAttempt,
+  ExerciseSubmission,
+  SubmissionStatus,
+} from "@/types/quiz";
 
 // ─── QUIZ ATTEMPTS ──────────────────────
 
@@ -51,7 +55,9 @@ export function useSubmitQuiz() {
       return data as QuizAttempt;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["quiz-attempts", data.lesson_id] });
+      queryClient.invalidateQueries({
+        queryKey: ["quiz-attempts", data.lesson_id],
+      });
     },
   });
 }
@@ -71,12 +77,18 @@ export function useQuizStats(lessonId: string) {
         .eq("lesson_id", lessonId);
       if (error) throw error;
 
-      const attempts = data as { score: number; passed: boolean; student_id: string }[];
+      const attempts = data as {
+        score: number;
+        passed: boolean;
+        student_id: string;
+      }[];
       const uniqueStudents = new Set(attempts.map((a) => a.student_id)).size;
       const passCount = attempts.filter((a) => a.passed).length;
-      const avgScore = attempts.length > 0
-        ? attempts.reduce((sum, a) => sum + Number(a.score), 0) / attempts.length
-        : 0;
+      const avgScore =
+        attempts.length > 0
+          ? attempts.reduce((sum, a) => sum + Number(a.score), 0) /
+            attempts.length
+          : 0;
 
       return {
         totalAttempts: attempts.length,
@@ -140,7 +152,9 @@ export function useSubmitExercise() {
       return data as ExerciseSubmission;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["exercise-submissions", data.lesson_id] });
+      queryClient.invalidateQueries({
+        queryKey: ["exercise-submissions", data.lesson_id],
+      });
     },
   });
 }
@@ -171,7 +185,9 @@ export function useReviewExercise() {
       if (error) throw error;
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["exercise-submissions", variables.lesson_id] });
+      queryClient.invalidateQueries({
+        queryKey: ["exercise-submissions", variables.lesson_id],
+      });
     },
   });
 }

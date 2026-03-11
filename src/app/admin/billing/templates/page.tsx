@@ -2,7 +2,11 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { staggerContainer, fadeInUp, defaultTransition } from "@/lib/animations";
+import {
+  staggerContainer,
+  fadeInUp,
+  defaultTransition,
+} from "@/lib/animations";
 import { useContractTemplates } from "@/hooks/use-contracts";
 import { useAuth } from "@/hooks/use-auth";
 import type { TemplateVariable } from "@/types/billing";
@@ -26,7 +30,8 @@ const VARIABLE_TYPES: { value: TemplateVariable["type"]; label: string }[] = [
 
 export default function TemplatesPage() {
   const { user } = useAuth();
-  const { templates, isLoading, createTemplate, updateTemplate } = useContractTemplates();
+  const { templates, isLoading, createTemplate, updateTemplate } =
+    useContractTemplates();
   const [showEditor, setShowEditor] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [title, setTitle] = useState("");
@@ -60,7 +65,11 @@ export default function TemplatesPage() {
     setVariables((prev) => [...prev, { key: "", label: "", type: "text" }]);
   };
 
-  const updateVariable = (index: number, field: keyof TemplateVariable, value: string) => {
+  const updateVariable = (
+    index: number,
+    field: keyof TemplateVariable,
+    value: string,
+  ) => {
     setVariables((prev) =>
       prev.map((v, i) => {
         if (i !== index) return v;
@@ -73,7 +82,7 @@ export default function TemplatesPage() {
             .replace(/^_|_$/g, "");
         }
         return updated;
-      })
+      }),
     );
   };
 
@@ -86,12 +95,12 @@ export default function TemplatesPage() {
     if (editingId) {
       updateTemplate.mutate(
         { id: editingId, title, content, variables },
-        { onSuccess: resetForm }
+        { onSuccess: resetForm },
       );
     } else {
       createTemplate.mutate(
         { title, content, variables, created_by: user.id },
-        { onSuccess: resetForm }
+        { onSuccess: resetForm },
       );
     }
   };
@@ -117,7 +126,9 @@ export default function TemplatesPage() {
         className="flex items-center justify-between"
       >
         <div>
-          <h1 className="text-3xl font-semibold text-foreground">Modeles de contrats</h1>
+          <h1 className="text-3xl font-semibold text-foreground">
+            Modeles de contrats
+          </h1>
           <p className="text-sm text-muted-foreground mt-1">
             Creez des modeles reutilisables avec des variables dynamiques
           </p>
@@ -159,13 +170,18 @@ export default function TemplatesPage() {
               >
                 <div className="flex items-start justify-between">
                   <div>
-                    <h3 className="text-sm font-medium text-foreground">{template.title}</h3>
+                    <h3 className="text-sm font-medium text-foreground">
+                      {template.title}
+                    </h3>
                     <p className="text-xs text-muted-foreground mt-0.5">
-                      {template.variables?.length ?? 0} variable{(template.variables?.length ?? 0) !== 1 ? "s" : ""}
+                      {template.variables?.length ?? 0} variable
+                      {(template.variables?.length ?? 0) !== 1 ? "s" : ""}
                     </p>
                   </div>
                   <button
-                    onClick={() => handleToggleActive(template.id, template.is_active)}
+                    onClick={() =>
+                      handleToggleActive(template.id, template.is_active)
+                    }
                     className="text-muted-foreground hover:text-foreground transition-colors"
                     title={template.is_active ? "Desactiver" : "Activer"}
                   >
@@ -176,7 +192,9 @@ export default function TemplatesPage() {
                     )}
                   </button>
                 </div>
-                <p className="text-xs text-muted-foreground line-clamp-3">{template.content}</p>
+                <p className="text-xs text-muted-foreground line-clamp-3">
+                  {template.content}
+                </p>
                 {template.variables && template.variables.length > 0 && (
                   <div className="flex flex-wrap gap-1">
                     {template.variables.map((v) => (
@@ -200,7 +218,11 @@ export default function TemplatesPage() {
                   <button
                     onClick={() => {
                       const cloned = { ...template };
-                      openEditor({ ...cloned, id: "", title: cloned.title + " (copie)" });
+                      openEditor({
+                        ...cloned,
+                        id: "",
+                        title: cloned.title + " (copie)",
+                      });
                     }}
                     className="p-1.5 rounded-lg hover:bg-muted transition-colors text-muted-foreground"
                     title="Dupliquer"
@@ -222,7 +244,10 @@ export default function TemplatesPage() {
               <h2 className="text-lg font-semibold text-foreground">
                 {editingId ? "Modifier le modele" : "Nouveau modele"}
               </h2>
-              <button onClick={resetForm} className="p-2 rounded-lg hover:bg-muted transition-colors">
+              <button
+                onClick={resetForm}
+                className="p-2 rounded-lg hover:bg-muted transition-colors"
+              >
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -245,7 +270,9 @@ export default function TemplatesPage() {
               {/* Variables */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="text-sm font-medium text-foreground">Variables dynamiques</label>
+                  <label className="text-sm font-medium text-foreground">
+                    Variables dynamiques
+                  </label>
                   <button
                     onClick={addVariable}
                     className="text-xs text-primary hover:underline flex items-center gap-1"
@@ -256,7 +283,8 @@ export default function TemplatesPage() {
                 </div>
                 {variables.length === 0 ? (
                   <p className="text-xs text-muted-foreground">
-                    Ajoutez des variables pour personnaliser chaque contrat (ex: nom, montant, date)
+                    Ajoutez des variables pour personnaliser chaque contrat (ex:
+                    nom, montant, date)
                   </p>
                 ) : (
                   <div className="space-y-2">
@@ -265,7 +293,9 @@ export default function TemplatesPage() {
                         <input
                           type="text"
                           value={v.label}
-                          onChange={(e) => updateVariable(i, "label", e.target.value)}
+                          onChange={(e) =>
+                            updateVariable(i, "label", e.target.value)
+                          }
                           placeholder="Label (ex: Montant)"
                           className="flex-1 h-9 px-3 bg-surface border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
                         />
@@ -274,7 +304,9 @@ export default function TemplatesPage() {
                         </span>
                         <select
                           value={v.type}
-                          onChange={(e) => updateVariable(i, "type", e.target.value)}
+                          onChange={(e) =>
+                            updateVariable(i, "type", e.target.value)
+                          }
                           className="h-9 px-2 bg-surface border border-border rounded-lg text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
                         >
                           {VARIABLE_TYPES.map((t) => (
@@ -326,14 +358,19 @@ export default function TemplatesPage() {
               </button>
               <button
                 onClick={handleSave}
-                disabled={!title || !content || createTemplate.isPending || updateTemplate.isPending}
+                disabled={
+                  !title ||
+                  !content ||
+                  createTemplate.isPending ||
+                  updateTemplate.isPending
+                }
                 className="h-10 px-6 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
               >
                 {createTemplate.isPending || updateTemplate.isPending
                   ? "Enregistrement..."
                   : editingId
-                  ? "Mettre a jour"
-                  : "Creer le modele"}
+                    ? "Mettre a jour"
+                    : "Creer le modele"}
               </button>
             </div>
           </div>

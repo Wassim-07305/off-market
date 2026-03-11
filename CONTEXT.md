@@ -37,9 +37,9 @@ Alexia utilise l'app pour gérer ses coachés, suivre leur progression, envoyer 
 
 ## Comptes de test
 
-| Rôle  | Email                   | Mot de passe |
-|-------|-------------------------|--------------|
-| Test  | test@off-market.fr      | Test1234x    |
+| Rôle | Email              | Mot de passe |
+| ---- | ------------------ | ------------ |
+| Test | test@off-market.fr | Test1234x    |
 
 ## Commandes utiles
 

@@ -16,7 +16,10 @@ export async function POST(req: NextRequest) {
 
     const { inviteId } = await req.json();
     if (!inviteId) {
-      return NextResponse.json({ error: "ID invitation requis" }, { status: 400 });
+      return NextResponse.json(
+        { error: "ID invitation requis" },
+        { status: 400 },
+      );
     }
 
     // Fetch invite details
@@ -27,7 +30,10 @@ export async function POST(req: NextRequest) {
       .single();
 
     if (error || !invite) {
-      return NextResponse.json({ error: "Invitation introuvable" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Invitation introuvable" },
+        { status: 404 },
+      );
     }
 
     // Get inviter name

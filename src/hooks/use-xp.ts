@@ -3,7 +3,13 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
-import type { XpTransaction, XpConfig, LevelConfig, UserXpSummary, UserBadge } from "@/types/gamification";
+import type {
+  XpTransaction,
+  XpConfig,
+  LevelConfig,
+  UserXpSummary,
+  UserBadge,
+} from "@/types/gamification";
 
 export function useXp() {
   const supabase = useSupabase();
@@ -76,7 +82,13 @@ export function useXp() {
 
   // Award XP via the DB function
   const awardXp = useMutation({
-    mutationFn: async ({ action, metadata }: { action: string; metadata?: Record<string, unknown> }) => {
+    mutationFn: async ({
+      action,
+      metadata,
+    }: {
+      action: string;
+      metadata?: Record<string, unknown>;
+    }) => {
       if (!user) throw new Error("Not authenticated");
       const { data, error } = await supabase.rpc("award_xp", {
         p_profile_id: user.id,
@@ -96,15 +108,30 @@ export function useXp() {
   // Compute summary
   const levels = levelsQuery.data ?? [];
   const totalXp = xpQuery.data?.total ?? 0;
-  const currentLevel = [...levels].reverse().find((l) => totalXp >= l.min_xp) ?? levels[0];
+  const currentLevel =
+    [...levels].reverse().find((l) => totalXp >= l.min_xp) ?? levels[0];
   const nextLevel = levels.find((l) => l.min_xp > totalXp) ?? null;
-  const progressToNext = nextLevel && currentLevel
-    ? Math.min(Math.round(((totalXp - currentLevel.min_xp) / (nextLevel.min_xp - currentLevel.min_xp)) * 100), 100)
-    : 100;
+  const progressToNext =
+    nextLevel && currentLevel
+      ? Math.min(
+          Math.round(
+            ((totalXp - currentLevel.min_xp) /
+              (nextLevel.min_xp - currentLevel.min_xp)) *
+              100,
+          ),
+          100,
+        )
+      : 100;
 
   const summary: UserXpSummary = {
     totalXp,
-    level: currentLevel ?? { level: 1, name: "Debutant", min_xp: 0, icon: "🌱", color: "#71717A" },
+    level: currentLevel ?? {
+      level: 1,
+      name: "Debutant",
+      min_xp: 0,
+      icon: "🌱",
+      color: "#71717A",
+    },
     nextLevel,
     progressToNext,
     badges: badgesQuery.data ?? [],
@@ -138,11 +165,22 @@ export function useXpConfig() {
   });
 
   const updateConfig = useMutation({
-    mutationFn: async ({ id, xp_amount, is_active }: { id: string; xp_amount?: number; is_active?: boolean }) => {
+    mutationFn: async ({
+      id,
+      xp_amount,
+      is_active,
+    }: {
+      id: string;
+      xp_amount?: number;
+      is_active?: boolean;
+    }) => {
       const updates: Record<string, unknown> = {};
       if (xp_amount !== undefined) updates.xp_amount = xp_amount;
       if (is_active !== undefined) updates.is_active = is_active;
-      const { error } = await supabase.from("xp_config").update(updates).eq("id", id);
+      const { error } = await supabase
+        .from("xp_config")
+        .update(updates)
+        .eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {

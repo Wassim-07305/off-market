@@ -97,7 +97,7 @@ export function AIInsightsCard() {
                   key={insight.id}
                   className={cn(
                     "flex items-start gap-3 p-3 rounded-xl bg-muted/30 border-l-[3px] group transition-colors duration-200 hover:bg-muted/50",
-                    borderColor
+                    borderColor,
                   )}
                 >
                   <Icon className={cn("w-4 h-4 shrink-0 mt-0.5", iconColor)} />

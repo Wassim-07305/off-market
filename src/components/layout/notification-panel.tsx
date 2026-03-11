@@ -82,7 +82,11 @@ function getNotificationColor(type: string): string {
 }
 
 /** Resolve a notification to a route based on type and data */
-function getNotificationLink(type: string, data: Record<string, unknown>, prefix: string): string | null {
+function getNotificationLink(
+  type: string,
+  data: Record<string, unknown>,
+  prefix: string,
+): string | null {
   switch (type) {
     case "new_message":
     case "message":
@@ -98,7 +102,9 @@ function getNotificationLink(type: string, data: Record<string, unknown>, prefix
     case "goal":
       return `${prefix}/goals`;
     case "form_response":
-      return data?.form_id ? `${prefix}/forms/${data.form_id}` : `${prefix}/forms`;
+      return data?.form_id
+        ? `${prefix}/forms/${data.form_id}`
+        : `${prefix}/forms`;
     case "badge":
       return `${prefix}/progress`;
     case "course":
@@ -149,7 +155,11 @@ export function NotificationPanel() {
       markAsRead.mutate(notification.id);
     }
     // Navigate to linked page
-    const link = getNotificationLink(notification.type, notification.data, prefix);
+    const link = getNotificationLink(
+      notification.type,
+      notification.data,
+      prefix,
+    );
     if (link) {
       setNotificationPanelOpen(false);
       router.push(link);
@@ -168,7 +178,11 @@ export function NotificationPanel() {
   };
 
   return (
-    <div className="fixed inset-0 z-50" role="region" aria-label="Notifications alt+T">
+    <div
+      className="fixed inset-0 z-50"
+      role="region"
+      aria-label="Notifications alt+T"
+    >
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/30 backdrop-blur-[2px] animate-in fade-in duration-200"
@@ -248,10 +262,14 @@ export function NotificationPanel() {
               {notifications.map((notification) => {
                 const Icon = getNotificationIcon(notification.type);
                 const colorClass = getNotificationColor(notification.type);
-                const link = getNotificationLink(notification.type, notification.data, prefix);
+                const link = getNotificationLink(
+                  notification.type,
+                  notification.data,
+                  prefix,
+                );
                 const timeAgo = formatDistanceToNow(
                   new Date(notification.created_at),
-                  { addSuffix: true, locale: fr }
+                  { addSuffix: true, locale: fr },
                 );
 
                 return (
@@ -262,14 +280,14 @@ export function NotificationPanel() {
                       "w-full flex items-start gap-3 px-5 py-3.5 text-left transition-colors",
                       notification.is_read
                         ? "hover:bg-muted/30"
-                        : "bg-primary/[0.03] hover:bg-primary/[0.06]"
+                        : "bg-primary/[0.03] hover:bg-primary/[0.06]",
                     )}
                   >
                     {/* Icon */}
                     <div
                       className={cn(
                         "w-9 h-9 rounded-xl flex items-center justify-center shrink-0",
-                        colorClass
+                        colorClass,
                       )}
                     >
                       <Icon className="w-4 h-4" />
@@ -283,7 +301,7 @@ export function NotificationPanel() {
                             "text-sm leading-snug",
                             notification.is_read
                               ? "text-foreground"
-                              : "text-foreground font-medium"
+                              : "text-foreground font-medium",
                           )}
                         >
                           {notification.title}

@@ -47,7 +47,12 @@ export default function PublicProfilePage({
   const supabase = useSupabase();
   const { user } = useAuth();
   const prefix = useRoutePrefix();
-  const { isFollowing, isLoading: followLoading, follow, unfollow } = useFollowStatus(userId);
+  const {
+    isFollowing,
+    isLoading: followLoading,
+    follow,
+    unfollow,
+  } = useFollowStatus(userId);
   const { data: followCounts } = useFollowCounts(userId);
 
   const isSelf = user?.id === userId;
@@ -76,7 +81,10 @@ export default function PublicProfilePage({
         .select("xp_amount")
         .eq("profile_id", userId);
       if (error) throw error;
-      const total = (data as { xp_amount: number }[]).reduce((sum, t) => sum + t.xp_amount, 0);
+      const total = (data as { xp_amount: number }[]).reduce(
+        (sum, t) => sum + t.xp_amount,
+        0,
+      );
       return { total };
     },
   });
@@ -103,7 +111,9 @@ export default function PublicProfilePage({
     queryFn: async () => {
       const { data, error } = await supabase
         .from("feed_posts")
-        .select("id, content, post_type, likes_count, comments_count, created_at")
+        .select(
+          "id, content, post_type, likes_count, comments_count, created_at",
+        )
         .eq("author_id", userId)
         .order("created_at", { ascending: false })
         .limit(5);
@@ -130,7 +140,10 @@ export default function PublicProfilePage({
     return (
       <div className="max-w-2xl mx-auto space-y-6">
         <div className="h-5 w-20 bg-muted rounded animate-shimmer" />
-        <div className="bg-surface rounded-2xl p-8 space-y-4" style={{ boxShadow: "var(--shadow-card)" }}>
+        <div
+          className="bg-surface rounded-2xl p-8 space-y-4"
+          style={{ boxShadow: "var(--shadow-card)" }}
+        >
           <div className="flex items-center gap-4">
             <div className="w-20 h-20 rounded-full bg-muted animate-shimmer" />
             <div className="space-y-2">
@@ -207,25 +220,34 @@ export default function PublicProfilePage({
                 <h1 className="text-xl font-display font-bold text-foreground">
                   {profile.full_name}
                 </h1>
-                <span className={cn("text-[10px] font-medium px-2 py-0.5 rounded-full", role.color)}>
+                <span
+                  className={cn(
+                    "text-[10px] font-medium px-2 py-0.5 rounded-full",
+                    role.color,
+                  )}
+                >
                   {role.label}
                 </span>
               </div>
               {profile.bio && (
-                <p className="text-sm text-muted-foreground mt-1">{profile.bio}</p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {profile.bio}
+                </p>
               )}
             </div>
 
             {/* Follow button */}
             {!isSelf && user && (
               <button
-                onClick={() => isFollowing ? unfollow.mutate() : follow.mutate()}
+                onClick={() =>
+                  isFollowing ? unfollow.mutate() : follow.mutate()
+                }
                 disabled={follow.isPending || unfollow.isPending}
                 className={cn(
                   "h-9 px-4 rounded-xl text-sm font-medium transition-all active:scale-[0.98] flex items-center gap-2 shrink-0 disabled:opacity-50",
                   isFollowing
                     ? "border border-border text-muted-foreground hover:text-foreground hover:bg-muted"
-                    : "bg-primary text-white hover:bg-primary-hover"
+                    : "bg-primary text-white hover:bg-primary-hover",
                 )}
               >
                 {follow.isPending || unfollow.isPending ? (
@@ -243,11 +265,15 @@ export default function PublicProfilePage({
           {/* Stats */}
           <div className="flex items-center gap-6 mt-5 pt-5 border-t border-border">
             <div className="text-center">
-              <p className="text-lg font-bold text-foreground">{followCounts?.followersCount ?? 0}</p>
+              <p className="text-lg font-bold text-foreground">
+                {followCounts?.followersCount ?? 0}
+              </p>
               <p className="text-[10px] text-muted-foreground">Abonnes</p>
             </div>
             <div className="text-center">
-              <p className="text-lg font-bold text-foreground">{followCounts?.followingCount ?? 0}</p>
+              <p className="text-lg font-bold text-foreground">
+                {followCounts?.followingCount ?? 0}
+              </p>
               <p className="text-[10px] text-muted-foreground">Abonnements</p>
             </div>
             <div className="text-center">
@@ -315,20 +341,22 @@ export default function PublicProfilePage({
           </h2>
           <div className="space-y-3">
             {recentPosts.map((post) => (
-              <div
-                key={post.id}
-                className="p-3 bg-muted/30 rounded-xl"
-              >
+              <div key={post.id} className="p-3 bg-muted/30 rounded-xl">
                 <div className="flex items-start gap-2">
-                  <span className="text-sm">{POST_TYPE_ICONS[post.post_type] ?? "💬"}</span>
+                  <span className="text-sm">
+                    {POST_TYPE_ICONS[post.post_type] ?? "💬"}
+                  </span>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-foreground line-clamp-2">{post.content}</p>
+                    <p className="text-sm text-foreground line-clamp-2">
+                      {post.content}
+                    </p>
                     <div className="flex items-center gap-3 mt-1.5">
                       <span className="text-[10px] text-muted-foreground flex items-center gap-1">
                         <Heart className="w-3 h-3" /> {post.likes_count}
                       </span>
                       <span className="text-[10px] text-muted-foreground flex items-center gap-1">
-                        <MessageSquare className="w-3 h-3" /> {post.comments_count}
+                        <MessageSquare className="w-3 h-3" />{" "}
+                        {post.comments_count}
                       </span>
                       <span className="text-[10px] text-muted-foreground ml-auto">
                         {new Date(post.created_at).toLocaleDateString("fr-FR", {
@@ -346,12 +374,15 @@ export default function PublicProfilePage({
       )}
 
       {/* Empty state if no content */}
-      {(!userBadges || userBadges.length === 0) && (!recentPosts || recentPosts.length === 0) && (
-        <motion.div variants={staggerItem} className="text-center py-8">
-          <Star className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
-          <p className="text-sm text-muted-foreground">Pas encore d&apos;activite</p>
-        </motion.div>
-      )}
+      {(!userBadges || userBadges.length === 0) &&
+        (!recentPosts || recentPosts.length === 0) && (
+          <motion.div variants={staggerItem} className="text-center py-8">
+            <Star className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
+            <p className="text-sm text-muted-foreground">
+              Pas encore d&apos;activite
+            </p>
+          </motion.div>
+        )}
     </motion.div>
   );
 }

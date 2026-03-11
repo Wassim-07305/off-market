@@ -20,7 +20,11 @@ export default function EditFormPage({
   }
 
   if (!form) {
-    return <p className="text-center text-muted-foreground py-16">Formulaire non trouve</p>;
+    return (
+      <p className="text-center text-muted-foreground py-16">
+        Formulaire non trouve
+      </p>
+    );
   }
 
   return (
@@ -34,9 +38,7 @@ export default function EditFormPage({
       </Link>
 
       <div className="bg-surface border border-border rounded-xl p-6">
-        <h1
-          className="text-2xl font-semibold text-foreground font-bold"
-        >
+        <h1 className="text-2xl font-semibold text-foreground font-bold">
           Modifier : {form.title}
         </h1>
         <p className="text-sm text-muted-foreground mt-2">

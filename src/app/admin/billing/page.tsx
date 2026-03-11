@@ -3,11 +3,18 @@
 import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { staggerContainer, fadeInUp, defaultTransition } from "@/lib/animations";
+import {
+  staggerContainer,
+  fadeInUp,
+  defaultTransition,
+} from "@/lib/animations";
 import { useBillingStats } from "@/hooks/use-invoices";
 import { useContracts } from "@/hooks/use-contracts";
 import { useInvoices } from "@/hooks/use-invoices";
-import { usePaymentReminders, REMINDER_LABELS } from "@/hooks/use-payment-reminders";
+import {
+  usePaymentReminders,
+  REMINDER_LABELS,
+} from "@/hooks/use-payment-reminders";
 import {
   CreditCard,
   FileText,
@@ -25,14 +32,18 @@ import { ExportDropdown } from "@/components/shared/export-dropdown";
 import { exportToCSV, exportToPDF } from "@/lib/export";
 
 function formatEUR(amount: number) {
-  return new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(amount);
+  return new Intl.NumberFormat("fr-FR", {
+    style: "currency",
+    currency: "EUR",
+  }).format(amount);
 }
 
 export default function BillingOverviewPage() {
   const { data: stats, isLoading: statsLoading } = useBillingStats();
   const { contracts, isLoading: contractsLoading } = useContracts({ limit: 5 });
   const { invoices, isLoading: invoicesLoading } = useInvoices({ limit: 5 });
-  const { pendingReminders, upcomingReminders, markAsSent } = usePaymentReminders();
+  const { pendingReminders, upcomingReminders, markAsSent } =
+    usePaymentReminders();
 
   const isLoading = statsLoading || contractsLoading || invoicesLoading;
 
@@ -44,9 +55,15 @@ export default function BillingOverviewPage() {
       className="space-y-6"
     >
       {/* Header */}
-      <motion.div variants={fadeInUp} transition={defaultTransition} className="flex items-start justify-between">
+      <motion.div
+        variants={fadeInUp}
+        transition={defaultTransition}
+        className="flex items-start justify-between"
+      >
         <div>
-          <h1 className="text-3xl font-semibold text-foreground">Facturation</h1>
+          <h1 className="text-3xl font-semibold text-foreground">
+            Facturation
+          </h1>
           <p className="text-sm text-muted-foreground mt-1">
             Vue d&apos;ensemble des contrats, factures et paiements
           </p>
@@ -65,23 +82,44 @@ export default function BillingOverviewPage() {
                     {
                       title: "Revenus",
                       rows: [
-                        { label: "Revenu total", value: formatEUR(stats?.totalRevenue ?? 0) },
-                        { label: "En attente", value: formatEUR(stats?.pendingAmount ?? 0) },
-                        { label: "En retard", value: formatEUR(stats?.overdueAmount ?? 0) },
+                        {
+                          label: "Revenu total",
+                          value: formatEUR(stats?.totalRevenue ?? 0),
+                        },
+                        {
+                          label: "En attente",
+                          value: formatEUR(stats?.pendingAmount ?? 0),
+                        },
+                        {
+                          label: "En retard",
+                          value: formatEUR(stats?.overdueAmount ?? 0),
+                        },
                       ],
                     },
                     {
                       title: "Contrats",
                       rows: [
-                        { label: "Signes", value: String(stats?.contractsSigned ?? 0) },
-                        { label: "En attente", value: String(stats?.contractsPending ?? 0) },
+                        {
+                          label: "Signes",
+                          value: String(stats?.contractsSigned ?? 0),
+                        },
+                        {
+                          label: "En attente",
+                          value: String(stats?.contractsPending ?? 0),
+                        },
                       ],
                     },
                     {
                       title: "Factures",
                       rows: [
-                        { label: "Payees", value: String(stats?.invoicesPaid ?? 0) },
-                        { label: "En retard", value: String(stats?.invoicesOverdue ?? 0) },
+                        {
+                          label: "Payees",
+                          value: String(stats?.invoicesPaid ?? 0),
+                        },
+                        {
+                          label: "En retard",
+                          value: String(stats?.invoicesOverdue ?? 0),
+                        },
                       ],
                     },
                   ],
@@ -98,8 +136,12 @@ export default function BillingOverviewPage() {
                     client: inv.client?.full_name ?? "",
                     total: inv.total,
                     statut: inv.status,
-                    echeance: inv.due_date ? new Date(inv.due_date).toLocaleDateString("fr-FR") : "",
-                    paye_le: inv.paid_at ? new Date(inv.paid_at).toLocaleDateString("fr-FR") : "",
+                    echeance: inv.due_date
+                      ? new Date(inv.due_date).toLocaleDateString("fr-FR")
+                      : "",
+                    paye_le: inv.paid_at
+                      ? new Date(inv.paid_at).toLocaleDateString("fr-FR")
+                      : "",
                   })),
                   [
                     { key: "numero", label: "Numero" },
@@ -109,7 +151,7 @@ export default function BillingOverviewPage() {
                     { key: "echeance", label: "Echeance" },
                     { key: "paye_le", label: "Paye le" },
                   ],
-                  "factures-export"
+                  "factures-export",
                 );
               },
             },
@@ -132,7 +174,9 @@ export default function BillingOverviewPage() {
           <p className="text-2xl font-semibold text-foreground">
             {statsLoading ? "..." : formatEUR(stats?.totalRevenue ?? 0)}
           </p>
-          <p className="text-xs text-muted-foreground mt-1">Revenus encaisses</p>
+          <p className="text-xs text-muted-foreground mt-1">
+            Revenus encaisses
+          </p>
         </div>
 
         <div className="bg-surface border border-border rounded-xl p-5">
@@ -166,7 +210,7 @@ export default function BillingOverviewPage() {
             </div>
           </div>
           <p className="text-2xl font-semibold text-foreground">
-            {statsLoading ? "..." : stats?.contractsSigned ?? 0}
+            {statsLoading ? "..." : (stats?.contractsSigned ?? 0)}
           </p>
           <p className="text-xs text-muted-foreground mt-1">Contrats signes</p>
         </div>
@@ -181,7 +225,9 @@ export default function BillingOverviewPage() {
           className="bg-surface border border-border rounded-xl p-6"
         >
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold text-foreground">Derniers contrats</h2>
+            <h2 className="text-sm font-semibold text-foreground">
+              Derniers contrats
+            </h2>
             <Link
               href="/admin/billing/contracts"
               className="text-xs text-primary hover:underline flex items-center gap-1"
@@ -193,7 +239,10 @@ export default function BillingOverviewPage() {
           {contractsLoading ? (
             <div className="space-y-3">
               {[...Array(3)].map((_, i) => (
-                <div key={i} className="h-14 bg-muted animate-pulse rounded-lg" />
+                <div
+                  key={i}
+                  className="h-14 bg-muted animate-pulse rounded-lg"
+                />
               ))}
             </div>
           ) : contracts.length === 0 ? (
@@ -232,7 +281,9 @@ export default function BillingOverviewPage() {
           className="bg-surface border border-border rounded-xl p-6"
         >
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold text-foreground">Dernieres factures</h2>
+            <h2 className="text-sm font-semibold text-foreground">
+              Dernieres factures
+            </h2>
             <Link
               href="/admin/billing/invoices"
               className="text-xs text-primary hover:underline flex items-center gap-1"
@@ -244,7 +295,10 @@ export default function BillingOverviewPage() {
           {invoicesLoading ? (
             <div className="space-y-3">
               {[...Array(3)].map((_, i) => (
-                <div key={i} className="h-14 bg-muted animate-pulse rounded-lg" />
+                <div
+                  key={i}
+                  className="h-14 bg-muted animate-pulse rounded-lg"
+                />
               ))}
             </div>
           ) : invoices.length === 0 ? (
@@ -304,18 +358,26 @@ export default function BillingOverviewPage() {
           {/* Pending (to send now) */}
           {pendingReminders.length > 0 && (
             <div className="mb-4">
-              <p className="text-xs font-medium text-red-500 mb-2">A envoyer maintenant</p>
+              <p className="text-xs font-medium text-red-500 mb-2">
+                A envoyer maintenant
+              </p>
               <div className="space-y-2">
                 {pendingReminders.slice(0, 5).map((r) => {
                   const config = REMINDER_LABELS[r.reminder_type];
                   return (
-                    <div key={r.id} className="flex items-center justify-between p-3 bg-red-500/5 rounded-lg border border-red-500/10">
+                    <div
+                      key={r.id}
+                      className="flex items-center justify-between p-3 bg-red-500/5 rounded-lg border border-red-500/10"
+                    >
                       <div>
-                        <p className={`text-xs font-medium ${config?.severity ?? "text-red-500"}`}>
+                        <p
+                          className={`text-xs font-medium ${config?.severity ?? "text-red-500"}`}
+                        >
                           {config?.label ?? r.reminder_type}
                         </p>
                         <p className="text-[10px] text-muted-foreground">
-                          Prevue le {new Date(r.scheduled_at).toLocaleDateString("fr-FR")}
+                          Prevue le{" "}
+                          {new Date(r.scheduled_at).toLocaleDateString("fr-FR")}
                         </p>
                       </div>
                       <button
@@ -336,15 +398,22 @@ export default function BillingOverviewPage() {
           {/* Upcoming */}
           {upcomingReminders.length > 0 && (
             <div>
-              <p className="text-xs font-medium text-muted-foreground mb-2">Prochaines relances</p>
+              <p className="text-xs font-medium text-muted-foreground mb-2">
+                Prochaines relances
+              </p>
               <div className="space-y-1.5">
                 {upcomingReminders.slice(0, 5).map((r) => {
                   const config = REMINDER_LABELS[r.reminder_type];
                   return (
-                    <div key={r.id} className="flex items-center justify-between p-2.5 rounded-lg hover:bg-muted/30 transition-colors">
+                    <div
+                      key={r.id}
+                      className="flex items-center justify-between p-2.5 rounded-lg hover:bg-muted/30 transition-colors"
+                    >
                       <div className="flex items-center gap-2">
                         <Clock className="w-3.5 h-3.5 text-muted-foreground" />
-                        <span className="text-xs text-foreground">{config?.label ?? r.reminder_type}</span>
+                        <span className="text-xs text-foreground">
+                          {config?.label ?? r.reminder_type}
+                        </span>
                       </div>
                       <span className="text-[10px] text-muted-foreground">
                         {new Date(r.scheduled_at).toLocaleDateString("fr-FR")}
@@ -383,7 +452,9 @@ function ContractStatusBadge({ status }: { status: string }) {
   };
   const c = config[status] ?? config.draft;
   return (
-    <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${c.className}`}>
+    <span
+      className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${c.className}`}
+    >
       {c.label}
     </span>
   );
@@ -398,7 +469,9 @@ function InvoiceStatusIcon({ status }: { status: string }) {
     case "overdue":
       return <AlertTriangle className="w-4 h-4 text-red-500 shrink-0" />;
     case "cancelled":
-      return <AlertTriangle className="w-4 h-4 text-muted-foreground shrink-0" />;
+      return (
+        <AlertTriangle className="w-4 h-4 text-muted-foreground shrink-0" />
+      );
     default:
       return <Receipt className="w-4 h-4 text-muted-foreground shrink-0" />;
   }
@@ -410,11 +483,16 @@ function InvoiceStatusBadge({ status }: { status: string }) {
     sent: { label: "Envoyee", className: "bg-blue-500/10 text-blue-600" },
     paid: { label: "Payee", className: "bg-emerald-500/10 text-emerald-600" },
     overdue: { label: "En retard", className: "bg-red-500/10 text-red-600" },
-    cancelled: { label: "Annulee", className: "bg-muted text-muted-foreground" },
+    cancelled: {
+      label: "Annulee",
+      className: "bg-muted text-muted-foreground",
+    },
   };
   const c = config[status] ?? config.draft;
   return (
-    <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${c.className}`}>
+    <span
+      className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${c.className}`}
+    >
       {c.label}
     </span>
   );

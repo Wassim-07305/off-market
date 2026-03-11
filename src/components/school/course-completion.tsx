@@ -1,6 +1,11 @@
 "use client";
 
-import { useCourseProgress, useCourseQuizAverage, useCertificates, useIssueCertificate } from "@/hooks/use-certificates";
+import {
+  useCourseProgress,
+  useCourseQuizAverage,
+  useCertificates,
+  useIssueCertificate,
+} from "@/hooks/use-certificates";
 import { useAuth } from "@/hooks/use-auth";
 import { Award, Check, Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -19,7 +24,8 @@ export function CourseCompletion({ course }: CourseCompletionProps) {
 
   const hasCertificate = certificates?.some((c) => c.course_id === course.id);
   const totalModules = course.modules?.length ?? 0;
-  const totalLessons = course.modules?.reduce((acc, m) => acc + (m.lessons?.length ?? 0), 0) ?? 0;
+  const totalLessons =
+    course.modules?.reduce((acc, m) => acc + (m.lessons?.length ?? 0), 0) ?? 0;
 
   if (!progress || !progress.isComplete) return null;
 
@@ -48,9 +54,12 @@ export function CourseCompletion({ course }: CourseCompletionProps) {
           <Check className="w-5 h-5 text-emerald-600" />
         </div>
         <div>
-          <p className="text-sm font-semibold text-foreground">Formation terminee !</p>
+          <p className="text-sm font-semibold text-foreground">
+            Formation terminee !
+          </p>
           <p className="text-xs text-muted-foreground">
-            {progress.completedLessons}/{progress.totalLessons} lecons completees
+            {progress.completedLessons}/{progress.totalLessons} lecons
+            completees
             {quizAvg != null && ` · Moyenne quiz : ${quizAvg}%`}
           </p>
         </div>

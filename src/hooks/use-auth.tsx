@@ -16,11 +16,14 @@ interface AuthContextValue {
   user: User | null;
   profile: Profile | null;
   loading: boolean;
-  signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>;
+  signIn: (
+    email: string,
+    password: string,
+  ) => Promise<{ error: AuthError | null }>;
   signUp: (
     email: string,
     password: string,
-    fullName: string
+    fullName: string,
   ) => Promise<{ error: AuthError | null }>;
   signInWithMagicLink: (email: string) => Promise<{ error: AuthError | null }>;
   signInWithGoogle: () => Promise<{ error: AuthError | null }>;
@@ -102,7 +105,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
       return { error };
     },
-    [supabase]
+    [supabase],
   );
 
   const signUp = useCallback(
@@ -116,7 +119,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
       return { error };
     },
-    [supabase]
+    [supabase],
   );
 
   const signInWithMagicLink = useCallback(
@@ -129,7 +132,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
       return { error };
     },
-    [supabase]
+    [supabase],
   );
 
   const signInWithGoogle = useCallback(async () => {
@@ -158,7 +161,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
       return { error };
     },
-    [supabase]
+    [supabase],
   );
 
   const role = profile?.role;

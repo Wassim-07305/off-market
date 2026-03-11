@@ -36,11 +36,7 @@ export default function ForgotPasswordPage() {
           className="mx-auto mb-4 rounded-2xl"
           priority
         />
-        <h1
-          className="text-4xl text-white mb-2 font-bold"
-        >
-          Off Market
-        </h1>
+        <h1 className="text-4xl text-white mb-2 font-bold">Off Market</h1>
         <p className="text-zinc-400 text-sm">Reinitialise ton mot de passe</p>
       </div>
 

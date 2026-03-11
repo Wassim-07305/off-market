@@ -33,7 +33,12 @@ export interface Contract {
   created_at: string;
   updated_at: string;
   // Joined
-  client?: { id: string; full_name: string; email: string; avatar_url: string | null };
+  client?: {
+    id: string;
+    full_name: string;
+    email: string;
+    avatar_url: string | null;
+  };
 }
 
 export type ContractStatus = "draft" | "sent" | "signed" | "cancelled";
@@ -62,7 +67,12 @@ export interface Invoice {
   created_at: string;
   updated_at: string;
   // Joined
-  client?: { id: string; full_name: string; email: string; avatar_url: string | null };
+  client?: {
+    id: string;
+    full_name: string;
+    email: string;
+    avatar_url: string | null;
+  };
   contract?: { id: string; title: string } | null;
 }
 

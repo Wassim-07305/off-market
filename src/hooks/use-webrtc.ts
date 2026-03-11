@@ -60,17 +60,16 @@ export function useWebRTC({ callId }: UseWebRTCOptions) {
   const myName = profile?.full_name ?? "Utilisateur";
 
   // "Polite peer" pattern: lower ID = polite (yields on collision)
-  const isPolite = useCallback(
-    (remoteId: string) => myId < remoteId,
-    [myId]
-  );
+  const isPolite = useCallback((remoteId: string) => myId < remoteId, [myId]);
 
   // Use getState() everywhere to avoid stale closures and dependency cascades
   const cleanup = useCallback(() => {
     try {
       localStreamRef.current?.getTracks().forEach((t) => t.stop());
       screenStreamRef.current?.getTracks().forEach((t) => t.stop());
-    } catch { /* tracks already stopped */ }
+    } catch {
+      /* tracks already stopped */
+    }
     localStreamRef.current = null;
     screenStreamRef.current = null;
     setLocalStream(null);
@@ -78,14 +77,18 @@ export function useWebRTC({ callId }: UseWebRTCOptions) {
 
     try {
       pcRef.current?.close();
-    } catch { /* already closed */ }
+    } catch {
+      /* already closed */
+    }
     pcRef.current = null;
 
     try {
       if (channelRef.current) {
         supabase.removeChannel(channelRef.current);
       }
-    } catch { /* channel already removed */ }
+    } catch {
+      /* channel already removed */
+    }
     channelRef.current = null;
 
     useCallStore.getState().setRemoteConnected(false);
@@ -189,7 +192,11 @@ export function useWebRTC({ callId }: UseWebRTCOptions) {
         sigChannel.send({
           type: "broadcast",
           event: "offer",
-          payload: { sdp: pc.localDescription, senderId: myId, senderName: myName },
+          payload: {
+            sdp: pc.localDescription,
+            senderId: myId,
+            senderName: myName,
+          },
         });
       } catch (err) {
         console.error("Negotiation error:", err);
@@ -211,7 +218,9 @@ export function useWebRTC({ callId }: UseWebRTCOptions) {
         ignoringOfferRef.current = !polite && offerCollision;
         if (ignoringOfferRef.current) return;
 
-        useCallStore.getState().setRemotePeer(payload.senderId, payload.senderName);
+        useCallStore
+          .getState()
+          .setRemotePeer(payload.senderId, payload.senderName);
 
         await currentPc.setRemoteDescription(payload.sdp);
         await currentPc.setLocalDescription();
@@ -235,7 +244,9 @@ export function useWebRTC({ callId }: UseWebRTCOptions) {
       })
       .on("broadcast", { event: "join" }, async ({ payload }) => {
         if (payload.senderId === myId) return;
-        useCallStore.getState().setRemotePeer(payload.senderId, payload.senderName);
+        useCallStore
+          .getState()
+          .setRemotePeer(payload.senderId, payload.senderName);
         // If we're the impolite peer (higher ID), create offer
         if (!isPolite(payload.senderId)) {
           try {
@@ -244,7 +255,11 @@ export function useWebRTC({ callId }: UseWebRTCOptions) {
             sigChannel.send({
               type: "broadcast",
               event: "offer",
-              payload: { sdp: pc.localDescription, senderId: myId, senderName: myName },
+              payload: {
+                sdp: pc.localDescription,
+                senderId: myId,
+                senderName: myName,
+              },
             });
           } catch (err) {
             console.error("Join offer error:", err);
@@ -293,7 +308,9 @@ export function useWebRTC({ callId }: UseWebRTCOptions) {
         event: "leave",
         payload: { senderId: myId },
       });
-    } catch { /* channel may already be closed */ }
+    } catch {
+      /* channel may already be closed */
+    }
     cleanup();
     useCallStore.getState().setPhase("ended");
   }, [myId, cleanup]);
@@ -376,14 +393,19 @@ export function useWebRTC({ callId }: UseWebRTCOptions) {
 
   // Broadcast transcript entry to peer
   const broadcastTranscript = useCallback(
-    (entry: { speaker_id: string; speaker_name: string; text: string; timestamp_ms: number }) => {
+    (entry: {
+      speaker_id: string;
+      speaker_name: string;
+      text: string;
+      timestamp_ms: number;
+    }) => {
       channelRef.current?.send({
         type: "broadcast",
         event: "transcript",
         payload: { senderId: myId, entry },
       });
     },
-    [myId]
+    [myId],
   );
 
   // Cleanup on unmount only — stable deps so this won't re-fire on state changes

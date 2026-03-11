@@ -44,7 +44,12 @@ export default function SchoolAdminPage() {
     setShowCreateDialog(true);
   }
 
-  function handleEdit(course: { id: string; title: string; description?: string | null; cover_image_url?: string | null }) {
+  function handleEdit(course: {
+    id: string;
+    title: string;
+    description?: string | null;
+    cover_image_url?: string | null;
+  }) {
     setEditingCourse(course);
     setShowCreateDialog(true);
   }
@@ -59,7 +64,9 @@ export default function SchoolAdminPage() {
       {
         onSuccess: () => {
           toast.success(
-            course.status === "published" ? "Formation depubliee" : "Formation publiee"
+            course.status === "published"
+              ? "Formation depubliee"
+              : "Formation publiee",
           );
           setTogglingId(null);
         },
@@ -67,12 +74,17 @@ export default function SchoolAdminPage() {
           toast.error("Erreur lors de la mise a jour");
           setTogglingId(null);
         },
-      }
+      },
     );
   }
 
   function handleDelete(courseId: string, title: string) {
-    if (!confirm(`Supprimer la formation "${title}" ? Cette action est irreversible.`)) return;
+    if (
+      !confirm(
+        `Supprimer la formation "${title}" ? Cette action est irreversible.`,
+      )
+    )
+      return;
 
     setDeletingId(courseId);
     mutations.deleteCourse.mutate(courseId, {
@@ -144,7 +156,9 @@ export default function SchoolAdminPage() {
         ) : !courses || courses.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <GraduationCap className="h-16 w-16 text-muted-foreground/30 mb-4" />
-            <h3 className="text-lg font-display font-semibold mb-1">Aucune formation</h3>
+            <h3 className="text-lg font-display font-semibold mb-1">
+              Aucune formation
+            </h3>
             <p className="text-sm text-muted-foreground mb-6">
               Commencez par creer votre premiere formation
             </p>
@@ -163,7 +177,7 @@ export default function SchoolAdminPage() {
               const lessonCount =
                 course.modules?.reduce(
                   (acc, m) => acc + (m.lessons?.length ?? 0),
-                  0
+                  0,
                 ) ?? 0;
               const isDeleting = deletingId === course.id;
               const isToggling = togglingId === course.id;
@@ -173,7 +187,7 @@ export default function SchoolAdminPage() {
                   key={course.id}
                   className={cn(
                     "group bg-surface rounded-2xl overflow-hidden transition-all hover:shadow-lg",
-                    isDeleting && "opacity-50 pointer-events-none"
+                    isDeleting && "opacity-50 pointer-events-none",
                   )}
                   style={{ boxShadow: "var(--shadow-card)" }}
                 >
@@ -182,7 +196,9 @@ export default function SchoolAdminPage() {
                     {course.cover_image_url ? (
                       <div
                         className="w-full h-full bg-cover bg-center"
-                        style={{ backgroundImage: `url(${course.cover_image_url})` }}
+                        style={{
+                          backgroundImage: `url(${course.cover_image_url})`,
+                        }}
                       />
                     ) : (
                       <div className="flex items-center justify-center h-full bg-gradient-to-br from-primary to-zinc-900">
@@ -197,7 +213,7 @@ export default function SchoolAdminPage() {
                           "text-[10px] font-medium px-2.5 py-1 rounded-full backdrop-blur-sm",
                           course.status === "published"
                             ? "bg-success/90 text-white"
-                            : "bg-black/50 text-white/80"
+                            : "bg-black/50 text-white/80",
                         )}
                       >
                         {course.status === "published" ? "Publie" : "Brouillon"}
@@ -258,15 +274,19 @@ export default function SchoolAdminPage() {
                         <button
                           onClick={() => handleTogglePublish(course)}
                           disabled={isToggling}
-                          className="h-8 w-8 rounded-xl border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-all flex items-center justify-center disabled:opacity-50"
-                          title={course.status === "published" ? "Depublier" : "Publier"}
+                          className={cn(
+                            "h-8 px-3 rounded-xl border text-xs font-medium transition-all disabled:opacity-50",
+                            course.status === "published"
+                              ? "border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100"
+                              : "border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100",
+                          )}
                         >
                           {isToggling ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
+                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
                           ) : course.status === "published" ? (
-                            <EyeOff className="h-4 w-4" />
+                            "Mettre en prive"
                           ) : (
-                            <Eye className="h-4 w-4" />
+                            "Publier"
                           )}
                         </button>
 
@@ -299,8 +319,14 @@ export default function SchoolAdminPage() {
           setShowCreateDialog(false);
           setEditingCourse(null);
         }}
-        isPending={editingCourse ? mutations.updateCourse.isPending : mutations.createCourse.isPending}
-        course={editingCourse as Parameters<typeof CourseFormDialog>[0]["course"]}
+        isPending={
+          editingCourse
+            ? mutations.updateCourse.isPending
+            : mutations.createCourse.isPending
+        }
+        course={
+          editingCourse as Parameters<typeof CourseFormDialog>[0]["course"]
+        }
         onSave={(data) => {
           if (editingCourse) {
             mutations.updateCourse.mutate(
@@ -312,7 +338,7 @@ export default function SchoolAdminPage() {
                   setEditingCourse(null);
                 },
                 onError: () => toast.error("Erreur lors de la mise a jour"),
-              }
+              },
             );
           } else {
             mutations.createCourse.mutate(data, {

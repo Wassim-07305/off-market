@@ -13,7 +13,9 @@ export function groupMessages(messages: EnrichedMessage[]): MessageGroup[] {
     const sameUser = last && last.senderId === msg.sender_id;
     const within5Min =
       lastMsg &&
-      new Date(msg.created_at).getTime() - new Date(lastMsg.created_at).getTime() < 5 * 60 * 1000;
+      new Date(msg.created_at).getTime() -
+        new Date(lastMsg.created_at).getTime() <
+        5 * 60 * 1000;
     const sameDay = lastMsg && isSameDay(lastMsg.created_at, msg.created_at);
 
     if (sameUser && within5Min && sameDay && msg.content_type !== "system") {
@@ -41,7 +43,9 @@ export function groupMessages(messages: EnrichedMessage[]): MessageGroup[] {
 export function formatMessageTime(dateStr: string): string {
   const d = new Date(dateStr);
   const now = new Date();
-  const time = d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }).replace(":", " h ");
+  const time = d
+    .toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })
+    .replace(":", " h ");
 
   if (isSameDay(dateStr, now.toISOString())) {
     return time;
@@ -53,13 +57,18 @@ export function formatMessageTime(dateStr: string): string {
     return `Hier ${time}`;
   }
 
-  const daysDiff = Math.floor((now.getTime() - d.getTime()) / (1000 * 60 * 60 * 24));
+  const daysDiff = Math.floor(
+    (now.getTime() - d.getTime()) / (1000 * 60 * 60 * 24),
+  );
   if (daysDiff < 7) {
     const dayName = d.toLocaleDateString("fr-FR", { weekday: "short" });
     return `${dayName.charAt(0).toUpperCase() + dayName.slice(1)} ${time}`;
   }
 
-  const dateFormatted = d.toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
+  const dateFormatted = d.toLocaleDateString("fr-FR", {
+    day: "numeric",
+    month: "short",
+  });
   return `${dateFormatted} ${time}`;
 }
 
@@ -81,11 +90,13 @@ export function formatDateSeparator(dateStr: string): string {
     return "Hier";
   }
 
-  return d.toLocaleDateString("fr-FR", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-  }).replace(/^\w/, (c) => c.toUpperCase());
+  return d
+    .toLocaleDateString("fr-FR", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+    })
+    .replace(/^\w/, (c) => c.toUpperCase());
 }
 
 /**
@@ -113,7 +124,10 @@ export function isSameDay(a: string, b: string): boolean {
 /**
  * Get a short preview of message content for sidebar display.
  */
-export function getMessagePreview(content: string, contentType: string): string {
+export function getMessagePreview(
+  content: string,
+  contentType: string,
+): string {
   if (contentType === "image") return "📷 Image";
   if (contentType === "file") return "📎 Fichier";
   if (contentType === "video") return "🎥 Video";

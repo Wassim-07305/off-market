@@ -45,7 +45,9 @@ export function VoiceRecorder({ onSend }: VoiceRecorderProps) {
     try {
       const mimeType = getSupportedMimeType();
       if (!mimeType) {
-        toast.error("L'enregistrement vocal n'est pas supporte par ce navigateur");
+        toast.error(
+          "L'enregistrement vocal n'est pas supporte par ce navigateur",
+        );
         return;
       }
       mimeTypeRef.current = mimeType;
@@ -218,7 +220,9 @@ export function VoiceRecorder({ onSend }: VoiceRecorderProps) {
             />
           ))}
         </div>
-        <span className="text-[11px] font-mono text-primary shrink-0">{formatTime(elapsed)}</span>
+        <span className="text-[11px] font-mono text-primary shrink-0">
+          {formatTime(elapsed)}
+        </span>
       </div>
 
       <button

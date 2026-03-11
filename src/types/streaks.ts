@@ -63,4 +63,12 @@ export const STREAK_MILESTONES = [
   { days: 30, label: "1 mois", multiplier: "2x" },
 ] as const;
 
-export const DAY_LABELS = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"] as const;
+export const DAY_LABELS = [
+  "Dim",
+  "Lun",
+  "Mar",
+  "Mer",
+  "Jeu",
+  "Ven",
+  "Sam",
+] as const;

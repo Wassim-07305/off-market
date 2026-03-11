@@ -4,7 +4,11 @@ import { useState } from "react";
 import { useCallMetrics } from "@/hooks/use-calls";
 import { CALL_TYPES, SATISFACTION_CONFIG } from "@/types/calls";
 import { motion } from "framer-motion";
-import { staggerContainer, fadeInUp, defaultTransition } from "@/lib/animations";
+import {
+  staggerContainer,
+  fadeInUp,
+  defaultTransition,
+} from "@/lib/animations";
 import {
   Phone,
   CheckCircle,
@@ -27,12 +31,18 @@ export function CallMetrics() {
     if (period === "week") {
       const from = new Date(now);
       from.setDate(from.getDate() - 7);
-      return { from: from.toISOString().split("T")[0], to: now.toISOString().split("T")[0] };
+      return {
+        from: from.toISOString().split("T")[0],
+        to: now.toISOString().split("T")[0],
+      };
     }
     if (period === "month") {
       const from = new Date(now);
       from.setMonth(from.getMonth() - 1);
-      return { from: from.toISOString().split("T")[0], to: now.toISOString().split("T")[0] };
+      return {
+        from: from.toISOString().split("T")[0],
+        to: now.toISOString().split("T")[0],
+      };
     }
     return undefined;
   })();
@@ -61,17 +71,26 @@ export function CallMetrics() {
       className="space-y-6"
     >
       {/* Period selector */}
-      <motion.div variants={fadeInUp} transition={defaultTransition} className="flex items-center justify-between">
+      <motion.div
+        variants={fadeInUp}
+        transition={defaultTransition}
+        className="flex items-center justify-between"
+      >
         <h2 className="text-sm font-semibold text-foreground flex items-center gap-2">
           <BarChart3 className="w-4 h-4 text-primary" />
           Metriques d&apos;appels
         </h2>
-        <div className="flex rounded-xl overflow-hidden" style={{ boxShadow: "var(--shadow-xs)" }}>
-          {([
-            { key: "week", label: "7j" },
-            { key: "month", label: "30j" },
-            { key: "all", label: "Tout" },
-          ] as const).map((p) => (
+        <div
+          className="flex rounded-xl overflow-hidden"
+          style={{ boxShadow: "var(--shadow-xs)" }}
+        >
+          {(
+            [
+              { key: "week", label: "7j" },
+              { key: "month", label: "30j" },
+              { key: "all", label: "Tout" },
+            ] as const
+          ).map((p) => (
             <button
               key={p.key}
               onClick={() => setPeriod(p.key)}
@@ -79,7 +98,7 @@ export function CallMetrics() {
                 "h-8 px-3 text-xs font-medium transition-all",
                 period === p.key
                   ? "bg-foreground text-background"
-                  : "bg-surface text-muted-foreground hover:text-foreground"
+                  : "bg-surface text-muted-foreground hover:text-foreground",
               )}
             >
               {p.label}
@@ -99,7 +118,9 @@ export function CallMetrics() {
             <Phone className="w-4 h-4 text-primary" />
             <span className="text-xs text-muted-foreground">Total appels</span>
           </div>
-          <p className="text-2xl font-semibold text-foreground">{metrics.total}</p>
+          <p className="text-2xl font-semibold text-foreground">
+            {metrics.total}
+          </p>
           <p className="text-[10px] text-muted-foreground mt-0.5">
             {metrics.realise} realise{metrics.realise > 1 ? "s" : ""}
           </p>
@@ -108,9 +129,13 @@ export function CallMetrics() {
         <div className="bg-surface border border-border rounded-xl p-4">
           <div className="flex items-center gap-2 mb-2">
             <CheckCircle className="w-4 h-4 text-emerald-500" />
-            <span className="text-xs text-muted-foreground">Taux completion</span>
+            <span className="text-xs text-muted-foreground">
+              Taux completion
+            </span>
           </div>
-          <p className="text-2xl font-semibold text-foreground">{metrics.completionRate}%</p>
+          <p className="text-2xl font-semibold text-foreground">
+            {metrics.completionRate}%
+          </p>
           <p className="text-[10px] text-muted-foreground mt-0.5">
             {metrics.noShowRate}% no-show
           </p>
@@ -121,7 +146,9 @@ export function CallMetrics() {
             <Clock className="w-4 h-4 text-amber-500" />
             <span className="text-xs text-muted-foreground">Duree moyenne</span>
           </div>
-          <p className="text-2xl font-semibold text-foreground">{metrics.avgDuration} min</p>
+          <p className="text-2xl font-semibold text-foreground">
+            {metrics.avgDuration} min
+          </p>
         </div>
 
         <div className="bg-surface border border-border rounded-xl p-4">
@@ -156,17 +183,24 @@ export function CallMetrics() {
           <div className="space-y-2">
             {CALL_TYPES.map((type) => {
               const count = metrics.byType[type.value] ?? 0;
-              const pct = metrics.total > 0 ? Math.round((count / metrics.total) * 100) : 0;
+              const pct =
+                metrics.total > 0
+                  ? Math.round((count / metrics.total) * 100)
+                  : 0;
               return (
                 <div key={type.value} className="flex items-center gap-2">
-                  <span className="text-xs text-muted-foreground w-16 shrink-0">{type.label}</span>
+                  <span className="text-xs text-muted-foreground w-16 shrink-0">
+                    {type.label}
+                  </span>
                   <div className="flex-1 h-5 bg-muted/50 rounded-full overflow-hidden">
                     <div
                       className="h-full bg-primary/20 rounded-full transition-all"
                       style={{ width: `${pct}%` }}
                     />
                   </div>
-                  <span className="text-xs font-mono text-foreground w-8 text-right">{count}</span>
+                  <span className="text-xs font-mono text-foreground w-8 text-right">
+                    {count}
+                  </span>
                 </div>
               );
             })}
@@ -182,16 +216,24 @@ export function CallMetrics() {
           <div className="flex items-end gap-2 h-24">
             {metrics.byDay.map((count, i) => (
               <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                <div className="w-full flex flex-col justify-end" style={{ height: "60px" }}>
+                <div
+                  className="w-full flex flex-col justify-end"
+                  style={{ height: "60px" }}
+                >
                   <div
                     className={cn(
                       "w-full rounded-t-md transition-all",
-                      count > 0 ? "bg-primary/30" : "bg-muted/30"
+                      count > 0 ? "bg-primary/30" : "bg-muted/30",
                     )}
-                    style={{ height: `${(count / maxByDay) * 100}%`, minHeight: count > 0 ? "4px" : "0" }}
+                    style={{
+                      height: `${(count / maxByDay) * 100}%`,
+                      minHeight: count > 0 ? "4px" : "0",
+                    }}
                   />
                 </div>
-                <span className="text-[10px] text-muted-foreground">{DAY_LABELS[i]}</span>
+                <span className="text-[10px] text-muted-foreground">
+                  {DAY_LABELS[i]}
+                </span>
               </div>
             ))}
           </div>
@@ -202,16 +244,20 @@ export function CallMetrics() {
       <motion.div variants={fadeInUp} transition={defaultTransition}>
         <div className="flex items-center gap-4 text-xs text-muted-foreground">
           <span className="flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-green-500" /> Realises: {metrics.realise}
+            <span className="w-2 h-2 rounded-full bg-green-500" /> Realises:{" "}
+            {metrics.realise}
           </span>
           <span className="flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-red-500" /> No-show: {metrics.noShow}
+            <span className="w-2 h-2 rounded-full bg-red-500" /> No-show:{" "}
+            {metrics.noShow}
           </span>
           <span className="flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-zinc-400" /> Annules: {metrics.annule}
+            <span className="w-2 h-2 rounded-full bg-zinc-400" /> Annules:{" "}
+            {metrics.annule}
           </span>
           <span className="flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-orange-500" /> Reportes: {metrics.reporte}
+            <span className="w-2 h-2 rounded-full bg-orange-500" /> Reportes:{" "}
+            {metrics.reporte}
           </span>
         </div>
       </motion.div>

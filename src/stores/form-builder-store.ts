@@ -21,13 +21,10 @@ interface FormBuilderState {
 export const useFormBuilderStore = create<FormBuilderState>((set) => ({
   fields: [],
   setFields: (fields) => set({ fields }),
-  addField: (field) =>
-    set((state) => ({ fields: [...state.fields, field] })),
+  addField: (field) => set((state) => ({ fields: [...state.fields, field] })),
   updateField: (id, updates) =>
     set((state) => ({
-      fields: state.fields.map((f) =>
-        f.id === id ? { ...f, ...updates } : f
-      ),
+      fields: state.fields.map((f) => (f.id === id ? { ...f, ...updates } : f)),
     })),
   removeField: (id) =>
     set((state) => ({

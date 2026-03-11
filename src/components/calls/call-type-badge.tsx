@@ -22,7 +22,7 @@ export function CallTypeBadge({ type, className }: CallTypeBadgeProps) {
       className={cn(
         "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium",
         CALL_TYPE_COLORS[type],
-        className
+        className,
       )}
     >
       {type === "iclosed" && (

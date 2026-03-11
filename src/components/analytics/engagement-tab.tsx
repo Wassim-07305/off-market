@@ -54,7 +54,11 @@ export function EngagementTab({ range }: EngagementTabProps) {
       <div className="space-y-6">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="bg-surface rounded-2xl p-6 animate-shimmer" style={{ boxShadow: "var(--shadow-card)" }}>
+            <div
+              key={i}
+              className="bg-surface rounded-2xl p-6 animate-shimmer"
+              style={{ boxShadow: "var(--shadow-card)" }}
+            >
               <div className="h-3 w-20 bg-muted rounded-lg mb-3" />
               <div className="h-8 w-24 bg-muted rounded-lg" />
             </div>
@@ -70,12 +74,15 @@ export function EngagementTab({ range }: EngagementTabProps) {
     exportToCSV(
       "engagement.csv",
       ["Type d'activite", "Nombre"],
-      data.activityByType.map((a) => [a.label, String(a.count)])
+      data.activityByType.map((a) => [a.label, String(a.count)]),
     );
   };
 
   // Heatmap: compute max for color intensity
-  const maxHeatmapCount = Math.max(...data.activityHeatmap.map((h) => h.count), 1);
+  const maxHeatmapCount = Math.max(
+    ...data.activityHeatmap.map((h) => h.count),
+    1,
+  );
   const heatmapGrid = new Map<string, number>();
   for (const h of data.activityHeatmap) {
     heatmapGrid.set(`${h.day}-${h.hour}`, h.count);
@@ -85,29 +92,60 @@ export function EngagementTab({ range }: EngagementTabProps) {
     <div className="space-y-6">
       {/* KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard title="Clients total" value={data.totalClients} icon={Users} />
-        <StatCard title="Clients actifs" value={data.activeClients} icon={UserCheck} />
-        <StatCard title="Taux retention" value={`${data.retentionRate}%`} icon={Heart} />
-        <StatCard title="Score sante moyen" value={data.avgHealthScore} icon={Activity} />
+        <StatCard
+          title="Clients total"
+          value={data.totalClients}
+          icon={Users}
+        />
+        <StatCard
+          title="Clients actifs"
+          value={data.activeClients}
+          icon={UserCheck}
+        />
+        <StatCard
+          title="Taux retention"
+          value={`${data.retentionRate}%`}
+          icon={Heart}
+        />
+        <StatCard
+          title="Score sante moyen"
+          value={data.avgHealthScore}
+          icon={Activity}
+        />
       </div>
 
       {/* Tag distribution + Activity by type */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Tag distribution */}
-        <div className="bg-surface rounded-2xl p-6" style={{ boxShadow: "var(--shadow-card)" }}>
-          <h3 className="text-[13px] font-semibold text-foreground mb-4">Segmentation des eleves</h3>
+        <div
+          className="bg-surface rounded-2xl p-6"
+          style={{ boxShadow: "var(--shadow-card)" }}
+        >
+          <h3 className="text-[13px] font-semibold text-foreground mb-4">
+            Segmentation des eleves
+          </h3>
           <div className="space-y-3">
             {data.tagDistribution.map((tag) => {
-              const pct = data.totalClients > 0 ? Math.round((tag.count / data.totalClients) * 100) : 0;
+              const pct =
+                data.totalClients > 0
+                  ? Math.round((tag.count / data.totalClients) * 100)
+                  : 0;
               return (
                 <div key={tag.tag}>
                   <div className="flex items-center justify-between mb-1">
                     <div className="flex items-center gap-2">
-                      <span className={cn("inline-flex items-center h-5 px-2 rounded-full text-[10px] font-medium", tag.color)}>
+                      <span
+                        className={cn(
+                          "inline-flex items-center h-5 px-2 rounded-full text-[10px] font-medium",
+                          tag.color,
+                        )}
+                      >
                         {tag.label}
                       </span>
                     </div>
-                    <span className="text-[11px] text-muted-foreground font-mono">{tag.count} ({pct}%)</span>
+                    <span className="text-[11px] text-muted-foreground font-mono">
+                      {tag.count} ({pct}%)
+                    </span>
                   </div>
                   <div className="h-1.5 bg-muted rounded-full overflow-hidden">
                     <div
@@ -122,9 +160,14 @@ export function EngagementTab({ range }: EngagementTabProps) {
         </div>
 
         {/* Activity by type */}
-        <div className="bg-surface rounded-2xl p-6" style={{ boxShadow: "var(--shadow-card)" }}>
+        <div
+          className="bg-surface rounded-2xl p-6"
+          style={{ boxShadow: "var(--shadow-card)" }}
+        >
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-[13px] font-semibold text-foreground">Activites par type</h3>
+            <h3 className="text-[13px] font-semibold text-foreground">
+              Activites par type
+            </h3>
             <button
               onClick={handleExport}
               className="h-8 px-3 rounded-xl border border-border text-xs text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors flex items-center gap-1.5"
@@ -146,7 +189,11 @@ export function EngagementTab({ range }: EngagementTabProps) {
                     type="number"
                     axisLine={false}
                     tickLine={false}
-                    tick={{ fill: "var(--muted-foreground)", fontSize: 11, fontFamily: "var(--font-mono)" }}
+                    tick={{
+                      fill: "var(--muted-foreground)",
+                      fontSize: 11,
+                      fontFamily: "var(--font-mono)",
+                    }}
                   />
                   <YAxis
                     type="category"
@@ -157,9 +204,22 @@ export function EngagementTab({ range }: EngagementTabProps) {
                     width={110}
                   />
                   <Tooltip
-                    contentStyle={{ backgroundColor: "var(--surface)", border: "none", borderRadius: "12px", fontSize: "13px", boxShadow: "var(--shadow-elevated)", padding: "8px 12px" }}
+                    contentStyle={{
+                      backgroundColor: "var(--surface)",
+                      border: "none",
+                      borderRadius: "12px",
+                      fontSize: "13px",
+                      boxShadow: "var(--shadow-elevated)",
+                      padding: "8px 12px",
+                    }}
                   />
-                  <Bar dataKey="count" name="Actions" fill="var(--primary)" radius={[0, 6, 6, 0]} barSize={16} />
+                  <Bar
+                    dataKey="count"
+                    name="Actions"
+                    fill="var(--primary)"
+                    radius={[0, 6, 6, 0]}
+                    barSize={16}
+                  />
                 </BarChart>
               </ResponsiveContainer>
             )}
@@ -168,9 +228,16 @@ export function EngagementTab({ range }: EngagementTabProps) {
       </div>
 
       {/* Activity heatmap */}
-      <div className="bg-surface rounded-2xl p-6" style={{ boxShadow: "var(--shadow-card)" }}>
-        <h3 className="text-[13px] font-semibold text-foreground mb-1">Heatmap d&apos;activite</h3>
-        <p className="text-xs text-muted-foreground mb-4">Activite par jour et heure</p>
+      <div
+        className="bg-surface rounded-2xl p-6"
+        style={{ boxShadow: "var(--shadow-card)" }}
+      >
+        <h3 className="text-[13px] font-semibold text-foreground mb-1">
+          Heatmap d&apos;activite
+        </h3>
+        <p className="text-xs text-muted-foreground mb-4">
+          Activite par jour et heure
+        </p>
         {data.activityHeatmap.length === 0 ? (
           <div className="py-12 text-center text-muted-foreground text-sm">
             Pas assez de donnees pour afficher le heatmap
@@ -184,7 +251,10 @@ export function EngagementTab({ range }: EngagementTabProps) {
                   <div
                     key={h}
                     className="text-[10px] text-muted-foreground font-mono"
-                    style={{ width: `${(100 / 24) * 2}%`, marginLeft: `${((h - 6) / 24) * 100 - (h > 6 ? ((h - 6 - 2) / 24) * 100 : 0)}%` }}
+                    style={{
+                      width: `${(100 / 24) * 2}%`,
+                      marginLeft: `${((h - 6) / 24) * 100 - (h > 6 ? ((h - 6 - 2) / 24) * 100 : 0)}%`,
+                    }}
                   >
                     {h}h
                   </div>
@@ -193,19 +263,23 @@ export function EngagementTab({ range }: EngagementTabProps) {
               {/* Grid */}
               {DAY_LABELS.map((dayLabel, dayIdx) => (
                 <div key={dayIdx} className="flex items-center gap-2 mb-1">
-                  <span className="text-[10px] text-muted-foreground w-8 text-right font-mono">{dayLabel}</span>
+                  <span className="text-[10px] text-muted-foreground w-8 text-right font-mono">
+                    {dayLabel}
+                  </span>
                   <div className="flex-1 flex gap-[2px]">
                     {Array.from({ length: 24 }).map((_, hour) => {
                       const count = heatmapGrid.get(`${dayIdx}-${hour}`) ?? 0;
-                      const intensity = count > 0 ? Math.max(0.15, count / maxHeatmapCount) : 0;
+                      const intensity =
+                        count > 0 ? Math.max(0.15, count / maxHeatmapCount) : 0;
                       return (
                         <div
                           key={hour}
                           className="flex-1 h-5 rounded-[3px] transition-colors"
                           style={{
-                            backgroundColor: count > 0
-                              ? `rgba(var(--primary-rgb, 99, 102, 241), ${intensity})`
-                              : "var(--muted)",
+                            backgroundColor:
+                              count > 0
+                                ? `rgba(var(--primary-rgb, 99, 102, 241), ${intensity})`
+                                : "var(--muted)",
                           }}
                           title={`${dayLabel} ${hour}h: ${count} actions`}
                         />
@@ -221,30 +295,65 @@ export function EngagementTab({ range }: EngagementTabProps) {
 
       {/* Retention curve */}
       {retentionClients && retentionClients.length > 0 && (
-        <div className="bg-surface rounded-2xl p-6" style={{ boxShadow: "var(--shadow-card)" }}>
+        <div
+          className="bg-surface rounded-2xl p-6"
+          style={{ boxShadow: "var(--shadow-card)" }}
+        >
           <RetentionChart clients={retentionClients} />
         </div>
       )}
 
       {/* Bottom stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-surface rounded-2xl p-5" style={{ boxShadow: "var(--shadow-card)" }}>
-          <p className="text-[11px] text-muted-foreground uppercase tracking-wider mb-1">Nouveaux clients</p>
-          <p className="text-xl font-display font-bold text-foreground">{data.newClientsInPeriod}</p>
-          <p className="text-[11px] text-muted-foreground mt-0.5">sur la periode</p>
+        <div
+          className="bg-surface rounded-2xl p-5"
+          style={{ boxShadow: "var(--shadow-card)" }}
+        >
+          <p className="text-[11px] text-muted-foreground uppercase tracking-wider mb-1">
+            Nouveaux clients
+          </p>
+          <p className="text-xl font-display font-bold text-foreground">
+            {data.newClientsInPeriod}
+          </p>
+          <p className="text-[11px] text-muted-foreground mt-0.5">
+            sur la periode
+          </p>
         </div>
-        <div className="bg-surface rounded-2xl p-5" style={{ boxShadow: "var(--shadow-card)" }}>
-          <p className="text-[11px] text-muted-foreground uppercase tracking-wider mb-1">Clients perdus</p>
-          <p className="text-xl font-display font-bold text-error">{data.churnedClients}</p>
+        <div
+          className="bg-surface rounded-2xl p-5"
+          style={{ boxShadow: "var(--shadow-card)" }}
+        >
+          <p className="text-[11px] text-muted-foreground uppercase tracking-wider mb-1">
+            Clients perdus
+          </p>
+          <p className="text-xl font-display font-bold text-error">
+            {data.churnedClients}
+          </p>
         </div>
-        <div className="bg-surface rounded-2xl p-5" style={{ boxShadow: "var(--shadow-card)" }}>
-          <p className="text-[11px] text-muted-foreground uppercase tracking-wider mb-1">Humeur moyenne</p>
-          <p className="text-xl font-display font-bold text-foreground">{data.avgMood || "—"}/5</p>
+        <div
+          className="bg-surface rounded-2xl p-5"
+          style={{ boxShadow: "var(--shadow-card)" }}
+        >
+          <p className="text-[11px] text-muted-foreground uppercase tracking-wider mb-1">
+            Humeur moyenne
+          </p>
+          <p className="text-xl font-display font-bold text-foreground">
+            {data.avgMood || "—"}/5
+          </p>
         </div>
-        <div className="bg-surface rounded-2xl p-5" style={{ boxShadow: "var(--shadow-card)" }}>
-          <p className="text-[11px] text-muted-foreground uppercase tracking-wider mb-1">Check-ins</p>
-          <p className="text-xl font-display font-bold text-foreground">{data.checkinsCount}</p>
-          <p className="text-[11px] text-muted-foreground mt-0.5">sur la periode</p>
+        <div
+          className="bg-surface rounded-2xl p-5"
+          style={{ boxShadow: "var(--shadow-card)" }}
+        >
+          <p className="text-[11px] text-muted-foreground uppercase tracking-wider mb-1">
+            Check-ins
+          </p>
+          <p className="text-xl font-display font-bold text-foreground">
+            {data.checkinsCount}
+          </p>
+          <p className="text-[11px] text-muted-foreground mt-0.5">
+            sur la periode
+          </p>
         </div>
       </div>
     </div>

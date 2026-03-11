@@ -35,7 +35,10 @@ export function useOnlineStatus() {
         })
         .subscribe(async (status) => {
           if (status === "SUBSCRIBED") {
-            await channel.track({ user_id: user.id, online_at: new Date().toISOString() });
+            await channel.track({
+              user_id: user.id,
+              online_at: new Date().toISOString(),
+            });
           }
         });
     };
@@ -49,7 +52,7 @@ export function useOnlineStatus() {
 
   const isOnline = useCallback(
     (userId: string) => onlineUserIds.has(userId),
-    [onlineUserIds]
+    [onlineUserIds],
   );
 
   return { onlineUserIds, isOnline };

@@ -5,7 +5,7 @@ import { invoiceSentEmail } from "@/lib/email/templates";
 
 export async function POST(
   _req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -21,24 +21,39 @@ export async function POST(
 
     const { data: invoice, error } = await supabase
       .from("invoices")
-      .select("*, client:profiles!invoices_client_id_fkey(id, full_name, email)")
+      .select(
+        "*, client:profiles!invoices_client_id_fkey(id, full_name, email)",
+      )
       .eq("id", id)
       .single();
 
     if (error || !invoice) {
-      return NextResponse.json({ error: "Facture introuvable" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Facture introuvable" },
+        { status: 404 },
+      );
     }
 
     if (!invoice.client?.email) {
-      return NextResponse.json({ error: "Email client manquant" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Email client manquant" },
+        { status: 400 },
+      );
     }
 
     const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
     const formatEUR = (n: number) =>
-      new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(n);
+      new Intl.NumberFormat("fr-FR", {
+        style: "currency",
+        currency: "EUR",
+      }).format(n);
     const formatDate = (d: string | null) => {
       if (!d) return "-";
-      return new Date(d).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+      return new Date(d).toLocaleDateString("fr-FR", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      });
     };
 
     const { subject, html } = invoiceSentEmail({

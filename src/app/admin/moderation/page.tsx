@@ -5,10 +5,7 @@ import { motion } from "framer-motion";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 import { cn } from "@/lib/utils";
 import { useFeedReports } from "@/hooks/use-reports-moderation";
-import {
-  REPORT_REASONS,
-  REPORT_STATUS_CONFIG,
-} from "@/types/feed";
+import { REPORT_REASONS, REPORT_STATUS_CONFIG } from "@/types/feed";
 import type { ReportStatus, FeedReport } from "@/types/feed";
 import {
   Shield,
@@ -30,10 +27,11 @@ const STATUS_TABS: { value: ReportStatus | "all"; label: string }[] = [
 ];
 
 export default function ModerationPage() {
-  const [statusFilter, setStatusFilter] = useState<ReportStatus | "all">("pending");
-  const { reports, isLoading, reviewReport, deleteReportedContent } = useFeedReports(
-    statusFilter === "all" ? undefined : statusFilter
+  const [statusFilter, setStatusFilter] = useState<ReportStatus | "all">(
+    "pending",
   );
+  const { reports, isLoading, reviewReport, deleteReportedContent } =
+    useFeedReports(statusFilter === "all" ? undefined : statusFilter);
 
   return (
     <motion.div
@@ -60,7 +58,10 @@ export default function ModerationPage() {
       </motion.div>
 
       {/* Status tabs */}
-      <motion.div variants={staggerItem} className="flex gap-1.5 overflow-x-auto pb-1">
+      <motion.div
+        variants={staggerItem}
+        className="flex gap-1.5 overflow-x-auto pb-1"
+      >
         {STATUS_TABS.map((tab) => (
           <button
             key={tab.value}
@@ -69,15 +70,17 @@ export default function ModerationPage() {
               "px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all",
               statusFilter === tab.value
                 ? "bg-primary text-white"
-                : "bg-muted text-muted-foreground hover:text-foreground"
+                : "bg-muted text-muted-foreground hover:text-foreground",
             )}
           >
             {tab.label}
-            {tab.value === "pending" && reports.length > 0 && statusFilter !== "pending" && (
-              <span className="ml-1.5 px-1.5 py-0.5 rounded-full bg-white/20 text-[10px]">
-                {reports.length}
-              </span>
-            )}
+            {tab.value === "pending" &&
+              reports.length > 0 &&
+              statusFilter !== "pending" && (
+                <span className="ml-1.5 px-1.5 py-0.5 rounded-full bg-white/20 text-[10px]">
+                  {reports.length}
+                </span>
+              )}
           </button>
         ))}
       </motion.div>
@@ -101,7 +104,8 @@ export default function ModerationPage() {
         >
           <Check className="w-10 h-10 text-emerald-500 mx-auto mb-3" />
           <p className="text-sm text-muted-foreground">
-            Aucun signalement {statusFilter !== "all" ? "dans cette categorie" : ""}
+            Aucun signalement{" "}
+            {statusFilter !== "all" ? "dans cette categorie" : ""}
           </p>
         </motion.div>
       ) : (
@@ -118,9 +122,9 @@ export default function ModerationPage() {
                         toast.success(
                           status === "dismissed"
                             ? "Signalement rejete"
-                            : "Signalement traite"
+                            : "Signalement traite",
                         ),
-                    }
+                    },
                   )
                 }
                 onDeleteContent={() =>
@@ -130,7 +134,7 @@ export default function ModerationPage() {
                       postId: report.post_id,
                       commentId: report.comment_id,
                     },
-                    { onSuccess: () => toast.success("Contenu supprime") }
+                    { onSuccess: () => toast.success("Contenu supprime") },
                   )
                 }
               />
@@ -148,14 +152,20 @@ function ReportCard({
   onDeleteContent,
 }: {
   report: FeedReport;
-  onReview: (status: ReportStatus, action?: "warning" | "content_removed" | "user_suspended") => void;
+  onReview: (
+    status: ReportStatus,
+    action?: "warning" | "content_removed" | "user_suspended",
+  ) => void;
   onDeleteContent: () => void;
 }) {
   const statusConfig = REPORT_STATUS_CONFIG[report.status];
-  const reasonLabel = REPORT_REASONS.find((r) => r.value === report.reason)?.label ?? report.reason;
+  const reasonLabel =
+    REPORT_REASONS.find((r) => r.value === report.reason)?.label ??
+    report.reason;
   const isPending = report.status === "pending";
 
-  const contentPreview = report.post?.content ?? report.comment?.content ?? "Contenu non disponible";
+  const contentPreview =
+    report.post?.content ?? report.comment?.content ?? "Contenu non disponible";
   const contentType = report.post_id ? "Publication" : "Commentaire";
 
   return (
@@ -176,14 +186,15 @@ function ReportCard({
               <span
                 className={cn(
                   "text-[10px] font-medium px-1.5 py-0.5 rounded-full",
-                  statusConfig.color
+                  statusConfig.color,
                 )}
               >
                 {statusConfig.label}
               </span>
             </div>
             <p className="text-xs text-muted-foreground">
-              {contentType} signale par {report.reporter?.full_name ?? "Inconnu"} ·{" "}
+              {contentType} signale par{" "}
+              {report.reporter?.full_name ?? "Inconnu"} ·{" "}
               {new Date(report.created_at).toLocaleDateString("fr-FR", {
                 day: "numeric",
                 month: "short",
@@ -197,7 +208,9 @@ function ReportCard({
 
       {/* Content preview */}
       <div className="bg-muted/50 rounded-xl p-3 mb-3">
-        <p className="text-xs text-muted-foreground mb-1">{contentType} signale :</p>
+        <p className="text-xs text-muted-foreground mb-1">
+          {contentType} signale :
+        </p>
         <p className="text-sm text-foreground line-clamp-3">{contentPreview}</p>
       </div>
 

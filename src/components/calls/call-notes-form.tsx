@@ -66,9 +66,7 @@ export function CallNotesForm({ callId }: CallNotesFormProps) {
 
   const toggleAction = (index: number) => {
     setActionItems(
-      actionItems.map((a, i) =>
-        i === index ? { ...a, done: !a.done } : a
-      )
+      actionItems.map((a, i) => (i === index ? { ...a, done: !a.done } : a)),
     );
   };
 
@@ -107,7 +105,10 @@ export function CallNotesForm({ callId }: CallNotesFormProps) {
                 type="button"
                 onClick={() => {
                   const sections = tpl.structure
-                    .map((s: { section: string; placeholder: string }) => `## ${s.section}\n${s.placeholder}`)
+                    .map(
+                      (s: { section: string; placeholder: string }) =>
+                        `## ${s.section}\n${s.placeholder}`,
+                    )
                     .join("\n\n");
                   setSummary(sections);
                 }}
@@ -140,23 +141,28 @@ export function CallNotesForm({ callId }: CallNotesFormProps) {
           Humeur du client
         </label>
         <div className="flex gap-1.5">
-          {(Object.entries(CALL_MOOD_CONFIG) as [CallNoteMood, { label: string; emoji: string }][]).map(
-            ([key, config]) => (
-              <button
-                key={key}
-                onClick={() => setMood(mood === key ? "" : key)}
-                className={cn(
-                  "flex-1 flex flex-col items-center gap-0.5 p-2 rounded-lg border transition-colors",
-                  mood === key
-                    ? "border-primary bg-primary/5"
-                    : "border-border hover:bg-muted/50"
-                )}
-              >
-                <span className="text-lg">{config.emoji}</span>
-                <span className="text-[9px] text-muted-foreground">{config.label}</span>
-              </button>
-            )
-          )}
+          {(
+            Object.entries(CALL_MOOD_CONFIG) as [
+              CallNoteMood,
+              { label: string; emoji: string },
+            ][]
+          ).map(([key, config]) => (
+            <button
+              key={key}
+              onClick={() => setMood(mood === key ? "" : key)}
+              className={cn(
+                "flex-1 flex flex-col items-center gap-0.5 p-2 rounded-lg border transition-colors",
+                mood === key
+                  ? "border-primary bg-primary/5"
+                  : "border-border hover:bg-muted/50",
+              )}
+            >
+              <span className="text-lg">{config.emoji}</span>
+              <span className="text-[9px] text-muted-foreground">
+                {config.label}
+              </span>
+            </button>
+          ))}
         </div>
       </div>
 
@@ -166,22 +172,25 @@ export function CallNotesForm({ callId }: CallNotesFormProps) {
           Resultat
         </label>
         <div className="flex flex-wrap gap-1.5">
-          {(Object.entries(CALL_OUTCOME_CONFIG) as [CallNoteOutcome, { label: string; color: string }][]).map(
-            ([key, config]) => (
-              <button
-                key={key}
-                onClick={() => setOutcome(outcome === key ? "" : key)}
-                className={cn(
-                  "h-7 px-2.5 rounded-lg text-xs font-medium transition-colors border",
-                  outcome === key
-                    ? cn(config.color, "border-current/20")
-                    : "border-border text-muted-foreground hover:text-foreground"
-                )}
-              >
-                {config.label}
-              </button>
-            )
-          )}
+          {(
+            Object.entries(CALL_OUTCOME_CONFIG) as [
+              CallNoteOutcome,
+              { label: string; color: string },
+            ][]
+          ).map(([key, config]) => (
+            <button
+              key={key}
+              onClick={() => setOutcome(outcome === key ? "" : key)}
+              className={cn(
+                "h-7 px-2.5 rounded-lg text-xs font-medium transition-colors border",
+                outcome === key
+                  ? cn(config.color, "border-current/20")
+                  : "border-border text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {config.label}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -207,10 +216,7 @@ export function CallNotesForm({ callId }: CallNotesFormProps) {
         <div className="space-y-1.5">
           {actionItems.map((item, i) => (
             <div key={i} className="flex items-center gap-2 group">
-              <button
-                onClick={() => toggleAction(i)}
-                className="shrink-0"
-              >
+              <button onClick={() => toggleAction(i)} className="shrink-0">
                 {item.done ? (
                   <CheckCircle className="w-4 h-4 text-success" />
                 ) : (
@@ -220,7 +226,9 @@ export function CallNotesForm({ callId }: CallNotesFormProps) {
               <span
                 className={cn(
                   "flex-1 text-sm",
-                  item.done ? "text-muted-foreground line-through" : "text-foreground"
+                  item.done
+                    ? "text-muted-foreground line-through"
+                    : "text-foreground",
                 )}
               >
                 {item.title}
@@ -263,7 +271,11 @@ export function CallNotesForm({ callId }: CallNotesFormProps) {
         ) : (
           <Save className="w-4 h-4" />
         )}
-        {saveNote.isPending ? "Sauvegarde..." : note ? "Mettre a jour" : "Sauvegarder"}
+        {saveNote.isPending
+          ? "Sauvegarde..."
+          : note
+            ? "Mettre a jour"
+            : "Sauvegarder"}
       </button>
     </div>
   );

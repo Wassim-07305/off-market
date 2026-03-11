@@ -61,7 +61,11 @@ export function useUpdatePreferences() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (updates: Partial<Omit<UserPreferences, "id" | "user_id" | "created_at" | "updated_at">>) => {
+    mutationFn: async (
+      updates: Partial<
+        Omit<UserPreferences, "id" | "user_id" | "created_at" | "updated_at">
+      >,
+    ) => {
       const { data, error } = await supabase
         .from("user_preferences")
         .update(updates)

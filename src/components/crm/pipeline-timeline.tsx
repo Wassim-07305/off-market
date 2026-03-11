@@ -64,14 +64,17 @@ export function PipelineTimeline() {
     }
 
     // Sort by date descending
-    events.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    events.sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+    );
 
     return events.slice(0, 50);
   }, [contacts]);
 
   // Group events by day
   const groupedByDay = useMemo(() => {
-    const groups: { date: string; label: string; events: TimelineEvent[] }[] = [];
+    const groups: { date: string; label: string; events: TimelineEvent[] }[] =
+      [];
     const map = new Map<string, TimelineEvent[]>();
 
     for (const event of timeline) {
@@ -84,8 +87,7 @@ export function PipelineTimeline() {
       const d = new Date(day);
       const isToday = d.toDateString() === new Date().toDateString();
       const isYesterday =
-        d.toDateString() ===
-        new Date(Date.now() - 86400000).toDateString();
+        d.toDateString() === new Date(Date.now() - 86400000).toDateString();
 
       groups.push({
         date: day,
@@ -128,7 +130,9 @@ export function PipelineTimeline() {
     return (
       <div className="text-center py-16">
         <Activity className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
-        <p className="text-sm text-muted-foreground">Aucun contact dans le pipeline</p>
+        <p className="text-sm text-muted-foreground">
+          Aucun contact dans le pipeline
+        </p>
       </div>
     );
   }
@@ -142,10 +146,7 @@ export function PipelineTimeline() {
           return (
             <div
               key={stage.value}
-              className={cn(
-                "rounded-xl border p-3 text-center",
-                stage.bg
-              )}
+              className={cn("rounded-xl border p-3 text-center", stage.bg)}
             >
               <p className={cn("text-lg font-bold", stage.color)}>{count}</p>
               <p className="text-[10px] text-muted-foreground">{stage.label}</p>
@@ -167,7 +168,7 @@ export function PipelineTimeline() {
 
               {group.events.map((event) => {
                 const stage = PIPELINE_STAGES.find(
-                  (s) => s.value === event.contact.stage
+                  (s) => s.value === event.contact.stage,
                 );
                 return (
                   <div key={event.id} className="relative">
@@ -179,7 +180,7 @@ export function PipelineTimeline() {
                           ? "bg-blue-500"
                           : event.type === "interaction"
                             ? "bg-emerald-500"
-                            : "bg-amber-500"
+                            : "bg-amber-500",
                       )}
                     />
 
@@ -198,7 +199,7 @@ export function PipelineTimeline() {
                                 className={cn(
                                   "inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium border",
                                   stage.bg,
-                                  stage.color
+                                  stage.color,
                                 )}
                               >
                                 {stage.label}
@@ -221,14 +222,18 @@ export function PipelineTimeline() {
                             {event.type === "interaction" && (
                               <>
                                 <MessageSquare className="w-3 h-3" />
-                                Derniere interaction ({event.contact.interaction_count})
+                                Derniere interaction (
+                                {event.contact.interaction_count})
                               </>
                             )}
                             <span className="text-muted-foreground/60">
-                              {new Date(event.date).toLocaleTimeString("fr-FR", {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              })}
+                              {new Date(event.date).toLocaleTimeString(
+                                "fr-FR",
+                                {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                },
+                              )}
                             </span>
                           </p>
                         </div>
