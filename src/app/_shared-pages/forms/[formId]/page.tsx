@@ -5,7 +5,9 @@ import Link from "next/link";
 import { useRoutePrefix } from "@/hooks/use-route-prefix";
 import { useForm, useFormSubmissions } from "@/hooks/use-forms";
 import { getInitials, formatDate, cn } from "@/lib/utils";
-import { ArrowLeft, Edit, Download, Send } from "lucide-react";
+import { ArrowLeft, Edit, Send, FileText, Table } from "lucide-react";
+import { ExportDropdown } from "@/components/shared/export-dropdown";
+import { exportToCSV, exportTableToPDF } from "@/lib/export";
 
 export default function FormResponsesPage({
   params,
@@ -27,6 +29,37 @@ export default function FormResponsesPage({
 
   const fields = form.form_fields?.sort((a, b) => a.sort_order - b.sort_order) ?? [];
 
+  const exportColumns = [
+    { key: "respondent", label: "Repondant" },
+    { key: "date", label: "Date" },
+    ...fields.map((f) => ({ key: f.id, label: f.label })),
+  ];
+
+  const exportRows = (submissions ?? []).map((sub) => {
+    const answers = sub.answers as Record<string, unknown>;
+    const row: Record<string, unknown> = {
+      respondent: sub.respondent?.full_name ?? "Anonyme",
+      date: new Date(sub.submitted_at).toLocaleDateString("fr-FR"),
+    };
+    for (const f of fields) {
+      row[f.id] = answers[f.id] ?? "";
+    }
+    return row;
+  });
+
+  const handleExportCSV = () => {
+    exportToCSV(exportRows, exportColumns, `${form.title} - Reponses`);
+  };
+
+  const handleExportPDF = () => {
+    exportTableToPDF({
+      title: `${form.title} — Reponses`,
+      subtitle: `${exportRows.length} reponse(s)`,
+      columns: exportColumns,
+      rows: exportRows,
+    });
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -38,6 +71,14 @@ export default function FormResponsesPage({
           Retour
         </Link>
         <div className="flex items-center gap-2">
+          {submissions && submissions.length > 0 && (
+            <ExportDropdown
+              options={[
+                { label: "Exporter CSV", icon: Table, onClick: handleExportCSV },
+                { label: "Exporter PDF", icon: FileText, onClick: handleExportPDF },
+              ]}
+            />
+          )}
           <Link
             href={`${prefix}/forms/builder/${formId}`}
             className="h-9 px-3 rounded-[10px] border border-border text-sm flex items-center gap-2 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"

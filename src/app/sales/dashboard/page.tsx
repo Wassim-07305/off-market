@@ -18,6 +18,8 @@ import {
   Bell,
   Users,
   CalendarClock,
+  FileText,
+  Table,
 } from "lucide-react";
 import {
   AreaChart,
@@ -32,6 +34,8 @@ import {
 } from "recharts";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { ExportDropdown } from "@/components/shared/export-dropdown";
+import { exportToCSV, exportToPDF } from "@/lib/export";
 
 function formatEUR(amount: number) {
   return new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(amount);
@@ -136,11 +140,85 @@ export default function SalesDashboardPage() {
   return (
     <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="space-y-6">
       {/* Header */}
-      <motion.div variants={staggerItem}>
-        <h1 className="text-2xl font-display font-bold text-foreground">
-          {greeting}, {profile?.full_name?.split(" ")[0] ?? ""}
-        </h1>
-        <p className="text-sm text-muted-foreground mt-1">Tableau de bord commercial</p>
+      <motion.div variants={staggerItem} className="flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-display font-bold text-foreground">
+            {greeting}, {profile?.full_name?.split(" ")[0] ?? ""}
+          </h1>
+          <p className="text-sm text-muted-foreground mt-1">Tableau de bord commercial</p>
+        </div>
+        <ExportDropdown
+          disabled={isLoading}
+          options={[
+            {
+              label: "Rapport PDF",
+              icon: FileText,
+              onClick: () => {
+                exportToPDF({
+                  title: "Rapport Commercial",
+                  subtitle: "Tableau de bord Sales",
+                  sections: [
+                    {
+                      title: "KPIs Financiers",
+                      rows: [
+                        { label: "Revenus totaux", value: formatEUR(billingStats?.totalRevenue ?? 0) },
+                        { label: "MRR (Revenu mensuel recurrent)", value: formatEUR(mrr) },
+                        { label: "ARR estime", value: formatEUR(mrr * 12) },
+                        { label: "En attente", value: formatEUR(billingStats?.pendingAmount ?? 0) },
+                        { label: "En retard", value: formatEUR(billingStats?.overdueAmount ?? 0) },
+                      ],
+                    },
+                    {
+                      title: "Revenus Mensuels",
+                      rows: revenueByMonth.map((m) => ({
+                        label: m.label,
+                        value: formatEUR(m.revenue),
+                      })),
+                    },
+                    {
+                      title: "Previsions (3 mois)",
+                      rows: forecast.map((f) => ({
+                        label: f.month,
+                        value: `Base: ${formatEUR(f.baseline)} / Projection: ${formatEUR(f.projected)}`,
+                      })),
+                    },
+                    {
+                      title: "Top Clients",
+                      rows: topClients.map((c, i) => ({
+                        label: `${i + 1}. ${c.name} (${c.count} factures)`,
+                        value: formatEUR(c.total),
+                      })),
+                    },
+                    {
+                      title: "Statistiques",
+                      rows: [
+                        { label: "Contrats signes", value: String(billingStats?.contractsSigned ?? 0) },
+                        { label: "Contrats en attente", value: String(billingStats?.contractsPending ?? 0) },
+                        { label: "Factures payees", value: String(billingStats?.invoicesPaid ?? 0) },
+                        { label: "Factures en retard", value: String(billingStats?.invoicesOverdue ?? 0) },
+                      ],
+                    },
+                  ],
+                });
+              },
+            },
+            {
+              label: "Donnees CSV",
+              icon: Table,
+              onClick: () => {
+                exportToCSV(
+                  revenueByMonth.map((m) => ({ ...m })),
+                  [
+                    { key: "month", label: "Mois" },
+                    { key: "label", label: "Libelle" },
+                    { key: "revenue", label: "Revenu (EUR)" },
+                  ],
+                  "revenus-mensuels"
+                );
+              },
+            },
+          ]}
+        />
       </motion.div>
 
       {/* Alerts */}

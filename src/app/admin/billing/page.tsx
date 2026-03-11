@@ -19,7 +19,10 @@ import {
   Send,
   Bell,
   MailCheck,
+  Table,
 } from "lucide-react";
+import { ExportDropdown } from "@/components/shared/export-dropdown";
+import { exportToCSV, exportToPDF } from "@/lib/export";
 
 function formatEUR(amount: number) {
   return new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(amount);
@@ -41,11 +44,77 @@ export default function BillingOverviewPage() {
       className="space-y-6"
     >
       {/* Header */}
-      <motion.div variants={fadeInUp} transition={defaultTransition}>
-        <h1 className="text-3xl font-semibold text-foreground">Facturation</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Vue d&apos;ensemble des contrats, factures et paiements
-        </p>
+      <motion.div variants={fadeInUp} transition={defaultTransition} className="flex items-start justify-between">
+        <div>
+          <h1 className="text-3xl font-semibold text-foreground">Facturation</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Vue d&apos;ensemble des contrats, factures et paiements
+          </p>
+        </div>
+        <ExportDropdown
+          disabled={isLoading}
+          options={[
+            {
+              label: "Rapport PDF",
+              icon: FileText,
+              onClick: () => {
+                exportToPDF({
+                  title: "Rapport Facturation",
+                  subtitle: "Vue d'ensemble",
+                  sections: [
+                    {
+                      title: "Revenus",
+                      rows: [
+                        { label: "Revenu total", value: formatEUR(stats?.totalRevenue ?? 0) },
+                        { label: "En attente", value: formatEUR(stats?.pendingAmount ?? 0) },
+                        { label: "En retard", value: formatEUR(stats?.overdueAmount ?? 0) },
+                      ],
+                    },
+                    {
+                      title: "Contrats",
+                      rows: [
+                        { label: "Signes", value: String(stats?.contractsSigned ?? 0) },
+                        { label: "En attente", value: String(stats?.contractsPending ?? 0) },
+                      ],
+                    },
+                    {
+                      title: "Factures",
+                      rows: [
+                        { label: "Payees", value: String(stats?.invoicesPaid ?? 0) },
+                        { label: "En retard", value: String(stats?.invoicesOverdue ?? 0) },
+                      ],
+                    },
+                  ],
+                });
+              },
+            },
+            {
+              label: "Factures CSV",
+              icon: Table,
+              onClick: () => {
+                exportToCSV(
+                  invoices.map((inv) => ({
+                    numero: inv.invoice_number,
+                    client: inv.client?.full_name ?? "",
+                    total: inv.total,
+                    statut: inv.status,
+                    echeance: inv.due_date ? new Date(inv.due_date).toLocaleDateString("fr-FR") : "",
+                    paye_le: inv.paid_at ? new Date(inv.paid_at).toLocaleDateString("fr-FR") : "",
+                  })),
+                  [
+                    { key: "numero", label: "Numero" },
+                    { key: "client", label: "Client" },
+                    { key: "total", label: "Total (EUR)" },
+                    { key: "statut", label: "Statut" },
+                    { key: "echeance", label: "Echeance" },
+                    { key: "paye_le", label: "Paye le" },
+                  ],
+                  "factures-export"
+                );
+              },
+            },
+          ]}
+        />
       </motion.div>
 
       {/* Stats cards */}
