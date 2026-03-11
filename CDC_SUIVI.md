@@ -1,7 +1,7 @@
 # Suivi d'avancement - Cahier des Charges Off-Market
 
 > Derniere mise a jour : 2026-03-11
-> Avancement global : **~84%**
+> Avancement global : **~86%**
 
 ---
 
@@ -42,14 +42,14 @@
 | F6 | Tags d'Engagement | Done | VIP, Standard, New, At-Risk, Churned + couleurs |
 | F7 | Pipeline Etudiant | Done | Kanban drag-drop + vue liste + filtres |
 | F8 | Alertes Automatiques Coach | Done | Inactivite, at-risk, objectifs, check-in |
-| F8.1 | Visualisations Pipeline | Partiel | Kanban + Liste OK. Manque vue Timeline, bulk actions |
+| F8.1 | Visualisations Pipeline | Done | Kanban + Liste + Timeline + Bulk actions (Sprint 26) |
 | F8.2 | Segmentation et Filtrage | Partiel | Filtres par tag, recherche. Manque segments sauvegardes, export CSV avance |
 
 ### Manques CRM
-- [ ] Vue Timeline (progression temporelle)
-- [ ] Bulk actions (modifier plusieurs eleves)
+- [x] Vue Timeline (progression temporelle) (Sprint 26)
+- [x] Bulk actions (modifier plusieurs eleves) (Sprint 26)
 - [ ] Segments sauvegardes et partageables
-- [ ] Historique des mouvements pipeline avec timestamps
+- [x] Historique des mouvements pipeline avec timestamps (Sprint 26)
 
 ---
 
@@ -376,7 +376,7 @@
 ### Vague 1 - Gaps critiques
 - [x] **Sprint 24** : Quiz & Exercices UI — timer, soumission, correction, stats (F11)
 - [x] **Sprint 25** : Export PDF/Excel — dashboards sales/billing + reponses formulaires CSV/PDF (F4.2, F32)
-- [ ] **Sprint 26** : Vue Timeline CRM + bulk actions (F8.1)
+- [x] **Sprint 26** : Vue Timeline CRM + bulk actions — 3 vues, multi-select, tag batch (F8.1)
 
 ### Vague 2 - Differenciation
 - [ ] **Sprint 27** : Profils publics + follow system (F40)
