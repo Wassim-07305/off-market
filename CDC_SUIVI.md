@@ -209,14 +209,14 @@
 |-----|---------------|--------|-------|
 | F38 | Feed Social | Done | Posts, likes, commentaires, types, moderation |
 | F39 | Partage Wins & Achievements | Partiel | Posts type "victory" OK. Manque templates wins |
-| F40 | Profils Publics | Partiel | Profil basique. Manque page profil complete avec badges/stats |
+| F40 | Profils Publics | Done | Page profil complete: avatar, role, bio, follow/unfollow, stats XP/badges/followers, posts recents (Sprint 27) |
 | F40.1 | Regles Communautaires | Partiel | Moderation OK. Manque code of conduct affiche |
 | F40.2 | Moderation et Reporting | Done | Report, admin review, pin, delete |
 | F40.3 | Communautes Specialisees | Manque | Pas de sous-groupes thematiques |
 
 ### Manques Communaute
-- [ ] Profils publics complets (badges, wins, stats, follow)
-- [ ] Systeme follow/unfollow
+- [x] Profils publics complets (badges, wins, stats, follow) (Sprint 27)
+- [x] Systeme follow/unfollow (Sprint 27)
 - [ ] Sous-communautes par niche/interet
 - [ ] Commentaires imbriques (nested replies)
 - [ ] Trending posts / most liked
@@ -379,7 +379,7 @@
 - [x] **Sprint 26** : Vue Timeline CRM + bulk actions — 3 vues, multi-select, tag batch (F8.1)
 
 ### Vague 2 - Differenciation
-- [ ] **Sprint 27** : Profils publics + follow system (F40)
+- [x] **Sprint 27** : Profils publics + follow system (F40)
 - [ ] **Sprint 28** : Parcours d'apprentissage avec prerequis (F12.1)
 - [ ] **Sprint 29** : Analyse de risque IA automatique (F44)
 - [ ] **Sprint 30** : Onboarding interactif walkthrough (F41-F42)
