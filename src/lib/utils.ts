@@ -1,40 +1,61 @@
-import { clsx, type ClassValue } from 'clsx'
-import { twMerge } from 'tailwind-merge'
-import { format, formatDistanceToNow } from 'date-fns'
-import { fr } from 'date-fns/locale'
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
+}
+
+export function formatDate(date: string | Date, format: "short" | "long" | "relative" = "short"): string {
+  const d = new Date(date);
+  const now = new Date();
+  const diff = now.getTime() - d.getTime();
+
+  if (format === "relative") {
+    const minutes = Math.floor(diff / 60000);
+    if (minutes < 1) return "A l'instant";
+    if (minutes < 60) return `Il y a ${minutes}min`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `Il y a ${hours}h`;
+    const days = Math.floor(hours / 24);
+    if (days < 7) return `Il y a ${days}j`;
+    if (days < 30) return `Il y a ${Math.floor(days / 7)} sem.`;
+    return d.toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
+  }
+
+  if (format === "long") {
+    return d.toLocaleDateString("fr-FR", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  }
+
+  return d.toLocaleDateString("fr-FR", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
 }
 
 export function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('fr-FR', {
-    style: 'currency',
-    currency: 'EUR',
-  }).format(amount)
-}
-
-export function formatDate(date: string | Date): string {
-  return format(new Date(date), 'dd MMM yyyy', { locale: fr })
-}
-
-export function formatDateTime(date: string | Date): string {
-  return format(new Date(date), 'dd MMM yyyy HH:mm', { locale: fr })
-}
-
-export function formatRelativeDate(date: string | Date): string {
-  return formatDistanceToNow(new Date(date), { addSuffix: true, locale: fr })
-}
-
-export function formatPercent(value: number): string {
-  return `${value.toFixed(1)}%`
+  return new Intl.NumberFormat("fr-FR", {
+    style: "currency",
+    currency: "EUR",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount);
 }
 
 export function getInitials(name: string): string {
   return name
-    .split(' ')
+    .split(" ")
     .map((n) => n[0])
-    .join('')
+    .join("")
     .toUpperCase()
-    .slice(0, 2)
+    .slice(0, 2);
+}
+
+export function truncate(str: string, length: number): string {
+  if (str.length <= length) return str;
+  return str.slice(0, length) + "...";
 }

@@ -1,342 +1,482 @@
-export type AppRole = 'admin' | 'coach' | 'prospect'
-
 export interface Profile {
-  id: string
-  email: string
-  full_name: string
-  avatar_url: string | null
-  coach_id: string | null
-  phone: string | null
-  last_seen_at: string | null
-  created_at: string
-  updated_at: string
+  id: string;
+  email: string;
+  full_name: string;
+  avatar_url: string | null;
+  role: "admin" | "coach" | "setter" | "closer" | "client";
+  phone: string | null;
+  bio: string | null;
+  timezone: string;
+  onboarding_completed: boolean;
+  onboarding_step: number;
+  last_seen_at: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
-export interface UserRole {
-  id: string
-  user_id: string
-  role: AppRole
-  created_at: string
+export interface StudentDetail {
+  id: string;
+  profile_id: string;
+  tag: "vip" | "standard" | "new" | "at_risk" | "churned";
+  revenue: number;
+  lifetime_value: number;
+  acquisition_source: string | null;
+  enrollment_date: string;
+  program: string | null;
+  goals: string | null;
+  coach_notes: string | null;
+  health_score: number;
+  last_engagement_at: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
-export interface Client {
-  id: string
-  name: string
-  email: string | null
-  phone: string | null
-  notes: string | null
-  status: 'actif' | 'inactif' | 'archivé'
-  created_by: string | null
-  created_at: string
-  updated_at: string
+export interface StudentActivity {
+  id: string;
+  student_id: string;
+  activity_type: string;
+  metadata: Record<string, unknown>;
+  created_at: string;
 }
 
-export interface ClientAssignment {
-  id: string
-  client_id: string
-  user_id: string
-  role: AppRole
-  assigned_at: string
+export interface StudentNote {
+  id: string;
+  student_id: string;
+  author_id: string;
+  content: string;
+  is_pinned: boolean;
+  created_at: string;
+  updated_at: string;
+  author?: Profile;
 }
 
-export interface Lead {
-  id: string
-  client_id: string | null
-  assigned_to: string | null
-  name: string
-  email: string | null
-  phone: string | null
-  source: 'instagram' | 'linkedin' | 'tiktok' | 'referral' | 'ads' | 'autre' | null
-  status: 'premier_message' | 'en_discussion' | 'qualifie' | 'loom_envoye' | 'call_planifie' | 'close' | 'perdu'
-  ca_contracté: number
-  ca_collecté: number
-  commission_setter: number
-  commission_closer: number
-  notes: string | null
-  created_at: string
-  updated_at: string
+export interface StudentTask {
+  id: string;
+  student_id: string;
+  assigned_by: string | null;
+  title: string;
+  description: string | null;
+  due_date: string | null;
+  status: "todo" | "in_progress" | "done" | "overdue";
+  priority: "low" | "medium" | "high" | "urgent";
+  created_at: string;
+  completed_at: string | null;
 }
 
-export interface CallCalendar {
-  id: string
-  client_id: string | null
-  lead_id: string | null
-  assigned_to: string | null
-  date: string
-  time: string
-  type: 'manuel' | 'iclosed' | 'calendly' | 'coaching' | 'closing' | 'autre'
-  status: 'planifié' | 'réalisé' | 'no_show' | 'annulé' | 'reporté'
-  link: string | null
-  notes: string | null
-  created_at: string
-}
-
-export interface FinancialEntry {
-  id: string
-  client_id: string | null
-  type: 'ca' | 'récurrent' | 'charge' | 'prestataire'
-  label: string
-  amount: number
-  prestataire: string | null
-  is_paid: boolean
-  date: string
-  recurrence: 'mensuel' | 'trimestriel' | 'annuel' | null
-  created_at: string
-}
-
-export interface PaymentSchedule {
-  id: string
-  financial_entry_id: string | null
-  client_id: string | null
-  amount: number
-  due_date: string
-  is_paid: boolean
-  paid_at: string | null
-  created_at: string
-}
-
-export interface SetterActivity {
-  id: string
-  user_id: string
-  client_id: string | null
-  date: string
-  messages_sent: number
-  calls_made: number
-  looms_sent: number
-  notes: string | null
-  created_at: string
-}
-
-export interface Notification {
-  id: string
-  user_id: string
-  type: 'lead_status' | 'new_call' | 'call_closed' | 'general'
-  title: string
-  message: string | null
-  is_read: boolean
-  metadata: Record<string, unknown>
-  created_at: string
-}
-
-export interface Ritual {
-  id: string
-  client_id: string | null
-  title: string
-  description: string | null
-  frequency: 'quotidien' | 'hebdomadaire' | 'mensuel' | null
-  is_active: boolean
-  created_at: string
-}
-
-// Messaging types
 export interface Channel {
-  id: string
-  name: string
-  type: 'direct' | 'group'
-  write_mode: 'all' | 'admin_only'
-  created_by: string | null
-  created_at: string
-  updated_at: string
+  id: string;
+  name: string;
+  description: string | null;
+  type: "public" | "private" | "dm";
+  created_by: string | null;
+  is_archived: boolean;
+  is_default: boolean;
+  avatar_url: string | null;
+  last_message_at: string | null;
+  created_at: string;
 }
 
 export interface ChannelMember {
-  id: string
-  channel_id: string
-  user_id: string
-  joined_at: string
+  id: string;
+  channel_id: string;
+  profile_id: string;
+  role: "admin" | "moderator" | "member";
+  last_read_at: string;
+  notifications_muted: boolean;
+  joined_at: string;
+  profile?: Profile;
 }
 
 export interface Message {
-  id: string
-  channel_id: string
-  sender_id: string
-  content: string | null
-  file_url: string | null
-  file_name: string | null
-  is_edited: boolean
-  created_at: string
-  updated_at: string
+  id: string;
+  channel_id: string;
+  sender_id: string;
+  content: string;
+  content_type: "text" | "image" | "file" | "video" | "audio" | "system";
+  reply_to: string | null;
+  is_pinned: boolean;
+  is_edited: boolean;
+  reply_count: number;
+  scheduled_at: string | null;
+  metadata: Record<string, unknown>;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+  sender?: Profile;
+  reactions?: MessageReaction[];
+  attachments?: MessageAttachment[];
+  reply_message?: Message;
 }
 
-export interface MessageRead {
-  id: string
-  channel_id: string
-  user_id: string
-  last_read_at: string
+export interface MessageReaction {
+  id: string;
+  message_id: string;
+  profile_id: string;
+  emoji: string;
+  created_at: string;
+  profile?: Profile;
 }
 
-// Formation types
-export interface Formation {
-  id: string
-  title: string
-  description: string | null
-  thumbnail_url: string | null
-  is_published: boolean
-  sort_order: number
-  created_by: string | null
-  created_at: string
-  updated_at: string
+export interface MessageAttachment {
+  id: string;
+  message_id: string;
+  file_name: string;
+  file_url: string;
+  file_type: string;
+  file_size: number | null;
+  created_at: string;
 }
 
-export interface FormationModule {
-  id: string
-  formation_id: string
-  title: string
-  description: string | null
-  sort_order: number
-  created_at: string
-  updated_at: string
+export interface Course {
+  id: string;
+  title: string;
+  description: string | null;
+  cover_image_url: string | null;
+  status: "draft" | "published" | "archived";
+  sort_order: number;
+  is_mandatory: boolean;
+  estimated_duration: number | null;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+  modules?: Module[];
 }
 
-export interface ModuleItem {
-  id: string
-  module_id: string
-  title: string
-  type: 'video' | 'document'
-  url: string | null
-  duration: number | null
-  sort_order: number
-  created_at: string
-  updated_at: string
+export interface Module {
+  id: string;
+  course_id: string;
+  title: string;
+  description: string | null;
+  sort_order: number;
+  is_locked: boolean;
+  unlock_condition: Record<string, unknown>;
+  created_at: string;
+  lessons?: Lesson[];
 }
 
-export interface ItemCompletion {
-  id: string
-  item_id: string
-  user_id: string
-  completed_at: string
+
+export interface LessonAttachment {
+  name: string;
+  url: string;
+  type: string;
 }
 
-// Channel with computed fields (from RPC)
-export interface ChannelWithDetails extends Channel {
-  last_message?: {
-    id: string
-    content: string | null
-    sender_id: string
-    sender_name: string
-    created_at: string
-  } | null
-  unread_count: number
-  member_count: number
-  other_member?: {
-    id: string
-    full_name: string
-    avatar_url: string | null
-  } | null
+export interface Lesson {
+  id: string;
+  module_id: string;
+  title: string;
+  description: string | null;
+  content_type: "video" | "text" | "pdf" | "quiz" | "assignment";
+  content: Record<string, unknown>;
+  video_url: string | null;
+  content_html: string | null;
+  attachments: LessonAttachment[];
+  sort_order: number;
+  estimated_duration: number | null;
+  is_preview: boolean;
+  created_at: string;
+  updated_at: string;
+  progress?: LessonProgress;
 }
 
-// Message with sender profile
-export interface MessageWithSender extends Message {
-  sender?: Profile
+export interface LessonProgress {
+  id: string;
+  lesson_id: string;
+  student_id: string;
+  status: "not_started" | "in_progress" | "completed";
+  progress_percent: number;
+  time_spent: number;
+  completed_at: string | null;
+  last_accessed_at: string;
+  created_at: string;
 }
 
-// Formation progress (from RPC)
-export interface FormationProgress {
-  formation_id: string
-  user_id: string
-  total_items: number
-  completed_items: number
-  percentage: number
+export interface LessonComment {
+  id: string;
+  lesson_id: string;
+  author_id: string;
+  content: string;
+  reply_to: string | null;
+  created_at: string;
+  author?: Profile;
 }
 
-// Student overview (from RPC)
-export interface StudentOverview {
-  user_id: string
-  full_name: string
-  email: string
-  avatar_url: string | null
-  last_seen_at: string | null
-  created_at: string
-  formations: Array<{
-    formation_id: string
-    title: string
-    progress: FormationProgress
-  }>
-  messages_count: number
-  last_message_at: string | null
-  total_completions?: number
+export interface Form {
+  id: string;
+  title: string;
+  description: string | null;
+  status: "draft" | "active" | "closed" | "archived";
+  created_by: string;
+  cover_image_url: string | null;
+  thank_you_message: string;
+  is_anonymous: boolean;
+  allow_multiple_submissions: boolean;
+  closes_at: string | null;
+  target_audience: "all" | "vip" | "standard" | "new" | "custom";
+  target_student_ids: string[];
+  notification_on_submit: boolean;
+  created_at: string;
+  updated_at: string;
+  fields?: FormField[];
+  _count?: { submissions: number };
 }
 
-// Extended types with relations
-export interface LeadWithRelations extends Lead {
-  client?: Client
-  assigned_profile?: Profile
+export type ConditionalOperator = "equals" | "not_equals" | "contains" | "not_contains" | "is_empty" | "is_not_empty" | "gt" | "lt";
+
+export interface ConditionalRule {
+  fieldId: string;
+  operator: ConditionalOperator;
+  value: string;
 }
 
-export interface CallCalendarWithRelations extends CallCalendar {
-  client?: Client
-  lead?: Lead
-  assigned_profile?: Profile
+export interface ConditionalLogic {
+  enabled: boolean;
+  action: "show" | "hide";
+  rules: ConditionalRule[];
+  logic: "and" | "or"; // all rules must match or any
 }
 
-export interface ClientAssignmentWithRelations extends ClientAssignment {
-  profile?: Profile
-  client?: Client
+export interface FormField {
+  id: string;
+  form_id: string;
+  field_type: string;
+  label: string;
+  description: string | null;
+  placeholder: string | null;
+  is_required: boolean;
+  options: Array<{ label: string; value: string }>;
+  validation: Record<string, unknown>;
+  conditional_logic: ConditionalLogic | Record<string, never>;
+  sort_order: number;
+  created_at: string;
 }
 
-// Supabase Database type for typed client
+export interface FormSubmission {
+  id: string;
+  form_id: string;
+  respondent_id: string | null;
+  answers: Record<string, unknown>;
+  submitted_at: string;
+  ip_address: string | null;
+  user_agent: string | null;
+  respondent?: Profile;
+}
+
+export type NotificationCategory = "general" | "messaging" | "billing" | "coaching" | "gamification" | "system";
+
+export interface Notification {
+  id: string;
+  recipient_id: string;
+  type: string;
+  title: string;
+  body: string | null;
+  data: Record<string, unknown>;
+  is_read: boolean;
+  read_at: string | null;
+  category: NotificationCategory;
+  action_url: string | null;
+  is_archived: boolean;
+  created_at: string;
+}
+
+export interface Certificate {
+  id: string;
+  student_id: string;
+  course_id: string;
+  certificate_number: string;
+  issued_at: string;
+  course_title: string;
+  student_name: string;
+  total_lessons: number;
+  total_modules: number;
+  quiz_average: number | null;
+  created_at: string;
+}
+
+export interface Resource {
+  id: string;
+  title: string;
+  description: string | null;
+  category: string;
+  file_name: string;
+  file_url: string;
+  file_type: string;
+  file_size: number;
+  uploaded_by: string;
+  visibility: "all" | "staff" | "clients";
+  is_pinned: boolean;
+  download_count: number;
+  created_at: string;
+  updated_at: string;
+  uploader?: Profile;
+}
+
+export interface AIConversation {
+  id: string;
+  user_id: string;
+  title: string | null;
+  context: Record<string, unknown>;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AIMessage {
+  id: string;
+  conversation_id: string;
+  role: "user" | "assistant";
+  content: string;
+  metadata: Record<string, unknown>;
+  created_at: string;
+}
+
+export interface AIInsight {
+  id: string;
+  type: "student_risk" | "engagement_drop" | "content_suggestion" | "revenue_insight" | "weekly_summary";
+  title: string;
+  description: string;
+  data: Record<string, unknown>;
+  priority: "low" | "medium" | "high";
+  is_dismissed: boolean;
+  created_at: string;
+}
+
+export interface GoogleCalendarToken {
+  id: string;
+  user_id: string;
+  access_token: string;
+  refresh_token: string | null;
+  token_expiry: string | null;
+  google_email: string | null;
+  calendar_id: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ContactInteraction {
+  id: string;
+  contact_id: string;
+  type: "call" | "email" | "meeting" | "note" | "message";
+  content: string | null;
+  metadata: Record<string, unknown>;
+  created_by: string | null;
+  created_at: string;
+}
+
+// Supabase Database type map
 export interface Database {
   public: {
     Tables: {
-      profiles: { Row: Profile; Insert: Partial<Profile> & { id: string; email: string }; Update: Partial<Profile>; Relationships: [] }
-      user_roles: { Row: UserRole; Insert: Partial<UserRole> & { user_id: string }; Update: Partial<UserRole>; Relationships: [] }
-      clients: { Row: Client; Insert: Partial<Client> & { name: string }; Update: Partial<Client>; Relationships: [] }
-      client_assignments: { Row: ClientAssignment; Insert: Partial<ClientAssignment> & { client_id: string; user_id: string; role: AppRole }; Update: Partial<ClientAssignment>; Relationships: [] }
-      leads: { Row: Lead; Insert: Partial<Lead> & { name: string }; Update: Partial<Lead>; Relationships: [] }
-      call_calendar: { Row: CallCalendar; Insert: Partial<CallCalendar> & { date: string; time: string }; Update: Partial<CallCalendar>; Relationships: [] }
-      financial_entries: { Row: FinancialEntry; Insert: Partial<FinancialEntry> & { type: string; label: string; amount: number }; Update: Partial<FinancialEntry>; Relationships: [] }
-      payment_schedules: { Row: PaymentSchedule; Insert: Partial<PaymentSchedule> & { amount: number; due_date: string }; Update: Partial<PaymentSchedule>; Relationships: [] }
-      setter_activities: { Row: SetterActivity; Insert: Partial<SetterActivity> & { user_id: string }; Update: Partial<SetterActivity>; Relationships: [] }
-      notifications: { Row: Notification; Insert: Partial<Notification> & { user_id: string; type: string; title: string }; Update: Partial<Notification>; Relationships: [] }
-      rituals: { Row: Ritual; Insert: Partial<Ritual> & { title: string }; Update: Partial<Ritual>; Relationships: [] }
-      channels: { Row: Channel; Insert: Partial<Channel> & { name: string }; Update: Partial<Channel>; Relationships: [] }
-      channel_members: { Row: ChannelMember; Insert: Partial<ChannelMember> & { channel_id: string; user_id: string }; Update: Partial<ChannelMember>; Relationships: [] }
-      messages: { Row: Message; Insert: Partial<Message> & { channel_id: string; sender_id: string }; Update: Partial<Message>; Relationships: [] }
-      message_reads: { Row: MessageRead; Insert: Partial<MessageRead> & { channel_id: string; user_id: string }; Update: Partial<MessageRead>; Relationships: [] }
-      formations: { Row: Formation; Insert: Partial<Formation> & { title: string }; Update: Partial<Formation>; Relationships: [] }
-      formation_modules: { Row: FormationModule; Insert: Partial<FormationModule> & { formation_id: string; title: string }; Update: Partial<FormationModule>; Relationships: [] }
-      module_items: { Row: ModuleItem; Insert: Partial<ModuleItem> & { module_id: string; title: string }; Update: Partial<ModuleItem>; Relationships: [] }
-      item_completions: { Row: ItemCompletion; Insert: Partial<ItemCompletion> & { item_id: string; user_id: string }; Update: Partial<ItemCompletion>; Relationships: [] }
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      has_role: { Args: { _role: AppRole }; Returns: boolean }
-      is_assigned_to_client: { Args: { _client_id: string }; Returns: boolean }
-      is_channel_member: { Args: { p_channel_id: string }; Returns: boolean }
-      get_dashboard_stats: { Args: Record<string, never>; Returns: DashboardStats }
-      global_search: { Args: { search_term: string }; Returns: GlobalSearchResult }
-      get_user_channels: { Args: Record<string, never>; Returns: ChannelWithDetails[] }
-      mark_channel_read: { Args: { p_channel_id: string }; Returns: void }
-      get_formation_progress: { Args: { p_formation_id: string; p_user_id?: string }; Returns: FormationProgress }
-      get_student_overview: { Args: { p_user_id: string }; Returns: StudentOverview }
-      get_students_overview: { Args: Record<string, never>; Returns: StudentOverview[] }
-    }
-    Enums: {
-      app_role: AppRole
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  }
-}
-
-export interface DashboardStats {
-  ca_total: number
-  ca_total_prev_month: number
-  ca_total_this_month: number
-  nb_calls: number
-  nb_calls_this_month: number
-  nb_calls_prev_month: number
-  taux_closing: number
-  taux_closing_prev_month: number
-  messages_sent: number
-  messages_sent_this_month: number
-  messages_sent_prev_month: number
-}
-
-export interface GlobalSearchResult {
-  clients: Array<{ id: string; name: string; email: string | null; status: string }>
-  leads: Array<{ id: string; name: string; email: string | null; status: string }>
+      profiles: {
+        Row: Profile;
+        Insert: Partial<Profile> & { id: string; email: string; full_name: string };
+        Update: Partial<Profile>;
+      };
+      student_details: {
+        Row: StudentDetail;
+        Insert: Partial<StudentDetail> & { profile_id: string };
+        Update: Partial<StudentDetail>;
+      };
+      student_activities: {
+        Row: StudentActivity;
+        Insert: Partial<StudentActivity> & { student_id: string; activity_type: string };
+        Update: Partial<StudentActivity>;
+      };
+      student_notes: {
+        Row: StudentNote;
+        Insert: Partial<StudentNote> & { student_id: string; author_id: string; content: string };
+        Update: Partial<StudentNote>;
+      };
+      student_tasks: {
+        Row: StudentTask;
+        Insert: Partial<StudentTask> & { student_id: string; title: string };
+        Update: Partial<StudentTask>;
+      };
+      channels: {
+        Row: Channel;
+        Insert: Partial<Channel> & { name: string };
+        Update: Partial<Channel>;
+      };
+      channel_members: {
+        Row: ChannelMember;
+        Insert: Partial<ChannelMember> & { channel_id: string; profile_id: string };
+        Update: Partial<ChannelMember>;
+      };
+      messages: {
+        Row: Message;
+        Insert: Partial<Message> & { channel_id: string; sender_id: string; content: string };
+        Update: Partial<Message>;
+      };
+      message_reactions: {
+        Row: MessageReaction;
+        Insert: Partial<MessageReaction> & { message_id: string; profile_id: string; emoji: string };
+        Update: Partial<MessageReaction>;
+      };
+      message_attachments: {
+        Row: MessageAttachment;
+        Insert: Partial<MessageAttachment> & { message_id: string; file_name: string; file_url: string; file_type: string };
+        Update: Partial<MessageAttachment>;
+      };
+      courses: {
+        Row: Course;
+        Insert: Partial<Course> & { title: string };
+        Update: Partial<Course>;
+      };
+      modules: {
+        Row: Module;
+        Insert: Partial<Module> & { course_id: string; title: string };
+        Update: Partial<Module>;
+      };
+      lessons: {
+        Row: Lesson;
+        Insert: Partial<Lesson> & { module_id: string; title: string; content_type: string };
+        Update: Partial<Lesson>;
+      };
+      lesson_progress: {
+        Row: LessonProgress;
+        Insert: Partial<LessonProgress> & { lesson_id: string; student_id: string };
+        Update: Partial<LessonProgress>;
+      };
+      lesson_comments: {
+        Row: LessonComment;
+        Insert: Partial<LessonComment> & { lesson_id: string; author_id: string; content: string };
+        Update: Partial<LessonComment>;
+      };
+      forms: {
+        Row: Form;
+        Insert: Partial<Form> & { title: string; created_by: string };
+        Update: Partial<Form>;
+      };
+      form_fields: {
+        Row: FormField;
+        Insert: Partial<FormField> & { form_id: string; field_type: string; label: string };
+        Update: Partial<FormField>;
+      };
+      form_submissions: {
+        Row: FormSubmission;
+        Insert: Partial<FormSubmission> & { form_id: string };
+        Update: Partial<FormSubmission>;
+      };
+      notifications: {
+        Row: Notification;
+        Insert: Partial<Notification> & { recipient_id: string; type: string; title: string };
+        Update: Partial<Notification>;
+      };
+      ai_conversations: {
+        Row: AIConversation;
+        Insert: Partial<AIConversation> & { user_id: string };
+        Update: Partial<AIConversation>;
+      };
+      ai_messages: {
+        Row: AIMessage;
+        Insert: Partial<AIMessage> & { conversation_id: string; role: string; content: string };
+        Update: Partial<AIMessage>;
+      };
+      ai_insights: {
+        Row: AIInsight;
+        Insert: Partial<AIInsight> & { type: string; title: string; description: string };
+        Update: Partial<AIInsight>;
+      };
+    };
+  };
 }

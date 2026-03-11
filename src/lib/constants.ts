@@ -1,117 +1,76 @@
-export const APP_ROLES = ['admin', 'coach', 'prospect'] as const
-export type AppRole = (typeof APP_ROLES)[number]
+export const STUDENT_TAGS = [
+  { value: "vip", label: "VIP", color: "bg-amber-100 text-amber-800 border-amber-200" },
+  { value: "standard", label: "Standard", color: "bg-zinc-100 text-zinc-800 border-zinc-200" },
+  { value: "new", label: "Nouveau", color: "bg-emerald-100 text-emerald-800 border-emerald-200" },
+  { value: "at_risk", label: "A risque", color: "bg-red-100 text-red-800 border-red-200" },
+  { value: "churned", label: "Perdu", color: "bg-zinc-200 text-zinc-500 border-zinc-300" },
+] as const;
 
-export const ROLE_LABELS: Record<AppRole, string> = {
-  admin: 'Administrateur',
-  coach: 'Coach',
-  prospect: 'Prospect',
-}
+export const ACTIVITY_TYPES = [
+  { value: "module_started", label: "Module commenc\u00e9", icon: "BookOpen" },
+  { value: "module_completed", label: "Module termin\u00e9", icon: "CheckCircle" },
+  { value: "lesson_completed", label: "Le\u00e7on termin\u00e9e", icon: "Check" },
+  { value: "form_submitted", label: "Formulaire soumis", icon: "FileText" },
+  { value: "message_sent", label: "Message envoy\u00e9", icon: "MessageSquare" },
+  { value: "login", label: "Connexion", icon: "LogIn" },
+  { value: "milestone_reached", label: "Jalon atteint", icon: "Flag" },
+  { value: "note_added", label: "Note ajout\u00e9e", icon: "StickyNote" },
+  { value: "call_scheduled", label: "Appel planifi\u00e9", icon: "Phone" },
+  { value: "payment_received", label: "Paiement re\u00e7u", icon: "CreditCard" },
+] as const;
 
-export const CLIENT_STATUSES = ['actif', 'inactif', 'archivé'] as const
-export type ClientStatus = (typeof CLIENT_STATUSES)[number]
+export const NOTIFICATION_TYPES = [
+  { value: "new_message", label: "Nouveau message" },
+  { value: "mention", label: "Mention" },
+  { value: "form_response", label: "R\u00e9ponse formulaire" },
+  { value: "module_complete", label: "Module termin\u00e9" },
+  { value: "task_assigned", label: "T\u00e2che assign\u00e9e" },
+  { value: "task_due", label: "T\u00e2che \u00e9ch\u00e9ante" },
+  { value: "student_inactive", label: "El\u00e8ve inactif" },
+  { value: "new_enrollment", label: "Nouvelle inscription" },
+  { value: "ai_insight", label: "Insight IA" },
+  { value: "system", label: "Syst\u00e8me" },
+] as const;
 
-export const CLIENT_STATUS_COLORS: Record<ClientStatus, string> = {
-  actif: 'bg-green-100 text-green-700',
-  inactif: 'bg-gray-100 text-gray-600',
-  archivé: 'bg-red-100 text-red-700',
-}
+export const FORM_FIELD_TYPES = [
+  { value: "short_text", label: "Texte court", icon: "Type" },
+  { value: "long_text", label: "Texte long", icon: "AlignLeft" },
+  { value: "email", label: "Email", icon: "Mail" },
+  { value: "phone", label: "T\u00e9l\u00e9phone", icon: "Phone" },
+  { value: "number", label: "Nombre", icon: "Hash" },
+  { value: "single_select", label: "Choix unique", icon: "CircleDot" },
+  { value: "multi_select", label: "Choix multiples", icon: "CheckSquare" },
+  { value: "dropdown", label: "Dropdown", icon: "ChevronDown" },
+  { value: "rating", label: "Notation", icon: "Star" },
+  { value: "nps", label: "NPS", icon: "BarChart" },
+  { value: "scale", label: "Echelle", icon: "Sliders" },
+  { value: "date", label: "Date", icon: "Calendar" },
+  { value: "time", label: "Heure", icon: "Clock" },
+  { value: "file_upload", label: "Upload fichier", icon: "Upload" },
+  { value: "heading", label: "Titre", icon: "Heading" },
+  { value: "paragraph", label: "Paragraphe", icon: "Text" },
+  { value: "divider", label: "S\u00e9parateur", icon: "Minus" },
+] as const;
 
-export const LEAD_STATUSES = ['premier_message', 'en_discussion', 'qualifie', 'loom_envoye', 'call_planifie', 'close', 'perdu'] as const
-export type LeadStatus = (typeof LEAD_STATUSES)[number]
+export const LESSON_TYPES = [
+  { value: "video", label: "Vid\u00e9o", icon: "Play" },
+  { value: "text", label: "Texte", icon: "FileText" },
+  { value: "pdf", label: "PDF", icon: "File" },
+  { value: "quiz", label: "Quiz", icon: "HelpCircle" },
+  { value: "assignment", label: "Exercice", icon: "PenTool" },
+] as const;
 
-export const LEAD_STATUS_LABELS: Record<LeadStatus, string> = {
-  premier_message: 'Premier message',
-  en_discussion: 'En discussion',
-  qualifie: 'Qualifié',
-  loom_envoye: 'Loom envoyé',
-  call_planifie: 'Call planifié',
-  close: 'Closé',
-  perdu: 'Perdu',
-}
+export const ROLES = {
+  admin: { label: "Admin", color: "bg-primary/10 text-primary" },
+  coach: { label: "Coach", color: "bg-primary/10 text-primary" },
+  setter: { label: "Setter", color: "bg-blue-100 text-blue-800" },
+  closer: { label: "Closer", color: "bg-indigo-100 text-indigo-800" },
+  client: { label: "Client", color: "bg-zinc-100 text-zinc-800" },
+} as const;
 
-export const LEAD_STATUS_COLORS: Record<LeadStatus, string> = {
-  premier_message: 'bg-slate-100 text-slate-700',
-  en_discussion: 'bg-blue-100 text-blue-700',
-  qualifie: 'bg-indigo-100 text-indigo-700',
-  loom_envoye: 'bg-purple-100 text-purple-700',
-  call_planifie: 'bg-amber-100 text-amber-700',
-  close: 'bg-green-100 text-green-700',
-  perdu: 'bg-red-100 text-red-700',
-}
-
-export const LEAD_SOURCES = ['instagram', 'linkedin', 'tiktok', 'referral', 'ads', 'autre'] as const
-export type LeadSource = (typeof LEAD_SOURCES)[number]
-
-export const LEAD_SOURCE_LABELS: Record<LeadSource, string> = {
-  instagram: 'Instagram',
-  linkedin: 'LinkedIn',
-  tiktok: 'TikTok',
-  referral: 'Referral',
-  ads: 'Ads',
-  autre: 'Autre',
-}
-
-export const CALL_TYPES = ['manuel', 'iclosed', 'calendly', 'coaching', 'closing', 'autre'] as const
-export type CallType = (typeof CALL_TYPES)[number]
-
-export const CALL_TYPE_LABELS: Record<CallType, string> = {
-  manuel: 'Manuel',
-  iclosed: 'iClosed',
-  calendly: 'Calendly',
-  coaching: 'Coaching',
-  closing: 'Closing',
-  autre: 'Autre',
-}
-
-export const CALL_TYPE_COLORS: Record<CallType, string> = {
-  manuel: 'bg-gray-100 text-gray-700',
-  iclosed: 'bg-blue-100 text-blue-700',
-  calendly: 'bg-green-100 text-green-700',
-  coaching: 'bg-purple-100 text-purple-700',
-  closing: 'bg-red-100 text-red-700',
-  autre: 'bg-yellow-100 text-yellow-700',
-}
-
-export const CALL_STATUSES = ['planifié', 'réalisé', 'no_show', 'annulé', 'reporté'] as const
-export type CallStatus = (typeof CALL_STATUSES)[number]
-
-export const CALL_STATUS_COLORS: Record<CallStatus, string> = {
-  planifié: 'bg-blue-100 text-blue-700',
-  réalisé: 'bg-green-100 text-green-700',
-  no_show: 'bg-red-100 text-red-700',
-  annulé: 'bg-gray-100 text-gray-600',
-  reporté: 'bg-orange-100 text-orange-700',
-}
-
-export const CALL_STATUS_LABELS: Record<CallStatus, string> = {
-  planifié: 'Planifié',
-  réalisé: 'Réalisé',
-  no_show: 'No show',
-  annulé: 'Annulé',
-  reporté: 'Reporté',
-}
-
-export const FINANCIAL_TYPES = ['ca', 'récurrent', 'charge', 'prestataire'] as const
-export type FinancialType = (typeof FINANCIAL_TYPES)[number]
-
-export const FINANCIAL_TYPE_LABELS: Record<FinancialType, string> = {
-  ca: 'CA',
-  récurrent: 'Récurrent',
-  charge: 'Charge',
-  prestataire: 'Prestataire',
-}
-
-export const RECURRENCE_OPTIONS = ['mensuel', 'trimestriel', 'annuel'] as const
-export type RecurrenceType = (typeof RECURRENCE_OPTIONS)[number]
-
-export const RECURRENCE_LABELS: Record<RecurrenceType, string> = {
-  mensuel: 'Mensuel',
-  trimestriel: 'Trimestriel',
-  annuel: 'Annuel',
-}
-
-export const NOTIFICATION_TYPES = ['lead_status', 'new_call', 'call_closed', 'general'] as const
-
-export const RITUAL_FREQUENCIES = ['quotidien', 'hebdomadaire', 'mensuel'] as const
-
-export const ITEMS_PER_PAGE = 20
+export type StudentTag = (typeof STUDENT_TAGS)[number]["value"];
+export type ActivityType = (typeof ACTIVITY_TYPES)[number]["value"];
+export type NotificationType = (typeof NOTIFICATION_TYPES)[number]["value"];
+export type FormFieldType = (typeof FORM_FIELD_TYPES)[number]["value"];
+export type LessonType = (typeof LESSON_TYPES)[number]["value"];
+export type Role = keyof typeof ROLES;
