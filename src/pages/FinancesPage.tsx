@@ -16,6 +16,7 @@ import { exportToCSV } from '@/lib/csv'
 import { FINANCIAL_TYPES, FINANCIAL_TYPE_LABELS, ITEMS_PER_PAGE } from '@/lib/constants'
 import type { FinancialEntry, PaymentSchedule } from '@/types/database'
 import { toast } from 'sonner'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 const FINANCE_TABS = [
   { value: 'entries', label: 'Entrées' },
@@ -24,6 +25,7 @@ const FINANCE_TABS = [
 ]
 
 export default function FinancesPage() {
+  usePageTitle('Finances')
   const [activeTab, setActiveTab] = useState('entries')
   const [clientFilter, setClientFilter] = useState<string>('')
   const [typeFilter, setTypeFilter] = useState<string>('')
@@ -38,7 +40,7 @@ export default function FinancesPage() {
   const [editSchedule, setEditSchedule] = useState<PaymentSchedule | null>(null)
 
   const { data: clientsData } = useClients()
-  const clients = clientsData?.data ?? []
+  const clients = useMemo(() => clientsData?.data ?? [], [clientsData?.data])
 
   const entryFilters = useMemo(
     () => ({
@@ -56,7 +58,7 @@ export default function FinancesPage() {
     clientFilter || undefined
   )
 
-  const entries = entriesResult?.data ?? []
+  const entries = useMemo(() => entriesResult?.data ?? [], [entriesResult?.data])
   const totalEntries = entriesResult?.count ?? 0
   const totalPages = Math.ceil(totalEntries / ITEMS_PER_PAGE)
 

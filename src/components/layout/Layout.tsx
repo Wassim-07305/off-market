@@ -3,16 +3,28 @@ import { Outlet, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useUIStore } from '@/stores/ui-store'
 import { usePresence } from '@/hooks/usePresence'
+import { useAuth } from '@/hooks/useAuth'
+import { useNotifications } from '@/hooks/useNotifications'
+import { useTheme } from '@/hooks/useTheme'
 import { Sidebar } from '@/components/layout/Sidebar'
 import { Header } from '@/components/layout/Header'
 import { CommandPalette } from '@/components/layout/CommandPalette'
+import { KeyboardShortcuts } from '@/components/layout/KeyboardShortcuts'
+import { QuickAddModal } from '@/components/layout/QuickAddModal'
 import { NotificationsPanel } from '@/components/notifications/NotificationsPanel'
+import { AnnouncementBanner } from '@/components/announcements/AnnouncementBanner'
 import { DemoDataButton } from '@/components/admin/DemoDataButton'
+import { ScrollToTop } from '@/components/ui/scroll-to-top'
+import { MobileBottomNav } from '@/components/layout/MobileBottomNav'
 
 export function Layout() {
-  const { setSidebarCollapsed, setMobileSidebarOpen } = useUIStore()
+  const { setSidebarCollapsed, setMobileSidebarOpen, quickAddOpen, setQuickAddOpen } = useUIStore()
   const location = useLocation()
+  const { user } = useAuth()
   usePresence()
+  useTheme() // Apply theme to document
+  // Charger les notifications et activer les souscriptions realtime
+  useNotifications(user?.id)
 
   // Auto-collapse sidebar on small screens, hide on mobile
   useEffect(() => {
@@ -45,8 +57,9 @@ export function Layout() {
 
       <div className="flex min-w-0 flex-1 flex-col">
         <Header />
+        <AnnouncementBanner />
 
-        <main className="flex-1 overflow-y-auto p-5 md:p-8 lg:p-10">
+        <main className="flex-1 overflow-y-auto p-5 pb-24 md:p-8 md:pb-8 lg:p-10 lg:pb-10">
           <div className="mx-auto max-w-[1400px]">
             <AnimatePresence mode="wait">
               <motion.div
@@ -65,8 +78,12 @@ export function Layout() {
 
       {/* Global overlays */}
       <CommandPalette />
+      <KeyboardShortcuts />
+      <QuickAddModal open={quickAddOpen} onClose={() => setQuickAddOpen(false)} />
       <NotificationsPanel />
       <DemoDataButton />
+      <ScrollToTop />
+      <MobileBottomNav />
     </div>
   )
 }

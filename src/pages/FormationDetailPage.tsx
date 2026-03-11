@@ -16,8 +16,10 @@ import { FormationProgressAdmin } from '@/components/formations/FormationProgres
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import type { FormationModule as FormationModuleType, ModuleItem } from '@/types/database'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 export default function FormationDetailPage() {
+  usePageTitle('Formation')
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { isAdmin, isProspect } = useRole()

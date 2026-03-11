@@ -1,13 +1,16 @@
 import { useState, useCallback } from 'react'
-import { Plus, Download, LayoutList, Columns } from 'lucide-react'
+import { Plus, Download, Upload, LayoutList, Columns, Trash2 } from 'lucide-react'
+import { AnimatePresence, motion } from 'framer-motion'
 import type { LeadWithRelations } from '@/types/database'
 import type { LeadStatus } from '@/lib/constants'
-import { useLeads, useAllLeads, useUpdateLead } from '@/hooks/useLeads'
+import { useLeads, useAllLeads, useUpdateLead, useBulkCreateLeads, useBulkDeleteLeads, useBulkUpdateLeads } from '@/hooks/useLeads'
 import { useClients } from '@/hooks/useClients'
 import { LeadKPIs } from '@/components/leads/LeadKPIs'
 import { LeadsTable } from '@/components/leads/LeadsTable'
 import { LeadKanban } from '@/components/leads/LeadKanban'
 import { LeadFormModal } from '@/components/leads/LeadFormModal'
+import { CSVImportModal } from '@/components/shared/CSVImportModal'
+import type { CSVColumn } from '@/components/shared/CSVImportModal'
 import { SearchInput } from '@/components/ui/search-input'
 import { Select } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
@@ -21,8 +24,20 @@ import {
   LEAD_SOURCE_LABELS,
   ITEMS_PER_PAGE,
 } from '@/lib/constants'
+import { usePageTitle } from '@/hooks/usePageTitle'
+
+const LEAD_IMPORT_COLUMNS: CSVColumn<'name' | 'email' | 'phone' | 'source' | 'status' | 'notes' | 'ca_contracté'>[] = [
+  { key: 'name', label: 'Nom', required: true },
+  { key: 'email', label: 'Email' },
+  { key: 'phone', label: 'Téléphone' },
+  { key: 'source', label: 'Source' },
+  { key: 'status', label: 'Statut' },
+  { key: 'ca_contracté', label: 'CA Contracté' },
+  { key: 'notes', label: 'Notes' },
+]
 
 export default function LeadsPage() {
+  usePageTitle('Pipeline')
   const [search, setSearch] = useState('')
   const [status, setStatus] = useState('')
   const [source, setSource] = useState('')
@@ -31,6 +46,12 @@ export default function LeadsPage() {
   const [modalOpen, setModalOpen] = useState(false)
   const [editingLead, setEditingLead] = useState<LeadWithRelations | null>(null)
   const [viewMode, setViewMode] = useState<'table' | 'kanban'>('table')
+  const [importOpen, setImportOpen] = useState(false)
+  const [selectedIds, setSelectedIds] = useState<string[]>([])
+
+  const bulkCreate = useBulkCreateLeads()
+  const bulkDelete = useBulkDeleteLeads()
+  const bulkUpdate = useBulkUpdateLeads()
 
   const filters = {
     search: search || undefined,
@@ -60,6 +81,48 @@ export default function LeadsPage() {
   const handleKanbanStatusChange = useCallback((leadId: string, newStatus: LeadStatus) => {
     updateLead.mutate({ id: leadId, status: newStatus })
   }, [updateLead])
+
+  const handleImportCSV = useCallback(
+    async (rows: Record<'name' | 'email' | 'phone' | 'source' | 'status' | 'notes' | 'ca_contracté', string>[]) => {
+      const validSources = ['instagram', 'linkedin', 'tiktok', 'referral', 'ads', 'autre']
+      const validStatuses = ['premier_message', 'en_discussion', 'qualifie', 'loom_envoye', 'call_planifie', 'close', 'perdu']
+
+      const leads = rows
+        .filter((r) => r.name?.trim())
+        .map((r) => ({
+          name: r.name.trim(),
+          email: r.email?.trim() || null,
+          phone: r.phone?.trim() || null,
+          source: validSources.includes(r.source?.toLowerCase()) ? r.source.toLowerCase() as 'instagram' | 'linkedin' | 'tiktok' | 'referral' | 'ads' | 'autre' : null,
+          status: validStatuses.includes(r.status?.toLowerCase()) ? r.status.toLowerCase() as 'premier_message' : 'premier_message' as const,
+          ca_contracté: Number(r.ca_contracté) || 0,
+          ca_collecté: 0,
+          commission_setter: 0,
+          commission_closer: 0,
+          notes: r.notes?.trim() || null,
+        }))
+
+      return bulkCreate.mutateAsync(leads)
+    },
+    [bulkCreate]
+  )
+
+  const handleSelectionChange = useCallback((ids: string[]) => {
+    setSelectedIds(ids)
+  }, [])
+
+  const handleBulkDelete = useCallback(async () => {
+    if (selectedIds.length === 0) return
+    if (!confirm(`Supprimer ${selectedIds.length} lead${selectedIds.length > 1 ? 's' : ''} ?`)) return
+    await bulkDelete.mutateAsync(selectedIds)
+    setSelectedIds([])
+  }, [selectedIds, bulkDelete])
+
+  const handleBulkStatusChange = useCallback(async (newStatus: LeadStatus) => {
+    if (selectedIds.length === 0) return
+    await bulkUpdate.mutateAsync({ ids: selectedIds, data: { status: newStatus } })
+    setSelectedIds([])
+  }, [selectedIds, bulkUpdate])
 
   const handleExport = useCallback(() => {
     if (!data?.data) return
@@ -142,11 +205,19 @@ export default function LeadsPage() {
           <Button
             variant="secondary"
             size="sm"
+            icon={<Upload className="h-4 w-4" />}
+            onClick={() => setImportOpen(true)}
+          >
+            Importer
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
             icon={<Download className="h-4 w-4" />}
             onClick={handleExport}
             disabled={!data?.data?.length}
           >
-            Exporter CSV
+            Exporter
           </Button>
           <Button
             size="sm"
@@ -206,10 +277,55 @@ export default function LeadsPage() {
             />
           </div>
 
+          {/* Bulk actions bar */}
+          <AnimatePresence>
+            {selectedIds.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="flex items-center gap-3 rounded-lg border border-primary/20 bg-primary/5 px-4 py-2"
+              >
+                <span className="text-sm font-medium text-primary">
+                  {selectedIds.length} sélectionné{selectedIds.length > 1 ? 's' : ''}
+                </span>
+                <div className="flex items-center gap-2">
+                  <Select
+                    options={[
+                      { value: '', label: 'Changer le statut...' },
+                      ...LEAD_STATUSES.map((s) => ({ value: s, label: LEAD_STATUS_LABELS[s] })),
+                    ]}
+                    value=""
+                    onChange={(val) => {
+                      if (val) handleBulkStatusChange(val as LeadStatus)
+                    }}
+                    className="w-44"
+                  />
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    icon={<Trash2 className="h-4 w-4" />}
+                    onClick={handleBulkDelete}
+                    disabled={bulkDelete.isPending}
+                  >
+                    Supprimer
+                  </Button>
+                </div>
+                <button
+                  onClick={() => setSelectedIds([])}
+                  className="ml-auto text-sm text-muted-foreground hover:text-foreground"
+                >
+                  Annuler
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           <LeadsTable
             data={data?.data ?? []}
             isLoading={isLoading}
             onEdit={handleEdit}
+            onSelectionChange={handleSelectionChange}
           />
 
           <Pagination
@@ -225,6 +341,16 @@ export default function LeadsPage() {
         open={modalOpen}
         onClose={handleCloseModal}
         lead={editingLead}
+      />
+
+      <CSVImportModal
+        open={importOpen}
+        onClose={() => setImportOpen(false)}
+        title="Importer des leads"
+        description="Importez vos leads depuis un fichier CSV"
+        columns={LEAD_IMPORT_COLUMNS}
+        onImport={handleImportCSV}
+        templateFilename="template-leads"
       />
     </div>
   )

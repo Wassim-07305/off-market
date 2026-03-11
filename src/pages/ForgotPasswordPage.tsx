@@ -10,6 +10,7 @@ import { OffMarketLogo } from '@/components/ui/OffMarketLogo'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 const forgotPasswordSchema = z.object({
   email: z.email('Adresse email invalide'),
@@ -18,6 +19,7 @@ const forgotPasswordSchema = z.object({
 type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>
 
 export default function ForgotPasswordPage() {
+  usePageTitle('Mot de passe oublié')
   const { resetPassword } = useAuth()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [emailSent, setEmailSent] = useState(false)
@@ -50,17 +52,17 @@ export default function ForgotPasswordPage() {
         <div className="mb-8 flex flex-col items-center text-center">
           <OffMarketLogo size={48} showText textClassName="text-2xl text-foreground" />
           <p className="mt-3 text-muted-foreground">
-            Reinitialisation du mot de passe
+            Réinitialisation du mot de passe
           </p>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>Mot de passe oublie</CardTitle>
+            <CardTitle>Mot de passe oublié</CardTitle>
             <CardDescription>
               {emailSent
-                ? 'Un email de reinitialisation a ete envoye'
-                : 'Entrez votre email pour recevoir un lien de reinitialisation'}
+                ? 'Un email de réinitialisation a été envoyé'
+                : 'Entrez votre email pour recevoir un lien de réinitialisation'}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -69,15 +71,15 @@ export default function ForgotPasswordPage() {
                 <div className="rounded-md bg-muted p-4 text-center">
                   <Mail className="mx-auto mb-2 h-10 w-10 text-primary" />
                   <p className="text-sm text-foreground">
-                    Si un compte est associe a cette adresse, vous recevrez un
-                    email avec les instructions pour reinitialiser votre mot de
+                    Si un compte est associé à cette adresse, vous recevrez un
+                    email avec les instructions pour réinitialiser votre mot de
                     passe.
                   </p>
                 </div>
 
                 <Link to="/login">
                   <Button variant="secondary" className="w-full" icon={<ArrowLeft className="h-4 w-4" />}>
-                    Retour a la connexion
+                    Retour à la connexion
                   </Button>
                 </Link>
               </div>
@@ -103,7 +105,7 @@ export default function ForgotPasswordPage() {
 
                 <Link to="/login" className="flex items-center justify-center gap-1 text-sm text-muted-foreground hover:text-foreground">
                   <ArrowLeft className="h-4 w-4" />
-                  Retour a la connexion
+                  Retour à la connexion
                 </Link>
               </form>
             )}

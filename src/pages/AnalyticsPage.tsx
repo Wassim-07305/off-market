@@ -35,6 +35,7 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import type { TimePeriod } from '@/components/shared/TimeFilter'
 import { TimeFilter } from '@/components/shared/TimeFilter'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 const COLORS = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899']
 
@@ -51,22 +52,25 @@ const STATUS_COLORS: Record<string, string> = {
 const STATUS_LABELS: Record<string, string> = {
   premier_message: 'Premier message',
   en_discussion: 'En discussion',
-  qualifie: 'Qualifie',
-  loom_envoye: 'Loom envoye',
-  call_planifie: 'Call planifie',
+  qualifie: 'Qualifié',
+  loom_envoye: 'Loom envoyé',
+  call_planifie: 'Call planifié',
   close: 'Close',
   perdu: 'Perdu',
 }
 
 export default function AnalyticsPage() {
+  usePageTitle('Analytics')
   const [period, setPeriod] = useState<TimePeriod>('month')
   const { isAdmin } = useRole()
   const { data: stats, isLoading: statsLoading } = useDashboardStats()
   const { data: leadsData, isLoading: leadsLoading } = useLeads()
-  const leads = leadsData?.data ?? []
   const { data: calls, isLoading: callsLoading } = useCallCalendar()
 
   const isLoading = statsLoading || leadsLoading || callsLoading
+
+  // Memoize leads array
+  const leads = useMemo(() => leadsData?.data ?? [], [leadsData?.data])
 
   // Leads by status
   const leadsByStatus = useMemo(() => {
@@ -160,8 +164,8 @@ export default function AnalyticsPage() {
     return [
       { name: 'Total Leads', value: total, fill: '#94a3b8' },
       { name: 'En discussion', value: enDiscussion, fill: '#3b82f6' },
-      { name: 'Qualifies', value: qualifies, fill: '#6366f1' },
-      { name: 'Call planifie', value: callPlanifie, fill: '#f59e0b' },
+      { name: 'Qualifiés', value: qualifies, fill: '#6366f1' },
+      { name: 'Call planifié', value: callPlanifie, fill: '#f59e0b' },
       { name: 'Closes', value: closes, fill: '#10b981' },
     ]
   }, [leads])
@@ -188,9 +192,9 @@ export default function AnalyticsPage() {
       <div className="flex h-[60vh] items-center justify-center">
         <div className="text-center">
           <BarChart3 className="mx-auto h-12 w-12 text-muted-foreground/50" />
-          <h2 className="mt-4 text-lg font-semibold text-foreground">Acces restreint</h2>
+          <h2 className="mt-4 text-lg font-semibold text-foreground">Accès restreint</h2>
           <p className="text-sm text-muted-foreground">
-            Les analytics sont reservees aux administrateurs.
+            Les analytics sont réservées aux administrateurs.
           </p>
         </div>
       </div>
@@ -319,7 +323,7 @@ export default function AnalyticsPage() {
               <Target className="h-5 w-5 text-blue-600" />
               Leads par statut
             </CardTitle>
-            <CardDescription>Repartition actuelle du pipeline</CardDescription>
+            <CardDescription>Répartition actuelle du pipeline</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-[280px]">
@@ -444,7 +448,7 @@ export default function AnalyticsPage() {
             <Calendar className="h-5 w-5 text-red-600" />
             Calls par type
           </CardTitle>
-          <CardDescription>Repartition des differents types de calls</CardDescription>
+          <CardDescription>Répartition des differents types de calls</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="h-[200px]">

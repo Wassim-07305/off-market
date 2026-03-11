@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { DollarSign, Phone, TrendingUp, MessageSquare, AlertTriangle, Users, Target } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { DollarSign, Phone, TrendingUp, MessageSquare, AlertTriangle, Users, Target, Plus, GraduationCap, ArrowRight, Trophy, BookMarked } from 'lucide-react'
 import { useDashboardStats } from '@/hooks/useDashboardStats'
 import { useAuth } from '@/hooks/useAuth'
 import { useRole } from '@/hooks/useRole'
@@ -18,6 +19,7 @@ import { LeadsChart } from '@/components/dashboard/LeadsChart'
 import { SetterActivityChart } from '@/components/dashboard/SetterActivityChart'
 import { cn } from '@/lib/utils'
 import type { TimePeriod } from '@/components/shared/TimeFilter'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 function computeTrend(current: number, previous: number): number {
   if (previous === 0) return current > 0 ? 100 : 0
@@ -44,30 +46,76 @@ function StatsCardsSkeleton() {
   )
 }
 
+// ─── Quick Actions (Prospect) ───
+function QuickActions() {
+  const navigate = useNavigate()
+
+  const actions = [
+    {
+      label: 'Nouveau lead',
+      description: 'Ajouter un prospect au pipeline',
+      icon: Plus,
+      color: 'from-red-500 to-orange-500',
+      iconBg: 'bg-red-500/10 text-red-600',
+      onClick: () => navigate('/pipeline?action=new'),
+    },
+    {
+      label: 'Messagerie',
+      description: 'Discuter avec votre coach',
+      icon: MessageSquare,
+      color: 'from-blue-500 to-indigo-500',
+      iconBg: 'bg-blue-500/10 text-blue-600',
+      onClick: () => navigate('/messaging'),
+    },
+    {
+      label: 'Formations',
+      description: 'Continuer votre apprentissage',
+      icon: GraduationCap,
+      color: 'from-purple-500 to-pink-500',
+      iconBg: 'bg-purple-500/10 text-purple-600',
+      onClick: () => navigate('/formations'),
+    },
+    {
+      label: 'Ma progression',
+      description: 'XP, badges et défis',
+      icon: Trophy,
+      color: 'from-amber-500 to-yellow-500',
+      iconBg: 'bg-amber-500/10 text-amber-600',
+      onClick: () => navigate('/progression'),
+    },
+  ]
+
+  return (
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      {actions.map((action) => (
+        <button
+          key={action.label}
+          onClick={action.onClick}
+          className="group flex flex-col items-start gap-3 rounded-2xl border border-border/40 bg-white p-4 text-left transition-all duration-200 hover:shadow-lg hover:border-border/60 cursor-pointer"
+        >
+          <div className={cn('flex h-10 w-10 items-center justify-center rounded-xl', action.iconBg)}>
+            <action.icon className="h-5 w-5" />
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-foreground">{action.label}</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">{action.description}</p>
+          </div>
+          <ArrowRight className="h-4 w-4 text-muted-foreground/40 transition-transform group-hover:translate-x-1 group-hover:text-foreground" />
+        </button>
+      ))}
+    </div>
+  )
+}
+
 // ─── Eleve Dashboard ───
 function EleveDashboard() {
   const { user } = useAuth()
+  const navigate = useNavigate()
   const userId = user?.id
   const { data: leadStats, isLoading: leadLoading } = useLeadStats()
   const { data: activityStats, isLoading: activityLoading } = useSetterStats(userId)
 
   const isLoading = leadLoading || activityLoading
-
-  if (isLoading) {
-    return (
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <Card key={i}>
-            <CardContent className="p-5">
-              <Skeleton className="h-10 w-10 rounded-lg" />
-              <Skeleton className="mt-3 h-4 w-24" />
-              <Skeleton className="mt-2 h-8 w-16" />
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    )
-  }
 
   const kpis = [
     {
@@ -83,7 +131,7 @@ function EleveDashboard() {
       color: 'bg-blue-100 text-blue-700',
     },
     {
-      title: 'Calls Planifies',
+      title: 'Calls Planifiés',
       value: String(leadStats?.call_planifie ?? 0),
       icon: Phone,
       color: 'bg-amber-100 text-amber-700',
@@ -97,21 +145,75 @@ function EleveDashboard() {
   ]
 
   return (
-    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-      {kpis.map((kpi) => (
-        <Card key={kpi.title}>
-          <CardContent className="p-5">
-            <div className={cn('flex h-10 w-10 items-center justify-center rounded-lg', kpi.color)}>
-              <kpi.icon className="h-5 w-5" />
+    <>
+      {/* Quick Actions */}
+      <QuickActions />
+
+      {/* KPIs */}
+      {isLoading ? (
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Card key={i}>
+              <CardContent className="p-5">
+                <Skeleton className="h-10 w-10 rounded-lg" />
+                <Skeleton className="mt-3 h-4 w-24" />
+                <Skeleton className="mt-2 h-8 w-16" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {kpis.map((kpi) => (
+            <Card key={kpi.title}>
+              <CardContent className="p-5">
+                <div className={cn('flex h-10 w-10 items-center justify-center rounded-lg', kpi.color)}>
+                  <kpi.icon className="h-5 w-5" />
+                </div>
+                <div className="mt-3">
+                  <p className="text-sm font-medium text-muted-foreground">{kpi.title}</p>
+                  <p className="mt-1 text-2xl font-bold text-foreground">{kpi.value}</p>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+
+      {/* Raccourcis */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <Card
+          className="cursor-pointer transition-all hover:shadow-md"
+          onClick={() => navigate('/journal')}
+        >
+          <CardContent className="flex items-center gap-4 p-5">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-rose-50">
+              <BookMarked className="h-6 w-6 text-rose-500" />
             </div>
-            <div className="mt-3">
-              <p className="text-sm font-medium text-muted-foreground">{kpi.title}</p>
-              <p className="mt-1 text-2xl font-bold text-foreground">{kpi.value}</p>
+            <div className="flex-1">
+              <p className="font-semibold text-foreground">Journal</p>
+              <p className="text-sm text-muted-foreground">Notez vos réflexions du jour</p>
             </div>
+            <ArrowRight className="h-5 w-5 text-muted-foreground/40" />
           </CardContent>
         </Card>
-      ))}
-    </div>
+        <Card
+          className="cursor-pointer transition-all hover:shadow-md"
+          onClick={() => navigate('/communaute')}
+        >
+          <CardContent className="flex items-center gap-4 p-5">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-50">
+              <Users className="h-6 w-6 text-indigo-500" />
+            </div>
+            <div className="flex-1">
+              <p className="font-semibold text-foreground">Communauté</p>
+              <p className="text-sm text-muted-foreground">Échangez avec les autres membres</p>
+            </div>
+            <ArrowRight className="h-5 w-5 text-muted-foreground/40" />
+          </CardContent>
+        </Card>
+      </div>
+    </>
   )
 }
 
@@ -146,7 +248,7 @@ function AdminDashboard() {
             value={formatCurrency(stats.ca_total)}
             icon={DollarSign}
             trend={caTrend}
-            trendLabel="vs mois precedent"
+            trendLabel="vs mois précédent"
             accent="emerald"
             index={0}
           />
@@ -155,7 +257,7 @@ function AdminDashboard() {
             value={String(stats.nb_calls)}
             icon={Phone}
             trend={callsTrend}
-            trendLabel="vs mois precedent"
+            trendLabel="vs mois précédent"
             accent="blue"
             index={1}
           />
@@ -164,7 +266,7 @@ function AdminDashboard() {
             value={formatPercent(stats.taux_closing)}
             icon={TrendingUp}
             trend={closingTrend}
-            trendLabel="vs mois precedent"
+            trendLabel="vs mois précédent"
             accent="red"
             index={2}
           />
@@ -173,7 +275,7 @@ function AdminDashboard() {
             value={String(stats.messages_sent)}
             icon={MessageSquare}
             trend={messagesTrend}
-            trendLabel="vs mois precedent"
+            trendLabel="vs mois précédent"
             accent="amber"
             index={3}
           />
@@ -190,7 +292,7 @@ function AdminDashboard() {
             </p>
             <p className="text-xs text-destructive/80">
               Votre taux de closing est actuellement de {formatPercent(stats!.taux_closing)}.
-              Un taux inferieur a 30% necessite une attention particuliere.
+              Un taux inférieur à 30% nécessite une attention particulière.
             </p>
           </div>
         </div>
@@ -221,6 +323,7 @@ function AdminDashboard() {
 
 // ─── Main Dashboard ───
 export default function DashboardPage() {
+  usePageTitle('Tableau de bord')
   const [period, setPeriod] = useState<TimePeriod>('month')
   const { isProspect } = useRole()
 

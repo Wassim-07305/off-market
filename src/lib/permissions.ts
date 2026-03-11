@@ -13,6 +13,19 @@ export type Module =
   | 'notifications'
   | 'settings'
   | 'analytics'
+  | 'closer-calls'
+  | 'social-content'
+  | 'instagram'
+  | 'clients'
+  | 'rituals'
+  | 'journal'
+  | 'gamification'
+  | 'forms'
+  | 'coaching'
+  | 'assistant'
+  | 'feed'
+  | 'contracts'
+  | 'documentation'
 
 const PERMISSIONS: Record<Module, AppRole[]> = {
   dashboard: ['admin', 'coach', 'prospect'],
@@ -27,6 +40,19 @@ const PERMISSIONS: Record<Module, AppRole[]> = {
   notifications: ['admin', 'coach', 'prospect'],
   settings: ['admin', 'coach', 'prospect'],
   analytics: ['admin'],
+  'closer-calls': ['admin', 'coach'],
+  'social-content': ['admin', 'coach'],
+  instagram: ['admin', 'coach'],
+  clients: ['admin', 'coach'],
+  rituals: ['admin', 'coach'],
+  journal: ['admin', 'coach', 'prospect'],
+  gamification: ['admin', 'coach', 'prospect'],
+  forms: ['admin', 'coach'],
+  coaching: ['admin', 'coach'],
+  assistant: ['admin', 'coach', 'prospect'],
+  feed: ['admin', 'coach', 'prospect'],
+  contracts: ['admin', 'coach'],
+  documentation: ['admin', 'coach', 'prospect'],
 }
 
 export function canAccess(role: AppRole | null, module: Module): boolean {

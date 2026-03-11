@@ -2,11 +2,14 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import type { ChannelWithDetails, MessageWithSender } from '@/types/database'
 import { useMessages, useSendMessage, useEditMessage, useDeleteMessage } from '@/hooks/useMessages'
 import { useMarkChannelRead } from '@/hooks/useMessageReads'
+import { useTypingIndicator } from '@/hooks/useTypingIndicator'
 import { useAuthStore } from '@/stores/auth-store'
 import { useRole } from '@/hooks/useRole'
 import { ChannelHeader } from './ChannelHeader'
 import { MessageBubble } from './MessageBubble'
 import { MessageInput } from './MessageInput'
+import { TypingIndicator } from './TypingIndicator'
+import { MessageSearch } from './MessageSearch'
 import { ReadOnlyBanner } from './ReadOnlyBanner'
 import { Skeleton } from '@/components/ui/skeleton'
 import { format, isSameDay } from 'date-fns'
@@ -28,10 +31,12 @@ export function ChatWindow({ channel, onBack, onSettings, showBack = false }: Ch
   const editMessage = useEditMessage()
   const deleteMessage = useDeleteMessage()
   const markRead = useMarkChannelRead()
+  const { typingUsers, sendTyping } = useTypingIndicator(channel.id)
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const [autoScroll, setAutoScroll] = useState(true)
+  const [searchOpen, setSearchOpen] = useState(false)
 
   // All messages flattened from infinite query pages
   const allMessages = messagesQuery.data?.pages.flatMap((p) => p.data) ?? []
@@ -116,8 +121,16 @@ export function ChatWindow({ channel, onBack, onSettings, showBack = false }: Ch
         channel={channel}
         onBack={onBack}
         onSettings={onSettings}
+        onSearch={() => setSearchOpen(!searchOpen)}
         showBack={showBack}
       />
+
+      {searchOpen && (
+        <MessageSearch
+          channelId={channel.id}
+          onClose={() => setSearchOpen(false)}
+        />
+      )}
 
       {/* Messages area */}
       <div
@@ -182,9 +195,12 @@ export function ChatWindow({ channel, onBack, onSettings, showBack = false }: Ch
         )}
       </div>
 
+      {/* Typing indicator */}
+      <TypingIndicator typingUsers={typingUsers} />
+
       {/* Input area */}
       {canWrite ? (
-        <MessageInput onSend={handleSend} disabled={sendMessage.isPending} />
+        <MessageInput onSend={handleSend} disabled={sendMessage.isPending} onTyping={sendTyping} />
       ) : (
         <ReadOnlyBanner />
       )}

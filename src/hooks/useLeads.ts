@@ -134,6 +134,79 @@ export function useDeleteLead() {
   })
 }
 
+export function useBulkCreateLeads() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (rows: Partial<Lead>[]) => {
+      let success = 0
+      let errors = 0
+
+      // Insérer par lots de 50
+      for (let i = 0; i < rows.length; i += 50) {
+        const batch = rows.slice(i, i + 50)
+        const { error } = await supabase.from('leads').insert(batch)
+        if (error) {
+          errors += batch.length
+        } else {
+          success += batch.length
+        }
+      }
+
+      return { success, errors }
+    },
+    onSuccess: (result) => {
+      queryClient.invalidateQueries({ queryKey: ['leads'] })
+      if (result.errors === 0) {
+        toast.success(`${result.success} leads importés avec succès`)
+      } else {
+        toast.success(`${result.success} importés, ${result.errors} erreurs`)
+      }
+    },
+    onError: (error: Error) => {
+      toast.error(`Erreur d'import: ${error.message}`)
+    },
+  })
+}
+
+export function useBulkDeleteLeads() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (ids: string[]) => {
+      const { error } = await supabase.from('leads').delete().in('id', ids)
+      if (error) throw error
+      return ids.length
+    },
+    onSuccess: (count) => {
+      queryClient.invalidateQueries({ queryKey: ['leads'] })
+      toast.success(`${count} lead${count > 1 ? 's' : ''} supprimé${count > 1 ? 's' : ''}`)
+    },
+    onError: (error: Error) => {
+      toast.error(`Erreur: ${error.message}`)
+    },
+  })
+}
+
+export function useBulkUpdateLeads() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async ({ ids, data }: { ids: string[]; data: Partial<Lead> }) => {
+      const { error } = await supabase.from('leads').update(data).in('id', ids)
+      if (error) throw error
+      return ids.length
+    },
+    onSuccess: (count) => {
+      queryClient.invalidateQueries({ queryKey: ['leads'] })
+      toast.success(`${count} lead${count > 1 ? 's' : ''} mis à jour`)
+    },
+    onError: (error: Error) => {
+      toast.error(`Erreur: ${error.message}`)
+    },
+  })
+}
+
 export function useLeadStats(clientId?: string) {
   return useQuery({
     queryKey: ['lead-stats', clientId],

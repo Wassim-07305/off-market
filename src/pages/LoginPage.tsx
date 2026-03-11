@@ -10,6 +10,7 @@ import { OffMarketLogo } from '@/components/ui/OffMarketLogo'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 const loginSchema = z.object({
   email: z.email('Adresse email invalide'),
@@ -19,6 +20,7 @@ const loginSchema = z.object({
 type LoginFormData = z.infer<typeof loginSchema>
 
 export default function LoginPage() {
+  usePageTitle('Connexion')
   const { signIn } = useAuth()
   const navigate = useNavigate()
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -47,18 +49,29 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="w-full max-w-md">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-slate-50 via-background to-red-50/30 px-4">
+      {/* Background decoration */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 h-80 w-80 rounded-full bg-gradient-to-br from-primary/10 to-primary/5 blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-gradient-to-tr from-primary/10 to-primary/5 blur-3xl" />
+      </div>
+
+      <div className="relative w-full max-w-md">
         <div className="mb-8 flex flex-col items-center text-center">
-          <OffMarketLogo size={48} showText textClassName="text-2xl text-foreground" />
-          <p className="mt-3 text-muted-foreground">
-            Connectez-vous pour acceder a votre espace
+          <div className="mb-2 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-red-600 shadow-lg shadow-primary/25">
+            <OffMarketLogo size={32} showText={false} className="text-white" />
+          </div>
+          <h1 className="mt-4 text-2xl font-bold tracking-tight text-foreground">
+            Off-Market
+          </h1>
+          <p className="mt-2 text-muted-foreground">
+            Plateforme de coaching prospection
           </p>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Connexion</CardTitle>
+        <Card className="border-0 shadow-xl shadow-black/5">
+          <CardHeader className="text-center pb-2">
+            <CardTitle className="text-xl">Connexion</CardTitle>
             <CardDescription>
               Entrez vos identifiants pour continuer
             </CardDescription>

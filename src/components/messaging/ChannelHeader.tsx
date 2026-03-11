@@ -1,16 +1,23 @@
-import { ArrowLeft, Hash, Settings } from 'lucide-react'
+import { ArrowLeft, Hash, Search, Settings } from 'lucide-react'
 import type { ChannelWithDetails } from '@/types/database'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+
+function isOnline(lastSeenAt: string | null | undefined): boolean {
+  if (!lastSeenAt) return false
+  const diff = Date.now() - new Date(lastSeenAt).getTime()
+  return diff < 5 * 60 * 1000 // actif dans les 5 dernières minutes
+}
 
 interface ChannelHeaderProps {
   channel: ChannelWithDetails
   onBack: () => void
   onSettings?: () => void
+  onSearch?: () => void
   showBack?: boolean
 }
 
-export function ChannelHeader({ channel, onBack, onSettings, showBack = false }: ChannelHeaderProps) {
+export function ChannelHeader({ channel, onBack, onSettings, onSearch, showBack = false }: ChannelHeaderProps) {
   const displayName =
     channel.type === 'direct' && channel.other_member
       ? channel.other_member.full_name
@@ -22,6 +29,10 @@ export function ChannelHeader({ channel, onBack, onSettings, showBack = false }:
     .join('')
     .toUpperCase()
     .slice(0, 2)
+
+  const otherMemberOnline = channel.type === 'direct' && channel.other_member
+    ? isOnline((channel.other_member as Record<string, unknown>).last_seen_at as string | null)
+    : false
 
   return (
     <div className="flex h-14 items-center gap-3 border-b border-border bg-white px-4">
@@ -36,15 +47,20 @@ export function ChannelHeader({ channel, onBack, onSettings, showBack = false }:
       )}
 
       {channel.type === 'direct' ? (
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-medium text-blue-700">
-          {channel.other_member?.avatar_url ? (
-            <img
-              src={channel.other_member.avatar_url}
-              alt={displayName}
-              className="h-8 w-8 rounded-full object-cover"
-            />
-          ) : (
-            initials
+        <div className="relative">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-medium text-blue-700">
+            {channel.other_member?.avatar_url ? (
+              <img
+                src={channel.other_member.avatar_url}
+                alt={displayName}
+                className="h-8 w-8 rounded-full object-cover"
+              />
+            ) : (
+              initials
+            )}
+          </div>
+          {otherMemberOnline && (
+            <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-white bg-emerald-500" />
           )}
         </div>
       ) : (
@@ -56,21 +72,36 @@ export function ChannelHeader({ channel, onBack, onSettings, showBack = false }:
       <div className="min-w-0 flex-1">
         <h2 className="truncate text-sm font-semibold text-foreground">{displayName}</h2>
         <p className="truncate text-xs text-muted-foreground">
-          {channel.type === 'direct' ? 'Message direct' : `${channel.member_count} membres`}
+          {channel.type === 'direct'
+            ? otherMemberOnline ? 'En ligne' : 'Message direct'
+            : `${channel.member_count} membres`}
         </p>
       </div>
 
-      {onSettings && channel.type === 'group' && (
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onSettings}
-          icon={<Settings className="h-4 w-4" />}
-          className={cn('shrink-0')}
-        >
-          <span className="sr-only">Paramètres</span>
-        </Button>
-      )}
+      <div className="flex items-center gap-1">
+        {onSearch && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onSearch}
+            icon={<Search className="h-4 w-4" />}
+            className={cn('shrink-0')}
+          >
+            <span className="sr-only">Rechercher</span>
+          </Button>
+        )}
+        {onSettings && channel.type === 'group' && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onSettings}
+            icon={<Settings className="h-4 w-4" />}
+            className={cn('shrink-0')}
+          >
+            <span className="sr-only">Paramètres</span>
+          </Button>
+        )}
+      </div>
     </div>
   )
 }

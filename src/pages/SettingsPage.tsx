@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { User, Lock, Bell, Camera, Check } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -6,12 +6,18 @@ import { z } from 'zod'
 import { toast } from 'sonner'
 import { useAuth } from '@/hooks/useAuth'
 import { useUpdateProfile } from '@/hooks/useUsers'
+import { useNotificationPreferences, useUpdateNotificationPreferences } from '@/hooks/useNotificationPreferences'
 import { supabase } from '@/lib/supabase'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Switch } from '@/components/ui/switch'
 import { TabsList, TabsContent } from '@/components/ui/tabs'
 import { getInitials } from '@/lib/utils'
+import { DEFAULT_NOTIFICATION_PREFERENCES } from '@/types/database'
+import type { NotificationPreferences } from '@/types/database'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 const profileSchema = z.object({
   full_name: z.string().min(2, 'Nom requis'),
@@ -31,6 +37,7 @@ type ProfileFormData = z.infer<typeof profileSchema>
 type PasswordFormData = z.infer<typeof passwordSchema>
 
 export default function SettingsPage() {
+  usePageTitle('Paramètres')
   const { user, profile } = useAuth()
   const updateProfile = useUpdateProfile()
   const [activeTab, setActiveTab] = useState('profile')
@@ -70,9 +77,9 @@ export default function SettingsPage() {
         password: data.newPassword,
       })
       if (error) throw error
-      toast.success('Mot de passe mis a jour')
+      toast.success('Mot de passe mis à jour')
       resetPassword()
-    } catch (error) {
+    } catch {
       toast.error('Erreur lors du changement de mot de passe')
     } finally {
       setPasswordChanging(false)
@@ -99,9 +106,9 @@ export default function SettingsPage() {
         .getPublicUrl(filePath)
 
       await updateProfile.mutateAsync({ id: user.id, avatar_url: publicUrl })
-      toast.success('Photo de profil mise a jour')
-    } catch (error) {
-      toast.error('Erreur lors du telechargement')
+      toast.success('Photo de profil mise à jour')
+    } catch {
+      toast.error('Erreur lors du téléchargement')
     } finally {
       setAvatarUploading(false)
     }
@@ -110,14 +117,14 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl sm:text-2xl font-bold text-foreground">Parametres</h1>
-        <p className="text-sm text-muted-foreground">Gerez votre profil et vos preferences</p>
+        <h1 className="text-xl sm:text-2xl font-bold text-foreground">Paramètres</h1>
+        <p className="text-sm text-muted-foreground">Gérez votre profil et vos préférences</p>
       </div>
 
       <TabsList
         tabs={[
           { value: 'profile', label: <><User className="mr-2 h-4 w-4" />Profil</> },
-          { value: 'security', label: <><Lock className="mr-2 h-4 w-4" />Securite</> },
+          { value: 'security', label: <><Lock className="mr-2 h-4 w-4" />Sécurité</> },
           { value: 'notifications', label: <><Bell className="mr-2 h-4 w-4" />Notifications</> },
         ]}
         value={activeTab}
@@ -159,7 +166,7 @@ export default function SettingsPage() {
                 <p className="mt-3 text-sm font-medium text-foreground">{profile?.full_name}</p>
                 <p className="text-xs text-muted-foreground">{profile?.email}</p>
                 {avatarUploading && (
-                  <p className="mt-2 text-xs text-primary">Telechargement...</p>
+                  <p className="mt-2 text-xs text-primary">Téléchargement...</p>
                 )}
               </CardContent>
             </Card>
@@ -168,7 +175,7 @@ export default function SettingsPage() {
             <Card className="lg:col-span-2">
               <CardHeader>
                 <CardTitle>Informations personnelles</CardTitle>
-                <CardDescription>Mettez a jour vos informations</CardDescription>
+                <CardDescription>Mettez à jour vos informations</CardDescription>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleProfileSubmit(onProfileSubmit)} className="space-y-4">
@@ -184,7 +191,7 @@ export default function SettingsPage() {
                     className="opacity-60"
                   />
                   <Input
-                    label="Telephone"
+                    label="Téléphone"
                     {...registerProfile('phone')}
                     placeholder="+33 6 00 00 00 00"
                     error={profileErrors.phone?.message}
@@ -237,7 +244,7 @@ export default function SettingsPage() {
                     loading={passwordChanging}
                     icon={<Lock className="h-4 w-4" />}
                   >
-                    Mettre a jour
+                    Mettre à jour
                   </Button>
                 </div>
               </form>
@@ -246,70 +253,73 @@ export default function SettingsPage() {
       </TabsContent>
 
       <TabsContent value="notifications" activeValue={activeTab} className="mt-6">
-          <Card className="max-w-xl">
-            <CardHeader>
-              <CardTitle>Preferences de notifications</CardTitle>
-              <CardDescription>Choisissez les notifications que vous souhaitez recevoir</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <NotificationToggle
-                  label="Nouveaux messages"
-                  description="Recevoir une notification pour chaque nouveau message"
-                  defaultChecked
-                />
-                <NotificationToggle
-                  label="Nouveaux leads"
-                  description="Etre notifie quand un nouveau lead est ajoute"
-                  defaultChecked
-                />
-                <NotificationToggle
-                  label="Rappels de calls"
-                  description="Recevoir un rappel avant chaque call planifie"
-                  defaultChecked
-                />
-                <NotificationToggle
-                  label="Progression formations"
-                  description="Notifications sur la progression des formations"
-                />
-              </div>
-            </CardContent>
-          </Card>
+          <NotificationsTab />
       </TabsContent>
     </div>
   )
 }
 
-function NotificationToggle({
-  label,
-  description,
-  defaultChecked = false,
-}: {
-  label: string
-  description: string
-  defaultChecked?: boolean
-}) {
-  const [enabled, setEnabled] = useState(defaultChecked)
+const NOTIFICATION_ITEMS: { key: keyof NotificationPreferences; label: string; description: string }[] = [
+  { key: 'sound_enabled', label: 'Son de notification', description: 'Jouer un son lors de la réception de notifications' },
+  { key: 'new_messages', label: 'Nouveaux messages', description: 'Recevoir une notification pour chaque nouveau message' },
+  { key: 'new_leads', label: 'Nouveaux leads', description: 'Être notifié quand un nouveau lead est ajouté' },
+  { key: 'call_reminders', label: 'Rappels de calls', description: 'Recevoir un rappel avant chaque call planifié' },
+  { key: 'formation_progress', label: 'Progression formations', description: 'Notifications sur la progression des formations' },
+]
+
+function NotificationsTab() {
+  const { data: prefs, isLoading } = useNotificationPreferences()
+  const updatePrefs = useUpdateNotificationPreferences()
+
+  const currentPrefs = prefs ?? DEFAULT_NOTIFICATION_PREFERENCES
+
+  const handleToggle = useCallback(
+    (key: keyof NotificationPreferences) => {
+      updatePrefs.mutate({ ...currentPrefs, [key]: !currentPrefs[key] })
+    },
+    [currentPrefs, updatePrefs]
+  )
+
+  if (isLoading) {
+    return (
+      <Card className="max-w-xl">
+        <CardHeader>
+          <CardTitle>Préférences de notifications</CardTitle>
+          <CardDescription>Choisissez les notifications que vous souhaitez recevoir</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-16 w-full rounded-lg" />
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
 
   return (
-    <div className="flex items-center justify-between rounded-lg border border-border p-4">
-      <div>
-        <p className="text-sm font-medium text-foreground">{label}</p>
-        <p className="text-xs text-muted-foreground">{description}</p>
-      </div>
-      <button
-        type="button"
-        onClick={() => setEnabled(!enabled)}
-        className={`relative h-6 w-11 rounded-full transition-colors ${
-          enabled ? 'bg-primary' : 'bg-muted'
-        }`}
-      >
-        <span
-          className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform ${
-            enabled ? 'translate-x-5' : 'translate-x-0.5'
-          }`}
-        />
-      </button>
-    </div>
+    <Card className="max-w-xl">
+      <CardHeader>
+        <CardTitle>Préférences de notifications</CardTitle>
+        <CardDescription>Choisissez les notifications que vous souhaitez recevoir</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          {NOTIFICATION_ITEMS.map((item) => (
+            <div key={item.key} className="rounded-lg border border-border p-4">
+              <Switch
+                label={item.label}
+                description={item.description}
+                checked={currentPrefs[item.key]}
+                onCheckedChange={() => handleToggle(item.key)}
+                disabled={updatePrefs.isPending}
+                wrapperClassName="w-full"
+              />
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
   )
 }

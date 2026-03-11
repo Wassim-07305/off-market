@@ -18,6 +18,10 @@ interface DemoDataIds {
   moduleIds: string[]
   itemIds: string[]
   completionIds: string[]
+  closerCallIds: string[]
+  socialContentIds: string[]
+  instagramAccountIds: string[]
+  instagramPostStatIds: string[]
 }
 
 function getStoredIds(): DemoDataIds | null {
@@ -90,6 +94,10 @@ export async function seedDemoData(adminUserId: string): Promise<string> {
     moduleIds: [],
     itemIds: [],
     completionIds: [],
+    closerCallIds: [],
+    socialContentIds: [],
+    instagramAccountIds: [],
+    instagramPostStatIds: [],
   }
 
   try {
@@ -471,6 +479,79 @@ export async function seedDemoData(adminUserId: string): Promise<string> {
     if (compErr) throw new Error(`Completions: ${compErr.message}`)
     ids.completionIds = compData.map((c) => c.id)
 
+    // ── 16. Closer Calls (20) ──
+    const closerCallsToInsert = Array.from({ length: 20 }, (_, i) => {
+      const isClosed = i % 3 !== 2
+      const monthOffset = Math.floor(i / 4)
+      return {
+        client_id: clientPool[i % clientPool.length],
+        lead_id: ids.leadIds[i % ids.leadIds.length],
+        closer_id: i % 2 === 0 ? adminUserId : sarahId,
+        date: monthsAgo(monthOffset),
+        status: isClosed ? 'closé' : 'non_closé',
+        revenue: isClosed ? 2000 + i * 500 : 0,
+        nombre_paiements: isClosed ? 1 + (i % 4) : 0,
+        link: i % 3 === 0 ? 'https://meet.google.com/demo-closer' : null,
+        debrief: isClosed ? `Call closé avec succès — ${2000 + i * 500} €` : 'Prospect pas convaincu, relancer dans 1 mois.',
+        notes: `Closer call ${i + 1}`,
+      }
+    })
+    const { data: closerData, error: closerError } = await supabase.from('closer_calls').insert(closerCallsToInsert).select('id')
+    if (closerError) throw new Error(`Closer calls: ${closerError.message}`)
+    ids.closerCallIds = closerData.map((c) => c.id)
+
+    // ── 17. Social Content (20) ──
+    const socialStatuses = ['idée', 'a_tourner', 'en_cours', 'publié', 'reporté'] as const
+    const socialFormats = ['reel', 'story', 'carrousel', 'post'] as const
+    const videoTypes = ['react', 'b-roll', 'video_virale', 'preuve_sociale', 'facecam', 'talking_head', 'vlog'] as const
+    const socialTitles = [
+      'Témoignage client FitCoach', 'Behind the scenes coaching', 'Les 5 erreurs du débutant',
+      'Résultats du mois', 'FAQ coaching business', 'Routine matinale du coach',
+      'Comment closer en 5 min', 'Story day-in-the-life', 'Avant/Après transformation',
+      'Tips LinkedIn', 'Reel motivation', 'Carrousel objections', 'Post résultats Q1',
+      'Story Q&A', 'Reel process closing', 'Contenu éducatif', 'Post valeur ajoutée',
+      'Reel lifestyle', 'Carrousel méthode', 'Story coulisses',
+    ]
+    const socialToInsert = socialTitles.map((title, i) => ({
+      client_id: clientPool[i % clientPool.length],
+      title,
+      status: socialStatuses[i % socialStatuses.length],
+      format: socialFormats[i % socialFormats.length],
+      video_type: socialFormats[i % socialFormats.length] === 'reel' ? videoTypes[i % videoTypes.length] : null,
+      is_validated: i % 4 === 0,
+      text_content: `Script/description pour "${title}"`,
+      planned_date: i < 10 ? daysAgo(i * 3) : daysFromNow((i - 10) * 3),
+      sort_order: i,
+    }))
+    const { data: socialData, error: socialError } = await supabase.from('social_content').insert(socialToInsert).select('id')
+    if (socialError) throw new Error(`Social content: ${socialError.message}`)
+    ids.socialContentIds = socialData.map((s) => s.id)
+
+    // ── 18. Instagram Accounts (2) + Post Stats (15) ──
+    const igAccounts = [
+      { client_id: fitcoachId, username: 'fitcoachpro_off', followers: 12400, following: 890, media_count: 234 },
+      { client_id: digitalId, username: 'digitalacademy_io', followers: 8700, following: 540, media_count: 156 },
+    ]
+    const { data: igData, error: igError } = await supabase.from('instagram_accounts').insert(igAccounts).select('id')
+    if (igError) throw new Error(`Instagram accounts: ${igError.message}`)
+    ids.instagramAccountIds = igData.map((a) => a.id)
+
+    const igPostStats = Array.from({ length: 15 }, (_, i) => ({
+      account_id: igData[i < 8 ? 0 : 1].id,
+      post_url: `https://www.instagram.com/p/demo${i + 1}`,
+      likes: 150 + Math.floor(Math.random() * 500),
+      comments: 10 + Math.floor(Math.random() * 50),
+      shares: 5 + Math.floor(Math.random() * 30),
+      saves: 20 + Math.floor(Math.random() * 80),
+      reach: 2000 + Math.floor(Math.random() * 5000),
+      impressions: 3000 + Math.floor(Math.random() * 8000),
+      engagement_rate: Number((2 + Math.random() * 6).toFixed(2)),
+      posted_at: new Date(Date.now() - i * 3 * 86400000).toISOString(),
+    }))
+    const { data: igStatData, error: igStatError } = await supabase.from('instagram_post_stats').insert(igPostStats).select('id')
+    if (igStatError) throw new Error(`Instagram post stats: ${igStatError.message}`)
+    ids.instagramPostStatIds = igStatData.map((s) => s.id)
+
     // ── Store IDs ──
     storeIds(ids)
 
@@ -478,6 +559,7 @@ export async function seedDemoData(adminUserId: string): Promise<string> {
       '5 profils (2 setters, 3 élèves)', '8 clients', '30 leads', '25 calls',
       `${setterData.length} activités setter`, '15 entrées financières', `${payData.length} échéanciers`,
       '15 notifications', '4 canaux + ~30 messages', '2 formations (15+6 items)', '20 completions',
+      '20 appels closer', '20 contenus sociaux', '2 comptes Instagram + 15 stats posts',
     ].join(', ')
   } catch (error) {
     console.error('Seed error, attempting cleanup:', error)
@@ -494,6 +576,10 @@ export async function clearDemoData(): Promise<void> {
   if (!stored) return
 
   const deletions: Array<{ table: string; ids: string[] }> = [
+    { table: 'instagram_post_stats', ids: stored.instagramPostStatIds ?? [] },
+    { table: 'instagram_accounts', ids: stored.instagramAccountIds ?? [] },
+    { table: 'social_content', ids: stored.socialContentIds ?? [] },
+    { table: 'closer_calls', ids: stored.closerCallIds ?? [] },
     { table: 'item_completions', ids: stored.completionIds ?? [] },
     { table: 'module_items', ids: stored.itemIds ?? [] },
     { table: 'formation_modules', ids: stored.moduleIds ?? [] },

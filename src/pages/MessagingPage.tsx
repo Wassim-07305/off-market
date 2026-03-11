@@ -9,8 +9,10 @@ import { ChannelSettingsModal } from '@/components/messaging/ChannelSettingsModa
 import { EmptyState } from '@/components/ui/empty-state'
 import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 export default function MessagingPage() {
+  usePageTitle('Messagerie')
   const { data: channels, isLoading } = useChannels()
   const { activeChannelId, setActiveChannel, mobileShowChat, setMobileShowChat } = useChatStore()
   const [showCreateModal, setShowCreateModal] = useState(false)

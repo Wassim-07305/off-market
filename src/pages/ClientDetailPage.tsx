@@ -7,12 +7,20 @@ import {
   CalendarDays,
   MessageSquare,
   Wallet,
+  PhoneCall,
+  Film,
+  Instagram,
+  Users,
 } from 'lucide-react'
 import { useEleve } from '@/hooks/useEleves'
 import { ClientLeads } from '@/components/clients/ClientLeads'
 import { ClientCalendar } from '@/components/clients/ClientCalendar'
 import { ClientFinances } from '@/components/clients/ClientFinances'
 import { ClientSetterActivity } from '@/components/clients/ClientSetterActivity'
+import { ClientCloserCalls } from '@/components/clients/ClientCloserCalls'
+import { ClientSocial } from '@/components/clients/ClientSocial'
+import { ClientInstagram } from '@/components/clients/ClientInstagram'
+import { ClientTeam } from '@/components/clients/ClientTeam'
 import { Button } from '@/components/ui/button'
 import { TabsList, TabsContent } from '@/components/ui/tabs'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -22,13 +30,18 @@ import type { TabItem } from '@/components/ui/tabs'
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 import type { Lead } from '@/types/database'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 const TABS: TabItem[] = [
   { value: 'overview', label: <span className="inline-flex items-center gap-1.5"><LayoutDashboard className="hidden h-4 w-4 sm:block" />{"Vue d'ensemble"}</span> },
+  { value: 'team', label: <span className="inline-flex items-center gap-1.5"><Users className="hidden h-4 w-4 sm:block" />Équipe</span> },
   { value: 'pipeline', label: <span className="inline-flex items-center gap-1.5"><Target className="hidden h-4 w-4 sm:block" />Pipeline</span> },
+  { value: 'closer', label: <span className="inline-flex items-center gap-1.5"><PhoneCall className="hidden h-4 w-4 sm:block" />Closer Calls</span> },
   { value: 'calendar', label: <span className="inline-flex items-center gap-1.5"><CalendarDays className="hidden h-4 w-4 sm:block" />Calendrier</span> },
   { value: 'activite', label: <span className="inline-flex items-center gap-1.5"><MessageSquare className="hidden h-4 w-4 sm:block" />Activité</span> },
   { value: 'finances', label: <span className="inline-flex items-center gap-1.5"><Wallet className="hidden h-4 w-4 sm:block" />Finances</span> },
+  { value: 'social', label: <span className="inline-flex items-center gap-1.5"><Film className="hidden h-4 w-4 sm:block" />Social</span> },
+  { value: 'instagram', label: <span className="inline-flex items-center gap-1.5"><Instagram className="hidden h-4 w-4 sm:block" />Instagram</span> },
 ]
 
 function useEleveStats(userId: string | undefined) {
@@ -61,6 +74,7 @@ function useEleveStats(userId: string | undefined) {
 }
 
 export default function ClientDetailPage() {
+  usePageTitle('Détail client')
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
 
@@ -207,8 +221,16 @@ export default function ClientDetailPage() {
         </div>
       </TabsContent>
 
+      <TabsContent value="team" activeValue={activeTab}>
+        <ClientTeam clientId={eleve.id} />
+      </TabsContent>
+
       <TabsContent value="pipeline" activeValue={activeTab}>
         <ClientLeads clientId={eleve.id} />
+      </TabsContent>
+
+      <TabsContent value="closer" activeValue={activeTab}>
+        <ClientCloserCalls clientId={eleve.id} />
       </TabsContent>
 
       <TabsContent value="calendar" activeValue={activeTab}>
@@ -221,6 +243,14 @@ export default function ClientDetailPage() {
 
       <TabsContent value="finances" activeValue={activeTab}>
         <ClientFinances clientId={eleve.id} />
+      </TabsContent>
+
+      <TabsContent value="social" activeValue={activeTab}>
+        <ClientSocial clientId={eleve.id} />
+      </TabsContent>
+
+      <TabsContent value="instagram" activeValue={activeTab}>
+        <ClientInstagram clientId={eleve.id} />
       </TabsContent>
     </div>
   )

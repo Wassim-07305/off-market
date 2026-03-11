@@ -10,6 +10,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { ITEMS_PER_PAGE } from '@/lib/constants'
 import { formatCurrency, getInitials } from '@/lib/utils'
 import type { EleveWithStats } from '@/hooks/useEleves'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 function formatTimeAgo(dateStr: string | null): string {
   if (!dateStr) return 'Jamais'
@@ -23,6 +24,7 @@ function formatTimeAgo(dateStr: string | null): string {
 }
 
 export default function ClientsPage() {
+  usePageTitle('Prospects')
   const navigate = useNavigate()
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)

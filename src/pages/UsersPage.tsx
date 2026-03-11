@@ -6,12 +6,14 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { EmptyState } from '@/components/ui/empty-state'
 import { UsersTable } from '@/components/users/UsersTable'
 import { UserFormModal } from '@/components/users/UserFormModal'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 interface UserWithRole extends Profile {
   role: AppRole
 }
 
 export default function UsersPage() {
+  usePageTitle('Utilisateurs')
   const { data: users, isLoading } = useUsers()
   const [selectedUser, setSelectedUser] = useState<UserWithRole | null>(null)
   const [showModal, setShowModal] = useState(false)

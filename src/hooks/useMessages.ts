@@ -130,6 +130,36 @@ export function useSendMessage() {
   })
 }
 
+export function useSearchMessages(channelId: string | null, searchQuery: string) {
+  return useInfiniteQuery({
+    queryKey: ['messages-search', channelId, searchQuery],
+    queryFn: async ({ pageParam = 0 }) => {
+      if (!channelId || !searchQuery.trim()) return { data: [], nextOffset: null }
+
+      const from = pageParam
+      const to = from + MESSAGES_PER_PAGE - 1
+
+      const { data, error } = await supabase
+        .from('messages')
+        .select('*, sender:profiles!sender_id(id, full_name, avatar_url, email)')
+        .eq('channel_id', channelId)
+        .ilike('content', `%${searchQuery.trim()}%`)
+        .order('created_at', { ascending: false })
+        .range(from, to)
+
+      if (error) throw error
+
+      return {
+        data: data as MessageWithSender[],
+        nextOffset: data.length === MESSAGES_PER_PAGE ? from + MESSAGES_PER_PAGE : null,
+      }
+    },
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) => lastPage.nextOffset,
+    enabled: !!channelId && !!searchQuery.trim(),
+  })
+}
+
 export function useEditMessage() {
   const queryClient = useQueryClient()
 

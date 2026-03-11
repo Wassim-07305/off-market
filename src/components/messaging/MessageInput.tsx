@@ -8,9 +8,10 @@ interface MessageInputProps {
   onSend: (content?: string, fileUrl?: string, fileName?: string) => void
   disabled?: boolean
   placeholder?: string
+  onTyping?: () => void
 }
 
-export function MessageInput({ onSend, disabled = false, placeholder = 'Écrire un message...' }: MessageInputProps) {
+export function MessageInput({ onSend, disabled = false, placeholder = 'Écrire un message...', onTyping }: MessageInputProps) {
   const [text, setText] = useState('')
   const [file, setFile] = useState<File | null>(null)
   const [uploading, setUploading] = useState(false)
@@ -120,6 +121,7 @@ export function MessageInput({ onSend, disabled = false, placeholder = 'Écrire 
           onChange={(e) => {
             setText(e.target.value)
             adjustTextareaHeight()
+            onTyping?.()
           }}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}

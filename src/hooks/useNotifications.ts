@@ -1,13 +1,22 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 import type { Notification } from '@/types/database'
 import { useNotificationStore } from '@/stores/notification-store'
+import { useNotificationPreferences } from '@/hooks/useNotificationPreferences'
+import { playNotificationSound } from '@/lib/notification-sound'
 import { toast } from 'sonner'
 
 export function useNotifications(userId: string | undefined) {
   const { setNotifications, setUnreadCount, addNotification } = useNotificationStore()
   const queryClient = useQueryClient()
+  const { data: prefs } = useNotificationPreferences()
+  const prefsRef = useRef(prefs)
+
+  // Keep prefs ref updated
+  useEffect(() => {
+    prefsRef.current = prefs
+  }, [prefs])
 
   const query = useQuery({
     queryKey: ['notifications', userId],
@@ -53,6 +62,11 @@ export function useNotifications(userId: string | undefined) {
           addNotification(notification)
           queryClient.invalidateQueries({ queryKey: ['notifications', userId] })
           toast.info(notification.title, { description: notification.message ?? undefined })
+
+          // Play notification sound if enabled
+          if (prefsRef.current?.sound_enabled !== false) {
+            playNotificationSound()
+          }
         }
       )
       .subscribe()
