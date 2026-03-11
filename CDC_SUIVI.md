@@ -1,7 +1,7 @@
 # Suivi d'avancement - Cahier des Charges Off-Market
 
 > Derniere mise a jour : 2026-03-11
-> Avancement global : **~82%**
+> Avancement global : **~84%**
 
 ---
 
@@ -24,10 +24,10 @@
 | F3 | Dashboard Client | Done | Progression, XP, badges, appels |
 | F4 | Dashboard Sales | Done | KPIs financiers, MRR, forecast, top clients (Sprint 22) |
 | F4.1 | Widgets KPI | Done | MRR/ARR, retention, NPS basique |
-| F4.2 | Graphiques & Historiques | Partiel | Courbes revenus OK. Manque heatmaps activite, export image, comparaisons periodes |
+| F4.2 | Graphiques & Historiques | Partiel | Courbes revenus + export PDF/CSV OK (Sprint 25). Manque heatmaps activite, comparaisons periodes |
 
 ### Manques Dashboard
-- [ ] Export PDF/Excel des rapports
+- [x] Export PDF/Excel des rapports (Sprint 25)
 - [ ] Heatmaps d'activite par jour/heure
 - [ ] Comparaisons periode a periode
 - [ ] Widgets configurables (drag-drop dashboard)
@@ -165,13 +165,13 @@
 | F29 | Editeur Drag-and-Drop | Done | @dnd-kit, library de champs, preview |
 | F30 | Types de Champs | Done | Text, email, phone, select, rating, NPS, date, file, etc. |
 | F31 | Logique Conditionnelle | Done | Show/hide, conditions, operateurs |
-| F32 | Collecte et Gestion Reponses | Partiel | Stockage OK. Manque export, rapports, webhooks |
+| F32 | Collecte et Gestion Reponses | Partiel | Stockage + export CSV/PDF OK (Sprint 25). Manque rapports agreges, webhooks |
 | F32.1 | Evaluations et Sondages | Partiel | NPS/rating OK. Manque CSAT, pre/post tests |
 | F32.2 | Intake et Onboarding Forms | Partiel | Formulaire onboarding basique |
 | F32.3 | Lead Magnet Forms | Manque | Pas de formulaires publics de capture leads |
 
 ### Manques Formulaires
-- [ ] Export reponses CSV/Excel
+- [x] Export reponses CSV/Excel (Sprint 25)
 - [ ] Rapports agreges avec statistiques
 - [ ] Templates de formulaires pre-construits
 - [ ] Webhooks sur soumission
@@ -375,7 +375,7 @@
 
 ### Vague 1 - Gaps critiques
 - [x] **Sprint 24** : Quiz & Exercices UI — timer, soumission, correction, stats (F11)
-- [ ] **Sprint 25** : Export PDF/Excel dashboards + reponses formulaires (F4.2, F32)
+- [x] **Sprint 25** : Export PDF/Excel — dashboards sales/billing + reponses formulaires CSV/PDF (F4.2, F32)
 - [ ] **Sprint 26** : Vue Timeline CRM + bulk actions (F8.1)
 
 ### Vague 2 - Differenciation
