@@ -1,7 +1,7 @@
 # Suivi d'avancement - Cahier des Charges Off-Market
 
 > Derniere mise a jour : 2026-03-11
-> Avancement global : **~80%**
+> Avancement global : **~82%**
 
 ---
 
@@ -59,15 +59,17 @@
 |-----|---------------|--------|-------|
 | F9 | Cours et Modules | Done | Hierarchie cours > modules > lecons |
 | F10 | School Builder | Done | Drag-drop, types de contenu, editeur |
-| F11 | Quiz et Exercices | Partiel | Tables DB existent (quiz_attempts, exercise_submissions). Manque UI quiz/correction |
+| F11 | Quiz et Exercices | Done | Quiz player + timer, soumission exercices, correction coach, stats (Sprint 24) |
 | F12 | Progression et Tracking | Done | Pourcentage completion, lecons completees |
 | F12.1 | Parcours d'Apprentissage | Manque | Pas de sequencage, prerequis, branches conditionnelles |
 | F12.2 | Contenus Multimedias | Partiel | Video (YouTube/Vimeo) OK. Manque audio, embeds Figma/Miro |
 | F12.3 | Gamification Apprentissage | Done | XP par lecon, badges completion, streaks |
 
 ### Manques LMS
-- [ ] Interface quiz avec scoring automatique
-- [ ] Correction manuelle exercices par coach
+- [x] Interface quiz avec scoring automatique (Sprint 24)
+- [x] Correction manuelle exercices par coach (Sprint 24)
+- [x] Stats quiz/exercices pour coach (Sprint 24)
+- [x] Timer quiz avec auto-submit (Sprint 24)
 - [ ] Certificats de completion (table existe, UI manquante)
 - [ ] Parcours d'apprentissage avec prerequis
 - [ ] Support audio/podcast
@@ -372,7 +374,7 @@
 ## Prochains Sprints Recommandes
 
 ### Vague 1 - Gaps critiques
-- [ ] **Sprint 24** : Quiz & Exercices UI (F11)
+- [x] **Sprint 24** : Quiz & Exercices UI — timer, soumission, correction, stats (F11)
 - [ ] **Sprint 25** : Export PDF/Excel dashboards + reponses formulaires (F4.2, F32)
 - [ ] **Sprint 26** : Vue Timeline CRM + bulk actions (F8.1)
 
