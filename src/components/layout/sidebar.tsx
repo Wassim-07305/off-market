@@ -1,236 +1,313 @@
-"use client";
-
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { cn, getInitials } from "@/lib/utils";
-import { useUIStore } from "@/stores/ui-store";
-import { useAuth } from "@/hooks/use-auth";
+import { useCallback, useMemo } from 'react'
+import { NavLink, useLocation } from 'react-router-dom'
 import {
   LayoutDashboard,
   Users,
-  MessageSquare,
+  Target,
+  Calendar,
+  MessageCircle,
   GraduationCap,
-  FileText,
-  Bot,
-  BarChart3,
+  DollarSign,
   Settings,
+  Activity,
   PanelLeftClose,
   PanelLeft,
   LogOut,
-} from "lucide-react";
+  BarChart3,
+  UserCog,
+  PhoneCall,
+  Film,
+  Instagram,
+  BookOpen,
+  Building2,
+  ListChecks,
+  BookMarked,
+  Trophy,
+  FileText,
+  Crosshair,
+  Bot,
+  Heart,
+  FileSignature,
+} from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
+import { cn, getInitials } from '@/lib/utils'
+import { OffMarketLogo } from '@/components/ui/OffMarketLogo'
+import { canAccess } from '@/lib/permissions'
+import type { Module } from '@/lib/permissions'
+import { useAuth } from '@/hooks/useAuth'
+import { useRole } from '@/hooks/useRole'
+import { useUIStore } from '@/stores/ui-store'
+import { useUnreadCount } from '@/hooks/useUnreadCount'
 
-const navigation = [
-  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, roles: ["admin", "coach", "setter", "closer"] },
-  { name: "CRM", href: "/crm", icon: Users, roles: ["admin", "coach", "setter", "closer"] },
-  { name: "Messagerie", href: "/messaging", icon: MessageSquare, roles: ["admin", "coach", "setter", "closer", "client"] },
-  { name: "Formation", href: "/school", icon: GraduationCap, roles: ["admin", "coach", "client"] },
-  { name: "Formulaires", href: "/forms", icon: FileText, roles: ["admin", "coach", "client"] },
-  { name: "Assistant IA", href: "/ai", icon: Bot, roles: ["admin", "coach"] },
-  { name: "Analytics", href: "/analytics", icon: BarChart3, roles: ["admin", "coach"] },
-  { name: "Reglages", href: "/settings", icon: Settings, roles: ["admin", "coach", "setter", "closer", "client"] },
-] as const;
+interface NavItem {
+  label: string
+  icon: LucideIcon
+  path: string
+  module: Module
+}
+
+interface NavSection {
+  label?: string
+  items: NavItem[]
+}
+
+const NAV_SECTIONS: NavSection[] = [
+  {
+    items: [
+      { label: 'Dashboard', icon: LayoutDashboard, path: '/', module: 'dashboard' },
+      { label: 'Messagerie', icon: MessageCircle, path: '/messaging', module: 'messaging' },
+      { label: 'Formations', icon: GraduationCap, path: '/formations', module: 'formations' },
+      { label: 'Prospects', icon: Users, path: '/eleves', module: 'eleves' },
+      { label: 'Pipeline', icon: Target, path: '/pipeline', module: 'pipeline' },
+      { label: 'Calendrier', icon: Calendar, path: '/calendrier', module: 'calendrier' },
+      { label: 'Activite', icon: Activity, path: '/activite', module: 'activite' },
+      { label: 'CA & Calls', icon: PhoneCall, path: '/closer-calls', module: 'closer-calls' },
+      { label: 'Social', icon: Film, path: '/social-content', module: 'social-content' },
+      { label: 'Instagram', icon: Instagram, path: '/instagram', module: 'instagram' },
+      { label: 'Clients', icon: Building2, path: '/clients', module: 'clients' },
+      { label: 'Rituels', icon: ListChecks, path: '/rituels', module: 'rituals' },
+      { label: 'Journal', icon: BookMarked, path: '/journal', module: 'journal' },
+      { label: 'Progression', icon: Trophy, path: '/progression', module: 'gamification' },
+      { label: 'Formulaires', icon: FileText, path: '/formulaires', module: 'forms' },
+      { label: 'Coaching', icon: Crosshair, path: '/coaching', module: 'coaching' },
+      { label: 'Assistant IA', icon: Bot, path: '/assistant', module: 'assistant' },
+      { label: 'Communauté', icon: Heart, path: '/communaute', module: 'feed' },
+      { label: 'Contrats', icon: FileSignature, path: '/contrats', module: 'contracts' },
+    ],
+  },
+  {
+    label: 'Gestion',
+    items: [
+      { label: 'Analytics', icon: BarChart3, path: '/analytics', module: 'analytics' },
+      { label: 'Finances', icon: DollarSign, path: '/finances', module: 'finances' },
+      { label: 'Utilisateurs', icon: UserCog, path: '/users', module: 'users' },
+    ],
+  },
+  {
+    label: 'Compte',
+    items: [
+      { label: 'Parametres', icon: Settings, path: '/settings', module: 'settings' },
+      { label: 'Documentation', icon: BookOpen, path: '/documentation', module: 'documentation' },
+    ],
+  },
+]
 
 export function Sidebar() {
-  const pathname = usePathname();
-  const { sidebarCollapsed, toggleSidebar } = useUIStore();
-  const { profile, loading, signOut } = useAuth();
-  const role = profile?.role ?? "admin";
+  const location = useLocation()
+  const { profile, signOut } = useAuth()
+  const { role } = useRole()
+  const { sidebarCollapsed, toggleSidebar, sidebarMobileOpen, setMobileSidebarOpen } = useUIStore()
+  const unreadMessages = useUnreadCount()
 
-  const filteredNavigation = navigation.filter((item) =>
-    (item.roles as readonly string[]).includes(role)
-  );
+  // Badges pour chaque route
+  const badges = useMemo<Record<string, number>>(() => ({
+    '/messaging': unreadMessages,
+  }), [unreadMessages])
 
-  const initials = profile?.full_name ? getInitials(profile.full_name) : "";
+  const closeMobile = useCallback(() => {
+    setMobileSidebarOpen(false)
+  }, [setMobileSidebarOpen])
 
-  const roleLabel =
-    role === "admin"
-      ? "Admin"
-      : role === "coach"
-        ? "Coach"
-        : role === "setter" || role === "closer"
-          ? "Sales"
-          : "Client";
+  const isCollapsed = sidebarCollapsed
 
   return (
-    <aside
-      className={cn(
-        "fixed left-0 top-0 h-screen flex flex-col transition-all duration-300 z-40 hidden lg:flex",
-        "bg-[var(--sidebar-bg)]",
-        sidebarCollapsed ? "w-[72px]" : "w-[260px]"
+    <>
+      {/* Mobile backdrop */}
+      {sidebarMobileOpen && (
+        <div
+          className="fixed inset-0 z-20 bg-black/40 backdrop-blur-sm md:hidden"
+          onClick={closeMobile}
+        />
       )}
-    >
-      {/* Logo */}
-      <div
+
+      <aside
         className={cn(
-          "h-16 flex items-center px-4 shrink-0",
-          sidebarCollapsed ? "justify-center" : "gap-3"
+          'z-30 flex h-screen flex-col border-r border-white/5 bg-gradient-to-b from-[#1a1f36] to-[#151929] transition-all duration-300',
+          'fixed left-0 top-0',
+          'md:static',
+          sidebarMobileOpen ? 'translate-x-0' : '-translate-x-full',
+          'md:translate-x-0',
+          'w-64 shrink-0',
+          isCollapsed && 'md:w-[72px]'
         )}
       >
-        <Link href="/dashboard" className="flex items-center gap-3 group">
-          <div className="relative">
-            <img
-              src="/logo.png"
-              alt="Off Market"
-              width={34}
-              height={34}
-              className="rounded-xl shrink-0 transition-transform duration-300 group-hover:scale-105"
-            />
-            <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-primary/10 blur-md" />
-          </div>
-          {!sidebarCollapsed && (
-            <span className="text-lg text-[var(--sidebar-text-active)] font-display font-bold tracking-tight">
-              Off Market
-            </span>
-          )}
-        </Link>
-      </div>
-
-      {/* Navigation */}
-      <nav className="flex-1 py-3 px-3 space-y-0.5 overflow-y-auto">
-        {filteredNavigation.map((item) => {
-          const isActive =
-            pathname === item.href || pathname.startsWith(item.href + "/");
-
-          const showSeparator = item.name === "Reglages";
-
-          return (
-            <div key={item.name}>
-              {showSeparator && (
-                <div className="my-2 mx-3 h-px bg-white/[0.06]" />
-              )}
-              <Link
-                href={item.href}
-                className={cn(
-                  "relative flex items-center gap-3 h-10 rounded-xl px-3 transition-all duration-200 group",
-                  isActive
-                    ? "bg-primary/[0.08] text-[var(--sidebar-text-active)]"
-                    : "text-[var(--sidebar-text)] hover:text-[var(--sidebar-text-active)] hover:bg-white/[0.04]",
-                  sidebarCollapsed && "justify-center px-0"
-                )}
-              >
-                {/* Active indicator bar with glow */}
-                {isActive && (
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-full bg-primary shadow-[0_0_8px_rgba(196,30,58,0.4)]" />
-                )}
-                <item.icon
-                  className={cn(
-                    "w-[18px] h-[18px] shrink-0 transition-all duration-200",
-                    isActive
-                      ? "text-primary drop-shadow-[0_0_6px_rgba(196,30,58,0.3)]"
-                      : "group-hover:text-[var(--sidebar-text-active)]"
-                  )}
-                />
-                {!sidebarCollapsed && (
-                  <span className="text-[13px] font-medium tracking-[-0.01em] truncate">
-                    {item.name}
-                  </span>
-                )}
-                {/* Tooltip when collapsed */}
-                {sidebarCollapsed && (
-                  <div className="absolute left-full ml-3 hidden lg:group-hover:block pointer-events-none z-50">
-                    <div className="bg-stone-800 rounded-lg px-2.5 py-1.5 text-xs font-medium text-white shadow-xl whitespace-nowrap">
-                      {item.name}
-                    </div>
-                  </div>
-                )}
-              </Link>
-            </div>
-          );
-        })}
-      </nav>
-
-      {/* Collapse button — desktop only */}
-      <div className="border-t border-white/[0.05] px-3 py-2 shrink-0 hidden lg:block">
-        <button
-          onClick={toggleSidebar}
-          className={cn(
-            "w-full h-9 rounded-xl flex items-center gap-3 transition-all duration-200 text-[var(--sidebar-text)] hover:text-[var(--sidebar-text-active)] hover:bg-white/[0.04]",
-            sidebarCollapsed ? "justify-center px-0" : "px-3"
-          )}
-          title={sidebarCollapsed ? "Ouvrir le menu" : "Reduire le menu"}
-        >
-          {sidebarCollapsed ? (
-            <PanelLeft className="w-[18px] h-[18px]" />
-          ) : (
-            <>
-              <PanelLeftClose className="w-[18px] h-[18px]" />
-              <span className="text-[13px] font-medium">Reduire</span>
-            </>
-          )}
-        </button>
-      </div>
-
-      {/* Profile section */}
-      <div className="border-t border-white/[0.05] p-3 shrink-0">
+        {/* Logo */}
         <div
           className={cn(
-            "flex items-center gap-2",
-            sidebarCollapsed && "justify-center"
+            'flex h-16 items-center border-b border-white/5 px-5',
+            isCollapsed ? 'md:justify-center md:px-0' : ''
           )}
         >
-          {/* Avatar + info */}
+          <OffMarketLogo
+            size={36}
+            showText={!isCollapsed}
+            textClassName="text-white"
+            className={cn(isCollapsed && 'md:justify-center')}
+          />
+        </div>
+
+        {/* Navigation */}
+        <nav className="flex-1 overflow-y-auto px-3 py-4">
+          {NAV_SECTIONS.map((section, sIdx) => {
+            const visibleItems = section.items.filter((item) => canAccess(role, item.module))
+            if (visibleItems.length === 0) return null
+
+            return (
+              <div key={sIdx}>
+                {/* Section divider & label */}
+                {sIdx > 0 && (
+                  <div className="mx-2 mt-4 mb-2 border-t border-white/5" />
+                )}
+                {section.label && !isCollapsed && (
+                  <p className="mb-1 px-3 text-[10px] font-semibold uppercase tracking-widest text-slate-500">
+                    {section.label}
+                  </p>
+                )}
+
+                <div className="space-y-0.5">
+                  {visibleItems.map((item) => {
+                    const Icon = item.icon
+                    const isActive =
+                      item.path === '/'
+                        ? location.pathname === '/'
+                        : location.pathname.startsWith(item.path)
+
+                    return (
+                      <NavLink
+                        key={item.path}
+                        to={item.path}
+                        title={isCollapsed ? item.label : undefined}
+                        onClick={closeMobile}
+                        className={cn(
+                          'group relative flex items-center rounded-xl px-3 py-2.5 text-[13px] font-medium transition-all duration-200',
+                          isActive
+                            ? 'bg-red-500/15 text-white'
+                            : 'text-slate-400 hover:bg-white/[0.06] hover:text-white',
+                          isCollapsed && 'md:justify-center md:px-0'
+                        )}
+                      >
+                        {/* Active indicator bar */}
+                        {isActive && (
+                          <div className="absolute left-0 top-1/2 h-5 w-1 -translate-y-1/2 rounded-r-full bg-red-400 shadow-[0_0_8px_rgba(239,68,68,0.5)]" />
+                        )}
+
+                        <div className="relative">
+                          <Icon className={cn(
+                            'h-[18px] w-[18px] shrink-0 transition-all duration-200',
+                            isActive && 'drop-shadow-[0_0_6px_rgba(239,68,68,0.4)]'
+                          )} />
+                          {/* Badge sur l'icône (mode collapsed) */}
+                          {isCollapsed && badges[item.path] > 0 && (
+                            <span className="absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[9px] font-bold text-white shadow-lg">
+                              {badges[item.path] > 99 ? '99+' : badges[item.path]}
+                            </span>
+                          )}
+                        </div>
+                        <span className={cn(
+                          'flex-1',
+                          isCollapsed ? 'md:hidden' : 'ml-3'
+                        )}>
+                          {item.label}
+                        </span>
+                        {/* Badge (mode expanded) */}
+                        {!isCollapsed && badges[item.path] > 0 && (
+                          <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1.5 text-[10px] font-bold text-white shadow-lg">
+                            {badges[item.path] > 99 ? '99+' : badges[item.path]}
+                          </span>
+                        )}
+
+                        {/* Tooltip on hover when collapsed */}
+                        {isCollapsed && (
+                          <span className="pointer-events-none absolute left-full ml-3 hidden rounded-lg bg-slate-800 px-2.5 py-1.5 text-xs font-medium text-white shadow-xl md:group-hover:block">
+                            {item.label}
+                            {badges[item.path] > 0 && (
+                              <span className="ml-2 rounded-full bg-red-500 px-1.5 py-0.5 text-[10px]">
+                                {badges[item.path]}
+                              </span>
+                            )}
+                          </span>
+                        )}
+                      </NavLink>
+                    )
+                  })}
+                </div>
+              </div>
+            )
+          })}
+        </nav>
+
+        {/* Collapse toggle (desktop only) */}
+        <div className="hidden border-t border-white/5 px-3 py-3 md:block">
+          <button
+            onClick={toggleSidebar}
+            className="flex w-full items-center justify-center rounded-xl px-3 py-2 text-sm text-slate-500 transition-all duration-200 hover:bg-white/[0.06] hover:text-slate-300"
+            title={isCollapsed ? 'Ouvrir le menu' : 'Réduire le menu'}
+          >
+            {isCollapsed ? (
+              <PanelLeft className="h-5 w-5" />
+            ) : (
+              <>
+                <PanelLeftClose className="h-5 w-5" />
+                <span className="ml-3">Réduire</span>
+              </>
+            )}
+          </button>
+        </div>
+
+        {/* User profile */}
+        <div className="border-t border-white/5 px-3 py-4">
           <div
             className={cn(
-              "flex items-center gap-3 flex-1 min-w-0 group",
-              sidebarCollapsed && "justify-center"
+              'flex items-center rounded-xl px-3 py-2.5',
+              isCollapsed && 'md:justify-center md:px-0'
             )}
           >
-            <div className="relative shrink-0">
-              {profile?.avatar_url ? (
-                <img
-                  src={profile.avatar_url}
-                  alt={profile.full_name ?? ""}
-                  className="w-9 h-9 rounded-full object-cover ring-2 ring-primary/10"
-                />
-              ) : (
-                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center text-xs text-primary font-semibold ring-2 ring-primary/10">
-                  {loading ? "..." : initials || "U"}
-                </div>
-              )}
+            <div className="relative">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-red-500/20 to-red-400/10 text-xs font-semibold text-red-300 ring-2 ring-red-500/10">
+                {profile?.avatar_url ? (
+                  <img
+                    src={profile.avatar_url}
+                    alt={profile.full_name}
+                    className="h-9 w-9 rounded-full object-cover"
+                  />
+                ) : (
+                  getInitials(profile?.full_name ?? 'U')
+                )}
+              </div>
               {/* Online indicator */}
-              <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400 ring-2 ring-[var(--sidebar-bg)]" />
+              <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-emerald-400 ring-2 ring-[#1a1f36]" />
             </div>
-            {!sidebarCollapsed && (
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-white truncate leading-tight">
-                  {loading ? "Chargement..." : profile?.full_name ?? "Mon profil"}
-                </p>
-                <p className="text-xs text-stone-500 capitalize truncate mt-0.5">
-                  {roleLabel}
-                </p>
-              </div>
-            )}
-            {/* Tooltip when collapsed */}
-            {sidebarCollapsed && (
-              <div className="absolute left-full ml-3 hidden lg:group-hover:block pointer-events-none z-50">
-                <div className="bg-stone-800 rounded-lg px-2.5 py-1.5 text-xs font-medium text-white shadow-xl whitespace-nowrap">
-                  {profile?.full_name ?? "Mon profil"}
-                </div>
-              </div>
-            )}
+            <div className={cn(
+              'ml-3 min-w-0 flex-1',
+              isCollapsed && 'md:hidden'
+            )}>
+              <p className="truncate text-sm font-semibold text-white">
+                {profile?.full_name ?? 'Utilisateur'}
+              </p>
+              <p className="truncate text-xs text-slate-500 capitalize">
+                {role ?? ''}
+              </p>
+            </div>
           </div>
 
-          {/* Settings + Logout buttons */}
-          {!sidebarCollapsed && (
-            <div className="flex items-center gap-1 shrink-0">
-              <Link
-                href="/settings"
-                className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--sidebar-text)] hover:text-[var(--sidebar-text-active)] hover:bg-white/[0.06] transition-all duration-200"
-                title="Reglages"
-              >
-                <Settings className="w-4 h-4" />
-              </Link>
-              <button
-                onClick={signOut}
-                className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--sidebar-text)] hover:text-red-400 hover:bg-red-500/10 transition-all duration-200"
-                title="Deconnexion"
-              >
-                <LogOut className="w-4 h-4" />
-              </button>
-            </div>
-          )}
+          {/* Sign out */}
+          <button
+            onClick={signOut}
+            title={isCollapsed ? 'Déconnexion' : undefined}
+            className={cn(
+              'mt-1 flex w-full items-center rounded-xl px-3 py-2 text-sm text-slate-500 transition-all duration-200 hover:bg-red-500/10 hover:text-red-400',
+              isCollapsed && 'md:justify-center md:px-0'
+            )}
+          >
+            <LogOut className={cn('h-[18px] w-[18px] shrink-0', isCollapsed ? '' : 'mr-3')} />
+            <span className={cn(
+              isCollapsed && 'md:hidden'
+            )}>
+              Déconnexion
+            </span>
+          </button>
         </div>
-      </div>
-    </aside>
-  );
+      </aside>
+    </>
+  )
 }
