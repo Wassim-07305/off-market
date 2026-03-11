@@ -11,6 +11,10 @@ import { toast } from "sonner";
 import type { Lesson, LessonAttachment } from "@/types/database";
 import type { QuizConfig } from "@/types/quiz";
 import { QuizPlayer } from "@/components/school/quiz-player";
+import { AssignmentSubmission } from "@/components/school/assignment-submission";
+import { ExerciseReview } from "@/components/school/exercise-review";
+import { QuizExerciseStats } from "@/components/school/quiz-exercise-stats";
+import { useAuth } from "@/hooks/use-auth";
 import {
   ArrowLeft,
   ChevronLeft,
@@ -82,6 +86,7 @@ export default function LessonPage({
   const supabase = useSupabase();
   const prefix = useRoutePrefix();
   const router = useRouter();
+  const { isStaff } = useAuth();
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const [autoCompleted, setAutoCompleted] = useState(false);
@@ -323,14 +328,27 @@ export default function LessonPage({
 
         {/* Assignment */}
         {lesson.content_type === "assignment" && (
-          <div>
-            <p className="text-sm text-foreground mb-4">
-              {content?.instructions ?? "Instructions de l'exercice"}
-            </p>
-            <textarea
-              placeholder="Ta reponse..."
-              className="w-full h-32 p-4 bg-muted/50 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none transition-shadow"
-            />
+          <AssignmentSubmission
+            lessonId={lesson.id}
+            instructions={content?.instructions}
+            onComplete={() => {
+              markComplete.mutate(lesson.id);
+              toast.success("Exercice soumis ! Lecon marquee comme completee.");
+            }}
+          />
+        )}
+
+        {/* Coach/Admin: Quiz & Exercise Stats */}
+        {isStaff && (lesson.content_type === "quiz" || lesson.content_type === "assignment") && (
+          <div className="mt-6 pt-6 border-t border-border">
+            <QuizExerciseStats lessonId={lesson.id} contentType={lesson.content_type} />
+          </div>
+        )}
+
+        {/* Coach/Admin: Exercise Review */}
+        {isStaff && lesson.content_type === "assignment" && (
+          <div className="mt-6 pt-6 border-t border-border">
+            <ExerciseReview lessonId={lesson.id} lessonTitle={lesson.title} />
           </div>
         )}
 

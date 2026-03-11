@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import {
   CheckCircle,
   XCircle,
@@ -9,6 +9,7 @@ import {
   Trophy,
   RotateCcw,
   Loader2,
+  Timer,
 } from "lucide-react";
 import type { QuizConfig, QuizQuestion, QuizAnswer } from "@/types/quiz";
 import { useQuizAttempts, useSubmitQuiz } from "@/hooks/use-quizzes";
@@ -36,6 +37,8 @@ export function QuizPlayer({ lessonId, config, onComplete }: QuizPlayerProps) {
   } | null>(null);
 
   const startTimeRef = useRef<number>(0);
+  const [timeLeft, setTimeLeft] = useState<number | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const questions = config.shuffle_questions
     ? [...config.questions].sort(() => Math.random() - 0.5)
@@ -51,13 +54,21 @@ export function QuizPlayer({ lessonId, config, onComplete }: QuizPlayerProps) {
     setResults(null);
     setCurrentIndex(0);
     startTimeRef.current = Date.now();
+    if (config.time_limit) {
+      setTimeLeft(config.time_limit * 60);
+    }
   };
 
   const selectAnswer = (questionId: string, answer: string | number) => {
     setAnswers(new Map(answers).set(questionId, answer));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = useCallback(() => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+
     const timeSpent = Math.round((Date.now() - startTimeRef.current) / 1000);
 
     const quizAnswers: QuizAnswer[] = questions.map((q) => {
@@ -113,7 +124,33 @@ export function QuizPlayer({ lessonId, config, onComplete }: QuizPlayerProps) {
         },
       }
     );
-  };
+  }, [answers, questions, config.passing_score, lessonId, onComplete, submitQuiz]);
+
+  // Timer countdown
+  useEffect(() => {
+    if (!started || !config.time_limit || showResults) return;
+
+    timerRef.current = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev === null || prev <= 1) {
+          if (timerRef.current) clearInterval(timerRef.current);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [started, config.time_limit, showResults]);
+
+  // Auto-submit when time runs out
+  useEffect(() => {
+    if (timeLeft === 0 && started && !showResults) {
+      handleSubmit();
+    }
+  }, [timeLeft, started, showResults, handleSubmit]);
 
   // ─── Not started yet ──────────────────
 
@@ -127,6 +164,12 @@ export function QuizPlayer({ lessonId, config, onComplete }: QuizPlayerProps) {
           <h3 className="text-lg font-semibold text-foreground">Quiz</h3>
           <p className="text-sm text-muted-foreground mt-1">
             {questions.length} question{questions.length > 1 ? "s" : ""} — Score minimum : {config.passing_score}%
+            {config.time_limit && (
+              <span className="block mt-0.5">
+                <Timer className="w-3.5 h-3.5 inline mr-1" />
+                Temps limite : {config.time_limit} min
+              </span>
+            )}
           </p>
         </div>
         {bestAttempt && (
@@ -256,14 +299,30 @@ export function QuizPlayer({ lessonId, config, onComplete }: QuizPlayerProps) {
       </div>
 
       <div className="p-6 space-y-6">
-        {/* Counter */}
+        {/* Counter + Timer */}
         <div className="flex items-center justify-between">
           <span className="text-xs font-medium text-muted-foreground">
             Question {currentIndex + 1} sur {questions.length}
           </span>
-          <span className="text-xs text-muted-foreground">
-            {currentQuestion.points} pt{currentQuestion.points > 1 ? "s" : ""}
-          </span>
+          <div className="flex items-center gap-3">
+            {timeLeft !== null && (
+              <span
+                className={`inline-flex items-center gap-1 text-xs font-mono font-medium px-2 py-0.5 rounded-full ${
+                  timeLeft <= 60
+                    ? "text-red-600 bg-red-500/10 animate-pulse"
+                    : timeLeft <= 120
+                      ? "text-amber-600 bg-amber-500/10"
+                      : "text-muted-foreground bg-muted/50"
+                }`}
+              >
+                <Timer className="w-3 h-3" />
+                {Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, "0")}
+              </span>
+            )}
+            <span className="text-xs text-muted-foreground">
+              {currentQuestion.points} pt{currentQuestion.points > 1 ? "s" : ""}
+            </span>
+          </div>
         </div>
 
         {/* Question */}
