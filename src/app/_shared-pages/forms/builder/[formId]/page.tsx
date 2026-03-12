@@ -57,6 +57,11 @@ import {
   Heading,
   Text,
   Minus,
+  Settings2,
+  PenLine,
+  ListChecks,
+  Sparkles,
+  LayoutGrid,
 } from "lucide-react";
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -82,6 +87,29 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
 function getFieldIcon(iconName: string) {
   return ICON_MAP[iconName] ?? Type;
 }
+
+const FIELD_CATEGORIES = [
+  {
+    label: "Saisie",
+    icon: PenLine,
+    types: ["short_text", "long_text", "email", "phone", "number"],
+  },
+  {
+    label: "Choix",
+    icon: ListChecks,
+    types: ["single_select", "multi_select", "dropdown"],
+  },
+  {
+    label: "Avance",
+    icon: Sparkles,
+    types: ["rating", "nps", "scale", "date", "time", "file_upload"],
+  },
+  {
+    label: "Mise en page",
+    icon: LayoutGrid,
+    types: ["heading", "paragraph", "divider"],
+  },
+];
 
 export default function EditFormPage({
   params,
@@ -203,17 +231,50 @@ export default function EditFormPage({
   if (isLoading) {
     return (
       <div className="space-y-4">
-        <div className="h-10 w-48 bg-muted rounded-lg animate-pulse" />
-        <div className="h-64 bg-muted rounded-xl animate-pulse" />
+        <div className="flex items-center justify-between">
+          <div className="h-9 w-24 bg-muted rounded-xl animate-pulse" />
+          <div className="flex gap-2">
+            <div className="h-9 w-28 bg-muted rounded-xl animate-pulse" />
+            <div className="h-9 w-32 bg-muted rounded-xl animate-pulse" />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr_300px] gap-4">
+          <div className="hidden lg:block">
+            <div className="h-80 bg-muted rounded-2xl animate-pulse" />
+          </div>
+          <div className="space-y-3">
+            <div className="h-28 bg-muted rounded-2xl animate-pulse" />
+            <div className="h-24 bg-muted rounded-2xl animate-pulse" />
+            <div className="h-24 bg-muted rounded-2xl animate-pulse" />
+          </div>
+          <div className="hidden lg:block">
+            <div className="h-64 bg-muted rounded-2xl animate-pulse" />
+          </div>
+        </div>
       </div>
     );
   }
 
   if (!form) {
     return (
-      <p className="text-center text-muted-foreground py-16">
-        Formulaire non trouve
-      </p>
+      <div className="flex flex-col items-center justify-center py-24 text-center">
+        <div className="w-14 h-14 rounded-2xl bg-muted/50 flex items-center justify-center mb-4">
+          <Type className="w-7 h-7 text-muted-foreground/30" />
+        </div>
+        <p className="text-sm font-medium text-foreground mb-1">
+          Formulaire non trouve
+        </p>
+        <p className="text-xs text-muted-foreground mb-4">
+          Ce formulaire n&apos;existe pas ou a ete supprime
+        </p>
+        <Link
+          href={`${prefix}/forms`}
+          className="h-9 px-4 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-all inline-flex items-center gap-2"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Retour aux formulaires
+        </Link>
+      </div>
     );
   }
 
@@ -246,20 +307,31 @@ export default function EditFormPage({
         </Link>
         <div className="flex items-center gap-2">
           {/* Status selector */}
-          <select
-            value={status}
-            onChange={(e) =>
-              setStatus(
-                e.target.value as "draft" | "active" | "closed" | "archived",
-              )
-            }
-            className="h-9 px-3 rounded-[10px] border border-border text-sm text-foreground bg-surface focus:outline-none focus:ring-1 focus:ring-primary"
-          >
-            <option value="draft">Brouillon</option>
-            <option value="active">Actif</option>
-            <option value="closed">Ferme</option>
-            <option value="archived">Archive</option>
-          </select>
+          <div className="relative">
+            <div
+              className={cn(
+                "absolute left-3 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full",
+                status === "active" && "bg-emerald-500",
+                status === "draft" && "bg-zinc-400",
+                status === "closed" && "bg-amber-500",
+                status === "archived" && "bg-red-400",
+              )}
+            />
+            <select
+              value={status}
+              onChange={(e) =>
+                setStatus(
+                  e.target.value as "draft" | "active" | "closed" | "archived",
+                )
+              }
+              className="h-9 pl-7 pr-3 rounded-xl border border-border/50 text-sm text-foreground bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all appearance-none cursor-pointer"
+            >
+              <option value="draft">Brouillon</option>
+              <option value="active">Actif</option>
+              <option value="closed">Ferme</option>
+              <option value="archived">Archive</option>
+            </select>
+          </div>
           <button
             onClick={() => setPreviewMode(true)}
             className="h-9 px-4 rounded-[10px] border border-border text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all flex items-center gap-2"
@@ -282,22 +354,43 @@ export default function EditFormPage({
       <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr_300px] gap-4 min-h-[calc(100vh-12rem)]">
         {/* Left: Field type palette */}
         <div className="hidden lg:block">
-          <div className="bg-surface border border-border rounded-xl p-4 sticky top-24">
-            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-              Types de champs
+          <div className="bg-white border border-border/50 rounded-2xl p-4 sticky top-24 shadow-sm">
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-4 px-1">
+              Champs
             </h3>
-            <div className="space-y-1">
-              {FORM_FIELD_TYPES.map((type) => {
-                const Icon = getFieldIcon(type.icon);
+            <div className="space-y-4">
+              {FIELD_CATEGORIES.map((cat) => {
+                const CatIcon = cat.icon;
                 return (
-                  <button
-                    key={type.value}
-                    onClick={() => handleAddField(type.value)}
-                    className="w-full h-8 px-2.5 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center gap-2 text-left"
-                  >
-                    <Icon className="w-3.5 h-3.5 shrink-0" />
-                    {type.label}
-                  </button>
+                  <div key={cat.label}>
+                    <div className="flex items-center gap-1.5 px-1 mb-1.5">
+                      <CatIcon className="w-3 h-3 text-muted-foreground/60" />
+                      <span className="text-[10px] font-semibold text-muted-foreground/60 uppercase tracking-wider">
+                        {cat.label}
+                      </span>
+                    </div>
+                    <div className="space-y-0.5">
+                      {cat.types.map((typeValue) => {
+                        const typeConfig = FORM_FIELD_TYPES.find(
+                          (t) => t.value === typeValue,
+                        );
+                        if (!typeConfig) return null;
+                        const Icon = getFieldIcon(typeConfig.icon);
+                        return (
+                          <button
+                            key={typeValue}
+                            onClick={() => handleAddField(typeValue)}
+                            className="w-full h-8 px-2.5 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-primary/5 transition-all flex items-center gap-2 text-left group"
+                          >
+                            <div className="w-5 h-5 rounded-md bg-muted/60 group-hover:bg-primary/10 flex items-center justify-center transition-colors">
+                              <Icon className="w-3 h-3 shrink-0 group-hover:text-primary transition-colors" />
+                            </div>
+                            {typeConfig.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
                 );
               })}
             </div>
@@ -306,19 +399,26 @@ export default function EditFormPage({
 
         {/* Center: Form canvas */}
         <div className="space-y-3">
-          <div className="bg-surface border border-border rounded-xl p-6 space-y-3">
+          <div className="bg-white border border-border/50 rounded-2xl p-6 space-y-3 shadow-sm">
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Titre du formulaire"
               className="w-full text-2xl font-bold text-foreground bg-transparent border-none outline-none placeholder:text-muted-foreground/40"
             />
-            <input
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Description (optionnel)"
-              className="w-full text-sm text-muted-foreground bg-transparent border-none outline-none placeholder:text-muted-foreground/40"
-            />
+            <div className="flex items-center gap-3">
+              <input
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Description (optionnel)"
+                className="flex-1 text-sm text-muted-foreground bg-transparent border-none outline-none placeholder:text-muted-foreground/40"
+              />
+              {fields.length > 0 && (
+                <span className="text-[10px] font-medium text-muted-foreground bg-muted/60 px-2 py-1 rounded-full whitespace-nowrap">
+                  {fields.length} champ{fields.length > 1 ? "s" : ""}
+                </span>
+              )}
+            </div>
           </div>
 
           <DndContext
@@ -330,10 +430,11 @@ export default function EditFormPage({
               items={fields.map((f) => f.id)}
               strategy={verticalListSortingStrategy}
             >
-              {fields.map((field) => (
+              {fields.map((field, idx) => (
                 <SortableFieldCard
                   key={field.id}
                   field={field}
+                  index={idx}
                   isSelected={selectedFieldId === field.id}
                   onSelect={() => setSelectedFieldId(field.id)}
                   onRemove={() => removeField(field.id)}
@@ -344,11 +445,35 @@ export default function EditFormPage({
           </DndContext>
 
           {fields.length === 0 && (
-            <div className="border-2 border-dashed border-border rounded-xl p-12 text-center">
-              <Type className="w-8 h-8 text-muted-foreground/30 mx-auto mb-3" />
-              <p className="text-sm text-muted-foreground mb-1">
+            <div className="border-2 border-dashed border-border/40 rounded-2xl p-12 text-center">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center mx-auto mb-4">
+                <Type className="w-7 h-7 text-primary/40" />
+              </div>
+              <p className="text-sm font-medium text-foreground mb-1">
                 Aucun champ pour le moment
               </p>
+              <p className="text-xs text-muted-foreground/60 mb-5">
+                Ajoute des champs depuis le panneau de gauche
+              </p>
+              <div className="flex items-center justify-center gap-2 flex-wrap">
+                {["short_text", "email", "single_select", "rating"].map(
+                  (type) => {
+                    const tc = FORM_FIELD_TYPES.find((t) => t.value === type);
+                    if (!tc) return null;
+                    const Icon = getFieldIcon(tc.icon);
+                    return (
+                      <button
+                        key={type}
+                        onClick={() => handleAddField(type)}
+                        className="h-8 px-3 rounded-xl bg-muted/60 hover:bg-primary/10 text-xs text-muted-foreground hover:text-primary transition-all flex items-center gap-1.5"
+                      >
+                        <Icon className="w-3.5 h-3.5" />
+                        {tc.label}
+                      </button>
+                    );
+                  },
+                )}
+              </div>
             </div>
           )}
 
@@ -381,9 +506,13 @@ export default function EditFormPage({
               inputFields={inputFields}
             />
           ) : (
-            <div className="bg-surface border border-border rounded-xl p-5 text-center text-sm text-muted-foreground sticky top-24">
-              <Type className="w-6 h-6 mx-auto mb-2 opacity-30" />
-              Selectionne un champ pour le configurer
+            <div className="bg-white border border-border/50 rounded-2xl p-6 text-center sticky top-24 shadow-sm">
+              <div className="w-10 h-10 rounded-xl bg-muted/50 flex items-center justify-center mx-auto mb-3">
+                <Settings2 className="w-5 h-5 text-muted-foreground/30" />
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Selectionne un champ pour le configurer
+              </p>
             </div>
           )}
         </div>
@@ -396,12 +525,14 @@ export default function EditFormPage({
 
 function SortableFieldCard({
   field,
+  index,
   isSelected,
   onSelect,
   onRemove,
   onUpdate,
 }: {
   field: BuilderField;
+  index: number;
   isSelected: boolean;
   onSelect: () => void;
   onRemove: () => void;
@@ -428,40 +559,67 @@ function SortableFieldCard({
     "enabled" in field.conditional_logic &&
     field.conditional_logic.enabled;
 
+  const isLayout = ["heading", "paragraph", "divider"].includes(
+    field.field_type,
+  );
+
   return (
     <div
       ref={setNodeRef}
       style={style}
       onClick={onSelect}
       className={cn(
-        "bg-surface border rounded-xl p-4 cursor-pointer transition-all",
-        isDragging && "opacity-50 shadow-lg",
+        "group/card relative bg-white border rounded-2xl p-4 pl-5 cursor-pointer transition-all shadow-sm",
+        isDragging && "opacity-50 shadow-lg scale-[1.02]",
         isSelected
-          ? "border-primary ring-1 ring-primary/20"
-          : "border-border hover:border-primary/30",
+          ? "border-primary ring-2 ring-primary/15"
+          : "border-border/50 hover:border-primary/30 hover:shadow-md",
       )}
     >
+      {/* Numbered badge */}
+      {!isLayout && (
+        <div
+          className={cn(
+            "absolute -left-3 top-4 w-6 h-6 rounded-full text-[10px] font-bold flex items-center justify-center shadow-sm",
+            isSelected
+              ? "bg-primary text-white"
+              : "bg-muted text-muted-foreground",
+          )}
+        >
+          {index + 1}
+        </div>
+      )}
+
       <div className="flex items-center gap-2 mb-3">
         <button
           {...attributes}
           {...listeners}
-          className="touch-none p-0.5 rounded hover:bg-muted transition-colors cursor-grab active:cursor-grabbing"
+          className="touch-none p-0.5 rounded hover:bg-muted transition-colors cursor-grab active:cursor-grabbing opacity-0 group-hover/card:opacity-100"
         >
-          <GripVertical className="w-4 h-4 text-muted-foreground" />
+          <GripVertical className="w-4 h-4 text-muted-foreground/60" />
         </button>
         <div className="flex items-center gap-1.5">
-          <Icon className="w-3.5 h-3.5 text-primary/60" />
+          <div
+            className={cn(
+              "w-5 h-5 rounded-md flex items-center justify-center",
+              isSelected
+                ? "bg-primary/15 text-primary"
+                : "bg-muted/60 text-muted-foreground",
+            )}
+          >
+            <Icon className="w-3 h-3" />
+          </div>
           <span className="text-xs text-muted-foreground font-medium">
             {typeConfig?.label ?? field.field_type}
           </span>
         </div>
         {field.is_required && (
-          <span className="text-[10px] text-primary font-medium bg-primary/5 px-1.5 py-0.5 rounded">
+          <span className="text-[10px] text-primary font-semibold bg-primary/8 px-2 py-0.5 rounded-full">
             Requis
           </span>
         )}
         {hasCondition && (
-          <span className="inline-flex items-center gap-1 text-[10px] text-amber-600 font-medium bg-amber-50 px-1.5 py-0.5 rounded">
+          <span className="inline-flex items-center gap-1 text-[10px] text-amber-600 font-semibold bg-amber-50 px-2 py-0.5 rounded-full">
             <GitBranch className="w-3 h-3" />
             Conditionnel
           </span>
@@ -471,7 +629,7 @@ function SortableFieldCard({
             e.stopPropagation();
             onRemove();
           }}
-          className="ml-auto w-7 h-7 rounded-lg flex items-center justify-center text-muted-foreground hover:text-red-500 hover:bg-red-50 transition-colors"
+          className="ml-auto w-7 h-7 rounded-lg flex items-center justify-center text-muted-foreground/40 hover:text-red-500 hover:bg-red-50 transition-all opacity-0 group-hover/card:opacity-100"
         >
           <Trash2 className="w-3.5 h-3.5" />
         </button>
@@ -668,8 +826,28 @@ function FieldConfigPanel({
   };
 
   return (
-    <div className="bg-surface border border-border rounded-xl p-5 space-y-5 sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto">
-      <h3 className="text-sm font-semibold text-foreground">Configuration</h3>
+    <div className="bg-white border border-border/50 rounded-2xl p-5 space-y-5 sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto shadow-sm">
+      {/* Header with type icon */}
+      <div className="flex items-center gap-2.5">
+        <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center">
+          {(() => {
+            const tc = FORM_FIELD_TYPES.find(
+              (t) => t.value === field.field_type,
+            );
+            const TypeIcon = tc ? getFieldIcon(tc.icon) : Type;
+            return <TypeIcon className="w-4 h-4 text-primary" />;
+          })()}
+        </div>
+        <div>
+          <h3 className="text-sm font-semibold text-foreground">
+            Configuration
+          </h3>
+          <p className="text-[10px] text-muted-foreground">
+            {FORM_FIELD_TYPES.find((t) => t.value === field.field_type)
+              ?.label ?? field.field_type}
+          </p>
+        </div>
+      </div>
 
       <div>
         <label className="block text-xs font-medium text-muted-foreground mb-1.5">
@@ -678,7 +856,7 @@ function FieldConfigPanel({
         <input
           value={field.label}
           onChange={(e) => onUpdate({ label: e.target.value })}
-          className="w-full h-9 px-3 bg-muted border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+          className="w-full h-9 px-3 bg-muted/50 border border-border/50 rounded-xl text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all"
         />
       </div>
 
@@ -690,7 +868,7 @@ function FieldConfigPanel({
           value={field.description}
           onChange={(e) => onUpdate({ description: e.target.value })}
           placeholder="Texte d'aide..."
-          className="w-full h-9 px-3 bg-muted border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary placeholder:text-muted-foreground/40"
+          className="w-full h-9 px-3 bg-muted/50 border border-border/50 rounded-xl text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all placeholder:text-muted-foreground/40"
         />
       </div>
 
@@ -712,7 +890,7 @@ function FieldConfigPanel({
           <input
             value={field.placeholder}
             onChange={(e) => onUpdate({ placeholder: e.target.value })}
-            className="w-full h-9 px-3 bg-muted border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+            className="w-full h-9 px-3 bg-muted/50 border border-border/50 rounded-xl text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all"
           />
         </div>
       )}
@@ -752,7 +930,7 @@ function FieldConfigPanel({
                     onUpdate({ options: newOptions });
                   }}
                   placeholder={`Option ${i + 1}`}
-                  className="flex-1 h-8 px-2.5 bg-muted border border-border rounded-lg text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                  className="flex-1 h-8 px-2.5 bg-muted/50 border border-border/50 rounded-xl text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all"
                 />
                 <button
                   onClick={() => {
