@@ -30,6 +30,16 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
           ? "Sales"
           : "Client";
 
+  // Map nav item names to data-tour attributes for walkthrough
+  const tourMap: Record<string, string> = {
+    Dashboard: "dashboard",
+    Formation: "school",
+    Messagerie: "messaging",
+    Feed: "community",
+    "Check-in": "checkin",
+    "Check-ins": "checkin",
+  };
+
   return (
     <aside
       className={cn(
@@ -85,6 +95,7 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
               )}
               <Link
                 href={item.href}
+                data-tour={tourMap[item.name]}
                 className={cn(
                   "relative flex items-center gap-3 h-10 rounded-xl px-3 transition-all duration-200 group",
                   isActive

@@ -9,6 +9,8 @@ import { AIInsightsCard } from "@/components/dashboard/ai-insights-card";
 import { StreakWidget } from "@/components/dashboard/streak-widget";
 import { KpiGoalsWidget } from "@/components/dashboard/kpi-goals";
 import { ConversionFunnel } from "@/components/dashboard/conversion-funnel";
+import { OnboardingBanner } from "@/components/onboarding/onboarding-banner";
+import { OnboardingChecklist } from "@/components/onboarding/onboarding-checklist";
 import { useDashboardStats } from "@/hooks/use-dashboard-stats";
 import { useAuth } from "@/hooks/use-auth";
 import { Users, DollarSign, GraduationCap, CalendarCheck } from "lucide-react";
@@ -45,6 +47,13 @@ export default function DashboardPage() {
           Vue d&apos;ensemble de ton activite
         </p>
       </motion.div>
+
+      {/* Onboarding banner (clients only) */}
+      {isClient && (
+        <motion.div variants={staggerItem}>
+          <OnboardingBanner />
+        </motion.div>
+      )}
 
       {/* Stats cards */}
       <motion.div
@@ -109,6 +118,13 @@ export default function DashboardPage() {
         >
           <KpiGoalsWidget />
           <ConversionFunnel />
+        </motion.div>
+      )}
+
+      {/* Onboarding checklist (clients only) */}
+      {isClient && (
+        <motion.div variants={staggerItem}>
+          <OnboardingChecklist />
         </motion.div>
       )}
 
