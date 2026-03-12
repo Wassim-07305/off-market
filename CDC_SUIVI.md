@@ -1,7 +1,7 @@
 # Suivi d'avancement - Cahier des Charges Off-Market
 
-> Derniere mise a jour : 2026-03-11
-> Avancement global : **~86%**
+> Derniere mise a jour : 2026-03-12
+> Avancement global : **~88%**
 
 ---
 
@@ -237,17 +237,17 @@
 
 | Ref   | Fonctionnalite         | Statut  | Notes                                                    |
 | ----- | ---------------------- | ------- | -------------------------------------------------------- |
-| F41   | Flow Onboarding Client | Partiel | Formulaire etapes basique. Manque walkthrough interactif |
-| F42   | Checklist Onboarding   | Partiel | Progression trackee. Manque recompenses XP, rappels      |
+| F41   | Flow Onboarding Client | Done    | Walkthrough interactif avec tooltips, visite guidee plateforme (Sprint 30) |
+| F42   | Checklist Onboarding   | Done    | Checklist 6 etapes + XP rewards + banniere rappel + integration dashboard (Sprint 30) |
 | F42.1 | Engagement Progressif  | Manque  | Pas de pacing jour 1/2-3/4-5/semaine 2                   |
 | F42.2 | Support et Assistance  | Manque  | Pas de chatbot onboarding, FAQ                           |
 | F42.3 | Personnalisation       | Manque  | Pas de chemins differencies selon profil                 |
 
 ### Manques Onboarding
 
-- [ ] Walkthrough interactif avec tooltips
+- [x] Walkthrough interactif avec tooltips (Sprint 30)
 - [ ] Videos guides integrees
-- [ ] Recompenses XP a chaque etape completee
+- [x] Recompenses XP a chaque etape completee (Sprint 30)
 - [ ] Personnalisation selon type d'offre/formation
 - [ ] Chatbot d'assistance onboarding
 
@@ -400,7 +400,7 @@
 - [x] **Sprint 27** : Profils publics + follow system (F40)
 - [x] **Sprint 28** : Parcours d'apprentissage avec prerequis (F12.1)
 - [x] **Sprint 29** : Analyse de risque IA automatique (F44)
-- [ ] **Sprint 30** : Onboarding interactif walkthrough (F41-F42)
+- [x] **Sprint 30** : Onboarding interactif walkthrough (F41-F42)
 
 ### Vague 3 - Polish & Conformite
 
