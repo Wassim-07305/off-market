@@ -1,7 +1,7 @@
 # Suivi d'avancement - Cahier des Charges Off-Market
 
 > Derniere mise a jour : 2026-03-12
-> Avancement global : **~88%**
+> Avancement global : **~90%**
 
 ---
 
@@ -280,8 +280,8 @@
 | Ref   | Fonctionnalite            | Statut  | Notes                                                     |
 | ----- | ------------------------- | ------- | --------------------------------------------------------- |
 | F47   | Notifications In-App      | Done    | Cloche, liste, filtres, marquage lu                       |
-| F48   | Notifications Email       | Partiel | Emails relances + invitations OK. Manque templates varies |
-| F49   | Notifications Push        | Manque  | Pas de push navigateur/mobile                             |
+| F48   | Notifications Email       | Done    | 11 templates: facture, paiement, invitation, welcome, rappel, contrat, session, checkin, badge, alerte coach, digest (Sprint 31) |
+| F49   | Notifications Push        | Done    | Web Push API + service worker + VAPID + toggle settings + push send API (Sprint 31) |
 | F50   | Parametres Notification   | Done    | Toggles par type, digest email                            |
 | F50.1 | Notification Intelligente | Manque  | Pas de batching, timing optimal, priority scoring         |
 | F50.2 | Notifications Critiques   | Partiel | Alertes systeme basiques                                  |
@@ -289,8 +289,8 @@
 
 ### Manques Notifications
 
-- [ ] Notifications push navigateur (Web Push API)
-- [ ] Templates email varies (welcome, appel, objectif atteint)
+- [x] Notifications push navigateur (Web Push API) (Sprint 31)
+- [x] Templates email varies (session, checkin, badge, coach alert, digest) (Sprint 31)
 - [ ] SMS via Twilio
 - [ ] Notification intelligente (batching, timing optimal)
 - [ ] Analytics notifications (taux ouverture, clics)
@@ -404,7 +404,7 @@
 
 ### Vague 3 - Polish & Conformite
 
-- [ ] **Sprint 31** : Notifications push + email templates (F48-F49)
+- [x] **Sprint 31** : Notifications push + email templates (F48-F49)
 - [ ] **Sprint 32** : RGPD complet + 2FA (F54, F62)
 - [ ] **Sprint 33** : Branding & white-label (F56, F58.1)
 - [ ] **Sprint 34** : API REST publique + webhooks (F70)
