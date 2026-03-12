@@ -63,7 +63,7 @@
 | F10   | School Builder             | Done    | Drag-drop, types de contenu, editeur                                           |
 | F11   | Quiz et Exercices          | Done    | Quiz player + timer, soumission exercices, correction coach, stats (Sprint 24) |
 | F12   | Progression et Tracking    | Done    | Pourcentage completion, lecons completees                                      |
-| F12.1 | Parcours d'Apprentissage   | Manque  | Pas de sequencage, prerequis, branches conditionnelles                         |
+| F12.1 | Parcours d'Apprentissage   | Done    | Prerequis entre cours, verrouillage, gate page, gestion admin (Sprint 28)      |
 | F12.2 | Contenus Multimedias       | Partiel | Video (YouTube/Vimeo) OK. Manque audio, embeds Figma/Miro                      |
 | F12.3 | Gamification Apprentissage | Done    | XP par lecon, badges completion, streaks                                       |
 
@@ -74,7 +74,7 @@
 - [x] Stats quiz/exercices pour coach (Sprint 24)
 - [x] Timer quiz avec auto-submit (Sprint 24)
 - [ ] Certificats de completion (table existe, UI manquante)
-- [ ] Parcours d'apprentissage avec prerequis
+- [x] Parcours d'apprentissage avec prerequis (Sprint 28)
 - [ ] Support audio/podcast
 - [ ] Embeds externes (Figma, Miro, Google Docs)
 
@@ -398,7 +398,7 @@
 ### Vague 2 - Differenciation
 
 - [x] **Sprint 27** : Profils publics + follow system (F40)
-- [ ] **Sprint 28** : Parcours d'apprentissage avec prerequis (F12.1)
+- [x] **Sprint 28** : Parcours d'apprentissage avec prerequis (F12.1)
 - [ ] **Sprint 29** : Analyse de risque IA automatique (F44)
 - [ ] **Sprint 30** : Onboarding interactif walkthrough (F41-F42)
 
