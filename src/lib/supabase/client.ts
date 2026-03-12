@@ -2,6 +2,33 @@
 
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 
+/**
+ * Cookie-based storage adapter so the Supabase session is shared
+ * between the client (@supabase/supabase-js) and the middleware (@supabase/ssr).
+ * Without this, signOut clears localStorage but the middleware still sees cookies.
+ */
+const cookieStorage = {
+  getItem(key: string): string | null {
+    if (typeof document === "undefined") return null;
+    const match = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith(`${key}=`));
+    return match
+      ? decodeURIComponent(match.split("=").slice(1).join("="))
+      : null;
+  },
+  setItem(key: string, value: string): void {
+    if (typeof document === "undefined") return;
+    // Set cookie with 1 year expiry, matching Supabase defaults
+    const maxAge = 365 * 24 * 60 * 60;
+    document.cookie = `${key}=${encodeURIComponent(value)}; path=/; max-age=${maxAge}; SameSite=Lax`;
+  },
+  removeItem(key: string): void {
+    if (typeof document === "undefined") return;
+    document.cookie = `${key}=; path=/; max-age=0; SameSite=Lax`;
+  },
+};
+
 let client: ReturnType<typeof createSupabaseClient> | null = null;
 
 export function createClient() {
@@ -14,6 +41,8 @@ export function createClient() {
         persistSession: true,
         autoRefreshToken: true,
         detectSessionInUrl: true,
+        storage: cookieStorage,
+        flowType: "pkce",
       },
     },
   );
