@@ -90,27 +90,43 @@ function SortableLessonItem({
       ref={setNodeRef}
       style={style}
       className={cn(
-        "flex items-center gap-1 px-2 py-1.5 cursor-pointer hover:bg-muted/50 transition-colors border-b border-border last:border-0",
-        isSelected && "bg-primary/5",
-        isDragging && "opacity-50 bg-primary/5",
+        "group flex items-center gap-2 px-3 py-2.5 ml-2 cursor-pointer rounded-lg transition-all",
+        isSelected
+          ? "bg-primary/10 ring-1 ring-primary/25"
+          : "hover:bg-muted/80",
+        isDragging && "opacity-50 bg-primary/10",
       )}
       onClick={onSelect}
     >
       <button
         {...attributes}
         {...listeners}
-        className="w-5 h-5 flex items-center justify-center text-muted-foreground/30 hover:text-muted-foreground cursor-grab shrink-0"
+        className="w-5 h-5 flex items-center justify-center text-muted-foreground/40 hover:text-muted-foreground cursor-grab shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
         onClick={(e) => e.stopPropagation()}
       >
-        <GripVertical className="w-2.5 h-2.5" />
+        <GripVertical className="w-3.5 h-3.5" />
       </button>
-      <Play className="w-3 h-3 text-muted-foreground/50 shrink-0" />
-      <span className="text-xs text-foreground truncate flex-1">
+      <div
+        className={cn(
+          "w-6 h-6 rounded-md flex items-center justify-center shrink-0",
+          isSelected
+            ? "bg-primary/20 text-primary"
+            : "bg-muted text-muted-foreground",
+        )}
+      >
+        <Play className="w-3 h-3" />
+      </div>
+      <span
+        className={cn(
+          "text-sm truncate flex-1 transition-colors",
+          isSelected ? "font-medium text-foreground" : "text-muted-foreground",
+        )}
+      >
         {lesson.title}
       </span>
       {lesson.estimated_duration && (
-        <span className="text-[10px] text-muted-foreground shrink-0">
-          {lesson.estimated_duration}min
+        <span className="text-xs text-muted-foreground/70 shrink-0 tabular-nums bg-muted/50 px-1.5 py-0.5 rounded">
+          {lesson.estimated_duration}m
         </span>
       )}
       <button
@@ -118,9 +134,9 @@ function SortableLessonItem({
           e.stopPropagation();
           onDelete();
         }}
-        className="w-5 h-5 flex items-center justify-center text-muted-foreground/30 hover:text-error transition-colors shrink-0"
+        className="w-6 h-6 flex items-center justify-center text-muted-foreground/40 hover:text-error hover:bg-error/10 rounded-md transition-all shrink-0 opacity-0 group-hover:opacity-100"
       >
-        <Trash2 className="w-2.5 h-2.5" />
+        <Trash2 className="w-3.5 h-3.5" />
       </button>
     </div>
   );
@@ -201,55 +217,60 @@ function SortableModuleItem({
       ref={setNodeRef}
       style={style}
       className={cn(
-        "rounded-xl border transition-all",
+        "group/module rounded-xl border bg-surface transition-all",
         isDragging
-          ? "opacity-50 border-primary/30 bg-primary/5"
-          : "border-border",
-        isSelected && !isDragging ? "ring-2 ring-primary/20" : "",
+          ? "opacity-50 border-primary/30 bg-primary/5 shadow-lg"
+          : "border-border hover:border-border/80 shadow-sm",
+        isSelected && !isDragging
+          ? "ring-2 ring-primary/20 border-primary/20"
+          : "",
       )}
     >
       {/* Module header */}
-      <div className="flex items-center gap-1 px-2 py-2">
+      <div className="flex items-center gap-2 px-3 py-3">
         <button
           {...attributes}
           {...listeners}
-          className="w-6 h-6 flex items-center justify-center text-muted-foreground/50 hover:text-muted-foreground cursor-grab shrink-0"
+          className="w-6 h-6 flex items-center justify-center text-muted-foreground/40 hover:text-muted-foreground cursor-grab shrink-0 opacity-0 group-hover/module:opacity-100 transition-opacity"
         >
-          <GripVertical className="w-3.5 h-3.5" />
+          <GripVertical className="w-4 h-4" />
         </button>
-        <button onClick={onToggle} className="shrink-0 text-muted-foreground">
+        <button
+          onClick={onToggle}
+          className="shrink-0 w-6 h-6 flex items-center justify-center text-muted-foreground hover:text-foreground rounded-md hover:bg-muted transition-colors"
+        >
           {isExpanded ? (
-            <ChevronDown className="w-3.5 h-3.5" />
+            <ChevronDown className="w-4 h-4" />
           ) : (
-            <ChevronRight className="w-3.5 h-3.5" />
+            <ChevronRight className="w-4 h-4" />
           )}
         </button>
         <button
           onClick={onSelect}
-          className="flex-1 text-left text-sm font-medium text-foreground truncate hover:text-primary transition-colors"
+          className="flex-1 text-left text-sm font-semibold text-foreground truncate hover:text-primary transition-colors"
         >
           {mod.title}
         </button>
-        <span className="text-[10px] text-muted-foreground shrink-0 tabular-nums">
-          {lessons.length}
+        <span className="text-[11px] text-muted-foreground shrink-0 tabular-nums bg-muted px-2 py-0.5 rounded-full font-medium">
+          {lessons.length} lecon{lessons.length !== 1 ? "s" : ""}
         </span>
         <button
           onClick={onEdit}
-          className="w-6 h-6 flex items-center justify-center text-muted-foreground/50 hover:text-foreground transition-colors shrink-0"
+          className="w-7 h-7 flex items-center justify-center text-muted-foreground/50 hover:text-foreground hover:bg-muted rounded-lg transition-all shrink-0 opacity-0 group-hover/module:opacity-100"
         >
-          <Pencil className="w-3 h-3" />
+          <Pencil className="w-3.5 h-3.5" />
         </button>
         <button
           onClick={onDelete}
-          className="w-6 h-6 flex items-center justify-center text-muted-foreground/50 hover:text-error transition-colors shrink-0"
+          className="w-7 h-7 flex items-center justify-center text-muted-foreground/50 hover:text-error hover:bg-error/10 rounded-lg transition-all shrink-0 opacity-0 group-hover/module:opacity-100"
         >
-          <Trash2 className="w-3 h-3" />
+          <Trash2 className="w-3.5 h-3.5" />
         </button>
       </div>
 
       {/* Lessons with DnD */}
       {isExpanded && (
-        <div className="border-t border-border">
+        <div className="border-t border-border/50 pb-2 pt-1">
           <DndContext
             sensors={lessonSensors}
             collisionDetection={closestCenter}
@@ -272,9 +293,9 @@ function SortableModuleItem({
           </DndContext>
           <button
             onClick={onAddLesson}
-            className="w-full flex items-center gap-1.5 px-3 py-2 text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+            className="w-[calc(100%-1rem)] mx-2 mt-1 flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium text-muted-foreground hover:text-primary hover:bg-primary/5 rounded-lg border border-dashed border-border/50 hover:border-primary/30 transition-all"
           >
-            <Plus className="w-3 h-3" />
+            <Plus className="w-3.5 h-3.5" />
             Ajouter une lecon
           </button>
         </div>
@@ -815,38 +836,38 @@ export function CourseEditor({ course, routePrefix }: CourseEditorProps) {
   const sidebarContent = (
     <div className="flex flex-col h-full">
       {/* Course header */}
-      <div className="p-4 border-b border-border">
+      <div className="p-5 border-b border-border">
         <Link
           href={`${routePrefix}/school`}
-          className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors mb-3"
+          className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors mb-3 group"
         >
-          <ArrowLeft className="w-3 h-3" />
+          <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
           Formations
         </Link>
-        <h2 className="text-sm font-display font-bold text-foreground truncate">
+        <h2 className="text-base font-display font-bold text-foreground truncate">
           {course.title}
         </h2>
-        <div className="flex items-center gap-3 mt-1.5 text-[10px] text-muted-foreground">
-          <span className="flex items-center gap-1">
-            <BookOpen className="w-3 h-3" />
+        <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
+          <span className="flex items-center gap-1.5 bg-muted/50 px-2 py-1 rounded-md">
+            <BookOpen className="w-3.5 h-3.5" />
             {modules.length} module{modules.length !== 1 ? "s" : ""}
           </span>
-          <span className="flex items-center gap-1">
-            <Play className="w-3 h-3" />
+          <span className="flex items-center gap-1.5 bg-muted/50 px-2 py-1 rounded-md">
+            <Play className="w-3.5 h-3.5" />
             {totalLessons} lecon{totalLessons !== 1 ? "s" : ""}
           </span>
         </div>
         <button
           onClick={() => setShowCourseDialog(true)}
-          className="mt-3 w-full h-8 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center justify-center gap-1.5 border border-border"
+          className="mt-3 w-full h-9 rounded-xl text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all flex items-center justify-center gap-2 border border-border"
         >
-          <Settings className="w-3 h-3" />
+          <Settings className="w-3.5 h-3.5" />
           Parametres du cours
         </button>
       </div>
 
       {/* Modules list */}
-      <div className="flex-1 overflow-y-auto p-3 space-y-2">
+      <div className="flex-1 overflow-y-auto p-3 space-y-3">
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
@@ -928,15 +949,15 @@ export function CourseEditor({ course, routePrefix }: CourseEditorProps) {
       </div>
 
       {/* Add module button */}
-      <div className="p-3 border-t border-border">
+      <div className="p-4 border-t border-border">
         <button
           onClick={() => {
             setEditingModule(null);
             setShowModuleDialog(true);
           }}
-          className="w-full h-9 rounded-xl text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center justify-center gap-1.5 border border-dashed border-border"
+          className="w-full h-10 rounded-xl text-sm font-medium text-primary hover:text-primary-foreground bg-primary/10 hover:bg-primary transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
         >
-          <Plus className="w-3.5 h-3.5" />
+          <Plus className="w-4 h-4" />
           Ajouter un module
         </button>
       </div>

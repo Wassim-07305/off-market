@@ -43,6 +43,15 @@ export function createClient() {
         detectSessionInUrl: true,
         storage: cookieStorage,
         flowType: "pkce",
+        // Disable navigator.locks — prevents getSession() from hanging
+        // when the lock gets orphaned during HMR or page transitions
+        lock: async (
+          name: string,
+          acquireTimeout: number,
+          fn: () => Promise<unknown>,
+        ) => {
+          return await fn();
+        },
       },
     },
   );

@@ -15,13 +15,19 @@ import {
   MessageSquare,
 } from "lucide-react";
 import type { ChannelWithMeta } from "@/types/messaging";
+import { CreateChannelModal } from "./create-channel-modal";
 
 interface ChannelSidebarProps {
   publicChannels: ChannelWithMeta[];
   dmChannels: ChannelWithMeta[];
   activeChannelId: string | null;
   onSelectChannel: (id: string) => void;
-  onCreateChannel: (name: string) => Promise<unknown>;
+  onCreateChannel: (data: {
+    name: string;
+    description?: string;
+    type: "public" | "private";
+    memberIds: string[];
+  }) => Promise<unknown>;
   onCreateDM: (userId: string) => Promise<unknown>;
   isLoading: boolean;
   isOnline?: (userId: string) => boolean;
@@ -39,8 +45,7 @@ export function ChannelSidebar({
 }: ChannelSidebarProps) {
   const [channelsOpen, setChannelsOpen] = useState(true);
   const [dmsOpen, setDmsOpen] = useState(true);
-  const [showNewChannel, setShowNewChannel] = useState(false);
-  const [newChannelName, setNewChannelName] = useState("");
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [dmSearch, setDmSearch] = useState("");
   const { user } = useAuth();
   const supabase = useSupabase();
@@ -58,13 +63,6 @@ export function ChannelSidebar({
     },
     enabled: !!user,
   });
-
-  const handleCreateChannel = async () => {
-    if (!newChannelName.trim()) return;
-    await onCreateChannel(newChannelName.trim());
-    setNewChannelName("");
-    setShowNewChannel(false);
-  };
 
   // IDs des users qui ont deja un DM
   const dmPartnerIds = useMemo(() => {
@@ -134,7 +132,7 @@ export function ChannelSidebar({
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    setShowNewChannel(!showNewChannel);
+                    setShowCreateModal(true);
                   }}
                   className="w-5 h-5 rounded flex items-center justify-center hover:bg-muted transition-colors"
                 >
@@ -142,29 +140,11 @@ export function ChannelSidebar({
                 </button>
               </div>
 
-              {showNewChannel && (
-                <div className="px-3 mb-2">
-                  <div className="flex gap-1">
-                    <input
-                      autoFocus
-                      value={newChannelName}
-                      onChange={(e) => setNewChannelName(e.target.value)}
-                      placeholder="Nom du canal"
-                      className="flex-1 h-8 px-2.5 bg-surface border border-border rounded-lg text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") handleCreateChannel();
-                        if (e.key === "Escape") setShowNewChannel(false);
-                      }}
-                    />
-                    <button
-                      onClick={handleCreateChannel}
-                      className="h-8 px-2.5 bg-primary text-white rounded-lg text-xs font-medium"
-                    >
-                      OK
-                    </button>
-                  </div>
-                </div>
-              )}
+              <CreateChannelModal
+                open={showCreateModal}
+                onClose={() => setShowCreateModal(false)}
+                onCreateChannel={onCreateChannel}
+              />
 
               {channelsOpen && (
                 <div className="px-2 space-y-0.5">

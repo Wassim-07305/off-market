@@ -27,6 +27,7 @@ import {
   Award,
   FolderOpen,
   FileSignature,
+  Contact,
   type LucideIcon,
 } from "lucide-react";
 
@@ -39,7 +40,8 @@ export interface NavItem {
 /** Admin / Fondateur */
 export const adminNavigation: NavItem[] = [
   { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
-  { name: "CRM", href: "/admin/crm", icon: Users },
+  { name: "CRM", href: "/admin/crm", icon: Kanban },
+  { name: "Clients", href: "/admin/clients", icon: Contact },
   { name: "Messagerie", href: "/admin/messaging", icon: MessageSquare },
   { name: "Formation", href: "/admin/school", icon: GraduationCap },
   { name: "Formulaires", href: "/admin/forms", icon: FileText },

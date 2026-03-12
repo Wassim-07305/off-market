@@ -90,11 +90,14 @@ export default function MessagingContainer() {
           dmChannels={dmChannels}
           activeChannelId={activeChannelId}
           onSelectChannel={handleSelectChannel}
-          onCreateChannel={(name) =>
+          onCreateChannel={({ name, description, type, memberIds }) =>
             createChannel.mutateAsync({
               name,
-              type: "public",
-              memberIds: user ? [user.id] : [],
+              description,
+              type,
+              memberIds: user
+                ? [...new Set([user.id, ...memberIds])]
+                : memberIds,
             })
           }
           onCreateDM={(userId) =>
