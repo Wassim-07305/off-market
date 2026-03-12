@@ -1,9 +1,14 @@
 "use client";
 
 import { use, useState, useCallback, useEffect, useRef } from "react";
-import { useForm as useFormData } from "@/hooks/use-forms";
-import { useFormMutations } from "@/hooks/use-forms";
-import { useAuth } from "@/hooks/use-auth";
+import { useMemo } from "react";
+import { createClient } from "@/lib/supabase/client";
+import {
+  useQuery,
+  useMutation,
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
 import { evaluateConditionalLogic } from "@/lib/conditional-logic";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -18,35 +23,46 @@ import {
   Minus as MinusIcon,
   Plus as PlusIcon,
 } from "lucide-react";
-import Link from "next/link";
-import { useRoutePrefix } from "@/hooks/use-route-prefix";
-import type { FormField } from "@/types/database";
+import type { Form, FormField } from "@/types/database";
 
-export default function FormRespondPage({
-  params,
-}: {
-  params: Promise<{ formId: string }>;
-}) {
-  const { formId } = use(params);
-  const { data: form, isLoading } = useFormData(formId);
-  const { submitForm } = useFormMutations();
-  const { user } = useAuth();
+function PublicFormContent({ formId }: { formId: string }) {
+  const supabase = useMemo(() => createClient(), []);
+
+  const { data: form, isLoading } = useQuery({
+    queryKey: ["public-form", formId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("forms")
+        .select("*, form_fields(*)")
+        .eq("id", formId)
+        .single();
+      if (error) throw error;
+      return data as Form & { form_fields: FormField[] };
+    },
+  });
+
+  const submitForm = useMutation({
+    mutationFn: async (answers: Record<string, unknown>) => {
+      const { error } = await supabase.from("form_submissions").insert({
+        form_id: formId,
+        respondent_id: null,
+        answers,
+      });
+      if (error) throw error;
+    },
+  });
+
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [currentIndex, setCurrentIndex] = useState(0);
   const [submitted, setSubmitted] = useState(false);
-  const [direction, setDirection] = useState(1); // 1 = forward, -1 = backward
-  const prefix = useRoutePrefix();
+  const [direction, setDirection] = useState(1);
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null);
 
   const fields =
     form?.form_fields?.sort((a, b) => a.sort_order - b.sort_order) ?? [];
-
-  // Filter visible fields
   const visibleFields = fields.filter((f) =>
     evaluateConditionalLogic(f.conditional_logic, answers),
   );
-
-  // Only question fields (skip structural)
   const questionFields = visibleFields.filter(
     (f) => !["heading", "paragraph", "divider"].includes(f.field_type),
   );
@@ -65,7 +81,6 @@ export default function FormRespondPage({
 
   const goNext = useCallback(() => {
     if (!currentField) return;
-    // Validate required
     if (currentField.is_required && !answers[currentField.id]?.trim()) {
       toast.error("Ce champ est requis");
       return;
@@ -83,11 +98,29 @@ export default function FormRespondPage({
     }
   }, [isFirst]);
 
-  // Keyboard navigation
+  const handleSubmit = async () => {
+    if (currentField?.is_required && !answers[currentField.id]?.trim()) {
+      toast.error("Ce champ est requis");
+      return;
+    }
+    const missing = questionFields.find(
+      (f) => f.is_required && !answers[f.id]?.trim(),
+    );
+    if (missing) {
+      toast.error(`Le champ "${missing.label}" est requis`);
+      return;
+    }
+    try {
+      await submitForm.mutateAsync(answers);
+      setSubmitted(true);
+    } catch {
+      toast.error("Erreur lors de l'envoi");
+    }
+  };
+
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === "Enter" && !e.shiftKey) {
-        // Don't advance from textarea
         if (currentField?.field_type === "long_text") return;
         e.preventDefault();
         if (isLast) {
@@ -101,44 +134,15 @@ export default function FormRespondPage({
     return () => window.removeEventListener("keydown", handler);
   });
 
-  // Auto-focus input
   useEffect(() => {
     setTimeout(() => {
       inputRef.current?.focus();
     }, 400);
   }, [currentIndex]);
 
-  const handleSubmit = async () => {
-    if (!currentField) return;
-    if (currentField.is_required && !answers[currentField.id]?.trim()) {
-      toast.error("Ce champ est requis");
-      return;
-    }
-
-    // Validate all required visible fields
-    const missing = questionFields.find(
-      (f) => f.is_required && !answers[f.id]?.trim(),
-    );
-    if (missing) {
-      toast.error(`Le champ "${missing.label}" est requis`);
-      return;
-    }
-
-    try {
-      await submitForm.mutateAsync({
-        formId,
-        respondentId: user?.id,
-        answers,
-      });
-      setSubmitted(true);
-    } catch {
-      toast.error("Erreur lors de l'envoi");
-    }
-  };
-
   if (isLoading) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -146,21 +150,43 @@ export default function FormRespondPage({
 
   if (!form) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <p className="text-muted-foreground">Formulaire non trouve</p>
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <p className="text-xl font-semibold text-foreground mb-2">
+            Formulaire non trouve
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Ce lien n&apos;est pas valide ou le formulaire a ete supprime.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (form.status === "closed") {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <p className="text-xl font-semibold text-foreground mb-2">
+            Formulaire ferme
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Ce formulaire n&apos;accepte plus de reponses.
+          </p>
+        </div>
       </div>
     );
   }
 
   if (submitted) {
     return (
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5, ease: [0.25, 0.4, 0, 1] }}
-        className="min-h-[60vh] flex items-center justify-center"
-      >
-        <div className="text-center max-w-md">
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, ease: [0.25, 0.4, 0, 1] }}
+          className="text-center max-w-md px-6"
+        >
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
@@ -179,43 +205,23 @@ export default function FormRespondPage({
             {form.thank_you_message ||
               "Ta reponse a ete enregistree avec succes."}
           </p>
-          <Link
-            href={`${prefix}/forms`}
-            className="inline-flex items-center gap-2 text-sm text-primary mt-8 hover:text-primary-hover transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Retour aux formulaires
-          </Link>
-        </div>
-      </motion.div>
+        </motion.div>
+      </div>
     );
   }
 
   if (questionFields.length === 0) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-muted-foreground mb-4">
-            Ce formulaire n&apos;a pas de champs
-          </p>
-          <Link
-            href={`${prefix}/forms/${formId}`}
-            className="text-sm text-primary hover:text-primary-hover"
-          >
-            Retour
-          </Link>
-        </div>
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <p className="text-muted-foreground">
+          Ce formulaire n&apos;a pas de champs
+        </p>
       </div>
     );
   }
 
-  // Intro screen (first view showing title)
-  if (currentIndex === 0 && !answers[questionFields[0]?.id]) {
-    // Show intro only if we haven't started answering yet
-  }
-
   return (
-    <div className="min-h-[60vh] flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       {/* Progress bar */}
       <div className="fixed top-0 left-0 right-0 z-50 h-1 bg-muted">
         <motion.div
@@ -226,22 +232,18 @@ export default function FormRespondPage({
         />
       </div>
 
-      {/* Question counter */}
-      <div className="flex items-center justify-between mb-8">
-        <Link
-          href={`${prefix}/forms/${formId}`}
-          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Quitter
-        </Link>
+      {/* Header */}
+      <div className="px-6 pt-6 flex items-center justify-between">
+        <h3 className="text-sm font-medium text-muted-foreground">
+          {form.title}
+        </h3>
         <span className="text-xs text-muted-foreground">
           {currentIndex + 1} / {questionFields.length}
         </span>
       </div>
 
       {/* Question area */}
-      <div className="flex-1 flex items-center justify-center px-4">
+      <div className="flex-1 flex items-center justify-center px-6 py-12">
         <div className="w-full max-w-xl">
           <AnimatePresence mode="wait" custom={direction}>
             <motion.div
@@ -252,7 +254,6 @@ export default function FormRespondPage({
               exit={{ opacity: 0, y: direction * -40 }}
               transition={{ duration: 0.35, ease: [0.25, 0.4, 0, 1] }}
             >
-              {/* Field label */}
               <div className="mb-8">
                 <h2 className="text-2xl sm:text-3xl font-bold text-foreground leading-tight">
                   {currentField.label || "Sans titre"}
@@ -267,8 +268,7 @@ export default function FormRespondPage({
                 )}
               </div>
 
-              {/* Field input */}
-              <TypeformField
+              <PublicTypeformField
                 field={currentField}
                 value={answers[currentField.id] ?? ""}
                 onChange={(val) => updateAnswer(currentField.id, val)}
@@ -280,56 +280,56 @@ export default function FormRespondPage({
       </div>
 
       {/* Navigation */}
-      <div className="flex items-center justify-between mt-12 pb-4">
-        <button
-          onClick={goPrev}
-          disabled={isFirst}
-          className={cn(
-            "h-11 px-5 rounded-xl text-sm font-medium transition-all flex items-center gap-2",
-            isFirst
-              ? "opacity-0 pointer-events-none"
-              : "bg-muted text-foreground hover:bg-border/50",
+      <div className="px-6 pb-6">
+        <div className="flex items-center justify-between max-w-xl mx-auto">
+          <button
+            onClick={goPrev}
+            disabled={isFirst}
+            className={cn(
+              "h-11 px-5 rounded-xl text-sm font-medium transition-all flex items-center gap-2",
+              isFirst
+                ? "opacity-0 pointer-events-none"
+                : "bg-muted text-foreground hover:bg-border/50",
+            )}
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Precedent
+          </button>
+
+          {isLast ? (
+            <button
+              onClick={handleSubmit}
+              disabled={submitForm.isPending}
+              className="h-11 px-6 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-2"
+            >
+              {submitForm.isPending ? "Envoi..." : "Envoyer"}
+              <Check className="w-4 h-4" />
+            </button>
+          ) : (
+            <button
+              onClick={goNext}
+              className="h-11 px-6 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-all active:scale-[0.98] flex items-center gap-2"
+            >
+              Suivant
+              <ArrowRight className="w-4 h-4" />
+            </button>
           )}
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Precedent
-        </button>
-
-        {isLast ? (
-          <button
-            onClick={handleSubmit}
-            disabled={submitForm.isPending}
-            className="h-11 px-6 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-2"
-          >
-            {submitForm.isPending ? "Envoi..." : "Envoyer"}
-            <Check className="w-4 h-4" />
-          </button>
-        ) : (
-          <button
-            onClick={goNext}
-            className="h-11 px-6 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-all active:scale-[0.98] flex items-center gap-2"
-          >
-            Suivant
-            <ArrowRight className="w-4 h-4" />
-          </button>
-        )}
+        </div>
+        <p className="text-center text-xs text-muted-foreground/50 mt-3">
+          Appuie sur{" "}
+          <kbd className="px-1.5 py-0.5 bg-muted rounded text-[10px] font-mono">
+            Entree
+          </kbd>{" "}
+          pour continuer
+        </p>
       </div>
-
-      {/* Keyboard hint */}
-      <p className="text-center text-xs text-muted-foreground/50 pb-2">
-        Appuie sur{" "}
-        <kbd className="px-1.5 py-0.5 bg-muted rounded text-[10px] font-mono">
-          Entree
-        </kbd>{" "}
-        pour continuer
-      </p>
     </div>
   );
 }
 
-/* ─── Typeform Field ─── */
+/* ─── Public Typeform Field (same as internal but standalone) ─── */
 
-function TypeformField({
+function PublicTypeformField({
   field,
   value,
   onChange,
@@ -345,7 +345,6 @@ function TypeformField({
   const [hoveredRating, setHoveredRating] = useState<number | null>(null);
   const type = field.field_type;
 
-  // Short text
   if (type === "short_text") {
     return (
       <input
@@ -361,7 +360,6 @@ function TypeformField({
     );
   }
 
-  // Long text
   if (type === "long_text") {
     return (
       <div className="space-y-2">
@@ -382,7 +380,6 @@ function TypeformField({
     );
   }
 
-  // Email
   if (type === "email") {
     return (
       <input
@@ -398,7 +395,6 @@ function TypeformField({
     );
   }
 
-  // Phone
   if (type === "phone") {
     return (
       <input
@@ -414,7 +410,6 @@ function TypeformField({
     );
   }
 
-  // Number
   if (type === "number") {
     const numValue = value ? Number(value) : 0;
     return (
@@ -447,7 +442,6 @@ function TypeformField({
     );
   }
 
-  // Single select (radio cards)
   if (type === "single_select") {
     const options = field.options ?? [];
     return (
@@ -491,7 +485,6 @@ function TypeformField({
     );
   }
 
-  // Multi select (checkbox cards)
   if (type === "multi_select") {
     const options = field.options ?? [];
     const selected = value ? value.split(",") : [];
@@ -501,7 +494,6 @@ function TypeformField({
         : [...selected, optValue];
       onChange(newSelected.join(","));
     };
-
     return (
       <div className="space-y-2.5">
         <p className="text-xs text-muted-foreground mb-3">
@@ -543,7 +535,6 @@ function TypeformField({
     );
   }
 
-  // Dropdown
   if (type === "dropdown") {
     const options = field.options ?? [];
     const [isOpen, setIsOpen] = useState(false);
@@ -604,7 +595,6 @@ function TypeformField({
     );
   }
 
-  // Rating (stars)
   if (type === "rating") {
     const numValue = value ? Number(value) : 0;
     return (
@@ -618,7 +608,6 @@ function TypeformField({
             onMouseEnter={() => setHoveredRating(n)}
             onMouseLeave={() => setHoveredRating(null)}
             onClick={() => onChange(String(n))}
-            className="transition-colors"
           >
             <Star
               className={cn(
@@ -634,13 +623,11 @@ function TypeformField({
     );
   }
 
-  // NPS (0-10 with color gradient)
   if (type === "nps") {
     return (
       <div className="space-y-3">
         <div className="flex gap-1.5 sm:gap-2 flex-wrap">
           {Array.from({ length: 11 }, (_, n) => {
-            // Color gradient: red(0-6) -> yellow(7-8) -> green(9-10)
             const getBg = () => {
               if (value === String(n)) {
                 if (n <= 6) return "bg-red-500 text-white border-red-500";
@@ -674,7 +661,6 @@ function TypeformField({
     );
   }
 
-  // Scale (1-5 likert)
   if (type === "scale") {
     return (
       <div className="flex gap-2 sm:gap-3">
@@ -699,7 +685,6 @@ function TypeformField({
     );
   }
 
-  // Date
   if (type === "date") {
     return (
       <input
@@ -714,7 +699,6 @@ function TypeformField({
     );
   }
 
-  // Time
   if (type === "time") {
     return (
       <input
@@ -729,7 +713,6 @@ function TypeformField({
     );
   }
 
-  // File upload
   if (type === "file_upload") {
     const [isDragOver, setIsDragOver] = useState(false);
     return (
@@ -767,7 +750,6 @@ function TypeformField({
           <div className="space-y-2">
             <Check className="w-8 h-8 text-emerald-500 mx-auto" />
             <p className="text-sm font-medium text-foreground">{value}</p>
-            <p className="text-xs text-muted-foreground">Clique pour changer</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -782,22 +764,6 @@ function TypeformField({
     );
   }
 
-  // Heading (should not appear in questions but just in case)
-  if (type === "heading") {
-    return <h2 className="text-xl font-bold text-foreground">{field.label}</h2>;
-  }
-
-  // Paragraph
-  if (type === "paragraph") {
-    return <p className="text-muted-foreground">{field.label}</p>;
-  }
-
-  // Divider
-  if (type === "divider") {
-    return <hr className="border-border" />;
-  }
-
-  // Fallback
   return (
     <input
       ref={(el) => {
@@ -809,5 +775,28 @@ function TypeformField({
       placeholder="Reponse..."
       className="w-full text-lg bg-transparent border-b-2 border-border focus:border-primary pb-3 outline-none text-foreground"
     />
+  );
+}
+
+// Wrapper with QueryClient for public page (no AuthProvider needed)
+export default function PublicFormPage({
+  params,
+}: {
+  params: Promise<{ formId: string }>;
+}) {
+  const { formId } = use(params);
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: { staleTime: 60 * 1000, refetchOnWindowFocus: false },
+        },
+      }),
+  );
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <PublicFormContent formId={formId} />
+    </QueryClientProvider>
   );
 }

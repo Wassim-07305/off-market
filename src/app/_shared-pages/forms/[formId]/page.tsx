@@ -5,7 +5,17 @@ import Link from "next/link";
 import { useRoutePrefix } from "@/hooks/use-route-prefix";
 import { useForm, useFormSubmissions } from "@/hooks/use-forms";
 import { getInitials, formatDate, cn } from "@/lib/utils";
-import { ArrowLeft, Edit, Send, FileText, Table } from "lucide-react";
+import { copyLink } from "@/lib/clipboard";
+import {
+  ArrowLeft,
+  Edit,
+  Send,
+  FileText,
+  Table,
+  Link2,
+  ExternalLink,
+  Copy,
+} from "lucide-react";
 import { ExportDropdown } from "@/components/shared/export-dropdown";
 import { exportToCSV, exportTableToPDF } from "@/lib/export";
 
@@ -19,6 +29,13 @@ export default function FormResponsesPage({
   const { data: submissions, isLoading: subsLoading } =
     useFormSubmissions(formId);
   const prefix = useRoutePrefix();
+
+  const getPublicUrl = () => {
+    if (typeof window !== "undefined") {
+      return `${window.location.origin}/f/${formId}`;
+    }
+    return `/f/${formId}`;
+  };
 
   if (formLoading) {
     return <div className="h-64 bg-muted rounded-xl animate-pulse" />;
@@ -110,17 +127,75 @@ export default function FormResponsesPage({
         </div>
       </div>
 
+      {/* Form info + share link */}
       <div className="bg-surface border border-border rounded-xl p-6">
-        <h1 className="text-xl font-semibold text-foreground">{form.title}</h1>
-        {form.description && (
-          <p className="text-sm text-muted-foreground mt-1">
-            {form.description}
-          </p>
-        )}
-        <p className="text-xs text-muted-foreground mt-3">
-          {submissions?.length ?? 0} reponse
-          {(submissions?.length ?? 0) !== 1 ? "s" : ""}
-        </p>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-3 mb-1">
+              <h1 className="text-xl font-semibold text-foreground">
+                {form.title}
+              </h1>
+              <span
+                className={cn(
+                  "text-xs font-medium px-2.5 py-1 rounded-full",
+                  form.status === "active"
+                    ? "bg-success/10 text-success"
+                    : form.status === "draft"
+                      ? "bg-muted text-muted-foreground"
+                      : "bg-zinc-200 text-zinc-600",
+                )}
+              >
+                {form.status === "active"
+                  ? "Actif"
+                  : form.status === "draft"
+                    ? "Brouillon"
+                    : form.status === "closed"
+                      ? "Ferme"
+                      : "Archive"}
+              </span>
+            </div>
+            {form.description && (
+              <p className="text-sm text-muted-foreground mt-1">
+                {form.description}
+              </p>
+            )}
+            <p className="text-xs text-muted-foreground mt-3">
+              {submissions?.length ?? 0} reponse
+              {(submissions?.length ?? 0) !== 1 ? "s" : ""} · {fields.length}{" "}
+              champ{fields.length !== 1 ? "s" : ""}
+            </p>
+          </div>
+        </div>
+
+        {/* Shareable link */}
+        <div className="mt-4 pt-4 border-t border-border/50">
+          <label className="block text-xs font-medium text-muted-foreground mb-2">
+            Lien de partage public
+          </label>
+          <div className="flex items-center gap-2">
+            <div className="flex-1 h-9 px-3 bg-muted border border-border rounded-lg flex items-center overflow-hidden">
+              <Link2 className="w-3.5 h-3.5 text-muted-foreground shrink-0 mr-2" />
+              <span className="text-sm text-foreground truncate">
+                {getPublicUrl()}
+              </span>
+            </div>
+            <button
+              onClick={() => copyLink(getPublicUrl())}
+              className="h-9 px-3 rounded-lg border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center gap-1.5 shrink-0"
+            >
+              <Copy className="w-3.5 h-3.5" />
+              Copier
+            </button>
+            <Link
+              href={`/f/${formId}`}
+              target="_blank"
+              className="h-9 px-3 rounded-lg border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center gap-1.5 shrink-0"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+              Ouvrir
+            </Link>
+          </div>
+        </div>
       </div>
 
       {/* Responses table */}

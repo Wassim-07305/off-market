@@ -16,9 +16,9 @@ import {
   CheckCircle,
   Clock,
   PenLine,
-  Printer,
   Calendar,
   XCircle,
+  Download,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -58,41 +58,8 @@ export default function ClientContractDetailPage() {
     }
   };
 
-  const handlePrint = () => {
-    if (!contract) return;
-    const w = window.open("", "_blank");
-    if (!w) return;
-    w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8">
-      <title>${contract.title}</title>
-      <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; padding: 40px; max-width: 800px; margin: 0 auto; color: #1a1a1a; line-height: 1.7; }
-        h1 { font-size: 24px; margin-bottom: 8px; }
-        .meta { color: #666; font-size: 13px; margin-bottom: 32px; }
-        .content { white-space: pre-wrap; font-size: 14px; }
-        .signature-section { margin-top: 48px; border-top: 1px solid #e5e5e5; padding-top: 24px; }
-        .signature-section img { max-height: 80px; }
-        .signature-meta { font-size: 12px; color: #999; margin-top: 8px; }
-        @media print { body { padding: 20px; } }
-      </style>
-    </head><body>
-      <h1>${contract.title}</h1>
-      <div class="meta">Cree le ${formatDate(contract.created_at)}</div>
-      <div class="content">${contract.content}</div>
-      ${
-        contract.status === "signed"
-          ? `
-        <div class="signature-section">
-          <strong>Signature electronique</strong>
-          ${contract.signature_image ? `<br><img src="${contract.signature_image}" alt="Signature">` : ""}
-          <div class="signature-meta">Signe le ${formatDate(contract.signed_at)}</div>
-        </div>
-      `
-          : ""
-      }
-    </body></html>`);
-    w.document.close();
-    w.onload = () => w.print();
+  const handleDownloadPDF = () => {
+    window.open(`/api/contracts/${id}/pdf`, "_blank");
   };
 
   if (isLoading) {
@@ -159,11 +126,11 @@ export default function ClientContractDetailPage() {
           </div>
         </div>
         <button
-          onClick={handlePrint}
+          onClick={handleDownloadPDF}
           className="p-2 rounded-lg hover:bg-muted transition-colors text-muted-foreground"
-          title="Imprimer / PDF"
+          title="Telecharger PDF"
         >
-          <Printer className="w-5 h-5" />
+          <Download className="w-5 h-5" />
         </button>
       </motion.div>
 
@@ -234,6 +201,13 @@ export default function ClientContractDetailPage() {
                 </div>
               )}
             </div>
+            <button
+              onClick={handleDownloadPDF}
+              className="h-9 px-4 bg-emerald-600 text-white rounded-lg text-sm font-medium hover:bg-emerald-700 transition-colors flex items-center gap-2 flex-shrink-0"
+            >
+              <Download className="w-3.5 h-3.5" />
+              Telecharger PDF
+            </button>
           </div>
         </motion.div>
       )}

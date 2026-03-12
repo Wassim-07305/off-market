@@ -58,8 +58,16 @@ export async function updateSession(request: NextRequest) {
     pathname.startsWith("/forgot-password") ||
     pathname.startsWith("/auth");
 
-  // Not logged in → redirect to login (except auth pages)
-  if (!user && !isAuthPage) {
+  // Public pages/routes that don't require auth
+  const isPublicPage =
+    (pathname.startsWith("/contracts/") && pathname.endsWith("/sign")) ||
+    (pathname.startsWith("/api/contracts/") &&
+      (pathname.endsWith("/sign") ||
+        pathname.endsWith("/public") ||
+        pathname.endsWith("/pdf")));
+
+  // Not logged in → redirect to login (except auth & public pages)
+  if (!user && !isAuthPage && !isPublicPage) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);

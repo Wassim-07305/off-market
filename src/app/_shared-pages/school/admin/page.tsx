@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRoutePrefix } from "@/hooks/use-route-prefix";
 import { useCourses, useCourseMutations } from "@/hooks/use-courses";
 import { cn } from "@/lib/utils";
@@ -26,6 +27,7 @@ import {
 export default function SchoolAdminPage() {
   const prefix = useRoutePrefix();
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { data: courses, isLoading } = useCourses("all");
   const mutations = useCourseMutations();
 
@@ -55,11 +57,18 @@ export default function SchoolAdminPage() {
   }
 
   function handleTogglePublish(course: { id: string; status: string }) {
+    const newStatus = course.status === "published" ? "draft" : "published";
     setTogglingId(course.id);
+
+    // Optimistic update: immediately reflect the new status in the UI
+    queryClient.setQueryData(["courses", "all"], (old: typeof courses) =>
+      old?.map((c) => (c.id === course.id ? { ...c, status: newStatus } : c)),
+    );
+
     mutations.updateCourse.mutate(
       {
         id: course.id,
-        status: course.status === "published" ? "draft" : "published",
+        status: newStatus as "draft" | "published",
       },
       {
         onSuccess: () => {
@@ -71,6 +80,12 @@ export default function SchoolAdminPage() {
           setTogglingId(null);
         },
         onError: () => {
+          // Rollback optimistic update
+          queryClient.setQueryData(["courses", "all"], (old: typeof courses) =>
+            old?.map((c) =>
+              c.id === course.id ? { ...c, status: course.status } : c,
+            ),
+          );
           toast.error("Erreur lors de la mise a jour");
           setTogglingId(null);
         },

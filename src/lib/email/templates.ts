@@ -241,3 +241,53 @@ export function paymentReminderEmail(params: {
   `);
   return { subject, html };
 }
+
+// ─── Contract sign request ────────────────────
+
+export function contractSignEmail(params: {
+  clientName: string;
+  contractTitle: string;
+  createdDate: string;
+  expiresDate: string | null;
+  signUrl: string;
+}) {
+  const subject = `Contrat a signer — ${params.contractTitle}`;
+  const html = layout(`
+    <h2 style="margin:0 0 16px;color:#18181b;font-size:18px;font-weight:600;">Contrat a signer</h2>
+    <p style="margin:0 0 12px;color:#3f3f46;font-size:14px;line-height:1.6;">
+      Bonjour ${params.clientName},
+    </p>
+    <p style="margin:0 0 20px;color:#3f3f46;font-size:14px;line-height:1.6;">
+      Un contrat a ete prepare pour vous et attend votre signature electronique :
+    </p>
+    <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;margin-bottom:20px;">
+      <tr>
+        <td style="padding:12px 16px;background-color:#f4f4f5;border-radius:8px;">
+          <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;">
+            <tr>
+              <td style="color:#71717a;font-size:13px;padding:4px 0;">Contrat</td>
+              <td style="color:#18181b;font-size:13px;font-weight:600;text-align:right;padding:4px 0;">${params.contractTitle}</td>
+            </tr>
+            <tr>
+              <td style="color:#71717a;font-size:13px;padding:4px 0;">Date</td>
+              <td style="color:#18181b;font-size:13px;font-weight:600;text-align:right;padding:4px 0;">${params.createdDate}</td>
+            </tr>
+            ${
+              params.expiresDate
+                ? `<tr>
+              <td style="color:#71717a;font-size:13px;padding:4px 0;">Expire le</td>
+              <td style="color:#dc2626;font-size:13px;font-weight:600;text-align:right;padding:4px 0;">${params.expiresDate}</td>
+            </tr>`
+                : ""
+            }
+          </table>
+        </td>
+      </tr>
+    </table>
+    ${button("Signer le contrat", params.signUrl)}
+    <p style="margin:0;color:#a1a1aa;font-size:12px;">
+      Ce lien vous permet de consulter et signer votre contrat en ligne. Aucun compte n'est necessaire.
+    </p>
+  `);
+  return { subject, html };
+}

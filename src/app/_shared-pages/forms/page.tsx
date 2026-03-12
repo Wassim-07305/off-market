@@ -6,6 +6,7 @@ import { useRoutePrefix } from "@/hooks/use-route-prefix";
 import { useForms } from "@/hooks/use-forms";
 import { useAuth } from "@/hooks/use-auth";
 import { cn, formatDate } from "@/lib/utils";
+import { copyLink } from "@/lib/clipboard";
 import { motion } from "framer-motion";
 import {
   staggerContainer,
@@ -16,9 +17,9 @@ import {
   FileText,
   Plus,
   BarChart2,
-  Users,
   Calendar,
-  ChevronRight,
+  Link2,
+  ExternalLink,
 } from "lucide-react";
 
 export default function FormsPage() {
@@ -33,6 +34,13 @@ export default function FormsPage() {
     { value: "draft", label: "Brouillons" },
     { value: "closed", label: "Fermes" },
   ];
+
+  const getPublicUrl = (formId: string) => {
+    if (typeof window !== "undefined") {
+      return `${window.location.origin}/f/${formId}`;
+    }
+    return `/f/${formId}`;
+  };
 
   return (
     <motion.div
@@ -112,53 +120,76 @@ export default function FormsPage() {
           forms.map((form) => {
             const responseCount = form.form_submissions?.[0]?.count ?? 0;
             return (
-              <Link
+              <div
                 key={form.id}
-                href={`${prefix}/forms/${form.id}`}
                 className="bg-surface border border-border rounded-xl p-5 hover:shadow-sm transition-all group"
               >
-                <div className="flex items-start justify-between mb-3">
-                  <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <FileText className="w-4.5 h-4.5 text-primary" />
-                  </div>
-                  <span
-                    className={cn(
-                      "text-xs font-medium px-2.5 py-1 rounded-full",
-                      form.status === "active"
-                        ? "bg-success/10 text-success"
+                <Link href={`${prefix}/forms/${form.id}`}>
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <FileText className="w-4.5 h-4.5 text-primary" />
+                    </div>
+                    <span
+                      className={cn(
+                        "text-xs font-medium px-2.5 py-1 rounded-full",
+                        form.status === "active"
+                          ? "bg-success/10 text-success"
+                          : form.status === "draft"
+                            ? "bg-muted text-muted-foreground"
+                            : "bg-zinc-200 text-zinc-600",
+                      )}
+                    >
+                      {form.status === "active"
+                        ? "Actif"
                         : form.status === "draft"
-                          ? "bg-muted text-muted-foreground"
-                          : "bg-zinc-200 text-zinc-600",
-                    )}
+                          ? "Brouillon"
+                          : form.status === "closed"
+                            ? "Ferme"
+                            : "Archive"}
+                    </span>
+                  </div>
+                  <h3 className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">
+                    {form.title}
+                  </h3>
+                  {form.description && (
+                    <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                      {form.description}
+                    </p>
+                  )}
+                  <div className="flex items-center gap-3 mt-3 text-xs text-muted-foreground">
+                    <span className="flex items-center gap-1">
+                      <BarChart2 className="w-3.5 h-3.5" />
+                      {responseCount} reponse{responseCount !== 1 ? "s" : ""}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Calendar className="w-3.5 h-3.5" />
+                      {formatDate(form.created_at)}
+                    </span>
+                  </div>
+                </Link>
+
+                {/* Actions */}
+                <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-border/50">
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      copyLink(getPublicUrl(form.id));
+                    }}
+                    className="h-7 px-2.5 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center gap-1.5"
                   >
-                    {form.status === "active"
-                      ? "Actif"
-                      : form.status === "draft"
-                        ? "Brouillon"
-                        : form.status === "closed"
-                          ? "Ferme"
-                          : "Archive"}
-                  </span>
+                    <Link2 className="w-3 h-3" />
+                    Copier le lien
+                  </button>
+                  <Link
+                    href={`/f/${form.id}`}
+                    target="_blank"
+                    className="h-7 px-2.5 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center gap-1.5"
+                  >
+                    <ExternalLink className="w-3 h-3" />
+                    Ouvrir
+                  </Link>
                 </div>
-                <h3 className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">
-                  {form.title}
-                </h3>
-                {form.description && (
-                  <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
-                    {form.description}
-                  </p>
-                )}
-                <div className="flex items-center gap-3 mt-4 text-xs text-muted-foreground">
-                  <span className="flex items-center gap-1">
-                    <BarChart2 className="w-3.5 h-3.5" />
-                    {responseCount} reponse{responseCount !== 1 ? "s" : ""}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Calendar className="w-3.5 h-3.5" />
-                    {formatDate(form.created_at)}
-                  </span>
-                </div>
-              </Link>
+              </div>
             );
           })
         )}

@@ -16,11 +16,17 @@ import {
   CheckCircle,
   XCircle,
   Clock,
-  Printer,
   User,
   Calendar,
   PenLine,
+  Download,
+  Link2,
+  Mail,
+  Loader2,
+  Copy,
+  Check,
 } from "lucide-react";
+import { toast } from "sonner";
 
 function formatDate(date: string | null) {
   if (!date) return "-";
@@ -65,51 +71,46 @@ export default function ContractDetailPage() {
   const id = params.id as string;
   const { data: contract, isLoading } = useContract(id);
   const { sendContract, updateContract } = useContracts();
-  const [showPreview, setShowPreview] = useState(false);
+  const [sendingEmail, setSendingEmail] = useState(false);
+  const [copied, setCopied] = useState(false);
 
-  const handlePrint = () => {
-    if (!contract) return;
-    const w = window.open("", "_blank");
-    if (!w) return;
-    w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8">
-      <title>${contract.title}</title>
-      <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; padding: 40px; max-width: 800px; margin: 0 auto; color: #1a1a1a; line-height: 1.7; }
-        h1 { font-size: 24px; margin-bottom: 8px; }
-        .meta { color: #666; font-size: 13px; margin-bottom: 32px; }
-        .content { white-space: pre-wrap; font-size: 14px; }
-        .signature-section { margin-top: 48px; border-top: 1px solid #e5e5e5; padding-top: 24px; }
-        .signature-section img { max-height: 80px; }
-        .signature-meta { font-size: 12px; color: #999; margin-top: 8px; }
-        .status { display: inline-block; padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 500; }
-        @media print { body { padding: 20px; } }
-      </style>
-    </head><body>
-      <h1>${contract.title}</h1>
-      <div class="meta">
-        Client : ${contract.client?.full_name ?? "-"} &bull;
-        Cree le ${formatDate(contract.created_at)}
-        ${contract.status === "signed" ? ` &bull; Signe le ${formatDate(contract.signed_at)}` : ""}
-      </div>
-      <div class="content">${contract.content}</div>
-      ${
-        contract.status === "signed"
-          ? `
-        <div class="signature-section">
-          <strong>Signature electronique</strong>
-          ${contract.signature_image ? `<br><img src="${contract.signature_image}" alt="Signature">` : ""}
-          <div class="signature-meta">
-            Signe le ${formatDate(contract.signed_at)}
-            ${contract.signature_data?.ip_address ? ` &bull; IP: ${contract.signature_data.ip_address}` : ""}
-          </div>
-        </div>
-      `
-          : ""
+  const signUrl =
+    typeof window !== "undefined"
+      ? `${window.location.origin}/contracts/${id}/sign`
+      : "";
+
+  const handleDownloadPDF = () => {
+    window.open(`/api/contracts/${id}/pdf`, "_blank");
+  };
+
+  const handleCopySignLink = async () => {
+    try {
+      await navigator.clipboard.writeText(signUrl);
+      setCopied(true);
+      toast.success("Lien de signature copie !");
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.error("Impossible de copier le lien");
+    }
+  };
+
+  const handleSendEmail = async () => {
+    setSendingEmail(true);
+    try {
+      const res = await fetch(`/api/contracts/${id}/send-email`, {
+        method: "POST",
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        toast.error(data.error ?? "Erreur lors de l'envoi");
+        return;
       }
-    </body></html>`);
-    w.document.close();
-    w.onload = () => w.print();
+      toast.success("Email envoye au client !");
+    } catch {
+      toast.error("Erreur de connexion");
+    } finally {
+      setSendingEmail(false);
+    }
   };
 
   if (isLoading) {
@@ -149,7 +150,13 @@ export default function ContractDetailPage() {
         ]
       : []),
     ...(contract.status === "cancelled"
-      ? [{ date: contract.updated_at, label: "Contrat annule", icon: XCircle }]
+      ? [
+          {
+            date: contract.updated_at,
+            label: "Contrat annule",
+            icon: XCircle,
+          },
+        ]
       : []),
   ];
 
@@ -195,6 +202,38 @@ export default function ContractDetailPage() {
           transition={defaultTransition}
           className="lg:col-span-2 space-y-6"
         >
+          {/* Signing link banner for sent contracts */}
+          {contract.status === "sent" && (
+            <div className="bg-blue-500/5 border border-blue-500/20 rounded-xl p-4">
+              <div className="flex items-center gap-3 mb-2">
+                <Link2 className="w-4 h-4 text-blue-600" />
+                <h3 className="text-sm font-medium text-foreground">
+                  Lien de signature
+                </h3>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="flex-1 bg-muted/50 rounded-lg px-3 py-2 text-xs text-muted-foreground truncate font-mono">
+                  {signUrl}
+                </div>
+                <button
+                  onClick={handleCopySignLink}
+                  className="h-9 px-3 bg-blue-500 text-white rounded-lg text-xs font-medium hover:bg-blue-600 transition-colors flex items-center gap-1.5 flex-shrink-0"
+                >
+                  {copied ? (
+                    <Check className="w-3.5 h-3.5" />
+                  ) : (
+                    <Copy className="w-3.5 h-3.5" />
+                  )}
+                  {copied ? "Copie" : "Copier"}
+                </button>
+              </div>
+              <p className="text-xs text-muted-foreground mt-2">
+                Partagez ce lien avec le client pour qu&apos;il puisse signer en
+                ligne sans avoir besoin de compte.
+              </p>
+            </div>
+          )}
+
           {/* Contract content */}
           <div className="bg-surface border border-border rounded-xl p-6">
             <div className="flex items-center justify-between mb-4">
@@ -202,11 +241,11 @@ export default function ContractDetailPage() {
                 Contenu du contrat
               </h2>
               <button
-                onClick={handlePrint}
+                onClick={handleDownloadPDF}
                 className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
               >
-                <Printer className="w-3.5 h-3.5" />
-                Imprimer / PDF
+                <Download className="w-3.5 h-3.5" />
+                Telecharger PDF
               </button>
             </div>
             <div className="prose prose-sm max-w-none text-foreground/80 whitespace-pre-wrap text-sm leading-relaxed">
@@ -291,30 +330,81 @@ export default function ContractDetailPage() {
 
             {/* Actions */}
             <div className="pt-3 border-t border-border space-y-2">
+              {/* Download PDF — always available */}
+              <button
+                onClick={handleDownloadPDF}
+                className="w-full h-9 bg-muted text-foreground rounded-lg text-sm font-medium hover:bg-muted/80 transition-colors flex items-center justify-center gap-2"
+              >
+                <Download className="w-3.5 h-3.5" />
+                Telecharger PDF
+              </button>
+
+              {/* Draft: Send for signature */}
               {contract.status === "draft" && (
-                <button
-                  onClick={() => sendContract.mutate(contract.id)}
-                  disabled={sendContract.isPending}
-                  className="w-full h-9 bg-blue-500 text-white rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-                >
-                  <Send className="w-3.5 h-3.5" />
-                  Envoyer au client
-                </button>
+                <>
+                  <button
+                    onClick={handleSendEmail}
+                    disabled={sendingEmail}
+                    className="w-full h-9 bg-blue-500 text-white rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    {sendingEmail ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <Mail className="w-3.5 h-3.5" />
+                    )}
+                    Envoyer pour signature
+                  </button>
+                  <button
+                    onClick={() => sendContract.mutate(contract.id)}
+                    disabled={sendContract.isPending}
+                    className="w-full h-9 bg-muted text-foreground rounded-lg text-sm font-medium hover:bg-muted/80 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    <Send className="w-3.5 h-3.5" />
+                    Marquer comme envoye
+                  </button>
+                </>
               )}
+
+              {/* Sent: Copy link + Cancel */}
               {contract.status === "sent" && (
-                <button
-                  onClick={() =>
-                    updateContract.mutate({
-                      id: contract.id,
-                      status: "cancelled",
-                    })
-                  }
-                  disabled={updateContract.isPending}
-                  className="w-full h-9 bg-red-500/10 text-red-600 rounded-lg text-sm font-medium hover:bg-red-500/20 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-                >
-                  <XCircle className="w-3.5 h-3.5" />
-                  Annuler le contrat
-                </button>
+                <>
+                  <button
+                    onClick={handleCopySignLink}
+                    className="w-full h-9 bg-blue-500 text-white rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors flex items-center justify-center gap-2"
+                  >
+                    {copied ? (
+                      <Check className="w-3.5 h-3.5" />
+                    ) : (
+                      <Link2 className="w-3.5 h-3.5" />
+                    )}
+                    {copied ? "Lien copie !" : "Copier le lien de signature"}
+                  </button>
+                  <button
+                    onClick={handleSendEmail}
+                    disabled={sendingEmail}
+                    className="w-full h-9 bg-muted text-foreground rounded-lg text-sm font-medium hover:bg-muted/80 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    {sendingEmail ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <Mail className="w-3.5 h-3.5" />
+                    )}
+                    Renvoyer l&apos;email
+                  </button>
+                  <button
+                    onClick={() =>
+                      updateContract.mutate({
+                        id: contract.id,
+                        status: "cancelled",
+                      })
+                    }
+                    disabled={updateContract.isPending}
+                    className="w-full h-9 bg-red-500/10 text-red-600 rounded-lg text-sm font-medium hover:bg-red-500/20 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    <XCircle className="w-3.5 h-3.5" />
+                    Annuler le contrat
+                  </button>
+                </>
               )}
             </div>
           </div>

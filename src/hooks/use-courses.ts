@@ -94,11 +94,14 @@ export function useCourseMutations() {
       id,
       ...updates
     }: { id: string } & Partial<Course>) => {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from("courses")
         .update(updates)
-        .eq("id", id);
+        .eq("id", id)
+        .select()
+        .single();
       if (error) throw error;
+      return data as Course;
     },
     onSuccess: invalidate,
   });
