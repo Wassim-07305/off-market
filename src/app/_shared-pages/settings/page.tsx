@@ -25,6 +25,7 @@ import {
   Unlink,
   ExternalLink,
   Bell,
+  BellRing,
   Mail,
   Lock,
   Eye,
@@ -36,6 +37,7 @@ import {
   useDisconnectGoogleCalendar,
 } from "@/hooks/use-google-calendar";
 import { usePreferences, useUpdatePreferences } from "@/hooks/use-preferences";
+import { usePushNotifications } from "@/hooks/use-push-notifications";
 
 const NOTIFICATION_TOGGLES = [
   {
@@ -119,6 +121,7 @@ export default function SettingsPage() {
   // Preferences
   const { data: preferences } = usePreferences();
   const updatePreferences = useUpdatePreferences();
+  const push = usePushNotifications();
 
   // Toast on Google Calendar OAuth callback redirect
   useEffect(() => {
@@ -508,6 +511,47 @@ export default function SettingsPage() {
             );
           })}
         </div>
+
+        {/* Push notifications */}
+        {push.isSupported && (
+          <div className="border-t border-border pt-4">
+            <label className="flex items-center justify-between cursor-pointer">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <BellRing className="w-4 h-4 text-primary" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-foreground">
+                    Notifications push
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {push.permission === "denied"
+                      ? "Bloquees dans les parametres du navigateur"
+                      : "Recois des alertes meme quand le site est ferme"}
+                  </p>
+                </div>
+              </div>
+              <button
+                role="switch"
+                aria-checked={push.isSubscribed}
+                onClick={push.toggle}
+                disabled={push.isLoading || push.permission === "denied"}
+                className={cn(
+                  "relative w-10 h-6 rounded-full transition-colors shrink-0",
+                  push.isSubscribed ? "bg-primary" : "bg-muted-foreground/30",
+                  (push.isLoading || push.permission === "denied") && "opacity-50 cursor-not-allowed",
+                )}
+              >
+                <span
+                  className={cn(
+                    "absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform shadow-sm",
+                    push.isSubscribed && "translate-x-4",
+                  )}
+                />
+              </button>
+            </label>
+          </div>
+        )}
       </div>
 
       {/* Appearance */}
