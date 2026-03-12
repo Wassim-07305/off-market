@@ -258,7 +258,7 @@
 | Ref   | Fonctionnalite             | Statut  | Notes                                                   |
 | ----- | -------------------------- | ------- | ------------------------------------------------------- |
 | F43   | Assistant IA Coaching      | Done    | Chat Claude, prompts coaching, historique conversations |
-| F44   | Analyse de Risque Eleve    | Partiel | IA peut analyser sur demande. Pas d'analyse auto        |
+| F44   | Analyse de Risque Eleve    | Done    | Analyse auto multi-facteurs, health_score, alertes, recommandations (Sprint 29) |
 | F45   | Generation de Contenu      | Partiel | IA genere sur demande. Pas de workflow automatise       |
 | F46   | Insights Coaching          | Partiel | Reponses IA OK. Manque rapports periodiques auto        |
 | F46.1 | Transparence IA            | Manque  | Pas de labels "reponse IA", confidence scores           |
@@ -267,7 +267,7 @@
 
 ### Manques IA
 
-- [ ] Analyse de risque automatique (scoring at-risk)
+- [x] Analyse de risque automatique (scoring at-risk) (Sprint 29)
 - [ ] Rapports IA periodiques generes automatiquement
 - [ ] Labels "Reponse IA" vs humain
 - [ ] Integration IA dans messagerie (slash commands)
@@ -399,7 +399,7 @@
 
 - [x] **Sprint 27** : Profils publics + follow system (F40)
 - [x] **Sprint 28** : Parcours d'apprentissage avec prerequis (F12.1)
-- [ ] **Sprint 29** : Analyse de risque IA automatique (F44)
+- [x] **Sprint 29** : Analyse de risque IA automatique (F44)
 - [ ] **Sprint 30** : Onboarding interactif walkthrough (F41-F42)
 
 ### Vague 3 - Polish & Conformite
