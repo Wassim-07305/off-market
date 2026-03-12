@@ -8,6 +8,7 @@ import {
   useLessonProgress,
   useMarkLessonComplete,
 } from "@/hooks/use-courses";
+import { useCoursePrerequisites, useCourseUnlockStatus } from "@/hooks/use-course-prerequisites";
 import { CourseCompletion } from "@/components/school/course-completion";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
@@ -16,6 +17,7 @@ import type { Lesson } from "@/types/database";
 import {
   ArrowLeft,
   ArrowRight,
+  BookOpen,
   Play,
   CheckCircle,
   Circle,
@@ -103,6 +105,8 @@ export default function CourseViewPage({
   const { data: course, isLoading } = useCourse(courseId);
   const { data: progress } = useLessonProgress();
   const markComplete = useMarkLessonComplete();
+  const { data: prerequisites } = useCoursePrerequisites(courseId);
+  const { unlockMap, getCourseTitle } = useCourseUnlockStatus();
 
   // Flatten lessons
   const flatLessons = useMemo(() => {
@@ -263,6 +267,48 @@ export default function CourseViewPage({
       <p className="text-center text-muted-foreground py-16">
         Cours non trouve
       </p>
+    );
+  }
+
+  // Prerequisite gate (staff bypasses)
+  const courseUnlock = unlockMap.get(courseId);
+  if (!isStaff && courseUnlock && !courseUnlock.isUnlocked) {
+    return (
+      <div className="max-w-lg mx-auto text-center py-20 px-6">
+        <div className="w-16 h-16 rounded-2xl bg-amber-500/10 flex items-center justify-center mx-auto mb-5">
+          <Lock className="w-8 h-8 text-amber-600" />
+        </div>
+        <h2 className="text-xl font-display font-bold text-foreground mb-2">
+          Formation verrouillee
+        </h2>
+        <p className="text-sm text-muted-foreground mb-6">
+          Vous devez terminer les formations suivantes avant d&apos;acceder a ce cours :
+        </p>
+        <div className="space-y-2 mb-8">
+          {courseUnlock.missingPrereqs.map((pid) => (
+            <Link
+              key={pid}
+              href={`${prefix}/school/${pid}`}
+              className="flex items-center gap-3 p-3 rounded-xl border border-border bg-surface hover:bg-muted/50 transition-colors text-left"
+            >
+              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                <BookOpen className="w-4 h-4 text-primary" />
+              </div>
+              <span className="text-sm font-medium text-foreground">
+                {getCourseTitle(pid)}
+              </span>
+              <ArrowRight className="w-4 h-4 text-muted-foreground ml-auto" />
+            </Link>
+          ))}
+        </div>
+        <Link
+          href={`${prefix}/school`}
+          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Retour aux formations
+        </Link>
+      </div>
     );
   }
 

@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 import { CourseFormDialog } from "@/components/school/course-form-dialog";
+import { CoursePrerequisitesManager } from "@/components/school/course-prerequisites-manager";
 import {
   BookOpen,
   Plus,
@@ -21,6 +22,7 @@ import {
   Loader2,
   GraduationCap,
   Layers,
+  Link2,
   ArrowLeft,
 } from "lucide-react";
 
@@ -40,6 +42,7 @@ export default function SchoolAdminPage() {
   } | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [togglingId, setTogglingId] = useState<string | null>(null);
+  const [prereqCourse, setPrereqCourse] = useState<{ id: string; title: string } | null>(null);
 
   function handleCreate() {
     setEditingCourse(null);
@@ -287,6 +290,14 @@ export default function SchoolAdminPage() {
                         </button>
 
                         <button
+                          onClick={() => setPrereqCourse({ id: course.id, title: course.title })}
+                          className="h-8 w-8 rounded-xl border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-all flex items-center justify-center"
+                          title="Prerequis"
+                        >
+                          <Link2 className="h-4 w-4" />
+                        </button>
+
+                        <button
                           onClick={() => handleTogglePublish(course)}
                           disabled={isToggling}
                           className={cn(
@@ -366,6 +377,14 @@ export default function SchoolAdminPage() {
             });
           }
         }}
+      />
+
+      {/* Prerequisites manager dialog */}
+      <CoursePrerequisitesManager
+        courseId={prereqCourse?.id ?? ""}
+        courseTitle={prereqCourse?.title ?? ""}
+        open={!!prereqCourse}
+        onClose={() => setPrereqCourse(null)}
       />
     </motion.div>
   );
