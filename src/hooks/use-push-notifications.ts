@@ -23,7 +23,8 @@ export function usePushNotifications() {
   const supabase = useSupabase();
   const queryClient = useQueryClient();
   const { user } = useAuth();
-  const [permission, setPermission] = useState<NotificationPermission>("default");
+  const [permission, setPermission] =
+    useState<NotificationPermission>("default");
   const [isSupported, setIsSupported] = useState(false);
 
   useEffect(() => {
@@ -76,7 +77,9 @@ export function usePushNotifications() {
       // Subscribe to push
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY) as BufferSource,
+        applicationServerKey: urlBase64ToUint8Array(
+          VAPID_PUBLIC_KEY,
+        ) as BufferSource,
       });
 
       const sub = subscription.toJSON();
@@ -104,7 +107,9 @@ export function usePushNotifications() {
     },
     onError: (err: Error) => {
       if (err.message === "Permission refusee") {
-        toast.error("Tu as refuse les notifications. Active-les dans les parametres de ton navigateur.");
+        toast.error(
+          "Tu as refuse les notifications. Active-les dans les parametres de ton navigateur.",
+        );
       } else {
         toast.error("Erreur lors de l'activation des notifications push");
       }
@@ -154,7 +159,10 @@ export function usePushNotifications() {
     isSupported,
     isSubscribed,
     permission,
-    isLoading: subscribe.isPending || unsubscribe.isPending || subscriptionQuery.isLoading,
+    isLoading:
+      subscribe.isPending ||
+      unsubscribe.isPending ||
+      subscriptionQuery.isLoading,
     toggle,
     subscribe,
     unsubscribe,

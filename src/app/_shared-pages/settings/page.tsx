@@ -539,7 +539,8 @@ export default function SettingsPage() {
                 className={cn(
                   "relative w-10 h-6 rounded-full transition-colors shrink-0",
                   push.isSubscribed ? "bg-primary" : "bg-muted-foreground/30",
-                  (push.isLoading || push.permission === "denied") && "opacity-50 cursor-not-allowed",
+                  (push.isLoading || push.permission === "denied") &&
+                    "opacity-50 cursor-not-allowed",
                 )}
               >
                 <span

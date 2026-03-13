@@ -25,34 +25,46 @@ export type Module =
   | "assistant"
   | "feed"
   | "contracts"
-  | "documentation";
+  | "documentation"
+  | "billing"
+  | "invitations"
+  | "resources"
+  | "school"
+  | "community"
+  | "hall-of-fame";
 
 const PERMISSIONS: Record<Module, AppRole[]> = {
-  dashboard: ["admin", "coach", "prospect"],
-  messaging: ["admin", "coach", "prospect"],
-  formations: ["admin", "prospect"],
+  dashboard: ["admin", "coach", "client", "setter", "closer"],
+  messaging: ["admin", "coach", "client", "setter", "closer"],
+  formations: ["admin", "coach", "client"],
   eleves: ["admin", "coach"],
-  pipeline: ["admin", "coach", "prospect"],
+  pipeline: ["admin", "setter", "closer"],
   calendrier: ["admin", "coach"],
-  activite: ["admin", "prospect"],
+  activite: ["admin", "setter", "closer"],
   finances: ["admin"],
   users: ["admin"],
-  notifications: ["admin", "coach", "prospect"],
-  settings: ["admin", "coach", "prospect"],
+  notifications: ["admin", "coach", "client", "setter", "closer"],
+  settings: ["admin", "coach", "client", "setter", "closer"],
   analytics: ["admin"],
-  "closer-calls": ["admin", "coach"],
+  "closer-calls": ["admin", "closer"],
   "social-content": ["admin", "coach"],
   instagram: ["admin", "coach"],
   clients: ["admin", "coach"],
-  rituals: ["admin", "coach"],
-  journal: ["admin", "coach", "prospect"],
-  gamification: ["admin", "coach", "prospect"],
+  rituals: ["admin", "coach", "client"],
+  journal: ["admin", "coach", "client"],
+  gamification: ["admin", "coach", "client"],
   forms: ["admin", "coach"],
   coaching: ["admin", "coach"],
-  assistant: ["admin", "coach", "prospect"],
-  feed: ["admin", "coach", "prospect"],
-  contracts: ["admin", "coach"],
-  documentation: ["admin", "coach", "prospect"],
+  assistant: ["admin", "coach", "client"],
+  feed: ["admin", "coach", "client"],
+  contracts: ["admin", "setter", "closer"],
+  documentation: ["admin", "coach", "client"],
+  billing: ["admin"],
+  invitations: ["admin"],
+  resources: ["admin", "coach", "client", "setter", "closer"],
+  school: ["admin", "coach", "client"],
+  community: ["admin", "coach", "client"],
+  "hall-of-fame": ["admin", "coach", "client"],
 };
 
 export function canAccess(role: AppRole | null, module: Module): boolean {

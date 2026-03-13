@@ -3,7 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
-import type { Profile, StudentDetail } from "@/types/database";
+import type { Profile, StudentDetail, StudentFlag } from "@/types/database";
 import { useEffect } from "react";
 
 export type StudentWithDetails = Profile & {
@@ -113,11 +113,52 @@ export function useStudents(options: UseStudentsOptions = {}) {
     },
   });
 
+  const updateStudentFlag = useMutation({
+    mutationFn: async ({
+      profileId,
+      flag,
+      reason,
+    }: {
+      profileId: string;
+      flag: StudentFlag;
+      reason?: string;
+    }) => {
+      // Get current flag for history
+      const { data: current } = await supabase
+        .from("student_details")
+        .select("flag")
+        .eq("profile_id", profileId)
+        .single();
+
+      // Update the flag
+      const { error } = await supabase
+        .from("student_details")
+        .update({ flag })
+        .eq("profile_id", profileId);
+      if (error) throw error;
+
+      // Log the change in history
+      if (user) {
+        await supabase.from("student_flag_history").insert({
+          student_id: profileId,
+          old_flag: (current as { flag: string } | null)?.flag ?? null,
+          new_flag: flag,
+          reason: reason ?? null,
+          changed_by: user.id,
+        });
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["students"] });
+    },
+  });
+
   return {
     students: studentsQuery.data ?? [],
     isLoading: studentsQuery.isLoading,
     error: studentsQuery.error,
     updateStudentTag,
+    updateStudentFlag,
     updateStudentDetails,
   };
 }
@@ -299,4 +340,32 @@ export function useStudentTasks(studentId: string) {
     addTask,
     updateTaskStatus,
   };
+}
+
+export function useStudentFlagHistory(studentId: string) {
+  const supabase = useSupabase();
+
+  return useQuery({
+    queryKey: ["student-flag-history", studentId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("student_flag_history")
+        .select(
+          "*, author:profiles!student_flag_history_changed_by_fkey(full_name, avatar_url)",
+        )
+        .eq("student_id", studentId)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data as Array<{
+        id: string;
+        student_id: string;
+        previous_flag: StudentFlag | null;
+        new_flag: StudentFlag;
+        reason: string | null;
+        created_at: string;
+        author: { full_name: string; avatar_url: string | null } | null;
+      }>;
+    },
+    enabled: !!studentId,
+  });
 }

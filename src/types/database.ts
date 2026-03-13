@@ -1,4 +1,4 @@
-export type AppRole = "admin" | "coach" | "prospect";
+export type AppRole = "admin" | "coach" | "client" | "setter" | "closer";
 
 export type UserRole = {
   id: string;
@@ -233,10 +233,33 @@ export interface Profile {
   updated_at: string;
 }
 
+export type StudentFlag = "green" | "yellow" | "orange" | "red";
+export type StudentPipelineStage =
+  | "onboarding"
+  | "learning"
+  | "practicing"
+  | "launching"
+  | "scaling"
+  | "autonomous";
+export type StudentEngagementTag =
+  | "vip"
+  | "standard"
+  | "new"
+  | "at_risk"
+  | "churned";
+
 export interface StudentDetail {
   id: string;
   profile_id: string;
-  tag: "vip" | "standard" | "new" | "at_risk" | "churned";
+  tag: StudentEngagementTag;
+  flag: StudentFlag;
+  pipeline_stage: StudentPipelineStage;
+  engagement_score: number;
+  niche: string | null;
+  current_revenue: number;
+  revenue_objective: number;
+  obstacles: string | null;
+  assigned_coach: string | null;
   revenue: number;
   lifetime_value: number;
   acquisition_source: string | null;
@@ -311,7 +334,14 @@ export interface Message {
   channel_id: string;
   sender_id: string;
   content: string;
-  content_type: "text" | "image" | "file" | "video" | "audio" | "system";
+  content_type:
+    | "text"
+    | "image"
+    | "file"
+    | "video"
+    | "audio"
+    | "system"
+    | "gif";
   reply_to: string | null;
   is_pinned: boolean;
   is_edited: boolean;

@@ -42,7 +42,10 @@ export default function SchoolAdminPage() {
   } | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [togglingId, setTogglingId] = useState<string | null>(null);
-  const [prereqCourse, setPrereqCourse] = useState<{ id: string; title: string } | null>(null);
+  const [prereqCourse, setPrereqCourse] = useState<{
+    id: string;
+    title: string;
+  } | null>(null);
 
   function handleCreate() {
     setEditingCourse(null);
@@ -290,7 +293,12 @@ export default function SchoolAdminPage() {
                         </button>
 
                         <button
-                          onClick={() => setPrereqCourse({ id: course.id, title: course.title })}
+                          onClick={() =>
+                            setPrereqCourse({
+                              id: course.id,
+                              title: course.title,
+                            })
+                          }
                           className="h-8 w-8 rounded-xl border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-all flex items-center justify-center"
                           title="Prerequis"
                         >

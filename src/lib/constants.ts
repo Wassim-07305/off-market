@@ -104,6 +104,78 @@ export const ROLES = {
   client: { label: "Client", color: "bg-zinc-100 text-zinc-800" },
 } as const;
 
+export const STUDENT_FLAGS = [
+  {
+    value: "green" as const,
+    label: "En bonne voie",
+    description: "Progresse normalement",
+    dotColor: "bg-emerald-500",
+    bgColor: "bg-emerald-50",
+    textColor: "text-emerald-700",
+    borderColor: "border-emerald-200",
+  },
+  {
+    value: "yellow" as const,
+    label: "Attention",
+    description: "Ralentissement detecte",
+    dotColor: "bg-amber-500",
+    bgColor: "bg-amber-50",
+    textColor: "text-amber-700",
+    borderColor: "border-amber-200",
+  },
+  {
+    value: "orange" as const,
+    label: "A risque",
+    description: "Intervention necessaire",
+    dotColor: "bg-orange-500",
+    bgColor: "bg-orange-50",
+    textColor: "text-orange-700",
+    borderColor: "border-orange-200",
+  },
+  {
+    value: "red" as const,
+    label: "Critique",
+    description: "Action immediate requise",
+    dotColor: "bg-red-500",
+    bgColor: "bg-red-50",
+    textColor: "text-red-700",
+    borderColor: "border-red-200",
+  },
+];
+
+export const STUDENT_PIPELINE_STAGES = [
+  {
+    value: "onboarding" as const,
+    label: "Onboarding",
+    color: "bg-sky-100 text-sky-800 border-sky-200",
+  },
+  {
+    value: "learning" as const,
+    label: "Apprentissage",
+    color: "bg-blue-100 text-blue-800 border-blue-200",
+  },
+  {
+    value: "practicing" as const,
+    label: "Pratique",
+    color: "bg-violet-100 text-violet-800 border-violet-200",
+  },
+  {
+    value: "launching" as const,
+    label: "Lancement",
+    color: "bg-amber-100 text-amber-800 border-amber-200",
+  },
+  {
+    value: "scaling" as const,
+    label: "Scaling",
+    color: "bg-emerald-100 text-emerald-800 border-emerald-200",
+  },
+  {
+    value: "autonomous" as const,
+    label: "Autonome",
+    color: "bg-green-100 text-green-800 border-green-200",
+  },
+];
+
 export type StudentTag = (typeof STUDENT_TAGS)[number]["value"];
 export type ActivityType = (typeof ACTIVITY_TYPES)[number]["value"];
 export type NotificationType = (typeof NOTIFICATION_TYPES)[number]["value"];

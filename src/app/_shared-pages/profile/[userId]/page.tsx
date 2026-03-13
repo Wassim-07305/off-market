@@ -5,8 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useSupabase } from "@/hooks/use-supabase";
 import { useAuth } from "@/hooks/use-auth";
 import { useFollowStatus, useFollowCounts } from "@/hooks/use-follows";
-import { cn } from "@/lib/utils";
-import { getInitials } from "@/lib/utils";
+import { cn, getInitials } from "@/lib/utils";
 import Link from "next/link";
 import { useRoutePrefix } from "@/hooks/use-route-prefix";
 import { motion } from "framer-motion";
@@ -15,10 +14,10 @@ import {
   ArrowLeft,
   Award,
   Calendar,
+  Flame,
   Heart,
   Loader2,
   MessageSquare,
-  Shield,
   Star,
   Trophy,
   UserPlus,
@@ -27,7 +26,8 @@ import {
   Zap,
 } from "lucide-react";
 import type { Profile } from "@/types/database";
-import type { Badge } from "@/types/gamification";
+import type { Badge, LevelConfig } from "@/types/gamification";
+import { RARITY_CONFIG, type BadgeRarity } from "@/types/gamification";
 
 const ROLE_LABELS: Record<string, { label: string; color: string }> = {
   admin: { label: "Admin", color: "text-red-600 bg-red-500/10" },
@@ -36,6 +36,15 @@ const ROLE_LABELS: Record<string, { label: string; color: string }> = {
   setter: { label: "Setter", color: "text-amber-600 bg-amber-500/10" },
   closer: { label: "Closer", color: "text-emerald-600 bg-emerald-500/10" },
   sales: { label: "Sales", color: "text-orange-600 bg-orange-500/10" },
+};
+
+const POST_TYPE_ICONS: Record<string, string> = {
+  victory: "🏆",
+  question: "❓",
+  experience: "💡",
+  general: "💬",
+  resource: "📎",
+  off_topic: "🎲",
 };
 
 export default function PublicProfilePage({
@@ -47,12 +56,7 @@ export default function PublicProfilePage({
   const supabase = useSupabase();
   const { user } = useAuth();
   const prefix = useRoutePrefix();
-  const {
-    isFollowing,
-    isLoading: followLoading,
-    follow,
-    unfollow,
-  } = useFollowStatus(userId);
+  const { isFollowing, follow, unfollow } = useFollowStatus(userId);
   const { data: followCounts } = useFollowCounts(userId);
 
   const isSelf = user?.id === userId;
@@ -86,6 +90,38 @@ export default function PublicProfilePage({
         0,
       );
       return { total };
+    },
+  });
+
+  // Fetch level config
+  const { data: levels } = useQuery({
+    queryKey: ["level-config"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("level_config")
+        .select("*")
+        .order("min_xp", { ascending: true });
+      if (error) throw error;
+      return data as LevelConfig[];
+    },
+  });
+
+  // Fetch streak
+  const { data: streakData } = useQuery({
+    queryKey: ["public-streak", userId],
+    enabled: !!userId,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("streaks")
+        .select("current_streak, longest_streak, xp_multiplier")
+        .eq("profile_id", userId)
+        .maybeSingle();
+      if (error) return null;
+      return data as {
+        current_streak: number;
+        longest_streak: number;
+        xp_multiplier: number;
+      } | null;
     },
   });
 
@@ -129,12 +165,23 @@ export default function PublicProfilePage({
     },
   });
 
-  const POST_TYPE_ICONS: Record<string, string> = {
-    victory: "🏆",
-    question: "❓",
-    experience: "💡",
-    general: "💬",
-  };
+  // Compute level
+  const totalXp = xpData?.total ?? 0;
+  const allLevels = levels ?? [];
+  const currentLevel =
+    [...allLevels].reverse().find((l) => totalXp >= l.min_xp) ?? null;
+  const nextLevel = allLevels.find((l) => l.min_xp > totalXp) ?? null;
+  const progressToNext =
+    nextLevel && currentLevel
+      ? Math.min(
+          Math.round(
+            ((totalXp - currentLevel.min_xp) /
+              (nextLevel.min_xp - currentLevel.min_xp)) *
+              100,
+          ),
+          100,
+        )
+      : 100;
 
   if (profileLoading) {
     return (
@@ -170,6 +217,7 @@ export default function PublicProfilePage({
     month: "long",
     year: "numeric",
   });
+  const hasStreak = streakData && streakData.current_streak > 0;
 
   return (
     <motion.div
@@ -201,7 +249,7 @@ export default function PublicProfilePage({
         <div className="px-6 pb-6">
           {/* Avatar + info */}
           <div className="flex flex-col sm:flex-row sm:items-end gap-4 -mt-10">
-            <div className="shrink-0">
+            <div className="shrink-0 relative">
               {profile.avatar_url ? (
                 <img
                   src={profile.avatar_url}
@@ -212,6 +260,12 @@ export default function PublicProfilePage({
                 <div className="w-20 h-20 rounded-2xl bg-primary/10 border-4 border-surface flex items-center justify-center text-2xl text-primary font-bold">
                   {getInitials(profile.full_name)}
                 </div>
+              )}
+              {/* Level icon */}
+              {currentLevel?.icon && (
+                <span className="absolute -bottom-1 -right-1 text-lg bg-surface rounded-full p-0.5 border border-border">
+                  {currentLevel.icon}
+                </span>
               )}
             </div>
 
@@ -228,10 +282,23 @@ export default function PublicProfilePage({
                 >
                   {role.label}
                 </span>
+                {/* Streak flame */}
+                {hasStreak && (
+                  <span className="flex items-center gap-0.5 text-[10px] font-bold text-orange-500 bg-orange-500/10 px-1.5 py-0.5 rounded-full">
+                    🔥 {streakData.current_streak}j
+                  </span>
+                )}
               </div>
               {profile.bio && (
                 <p className="text-sm text-muted-foreground mt-1">
                   {profile.bio}
+                </p>
+              )}
+              {/* Level info */}
+              {currentLevel && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  {currentLevel.icon} Niv. {currentLevel.level} —{" "}
+                  {currentLevel.name}
                 </p>
               )}
             </div>
@@ -263,7 +330,7 @@ export default function PublicProfilePage({
           </div>
 
           {/* Stats */}
-          <div className="flex items-center gap-6 mt-5 pt-5 border-t border-border">
+          <div className="flex items-center gap-4 sm:gap-6 mt-5 pt-5 border-t border-border flex-wrap">
             <div className="text-center">
               <p className="text-lg font-bold text-foreground">
                 {followCounts?.followersCount ?? 0}
@@ -279,7 +346,7 @@ export default function PublicProfilePage({
             <div className="text-center">
               <p className="text-lg font-bold text-foreground flex items-center justify-center gap-1">
                 <Zap className="w-4 h-4 text-amber-500" />
-                {xpData?.total ?? 0}
+                {totalXp.toLocaleString("fr-FR")}
               </p>
               <p className="text-[10px] text-muted-foreground">XP</p>
             </div>
@@ -290,6 +357,15 @@ export default function PublicProfilePage({
               </p>
               <p className="text-[10px] text-muted-foreground">Badges</p>
             </div>
+            {hasStreak && (
+              <div className="text-center">
+                <p className="text-lg font-bold text-foreground flex items-center justify-center gap-1">
+                  <Flame className="w-4 h-4 text-orange-500" />
+                  {streakData.current_streak}
+                </p>
+                <p className="text-[10px] text-muted-foreground">Streak</p>
+              </div>
+            )}
             <div className="hidden sm:block text-center ml-auto">
               <p className="text-xs text-muted-foreground flex items-center gap-1">
                 <Calendar className="w-3 h-3" />
@@ -297,8 +373,71 @@ export default function PublicProfilePage({
               </p>
             </div>
           </div>
+
+          {/* XP Progress bar */}
+          {nextLevel && currentLevel && (
+            <div className="mt-4">
+              <div className="flex items-center justify-between text-[10px] text-muted-foreground mb-1">
+                <span>
+                  {currentLevel.icon} Niv. {currentLevel.level}
+                </span>
+                <span>{progressToNext}%</span>
+                <span>
+                  {nextLevel.icon} Niv. {nextLevel.level}
+                </span>
+              </div>
+              <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                <motion.div
+                  className="h-full rounded-full bg-primary/70"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${progressToNext}%` }}
+                  transition={{ duration: 0.8, ease: "easeOut" }}
+                />
+              </div>
+            </div>
+          )}
         </div>
       </motion.div>
+
+      {/* Streak card */}
+      {streakData &&
+        (streakData.current_streak > 0 || streakData.longest_streak > 0) && (
+          <motion.div
+            variants={staggerItem}
+            className="bg-surface rounded-2xl p-5"
+            style={{ boxShadow: "var(--shadow-card)" }}
+          >
+            <h2 className="text-sm font-semibold text-foreground flex items-center gap-2 mb-3">
+              <Flame className="w-4 h-4 text-orange-500" />
+              Streak
+            </h2>
+            <div className="flex items-center gap-6">
+              <div className="text-center">
+                <p className="text-2xl font-display font-bold text-foreground tabular-nums">
+                  {streakData.current_streak}
+                </p>
+                <p className="text-[10px] text-muted-foreground">Actuel</p>
+              </div>
+              <div className="text-center">
+                <p className="text-2xl font-display font-bold text-foreground tabular-nums">
+                  {streakData.longest_streak}
+                </p>
+                <p className="text-[10px] text-muted-foreground">Record</p>
+              </div>
+              {streakData.xp_multiplier > 1 && (
+                <div className="text-center">
+                  <p className="text-2xl font-display font-bold text-amber-500 tabular-nums flex items-center gap-1">
+                    <Zap className="w-5 h-5" />
+                    {streakData.xp_multiplier}x
+                  </p>
+                  <p className="text-[10px] text-muted-foreground">
+                    Multiplicateur
+                  </p>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
 
       {/* Badges */}
       {userBadges && userBadges.length > 0 && (
@@ -311,19 +450,34 @@ export default function PublicProfilePage({
             <Trophy className="w-4 h-4 text-amber-500" />
             Badges ({userBadges.length})
           </h2>
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
-            {userBadges.map((ub) => (
-              <div
-                key={ub.id}
-                className="flex flex-col items-center gap-1.5 p-3 bg-muted/30 rounded-xl hover:bg-muted/50 transition-colors"
-                title={ub.badge.description ?? ub.badge.name}
-              >
-                <span className="text-2xl">{ub.badge.icon ?? "🏅"}</span>
-                <span className="text-[10px] text-foreground font-medium text-center leading-tight">
-                  {ub.badge.name}
-                </span>
-              </div>
-            ))}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+            {userBadges.map((ub) => {
+              const rarityConfig =
+                RARITY_CONFIG[ub.badge.rarity as BadgeRarity];
+              return (
+                <div
+                  key={ub.id}
+                  className="flex flex-col items-center gap-1.5 p-3 bg-muted/30 rounded-xl hover:bg-muted/50 transition-colors border border-transparent hover:border-border"
+                  title={ub.badge.description ?? ub.badge.name}
+                >
+                  <span className="text-2xl">{ub.badge.icon ?? "🏅"}</span>
+                  <span className="text-[10px] text-foreground font-medium text-center leading-tight">
+                    {ub.badge.name}
+                  </span>
+                  {rarityConfig && (
+                    <span
+                      className={cn(
+                        "text-[9px] font-medium px-1.5 py-0.5 rounded-full",
+                        rarityConfig.color,
+                        rarityConfig.bg,
+                      )}
+                    >
+                      {rarityConfig.label}
+                    </span>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </motion.div>
       )}

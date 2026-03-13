@@ -2,7 +2,10 @@
 
 import { useState } from "react";
 import { useRiskAnalysis } from "@/hooks/use-risk-analysis";
-import type { RiskResult, RiskAnalysisResponse } from "@/hooks/use-risk-analysis";
+import type {
+  RiskResult,
+  RiskAnalysisResponse,
+} from "@/hooks/use-risk-analysis";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useRoutePrefix } from "@/hooks/use-route-prefix";
@@ -19,10 +22,26 @@ import {
 } from "lucide-react";
 
 const SEVERITY_CONFIG = {
-  critical: { label: "Critique", color: "text-red-600 bg-red-500/10", dot: "bg-red-500" },
-  high: { label: "Eleve", color: "text-orange-600 bg-orange-500/10", dot: "bg-orange-500" },
-  medium: { label: "Moyen", color: "text-amber-600 bg-amber-500/10", dot: "bg-amber-500" },
-  low: { label: "Faible", color: "text-emerald-600 bg-emerald-500/10", dot: "bg-emerald-500" },
+  critical: {
+    label: "Critique",
+    color: "text-red-600 bg-red-500/10",
+    dot: "bg-red-500",
+  },
+  high: {
+    label: "Eleve",
+    color: "text-orange-600 bg-orange-500/10",
+    dot: "bg-orange-500",
+  },
+  medium: {
+    label: "Moyen",
+    color: "text-amber-600 bg-amber-500/10",
+    dot: "bg-amber-500",
+  },
+  low: {
+    label: "Faible",
+    color: "text-emerald-600 bg-emerald-500/10",
+    dot: "bg-emerald-500",
+  },
 };
 
 export function RiskAnalysisPanel() {
@@ -75,7 +94,8 @@ export function RiskAnalysisPanel() {
           <div className="text-center py-8">
             <ShieldAlert className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
             <p className="text-sm text-muted-foreground">
-              Lance l&apos;analyse pour evaluer le risque de decrochage de tes eleves
+              Lance l&apos;analyse pour evaluer le risque de decrochage de tes
+              eleves
             </p>
             <p className="text-[11px] text-muted-foreground/70 mt-1">
               Basee sur l&apos;activite, les check-ins, le CA et la progression
@@ -130,7 +150,8 @@ export function RiskAnalysisPanel() {
             {data.results.filter((r) => r.severity !== "low").length > 0 ? (
               <div className="space-y-1.5">
                 <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider px-1">
-                  Eleves a surveiller ({data.results.filter((r) => r.severity !== "low").length})
+                  Eleves a surveiller (
+                  {data.results.filter((r) => r.severity !== "low").length})
                 </p>
                 {data.results
                   .filter((r) => r.severity !== "low")
@@ -141,7 +162,9 @@ export function RiskAnalysisPanel() {
                       isExpanded={expandedId === result.profile_id}
                       onToggle={() =>
                         setExpandedId(
-                          expandedId === result.profile_id ? null : result.profile_id
+                          expandedId === result.profile_id
+                            ? null
+                            : result.profile_id,
                         )
                       }
                       prefix={prefix}
@@ -231,7 +254,7 @@ function RiskStudentRow({
             <span
               className={cn(
                 "text-[11px] font-mono flex items-center gap-0.5",
-                delta < 0 ? "text-red-500" : "text-emerald-500"
+                delta < 0 ? "text-red-500" : "text-emerald-500",
               )}
             >
               {delta < 0 ? (

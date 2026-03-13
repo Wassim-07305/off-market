@@ -9,6 +9,7 @@ import {
   defaultTransition,
 } from "@/lib/animations";
 import { useContract, useContracts } from "@/hooks/use-contracts";
+import { CancelContractModal } from "@/components/contracts/cancel-contract-modal";
 import {
   ArrowLeft,
   FileText,
@@ -25,6 +26,8 @@ import {
   Loader2,
   Copy,
   Check,
+  AlertTriangle,
+  Shield,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -70,9 +73,10 @@ export default function ContractDetailPage() {
   const router = useRouter();
   const id = params.id as string;
   const { data: contract, isLoading } = useContract(id);
-  const { sendContract, updateContract } = useContracts();
+  const { sendContract, cancelContract, updateContract } = useContracts();
   const [sendingEmail, setSendingEmail] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [showCancelModal, setShowCancelModal] = useState(false);
 
   const signUrl =
     typeof window !== "undefined"
@@ -134,6 +138,17 @@ export default function ContractDetailPage() {
   const statusConf = STATUS_CONFIG[contract.status] ?? STATUS_CONFIG.draft;
   const StatusIcon = statusConf.icon;
 
+  // Expiry check
+  const isExpiringSoon =
+    contract.expires_at &&
+    contract.status === "sent" &&
+    new Date(contract.expires_at).getTime() - Date.now() < 7 * 86400000 &&
+    new Date(contract.expires_at).getTime() > Date.now();
+  const isExpired =
+    contract.expires_at &&
+    contract.status === "sent" &&
+    new Date(contract.expires_at).getTime() <= Date.now();
+
   // Build timeline events
   const timeline = [
     { date: contract.created_at, label: "Contrat cree", icon: FileText },
@@ -153,7 +168,7 @@ export default function ContractDetailPage() {
       ? [
           {
             date: contract.updated_at,
-            label: "Contrat annule",
+            label: `Contrat annule${contract.cancellation_reason ? ` — ${contract.cancellation_reason}` : ""}`,
             icon: XCircle,
           },
         ]
@@ -194,6 +209,43 @@ export default function ContractDetailPage() {
           {statusConf.label}
         </span>
       </motion.div>
+
+      {/* Expiry warning */}
+      {isExpired && (
+        <motion.div
+          variants={fadeInUp}
+          transition={defaultTransition}
+          className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 flex items-center gap-3"
+        >
+          <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0" />
+          <div>
+            <p className="text-sm font-medium text-foreground">
+              Ce contrat a expire
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Le delai de signature est depasse depuis le{" "}
+              {formatDate(contract.expires_at)}
+            </p>
+          </div>
+        </motion.div>
+      )}
+      {isExpiringSoon && !isExpired && (
+        <motion.div
+          variants={fadeInUp}
+          transition={defaultTransition}
+          className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 flex items-center gap-3"
+        >
+          <Clock className="w-5 h-5 text-amber-600 flex-shrink-0" />
+          <div>
+            <p className="text-sm font-medium text-foreground">
+              Ce contrat expire bientot
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Date d&apos;expiration : {formatDate(contract.expires_at)}
+            </p>
+          </div>
+        </motion.div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main content */}
@@ -256,7 +308,8 @@ export default function ContractDetailPage() {
           {/* Signature section */}
           {contract.status === "signed" && (
             <div className="bg-surface border border-border rounded-xl p-6">
-              <h2 className="text-sm font-medium text-foreground mb-4">
+              <h2 className="text-sm font-medium text-foreground mb-4 flex items-center gap-2">
+                <Shield className="w-4 h-4 text-emerald-500" />
                 Signature electronique
               </h2>
               <div className="flex items-start gap-6">
@@ -269,8 +322,13 @@ export default function ContractDetailPage() {
                     />
                   </div>
                 )}
-                <div className="space-y-1 text-sm">
-                  <p className="text-foreground">
+                <div className="space-y-1.5 text-sm">
+                  {contract.signature_data?.signer_name && (
+                    <p className="text-foreground font-medium">
+                      {contract.signature_data.signer_name}
+                    </p>
+                  )}
+                  <p className="text-muted-foreground text-xs">
                     Signe le {formatDate(contract.signed_at)}
                   </p>
                   {contract.signature_data?.ip_address && (
@@ -285,6 +343,26 @@ export default function ContractDetailPage() {
                   )}
                 </div>
               </div>
+              <div className="mt-4 pt-4 border-t border-border">
+                <p className="text-xs text-muted-foreground flex items-center gap-1">
+                  <Shield className="w-3 h-3" />
+                  Signature certifiee conforme au reglement eIDAS - Piste
+                  d&apos;audit complete
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Cancellation reason */}
+          {contract.status === "cancelled" && contract.cancellation_reason && (
+            <div className="bg-red-500/5 border border-red-500/20 rounded-xl p-6">
+              <h2 className="text-sm font-medium text-foreground mb-2 flex items-center gap-2">
+                <XCircle className="w-4 h-4 text-red-500" />
+                Motif d&apos;annulation
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                {contract.cancellation_reason}
+              </p>
             </div>
           )}
         </motion.div>
@@ -321,8 +399,25 @@ export default function ContractDetailPage() {
               {contract.expires_at && (
                 <div className="flex items-center gap-3 text-sm">
                   <Clock className="w-4 h-4 text-muted-foreground" />
+                  <p
+                    className={
+                      isExpired
+                        ? "text-red-500"
+                        : isExpiringSoon
+                          ? "text-amber-600"
+                          : "text-muted-foreground"
+                    }
+                  >
+                    {isExpired ? "Expire" : "Expire"} le{" "}
+                    {formatDate(contract.expires_at)}
+                  </p>
+                </div>
+              )}
+              {contract.version && contract.version > 1 && (
+                <div className="flex items-center gap-3 text-sm">
+                  <FileText className="w-4 h-4 text-muted-foreground" />
                   <p className="text-muted-foreground">
-                    Expire le {formatDate(contract.expires_at)}
+                    Version {contract.version}
                   </p>
                 </div>
               )}
@@ -330,7 +425,7 @@ export default function ContractDetailPage() {
 
             {/* Actions */}
             <div className="pt-3 border-t border-border space-y-2">
-              {/* Download PDF — always available */}
+              {/* Download PDF */}
               <button
                 onClick={handleDownloadPDF}
                 className="w-full h-9 bg-muted text-foreground rounded-lg text-sm font-medium hover:bg-muted/80 transition-colors flex items-center justify-center gap-2"
@@ -339,7 +434,7 @@ export default function ContractDetailPage() {
                 Telecharger PDF
               </button>
 
-              {/* Draft: Send for signature */}
+              {/* Draft: Send */}
               {contract.status === "draft" && (
                 <>
                   <button
@@ -392,14 +487,8 @@ export default function ContractDetailPage() {
                     Renvoyer l&apos;email
                   </button>
                   <button
-                    onClick={() =>
-                      updateContract.mutate({
-                        id: contract.id,
-                        status: "cancelled",
-                      })
-                    }
-                    disabled={updateContract.isPending}
-                    className="w-full h-9 bg-red-500/10 text-red-600 rounded-lg text-sm font-medium hover:bg-red-500/20 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                    onClick={() => setShowCancelModal(true)}
+                    className="w-full h-9 bg-red-500/10 text-red-600 rounded-lg text-sm font-medium hover:bg-red-500/20 transition-colors flex items-center justify-center gap-2"
                   >
                     <XCircle className="w-3.5 h-3.5" />
                     Annuler le contrat
@@ -438,6 +527,26 @@ export default function ContractDetailPage() {
           </div>
         </motion.div>
       </div>
+
+      {/* Cancel Modal */}
+      {showCancelModal && (
+        <CancelContractModal
+          contractTitle={contract.title}
+          onCancel={(reason) => {
+            cancelContract.mutate(
+              { id: contract.id, reason },
+              {
+                onSuccess: () => {
+                  setShowCancelModal(false);
+                  toast.success("Contrat annule");
+                },
+              },
+            );
+          }}
+          onClose={() => setShowCancelModal(false)}
+          isPending={cancelContract.isPending}
+        />
+      )}
     </motion.div>
   );
 }

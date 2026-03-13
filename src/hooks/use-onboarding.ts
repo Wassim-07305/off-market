@@ -33,11 +33,14 @@ export function useOnboarding() {
       onSuccess: () => {
         // Award XP for completing the current step
         try {
-          supabase.rpc("award_xp" as never, {
-            p_profile_id: user!.id,
-            p_action: "onboarding_step",
-            p_metadata: { step: currentStep },
-          } as never);
+          supabase.rpc(
+            "award_xp" as never,
+            {
+              p_profile_id: user!.id,
+              p_action: "onboarding_step",
+              p_metadata: { step: currentStep },
+            } as never,
+          );
         } catch {
           // Silently ignore — XP is bonus, not critical
         }

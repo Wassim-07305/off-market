@@ -16,11 +16,18 @@ export interface FeedPost {
     avatar_url: string | null;
     role: string;
   };
+  win_meta?: WinPostMeta | null;
   // Client-side
   is_liked?: boolean;
 }
 
-export type PostType = "victory" | "question" | "experience" | "general";
+export type PostType =
+  | "victory"
+  | "question"
+  | "experience"
+  | "general"
+  | "resource"
+  | "off_topic";
 
 export const POST_TYPE_CONFIG: Record<
   PostType,
@@ -46,7 +53,25 @@ export const POST_TYPE_CONFIG: Record<
     color: "text-zinc-600 bg-zinc-500/10",
     emoji: "💬",
   },
+  resource: {
+    label: "Ressource",
+    color: "text-amber-600 bg-amber-500/10",
+    emoji: "📎",
+  },
+  off_topic: {
+    label: "Off-Topic",
+    color: "text-rose-600 bg-rose-500/10",
+    emoji: "🎲",
+  },
 };
+
+/** Metadata for a "victory" (win) post */
+export interface WinPostMeta {
+  result: string;
+  context: string;
+  actions: string;
+  lesson: string;
+}
 
 export interface FeedLike {
   id: string;

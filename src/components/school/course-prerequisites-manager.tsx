@@ -1,18 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { useCoursePrerequisites, usePrerequisiteMutations } from "@/hooks/use-course-prerequisites";
+import {
+  useCoursePrerequisites,
+  usePrerequisiteMutations,
+} from "@/hooks/use-course-prerequisites";
 import { useCourses } from "@/hooks/use-courses";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import {
-  X,
-  Plus,
-  Link2,
-  BookOpen,
-  Loader2,
-  ChevronDown,
-} from "lucide-react";
+import { X, Plus, Link2, BookOpen, Loader2, ChevronDown } from "lucide-react";
 
 interface CoursePrerequisitesManagerProps {
   courseId: string;
@@ -35,9 +31,11 @@ export function CoursePrerequisitesManager({
   if (!open) return null;
 
   // Available courses = all courses except self and already-set prerequisites
-  const existingPrereqIds = new Set(prerequisites?.map((p) => p.prerequisite_course_id) ?? []);
+  const existingPrereqIds = new Set(
+    prerequisites?.map((p) => p.prerequisite_course_id) ?? [],
+  );
   const availableCourses = (allCourses ?? []).filter(
-    (c) => c.id !== courseId && !existingPrereqIds.has(c.id)
+    (c) => c.id !== courseId && !existingPrereqIds.has(c.id),
   );
 
   function handleAdd() {
@@ -50,7 +48,7 @@ export function CoursePrerequisitesManager({
           setSelectedCourseId("");
         },
         onError: () => toast.error("Erreur lors de l'ajout"),
-      }
+      },
     );
   }
 
@@ -121,7 +119,10 @@ export function CoursePrerequisitesManager({
           {isLoading ? (
             <div className="space-y-2">
               {[1, 2].map((i) => (
-                <div key={i} className="h-12 bg-muted animate-shimmer rounded-xl" />
+                <div
+                  key={i}
+                  className="h-12 bg-muted animate-shimmer rounded-xl"
+                />
               ))}
             </div>
           ) : !prerequisites || prerequisites.length === 0 ? (
@@ -162,7 +163,8 @@ export function CoursePrerequisitesManager({
 
           {/* Info */}
           <p className="text-[10px] text-muted-foreground leading-relaxed">
-            Les eleves devront terminer toutes les formations prerequises avant de pouvoir acceder a cette formation.
+            Les eleves devront terminer toutes les formations prerequises avant
+            de pouvoir acceder a cette formation.
           </p>
         </div>
       </div>

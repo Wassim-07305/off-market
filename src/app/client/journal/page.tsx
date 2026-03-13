@@ -22,12 +22,16 @@ import {
   Search,
   Download,
   Filter,
-  Calendar,
   TrendingUp,
   Flame,
   FileText,
-  ChevronDown,
   Loader2,
+  Edit3,
+  Eye,
+  ChevronDown,
+  Tag,
+  Sparkles,
+  CalendarDays,
 } from "lucide-react";
 
 type FilterMood = "all" | Mood;
@@ -48,6 +52,19 @@ function formatShortDate(date: string) {
   });
 }
 
+function formatTimeAgo(date: string) {
+  const now = new Date();
+  const d = new Date(date);
+  const diffMs = now.getTime() - d.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  if (diffMins < 60) return `il y a ${diffMins}min`;
+  const diffHours = Math.floor(diffMins / 60);
+  if (diffHours < 24) return `il y a ${diffHours}h`;
+  const diffDays = Math.floor(diffHours / 24);
+  if (diffDays < 7) return `il y a ${diffDays}j`;
+  return formatShortDate(date);
+}
+
 function getStreak(entries: JournalEntry[]): number {
   if (entries.length === 0) return 0;
   const today = new Date();
@@ -63,9 +80,7 @@ function getStreak(entries: JournalEntry[]): number {
     }),
   );
 
-  // Check today first
   if (!entryDates.has(checkDate.getTime())) {
-    // Allow yesterday to count as start
     checkDate.setDate(checkDate.getDate() - 1);
     if (!entryDates.has(checkDate.getTime())) return 0;
   }
@@ -85,18 +100,52 @@ function getMoodTrend(entries: JournalEntry[]): number | null {
   return Math.round(avg * 10) / 10;
 }
 
+// Group entries by month
+function groupByMonth(
+  entries: JournalEntry[],
+): Array<{ month: string; entries: JournalEntry[] }> {
+  const groups: Record<string, JournalEntry[]> = {};
+  for (const entry of entries) {
+    const d = new Date(entry.created_at);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(entry);
+  }
+  return Object.entries(groups)
+    .sort(([a], [b]) => b.localeCompare(a))
+    .map(([key, entries]) => {
+      const [year, month] = key.split("-");
+      const d = new Date(Number(year), Number(month) - 1);
+      const label = d.toLocaleDateString("fr-FR", {
+        month: "long",
+        year: "numeric",
+      });
+      return { month: label, entries };
+    });
+}
+
 export default function JournalPage() {
-  const { entries, isLoading, createEntry, deleteEntry } = useJournal();
+  const { entries, isLoading, createEntry, updateEntry, deleteEntry } =
+    useJournal();
   const [showComposer, setShowComposer] = useState(false);
   const [selectedTemplate, setSelectedTemplate] =
     useState<JournalTemplate | null>(null);
   const [search, setSearch] = useState("");
   const [filterMood, setFilterMood] = useState<FilterMood>("all");
   const [showFilters, setShowFilters] = useState(false);
+  const [expandedEntryId, setExpandedEntryId] = useState<string | null>(null);
+  const [editingEntry, setEditingEntry] = useState<JournalEntry | null>(null);
 
   const streak = useMemo(() => getStreak(entries), [entries]);
   const moodTrend = useMemo(() => getMoodTrend(entries), [entries]);
   const totalEntries = entries.length;
+
+  // Unique tags for quick filter
+  const allTags = useMemo(() => {
+    const tags = new Set<string>();
+    entries.forEach((e) => e.tags.forEach((t) => tags.add(t)));
+    return Array.from(tags).slice(0, 10);
+  }, [entries]);
 
   const filtered = useMemo(() => {
     let list = entries;
@@ -114,6 +163,8 @@ export default function JournalPage() {
     }
     return list;
   }, [entries, search, filterMood]);
+
+  const grouped = useMemo(() => groupByMonth(filtered), [filtered]);
 
   const handleExport = () => {
     const text = entries
@@ -134,6 +185,11 @@ export default function JournalPage() {
   const startFromTemplate = (t: JournalTemplate) => {
     setSelectedTemplate(t);
     setShowComposer(true);
+  };
+
+  const startEditing = (entry: JournalEntry) => {
+    setEditingEntry(entry);
+    setExpandedEntryId(null);
   };
 
   return (
@@ -169,6 +225,7 @@ export default function JournalPage() {
           <button
             onClick={() => {
               setSelectedTemplate(null);
+              setEditingEntry(null);
               setShowComposer(true);
             }}
             className="h-9 px-4 bg-primary text-white rounded-xl text-sm font-medium hover:bg-primary-hover transition-all active:scale-[0.98] flex items-center gap-2"
@@ -211,7 +268,7 @@ export default function JournalPage() {
         >
           <TrendingUp className="w-5 h-5 text-emerald-500 mx-auto mb-1" />
           <p className="text-lg font-display font-bold text-foreground">
-            {moodTrend !== null ? `${moodTrend}/5` : "—"}
+            {moodTrend !== null ? `${moodTrend}/5` : "\u2014"}
           </p>
           <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
             Humeur moy.
@@ -219,10 +276,11 @@ export default function JournalPage() {
         </div>
       </motion.div>
 
-      {/* Templates */}
-      {!showComposer && (
+      {/* Writing prompts / Templates */}
+      {!showComposer && !editingEntry && (
         <motion.div variants={staggerItem}>
-          <p className="text-xs font-medium text-muted-foreground mb-2">
+          <p className="text-xs font-medium text-muted-foreground mb-2 flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5" />
             Demarrer avec un template
           </p>
           <div className="flex gap-2 overflow-x-auto pb-1">
@@ -246,9 +304,9 @@ export default function JournalPage() {
         </motion.div>
       )}
 
-      {/* Composer */}
+      {/* Composer (create) */}
       <AnimatePresence>
-        {showComposer && (
+        {showComposer && !editingEntry && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
@@ -269,6 +327,41 @@ export default function JournalPage() {
                 setSelectedTemplate(null);
               }}
               isSubmitting={createEntry.isPending}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Composer (edit) */}
+      <AnimatePresence>
+        {editingEntry && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+          >
+            <JournalComposer
+              template={(editingEntry.template as JournalTemplate) ?? null}
+              initialData={{
+                title: editingEntry.title,
+                content: editingEntry.content,
+                mood: editingEntry.mood ?? undefined,
+                tags: editingEntry.tags,
+                is_private: editingEntry.is_private,
+              }}
+              onSubmit={(data) => {
+                updateEntry.mutate(
+                  { id: editingEntry.id, ...data },
+                  {
+                    onSuccess: () => {
+                      setEditingEntry(null);
+                    },
+                  },
+                );
+              }}
+              onCancel={() => setEditingEntry(null)}
+              isSubmitting={updateEntry.isPending}
+              isEditing
             />
           </motion.div>
         )}
@@ -301,40 +394,84 @@ export default function JournalPage() {
             </button>
           </div>
 
-          {showFilters && (
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground">Humeur :</span>
-              <button
-                onClick={() => setFilterMood("all")}
-                className={cn(
-                  "h-7 px-2.5 rounded-full text-xs font-medium transition-all",
-                  filterMood === "all"
-                    ? "bg-foreground text-background"
-                    : "bg-muted text-muted-foreground",
-                )}
+          <AnimatePresence>
+            {showFilters && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="space-y-3"
               >
-                Toutes
-              </button>
-              {([1, 2, 3, 4, 5] as Mood[]).map((m) => (
-                <button
-                  key={m}
-                  onClick={() => setFilterMood(filterMood === m ? "all" : m)}
-                  className={cn(
-                    "h-7 w-7 rounded-full flex items-center justify-center transition-all",
-                    filterMood === m
-                      ? "bg-foreground text-background scale-110"
-                      : "bg-muted hover:scale-105",
-                  )}
-                >
-                  <span className="text-sm">{MOOD_CONFIG[m].emoji}</span>
-                </button>
-              ))}
-            </div>
-          )}
+                {/* Mood filter */}
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">
+                    Humeur :
+                  </span>
+                  <button
+                    onClick={() => setFilterMood("all")}
+                    className={cn(
+                      "h-7 px-2.5 rounded-full text-xs font-medium transition-all",
+                      filterMood === "all"
+                        ? "bg-foreground text-background"
+                        : "bg-muted text-muted-foreground",
+                    )}
+                  >
+                    Toutes
+                  </button>
+                  {([1, 2, 3, 4, 5] as Mood[]).map((m) => (
+                    <button
+                      key={m}
+                      onClick={() =>
+                        setFilterMood(filterMood === m ? "all" : m)
+                      }
+                      className={cn(
+                        "h-7 w-7 rounded-full flex items-center justify-center transition-all",
+                        filterMood === m
+                          ? "bg-foreground text-background scale-110"
+                          : "bg-muted hover:scale-105",
+                      )}
+                    >
+                      <span className="text-sm">{MOOD_CONFIG[m].emoji}</span>
+                    </button>
+                  ))}
+                </div>
+
+                {/* Tag filter */}
+                {allTags.length > 0 && (
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-xs text-muted-foreground">
+                      Tags :
+                    </span>
+                    {allTags.map((tag) => (
+                      <button
+                        key={tag}
+                        onClick={() => {
+                          if (search === `#${tag}`) {
+                            setSearch("");
+                          } else {
+                            setSearch(`#${tag}`);
+                          }
+                        }}
+                        className={cn(
+                          "h-6 px-2 rounded-full text-[10px] font-medium transition-all flex items-center gap-1",
+                          search === `#${tag}`
+                            ? "bg-primary/10 text-primary"
+                            : "bg-muted text-muted-foreground hover:text-foreground",
+                        )}
+                      >
+                        <Tag className="w-2.5 h-2.5" />
+                        {tag}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
       )}
 
-      {/* Entries */}
+      {/* Entries grouped by month */}
       {isLoading ? (
         <div className="space-y-3">
           {[...Array(3)].map((_, i) => (
@@ -359,69 +496,34 @@ export default function JournalPage() {
           </p>
         </motion.div>
       ) : (
-        <motion.div variants={staggerItem} className="space-y-3">
-          {filtered.map((entry) => (
-            <div
-              key={entry.id}
-              className="bg-surface rounded-2xl p-5 group hover:border-primary/10 transition-colors"
-              style={{ boxShadow: "var(--shadow-card)" }}
-            >
-              <div className="flex items-start justify-between mb-2">
-                <div className="min-w-0">
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-sm font-semibold text-foreground truncate">
-                      {entry.title}
-                    </h3>
-                    {entry.template && (
-                      <span className="text-xs">
-                        {
-                          JOURNAL_TEMPLATES[entry.template as JournalTemplate]
-                            ?.icon
-                        }
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    {formatDate(entry.created_at)}
-                  </p>
-                </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  {entry.mood && (
-                    <span
-                      className="text-lg"
-                      title={MOOD_CONFIG[entry.mood as Mood]?.label}
-                    >
-                      {MOOD_CONFIG[entry.mood as Mood]?.emoji}
-                    </span>
-                  )}
-                  {entry.is_private ? (
-                    <Lock className="w-3.5 h-3.5 text-muted-foreground" />
-                  ) : (
-                    <Globe className="w-3.5 h-3.5 text-muted-foreground" />
-                  )}
-                  <button
-                    onClick={() => deleteEntry.mutate(entry.id)}
-                    className="h-6 w-6 rounded-lg flex items-center justify-center hover:bg-error/10 transition-colors text-muted-foreground hover:text-error opacity-0 group-hover:opacity-100"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                </div>
+        <motion.div variants={staggerItem} className="space-y-6">
+          {grouped.map((group) => (
+            <div key={group.month}>
+              <div className="flex items-center gap-2 mb-3">
+                <CalendarDays className="w-3.5 h-3.5 text-muted-foreground" />
+                <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  {group.month}
+                </h3>
+                <span className="text-[10px] text-muted-foreground/60">
+                  ({group.entries.length})
+                </span>
               </div>
-              <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed line-clamp-4">
-                {entry.content}
-              </p>
-              {entry.tags.length > 0 && (
-                <div className="flex gap-1 mt-3">
-                  {entry.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-muted text-muted-foreground"
-                    >
-                      #{tag}
-                    </span>
-                  ))}
-                </div>
-              )}
+              <div className="space-y-3">
+                {group.entries.map((entry) => (
+                  <JournalEntryCard
+                    key={entry.id}
+                    entry={entry}
+                    isExpanded={expandedEntryId === entry.id}
+                    onToggle={() =>
+                      setExpandedEntryId(
+                        expandedEntryId === entry.id ? null : entry.id,
+                      )
+                    }
+                    onEdit={() => startEditing(entry)}
+                    onDelete={() => deleteEntry.mutate(entry.id)}
+                  />
+                ))}
+              </div>
             </div>
           ))}
         </motion.div>
@@ -430,13 +532,167 @@ export default function JournalPage() {
   );
 }
 
+/* ─── Entry Card ─── */
+
+function JournalEntryCard({
+  entry,
+  isExpanded,
+  onToggle,
+  onEdit,
+  onDelete,
+}: {
+  entry: JournalEntry;
+  isExpanded: boolean;
+  onToggle: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
+}) {
+  return (
+    <div
+      className={cn(
+        "bg-surface rounded-2xl group transition-all",
+        isExpanded
+          ? "ring-1 ring-primary/20"
+          : "hover:ring-1 hover:ring-border",
+      )}
+      style={{ boxShadow: "var(--shadow-card)" }}
+    >
+      {/* Collapsed header */}
+      <div className="p-5 cursor-pointer" onClick={onToggle}>
+        <div className="flex items-start justify-between mb-2">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm font-semibold text-foreground truncate">
+                {entry.title}
+              </h3>
+              {entry.template && (
+                <span className="text-xs shrink-0">
+                  {JOURNAL_TEMPLATES[entry.template as JournalTemplate]?.icon}
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-2">
+              <span>{formatTimeAgo(entry.created_at)}</span>
+              <span className="text-muted-foreground/30">|</span>
+              <span>{formatDate(entry.created_at)}</span>
+            </p>
+          </div>
+          <div className="flex items-center gap-2 shrink-0 ml-3">
+            {entry.mood && (
+              <span
+                className="text-lg"
+                title={MOOD_CONFIG[entry.mood as Mood]?.label}
+              >
+                {MOOD_CONFIG[entry.mood as Mood]?.emoji}
+              </span>
+            )}
+            {entry.is_private ? (
+              <Lock className="w-3.5 h-3.5 text-muted-foreground" />
+            ) : (
+              <Globe className="w-3.5 h-3.5 text-muted-foreground" />
+            )}
+            <ChevronDown
+              className={cn(
+                "w-4 h-4 text-muted-foreground transition-transform",
+                isExpanded && "rotate-180",
+              )}
+            />
+          </div>
+        </div>
+
+        {/* Preview text (collapsed) */}
+        {!isExpanded && (
+          <p className="text-sm text-foreground/70 line-clamp-2 leading-relaxed">
+            {entry.content}
+          </p>
+        )}
+
+        {entry.tags.length > 0 && (
+          <div className="flex gap-1 mt-2">
+            {entry.tags.map((tag) => (
+              <span
+                key={tag}
+                className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-muted text-muted-foreground"
+              >
+                #{tag}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Expanded content */}
+      <AnimatePresence>
+        {isExpanded && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <div className="px-5 pb-5 border-t border-border/50 pt-4">
+              <div className="bg-muted/30 rounded-xl p-4 mb-4">
+                <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
+                  {entry.content}
+                </p>
+              </div>
+
+              {/* Actions */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onEdit();
+                    }}
+                    className="h-7 px-2.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all flex items-center gap-1.5"
+                  >
+                    <Edit3 className="w-3 h-3" />
+                    Modifier
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (confirm("Supprimer cette entree ?")) {
+                        onDelete();
+                      }
+                    }}
+                    className="h-7 px-2.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-error hover:bg-error/10 transition-all flex items-center gap-1.5"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                    Supprimer
+                  </button>
+                </div>
+                <span className="text-[10px] text-muted-foreground/50">
+                  {entry.content.length} caracteres
+                </span>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+/* ─── Composer ─── */
+
 function JournalComposer({
   template,
+  initialData,
   onSubmit,
   onCancel,
   isSubmitting,
+  isEditing = false,
 }: {
   template: JournalTemplate | null;
+  initialData?: {
+    title: string;
+    content: string;
+    mood?: Mood;
+    tags?: string[];
+    is_private?: boolean;
+  };
   onSubmit: (data: {
     title: string;
     content: string;
@@ -447,17 +703,23 @@ function JournalComposer({
   }) => void;
   onCancel: () => void;
   isSubmitting: boolean;
+  isEditing?: boolean;
 }) {
   const tpl = template ? JOURNAL_TEMPLATES[template] : null;
-  const [title, setTitle] = useState(tpl ? tpl.label : "");
-  const [content, setContent] = useState(
-    tpl && tpl.prompts.length > 0
-      ? tpl.prompts.map((p) => `${p}\n`).join("\n")
-      : "",
+  const [title, setTitle] = useState(
+    initialData?.title ?? (tpl ? tpl.label : ""),
   );
-  const [mood, setMood] = useState<Mood | null>(null);
-  const [tagsInput, setTagsInput] = useState("");
-  const [isPrivate, setIsPrivate] = useState(true);
+  const [content, setContent] = useState(
+    initialData?.content ??
+      (tpl && tpl.prompts.length > 0
+        ? tpl.prompts.map((p) => `${p}\n`).join("\n")
+        : ""),
+  );
+  const [mood, setMood] = useState<Mood | null>(initialData?.mood ?? null);
+  const [tagsInput, setTagsInput] = useState(
+    initialData?.tags?.join(", ") ?? "",
+  );
+  const [isPrivate, setIsPrivate] = useState(initialData?.is_private ?? true);
 
   const handleSubmit = () => {
     if (!title.trim() || !content.trim()) return;
@@ -475,15 +737,17 @@ function JournalComposer({
     });
   };
 
+  const wordCount = content.trim().split(/\s+/).filter(Boolean).length;
+
   return (
     <div
-      className="bg-surface rounded-2xl p-5 space-y-4"
+      className="bg-surface rounded-2xl p-5 space-y-4 ring-1 ring-primary/20"
       style={{ boxShadow: "var(--shadow-card)" }}
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <h3 className="text-sm font-semibold text-foreground">
-            Nouvelle entree
+            {isEditing ? "Modifier l'entree" : "Nouvelle entree"}
           </h3>
           {tpl && (
             <span className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
@@ -500,7 +764,7 @@ function JournalComposer({
       </div>
 
       {tpl && tpl.description && (
-        <p className="text-xs text-muted-foreground italic">
+        <p className="text-xs text-muted-foreground italic bg-primary/5 px-3 py-2 rounded-lg">
           {tpl.description}
         </p>
       )}
@@ -510,16 +774,22 @@ function JournalComposer({
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         placeholder="Titre"
-        className="w-full h-10 px-4 bg-muted border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+        className="w-full h-10 px-4 bg-muted border border-border rounded-xl text-sm font-medium text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+        autoFocus
       />
 
-      <textarea
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        placeholder="Ecris tes pensees..."
-        rows={8}
-        className="w-full px-4 py-3 bg-muted border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none leading-relaxed"
-      />
+      <div className="relative">
+        <textarea
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          placeholder="Ecris tes pensees..."
+          rows={10}
+          className="w-full px-4 py-3 bg-muted border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none leading-relaxed"
+        />
+        <div className="absolute bottom-2 right-3 text-[10px] text-muted-foreground/40">
+          {wordCount} mots | {content.length} car.
+        </div>
+      </div>
 
       {/* Mood */}
       <div className="flex items-center gap-2">
@@ -542,13 +812,16 @@ function JournalComposer({
       </div>
 
       {/* Tags */}
-      <input
-        type="text"
-        value={tagsInput}
-        onChange={(e) => setTagsInput(e.target.value)}
-        placeholder="Tags (separes par des virgules)"
-        className="w-full h-9 px-4 bg-muted border border-border rounded-xl text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
-      />
+      <div className="flex items-center gap-2">
+        <Tag className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+        <input
+          type="text"
+          value={tagsInput}
+          onChange={(e) => setTagsInput(e.target.value)}
+          placeholder="Tags (separes par des virgules)"
+          className="flex-1 h-9 px-3 bg-muted border border-border rounded-xl text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+        />
+      </div>
 
       <div className="flex items-center justify-between">
         <button
@@ -572,7 +845,11 @@ function JournalComposer({
           ) : (
             <BookOpen className="w-3.5 h-3.5" />
           )}
-          {isSubmitting ? "Sauvegarde..." : "Enregistrer"}
+          {isSubmitting
+            ? "Sauvegarde..."
+            : isEditing
+              ? "Mettre a jour"
+              : "Enregistrer"}
         </button>
       </div>
     </div>

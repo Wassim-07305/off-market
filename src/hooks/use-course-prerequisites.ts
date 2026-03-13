@@ -17,7 +17,11 @@ interface CoursePrerequisite {
 }
 
 interface PrerequisiteWithCourse extends CoursePrerequisite {
-  prerequisite: { id: string; title: string; cover_image_url: string | null } | null;
+  prerequisite: {
+    id: string;
+    title: string;
+    cover_image_url: string | null;
+  } | null;
 }
 
 // ─── Fetch prerequisites for a course ──────────────────────────
@@ -31,7 +35,9 @@ export function useCoursePrerequisites(courseId: string | null) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("course_prerequisites" as never)
-        .select("*, prerequisite:courses!course_prerequisites_prerequisite_course_id_fkey(id, title, cover_image_url)")
+        .select(
+          "*, prerequisite:courses!course_prerequisites_prerequisite_course_id_fkey(id, title, cover_image_url)",
+        )
         .eq("course_id", courseId!);
       if (error) throw error;
       return data as unknown as PrerequisiteWithCourse[];
@@ -68,14 +74,19 @@ export function useCourseUnlockStatus() {
     if (!courses || !progress) return new Set<string>();
 
     const completedLessonIds = new Set(
-      progress.filter((p) => p.status === "completed").map((p) => p.lesson_id)
+      progress.filter((p) => p.status === "completed").map((p) => p.lesson_id),
     );
 
     const completed = new Set<string>();
     for (const course of courses) {
-      const allLessons = (course as Course & { modules: (Module & { lessons: Lesson[] })[] })
-        .modules?.flatMap((m) => m.lessons ?? []) ?? [];
-      if (allLessons.length > 0 && allLessons.every((l) => completedLessonIds.has(l.id))) {
+      const allLessons =
+        (
+          course as Course & { modules: (Module & { lessons: Lesson[] })[] }
+        ).modules?.flatMap((m) => m.lessons ?? []) ?? [];
+      if (
+        allLessons.length > 0 &&
+        allLessons.every((l) => completedLessonIds.has(l.id))
+      ) {
         completed.add(course.id);
       }
     }
@@ -84,14 +95,18 @@ export function useCourseUnlockStatus() {
 
   // Build map: courseId -> { isUnlocked, missingPrereqs }
   const unlockMap = useMemo(() => {
-    const map = new Map<string, { isUnlocked: boolean; missingPrereqs: string[] }>();
+    const map = new Map<
+      string,
+      { isUnlocked: boolean; missingPrereqs: string[] }
+    >();
 
     if (!allPrereqs || !courses) return map;
 
     // Group prerequisites by course
     const prereqsByCourse = new Map<string, string[]>();
     for (const p of allPrereqs) {
-      if (!prereqsByCourse.has(p.course_id)) prereqsByCourse.set(p.course_id, []);
+      if (!prereqsByCourse.has(p.course_id))
+        prereqsByCourse.set(p.course_id, []);
       prereqsByCourse.get(p.course_id)!.push(p.prerequisite_course_id);
     }
 
@@ -101,7 +116,10 @@ export function useCourseUnlockStatus() {
         map.set(course.id, { isUnlocked: true, missingPrereqs: [] });
       } else {
         const missing = prereqs.filter((pid) => !completedCourseIds.has(pid));
-        map.set(course.id, { isUnlocked: missing.length === 0, missingPrereqs: missing });
+        map.set(course.id, {
+          isUnlocked: missing.length === 0,
+          missingPrereqs: missing,
+        });
       }
     }
 
@@ -132,10 +150,19 @@ export function usePrerequisiteMutations() {
   };
 
   const addPrerequisite = useMutation({
-    mutationFn: async ({ courseId, prerequisiteCourseId }: { courseId: string; prerequisiteCourseId: string }) => {
+    mutationFn: async ({
+      courseId,
+      prerequisiteCourseId,
+    }: {
+      courseId: string;
+      prerequisiteCourseId: string;
+    }) => {
       const { error } = await supabase
         .from("course_prerequisites" as never)
-        .insert({ course_id: courseId, prerequisite_course_id: prerequisiteCourseId } as never);
+        .insert({
+          course_id: courseId,
+          prerequisite_course_id: prerequisiteCourseId,
+        } as never);
       if (error) throw error;
     },
     onSuccess: invalidate,

@@ -17,7 +17,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Non autorise" }, { status: 401 });
   }
 
-  const { type = "daily" } = await request.json().catch(() => ({ type: "daily" }));
+  const { type = "daily" } = await request
+    .json()
+    .catch(() => ({ type: "daily" }));
 
   if (type !== "daily" && type !== "weekly") {
     return NextResponse.json({ error: "Type invalide" }, { status: 400 });
@@ -42,7 +44,10 @@ export async function POST(request: Request) {
 
     if (prefError) throw prefError;
     if (!preferences || preferences.length === 0) {
-      return NextResponse.json({ sent: 0, message: "Aucun utilisateur avec ce digest" });
+      return NextResponse.json({
+        sent: 0,
+        message: "Aucun utilisateur avec ce digest",
+      });
     }
 
     const userIds = preferences.map((p: { user_id: string }) => p.user_id);
@@ -108,7 +113,9 @@ export async function POST(request: Request) {
         // Build highlights
         const highlights: string[] = [];
         if ((notifCount ?? 0) > 5) {
-          highlights.push(`${notifCount} nouvelles notifications cette periode`);
+          highlights.push(
+            `${notifCount} nouvelles notifications cette periode`,
+          );
         }
         if (xpEarned > 0) {
           highlights.push(`Tu as gagne ${xpEarned} XP — continue comme ca !`);

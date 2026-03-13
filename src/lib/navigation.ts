@@ -28,6 +28,7 @@ import {
   FolderOpen,
   FileSignature,
   Contact,
+  Star,
   type LucideIcon,
 } from "lucide-react";
 
@@ -64,6 +65,7 @@ export const coachNavigation: NavItem[] = [
   { name: "Messagerie", href: "/coach/messaging", icon: MessageSquare },
   { name: "Formation", href: "/coach/school", icon: GraduationCap },
   { name: "Feed", href: "/coach/feed", icon: Rss },
+  { name: "Communaute", href: "/coach/community", icon: Users },
   { name: "Check-ins", href: "/coach/checkins", icon: ClipboardCheck },
   { name: "Alertes", href: "/coach/alerts", icon: Bell },
   { name: "Seances", href: "/coach/sessions", icon: Video },
@@ -97,6 +99,8 @@ export const clientNavigation: NavItem[] = [
   { name: "Progression", href: "/client/progress", icon: Trophy },
   { name: "Defis", href: "/client/challenges", icon: Flame },
   { name: "Classement", href: "/client/leaderboard", icon: Crown },
+  { name: "Communaute", href: "/client/community", icon: Users },
+  { name: "Hall of Fame", href: "/client/hall-of-fame", icon: Star },
   { name: "Ressources", href: "/client/resources", icon: FolderOpen },
   { name: "Reserver", href: "/client/booking", icon: CalendarCheck },
   { name: "Appels", href: "/client/calls", icon: Phone },

@@ -12,6 +12,7 @@ import { CallControls } from "./call-controls";
 import { CallTimer } from "./call-timer";
 import { ConnectionStatus } from "./connection-status";
 import { TranscriptPanel } from "./transcript-panel";
+import { SessionNotesPanel } from "./session-notes-panel";
 import { CallEndedSummary } from "./call-ended-summary";
 import { Loader2, Mic, MicOff, Video, VideoOff } from "lucide-react";
 
@@ -27,6 +28,7 @@ export function VideoRoom({ callId }: VideoRoomProps) {
   const store = useCallStore();
 
   const [showTranscript, setShowTranscript] = useState(false);
+  const [showNotes, setShowNotes] = useState(false);
   const [hasJoined, setHasJoined] = useState(false);
 
   // Reset call store when mounting (cleans up stale "ended" state from previous calls)
@@ -496,8 +498,10 @@ export function VideoRoom({ callId }: VideoRoomProps) {
           onToggleCamera={toggleCamera}
           onToggleScreenShare={handleToggleScreenShare}
           onToggleTranscript={handleToggleTranscript}
+          onToggleNotes={() => setShowNotes((v) => !v)}
           onHangUp={handleHangUp}
           showTranscript={showTranscript}
+          showNotes={showNotes}
           isTranscriptionSupported={isTranscriptionSupported}
         />
       </div>
@@ -505,6 +509,14 @@ export function VideoRoom({ callId }: VideoRoomProps) {
       {/* Transcript panel (slides in from right) */}
       {showTranscript && (
         <TranscriptPanel onClose={() => setShowTranscript(false)} />
+      )}
+
+      {/* Session notes panel */}
+      {showNotes && (
+        <SessionNotesPanel
+          callId={callId}
+          onClose={() => setShowNotes(false)}
+        />
       )}
     </div>
   );

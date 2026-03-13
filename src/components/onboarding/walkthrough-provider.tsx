@@ -1,6 +1,13 @@
 "use client";
 
-import { createContext, useContext, useState, useCallback, useEffect, useRef } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useEffect,
+  useRef,
+} from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
 import { X, ChevronRight, ChevronLeft } from "lucide-react";
@@ -30,7 +37,11 @@ export function useWalkthrough() {
 
 // ─── Provider ──────────────────────────────────────────────────
 
-export function WalkthroughProvider({ children }: { children: React.ReactNode }) {
+export function WalkthroughProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [steps, setSteps] = useState<WalkthroughStep[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isActive, setIsActive] = useState(false);
@@ -196,7 +207,7 @@ export function WalkthroughProvider({ children }: { children: React.ReactNode })
               </div>
             </div>
           </>,
-          document.body
+          document.body,
         )}
     </WalkthroughContext.Provider>
   );

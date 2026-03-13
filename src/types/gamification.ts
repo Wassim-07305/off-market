@@ -162,3 +162,21 @@ export interface UserXpSummary {
   badges: UserBadge[];
   rank: number;
 }
+
+// ─── HALL OF FAME ────────────────────
+export interface HallOfFameEntry {
+  id: string;
+  profile_id: string;
+  monthly_revenue: number;
+  testimony: string | null;
+  niche: string | null;
+  achievement_date: string;
+  is_visible: boolean;
+  created_at: string;
+  profile?: {
+    id: string;
+    full_name: string;
+    avatar_url: string | null;
+    bio: string | null;
+  };
+}

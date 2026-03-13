@@ -10,6 +10,7 @@ import {
   Monitor,
   MonitorOff,
   ScrollText,
+  StickyNote,
   PhoneOff,
 } from "lucide-react";
 
@@ -18,8 +19,10 @@ interface CallControlsProps {
   onToggleCamera: () => void;
   onToggleScreenShare: () => void;
   onToggleTranscript: () => void;
+  onToggleNotes?: () => void;
   onHangUp: () => void;
   showTranscript: boolean;
+  showNotes?: boolean;
   isTranscriptionSupported: boolean;
 }
 
@@ -28,8 +31,10 @@ export function CallControls({
   onToggleCamera,
   onToggleScreenShare,
   onToggleTranscript,
+  onToggleNotes,
   onHangUp,
   showTranscript,
+  showNotes,
   isTranscriptionSupported,
 }: CallControlsProps) {
   const { isMicOn, isCameraOn, isScreenSharing, isTranscribing } =
@@ -75,6 +80,18 @@ export function CallControls({
           activeIcon={ScrollText}
           inactiveIcon={ScrollText}
           label="Transcription"
+          highlightWhenActive
+        />
+      )}
+
+      {/* Notes */}
+      {onToggleNotes && (
+        <ControlButton
+          onClick={onToggleNotes}
+          active={!!showNotes}
+          activeIcon={StickyNote}
+          inactiveIcon={StickyNote}
+          label="Notes de seance"
           highlightWhenActive
         />
       )}

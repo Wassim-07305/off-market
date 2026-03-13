@@ -25,9 +25,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Config manquante" }, { status: 500 });
     }
 
-    const { createClient: createServerClient } = await import("@/lib/supabase/server");
+    const { createClient: createServerClient } =
+      await import("@/lib/supabase/server");
     const supabase = await createServerClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     if (!user) {
       return NextResponse.json({ error: "Non autorise" }, { status: 401 });
@@ -46,7 +49,10 @@ export async function POST(request: Request) {
 
   if (!VAPID_PUBLIC_KEY || !VAPID_PRIVATE_KEY) {
     return NextResponse.json(
-      { error: "VAPID keys non configurees. Ajoutez NEXT_PUBLIC_VAPID_PUBLIC_KEY et VAPID_PRIVATE_KEY." },
+      {
+        error:
+          "VAPID keys non configurees. Ajoutez NEXT_PUBLIC_VAPID_PUBLIC_KEY et VAPID_PRIVATE_KEY.",
+      },
       { status: 500 },
     );
   }

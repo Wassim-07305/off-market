@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useState, useRef, useMemo, useCallback, useEffect } from "react";
+import { use, useState, useMemo, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { useRoutePrefix } from "@/hooks/use-route-prefix";
 import {
@@ -8,12 +8,22 @@ import {
   useLessonProgress,
   useMarkLessonComplete,
 } from "@/hooks/use-courses";
-import { useCoursePrerequisites, useCourseUnlockStatus } from "@/hooks/use-course-prerequisites";
+import {
+  useCoursePrerequisites,
+  useCourseUnlockStatus,
+} from "@/hooks/use-course-prerequisites";
 import { CourseCompletion } from "@/components/school/course-completion";
+import { EnhancedVideoPlayer } from "@/components/school/video-player";
+import { ActionChecklist } from "@/components/school/action-checklist";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import type { Lesson } from "@/types/database";
+import type { QuizConfig } from "@/types/quiz";
+import { QuizPlayer } from "@/components/school/quiz-player";
+import { AssignmentSubmission } from "@/components/school/assignment-submission";
+import { ExerciseReview } from "@/components/school/exercise-review";
+import { QuizExerciseStats } from "@/components/school/quiz-exercise-stats";
 import {
   ArrowLeft,
   ArrowRight,
@@ -33,48 +43,33 @@ import {
   Menu,
   X,
   PlayCircle,
+  Clock,
+  ClipboardList,
+  HelpCircle,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 // ---------------------------------------------------------------------------
-// Video helpers
+// Content type visual config
 // ---------------------------------------------------------------------------
 
-function getVideoEmbed(url: string): {
-  type: "iframe" | "video" | "none";
-  src: string;
-} {
-  if (!url) return { type: "none", src: "" };
+const CONTENT_TYPE_ICONS: Record<
+  string,
+  { icon: LucideIcon; label: string; color: string }
+> = {
+  video: { icon: Video, label: "Video", color: "text-blue-500" },
+  text: { icon: FileText, label: "Texte", color: "text-emerald-500" },
+  quiz: { icon: HelpCircle, label: "Quiz", color: "text-amber-500" },
+  assignment: {
+    icon: ClipboardList,
+    label: "Exercice",
+    color: "text-purple-500",
+  },
+  pdf: { icon: File, label: "PDF", color: "text-red-500" },
+};
 
-  // YouTube
-  if (url.includes("youtube.com") || url.includes("youtu.be")) {
-    let id: string | null | undefined = null;
-    if (url.includes("youtu.be")) {
-      id = url.split("/").pop()?.split("?")[0];
-    } else {
-      try {
-        id = new URL(url).searchParams.get("v");
-      } catch {
-        id = null;
-      }
-    }
-    if (id)
-      return { type: "iframe", src: `https://www.youtube.com/embed/${id}` };
-  }
-
-  // Vimeo
-  if (url.includes("vimeo.com")) {
-    const id = url.split("/").pop()?.split("?")[0];
-    if (id)
-      return { type: "iframe", src: `https://player.vimeo.com/video/${id}` };
-  }
-
-  // Loom
-  if (url.includes("loom.com")) {
-    const id = url.split("/").pop()?.split("?")[0];
-    if (id) return { type: "iframe", src: `https://www.loom.com/embed/${id}` };
-  }
-
-  return { type: "video", src: url };
+function getContentIcon(type?: string) {
+  return CONTENT_TYPE_ICONS[type ?? ""] ?? CONTENT_TYPE_ICONS.text;
 }
 
 function getAttachmentIcon(type: string) {
@@ -197,16 +192,8 @@ export default function CourseViewPage({
     setExpandedModules(initial);
   }, [course, completedIds]);
 
-  // Video auto-complete
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [autoCompleted, setAutoCompleted] = useState(false);
-
   // Mobile sidebar
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-
-  useEffect(() => {
-    setAutoCompleted(false);
-  }, [selectedLessonId]);
 
   function toggleModule(moduleId: string) {
     setExpandedModules((prev) => {
@@ -231,17 +218,6 @@ export default function CourseViewPage({
       onSuccess: () => toast.success("Lecon terminee !"),
       onError: () => toast.error("Erreur lors de la mise a jour"),
     });
-  }
-
-  function handleTimeUpdate() {
-    const video = videoRef.current;
-    if (!video || autoCompleted) return;
-    if (!video.duration) return;
-    const percent = (video.currentTime / video.duration) * 100;
-    if (percent >= 80) {
-      setAutoCompleted(true);
-      handleMarkComplete();
-    }
   }
 
   function navigateLesson(direction: "prev" | "next") {
@@ -282,7 +258,8 @@ export default function CourseViewPage({
           Formation verrouillee
         </h2>
         <p className="text-sm text-muted-foreground mb-6">
-          Vous devez terminer les formations suivantes avant d&apos;acceder a ce cours :
+          Vous devez terminer les formations suivantes avant d&apos;acceder a ce
+          cours :
         </p>
         <div className="space-y-2 mb-8">
           {courseUnlock.missingPrereqs.map((pid) => (
@@ -389,10 +366,14 @@ export default function CourseViewPage({
 
                     {isExpanded && (
                       <div className="pb-1">
-                        {sortedLessons.map((lesson) => {
+                        {sortedLessons.map((lesson, lessonIdx) => {
                           const completed = completedIds.has(lesson.id);
                           const isActive = selectedLessonId === lesson.id;
                           const unlocked = isLessonUnlocked(lesson.id);
+                          const contentConfig = getContentIcon(
+                            lesson.content_type,
+                          );
+                          const ContentIcon = contentConfig.icon;
 
                           return (
                             <button
@@ -407,13 +388,18 @@ export default function CourseViewPage({
                                 !unlocked && "opacity-40 cursor-not-allowed",
                               )}
                             >
-                              <span className="shrink-0">
+                              <span className="shrink-0 relative">
                                 {completed ? (
                                   <CheckCircle className="h-4 w-4 text-primary" />
                                 ) : isActive ? (
                                   <Play className="h-4 w-4 text-primary" />
                                 ) : unlocked ? (
-                                  <Circle className="h-4 w-4 text-muted-foreground" />
+                                  <ContentIcon
+                                    className={cn(
+                                      "h-4 w-4",
+                                      contentConfig.color,
+                                    )}
+                                  />
                                 ) : (
                                   <Lock className="h-4 w-4 text-muted-foreground" />
                                 )}
@@ -435,11 +421,23 @@ export default function CourseViewPage({
                                 >
                                   {lesson.title}
                                 </p>
-                                {lesson.estimated_duration && (
-                                  <span className="text-[11px] text-muted-foreground">
-                                    {lesson.estimated_duration} min
+                                <div className="flex items-center gap-2 mt-0.5">
+                                  <span
+                                    className={cn(
+                                      "text-[10px]",
+                                      contentConfig.color,
+                                    )}
+                                  >
+                                    {contentConfig.label}
                                   </span>
-                                )}
+                                  {lesson.estimated_duration != null &&
+                                    lesson.estimated_duration > 0 && (
+                                      <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
+                                        <Clock className="w-2.5 h-2.5" />
+                                        {lesson.estimated_duration} min
+                                      </span>
+                                    )}
+                                </div>
                               </div>
                             </button>
                           );

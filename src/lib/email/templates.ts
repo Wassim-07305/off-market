@@ -365,7 +365,10 @@ export function coachAlertEmail(params: {
   description: string;
   dashboardUrl: string;
 }) {
-  const severityColors: Record<string, { bg: string; border: string; text: string }> = {
+  const severityColors: Record<
+    string,
+    { bg: string; border: string; text: string }
+  > = {
     critical: { bg: "#fef2f2", border: "#fecaca", text: "#991b1b" },
     high: { bg: "#fff7ed", border: "#fed7aa", text: "#9a3412" },
     medium: { bg: "#fffbeb", border: "#fde68a", text: "#92400e" },
@@ -424,11 +427,12 @@ export function digestEmail(params: {
   highlights: string[];
   dashboardUrl: string;
 }) {
-  const highlightsHtml = params.highlights.length > 0
-    ? `<ul style="margin:0 0 20px;padding-left:20px;color:#3f3f46;font-size:14px;line-height:1.8;">
+  const highlightsHtml =
+    params.highlights.length > 0
+      ? `<ul style="margin:0 0 20px;padding-left:20px;color:#3f3f46;font-size:14px;line-height:1.8;">
         ${params.highlights.map((h) => `<li>${h}</li>`).join("")}
       </ul>`
-    : "";
+      : "";
 
   const subject = `Ton resume ${params.period} — ${BRAND_NAME}`;
   const html = layout(`

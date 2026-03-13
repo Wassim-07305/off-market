@@ -35,9 +35,39 @@ interface MessagingState {
 
   mobileSidebarOpen: boolean;
   setMobileSidebarOpen: (open: boolean) => void;
+
+  // Bookmarks
+  bookmarkedMessageIds: Set<string>;
+  toggleBookmark: (messageId: string) => void;
+  isBookmarked: (messageId: string) => boolean;
+
+  showBookmarksPanel: boolean;
+  setShowBookmarksPanel: (show: boolean) => void;
 }
 
-export const useMessagingStore = create<MessagingState>((set) => ({
+function loadBookmarks(): Set<string> {
+  if (typeof window === "undefined") return new Set();
+  try {
+    const stored = localStorage.getItem("off-market-bookmarks");
+    if (stored) return new Set(JSON.parse(stored) as string[]);
+  } catch {
+    // ignore
+  }
+  return new Set();
+}
+
+function saveBookmarks(ids: Set<string>) {
+  try {
+    localStorage.setItem(
+      "off-market-bookmarks",
+      JSON.stringify(Array.from(ids)),
+    );
+  } catch {
+    // ignore
+  }
+}
+
+export const useMessagingStore = create<MessagingState>((set, get) => ({
   activeChannelId: null,
   setActiveChannelId: (id) => set({ activeChannelId: id }),
 
@@ -72,4 +102,21 @@ export const useMessagingStore = create<MessagingState>((set) => ({
 
   mobileSidebarOpen: false,
   setMobileSidebarOpen: (open) => set({ mobileSidebarOpen: open }),
+
+  bookmarkedMessageIds: loadBookmarks(),
+  toggleBookmark: (messageId) =>
+    set((state) => {
+      const next = new Set(state.bookmarkedMessageIds);
+      if (next.has(messageId)) {
+        next.delete(messageId);
+      } else {
+        next.add(messageId);
+      }
+      saveBookmarks(next);
+      return { bookmarkedMessageIds: next };
+    }),
+  isBookmarked: (messageId) => get().bookmarkedMessageIds.has(messageId),
+
+  showBookmarksPanel: false,
+  setShowBookmarksPanel: (show) => set({ showBookmarksPanel: show }),
 }));

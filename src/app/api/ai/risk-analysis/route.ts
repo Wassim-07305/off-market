@@ -3,12 +3,12 @@ import { createClient } from "@/lib/supabase/server";
 
 // ─── Risk Factor Weights ─────────────────────────────────────
 const WEIGHTS = {
-  inactivity: 30,    // max penalty for no engagement
-  checkin_mood: 20,  // low mood trend
+  inactivity: 30, // max penalty for no engagement
+  checkin_mood: 20, // low mood trend
   checkin_energy: 10, // low energy trend
-  revenue_drop: 20,  // revenue decline
-  no_checkin: 10,    // missing checkins
-  course_stall: 10,  // no course progress
+  revenue_drop: 20, // revenue decline
+  no_checkin: 10, // missing checkins
+  course_stall: 10, // no course progress
 };
 
 interface RiskResult {
@@ -51,22 +51,35 @@ export async function POST(request: Request) {
 
     if (studentsError) throw studentsError;
     if (!students || students.length === 0) {
-      return NextResponse.json({ results: [], summary: { total: 0, at_risk: 0, critical: 0 } });
+      return NextResponse.json({
+        results: [],
+        summary: { total: 0, at_risk: 0, critical: 0 },
+      });
     }
 
     const now = new Date();
     const results: RiskResult[] = [];
 
     for (const student of students) {
-      const details = (student.student_details as { health_score: number; tag: string; revenue: number }[])?.[0];
+      const details = (
+        student.student_details as {
+          health_score: number;
+          tag: string;
+          revenue: number;
+        }[]
+      )?.[0];
       const previousScore = details?.health_score ?? 50;
       const riskFactors: string[] = [];
       let penalty = 0;
 
       // ── Factor 1: Inactivity ──────────────────────────────
-      const lastSeen = student.last_seen_at ? new Date(student.last_seen_at) : null;
+      const lastSeen = student.last_seen_at
+        ? new Date(student.last_seen_at)
+        : null;
       const daysSinceLastSeen = lastSeen
-        ? Math.floor((now.getTime() - lastSeen.getTime()) / (1000 * 60 * 60 * 24))
+        ? Math.floor(
+            (now.getTime() - lastSeen.getTime()) / (1000 * 60 * 60 * 24),
+          )
         : 999;
 
       if (daysSinceLastSeen >= 14) {
@@ -92,7 +105,9 @@ export async function POST(request: Request) {
         .limit(4);
 
       if (checkins && checkins.length >= 2) {
-        const moods = checkins.map((c) => c.mood).filter((m): m is number => m !== null);
+        const moods = checkins
+          .map((c) => c.mood)
+          .filter((m): m is number => m !== null);
         if (moods.length >= 2) {
           const avgMood = moods.reduce((a, b) => a + b, 0) / moods.length;
           if (avgMood <= 2) {
@@ -108,23 +123,32 @@ export async function POST(request: Request) {
           }
         }
 
-        const energies = checkins.map((c) => c.energy).filter((e): e is number => e !== null);
+        const energies = checkins
+          .map((c) => c.energy)
+          .filter((e): e is number => e !== null);
         if (energies.length >= 2) {
-          const avgEnergy = energies.reduce((a, b) => a + b, 0) / energies.length;
+          const avgEnergy =
+            energies.reduce((a, b) => a + b, 0) / energies.length;
           if (avgEnergy <= 2) {
             penalty += WEIGHTS.checkin_energy;
-            riskFactors.push(`Energie basse (moyenne: ${avgEnergy.toFixed(1)}/5)`);
+            riskFactors.push(
+              `Energie basse (moyenne: ${avgEnergy.toFixed(1)}/5)`,
+            );
           }
         }
 
         // ── Factor 3: Revenue drop ──────────────────────────
-        const revenues = checkins.map((c) => c.revenue).filter((r): r is number => r !== null && r > 0);
+        const revenues = checkins
+          .map((c) => c.revenue)
+          .filter((r): r is number => r !== null && r > 0);
         if (revenues.length >= 2) {
           const recent = revenues[0];
           const older = revenues[revenues.length - 1];
           if (older > 0 && recent < older * 0.7) {
             penalty += WEIGHTS.revenue_drop;
-            riskFactors.push(`Baisse de CA de ${Math.round((1 - recent / older) * 100)}%`);
+            riskFactors.push(
+              `Baisse de CA de ${Math.round((1 - recent / older) * 100)}%`,
+            );
           } else if (older > 0 && recent < older * 0.85) {
             penalty += WEIGHTS.revenue_drop * 0.4;
           }
@@ -152,11 +176,13 @@ export async function POST(request: Request) {
       if (recentProgress && recentProgress.length > 0) {
         const lastCompletion = new Date(recentProgress[0].completed_at!);
         const daysSinceCompletion = Math.floor(
-          (now.getTime() - lastCompletion.getTime()) / (1000 * 60 * 60 * 24)
+          (now.getTime() - lastCompletion.getTime()) / (1000 * 60 * 60 * 24),
         );
         if (daysSinceCompletion >= 14) {
           penalty += WEIGHTS.course_stall;
-          riskFactors.push(`Aucune lecon terminee depuis ${daysSinceCompletion} jours`);
+          riskFactors.push(
+            `Aucune lecon terminee depuis ${daysSinceCompletion} jours`,
+          );
         } else if (daysSinceCompletion >= 7) {
           penalty += WEIGHTS.course_stall * 0.4;
         }
@@ -179,16 +205,22 @@ export async function POST(request: Request) {
       const newScore = Math.round(rawScore * 0.6 + previousScore * 0.4);
 
       const severity: RiskResult["severity"] =
-        newScore <= 25 ? "critical" :
-        newScore <= 45 ? "high" :
-        newScore <= 65 ? "medium" : "low";
+        newScore <= 25
+          ? "critical"
+          : newScore <= 45
+            ? "high"
+            : newScore <= 65
+              ? "medium"
+              : "low";
 
       // ── Generate recommendation ──────────────────────────
       let recommendation = "";
       if (severity === "critical") {
-        recommendation = "Appel urgent recommande. Ce client risque de decrocher completement.";
+        recommendation =
+          "Appel urgent recommande. Ce client risque de decrocher completement.";
       } else if (severity === "high") {
-        recommendation = "Planifie un point individuel rapidement pour remotiver ce client.";
+        recommendation =
+          "Planifie un point individuel rapidement pour remotiver ce client.";
       } else if (severity === "medium") {
         recommendation = "Envoie un message de suivi et verifie ses objectifs.";
       } else {
@@ -220,9 +252,16 @@ export async function POST(request: Request) {
 
         if (newScore <= 25 && currentTag !== "churned") {
           newTag = "churned";
-        } else if (newScore <= 45 && currentTag !== "at_risk" && currentTag !== "churned") {
+        } else if (
+          newScore <= 45 &&
+          currentTag !== "at_risk" &&
+          currentTag !== "churned"
+        ) {
           newTag = "at_risk";
-        } else if (newScore > 65 && (currentTag === "at_risk" || currentTag === "churned")) {
+        } else if (
+          newScore > 65 &&
+          (currentTag === "at_risk" || currentTag === "churned")
+        ) {
           newTag = "standard";
         }
 
@@ -242,15 +281,27 @@ export async function POST(request: Request) {
           .select("id")
           .eq("client_id", student.id)
           .eq("is_resolved", false)
-          .eq("alert_type", daysSinceLastSeen >= 14 ? "inactive_14d" : daysSinceLastSeen >= 7 ? "inactive_7d" : "goal_at_risk")
+          .eq(
+            "alert_type",
+            daysSinceLastSeen >= 14
+              ? "inactive_14d"
+              : daysSinceLastSeen >= 7
+                ? "inactive_7d"
+                : "goal_at_risk",
+          )
           .limit(1);
 
         if (!existingAlert || existingAlert.length === 0) {
-          const alertType = daysSinceLastSeen >= 14 ? "inactive_14d" :
-            daysSinceLastSeen >= 7 ? "inactive_7d" :
-            riskFactors.some((f) => f.includes("Moral")) ? "low_mood" :
-            riskFactors.some((f) => f.includes("CA")) ? "revenue_drop" :
-            "goal_at_risk";
+          const alertType =
+            daysSinceLastSeen >= 14
+              ? "inactive_14d"
+              : daysSinceLastSeen >= 7
+                ? "inactive_7d"
+                : riskFactors.some((f) => f.includes("Moral"))
+                  ? "low_mood"
+                  : riskFactors.some((f) => f.includes("CA"))
+                    ? "revenue_drop"
+                    : "goal_at_risk";
 
           await supabase.from("coach_alerts").insert({
             client_id: student.id,
@@ -274,7 +325,9 @@ export async function POST(request: Request) {
       high: results.filter((r) => r.severity === "high").length,
       medium: results.filter((r) => r.severity === "medium").length,
       low: results.filter((r) => r.severity === "low").length,
-      avg_score: Math.round(results.reduce((sum, r) => sum + r.new_score, 0) / results.length),
+      avg_score: Math.round(
+        results.reduce((sum, r) => sum + r.new_score, 0) / results.length,
+      ),
     };
 
     return NextResponse.json({ results, summary });
@@ -282,7 +335,7 @@ export async function POST(request: Request) {
     console.error("Risk analysis error:", error);
     return NextResponse.json(
       { error: "Erreur lors de l'analyse de risque" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

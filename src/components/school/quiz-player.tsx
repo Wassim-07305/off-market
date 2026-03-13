@@ -11,8 +11,9 @@ import {
   Loader2,
   Timer,
 } from "lucide-react";
-import type { QuizConfig, QuizQuestion, QuizAnswer } from "@/types/quiz";
+import type { QuizConfig, QuizAnswer } from "@/types/quiz";
 import { useQuizAttempts, useSubmitQuiz } from "@/hooks/use-quizzes";
+import { cn } from "@/lib/utils";
 
 interface QuizPlayerProps {
   lessonId: string;
@@ -212,30 +213,63 @@ export function QuizPlayer({ lessonId, config, onComplete }: QuizPlayerProps) {
   // ─── Show results ─────────────────────
 
   if (showResults && results) {
+    // Score ring: visual score indicator
+    const scoreColor = results.passed ? "text-emerald-500" : "text-red-500";
+    const scoreBg = results.passed ? "bg-emerald-500/10" : "bg-red-500/10";
+    const circumference = 2 * Math.PI * 40;
+    const strokeDashoffset =
+      circumference - (results.score / 100) * circumference;
+
     return (
       <div className="bg-surface border border-border rounded-xl overflow-hidden">
-        {/* Score header */}
-        <div
-          className={`p-6 text-center ${
-            results.passed ? "bg-emerald-500/10" : "bg-red-500/10"
-          }`}
-        >
-          <div className="text-4xl font-bold text-foreground mb-1">
-            {results.score}%
+        {/* Score header with ring */}
+        <div className={cn("p-8 text-center", scoreBg)}>
+          <div className="relative w-28 h-28 mx-auto mb-4">
+            <svg className="w-28 h-28 -rotate-90" viewBox="0 0 100 100">
+              <circle
+                cx="50"
+                cy="50"
+                r="40"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="6"
+                className="text-muted/30"
+              />
+              <circle
+                cx="50"
+                cy="50"
+                r="40"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="6"
+                strokeLinecap="round"
+                className={scoreColor}
+                strokeDasharray={circumference}
+                strokeDashoffset={strokeDashoffset}
+                style={{ transition: "stroke-dashoffset 1s ease-out" }}
+              />
+            </svg>
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <span className="text-2xl font-bold text-foreground">
+                {results.score}%
+              </span>
+            </div>
           </div>
-          <p className="text-sm font-medium text-foreground">
+
+          <p className="text-sm font-medium text-foreground mb-1">
             {results.correct}/{results.total} reponses correctes
           </p>
           <div
-            className={`inline-flex items-center gap-2 mt-3 px-3 py-1.5 rounded-full text-sm font-medium ${
+            className={cn(
+              "inline-flex items-center gap-2 mt-2 px-4 py-2 rounded-full text-sm font-semibold",
               results.passed
                 ? "bg-emerald-500/20 text-emerald-700"
-                : "bg-red-500/20 text-red-700"
-            }`}
+                : "bg-red-500/20 text-red-700",
+            )}
           >
             {results.passed ? (
               <>
-                <CheckCircle className="w-4 h-4" />
+                <Trophy className="w-4 h-4" />
                 Quiz reussi !
               </>
             ) : (
@@ -249,34 +283,46 @@ export function QuizPlayer({ lessonId, config, onComplete }: QuizPlayerProps) {
 
         {/* Answers review */}
         {config.show_correct_answers && (
-          <div className="p-4 space-y-3">
+          <div className="p-5 space-y-3">
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+              Detail des reponses
+            </h4>
             {questions.map((q, i) => {
               const answer = results.answers[i];
               return (
                 <div
                   key={q.id}
-                  className={`p-3 rounded-lg border ${
+                  className={cn(
+                    "p-4 rounded-xl border transition-colors",
                     answer.is_correct
                       ? "bg-emerald-500/5 border-emerald-500/20"
-                      : "bg-red-500/5 border-red-500/20"
-                  }`}
+                      : "bg-red-500/5 border-red-500/20",
+                  )}
                 >
-                  <div className="flex items-start gap-2">
-                    {answer.is_correct ? (
-                      <CheckCircle className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
-                    ) : (
-                      <XCircle className="w-4 h-4 text-red-500 mt-0.5 shrink-0" />
-                    )}
+                  <div className="flex items-start gap-3">
+                    <span
+                      className={cn(
+                        "shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold text-white mt-0.5",
+                        answer.is_correct ? "bg-emerald-500" : "bg-red-500",
+                      )}
+                    >
+                      {i + 1}
+                    </span>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-foreground">
                         {q.question}
                       </p>
                       {q.explanation && (
-                        <p className="text-xs text-muted-foreground mt-1">
+                        <p className="text-xs text-muted-foreground mt-1.5 italic">
                           {q.explanation}
                         </p>
                       )}
                     </div>
+                    {answer.is_correct ? (
+                      <CheckCircle className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                    ) : (
+                      <XCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+                    )}
                   </div>
                 </div>
               );
@@ -285,13 +331,13 @@ export function QuizPlayer({ lessonId, config, onComplete }: QuizPlayerProps) {
         )}
 
         {/* Retry */}
-        <div className="p-4 border-t border-border flex justify-center">
+        <div className="p-5 border-t border-border flex justify-center">
           <button
             onClick={handleStart}
-            className="inline-flex items-center gap-2 h-9 px-4 bg-muted hover:bg-muted/80 rounded-lg text-sm text-foreground transition-colors"
+            className="inline-flex items-center gap-2 h-10 px-5 bg-muted hover:bg-muted/80 rounded-xl text-sm font-medium text-foreground transition-colors"
           >
             <RotateCcw className="w-4 h-4" />
-            Retenter
+            Retenter le quiz
           </button>
         </div>
       </div>
@@ -342,6 +388,31 @@ export function QuizPlayer({ lessonId, config, onComplete }: QuizPlayerProps) {
           </div>
         </div>
 
+        {/* Question navigation dots */}
+        <div className="flex items-center gap-1.5 flex-wrap">
+          {questions.map((q, i) => {
+            const isAnswered = answers.has(q.id);
+            const isCurrent = i === currentIndex;
+            return (
+              <button
+                key={q.id}
+                onClick={() => setCurrentIndex(i)}
+                title={`Question ${i + 1}${isAnswered ? " (repondue)" : ""}`}
+                className={cn(
+                  "w-7 h-7 rounded-full text-[10px] font-bold transition-all border-2",
+                  isCurrent
+                    ? "border-primary bg-primary text-white scale-110"
+                    : isAnswered
+                      ? "border-primary/40 bg-primary/10 text-primary"
+                      : "border-border bg-muted text-muted-foreground hover:border-primary/30",
+                )}
+              >
+                {i + 1}
+              </button>
+            );
+          })}
+        </div>
+
         {/* Question */}
         <h3 className="text-lg font-medium text-foreground">
           {currentQuestion.question}
@@ -355,13 +426,21 @@ export function QuizPlayer({ lessonId, config, onComplete }: QuizPlayerProps) {
                 <button
                   key={i}
                   onClick={() => selectAnswer(currentQuestion.id, i)}
-                  className={`w-full text-left p-3 rounded-lg border text-sm transition-colors ${
+                  className={cn(
+                    "w-full text-left p-3.5 rounded-xl border text-sm transition-all",
                     answers.get(currentQuestion.id) === i
-                      ? "bg-primary/10 border-primary text-foreground"
-                      : "bg-surface border-border text-foreground hover:border-primary/50"
-                  }`}
+                      ? "bg-primary/10 border-primary text-foreground ring-1 ring-primary/30"
+                      : "bg-surface border-border text-foreground hover:border-primary/50 hover:bg-muted/30",
+                  )}
                 >
-                  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-muted text-xs font-medium mr-3">
+                  <span
+                    className={cn(
+                      "inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold mr-3 transition-colors",
+                      answers.get(currentQuestion.id) === i
+                        ? "bg-primary text-white"
+                        : "bg-muted text-muted-foreground",
+                    )}
+                  >
                     {String.fromCharCode(65 + i)}
                   </span>
                   {option}
@@ -379,11 +458,12 @@ export function QuizPlayer({ lessonId, config, onComplete }: QuizPlayerProps) {
               <button
                 key={value}
                 onClick={() => selectAnswer(currentQuestion.id, value)}
-                className={`flex-1 h-12 rounded-lg text-sm font-medium border transition-colors ${
+                className={cn(
+                  "flex-1 h-14 rounded-xl text-sm font-semibold border-2 transition-all",
                   answers.get(currentQuestion.id) === value
-                    ? "bg-primary/10 border-primary text-foreground"
-                    : "bg-surface border-border text-foreground hover:border-primary/50"
-                }`}
+                    ? "bg-primary/10 border-primary text-foreground ring-1 ring-primary/30"
+                    : "bg-surface border-border text-foreground hover:border-primary/50",
+                )}
               >
                 {label}
               </button>
@@ -418,7 +498,7 @@ export function QuizPlayer({ lessonId, config, onComplete }: QuizPlayerProps) {
               disabled={
                 answeredCount < questions.length || submitQuiz.isPending
               }
-              className="inline-flex items-center gap-2 h-9 px-5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
+              className="inline-flex items-center gap-2 h-10 px-6 bg-primary text-white rounded-xl text-sm font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50 shadow-sm"
             >
               {submitQuiz.isPending ? (
                 <Loader2 className="w-4 h-4 animate-spin" />

@@ -214,7 +214,9 @@ export default function SchoolPage() {
               <div
                 className={cn(
                   "h-full bg-surface rounded-2xl overflow-hidden transition-all duration-200",
-                  isLocked ? "opacity-75" : "hover:scale-[1.02] hover:shadow-lg"
+                  isLocked
+                    ? "opacity-75"
+                    : "hover:scale-[1.02] hover:shadow-lg",
                 )}
                 style={{ boxShadow: "var(--shadow-card)" }}
               >
@@ -254,10 +256,14 @@ export default function SchoolPage() {
 
                 {/* Content */}
                 <div className="p-5 flex flex-col flex-1">
-                  <h3 className={cn(
-                    "text-base font-display font-semibold line-clamp-1 transition-colors",
-                    isLocked ? "text-muted-foreground" : "text-foreground group-hover:text-primary"
-                  )}>
+                  <h3
+                    className={cn(
+                      "text-base font-display font-semibold line-clamp-1 transition-colors",
+                      isLocked
+                        ? "text-muted-foreground"
+                        : "text-foreground group-hover:text-primary",
+                    )}
+                  >
                     {course.title}
                   </h3>
 
@@ -275,7 +281,10 @@ export default function SchoolPage() {
                       </p>
                       <ul className="mt-1 space-y-0.5">
                         {unlock.missingPrereqs.map((pid) => (
-                          <li key={pid} className="text-[11px] text-amber-600 flex items-center gap-1">
+                          <li
+                            key={pid}
+                            className="text-[11px] text-amber-600 flex items-center gap-1"
+                          >
                             <Lock className="w-3 h-3 shrink-0" />
                             {getCourseTitle(pid)}
                           </li>

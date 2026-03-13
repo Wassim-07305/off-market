@@ -92,7 +92,11 @@ export function OnboardingChecklist() {
 
   const completedSteps = useMemo(() => {
     // Steps <= current step are considered completed
-    return new Set(CHECKLIST_ITEMS.filter((item) => item.step < step).map((item) => item.step));
+    return new Set(
+      CHECKLIST_ITEMS.filter((item) => item.step < step).map(
+        (item) => item.step,
+      ),
+    );
   }, [step]);
 
   const progress = useMemo(() => {
@@ -101,10 +105,9 @@ export function OnboardingChecklist() {
   }, [completedSteps, completed]);
 
   const earnedXp = useMemo(() => {
-    return CHECKLIST_ITEMS.filter((item) => completedSteps.has(item.step)).reduce(
-      (sum, item) => sum + item.xp,
-      0
-    );
+    return CHECKLIST_ITEMS.filter((item) =>
+      completedSteps.has(item.step),
+    ).reduce((sum, item) => sum + item.xp, 0);
   }, [completedSteps]);
 
   // Don't show if onboarding is completed or not a client
@@ -126,14 +129,18 @@ export function OnboardingChecklist() {
           </div>
           <div className="flex items-center gap-1.5 text-xs text-amber-600">
             <Zap className="w-3.5 h-3.5" />
-            <span className="font-medium">{earnedXp}/{TOTAL_XP} XP</span>
+            <span className="font-medium">
+              {earnedXp}/{TOTAL_XP} XP
+            </span>
           </div>
         </div>
 
         {/* Progress bar */}
         <div className="mt-3">
           <div className="flex items-center justify-between text-[11px] text-muted-foreground mb-1.5">
-            <span>{completedSteps.size}/{CHECKLIST_ITEMS.length} etapes</span>
+            <span>
+              {completedSteps.size}/{CHECKLIST_ITEMS.length} etapes
+            </span>
             <span className="font-mono">{progress}%</span>
           </div>
           <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
@@ -158,7 +165,7 @@ export function OnboardingChecklist() {
                 "flex items-center gap-3 px-5 py-3 transition-colors",
                 isCurrent && "bg-primary/5",
                 !isCompleted && !isCurrent && "hover:bg-muted/50",
-                isCompleted && "opacity-60"
+                isCompleted && "opacity-60",
               )}
             >
               {/* Status icon */}
@@ -179,20 +186,23 @@ export function OnboardingChecklist() {
                 <p
                   className={cn(
                     "text-sm font-medium",
-                    isCompleted ? "text-muted-foreground line-through" : "text-foreground"
+                    isCompleted
+                      ? "text-muted-foreground line-through"
+                      : "text-foreground",
                   )}
                 >
                   {item.label}
                 </p>
-                <p className="text-[11px] text-muted-foreground">{item.description}</p>
+                <p className="text-[11px] text-muted-foreground">
+                  {item.description}
+                </p>
               </div>
 
               {/* XP badge */}
               <div className="flex items-center gap-2 shrink-0">
                 {!isCompleted && (
                   <span className="text-[10px] font-medium text-amber-600 bg-amber-500/10 px-2 py-0.5 rounded-full flex items-center gap-0.5">
-                    <Zap className="w-2.5 h-2.5" />
-                    +{item.xp}
+                    <Zap className="w-2.5 h-2.5" />+{item.xp}
                   </span>
                 )}
                 {item.href && !isCompleted && (

@@ -9,9 +9,11 @@ import {
   FileArchive,
   FileSpreadsheet,
   FileImage,
+  AlertTriangle,
 } from "lucide-react";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { ImageLightbox } from "./image-lightbox";
+import { LinkPreview, extractFirstUrl } from "./link-preview";
 import type { EnrichedMessage } from "@/types/messaging";
 
 interface MessageContentProps {
@@ -19,6 +21,10 @@ interface MessageContentProps {
 }
 
 export function MessageContent({ message }: MessageContentProps) {
+  if (message.content_type === "gif" || isGifUrl(message.content)) {
+    return <GifContent message={message} />;
+  }
+
   switch (message.content_type) {
     case "image":
       return <ImageContent message={message} />;
@@ -34,25 +40,110 @@ export function MessageContent({ message }: MessageContentProps) {
   }
 }
 
-/**
- * Render text with @mention highlighting, bold, italic, code, strikethrough, and links.
- */
+function isGifUrl(content: string): boolean {
+  return /\.(gif)(\?|$)/i.test(content) && content.startsWith("http");
+}
+
+function GifContent({ message }: { message: EnrichedMessage }) {
+  const url = message.attachments?.[0]?.file_url ?? message.content;
+  const [showLightbox, setShowLightbox] = useState(false);
+
+  return (
+    <>
+      <div className="mt-1 max-w-xs">
+        <img
+          src={url}
+          alt="GIF"
+          className="rounded-xl border border-border/40 cursor-pointer hover:opacity-90 transition-opacity max-h-64"
+          onClick={() => setShowLightbox(true)}
+          loading="lazy"
+        />
+        <span className="text-[9px] text-muted-foreground/50 mt-0.5 block">
+          GIF
+        </span>
+      </div>
+      {showLightbox && (
+        <ImageLightbox
+          src={url}
+          alt="GIF"
+          onClose={() => setShowLightbox(false)}
+        />
+      )}
+    </>
+  );
+}
+
+function isUrgent(content: string): boolean {
+  return /#urgent\b/i.test(content);
+}
+
 function TextContent({ content }: { content: string }) {
   const imageMatch = content.match(/!\[.*?\]\((.*?)\)/);
   if (imageMatch) {
     return <InlineImage url={imageMatch[1]} />;
   }
 
+  const urgent = isUrgent(content);
+  const firstUrl = extractFirstUrl(content);
+
+  const lines = content.split("\n");
+  const blocks: Array<{ type: "quote" | "text"; content: string }> = [];
+  let currentBlock: { type: "quote" | "text"; content: string } | null = null;
+
+  for (const line of lines) {
+    const isQuoteLine = line.startsWith("> ");
+    const blockType = isQuoteLine ? "quote" : "text";
+    const cleanLine = isQuoteLine ? line.slice(2) : line;
+
+    if (currentBlock && currentBlock.type === blockType) {
+      currentBlock.content += "\n" + cleanLine;
+    } else {
+      if (currentBlock) blocks.push(currentBlock);
+      currentBlock = { type: blockType, content: cleanLine };
+    }
+  }
+  if (currentBlock) blocks.push(currentBlock);
+
   return (
-    <p className="text-[14px] text-foreground leading-relaxed whitespace-pre-wrap break-words">
-      {renderRichText(content)}
-    </p>
+    <div>
+      {urgent && (
+        <div className="flex items-center gap-1.5 mb-1 px-2 py-1 rounded-lg bg-red-500/10 border border-red-500/20 w-fit">
+          <AlertTriangle className="w-3 h-3 text-red-500" />
+          <span className="text-[10px] font-bold text-red-600 uppercase tracking-wider">
+            Urgent
+          </span>
+        </div>
+      )}
+      <div className={urgent ? "border-l-2 border-red-500 pl-2" : ""}>
+        {blocks.map((block, i) => {
+          if (block.type === "quote") {
+            return (
+              <blockquote
+                key={i}
+                className="border-l-2 border-primary/40 pl-3 py-0.5 my-1 text-[14px] text-foreground/70 italic leading-relaxed"
+              >
+                {renderRichText(block.content)}
+              </blockquote>
+            );
+          }
+          return (
+            <p
+              key={i}
+              className="text-[14px] text-foreground leading-relaxed whitespace-pre-wrap break-words"
+            >
+              {renderRichText(block.content)}
+            </p>
+          );
+        })}
+      </div>
+      {firstUrl && <LinkPreview url={firstUrl} />}
+    </div>
   );
 }
 
 function renderRichText(text: string): React.ReactNode[] {
   const pattern =
-    /(@[\w\s]+?)(?=\s|$)|(\*\*(.+?)\*\*)|(_(.+?)_)|(~~(.+?)~~)|(`(.+?)`)|(\[(.+?)\]\((.+?)\))|(https?:\/\/[^\s]+)/g;
+    /(@(?:tous|channel|coachs|[\w\s]+?))(?=[\s,.]|$)|(\*\*(.+?)\*\*)|(_(.+?)_)|(~~(.+?)~~)|(`(.+?)`)|(\[(.+?)\]\((.+?)\))|(https?:\/\/[^\s<>"{}|\\^`[\]]+)|(#urgent\b)/g;
 
   const parts: React.ReactNode[] = [];
   let lastIdx = 0;
@@ -64,12 +155,18 @@ function renderRichText(text: string): React.ReactNode[] {
     }
 
     if (match[1]) {
+      const mentionText = match[1];
+      const isGroupMention = /^@(tous|channel|coachs)$/i.test(mentionText);
       parts.push(
         <span
           key={match.index}
-          className="px-0.5 py-px rounded bg-primary/10 text-primary font-medium text-[13px]"
+          className={
+            isGroupMention
+              ? "px-1 py-px rounded bg-amber-500/15 text-amber-700 dark:text-amber-400 font-semibold text-[13px]"
+              : "px-0.5 py-px rounded bg-primary/10 text-primary font-medium text-[13px]"
+          }
         >
-          {match[1]}
+          {mentionText}
         </span>,
       );
     } else if (match[2]) {
@@ -118,6 +215,15 @@ function renderRichText(text: string): React.ReactNode[] {
         >
           {match[13]}
         </a>,
+      );
+    } else if (match[14]) {
+      parts.push(
+        <span
+          key={match.index}
+          className="px-1 py-px rounded bg-red-500/15 text-red-600 font-bold text-[12px]"
+        >
+          #urgent
+        </span>,
       );
     }
 
@@ -187,7 +293,6 @@ function VideoContent({ message }: { message: EnrichedMessage }) {
   );
 }
 
-// Pre-compute bar heights once (deterministic waveform shape)
 const WAVEFORM_BARS = Array.from(
   { length: 30 },
   (_, i) => Math.max(Math.sin(i * 0.6 + 1) * 0.5 + 0.5, 0.15) * 100,
@@ -202,7 +307,6 @@ function AudioContent({ message }: { message: EnrichedMessage }) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const rafRef = useRef<number>(0);
 
-  // 60fps progress update via requestAnimationFrame
   const tick = useCallback(() => {
     const el = audioRef.current;
     if (!el) return;
@@ -279,9 +383,7 @@ function AudioContent({ message }: { message: EnrichedMessage }) {
         )}
       </button>
 
-      {/* Waveform — dual-layer with GPU-accelerated clipPath for smooth sweep */}
       <div className="flex-1 relative h-7 cursor-pointer" onClick={handleSeek}>
-        {/* Background layer (inactive bars) */}
         <div className="absolute inset-0 flex items-center gap-px">
           {WAVEFORM_BARS.map((h, i) => (
             <div
@@ -291,7 +393,6 @@ function AudioContent({ message }: { message: EnrichedMessage }) {
             />
           ))}
         </div>
-        {/* Foreground layer (active bars) — clipped to progress */}
         <div
           className="absolute inset-0 flex items-center gap-px"
           style={{ clipPath: `inset(0 ${100 - progress * 100}% 0 0)` }}

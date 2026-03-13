@@ -17,6 +17,8 @@ interface MessageListProps {
   onPin: (id: string, pinned: boolean) => void;
   onOpenThread?: (msg: EnrichedMessage) => void;
   searchQuery: string;
+  onBookmark?: (messageId: string) => void;
+  isBookmarked?: (messageId: string) => boolean;
 }
 
 export function MessageList({
@@ -30,6 +32,8 @@ export function MessageList({
   onPin,
   onOpenThread,
   searchQuery,
+  onBookmark,
+  isBookmarked,
 }: MessageListProps) {
   const endRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -136,6 +140,8 @@ export function MessageList({
                   onOpenThread={
                     onOpenThread ? () => onOpenThread(msg) : undefined
                   }
+                  onBookmark={onBookmark}
+                  isBookmarked={isBookmarked?.(msg.id)}
                 />
               ))}
             </div>

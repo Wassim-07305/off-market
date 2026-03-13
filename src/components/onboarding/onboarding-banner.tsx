@@ -13,13 +13,15 @@ const PLATFORM_TOUR: WalkthroughStep[] = [
   {
     target: "[data-tour='dashboard']",
     title: "Ton tableau de bord",
-    content: "Retrouve ici un apercu de ta progression, tes stats et ton activite.",
+    content:
+      "Retrouve ici un apercu de ta progression, tes stats et ton activite.",
     placement: "bottom",
   },
   {
     target: "[data-tour='school']",
     title: "Tes formations",
-    content: "Accede a toutes les formations disponibles. Progresse a ton rythme !",
+    content:
+      "Accede a toutes les formations disponibles. Progresse a ton rythme !",
     placement: "right",
   },
   {
@@ -50,7 +52,8 @@ export function OnboardingBanner() {
   const [dismissed, setDismissed] = useState(false);
 
   // Only show for clients with incomplete onboarding
-  if (dismissed || completed || profile?.role !== "client" || step >= 7) return null;
+  if (dismissed || completed || profile?.role !== "client" || step >= 7)
+    return null;
 
   return (
     <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border border-primary/20 rounded-2xl p-4 flex items-center gap-4">
@@ -63,7 +66,8 @@ export function OnboardingBanner() {
           Bienvenue sur Off Market !
         </p>
         <p className="text-[12px] text-muted-foreground mt-0.5">
-          Complete ton onboarding pour debloquer toutes les fonctionnalites et gagner de l&apos;XP.
+          Complete ton onboarding pour debloquer toutes les fonctionnalites et
+          gagner de l&apos;XP.
         </p>
       </div>
 
