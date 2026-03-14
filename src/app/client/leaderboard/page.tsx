@@ -1,15 +1,20 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import {
   staggerContainer,
   fadeInUp,
   defaultTransition,
 } from "@/lib/animations";
-import { useLeaderboard } from "@/hooks/use-leaderboard";
+import {
+  useLeaderboard,
+  type LeaderboardPeriod,
+} from "@/hooks/use-leaderboard";
 import { useXp } from "@/hooks/use-xp";
 import { useAuth } from "@/hooks/use-auth";
-import { Crown, Medal, Award, TrendingUp } from "lucide-react";
+import { Crown, Medal, Award, TrendingUp, UserX } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const PODIUM_CONFIG = [
   {
@@ -35,13 +40,22 @@ const PODIUM_CONFIG = [
   },
 ];
 
+const PERIOD_TABS: { value: LeaderboardPeriod; label: string }[] = [
+  { value: "7d", label: "Cette semaine" },
+  { value: "30d", label: "Ce mois" },
+  { value: "all", label: "Tout" },
+];
+
 export default function ClientLeaderboardPage() {
-  const { entries, isLoading } = useLeaderboard();
+  const [period, setPeriod] = useState<LeaderboardPeriod>("all");
+  const { entries, isLoading } = useLeaderboard(period);
   const { summary } = useXp();
   const { user } = useAuth();
 
   const top3 = entries.slice(0, 3);
   const rest = entries.slice(3);
+
+  const isAnonymousEntry = (name: string) => name === "Utilisateur anonyme";
 
   return (
     <motion.div
@@ -56,6 +70,28 @@ export default function ClientLeaderboardPage() {
         <p className="text-sm text-muted-foreground mt-1">
           Ton rang parmi les autres freelances
         </p>
+      </motion.div>
+
+      {/* Period filter tabs */}
+      <motion.div
+        variants={fadeInUp}
+        transition={defaultTransition}
+        className="flex items-center gap-1 bg-muted p-1 rounded-xl w-fit"
+      >
+        {PERIOD_TABS.map((tab) => (
+          <button
+            key={tab.value}
+            onClick={() => setPeriod(tab.value)}
+            className={cn(
+              "h-9 px-4 rounded-lg text-sm font-medium transition-all",
+              period === tab.value
+                ? "bg-surface text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            {tab.label}
+          </button>
+        ))}
       </motion.div>
 
       {/* My position card */}
@@ -121,6 +157,7 @@ export default function ClientLeaderboardPage() {
                 );
                 const Icon = podium?.icon ?? Medal;
                 const isMe = entry.profile_id === user?.id;
+                const isAnonymous = isAnonymousEntry(entry.full_name);
 
                 return (
                   <div
@@ -133,7 +170,9 @@ export default function ClientLeaderboardPage() {
                       className={`w-6 h-6 mx-auto mb-2 ${podium?.color ?? "text-muted-foreground"}`}
                     />
                     <div className="w-10 h-10 rounded-full bg-muted mx-auto mb-2 flex items-center justify-center text-sm font-medium text-foreground">
-                      {entry.avatar_url ? (
+                      {isAnonymous ? (
+                        <UserX className="w-4 h-4 text-muted-foreground" />
+                      ) : entry.avatar_url ? (
                         <img
                           src={entry.avatar_url}
                           alt={entry.full_name}
@@ -144,7 +183,14 @@ export default function ClientLeaderboardPage() {
                       )}
                     </div>
                     <p
-                      className={`text-xs font-medium truncate ${isMe ? "text-primary" : "text-foreground"}`}
+                      className={cn(
+                        "text-xs font-medium truncate",
+                        isMe
+                          ? "text-primary"
+                          : isAnonymous
+                            ? "text-muted-foreground italic"
+                            : "text-foreground",
+                      )}
                     >
                       {isMe ? "Toi" : entry.full_name}
                     </p>
@@ -172,6 +218,8 @@ export default function ClientLeaderboardPage() {
             >
               {rest.map((entry) => {
                 const isMe = entry.profile_id === user?.id;
+                const isAnonymous = isAnonymousEntry(entry.full_name);
+
                 return (
                   <div
                     key={entry.profile_id}
@@ -183,7 +231,9 @@ export default function ClientLeaderboardPage() {
                       #{entry.rank}
                     </span>
                     <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs font-medium text-foreground shrink-0">
-                      {entry.avatar_url ? (
+                      {isAnonymous ? (
+                        <UserX className="w-3.5 h-3.5 text-muted-foreground" />
+                      ) : entry.avatar_url ? (
                         <img
                           src={entry.avatar_url}
                           alt={entry.full_name}
@@ -195,7 +245,14 @@ export default function ClientLeaderboardPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p
-                        className={`text-sm font-medium truncate ${isMe ? "text-primary" : "text-foreground"}`}
+                        className={cn(
+                          "text-sm font-medium truncate",
+                          isMe
+                            ? "text-primary"
+                            : isAnonymous
+                              ? "text-muted-foreground italic"
+                              : "text-foreground",
+                        )}
                       >
                         {isMe ? "Toi" : entry.full_name}
                       </p>

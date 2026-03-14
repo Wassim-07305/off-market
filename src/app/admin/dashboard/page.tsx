@@ -9,6 +9,9 @@ import { StatCard } from "@/components/dashboard/stat-card";
 import { ActivityFeed } from "@/components/dashboard/activity-feed";
 import { ConversionFunnel } from "@/components/dashboard/conversion-funnel";
 import { KpiGoalsWidget } from "@/components/dashboard/kpi-goals";
+import { ActivityHeatmap } from "@/components/dashboard/activity-heatmap";
+import { PeriodComparison } from "@/components/dashboard/period-comparison";
+import { LTVRanking } from "@/components/dashboard/ltv-ranking";
 import { formatCurrency, cn } from "@/lib/utils";
 import {
   DollarSign,
@@ -539,6 +542,20 @@ export default function AdminDashboardPage() {
           </div>
         </motion.div>
       )}
+
+      {/* Activity Heatmap + Period Comparison */}
+      <motion.div
+        variants={staggerItem}
+        className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+      >
+        <ActivityHeatmap />
+        <PeriodComparison />
+      </motion.div>
+
+      {/* LTV Ranking */}
+      <motion.div variants={staggerItem}>
+        <LTVRanking />
+      </motion.div>
 
       {/* KPI Goals + Funnel */}
       <motion.div

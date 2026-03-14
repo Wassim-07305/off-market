@@ -32,6 +32,7 @@ import {
   EyeOff,
   ShieldCheck,
   Smartphone,
+  Trophy,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -106,6 +107,7 @@ export default function SettingsPage() {
   const [phone, setPhone] = useState(profile?.phone ?? "");
   const [bio, setBio] = useState(profile?.bio ?? "");
   const [avatarUrl, setAvatarUrl] = useState(profile?.avatar_url ?? "");
+  const [leaderboardAnonymous, setLeaderboardAnonymous] = useState(false);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [exporting, setExporting] = useState(false);
@@ -152,6 +154,10 @@ export default function SettingsPage() {
       setPhone(profile.phone ?? "");
       setBio(profile.bio ?? "");
       setAvatarUrl(profile.avatar_url ?? "");
+      setLeaderboardAnonymous(
+        (profile as unknown as Record<string, unknown>).leaderboard_anonymous ===
+          true,
+      );
     }
   }, [profile]);
 
@@ -546,6 +552,61 @@ export default function SettingsPage() {
             </label>
           </div>
         )}
+      </div>
+
+      {/* Leaderboard anonymity */}
+      <div
+        className="bg-surface rounded-2xl p-6 space-y-4"
+        style={{ boxShadow: "var(--shadow-card)" }}
+      >
+        <div className="flex items-center gap-2 mb-2">
+          <Trophy className="w-4 h-4 text-muted-foreground" />
+          <h2 className="text-sm font-semibold text-foreground">Classement</h2>
+        </div>
+        <label className="flex items-center justify-between cursor-pointer">
+          <div>
+            <p className="text-sm font-medium text-foreground">
+              Mode anonyme
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Masque ton nom et ta photo dans le classement public
+            </p>
+          </div>
+          <button
+            role="switch"
+            aria-checked={leaderboardAnonymous}
+            onClick={async () => {
+              if (!user) return;
+              const newVal = !leaderboardAnonymous;
+              setLeaderboardAnonymous(newVal);
+              const { error } = await supabase
+                .from("profiles")
+                .update({ leaderboard_anonymous: newVal })
+                .eq("id", user.id);
+              if (error) {
+                toast.error("Erreur lors de la mise a jour");
+                setLeaderboardAnonymous(!newVal);
+              } else {
+                toast.success(
+                  newVal
+                    ? "Tu apparais maintenant en anonyme"
+                    : "Ton profil est visible dans le classement",
+                );
+              }
+            }}
+            className={cn(
+              "relative w-10 h-6 rounded-full transition-colors shrink-0",
+              leaderboardAnonymous ? "bg-primary" : "bg-muted-foreground/30",
+            )}
+          >
+            <span
+              className={cn(
+                "absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform shadow-sm",
+                leaderboardAnonymous && "translate-x-4",
+              )}
+            />
+          </button>
+        </label>
       </div>
 
       {/* Appearance */}

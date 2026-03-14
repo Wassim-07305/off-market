@@ -163,6 +163,96 @@ export interface UserXpSummary {
   rank: number;
 }
 
+// ─── REWARDS ─────────────────────────
+export type RewardType =
+  | "session_bonus"
+  | "resource_unlock"
+  | "badge_exclusive"
+  | "custom";
+
+export const REWARD_TYPE_CONFIG: Record<
+  RewardType,
+  { label: string; icon: string; color: string; bg: string }
+> = {
+  session_bonus: {
+    label: "Session bonus",
+    icon: "Video",
+    color: "text-blue-500",
+    bg: "bg-blue-500/10",
+  },
+  resource_unlock: {
+    label: "Ressource",
+    icon: "FolderOpen",
+    color: "text-emerald-500",
+    bg: "bg-emerald-500/10",
+  },
+  badge_exclusive: {
+    label: "Badge exclusif",
+    icon: "Award",
+    color: "text-purple-500",
+    bg: "bg-purple-500/10",
+  },
+  custom: {
+    label: "Special",
+    icon: "Sparkles",
+    color: "text-amber-500",
+    bg: "bg-amber-500/10",
+  },
+};
+
+export interface Reward {
+  id: string;
+  title: string;
+  description: string | null;
+  cost_xp: number;
+  type: RewardType;
+  stock: number | null; // null = unlimited
+  is_active: boolean;
+  image_url: string | null;
+  created_by: string | null;
+  created_at: string;
+}
+
+export type RedemptionStatus = "pending" | "fulfilled" | "cancelled";
+
+export const REDEMPTION_STATUS_CONFIG: Record<
+  RedemptionStatus,
+  { label: string; color: string; bg: string }
+> = {
+  pending: {
+    label: "En attente",
+    color: "text-amber-600",
+    bg: "bg-amber-500/10",
+  },
+  fulfilled: {
+    label: "Rempli",
+    color: "text-emerald-600",
+    bg: "bg-emerald-500/10",
+  },
+  cancelled: {
+    label: "Annule",
+    color: "text-zinc-500",
+    bg: "bg-zinc-500/10",
+  },
+};
+
+export interface RewardRedemption {
+  id: string;
+  user_id: string;
+  reward_id: string;
+  xp_spent: number;
+  status: RedemptionStatus;
+  redeemed_at: string;
+  fulfilled_at: string | null;
+  fulfilled_by: string | null;
+  reward?: Reward;
+  profile?: {
+    id: string;
+    full_name: string;
+    avatar_url: string | null;
+  };
+}
+
 // ─── HALL OF FAME ────────────────────
 export interface HallOfFameEntry {
   id: string;

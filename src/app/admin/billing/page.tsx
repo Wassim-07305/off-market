@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import { ExportDropdown } from "@/components/shared/export-dropdown";
 import { exportToCSV, exportToPDF } from "@/lib/export";
+import { CashFlowChart } from "@/components/dashboard/cash-flow-chart";
 
 function formatEUR(amount: number) {
   return new Intl.NumberFormat("fr-FR", {
@@ -214,6 +215,11 @@ export default function BillingOverviewPage() {
           </p>
           <p className="text-xs text-muted-foreground mt-1">Contrats signes</p>
         </div>
+      </motion.div>
+
+      {/* Cash flow chart */}
+      <motion.div variants={fadeInUp} transition={defaultTransition}>
+        <CashFlowChart />
       </motion.div>
 
       {/* Two columns: Recent contracts + Recent invoices */}

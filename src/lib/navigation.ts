@@ -18,6 +18,7 @@ import {
   Trophy,
   Flame,
   Crown,
+  Gift,
   Phone,
   Send,
   CalendarCheck,
@@ -54,8 +55,10 @@ export const adminNavigation: NavItem[] = [
   { name: "Assistant IA", href: "/admin/ai", icon: Bot },
   { name: "Invitations", href: "/admin/invitations", icon: Send },
   { name: "Ressources", href: "/admin/resources", icon: FolderOpen },
+  { name: "Recompenses", href: "/admin/rewards", icon: Gift },
   { name: "Moderation", href: "/admin/moderation", icon: Shield },
   { name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
+  { name: "Audit", href: "/admin/audit", icon: ClipboardCheck },
 ];
 
 /** Coach / CSM */
@@ -99,6 +102,7 @@ export const clientNavigation: NavItem[] = [
   { name: "Progression", href: "/client/progress", icon: Trophy },
   { name: "Defis", href: "/client/challenges", icon: Flame },
   { name: "Classement", href: "/client/leaderboard", icon: Crown },
+  { name: "Recompenses", href: "/client/rewards", icon: Gift },
   { name: "Communaute", href: "/client/community", icon: Users },
   { name: "Hall of Fame", href: "/client/hall-of-fame", icon: Star },
   { name: "Ressources", href: "/client/resources", icon: FolderOpen },

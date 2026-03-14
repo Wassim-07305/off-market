@@ -23,7 +23,19 @@ export function useLeaderboard(period: LeaderboardPeriod = "all") {
           .order("rank", { ascending: true })
           .limit(50);
         if (error) throw error;
-        return data as LeaderboardEntry[];
+
+        // Fetch anonymity flags
+        const profileIds = (data ?? []).map(
+          (e: LeaderboardEntry) => e.profile_id,
+        );
+        const anonymousSet = await fetchAnonymousProfiles(
+          supabase,
+          profileIds,
+        );
+
+        return (data as LeaderboardEntry[]).map((entry) =>
+          applyAnonymity(entry, anonymousSet, user?.id),
+        );
       }
 
       // For time-filtered queries, aggregate from xp_transactions
@@ -55,12 +67,12 @@ export function useLeaderboard(period: LeaderboardPeriod = "all") {
 
       if (sorted.length === 0) return [];
 
-      // Fetch profiles and badge counts
+      // Fetch profiles (including anonymity) and badge counts
       const profileIds = sorted.map(([id]) => id);
       const [profilesRes, badgesRes] = await Promise.all([
         supabase
           .from("profiles")
-          .select("id, full_name, avatar_url")
+          .select("id, full_name, avatar_url, leaderboard_anonymous")
           .in("id", profileIds),
         supabase
           .from("user_badges")
@@ -83,10 +95,16 @@ export function useLeaderboard(period: LeaderboardPeriod = "all") {
 
       return sorted.map(([profileId, totalXp], index) => {
         const profile = profileMap.get(profileId);
+        const isAnonymous =
+          profile?.leaderboard_anonymous === true &&
+          profileId !== user?.id;
+
         return {
           profile_id: profileId,
-          full_name: profile?.full_name ?? "Utilisateur",
-          avatar_url: profile?.avatar_url ?? null,
+          full_name: isAnonymous
+            ? "Utilisateur anonyme"
+            : (profile?.full_name ?? "Utilisateur"),
+          avatar_url: isAnonymous ? null : (profile?.avatar_url ?? null),
           total_xp: totalXp,
           badge_count: badgeCountMap.get(profileId) ?? 0,
           rank: index + 1,
@@ -98,5 +116,34 @@ export function useLeaderboard(period: LeaderboardPeriod = "all") {
   return {
     entries: leaderboardQuery.data ?? [],
     isLoading: leaderboardQuery.isLoading,
+  };
+}
+
+// ─── Helpers ────────────────────────
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function fetchAnonymousProfiles(supabase: any, profileIds: string[]) {
+  if (profileIds.length === 0) return new Set<string>();
+  const { data } = await supabase
+    .from("profiles")
+    .select("id, leaderboard_anonymous")
+    .in("id", profileIds)
+    .eq("leaderboard_anonymous", true);
+  return new Set<string>((data ?? []).map((p: { id: string }) => p.id));
+}
+
+function applyAnonymity(
+  entry: LeaderboardEntry,
+  anonymousSet: Set<string>,
+  currentUserId: string | undefined,
+): LeaderboardEntry {
+  // Never hide current user's own entry
+  if (entry.profile_id === currentUserId) return entry;
+  if (!anonymousSet.has(entry.profile_id)) return entry;
+
+  return {
+    ...entry,
+    full_name: "Utilisateur anonyme",
+    avatar_url: null,
   };
 }

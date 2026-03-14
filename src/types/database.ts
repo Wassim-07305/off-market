@@ -621,6 +621,18 @@ export interface GoogleCalendarToken {
   updated_at: string;
 }
 
+export interface AuditLog {
+  id: string;
+  user_id: string | null;
+  action: string;
+  entity_type: string | null;
+  entity_id: string | null;
+  metadata: Record<string, unknown>;
+  ip_address: string | null;
+  created_at: string;
+  user?: Profile;
+}
+
 export interface ContactInteraction {
   id: string;
   contact_id: string;
@@ -628,6 +640,80 @@ export interface ContactInteraction {
   content: string | null;
   metadata: Record<string, unknown>;
   created_by: string | null;
+  created_at: string;
+}
+
+// ---------------------------------------------------------------------------
+// Workbooks
+// ---------------------------------------------------------------------------
+
+export type WorkbookModuleType =
+  | "marche"
+  | "offre"
+  | "communication"
+  | "acquisition"
+  | "conversion"
+  | "diagnostic"
+  | "general";
+
+export interface WorkbookFieldOption {
+  label: string;
+  value: string;
+}
+
+export interface WorkbookField {
+  id: string;
+  type: "text" | "textarea" | "select" | "number" | "rating";
+  label: string;
+  description?: string;
+  placeholder?: string;
+  required?: boolean;
+  options?: WorkbookFieldOption[];
+  min?: number;
+  max?: number;
+}
+
+export interface Workbook {
+  id: string;
+  title: string;
+  description: string | null;
+  course_id: string | null;
+  module_type: WorkbookModuleType | null;
+  fields: WorkbookField[];
+  created_by: string | null;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export type WorkbookSubmissionStatus = "draft" | "submitted" | "reviewed";
+
+export interface WorkbookSubmission {
+  id: string;
+  workbook_id: string;
+  client_id: string;
+  call_id: string | null;
+  answers: Record<string, unknown>;
+  status: WorkbookSubmissionStatus;
+  reviewer_notes: string | null;
+  reviewed_by: string | null;
+  submitted_at: string | null;
+  created_at: string;
+  workbook?: Workbook;
+  client?: Profile;
+}
+
+export type CallDocumentType = "transcript_fusion" | "summary" | "workbook_export";
+
+export interface CallDocument {
+  id: string;
+  call_id: string;
+  type: CallDocumentType;
+  title: string;
+  content_html: string;
+  content_markdown: string | null;
+  generated_by: string;
+  model: string | null;
   created_at: string;
 }
 
