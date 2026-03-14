@@ -133,14 +133,14 @@ export function StudentSidePanel({
 
   return (
     <>
-      {/* Backdrop */}
+      {/* Backdrop — transparent, no blur */}
       <div
-        className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40 transition-opacity"
+        className="fixed inset-0 z-40"
         onClick={onClose}
       />
 
       {/* Panel */}
-      <div className="fixed inset-y-0 right-0 w-full max-w-xl bg-background border-l border-border z-50 overflow-y-auto animate-in slide-in-from-right duration-300">
+      <div className="fixed inset-y-0 right-0 w-full max-w-xl bg-background border-l border-border z-50 overflow-y-auto shadow-2xl animate-in slide-in-from-right duration-200">
         {/* Header */}
         <div className="sticky top-0 bg-background/95 backdrop-blur-sm border-b border-border z-10 px-6 py-4">
           <div className="flex items-center justify-between">
@@ -156,7 +156,7 @@ export function StudentSidePanel({
           </div>
         </div>
 
-        <div className="px-6 py-4 space-y-5">
+        <div className="px-6 py-4 pb-8 space-y-5">
           {isLoading ? (
             <div className="space-y-4 animate-pulse">
               <div className="flex items-center gap-4">
