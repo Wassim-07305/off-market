@@ -1,1 +1,2 @@
-export { default } from "@/app/_shared-pages/crm/[id]/page";
+import StudentDetailPage from "@/app/_shared-pages/crm/[id]/page";
+export default StudentDetailPage;
