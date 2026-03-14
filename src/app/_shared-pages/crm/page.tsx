@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useRoutePrefix } from "@/hooks/use-route-prefix";
 import { useSupabase } from "@/hooks/use-supabase";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 import { toast } from "sonner";
 import {
@@ -499,12 +499,14 @@ export default function CRMPage() {
         onClose={() => setShowAddModal(false)}
       />
 
-      {selectedStudentId && (
-        <StudentSidePanel
-          studentId={selectedStudentId}
-          onClose={() => setSelectedStudentId(null)}
-        />
-      )}
+      <AnimatePresence>
+        {selectedStudentId && (
+          <StudentSidePanel
+            studentId={selectedStudentId}
+            onClose={() => setSelectedStudentId(null)}
+          />
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

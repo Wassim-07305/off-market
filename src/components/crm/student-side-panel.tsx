@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
 import { useRoutePrefix } from "@/hooks/use-route-prefix";
 import {
   useStudent,
@@ -134,13 +135,23 @@ export function StudentSidePanel({
   return (
     <>
       {/* Backdrop — transparent, no blur */}
-      <div
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2 }}
         className="fixed inset-0 z-40"
         onClick={onClose}
       />
 
       {/* Panel */}
-      <div className="fixed inset-y-0 right-0 w-full max-w-xl bg-background border-l border-border z-50 overflow-y-auto shadow-2xl animate-in slide-in-from-right duration-200">
+      <motion.div
+        initial={{ x: "100%" }}
+        animate={{ x: 0 }}
+        exit={{ x: "100%" }}
+        transition={{ type: "spring", damping: 30, stiffness: 300 }}
+        className="fixed inset-y-0 right-0 w-full max-w-xl bg-background border-l border-border z-50 overflow-y-auto shadow-2xl"
+      >
         {/* Header */}
         <div className="sticky top-0 bg-background/95 backdrop-blur-sm border-b border-border z-10 px-6 py-4">
           <div className="flex items-center justify-between">
@@ -758,7 +769,7 @@ export function StudentSidePanel({
             </>
           )}
         </div>
-      </div>
+      </motion.div>
     </>
   );
 }
