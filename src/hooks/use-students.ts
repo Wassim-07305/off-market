@@ -76,18 +76,15 @@ export function useStudents(options: UseStudentsOptions = {}) {
   }, [supabase, queryClient]);
 
   const ensureStudentDetails = async (profileId: string) => {
-    const { data, error: selectError } = await supabase
+    const { data } = await supabase
       .from("student_details")
       .select("id")
       .eq("profile_id", profileId)
       .maybeSingle();
-    console.log("[ensureStudentDetails] existing row:", data, "selectError:", selectError);
     if (!data) {
-      const { data: inserted, error } = await supabase
+      const { error } = await supabase
         .from("student_details")
-        .insert({ profile_id: profileId })
-        .select();
-      console.log("[ensureStudentDetails] insert result:", inserted, "error:", error);
+        .insert({ profile_id: profileId });
       if (error) throw error;
     }
   };
@@ -100,19 +97,32 @@ export function useStudents(options: UseStudentsOptions = {}) {
       profileId: string;
       tag: string;
     }) => {
-      console.log("[updateStudentTag] profileId:", profileId, "tag:", tag);
       await ensureStudentDetails(profileId);
-      const { data: updated, error, count } = await supabase
+      const { error } = await supabase
         .from("student_details")
         .update({ tag })
-        .eq("profile_id", profileId)
-        .select();
-      console.log("[updateStudentTag] result:", updated, "error:", error, "count:", count);
+        .eq("profile_id", profileId);
       if (error) throw error;
+      return { profileId, tag };
     },
-    onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["students"] });
-      queryClient.invalidateQueries({ queryKey: ["student", variables.profileId] });
+    onSuccess: async (_data, variables) => {
+      // Optimistic: update cache directly
+      queryClient.setQueryData<StudentWithDetails>(
+        ["student", variables.profileId],
+        (old) => {
+          if (!old) return old;
+          return {
+            ...old,
+            student_details: old.student_details.map((d) => ({
+              ...d,
+              tag: variables.tag,
+            })),
+          };
+        },
+      );
+      // Then refetch to ensure consistency
+      await queryClient.refetchQueries({ queryKey: ["students"] });
+      await queryClient.refetchQueries({ queryKey: ["student", variables.profileId] });
     },
   });
 
