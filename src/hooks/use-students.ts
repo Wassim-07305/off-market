@@ -85,8 +85,7 @@ export function useStudents(options: UseStudentsOptions = {}) {
     }) => {
       const { error } = await supabase
         .from("student_details")
-        .update({ tag })
-        .eq("profile_id", profileId);
+        .upsert({ profile_id: profileId, tag }, { onConflict: "profile_id" });
       if (error) throw error;
     },
     onSuccess: (_data, variables) => {
@@ -105,8 +104,7 @@ export function useStudents(options: UseStudentsOptions = {}) {
     }) => {
       const { error } = await supabase
         .from("student_details")
-        .update(updates)
-        .eq("profile_id", profileId);
+        .upsert({ profile_id: profileId, ...updates }, { onConflict: "profile_id" });
       if (error) throw error;
     },
     onSuccess: (_data, variables) => {
@@ -135,8 +133,7 @@ export function useStudents(options: UseStudentsOptions = {}) {
       // Update the flag
       const { error } = await supabase
         .from("student_details")
-        .update({ flag })
-        .eq("profile_id", profileId);
+        .upsert({ profile_id: profileId, flag }, { onConflict: "profile_id" });
       if (error) throw error;
 
       // Log the change in history
