@@ -198,11 +198,13 @@ export function StudentSidePanel({
 
   const handleTagChange = (newTag: string) => {
     if (!student) return;
-    updateStudentTag.mutate({
-      profileId: student.id,
-      tag: newTag,
-    });
-    toast.success("Tag mis a jour");
+    updateStudentTag.mutate(
+      { profileId: student.id, tag: newTag },
+      {
+        onSuccess: () => toast.success("Tag mis a jour"),
+        onError: () => toast.error("Erreur lors de la mise a jour du tag"),
+      },
+    );
   };
 
   const tabs: { key: TabType; label: string; icon: typeof FileText }[] = [

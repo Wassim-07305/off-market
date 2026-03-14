@@ -75,6 +75,20 @@ export function useStudents(options: UseStudentsOptions = {}) {
     };
   }, [supabase, queryClient]);
 
+  const ensureStudentDetails = async (profileId: string) => {
+    const { data } = await supabase
+      .from("student_details")
+      .select("id")
+      .eq("profile_id", profileId)
+      .maybeSingle();
+    if (!data) {
+      const { error } = await supabase
+        .from("student_details")
+        .insert({ profile_id: profileId });
+      if (error) throw error;
+    }
+  };
+
   const updateStudentTag = useMutation({
     mutationFn: async ({
       profileId,
@@ -83,9 +97,11 @@ export function useStudents(options: UseStudentsOptions = {}) {
       profileId: string;
       tag: string;
     }) => {
+      await ensureStudentDetails(profileId);
       const { error } = await supabase
         .from("student_details")
-        .upsert({ profile_id: profileId, tag }, { onConflict: "profile_id" });
+        .update({ tag })
+        .eq("profile_id", profileId);
       if (error) throw error;
     },
     onSuccess: (_data, variables) => {
@@ -102,9 +118,11 @@ export function useStudents(options: UseStudentsOptions = {}) {
       profileId: string;
       updates: Partial<StudentDetail>;
     }) => {
+      await ensureStudentDetails(profileId);
       const { error } = await supabase
         .from("student_details")
-        .upsert({ profile_id: profileId, ...updates }, { onConflict: "profile_id" });
+        .update(updates)
+        .eq("profile_id", profileId);
       if (error) throw error;
     },
     onSuccess: (_data, variables) => {
@@ -123,6 +141,8 @@ export function useStudents(options: UseStudentsOptions = {}) {
       flag: StudentFlag;
       reason?: string;
     }) => {
+      await ensureStudentDetails(profileId);
+
       // Get current flag for history
       const { data: current } = await supabase
         .from("student_details")
@@ -133,7 +153,8 @@ export function useStudents(options: UseStudentsOptions = {}) {
       // Update the flag
       const { error } = await supabase
         .from("student_details")
-        .upsert({ profile_id: profileId, flag }, { onConflict: "profile_id" });
+        .update({ flag })
+        .eq("profile_id", profileId);
       if (error) throw error;
 
       // Log the change in history
