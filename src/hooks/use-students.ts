@@ -103,24 +103,8 @@ export function useStudents(options: UseStudentsOptions = {}) {
         .update({ tag })
         .eq("profile_id", profileId);
       if (error) throw error;
-      return { profileId, tag };
     },
     onSuccess: (_data, variables) => {
-      // Optimistic: update cache directly
-      queryClient.setQueryData<StudentWithDetails>(
-        ["student", variables.profileId],
-        (old) => {
-          if (!old) return old;
-          const details = old.student_details ?? [];
-          return {
-            ...old,
-            student_details: details.length > 0
-              ? details.map((d) => ({ ...d, tag: variables.tag }))
-              : [{ tag: variables.tag } as StudentDetail],
-          };
-        },
-      );
-      // Then refetch in background
       queryClient.invalidateQueries({ queryKey: ["students"] });
       queryClient.invalidateQueries({ queryKey: ["student", variables.profileId] });
     },

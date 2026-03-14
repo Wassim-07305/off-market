@@ -79,6 +79,7 @@ export function StudentSidePanel({
   const { profile } = useAuth();
   const { updateStudentFlag, updateStudentTag, updateStudentDetails } = useStudentsHook();
 
+  const [selectedTag, setSelectedTag] = useState<string>("standard");
   const [newNote, setNewNote] = useState("");
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [isEditing, setIsEditing] = useState(false);
@@ -100,6 +101,7 @@ export function StudentSidePanel({
   useEffect(() => {
     if (student) {
       const d = student.student_details?.[0];
+      setSelectedTag(d?.tag ?? "standard");
       setEditForm({
         full_name: student.full_name ?? "",
         email: student.email ?? "",
@@ -196,18 +198,27 @@ export function StudentSidePanel({
     });
   };
 
-  const handleTagChange = (newTag: string) => {
+  const handleTagChange = async (newTag: string) => {
     if (!student) return;
-    updateStudentTag.mutate(
-      { profileId: student.id, tag: newTag },
-      {
-        onSuccess: () => toast.success("Tag mis a jour"),
-        onError: (err) => {
-          console.error("[updateStudentTag] error:", err);
-          toast.error(`Erreur tag: ${err instanceof Error ? err.message : JSON.stringify(err)}`);
-        },
-      },
-    );
+    const oldTag = selectedTag;
+    setSelectedTag(newTag);
+    try {
+      // Ensure row exists
+      const { data: existing } = await supabase
+        .from("student_details")
+        .select("id")
+        .eq("profile_id", student.id)
+        .maybeSingle();
+      if (!existing) {
+        await supabase.from("student_details").insert({ profile_id: student.id, tag: newTag });
+      } else {
+        await supabase.from("student_details").update({ tag: newTag }).eq("profile_id", student.id);
+      }
+      toast.success("Tag mis a jour");
+    } catch {
+      setSelectedTag(oldTag);
+      toast.error("Erreur lors de la mise a jour du tag");
+    }
   };
 
   const tabs: { key: TabType; label: string; icon: typeof FileText }[] = [
@@ -474,9 +485,9 @@ export function StudentSidePanel({
                   Tag engagement
                 </p>
                 <EngagementTagSelector
-                  currentTag={details?.tag ?? "standard"}
+                  currentTag={selectedTag as import("@/types/database").StudentEngagementTag}
                   onSelect={handleTagChange}
-                  isPending={updateStudentTag.isPending}
+                  isPending={false}
                 />
               </div>
 
