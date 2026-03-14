@@ -12,6 +12,7 @@ import {
   type CallCalendarWithRelations,
 } from "@/types/calls";
 import { CallNotesForm } from "@/components/calls/call-notes-form";
+import { CallSummaryPanel } from "@/components/calls/call-summary-panel";
 import { cn } from "@/lib/utils";
 
 interface CallFormModalProps {
@@ -459,6 +460,18 @@ export function CallFormModal({
                 <CallNotesForm callId={editCall.id} />
               </div>
             )}
+
+          {/* AI Summary (only for completed calls) */}
+          {editCall && editCall.status === "realise" && (
+            <div className="pt-4 border-t border-border/50">
+              <CallSummaryPanel
+                callId={editCall.id}
+                callTitle={editCall.title}
+                clientName={editCall.client?.full_name}
+                callDate={editCall.date}
+              />
+            </div>
+          )}
 
           <div className="flex gap-3 pt-2">
             {editCall && (

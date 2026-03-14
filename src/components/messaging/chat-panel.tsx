@@ -81,6 +81,8 @@ export function ChatPanel({
     setShowSearchPanel,
     searchQuery,
     setSearchQuery,
+    toggleBookmark,
+    isBookmarked,
   } = useMessagingStore();
   const [threadMessage, setThreadMessage] = useState<EnrichedMessage | null>(
     null,
@@ -258,6 +260,8 @@ export function ChatPanel({
           onPin={(id, pinned) => togglePin.mutate({ id, pinned })}
           onOpenThread={(msg) => setThreadMessage(msg)}
           searchQuery={searchQuery}
+          onBookmark={toggleBookmark}
+          isBookmarked={isBookmarked}
         />
 
         <TypingIndicator typingUsers={typingUsers} />

@@ -265,6 +265,23 @@ export function useChannels() {
   };
 }
 
+interface ChannelMemberRow {
+  id: string;
+  channel_id: string;
+  profile_id: string;
+  role: string;
+  last_read_at: string;
+  notifications_muted: boolean;
+  joined_at: string;
+  profile: {
+    id: string;
+    full_name: string;
+    avatar_url: string | null;
+    role: string;
+    email: string;
+  } | null;
+}
+
 export function useChannelMembers(channelId: string | null) {
   const supabase = useSupabase();
 
@@ -276,7 +293,7 @@ export function useChannelMembers(channelId: string | null) {
         .select("*, profile:profiles(id, full_name, avatar_url, role, email)")
         .eq("channel_id", channelId!);
       if (error) throw error;
-      return data ?? [];
+      return (data ?? []) as ChannelMemberRow[];
     },
     enabled: !!channelId,
   });

@@ -12,6 +12,7 @@ import {
   Trash2,
   Pin,
   MessageSquare,
+  Bookmark,
 } from "lucide-react";
 import type { EnrichedMessage } from "@/types/messaging";
 
@@ -26,6 +27,8 @@ interface MessageBubbleProps {
   onDelete: () => void;
   onPin: () => void;
   onOpenThread?: () => void;
+  onBookmark?: (messageId: string) => void;
+  isBookmarked?: boolean;
 }
 
 const QUICK_REACTIONS = [
@@ -48,6 +51,8 @@ export function MessageBubble({
   onDelete,
   onPin,
   onOpenThread,
+  onBookmark,
+  isBookmarked,
 }: MessageBubbleProps) {
   const [showActions, setShowActions] = useState(false);
   const [showQuickReact, setShowQuickReact] = useState(false);
@@ -263,6 +268,20 @@ export function MessageBubble({
         >
           <Pin className="w-3.5 h-3.5" />
         </button>
+        {onBookmark && (
+          <button
+            onClick={() => onBookmark(message.id)}
+            className={cn(
+              "w-7 h-7 flex items-center justify-center transition-colors",
+              isBookmarked
+                ? "text-primary hover:bg-muted"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted",
+            )}
+            title={isBookmarked ? "Retirer le signet" : "Ajouter un signet"}
+          >
+            <Bookmark className={cn("w-3.5 h-3.5", isBookmarked && "fill-primary")} />
+          </button>
+        )}
         {isOwn && (
           <button
             onClick={onDelete}

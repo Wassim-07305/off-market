@@ -340,6 +340,7 @@ export function VideoRoom({ callId }: VideoRoomProps) {
   if (store.phase === "ended" && hasJoined) {
     return (
       <CallEndedSummary
+        callId={callId}
         callTitle={call.title}
         onDownloadTranscript={handleDownloadTranscript}
       />

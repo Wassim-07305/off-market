@@ -59,7 +59,12 @@ export function ChannelSidebar({
         .select("id, full_name, avatar_url, role")
         .neq("id", user?.id ?? "")
         .order("full_name");
-      return data ?? [];
+      return (data ?? []) as Array<{
+        id: string;
+        full_name: string;
+        avatar_url: string | null;
+        role: string;
+      }>;
     },
     enabled: !!user,
   });

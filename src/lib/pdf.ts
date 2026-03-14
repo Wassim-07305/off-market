@@ -427,3 +427,159 @@ export function generateContractPDF(contract: ContractPDFData) {
   const safeTitle = contract.title.replace(/[^a-zA-Z0-9]/g, "_");
   doc.save(`contrat_${safeTitle}.pdf`);
 }
+
+// ═══════════════════════════════════════════════════
+// Call Summary PDF
+// ═══════════════════════════════════════════════════
+
+interface CallSummaryPDFData {
+  content: string;
+  callTitle: string;
+  clientName: string;
+  callDate: string;
+}
+
+export function generateCallSummaryPDF(data: CallSummaryPDFData) {
+  const doc = new jsPDF();
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const margin = 20;
+  const contentWidth = pageWidth - margin * 2;
+
+  // ── En-tete ────────────────────────────────────
+  doc.setFillColor(...PRIMARY_COLOR);
+  doc.rect(0, 0, pageWidth, 4, "F");
+
+  // Titre
+  doc.setFontSize(22);
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(...PRIMARY_COLOR);
+  doc.text("SYNTHESE D'APPEL", pageWidth / 2, 25, { align: "center" });
+
+  doc.setFontSize(12);
+  doc.setTextColor(107, 114, 128);
+  doc.text(BUSINESS.company, pageWidth / 2, 34, { align: "center" });
+
+  // Infos appel
+  doc.setFontSize(11);
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(31, 41, 55);
+  doc.text(data.callTitle, pageWidth / 2, 48, { align: "center" });
+
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(107, 114, 128);
+
+  const metaLine = [
+    data.clientName && `Client : ${data.clientName}`,
+    data.callDate && `Date : ${formatDate(data.callDate)}`,
+  ]
+    .filter(Boolean)
+    .join("  |  ");
+
+  if (metaLine) {
+    doc.text(metaLine, pageWidth / 2, 56, { align: "center" });
+  }
+
+  // Separator line
+  doc.setDrawColor(209, 213, 219);
+  doc.setLineWidth(0.5);
+  doc.line(margin, 62, pageWidth - margin, 62);
+
+  // ── Contenu Markdown simplifie ──────────────────
+  let currentY = 72;
+
+  const lines = data.content.split("\n");
+
+  for (const line of lines) {
+    // Check page overflow
+    if (currentY > pageHeight - 30) {
+      doc.addPage();
+      doc.setFillColor(...PRIMARY_COLOR);
+      doc.rect(0, 0, pageWidth, 2, "F");
+      currentY = 20;
+    }
+
+    const trimmed = line.trim();
+
+    if (!trimmed) {
+      currentY += 4;
+      continue;
+    }
+
+    // ## Heading
+    if (trimmed.startsWith("## ")) {
+      currentY += 4;
+      doc.setFontSize(13);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(...PRIMARY_COLOR);
+      doc.text(trimmed.replace("## ", ""), margin, currentY);
+      currentY += 8;
+      continue;
+    }
+
+    // ### Sub-heading
+    if (trimmed.startsWith("### ")) {
+      currentY += 2;
+      doc.setFontSize(11);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(31, 41, 55);
+      doc.text(trimmed.replace("### ", ""), margin, currentY);
+      currentY += 7;
+      continue;
+    }
+
+    // **Bold text** (standalone)
+    if (trimmed.startsWith("**") && trimmed.endsWith("**")) {
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(31, 41, 55);
+      doc.text(trimmed.replace(/\*\*/g, ""), margin, currentY);
+      currentY += 6;
+      continue;
+    }
+
+    // Bullet point
+    if (trimmed.startsWith("- ") || trimmed.startsWith("* ")) {
+      doc.setFontSize(9);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(55, 65, 81);
+      const bulletText = trimmed.replace(/^[-*] /, "").replace(/\*\*/g, "");
+      const wrapped = doc.splitTextToSize(bulletText, contentWidth - 10);
+      doc.text("•", margin + 2, currentY);
+      doc.text(wrapped, margin + 8, currentY);
+      currentY += wrapped.length * 5 + 2;
+      continue;
+    }
+
+    // Normal paragraph
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(75, 85, 99);
+    const cleanText = trimmed.replace(/\*\*/g, "");
+    const wrapped = doc.splitTextToSize(cleanText, contentWidth);
+    doc.text(wrapped, margin, currentY);
+    currentY += wrapped.length * 5 + 2;
+  }
+
+  // ── Footer ─────────────────────────────────────
+  const lastPage = doc.getNumberOfPages();
+  for (let i = 1; i <= lastPage; i++) {
+    doc.setPage(i);
+    doc.setFillColor(...PRIMARY_COLOR);
+    doc.rect(0, pageHeight - 4, pageWidth, 4, "F");
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(156, 163, 175);
+    doc.text(
+      `Synthese generee par IA — ${BUSINESS.company}`,
+      pageWidth / 2,
+      pageHeight - 8,
+      { align: "center" },
+    );
+  }
+
+  // Telecharger
+  const safeTitle = data.callTitle.replace(/[^a-zA-Z0-9]/g, "_");
+  doc.save(`synthese_${safeTitle}.pdf`);
+}

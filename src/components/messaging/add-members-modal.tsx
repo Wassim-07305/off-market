@@ -43,7 +43,7 @@ export function AddMembersModal({
       .select("id, full_name, email, avatar_url, role")
       .order("full_name")
       .then(({ data }) => {
-        setProfiles(data ?? []);
+        setProfiles((data as ProfileItem[] | null) ?? []);
         setLoading(false);
       });
   }, [open, supabase]);
@@ -69,7 +69,7 @@ export function AddMembersModal({
           .eq("profile_id", profileId);
         toast.success("Membre retire");
       } else {
-        await supabase.from("channel_members").insert({
+        await (supabase.from("channel_members") as any).insert({
           channel_id: channelId,
           profile_id: profileId,
           role: "member",
