@@ -111,16 +111,16 @@ export function useStudents(options: UseStudentsOptions = {}) {
         ["student", variables.profileId],
         (old) => {
           if (!old) return old;
+          const details = old.student_details ?? [];
           return {
             ...old,
-            student_details: old.student_details.map((d) => ({
-              ...d,
-              tag: variables.tag,
-            })),
+            student_details: details.length > 0
+              ? details.map((d) => ({ ...d, tag: variables.tag }))
+              : [{ tag: variables.tag } as StudentDetail],
           };
         },
       );
-      // Then refetch in background (don't await)
+      // Then refetch in background
       queryClient.invalidateQueries({ queryKey: ["students"] });
       queryClient.invalidateQueries({ queryKey: ["student", variables.profileId] });
     },
