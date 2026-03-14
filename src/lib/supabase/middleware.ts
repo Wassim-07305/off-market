@@ -58,6 +58,9 @@ export async function updateSession(request: NextRequest) {
     pathname.startsWith("/forgot-password") ||
     pathname.startsWith("/auth");
 
+  // API routes handle their own auth — skip middleware redirect
+  const isApiRoute = pathname.startsWith("/api");
+
   // Public pages/routes that don't require auth
   const isPublicPage =
     (pathname.startsWith("/contracts/") && pathname.endsWith("/sign")) ||
@@ -66,8 +69,8 @@ export async function updateSession(request: NextRequest) {
         pathname.endsWith("/public") ||
         pathname.endsWith("/pdf")));
 
-  // Not logged in → redirect to login (except auth & public pages)
-  if (!user && !isAuthPage && !isPublicPage) {
+  // Not logged in → redirect to login (except auth, API & public pages)
+  if (!user && !isAuthPage && !isApiRoute && !isPublicPage) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
@@ -90,7 +93,6 @@ export async function updateSession(request: NextRequest) {
   // Role-based route protection + onboarding enforcement
   if (user) {
     const isOnboardingPage = pathname === "/onboarding";
-    const isApiRoute = pathname.startsWith("/api");
     const isRoleRoute =
       pathname.startsWith("/admin") ||
       pathname.startsWith("/coach") ||
