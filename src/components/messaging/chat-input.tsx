@@ -19,11 +19,12 @@ import {
   ListOrdered,
   Loader2,
   Clock,
+  AlertTriangle,
 } from "lucide-react";
 
 interface ChatInputProps {
   channelName: string;
-  onSend: (content: string, scheduledAt?: string) => Promise<void>;
+  onSend: (content: string, scheduledAt?: string, isUrgent?: boolean) => Promise<void>;
   onFileUpload: (file: File) => Promise<void>;
   onVoiceSend: (blob: Blob, duration: number) => Promise<void>;
   replyTo: { id: string; content: string; senderName: string } | null;
@@ -50,6 +51,7 @@ export function ChatInput({
   const [showEmoji, setShowEmoji] = useState(false);
   const [showSchedule, setShowSchedule] = useState(false);
   const [scheduledAt, setScheduledAt] = useState("");
+  const [isUrgent, setIsUrgent] = useState(false);
   const [mentionQuery, setMentionQuery] = useState<string | null>(null);
   const [mentionStartPos, setMentionStartPos] = useState(0);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -81,14 +83,16 @@ export function ChatInput({
     const schedule = scheduledAt
       ? new Date(scheduledAt).toISOString()
       : undefined;
+    const urgent = isUrgent;
     setMessage("");
     setScheduledAt("");
     setShowSchedule(false);
+    setIsUrgent(false);
     onStopTyping?.();
-    await onSend(trimmed, schedule);
+    await onSend(trimmed, schedule, urgent);
     textareaRef.current?.focus();
     if (textareaRef.current) textareaRef.current.style.height = "auto";
-  }, [message, onSend, isSending, onStopTyping, scheduledAt]);
+  }, [message, onSend, isSending, onStopTyping, scheduledAt, isUrgent]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (mentionQuery !== null) return;
@@ -176,7 +180,12 @@ export function ChatInput({
 
       <div className="p-3">
         <div
-          className="rounded-xl bg-muted/40 transition-all duration-200 relative cursor-text"
+          className={cn(
+            "rounded-xl transition-all duration-200 relative cursor-text",
+            isUrgent
+              ? "bg-red-50 dark:bg-red-950/20 ring-1 ring-red-300 dark:ring-red-800"
+              : "bg-muted/40",
+          )}
           onClick={(e) => {
             const target = e.target as HTMLElement;
             if (
@@ -188,6 +197,16 @@ export function ChatInput({
             textareaRef.current?.focus();
           }}
         >
+          {/* Urgent indicator */}
+          {isUrgent && (
+            <div className="flex items-center gap-1.5 px-3 pt-2 pb-0">
+              <AlertTriangle className="w-3 h-3 text-red-500" />
+              <span className="text-[11px] font-semibold text-red-500 uppercase tracking-wide">
+                Message urgent
+              </span>
+            </div>
+          )}
+
           {/* Formatting toolbar */}
           <div className="flex items-center gap-0.5 px-3 pt-2 pb-0.5">
             <FormatBtn
@@ -268,6 +287,19 @@ export function ChatInput({
                 />
               )}
 
+              <button
+                onClick={() => setIsUrgent(!isUrgent)}
+                className={cn(
+                  "w-7 h-7 rounded-lg flex items-center justify-center transition-colors",
+                  isUrgent
+                    ? "text-red-500 bg-red-500/10"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+                title={isUrgent ? "Retirer l'urgence" : "Marquer comme urgent"}
+              >
+                <AlertTriangle className="w-4 h-4" />
+              </button>
+
               <div className="relative">
                 <button
                   onClick={() => setShowSchedule(!showSchedule)}
@@ -313,11 +345,13 @@ export function ChatInput({
                 disabled={!message.trim() || isSending}
                 className={cn(
                   "w-7 h-7 rounded-lg flex items-center justify-center text-white transition-all duration-150 active:scale-90 disabled:opacity-30 disabled:pointer-events-none disabled:scale-100 shrink-0",
-                  scheduledAt
-                    ? "bg-amber-500 hover:bg-amber-600"
-                    : "bg-primary hover:bg-primary/90",
+                  isUrgent
+                    ? "bg-red-500 hover:bg-red-600"
+                    : scheduledAt
+                      ? "bg-amber-500 hover:bg-amber-600"
+                      : "bg-primary hover:bg-primary/90",
                 )}
-                title={scheduledAt ? "Programmer" : "Envoyer"}
+                title={isUrgent ? "Envoyer (urgent)" : scheduledAt ? "Programmer" : "Envoyer"}
               >
                 {isSending ? (
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />

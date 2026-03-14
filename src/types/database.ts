@@ -345,6 +345,7 @@ export interface Message {
   reply_to: string | null;
   is_pinned: boolean;
   is_edited: boolean;
+  is_urgent: boolean;
   reply_count: number;
   scheduled_at: string | null;
   metadata: Record<string, unknown>;

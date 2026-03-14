@@ -70,11 +70,13 @@ export function useMessages(channelId: string | null) {
       contentType = "text",
       replyTo,
       scheduledAt,
+      isUrgent = false,
     }: {
       content: string;
       contentType?: string;
       replyTo?: string;
       scheduledAt?: string;
+      isUrgent?: boolean;
     }) => {
       if (!channelId || !user) throw new Error("Missing channel or user");
       const { data, error } = await supabase
@@ -86,13 +88,14 @@ export function useMessages(channelId: string | null) {
           content_type: contentType,
           reply_to: replyTo ?? null,
           scheduled_at: scheduledAt ?? null,
+          is_urgent: isUrgent,
         })
         .select("id")
         .single();
       if (error) throw error;
       return data;
     },
-    onMutate: async ({ content, contentType = "text", replyTo }) => {
+    onMutate: async ({ content, contentType = "text", replyTo, isUrgent = false }) => {
       if (!user) return;
       // Cancel in-flight fetches
       await queryClient.cancelQueries({ queryKey: ["messages", channelId] });
@@ -112,6 +115,7 @@ export function useMessages(channelId: string | null) {
         reply_to: replyTo ?? null,
         is_pinned: false,
         is_edited: false,
+        is_urgent: isUrgent,
         reply_count: 0,
         scheduled_at: null,
         metadata: {},

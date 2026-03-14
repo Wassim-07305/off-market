@@ -10,11 +10,13 @@ import {
   Lock,
   Settings,
   Users,
-  Trash2,
-  LogOut,
   Crown,
   Shield,
   UserCircle,
+  BellOff,
+  Bell,
+  Archive,
+  ArchiveRestore,
 } from "lucide-react";
 import type { ChannelWithMeta } from "@/types/messaging";
 
@@ -23,6 +25,11 @@ interface ChannelSettingsModalProps {
   open: boolean;
   onClose: () => void;
   isOnline?: (userId: string) => boolean;
+  onMute?: () => void;
+  onUnmute?: () => void;
+  onArchive?: () => void;
+  onUnarchive?: () => void;
+  userRole?: string;
 }
 
 const ROLE_ICONS: Record<string, typeof Crown> = {
@@ -44,6 +51,11 @@ export function ChannelSettingsModal({
   open,
   onClose,
   isOnline,
+  onMute,
+  onUnmute,
+  onArchive,
+  onUnarchive,
+  userRole,
 }: ChannelSettingsModalProps) {
   const { user } = useAuth();
   const { data: members, isLoading } = useChannelMembers(
@@ -55,6 +67,7 @@ export function ChannelSettingsModal({
 
   const isDM = channel.type === "dm";
   const ChannelIcon = channel.type === "private" ? Lock : Hash;
+  const isStaff = userRole === "admin" || userRole === "coach";
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center animate-in fade-in duration-150">
@@ -182,6 +195,96 @@ export function ChannelSettingsModal({
                   })}
                 </p>
               </div>
+
+              {/* Actions */}
+              <div className="pt-2 border-t border-border/40 space-y-2">
+                <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                  Actions
+                </label>
+
+                {/* Mute toggle */}
+                {channel.isMuted ? (
+                  <button
+                    onClick={() => {
+                      onUnmute?.();
+                      onClose();
+                    }}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-foreground hover:bg-muted transition-colors"
+                  >
+                    <Bell className="w-4 h-4 text-muted-foreground" />
+                    Reactiver les notifications
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => {
+                      onMute?.();
+                      onClose();
+                    }}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-foreground hover:bg-muted transition-colors"
+                  >
+                    <BellOff className="w-4 h-4 text-muted-foreground" />
+                    Mettre en sourdine
+                  </button>
+                )}
+
+                {/* Archive toggle — staff only */}
+                {isStaff && (
+                  <>
+                    {channel.is_archived ? (
+                      <button
+                        onClick={() => {
+                          onUnarchive?.();
+                          onClose();
+                        }}
+                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-foreground hover:bg-muted transition-colors"
+                      >
+                        <ArchiveRestore className="w-4 h-4 text-muted-foreground" />
+                        Desarchiver le canal
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          onArchive?.();
+                          onClose();
+                        }}
+                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/20 transition-colors"
+                      >
+                        <Archive className="w-4 h-4" />
+                        Archiver le canal
+                      </button>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* DM-specific actions (mute) */}
+          {isDM && (
+            <div className="px-5 py-3 border-b border-border/40">
+              {channel.isMuted ? (
+                <button
+                  onClick={() => {
+                    onUnmute?.();
+                    onClose();
+                  }}
+                  className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-foreground hover:bg-muted transition-colors"
+                >
+                  <Bell className="w-4 h-4 text-muted-foreground" />
+                  Reactiver les notifications
+                </button>
+              ) : (
+                <button
+                  onClick={() => {
+                    onMute?.();
+                    onClose();
+                  }}
+                  className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-foreground hover:bg-muted transition-colors"
+                >
+                  <BellOff className="w-4 h-4 text-muted-foreground" />
+                  Mettre en sourdine
+                </button>
+              )}
             </div>
           )}
 

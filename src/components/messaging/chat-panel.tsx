@@ -26,6 +26,7 @@ interface ChatPanelProps {
       contentType?: string;
       replyTo?: string;
       scheduledAt?: string;
+      isUrgent?: boolean;
     }
   >;
   editMessage: UseMutationResult<void, Error, { id: string; content: string }>;
@@ -89,16 +90,20 @@ export function ChatPanel({
   );
 
   const handleSend = useCallback(
-    async (content: string, scheduledAt?: string) => {
+    async (content: string, scheduledAt?: string, isUrgent?: boolean) => {
       if (!content.trim()) return;
       await sendMessage.mutateAsync({
         content,
         replyTo: replyToMessage?.id,
         scheduledAt,
+        isUrgent,
       });
       setReplyTo(null);
       if (scheduledAt) {
         toast.success("Message programme");
+      }
+      if (isUrgent) {
+        toast.success("Message urgent envoye");
       }
     },
     [sendMessage, replyToMessage, setReplyTo],

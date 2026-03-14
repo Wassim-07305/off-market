@@ -13,12 +13,15 @@ import {
   ChevronDown,
   ChevronRight,
   MessageSquare,
+  BellOff,
+  Archive,
 } from "lucide-react";
 import type { ChannelWithMeta } from "@/types/messaging";
 import { CreateChannelModal } from "./create-channel-modal";
 
 interface ChannelSidebarProps {
   publicChannels: ChannelWithMeta[];
+  archivedChannels: ChannelWithMeta[];
   dmChannels: ChannelWithMeta[];
   activeChannelId: string | null;
   onSelectChannel: (id: string) => void;
@@ -31,10 +34,13 @@ interface ChannelSidebarProps {
   onCreateDM: (userId: string) => Promise<unknown>;
   isLoading: boolean;
   isOnline?: (userId: string) => boolean;
+  showArchived: boolean;
+  onToggleShowArchived: () => void;
 }
 
 export function ChannelSidebar({
   publicChannels,
+  archivedChannels,
   dmChannels,
   activeChannelId,
   onSelectChannel,
@@ -42,6 +48,8 @@ export function ChannelSidebar({
   onCreateDM,
   isLoading,
   isOnline,
+  showArchived,
+  onToggleShowArchived,
 }: ChannelSidebarProps) {
   const [channelsOpen, setChannelsOpen] = useState(true);
   const [dmsOpen, setDmsOpen] = useState(true);
@@ -156,6 +164,7 @@ export function ChannelSidebar({
                   {publicChannels.map((ch) => {
                     const isActive = ch.id === activeChannelId;
                     const Icon = ch.type === "private" ? Lock : Hash;
+                    const hasUrgent = ch.urgentUnreadCount > 0;
                     return (
                       <button
                         key={ch.id}
@@ -165,6 +174,7 @@ export function ChannelSidebar({
                           isActive
                             ? "bg-primary/10 text-primary font-medium shadow-sm"
                             : "text-muted-foreground hover:text-foreground hover:bg-muted/60 active:scale-[0.98]",
+                          ch.isMuted && !isActive && "opacity-50",
                         )}
                       >
                         <Icon
@@ -176,8 +186,16 @@ export function ChannelSidebar({
                         <span className="truncate flex-1 text-left">
                           {ch.name}
                         </span>
-                        {ch.unreadCount > 0 && (
-                          <span className="min-w-[18px] h-[18px] rounded-full bg-primary text-white text-[10px] font-bold flex items-center justify-center px-1">
+                        {ch.isMuted && (
+                          <BellOff className="w-3 h-3 text-muted-foreground/50 shrink-0" />
+                        )}
+                        {ch.unreadCount > 0 && !ch.isMuted && (
+                          <span
+                            className={cn(
+                              "min-w-[18px] h-[18px] rounded-full text-white text-[10px] font-bold flex items-center justify-center px-1",
+                              hasUrgent ? "bg-red-500" : "bg-primary",
+                            )}
+                          >
                             {ch.unreadCount > 99 ? "99+" : ch.unreadCount}
                           </span>
                         )}
@@ -187,6 +205,51 @@ export function ChannelSidebar({
                 </div>
               )}
             </div>
+
+            {/* Archived channels section */}
+            {archivedChannels.length > 0 && (
+              <div className="mt-2 mb-1">
+                <button
+                  onClick={onToggleShowArchived}
+                  className="w-full flex items-center gap-1.5 px-4 py-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <Archive className="w-3 h-3" />
+                  <span className="font-medium">
+                    {showArchived ? "Masquer les archives" : "Voir les archives"}
+                  </span>
+                  <span className="text-[10px] opacity-60">
+                    ({archivedChannels.length})
+                  </span>
+                </button>
+
+                {showArchived && (
+                  <div className="px-2 space-y-0.5 mt-0.5">
+                    {archivedChannels.map((ch) => {
+                      const isActive = ch.id === activeChannelId;
+                      const Icon = ch.type === "private" ? Lock : ch.type === "dm" ? MessageSquare : Hash;
+                      return (
+                        <button
+                          key={ch.id}
+                          onClick={() => onSelectChannel(ch.id)}
+                          className={cn(
+                            "w-full flex items-center gap-2.5 px-2.5 h-8 rounded-lg text-[13px] transition-all duration-150 opacity-50",
+                            isActive
+                              ? "bg-primary/10 text-primary font-medium shadow-sm opacity-100"
+                              : "text-muted-foreground hover:text-foreground hover:bg-muted/60 hover:opacity-75 active:scale-[0.98]",
+                          )}
+                        >
+                          <Icon className="w-4 h-4 shrink-0 opacity-50" />
+                          <span className="truncate flex-1 text-left">
+                            {ch.name}
+                          </span>
+                          <Archive className="w-3 h-3 text-muted-foreground/40 shrink-0" />
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Direct Messages section */}
             <div className="mt-3">
@@ -232,6 +295,7 @@ export function ChannelSidebar({
                       const online = partner
                         ? (isOnline?.(partner.id) ?? false)
                         : false;
+                      const hasUrgent = ch.urgentUnreadCount > 0;
                       return (
                         <button
                           key={ch.id}
@@ -241,6 +305,7 @@ export function ChannelSidebar({
                             isActive
                               ? "bg-primary/10 text-primary font-medium shadow-sm"
                               : "text-muted-foreground hover:text-foreground hover:bg-muted/60 active:scale-[0.98]",
+                            ch.isMuted && !isActive && "opacity-50",
                           )}
                         >
                           <div className="relative shrink-0">
@@ -266,8 +331,16 @@ export function ChannelSidebar({
                           <span className="truncate flex-1 text-left">
                             {partner?.full_name ?? ch.name}
                           </span>
-                          {ch.unreadCount > 0 && (
-                            <span className="min-w-[18px] h-[18px] rounded-full bg-primary text-white text-[10px] font-bold flex items-center justify-center px-1">
+                          {ch.isMuted && (
+                            <BellOff className="w-3 h-3 text-muted-foreground/50 shrink-0" />
+                          )}
+                          {ch.unreadCount > 0 && !ch.isMuted && (
+                            <span
+                              className={cn(
+                                "min-w-[18px] h-[18px] rounded-full text-white text-[10px] font-bold flex items-center justify-center px-1",
+                                hasUrgent ? "bg-red-500" : "bg-primary",
+                              )}
+                            >
                               {ch.unreadCount > 99 ? "99+" : ch.unreadCount}
                             </span>
                           )}

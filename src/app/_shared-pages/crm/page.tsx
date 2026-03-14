@@ -23,13 +23,15 @@ import {
   X,
   Loader2,
   CheckSquare,
+  Users,
 } from "lucide-react";
 import { AddClientModal } from "@/components/crm/add-client-modal";
 import { PipelineKanban } from "@/components/crm/pipeline-kanban";
 import { PipelineTimeline } from "@/components/crm/pipeline-timeline";
 import { StudentSidePanel } from "@/components/crm/student-side-panel";
+import { CsmDashboard } from "@/components/crm/csm-dashboard";
 
-type CrmView = "clients" | "pipeline" | "timeline";
+type CrmView = "clients" | "pipeline" | "timeline" | "coach";
 
 export default function CRMPage() {
   const [view, setView] = useState<CrmView>("clients");
@@ -141,7 +143,9 @@ export default function CRMPage() {
               ? `${students.length} eleve${students.length !== 1 ? "s" : ""}`
               : view === "pipeline"
                 ? "Pipeline commercial"
-                : "Activite recente"}
+                : view === "coach"
+                  ? "Vue par coach / CSM"
+                  : "Activite recente"}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -155,6 +159,7 @@ export default function CRMPage() {
                 { key: "clients" as const, label: "Clients", icon: List },
                 { key: "pipeline" as const, label: "Pipeline", icon: Kanban },
                 { key: "timeline" as const, label: "Timeline", icon: Clock },
+                { key: "coach" as const, label: "Par Coach", icon: Users },
               ] as const
             ).map((v) => {
               const Icon = v.icon;
@@ -258,7 +263,7 @@ export default function CRMPage() {
         </motion.div>
       )}
 
-      {/* Timeline view */}
+      {/* Timeline / Pipeline / Coach / Clients view */}
       {view === "timeline" ? (
         <motion.div variants={staggerItem}>
           <PipelineTimeline />
@@ -266,6 +271,15 @@ export default function CRMPage() {
       ) : view === "pipeline" ? (
         <motion.div variants={staggerItem}>
           <PipelineKanban />
+        </motion.div>
+      ) : view === "coach" ? (
+        <motion.div variants={staggerItem}>
+          <CsmDashboard
+            onFilterByCoach={(_coachId) => {
+              // Switch to clients view — a future enhancement could filter by coach
+              setView("clients");
+            }}
+          />
         </motion.div>
       ) : (
         <>

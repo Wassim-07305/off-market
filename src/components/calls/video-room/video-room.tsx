@@ -15,6 +15,7 @@ import { TranscriptPanel } from "./transcript-panel";
 import { SessionNotesPanel } from "./session-notes-panel";
 import { CallEndedSummary } from "./call-ended-summary";
 import { Loader2, Mic, MicOff, Video, VideoOff } from "lucide-react";
+import { PreCallQuestions, PreCallResponsesView } from "@/components/calls/pre-call-questions";
 
 interface VideoRoomProps {
   callId: string;
@@ -29,7 +30,9 @@ export function VideoRoom({ callId }: VideoRoomProps) {
 
   const [showTranscript, setShowTranscript] = useState(false);
   const [showNotes, setShowNotes] = useState(false);
+  const [showPreCallResponses, setShowPreCallResponses] = useState(false);
   const [hasJoined, setHasJoined] = useState(false);
+  const [preCallCompleted, setPreCallCompleted] = useState(false);
 
   // Reset call store when mounting (cleans up stale "ended" state from previous calls)
   useEffect(() => {
@@ -347,8 +350,26 @@ export function VideoRoom({ callId }: VideoRoomProps) {
     );
   }
 
+  // Determine if the current user is staff (coach/admin) — they skip pre-call questions
+  const isStaffUser = profile?.role === "admin" || profile?.role === "coach";
+
   // Pre-join lobby with camera/mic preview
   if (!hasJoined) {
+    // Non-staff users must complete pre-call questions before seeing the lobby
+    const showPreCallGate = !isStaffUser && !preCallCompleted;
+
+    if (showPreCallGate) {
+      return (
+        <div className="flex-1 flex items-center justify-center bg-zinc-950 p-4 overflow-y-auto">
+          <PreCallQuestions
+            callId={callId}
+            callTitle={call.title}
+            onCompleted={() => setPreCallCompleted(true)}
+          />
+        </div>
+      );
+    }
+
     const hasVideoTrack =
       previewStream?.getVideoTracks().some((t) => t.enabled) && previewCamera;
 
@@ -366,6 +387,13 @@ export function VideoRoom({ callId }: VideoRoomProps) {
                   : ""}
             </p>
           </div>
+
+          {/* Pre-call responses summary for staff in the lobby */}
+          {isStaffUser && (
+            <div className="w-full">
+              <PreCallResponsesView callId={callId} />
+            </div>
+          )}
 
           {/* Video preview */}
           <div className="relative w-full aspect-video bg-zinc-900 rounded-2xl overflow-hidden">
@@ -500,9 +528,15 @@ export function VideoRoom({ callId }: VideoRoomProps) {
           onToggleScreenShare={handleToggleScreenShare}
           onToggleTranscript={handleToggleTranscript}
           onToggleNotes={() => setShowNotes((v) => !v)}
+          onTogglePreCallResponses={
+            isStaffUser
+              ? () => setShowPreCallResponses((v) => !v)
+              : undefined
+          }
           onHangUp={handleHangUp}
           showTranscript={showTranscript}
           showNotes={showNotes}
+          showPreCallResponses={showPreCallResponses}
           isTranscriptionSupported={isTranscriptionSupported}
         />
       </div>
@@ -516,8 +550,30 @@ export function VideoRoom({ callId }: VideoRoomProps) {
       {showNotes && (
         <SessionNotesPanel
           callId={callId}
+          clientName={call.client?.full_name ?? undefined}
           onClose={() => setShowNotes(false)}
         />
+      )}
+
+      {/* Pre-call responses panel (staff only, slides in from right) */}
+      {showPreCallResponses && isStaffUser && (
+        <div className="w-80 lg:w-96 bg-zinc-900/95 border-l border-white/5 flex flex-col h-full">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-white/5">
+            <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+              <span className="text-amber-400">&#9997;</span>
+              Reponses pre-appel
+            </h3>
+            <button
+              onClick={() => setShowPreCallResponses(false)}
+              className="w-7 h-7 rounded-lg flex items-center justify-center text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
+            >
+              &times;
+            </button>
+          </div>
+          <div className="flex-1 overflow-y-auto p-4">
+            <PreCallResponsesView callId={callId} />
+          </div>
+        </div>
       )}
     </div>
   );

@@ -1,7 +1,7 @@
 # Suivi d'avancement - Cahier des Charges Off-Market
 
-> Derniere mise a jour : 2026-03-14
-> Avancement global : **~90%**
+> Derniere mise a jour : 2026-03-14 22h00
+> Avancement global : **~85%** (CDC technique) / **~60%** (besoins Alexia Call1+Call2)
 
 ---
 
@@ -73,7 +73,7 @@
 - [x] Correction manuelle exercices par coach (Sprint 24)
 - [x] Stats quiz/exercices pour coach (Sprint 24)
 - [x] Timer quiz avec auto-submit (Sprint 24)
-- [ ] Certificats de completion (table existe, UI manquante)
+- [x] Certificats de completion (certificate-card.tsx + use-certificates.ts)
 - [x] Parcours d'apprentissage avec prerequis (Sprint 28)
 - [ ] Support audio/podcast
 - [ ] Embeds externes (Figma, Miro, Google Docs)
@@ -93,7 +93,7 @@
 
 ### Manques Messagerie
 
-- [ ] Epinglage de messages (pinning)
+- [x] Epinglage de messages (is_pinned dans schema messages)
 - [ ] Archive de conversations
 - [ ] IA integree dans le chat (slash commands /help, /summarize)
 - [ ] Mode "Do Not Disturb"
@@ -348,7 +348,7 @@
 | --- | -------------------------------- | ------- | ----------------------------------------------------- |
 | F61 | Chiffrement des Donnees          | Partiel | TLS via Vercel/Supabase. Manque E2E custom            |
 | F62 | Conformite RGPD                  | Done    | Suppression compte + export JSON + banniere consentement (Sprint 32) |
-| F63 | Authentification et Autorisation | Partiel | OAuth + RLS. Manque 2FA, IP whitelist                 |
+| F63 | Authentification et Autorisation | Done    | OAuth + RLS + 2FA TOTP (Sprint 32). Manque IP whitelist |
 | F64 | Audit et Monitoring              | Manque  | Pas d'audit logs, SIEM                                |
 | F65 | Haute Disponibilite              | Partiel | Vercel + Supabase managed. Pas de multi-region custom |
 
@@ -414,3 +414,102 @@
 - [x] **Sprint 33** : Branding & white-label (F56, F58.1)
 - [x] **Sprint 34** : API REST publique + webhooks (F70)
 - [x] **Sprint 35** : Integrations Stripe complet + Wise (F66)
+
+---
+
+## Checklist Alexia (Call1 + Call2) — Couverture
+
+> Features demandees par Alexia lors des appels decouverte. Comparaison avec l'etat actuel du code.
+
+### Features Principales
+
+| Feature                                      | Statut  | Notes                                                                           |
+| -------------------------------------------- | ------- | ------------------------------------------------------------------------------- |
+| Workbooks / Questionnaires dynamiques        | Partiel | Form builder existe (F29-F31). Manque : workbooks par module, variables dynamiques adaptatives, export Markdown pour IA, notif Slack |
+| Appels video natifs + transcription           | Done    | WebRTC + transcription temps reel (Web Speech API). Manque : enregistrement video, relecture transcript pendant appel |
+| Generation docs post-appel (transcript+workbook) | Partiel | IA call summary existe (Claude API). Manque : fusion auto transcript + reponses workbook en un doc, export PDF auto |
+| Messagerie simplifiee (remplace Slack)        | Done    | Channels publics/prives, DMs, threads, reactions, typing, fichiers             |
+| Canal individuel par client                   | Done    | DM channels fonctionnels                                                        |
+| Canaux de groupe (General, Lives, Challenge)  | Done    | Channels publics/prives creables                                                |
+| Badge messages non lus (compteur rouge)       | Done    | Unread count tracking dans use-channels.ts                                      |
+| Systeme #urgent / @urgent                     | Manque  | Pas de priorite message, pas de son different, pas de notif lock screen         |
+| Mute des abuseurs                             | Manque  | notifications_muted existe en DB mais pas d'UI mute par utilisateur            |
+| Onboarding client guide                       | Done    | Walkthrough interactif, checklist, XP rewards (Sprint 30)                      |
+| Video accueil / onboarding                    | Manque  | Pas de video personnalisee onboarding                                           |
+| Formulaire step-by-step onboarding            | Partiel | Onboarding basique. Manque : "pourquoi Alexia", revenus actuels, infos business |
+| Tutorial guide interactif (style SaaS)        | Done    | walkthrough-provider.tsx avec tooltips et highlights                            |
+| Test obligatoire (message test)               | Manque  | Pas de validation action obligatoire pendant onboarding                        |
+| Video personnalisee CSM                       | Manque  | Pas de systeme de videos CSM assignees                                          |
+| Dashboard progression client                  | Done    | Dashboard client avec KPIs, XP, badges, appels                                |
+| Roadmap personnalisee auto-generee par IA     | Manque  | Pas de roadmap auto-generee apres kickoff                                       |
+| Jalons/milestones avec criteres validation    | Partiel | Pipeline stages existent. Manque criteres explicites de validation             |
+| Questions pre-appel standardisees             | Partiel | call-form-modal.tsx avec champs. Manque : 2 questions obligatoires avant chaque appel |
+| Reponse video au lieu d'appel                 | Manque  | Pas de systeme de reponse video asynchrone                                      |
+| Systeme de flags (Green/Orange/Red)           | Done    | student_details.flag + flag history + UI dans side panel                       |
+| Notification auto quand flag change           | Partiel | Flag history existe. Manque notification push a Alexia                         |
+| Attribution auto CSM                          | Manque  | Pas d'algo d'attribution par specialite/charge                                 |
+| Override manuel CSM                           | Partiel | coach_assignments existe mais pas d'UI d'attribution                           |
+| Vue groupee par CSM                           | Manque  | Pas de vue "clients par coach"                                                  |
+| Correlation performance CSM <-> resultats     | Manque  | Pas de metriques CSM vs resultats clients                                      |
+| FAQ / Base de connaissances IA                | Manque  | Pas de tracking questions repetitives, pas de reponse auto                     |
+| IA scoring urgence client                     | Done    | Analyse risque IA avec health_score (Sprint 29)                                |
+
+### Features Secondaires (Nice to Have)
+
+| Feature                                   | Statut  | Notes                                                          |
+| ----------------------------------------- | ------- | -------------------------------------------------------------- |
+| Dashboard financier complet               | Done    | MRR, ventes, KPIs, forecast (Sprint 22)                       |
+| Cash collecte vs cash facture             | Partiel | Invoices + paiements existent. Manque vue comparee             |
+| LTV par client                            | Manque  | Pas de calcul LTV automatique                                  |
+| Ventes par canal                          | Manque  | Pas de tracking source/canal d'acquisition                     |
+| Taux de closing + commentaires            | Partiel | Pipeline existe. Manque taux closing par source et raisons     |
+| Calcul auto paiements contracteurs        | Partiel | Commissions existent (use-commissions.ts). Manque calcul auto  |
+| Generation auto contrats/factures         | Done    | Templates + PDF + envoi email                                  |
+| Signature electronique                    | Manque  | Pas d'e-signature (Docusign/YouSign)                           |
+| CRM mobile setter                         | Partiel | PWA responsive. Manque optimisation mobile specifique setter   |
+| Challenges / Leaderboard anti-triche      | Partiel | Gamification complete. Manque integration LinkedIn API verif   |
+| Lead Magnet forms publics                 | Manque  | Pas de formulaires publics capture leads (F32.3)               |
+| Calendrier lives partage                  | Partiel | Calendrier appels existe. Manque calendrier lives groupe       |
+| Upsell automatise par palier revenu       | Manque  | Pas de declencheur automatique upsell                          |
+
+### Preferences UI / Design
+
+| Feature                                | Statut  | Notes                                                   |
+| -------------------------------------- | ------- | ------------------------------------------------------- |
+| Simplicite (anti-Slack)                | Done    | UI epuree, fonctionnalites essentielles                 |
+| Vue liste ET mosaique clients          | Done    | Grid + list dans CRM                                    |
+| Tri par activite recente               | Partiel | Tri par date. Manque tri par "dernier message non lu"   |
+| Filtrage/tri avance                    | Done    | Tags, recherche, filtres dans CRM                       |
+| Branding Off-Market                    | Done    | Logo, couleurs, polices personnalisables (Sprint 33)    |
+| Tutorial guide interactif              | Done    | Walkthrough provider (Sprint 30)                        |
+| Notifications differenciees son        | Manque  | Pas de sons differents urgent vs normal                 |
+| Badge rouge messages non lus           | Done    | Unread counter dans sidebar                             |
+| Roadmap imprimable client              | Manque  | Pas d'export roadmap PDF                                |
+| Mobile-first CRM setter               | Partiel | PWA responsive mais pas optimise mobile setter          |
+
+---
+
+## Resume des Gaps Prioritaires (Alexia)
+
+### Priorite Haute (bloquant pour la cliente)
+1. **Workbooks adaptatifs** — Formulaires par module avec variables dynamiques (marche, offre, communication, acquisition, conversion, diagnostic)
+2. **Fusion auto transcript + workbook** — Document IA genere apres chaque appel, exportable PDF
+3. **Questions pre-appel obligatoires** — 2 questions avant chaque appel ("objectif" + "solution deja essayee")
+4. **Attribution auto CSM** — Algo par specialite + charge equilibree + override manuel
+5. **Vue groupee par CSM** — Dashboard "mes clients" par coach avec correlation performance
+6. **Systeme #urgent** — Messages prioritaires avec notification differente + son
+
+### Priorite Moyenne (amelioration experience)
+7. **FAQ/KB IA** — Tracking questions repetitives + reponse auto + compteur + alerte 5+/semaine
+8. **Roadmap personnalisee IA** — Generation auto apres kickoff basee sur transcript
+9. **Video onboarding personnalisee CSM** — Chaque CSM enregistre sa video
+10. **LTV par client** — Calcul automatique lifetime value
+11. **Upsell automatise** — Declencheur quand client atteint palier revenu
+
+### Priorite Basse (nice to have)
+12. Enregistrement appels video
+13. LinkedIn API integration (anti-triche challenges)
+14. Lead magnet forms publics
+15. E-signature integree (Docusign/YouSign)
+16. Multi-devises
+17. Sous-communautes thematiques

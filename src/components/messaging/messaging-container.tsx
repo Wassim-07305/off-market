@@ -17,10 +17,17 @@ export default function MessagingContainer() {
   const {
     channels,
     publicChannels,
+    archivedChannels,
     dmChannels,
     isLoading: channelsLoading,
     createChannel,
     createDMChannel,
+    muteChannel,
+    unmuteChannel,
+    archiveChannel,
+    unarchiveChannel,
+    showArchived,
+    setShowArchived,
   } = useChannels();
 
   const {
@@ -87,6 +94,7 @@ export default function MessagingContainer() {
       >
         <ChannelSidebar
           publicChannels={publicChannels}
+          archivedChannels={archivedChannels}
           dmChannels={dmChannels}
           activeChannelId={activeChannelId}
           onSelectChannel={handleSelectChannel}
@@ -107,6 +115,8 @@ export default function MessagingContainer() {
           }
           isLoading={channelsLoading}
           isOnline={isOnline}
+          showArchived={showArchived}
+          onToggleShowArchived={() => setShowArchived(!showArchived)}
         />
       </div>
 
@@ -163,6 +173,11 @@ export default function MessagingContainer() {
           open={showMembersPanel}
           onClose={() => setShowMembersPanel(false)}
           isOnline={isOnline}
+          onMute={() => muteChannel.mutate(selectedChannel.id)}
+          onUnmute={() => unmuteChannel.mutate(selectedChannel.id)}
+          onArchive={() => archiveChannel.mutate(selectedChannel.id)}
+          onUnarchive={() => unarchiveChannel.mutate(selectedChannel.id)}
+          userRole={user?.user_metadata?.role}
         />
       )}
     </div>

@@ -13,6 +13,7 @@ import {
   Pin,
   MessageSquare,
   Bookmark,
+  AlertTriangle,
 } from "lucide-react";
 import type { EnrichedMessage } from "@/types/messaging";
 
@@ -99,6 +100,7 @@ export function MessageBubble({
         isFirstInGroup ? "pt-2" : "pt-0.5",
         showActions && "bg-muted/30",
         isOptimistic && "opacity-50",
+        message.is_urgent && "bg-red-50 dark:bg-red-950/20 border-l-3 border-l-red-500 pl-3",
       )}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -139,6 +141,12 @@ export function MessageBubble({
             <span className="text-[11px] text-muted-foreground">
               {formatMessageTime(message.created_at)}
             </span>
+            {message.is_urgent && (
+              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-red-500 text-white text-[9px] font-bold uppercase tracking-wider">
+                <AlertTriangle className="w-2.5 h-2.5" />
+                Urgent
+              </span>
+            )}
             {message.is_pinned && (
               <Pin className="w-3 h-3 text-amber-500 fill-amber-500" />
             )}

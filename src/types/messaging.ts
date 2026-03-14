@@ -38,6 +38,8 @@ export interface MessageGroup {
 
 export interface ChannelWithMeta extends Channel {
   unreadCount: number;
+  urgentUnreadCount: number;
+  isMuted: boolean;
   myLastRead: string | null;
   lastMessage?: {
     content: string;

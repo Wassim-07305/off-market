@@ -12,6 +12,7 @@ import {
   ScrollText,
   StickyNote,
   PhoneOff,
+  ClipboardList,
 } from "lucide-react";
 
 interface CallControlsProps {
@@ -20,9 +21,11 @@ interface CallControlsProps {
   onToggleScreenShare: () => void;
   onToggleTranscript: () => void;
   onToggleNotes?: () => void;
+  onTogglePreCallResponses?: () => void;
   onHangUp: () => void;
   showTranscript: boolean;
   showNotes?: boolean;
+  showPreCallResponses?: boolean;
   isTranscriptionSupported: boolean;
 }
 
@@ -32,9 +35,11 @@ export function CallControls({
   onToggleScreenShare,
   onToggleTranscript,
   onToggleNotes,
+  onTogglePreCallResponses,
   onHangUp,
   showTranscript,
   showNotes,
+  showPreCallResponses,
   isTranscriptionSupported,
 }: CallControlsProps) {
   const { isMicOn, isCameraOn, isScreenSharing, isTranscribing } =
@@ -92,6 +97,18 @@ export function CallControls({
           activeIcon={StickyNote}
           inactiveIcon={StickyNote}
           label="Notes de seance"
+          highlightWhenActive
+        />
+      )}
+
+      {/* Pre-call responses (staff only) */}
+      {onTogglePreCallResponses && (
+        <ControlButton
+          onClick={onTogglePreCallResponses}
+          active={!!showPreCallResponses}
+          activeIcon={ClipboardList}
+          inactiveIcon={ClipboardList}
+          label="Reponses pre-appel"
           highlightWhenActive
         />
       )}

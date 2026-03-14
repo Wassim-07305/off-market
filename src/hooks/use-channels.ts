@@ -3,7 +3,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 import type { Channel } from "@/types/database";
 import type { ChannelWithMeta } from "@/types/messaging";
 
@@ -11,48 +12,74 @@ export function useChannels() {
   const supabase = useSupabase();
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const [showArchived, setShowArchived] = useState(false);
 
   const channelsQuery = useQuery({
-    queryKey: ["channels"],
+    queryKey: ["channels", showArchived],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from("channels")
         .select(
           `*,
-          channel_members!inner(profile_id, last_read_at)`,
+          channel_members!inner(profile_id, last_read_at, notifications_muted)`,
         )
-        .eq("channel_members.profile_id", user?.id ?? "")
-        .eq("is_archived", false)
-        .order("last_message_at", { ascending: false, nullsFirst: false });
+        .eq("channel_members.profile_id", user?.id ?? "");
+
+      if (!showArchived) {
+        query = query.eq("is_archived", false);
+      }
+
+      const { data, error } = await query.order("last_message_at", {
+        ascending: false,
+        nullsFirst: false,
+      });
       if (error) throw error;
 
       return (data ?? []) as (Channel & {
-        channel_members: Array<{ profile_id: string; last_read_at: string }>;
+        channel_members: Array<{
+          profile_id: string;
+          last_read_at: string;
+          notifications_muted: boolean;
+        }>;
       })[];
     },
     enabled: !!user,
   });
 
-  // Fetch unread counts for all channels
+  // Fetch unread counts for all channels (total + urgent)
   const unreadQuery = useQuery({
-    queryKey: ["channel-unreads", user?.id],
+    queryKey: ["channel-unreads", user?.id, channelsQuery.data?.map((c) => c.id).join(",")],
     queryFn: async () => {
       if (!channelsQuery.data?.length) return {};
-      const unreads: Record<string, number> = {};
+      const unreads: Record<string, { total: number; urgent: number }> = {};
 
       for (const ch of channelsQuery.data) {
         const memberInfo = ch.channel_members[0];
         if (!memberInfo?.last_read_at) {
-          unreads[ch.id] = 0;
+          unreads[ch.id] = { total: 0, urgent: 0 };
           continue;
         }
+        // Total unread
         const { count, error } = await supabase
           .from("messages")
           .select("*", { count: "exact", head: true })
           .eq("channel_id", ch.id)
           .is("deleted_at", null)
           .gt("created_at", memberInfo.last_read_at);
-        if (!error) unreads[ch.id] = count ?? 0;
+        if (!error) {
+          // Urgent unread
+          const { count: urgentCount } = await supabase
+            .from("messages")
+            .select("*", { count: "exact", head: true })
+            .eq("channel_id", ch.id)
+            .eq("is_urgent", true)
+            .is("deleted_at", null)
+            .gt("created_at", memberInfo.last_read_at);
+          unreads[ch.id] = {
+            total: count ?? 0,
+            urgent: urgentCount ?? 0,
+          };
+        }
       }
       return unreads;
     },
@@ -107,7 +134,9 @@ export function useChannels() {
   const channels = useMemo((): ChannelWithMeta[] => {
     return (channelsQuery.data ?? []).map((ch) => ({
       ...ch,
-      unreadCount: unreadQuery.data?.[ch.id] ?? 0,
+      unreadCount: unreadQuery.data?.[ch.id]?.total ?? 0,
+      urgentUnreadCount: unreadQuery.data?.[ch.id]?.urgent ?? 0,
+      isMuted: ch.channel_members[0]?.notifications_muted ?? false,
       myLastRead: ch.channel_members[0]?.last_read_at ?? null,
       dmPartner: dmPartnersQuery.data?.[ch.id] ?? null,
     }));
@@ -120,6 +149,17 @@ export function useChannels() {
 
   const dmChannels = useMemo(
     () => channels.filter((c) => c.type === "dm"),
+    [channels],
+  );
+
+  // Separate active and archived channels
+  const activePublicChannels = useMemo(
+    () => publicChannels.filter((c) => !c.is_archived),
+    [publicChannels],
+  );
+
+  const archivedChannels = useMemo(
+    () => channels.filter((c) => c.is_archived),
     [channels],
   );
 
@@ -255,13 +295,94 @@ export function useChannels() {
     },
   });
 
+  // Mute / unmute channel
+  const muteChannel = useMutation({
+    mutationFn: async (channelId: string) => {
+      if (!user) throw new Error("Not authenticated");
+      const { error } = await supabase
+        .from("channel_members")
+        .update({ notifications_muted: true })
+        .eq("channel_id", channelId)
+        .eq("profile_id", user.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["channels"] });
+      toast.success("Canal mis en sourdine");
+    },
+    onError: () => {
+      toast.error("Erreur lors de la mise en sourdine");
+    },
+  });
+
+  const unmuteChannel = useMutation({
+    mutationFn: async (channelId: string) => {
+      if (!user) throw new Error("Not authenticated");
+      const { error } = await supabase
+        .from("channel_members")
+        .update({ notifications_muted: false })
+        .eq("channel_id", channelId)
+        .eq("profile_id", user.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["channels"] });
+      toast.success("Notifications reactivees");
+    },
+    onError: () => {
+      toast.error("Erreur lors de la reactivation");
+    },
+  });
+
+  // Archive / unarchive channel
+  const archiveChannel = useMutation({
+    mutationFn: async (channelId: string) => {
+      const { error } = await supabase
+        .from("channels")
+        .update({ is_archived: true })
+        .eq("id", channelId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["channels"] });
+      toast.success("Canal archive");
+    },
+    onError: () => {
+      toast.error("Erreur lors de l'archivage");
+    },
+  });
+
+  const unarchiveChannel = useMutation({
+    mutationFn: async (channelId: string) => {
+      const { error } = await supabase
+        .from("channels")
+        .update({ is_archived: false })
+        .eq("id", channelId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["channels"] });
+      toast.success("Canal desarchive");
+    },
+    onError: () => {
+      toast.error("Erreur lors du desarchivage");
+    },
+  });
+
   return {
     channels,
-    publicChannels,
+    publicChannels: activePublicChannels,
+    archivedChannels,
     dmChannels,
     isLoading: channelsQuery.isLoading,
     createChannel,
     createDMChannel,
+    muteChannel,
+    unmuteChannel,
+    archiveChannel,
+    unarchiveChannel,
+    showArchived,
+    setShowArchived,
   };
 }
 
