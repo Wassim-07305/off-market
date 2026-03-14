@@ -202,7 +202,10 @@ export function StudentSidePanel({
       { profileId: student.id, tag: newTag },
       {
         onSuccess: () => toast.success("Tag mis a jour"),
-        onError: () => toast.error("Erreur lors de la mise a jour du tag"),
+        onError: (err) => {
+          console.error("[updateStudentTag] error:", err);
+          toast.error(`Erreur tag: ${err instanceof Error ? err.message : JSON.stringify(err)}`);
+        },
       },
     );
   };

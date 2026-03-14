@@ -105,7 +105,7 @@ export function useStudents(options: UseStudentsOptions = {}) {
       if (error) throw error;
       return { profileId, tag };
     },
-    onSuccess: async (_data, variables) => {
+    onSuccess: (_data, variables) => {
       // Optimistic: update cache directly
       queryClient.setQueryData<StudentWithDetails>(
         ["student", variables.profileId],
@@ -120,9 +120,9 @@ export function useStudents(options: UseStudentsOptions = {}) {
           };
         },
       );
-      // Then refetch to ensure consistency
-      await queryClient.refetchQueries({ queryKey: ["students"] });
-      await queryClient.refetchQueries({ queryKey: ["student", variables.profileId] });
+      // Then refetch in background (don't await)
+      queryClient.invalidateQueries({ queryKey: ["students"] });
+      queryClient.invalidateQueries({ queryKey: ["student", variables.profileId] });
     },
   });
 
