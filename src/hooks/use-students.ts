@@ -89,8 +89,9 @@ export function useStudents(options: UseStudentsOptions = {}) {
         .eq("profile_id", profileId);
       if (error) throw error;
     },
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["students"] });
+      queryClient.invalidateQueries({ queryKey: ["student", variables.profileId] });
     },
   });
 
@@ -108,8 +109,9 @@ export function useStudents(options: UseStudentsOptions = {}) {
         .eq("profile_id", profileId);
       if (error) throw error;
     },
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["students"] });
+      queryClient.invalidateQueries({ queryKey: ["student", variables.profileId] });
     },
   });
 
@@ -148,8 +150,10 @@ export function useStudents(options: UseStudentsOptions = {}) {
         });
       }
     },
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["students"] });
+      queryClient.invalidateQueries({ queryKey: ["student", variables.profileId] });
+      queryClient.invalidateQueries({ queryKey: ["student-flag-history", variables.profileId] });
     },
   });
 

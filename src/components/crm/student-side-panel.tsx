@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRoutePrefix } from "@/hooks/use-route-prefix";
+import { useSupabase } from "@/hooks/use-supabase";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   useStudent,
   useStudentActivities,
@@ -43,6 +45,9 @@ import {
   FileText,
   DollarSign,
   Zap,
+  Pencil,
+  Save,
+  Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -64,16 +69,93 @@ export function StudentSidePanel({
   onClose,
 }: StudentSidePanelProps) {
   const prefix = useRoutePrefix();
+  const supabase = useSupabase();
+  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<TabType>("overview");
   const { data: student, isLoading } = useStudent(studentId);
   const { data: activities } = useStudentActivities(studentId);
   const { notes, addNote, togglePin } = useStudentNotes(studentId);
   const { tasks, addTask, updateTaskStatus } = useStudentTasks(studentId);
   const { profile } = useAuth();
-  const { updateStudentFlag, updateStudentTag } = useStudentsHook();
+  const { updateStudentFlag, updateStudentTag, updateStudentDetails } = useStudentsHook();
 
   const [newNote, setNewNote] = useState("");
   const [newTaskTitle, setNewTaskTitle] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [editForm, setEditForm] = useState({
+    full_name: "",
+    email: "",
+    phone: "",
+    goals: "",
+    program: "",
+    coach_notes: "",
+    niche: "",
+    current_revenue: 0,
+    revenue_objective: 0,
+    obstacles: "",
+    acquisition_source: "",
+  });
+
+  useEffect(() => {
+    if (student) {
+      const d = student.student_details?.[0];
+      setEditForm({
+        full_name: student.full_name ?? "",
+        email: student.email ?? "",
+        phone: student.phone ?? "",
+        goals: d?.goals ?? "",
+        program: d?.program ?? "",
+        coach_notes: d?.coach_notes ?? "",
+        niche: d?.niche ?? "",
+        current_revenue: d?.current_revenue ?? 0,
+        revenue_objective: d?.revenue_objective ?? 0,
+        obstacles: d?.obstacles ?? "",
+        acquisition_source: d?.acquisition_source ?? "",
+      });
+    }
+  }, [student]);
+
+  const handleSave = async () => {
+    if (!student) return;
+    setSaving(true);
+    try {
+      // Update profile (name, email, phone)
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .update({
+          full_name: editForm.full_name,
+          email: editForm.email,
+          phone: editForm.phone || null,
+        })
+        .eq("id", student.id);
+      if (profileError) throw profileError;
+
+      // Update student_details
+      updateStudentDetails.mutate({
+        profileId: student.id,
+        updates: {
+          goals: editForm.goals,
+          program: editForm.program,
+          coach_notes: editForm.coach_notes,
+          niche: editForm.niche,
+          current_revenue: editForm.current_revenue,
+          revenue_objective: editForm.revenue_objective,
+          obstacles: editForm.obstacles,
+          acquisition_source: editForm.acquisition_source,
+        } as never,
+      });
+
+      queryClient.invalidateQueries({ queryKey: ["student", studentId] });
+      queryClient.invalidateQueries({ queryKey: ["students"] });
+      setIsEditing(false);
+      toast.success("Informations mises a jour");
+    } catch {
+      toast.error("Erreur lors de la sauvegarde");
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const details = student?.student_details?.[0];
   const score = details?.health_score ?? 0;
@@ -158,12 +240,42 @@ export function StudentSidePanel({
             <h2 className="text-lg font-semibold text-foreground">
               Fiche eleve
             </h2>
-            <button
-              onClick={onClose}
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-            >
-              <X className="w-4 h-4" />
-            </button>
+            <div className="flex items-center gap-1.5">
+              {!isLoading && student && (
+                isEditing ? (
+                  <>
+                    <button
+                      onClick={() => setIsEditing(false)}
+                      className="h-8 px-3 rounded-lg border border-border text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                    >
+                      Annuler
+                    </button>
+                    <button
+                      onClick={handleSave}
+                      disabled={saving}
+                      className="h-8 px-3 rounded-lg bg-primary text-white text-xs font-medium hover:bg-primary-hover transition-colors flex items-center gap-1.5 disabled:opacity-50"
+                    >
+                      {saving ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
+                      Sauvegarder
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="h-8 px-3 rounded-lg border border-border text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center gap-1.5"
+                  >
+                    <Pencil className="w-3 h-3" />
+                    Modifier
+                  </button>
+                )
+              )}
+              <button
+                onClick={onClose}
+                className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
 
@@ -213,27 +325,60 @@ export function StudentSidePanel({
                     </div>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <h3 className="text-base font-semibold text-foreground">
-                        {student.full_name}
-                      </h3>
-                      <FlagBadge flag={flag} />
-                    </div>
-                    {details?.tag && (
-                      <EngagementTagBadge tag={details.tag} />
+                    {isEditing ? (
+                      <div className="space-y-2">
+                        <input
+                          value={editForm.full_name}
+                          onChange={(e) => setEditForm((f) => ({ ...f, full_name: e.target.value }))}
+                          className="w-full h-8 px-2.5 bg-muted border border-border rounded-lg text-sm font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                          placeholder="Nom complet"
+                        />
+                        <div className="flex gap-2">
+                          <div className="flex-1 flex items-center gap-1.5">
+                            <Mail className="w-3 h-3 text-muted-foreground shrink-0" />
+                            <input
+                              value={editForm.email}
+                              onChange={(e) => setEditForm((f) => ({ ...f, email: e.target.value }))}
+                              className="w-full h-7 px-2 bg-muted border border-border rounded text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                              placeholder="Email"
+                            />
+                          </div>
+                          <div className="flex-1 flex items-center gap-1.5">
+                            <Phone className="w-3 h-3 text-muted-foreground shrink-0" />
+                            <input
+                              value={editForm.phone}
+                              onChange={(e) => setEditForm((f) => ({ ...f, phone: e.target.value }))}
+                              className="w-full h-7 px-2 bg-muted border border-border rounded text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                              placeholder="Telephone"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h3 className="text-base font-semibold text-foreground">
+                            {student.full_name}
+                          </h3>
+                          <FlagBadge flag={flag} />
+                        </div>
+                        {details?.tag && (
+                          <EngagementTagBadge tag={details.tag} />
+                        )}
+                        <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-foreground flex-wrap">
+                          <span className="flex items-center gap-1">
+                            <Mail className="w-3 h-3" />
+                            {student.email}
+                          </span>
+                          {student.phone && (
+                            <span className="flex items-center gap-1">
+                              <Phone className="w-3 h-3" />
+                              {student.phone}
+                            </span>
+                          )}
+                        </div>
+                      </>
                     )}
-                    <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-foreground flex-wrap">
-                      <span className="flex items-center gap-1">
-                        <Mail className="w-3 h-3" />
-                        {student.email}
-                      </span>
-                      {student.phone && (
-                        <span className="flex items-center gap-1">
-                          <Phone className="w-3 h-3" />
-                          {student.phone}
-                        </span>
-                      )}
-                    </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 mt-3">
@@ -366,27 +511,56 @@ export function StudentSidePanel({
                         <Target className="w-3.5 h-3.5 text-primary" />
                         Objectifs
                       </h3>
-                      <p className="text-sm text-muted-foreground">
-                        {details?.goals || "Aucun objectif defini"}
-                      </p>
+                      {isEditing ? (
+                        <textarea
+                          value={editForm.goals}
+                          onChange={(e) => setEditForm((f) => ({ ...f, goals: e.target.value }))}
+                          rows={2}
+                          className="w-full px-2.5 py-1.5 bg-muted border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
+                          placeholder="Objectifs de l'eleve..."
+                        />
+                      ) : (
+                        <p className="text-sm text-muted-foreground">
+                          {details?.goals || "Aucun objectif defini"}
+                        </p>
+                      )}
                     </div>
                     <div>
                       <h3 className="text-xs font-semibold text-foreground flex items-center gap-1.5 mb-1.5">
                         <Briefcase className="w-3.5 h-3.5 text-primary" />
                         Programme
                       </h3>
-                      <p className="text-sm text-muted-foreground">
-                        {details?.program || "Aucun programme assigne"}
-                      </p>
+                      {isEditing ? (
+                        <input
+                          value={editForm.program}
+                          onChange={(e) => setEditForm((f) => ({ ...f, program: e.target.value }))}
+                          className="w-full h-8 px-2.5 bg-muted border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                          placeholder="Programme assigne..."
+                        />
+                      ) : (
+                        <p className="text-sm text-muted-foreground">
+                          {details?.program || "Aucun programme assigne"}
+                        </p>
+                      )}
                     </div>
                     <div>
                       <h3 className="text-xs font-semibold text-foreground flex items-center gap-1.5 mb-1.5">
                         <FileText className="w-3.5 h-3.5 text-primary" />
                         Notes du coach
                       </h3>
-                      <p className="text-sm text-muted-foreground">
-                        {details?.coach_notes || "Aucune note"}
-                      </p>
+                      {isEditing ? (
+                        <textarea
+                          value={editForm.coach_notes}
+                          onChange={(e) => setEditForm((f) => ({ ...f, coach_notes: e.target.value }))}
+                          rows={3}
+                          className="w-full px-2.5 py-1.5 bg-muted border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
+                          placeholder="Notes du coach..."
+                        />
+                      ) : (
+                        <p className="text-sm text-muted-foreground">
+                          {details?.coach_notes || "Aucune note"}
+                        </p>
+                      )}
                     </div>
                     <div>
                       <h3 className="text-xs font-semibold text-foreground flex items-center gap-1.5 mb-1.5">
@@ -455,46 +629,83 @@ export function StudentSidePanel({
 
                 {activeTab === "business" && (
                   <div className="space-y-3">
-                    {[
-                      { label: "Niche", value: details?.niche },
-                      {
-                        label: "CA actuel",
-                        value: formatCurrency(details?.current_revenue ?? 0),
-                      },
-                      {
-                        label: "Objectif CA",
-                        value: formatCurrency(
-                          details?.revenue_objective ?? 0,
-                        ),
-                      },
-                      {
-                        label: "LTV",
-                        value: formatCurrency(
-                          Number(details?.lifetime_value ?? 0),
-                        ),
-                      },
-                      { label: "Source", value: details?.acquisition_source },
-                    ].map((item) => (
-                      <div
-                        key={item.label}
-                        className="flex justify-between items-center p-2.5 rounded-lg bg-muted/50 border border-border"
-                      >
-                        <span className="text-xs text-muted-foreground">
-                          {item.label}
-                        </span>
-                        <span className="text-xs font-medium text-foreground">
-                          {item.value || "-"}
-                        </span>
-                      </div>
-                    ))}
+                    {isEditing ? (
+                      <>
+                        <div className="p-2.5 rounded-lg bg-muted/50 border border-border space-y-1">
+                          <label className="text-xs text-muted-foreground">Niche</label>
+                          <input
+                            value={editForm.niche}
+                            onChange={(e) => setEditForm((f) => ({ ...f, niche: e.target.value }))}
+                            className="w-full h-8 px-2.5 bg-background border border-border rounded-lg text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                            placeholder="Niche..."
+                          />
+                        </div>
+                        <div className="p-2.5 rounded-lg bg-muted/50 border border-border space-y-1">
+                          <label className="text-xs text-muted-foreground">CA actuel (€)</label>
+                          <input
+                            type="number"
+                            value={editForm.current_revenue}
+                            onChange={(e) => setEditForm((f) => ({ ...f, current_revenue: Number(e.target.value) }))}
+                            className="w-full h-8 px-2.5 bg-background border border-border rounded-lg text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                          />
+                        </div>
+                        <div className="p-2.5 rounded-lg bg-muted/50 border border-border space-y-1">
+                          <label className="text-xs text-muted-foreground">Objectif CA (€)</label>
+                          <input
+                            type="number"
+                            value={editForm.revenue_objective}
+                            onChange={(e) => setEditForm((f) => ({ ...f, revenue_objective: Number(e.target.value) }))}
+                            className="w-full h-8 px-2.5 bg-background border border-border rounded-lg text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                          />
+                        </div>
+                        <div className="p-2.5 rounded-lg bg-muted/50 border border-border space-y-1">
+                          <label className="text-xs text-muted-foreground">Source d&apos;acquisition</label>
+                          <input
+                            value={editForm.acquisition_source}
+                            onChange={(e) => setEditForm((f) => ({ ...f, acquisition_source: e.target.value }))}
+                            className="w-full h-8 px-2.5 bg-background border border-border rounded-lg text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                            placeholder="Source..."
+                          />
+                        </div>
+                      </>
+                    ) : (
+                      [{label: "Niche", value: details?.niche},
+                        {label: "CA actuel", value: formatCurrency(details?.current_revenue ?? 0)},
+                        {label: "Objectif CA", value: formatCurrency(details?.revenue_objective ?? 0)},
+                        {label: "LTV", value: formatCurrency(Number(details?.lifetime_value ?? 0))},
+                        {label: "Source", value: details?.acquisition_source},
+                      ].map((item) => (
+                        <div
+                          key={item.label}
+                          className="flex justify-between items-center p-2.5 rounded-lg bg-muted/50 border border-border"
+                        >
+                          <span className="text-xs text-muted-foreground">
+                            {item.label}
+                          </span>
+                          <span className="text-xs font-medium text-foreground">
+                            {item.value || "-"}
+                          </span>
+                        </div>
+                      ))
+                    )}
                     <div>
                       <h4 className="text-xs font-semibold text-foreground flex items-center gap-1.5 mb-1.5 mt-3">
                         <AlertTriangle className="w-3.5 h-3.5 text-warning" />
                         Obstacles
                       </h4>
-                      <p className="text-sm text-muted-foreground p-3 rounded-lg bg-muted/50 border border-border">
-                        {details?.obstacles || "Aucun obstacle identifie"}
-                      </p>
+                      {isEditing ? (
+                        <textarea
+                          value={editForm.obstacles}
+                          onChange={(e) => setEditForm((f) => ({ ...f, obstacles: e.target.value }))}
+                          rows={3}
+                          className="w-full px-2.5 py-1.5 bg-muted border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
+                          placeholder="Obstacles identifies..."
+                        />
+                      ) : (
+                        <p className="text-sm text-muted-foreground p-3 rounded-lg bg-muted/50 border border-border">
+                          {details?.obstacles || "Aucun obstacle identifie"}
+                        </p>
+                      )}
                     </div>
                     {(details?.revenue_objective ?? 0) > 0 && (
                       <div>
