@@ -513,11 +513,7 @@ export default function CourseViewPage({
             <>
               {/* Video */}
               {videoUrl && (
-                <VideoPlayer
-                  videoUrl={videoUrl}
-                  videoRef={videoRef}
-                  onTimeUpdate={handleTimeUpdate}
-                />
+                <EnhancedVideoPlayer videoUrl={videoUrl} />
               )}
 
               {/* Lesson title */}
@@ -641,51 +637,3 @@ export default function CourseViewPage({
   );
 }
 
-// ---------------------------------------------------------------------------
-// Video player
-// ---------------------------------------------------------------------------
-
-function VideoPlayer({
-  videoUrl,
-  videoRef,
-  onTimeUpdate,
-}: {
-  videoUrl: string;
-  videoRef: React.RefObject<HTMLVideoElement | null>;
-  onTimeUpdate: () => void;
-}) {
-  const embed = getVideoEmbed(videoUrl);
-
-  if (embed.type === "none") return null;
-
-  if (embed.type === "iframe") {
-    return (
-      <div
-        className="aspect-video rounded-xl overflow-hidden bg-black"
-        style={{ boxShadow: "var(--shadow-elevated)" }}
-      >
-        <iframe
-          src={embed.src}
-          className="w-full h-full"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        />
-      </div>
-    );
-  }
-
-  return (
-    <div
-      className="aspect-video rounded-xl overflow-hidden bg-black"
-      style={{ boxShadow: "var(--shadow-elevated)" }}
-    >
-      <video
-        ref={videoRef}
-        src={embed.src}
-        className="w-full h-full"
-        controls
-        onTimeUpdate={onTimeUpdate}
-      />
-    </div>
-  );
-}
