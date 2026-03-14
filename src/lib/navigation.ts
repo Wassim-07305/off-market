@@ -30,6 +30,8 @@ import {
   FileSignature,
   Contact,
   Star,
+  Map,
+  TrendingUp,
   type LucideIcon,
 } from "lucide-react";
 
@@ -59,6 +61,8 @@ export const adminNavigation: NavItem[] = [
   { name: "Moderation", href: "/admin/moderation", icon: Shield },
   { name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
   { name: "Audit", href: "/admin/audit", icon: ClipboardCheck },
+  { name: "FAQ / Base IA", href: "/admin/faq", icon: BookOpen },
+  { name: "Upsell", href: "/admin/upsell", icon: TrendingUp },
 ];
 
 /** Coach / CSM */
@@ -103,6 +107,7 @@ export const clientNavigation: NavItem[] = [
   { name: "Defis", href: "/client/challenges", icon: Flame },
   { name: "Classement", href: "/client/leaderboard", icon: Crown },
   { name: "Recompenses", href: "/client/rewards", icon: Gift },
+  { name: "Roadmap", href: "/client/roadmap", icon: Map },
   { name: "Communaute", href: "/client/community", icon: Users },
   { name: "Hall of Fame", href: "/client/hall-of-fame", icon: Star },
   { name: "Ressources", href: "/client/resources", icon: FolderOpen },
