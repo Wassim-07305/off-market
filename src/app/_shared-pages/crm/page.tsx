@@ -27,6 +27,7 @@ import {
 import { AddClientModal } from "@/components/crm/add-client-modal";
 import { PipelineKanban } from "@/components/crm/pipeline-kanban";
 import { PipelineTimeline } from "@/components/crm/pipeline-timeline";
+import { StudentSidePanel } from "@/components/crm/student-side-panel";
 
 type CrmView = "clients" | "pipeline" | "timeline";
 
@@ -35,6 +36,7 @@ export default function CRMPage() {
   const [search, setSearch] = useState("");
   const [activeTag, setActiveTag] = useState("all");
   const [showAddModal, setShowAddModal] = useState(false);
+  const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [bulkAction, setBulkAction] = useState<string | null>(null);
   const [bulkLoading, setBulkLoading] = useState(false);
@@ -397,22 +399,22 @@ export default function CRMPage() {
                             />
                           </td>
                           <td className="px-5 py-3.5">
-                            <Link
-                              href={`${prefix}/crm/${student.id}`}
-                              className="flex items-center gap-3"
+                            <button
+                              onClick={() => setSelectedStudentId(student.id)}
+                              className="flex items-center gap-3 text-left"
                             >
                               <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center text-xs text-primary font-medium shrink-0">
                                 {getInitials(student.full_name)}
                               </div>
                               <div>
-                                <p className="text-[13px] font-medium text-foreground">
+                                <p className="text-[13px] font-medium text-foreground hover:text-primary transition-colors">
                                   {student.full_name}
                                 </p>
                                 <p className="text-[11px] text-muted-foreground">
                                   {student.email}
                                 </p>
                               </div>
-                            </Link>
+                            </button>
                           </td>
                           <td className="px-5 py-3.5 hidden md:table-cell">
                             {tag && (
@@ -474,12 +476,12 @@ export default function CRMPage() {
                             </span>
                           </td>
                           <td className="px-5 py-3.5">
-                            <Link
-                              href={`${prefix}/crm/${student.id}`}
+                            <button
+                              onClick={() => setSelectedStudentId(student.id)}
                               className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-all duration-200 opacity-0 group-hover:opacity-100"
                             >
                               <ChevronRight className="w-4 h-4" />
-                            </Link>
+                            </button>
                           </td>
                         </tr>
                       );
@@ -496,6 +498,13 @@ export default function CRMPage() {
         open={showAddModal}
         onClose={() => setShowAddModal(false)}
       />
+
+      {selectedStudentId && (
+        <StudentSidePanel
+          studentId={selectedStudentId}
+          onClose={() => setSelectedStudentId(null)}
+        />
+      )}
     </motion.div>
   );
 }
