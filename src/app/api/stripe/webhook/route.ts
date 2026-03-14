@@ -117,6 +117,34 @@ export async function POST(req: NextRequest) {
       );
       break;
     }
+
+    case "charge.refunded": {
+      const charge = event.data.object as Stripe.Charge;
+      const paymentIntentId = typeof charge.payment_intent === "string"
+        ? charge.payment_intent
+        : charge.payment_intent?.id;
+
+      if (paymentIntentId) {
+        const { data: invoice } = await supabase
+          .from("invoices")
+          .select("id, total")
+          .eq("stripe_payment_intent_id", paymentIntentId)
+          .maybeSingle();
+
+        if (invoice) {
+          const refundedAmount = (charge.amount_refunded ?? 0) / 100;
+          const isFullRefund = refundedAmount >= Number(invoice.total);
+
+          if (isFullRefund) {
+            await supabase
+              .from("invoices")
+              .update({ status: "cancelled" })
+              .eq("id", invoice.id);
+          }
+        }
+      }
+      break;
+    }
   }
 
   return NextResponse.json({ received: true });

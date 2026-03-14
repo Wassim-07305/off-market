@@ -1,6 +1,6 @@
 # Suivi d'avancement - Cahier des Charges Off-Market
 
-> Derniere mise a jour : 2026-03-12
+> Derniere mise a jour : 2026-03-14
 > Avancement global : **~90%**
 
 ---
@@ -194,20 +194,20 @@
 | ----- | -------------------------- | ------- | ------------------------------------------------------ |
 | F33   | Gestion des Contrats       | Done    | Templates, creation, envoi, statuts                    |
 | F34   | Facturation Automatique    | Done    | Generation factures, PDF, numerotation                 |
-| F35   | Gestion des Paiements      | Partiel | Suivi statut OK. Stripe webhook partiel. Manque Wise   |
-| F36   | Relances Automatiques      | Done    | 5 relances auto par trigger DB (Sprint 22)             |
+| F35   | Gestion des Paiements      | Done    | Stripe complet + Wise API + refunds (Sprint 35)        |
+| F36   | Relances Automatiques      | Done    | 5 relances auto + cron dispatch email (Sprint 35)      |
 | F37   | Rapports Financiers        | Done    | MRR/ARR, graphiques, forecast (Sprint 22)              |
 | F37.1 | Signatures Electroniques   | Manque  | Pas d'integration e-signature (Docusign ou equivalent) |
-| F37.2 | Gestion Renouvellements    | Manque  | Pas d'alertes expiration, renouvellement auto          |
-| F37.3 | Gestion Refunds et Credits | Manque  | Pas de workflow remboursement                          |
+| F37.2 | Gestion Renouvellements    | Done    | Facturation recurrente via echeanciers (Sprint 35)     |
+| F37.3 | Gestion Refunds et Credits | Done    | Remboursement total/partiel via Stripe (Sprint 35)     |
 
 ### Manques Facturation
 
 - [ ] E-signature integree
 - [ ] Renouvellement automatique contrats
-- [ ] Gestion remboursements partiels/totaux
-- [ ] Integration Wise (virements internationaux)
-- [ ] Facturation recurrente automatique
+- [x] Gestion remboursements partiels/totaux (Sprint 35)
+- [x] Integration Wise (virements internationaux) (Sprint 35)
+- [x] Facturation recurrente automatique (Sprint 35)
 - [ ] Multi-devises
 
 ---
@@ -304,14 +304,14 @@
 | F51   | Systeme d'Invitation         | Done    | Invitations email, statut, expiration                             |
 | F52   | Auto-Provisioning            | Partiel | Invitation-only. Manque auto-creation premier acces               |
 | F53   | Gestion Roles et Permissions | Partiel | Roles predefinis OK. Manque roles custom, permissions granulaires |
-| F54   | Authentification et Securite | Partiel | Email/password + OAuth Google. Manque 2FA, SSO                    |
+| F54   | Authentification et Securite | Done    | Email/password + OAuth Google + 2FA TOTP (Sprint 32)              |
 | F54.1 | Onboarding Coach             | Manque  | Pas de flow specifique coach                                      |
 | F54.2 | Onboarding Staff             | Manque  | Pas de flow specifique staff                                      |
 | F54.3 | Offboarding Utilisateur      | Manque  | Pas de transfert de donnees, desactivation                        |
 
 ### Manques Utilisateurs
 
-- [ ] 2FA (SMS ou authenticator)
+- [x] 2FA (TOTP authenticator) (Sprint 32)
 - [ ] SSO Google/Microsoft optionnel
 - [ ] Invitation en masse (CSV import)
 - [ ] Roles personnalises creables par admin
@@ -325,20 +325,20 @@
 | Ref   | Fonctionnalite          | Statut  | Notes                                                    |
 | ----- | ----------------------- | ------- | -------------------------------------------------------- |
 | F55   | Configuration Admin     | Done    | Organisation, integrations, templates                    |
-| F56   | Branding et Theme       | Partiel | Light/dark OK. Manque logo custom, couleurs, polices     |
+| F56   | Branding et Theme       | Done    | Light/dark + logo custom, couleurs, polices, border-radius (Sprint 33) |
 | F57   | Integrations Tierces    | Partiel | Google Calendar OK, Stripe partiel                       |
-| F58   | Sauvegardes et RGPD     | Partiel | Suppression compte OK. Manque export JSON, consentements |
-| F58.1 | Branding Avance         | Manque  | Pas de logo, palette, favicon, CSS custom                |
+| F58   | Sauvegardes et RGPD     | Done    | Suppression compte + export JSON + consentements RGPD (Sprint 32) |
+| F58.1 | Branding Avance         | Done    | Logo, palette, favicon, polices, border-radius (Sprint 33) |
 | F58.2 | Pages Publiques Branded | Manque  | Login/landing pas personnalisables                       |
 | F58.3 | Domaine Personnalise    | Manque  | Pas de custom domain                                     |
 
 ### Manques Parametres
 
-- [ ] Branding complet (logo, couleurs, polices)
+- [x] Branding complet (logo, couleurs, polices) (Sprint 33)
 - [ ] Pages login/landing branded
 - [ ] Domaine personnalise
-- [ ] Export donnees personnelles JSON (RGPD)
-- [ ] Consentement RGPD au premier acces
+- [x] Export donnees personnelles JSON (RGPD) (Sprint 32)
+- [x] Consentement RGPD au premier acces (Sprint 32)
 
 ---
 
@@ -347,7 +347,7 @@
 | Ref | Fonctionnalite                   | Statut  | Notes                                                 |
 | --- | -------------------------------- | ------- | ----------------------------------------------------- |
 | F61 | Chiffrement des Donnees          | Partiel | TLS via Vercel/Supabase. Manque E2E custom            |
-| F62 | Conformite RGPD                  | Partiel | Suppression compte OK. Manque export, consentements   |
+| F62 | Conformite RGPD                  | Done    | Suppression compte + export JSON + banniere consentement (Sprint 32) |
 | F63 | Authentification et Autorisation | Partiel | OAuth + RLS. Manque 2FA, IP whitelist                 |
 | F64 | Audit et Monitoring              | Manque  | Pas d'audit logs, SIEM                                |
 | F65 | Haute Disponibilite              | Partiel | Vercel + Supabase managed. Pas de multi-region custom |
@@ -358,20 +358,20 @@
 
 | Ref | Fonctionnalite             | Statut  | Notes                                          |
 | --- | -------------------------- | ------- | ---------------------------------------------- |
-| F66 | Integrations Paiement      | Partiel | Stripe webhook + checkout. Manque Wise, PayPal |
+| F66 | Integrations Paiement      | Done    | Stripe complet (checkout, webhook, refund) + Wise API (Sprint 35) |
 | F67 | Integrations Calendrier    | Done    | Google Calendar bidirectionnel                 |
 | F68 | Integrations Communication | Manque  | Pas de Slack, Teams, SMS, WhatsApp             |
 | F69 | Integrations Analytics     | Manque  | Pas de Google Analytics, Mixpanel, Segment     |
-| F70 | API REST                   | Manque  | Pas d'API publique, API keys, webhooks custom  |
+| F70 | API REST                   | Done    | API v1 (clients, leads, calls) + API keys + webhooks (Sprint 34) |
 
 ### Manques Integrations
 
-- [ ] Wise pour virements internationaux
+- [x] Wise pour virements internationaux (Sprint 35)
 - [ ] Slack notifications evenements cles
 - [ ] SMS via Twilio
 - [ ] Google Analytics / Mixpanel
-- [ ] API REST publique avec documentation
-- [ ] Webhooks custom configurables
+- [x] API REST publique /api/v1/ (clients, leads, calls) (Sprint 34)
+- [x] Webhooks custom configurables avec HMAC + logs (Sprint 34)
 - [ ] Zapier connector
 
 ---
@@ -384,6 +384,11 @@
 | 21     | Systeme de checkin ameliore (mood, energie, gratitudes, objectifs, heatmap)                                                                        | 2026-03-11   |
 | 22     | Rapports financiers & Sales Dashboard (payment reminders, KPIs, forecast, top clients)                                                             | 2026-03-11   |
 | 23     | Gestion appels avancee (reschedule, satisfaction, note templates, call metrics)                                                                    | 2026-03-11   |
+| 24-31  | Quiz, exports, timeline CRM, profils publics, parcours LMS, analyse risque IA, onboarding, notifications push/email                               | 2026-03-11~12 |
+| 32     | RGPD complet (export JSON, consentements, banniere) + 2FA TOTP (enrollment, login flow)                                                           | 2026-03-14   |
+| 33     | Branding & white-label (logo custom, couleurs, polices, favicon, border-radius, preview live)                                                     | 2026-03-14   |
+| 34     | API REST publique v1 (clients, leads, calls) + API keys + webhooks HMAC + admin UI                                                               | 2026-03-14   |
+| 35     | Stripe complet (refunds, cron overdue/reminders/recurring) + Wise API (quotes, transfers, balance)                                               | 2026-03-14   |
 
 ---
 
@@ -405,7 +410,7 @@
 ### Vague 3 - Polish & Conformite
 
 - [x] **Sprint 31** : Notifications push + email templates (F48-F49)
-- [ ] **Sprint 32** : RGPD complet + 2FA (F54, F62)
-- [ ] **Sprint 33** : Branding & white-label (F56, F58.1)
-- [ ] **Sprint 34** : API REST publique + webhooks (F70)
-- [ ] **Sprint 35** : Integrations Stripe complet + Wise (F66)
+- [x] **Sprint 32** : RGPD complet + 2FA (F54, F62)
+- [x] **Sprint 33** : Branding & white-label (F56, F58.1)
+- [x] **Sprint 34** : API REST publique + webhooks (F70)
+- [x] **Sprint 35** : Integrations Stripe complet + Wise (F66)

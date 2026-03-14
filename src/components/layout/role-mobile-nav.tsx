@@ -11,6 +11,7 @@ import {
   getMobileNavForRole,
 } from "@/lib/navigation";
 import { X, Settings, LogOut } from "lucide-react";
+import { useBrandingContext } from "@/components/providers/branding-provider";
 
 interface RoleMobileNavProps {
   variant: RoleVariant;
@@ -20,6 +21,7 @@ export function RoleMobileNav({ variant }: RoleMobileNavProps) {
   const pathname = usePathname();
   const { mobileMenuOpen, setMobileMenuOpen } = useUIStore();
   const { profile, loading, signOut } = useAuth();
+  const { branding } = useBrandingContext();
 
   const bottomItems = getMobileNavForRole(variant);
   const allItems = getNavigationForRole(variant);
@@ -56,14 +58,14 @@ export function RoleMobileNav({ variant }: RoleMobileNavProps) {
                 className="flex items-center gap-3"
               >
                 <img
-                  src="/logo.png"
-                  alt="Off Market"
+                  src={branding?.logo_url || "/logo.png"}
+                  alt={branding?.app_name || "Off Market"}
                   width={34}
                   height={34}
                   className="rounded-xl"
                 />
                 <span className="text-lg text-[var(--sidebar-text-active)] font-display font-bold tracking-tight">
-                  Off Market
+                  {branding?.app_name || "Off Market"}
                 </span>
               </Link>
               <button

@@ -7,6 +7,7 @@ import { useUIStore } from "@/stores/ui-store";
 import { useAuth } from "@/hooks/use-auth";
 import { PanelLeftClose, PanelLeft, LogOut, Settings } from "lucide-react";
 import { type RoleVariant, getNavigationForRole } from "@/lib/navigation";
+import { useBrandingContext } from "@/components/providers/branding-provider";
 
 interface RoleSidebarProps {
   variant: RoleVariant;
@@ -16,6 +17,7 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
   const pathname = usePathname();
   const { sidebarCollapsed, toggleSidebar } = useUIStore();
   const { profile, loading, signOut } = useAuth();
+  const { branding } = useBrandingContext();
 
   const navigation = getNavigationForRole(variant);
   const initials = profile?.full_name ? getInitials(profile.full_name) : "";
@@ -61,8 +63,8 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
         >
           <div className="relative">
             <img
-              src="/logo.png"
-              alt="Off Market"
+              src={branding?.logo_url || "/logo.png"}
+              alt={branding?.app_name || "Off Market"}
               width={34}
               height={34}
               className="rounded-xl shrink-0 transition-transform duration-300 group-hover:scale-105"
@@ -71,7 +73,7 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
           </div>
           {!sidebarCollapsed && (
             <span className="text-lg text-[var(--sidebar-text-active)] font-display font-bold tracking-tight">
-              Off Market
+              {branding?.app_name || "Off Market"}
             </span>
           )}
         </Link>

@@ -30,6 +30,8 @@ import {
   Lock,
   Eye,
   EyeOff,
+  ShieldCheck,
+  Smartphone,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -38,6 +40,9 @@ import {
 } from "@/hooks/use-google-calendar";
 import { usePreferences, useUpdatePreferences } from "@/hooks/use-preferences";
 import { usePushNotifications } from "@/hooks/use-push-notifications";
+import { use2FA } from "@/hooks/use-2fa";
+import { BrandingSettings } from "@/components/settings/branding-settings";
+import { ApiSettings } from "@/components/settings/api-settings";
 
 const NOTIFICATION_TOGGLES = [
   {
@@ -94,7 +99,7 @@ const DIGEST_OPTIONS = [
 ] as const;
 
 export default function SettingsPage() {
-  const { profile, user, signOut } = useAuth();
+  const { profile, user, signOut, isAdmin } = useAuth();
   const supabase = useSupabase();
   const { theme, setTheme } = useTheme();
   const [fullName, setFullName] = useState(profile?.full_name ?? "");
@@ -122,6 +127,9 @@ export default function SettingsPage() {
   const { data: preferences } = usePreferences();
   const updatePreferences = useUpdatePreferences();
   const push = usePushNotifications();
+  const twoFA = use2FA();
+  const [totpCode, setTotpCode] = useState("");
+  const [verifying2FA, setVerifying2FA] = useState(false);
 
   // Toast on Google Calendar OAuth callback redirect
   useEffect(() => {
@@ -146,6 +154,11 @@ export default function SettingsPage() {
       setAvatarUrl(profile.avatar_url ?? "");
     }
   }, [profile]);
+
+  // Load 2FA factors
+  useEffect(() => {
+    twoFA.fetchFactors();
+  }, [twoFA.fetchFactors]);
 
   const initials = fullName ? getInitials(fullName) : "U";
 
@@ -274,36 +287,16 @@ export default function SettingsPage() {
     if (!user) return;
     setExporting(true);
     try {
-      const [profileRes, messagesRes, checkinsRes] = await Promise.all([
-        supabase.from("profiles").select("*").eq("id", user.id).single(),
-        supabase
-          .from("messages")
-          .select("content, created_at")
-          .eq("sender_id", user.id)
-          .order("created_at", { ascending: false })
-          .limit(500),
-        supabase
-          .from("weekly_checkins")
-          .select("*")
-          .eq("client_id", user.id)
-          .order("week_start", { ascending: false }),
-      ]);
-      const exportData = {
-        exported_at: new Date().toISOString(),
-        profile: profileRes.data,
-        messages: messagesRes.data ?? [],
-        checkins: checkinsRes.data ?? [],
-      };
-      const blob = new Blob([JSON.stringify(exportData, null, 2)], {
-        type: "application/json",
-      });
+      const res = await fetch("/api/account/export");
+      if (!res.ok) throw new Error("Export failed");
+      const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
       a.download = `off-market-export-${new Date().toISOString().split("T")[0]}.json`;
       a.click();
       URL.revokeObjectURL(url);
-      toast.success("Donnees exportees");
+      toast.success("Donnees exportees (RGPD)");
     } catch {
       toast.error("Erreur lors de l'export");
     } finally {
@@ -586,6 +579,12 @@ export default function SettingsPage() {
         </div>
       </div>
 
+      {/* Branding (admin only) */}
+      {isAdmin && <BrandingSettings />}
+
+      {/* API & Webhooks (admin only) */}
+      {isAdmin && <ApiSettings />}
+
       {/* Security */}
       <div
         className="bg-surface rounded-2xl p-6 space-y-4"
@@ -684,6 +683,120 @@ export default function SettingsPage() {
             {changingPassword ? "Mise a jour..." : "Changer le mot de passe"}
           </button>
         </div>
+      </div>
+
+      {/* 2FA */}
+      <div
+        className="bg-surface rounded-2xl p-6 space-y-4"
+        style={{ boxShadow: "var(--shadow-card)" }}
+      >
+        <div className="flex items-center gap-2 mb-2">
+          <ShieldCheck className="w-4 h-4 text-muted-foreground" />
+          <h2 className="text-sm font-semibold text-foreground">
+            Authentification a deux facteurs (2FA)
+          </h2>
+        </div>
+
+        {twoFA.isEnabled ? (
+          <div className="space-y-3">
+            <div className="flex items-center gap-3 p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
+              <ShieldCheck className="w-5 h-5 text-emerald-600" />
+              <div>
+                <p className="text-sm font-medium text-foreground">2FA active</p>
+                <p className="text-xs text-muted-foreground">
+                  Ton compte est protege par une application d'authentification.
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={twoFA.disable}
+              className="h-9 px-4 rounded-[10px] border border-error/30 text-sm text-error hover:bg-error/5 transition-colors flex items-center gap-2"
+            >
+              <Lock className="w-3.5 h-3.5" />
+              Desactiver le 2FA
+            </button>
+          </div>
+        ) : twoFA.qrCode ? (
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Scanne ce QR code avec ton application d'authentification (Google Authenticator, Authy, etc.) :
+            </p>
+            <div className="flex justify-center">
+              <img
+                src={twoFA.qrCode}
+                alt="QR Code 2FA"
+                className="w-48 h-48 rounded-xl border border-border"
+              />
+            </div>
+            {twoFA.secret && (
+              <div className="p-3 bg-muted rounded-xl">
+                <p className="text-xs text-muted-foreground mb-1">
+                  Ou entre cette cle manuellement :
+                </p>
+                <p className="text-sm font-mono text-foreground break-all select-all">
+                  {twoFA.secret}
+                </p>
+              </div>
+            )}
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-1.5">
+                Code de verification
+              </label>
+              <div className="flex gap-3">
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={6}
+                  value={totpCode}
+                  onChange={(e) => setTotpCode(e.target.value.replace(/\D/g, ""))}
+                  placeholder="000000"
+                  className="flex-1 h-10 px-4 bg-muted border border-border rounded-[10px] text-sm text-foreground font-mono tracking-widest text-center focus:outline-none focus:ring-2 focus:ring-primary/30"
+                />
+                <button
+                  onClick={async () => {
+                    if (totpCode.length !== 6) return;
+                    setVerifying2FA(true);
+                    const ok = await twoFA.verifyEnroll(totpCode);
+                    setVerifying2FA(false);
+                    if (ok) setTotpCode("");
+                  }}
+                  disabled={totpCode.length !== 6 || verifying2FA}
+                  className="h-10 px-4 rounded-[10px] bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-2"
+                >
+                  {verifying2FA && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                  Verifier
+                </button>
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                twoFA.cancelEnroll();
+                setTotpCode("");
+              }}
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Annuler
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">
+              Ajoute une couche de securite supplementaire avec une application d'authentification.
+            </p>
+            <button
+              onClick={twoFA.startEnroll}
+              disabled={twoFA.enrolling}
+              className="h-9 px-4 rounded-[10px] bg-foreground text-background text-sm font-medium hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-2"
+            >
+              {twoFA.enrolling ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <Smartphone className="w-3.5 h-3.5" />
+              )}
+              Activer le 2FA
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Email preferences */}
