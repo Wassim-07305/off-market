@@ -77,7 +77,7 @@ export function StudentSidePanel({
   const { notes, addNote, togglePin } = useStudentNotes(studentId);
   const { tasks, addTask, updateTaskStatus } = useStudentTasks(studentId);
   const { profile } = useAuth();
-  const { updateStudentFlag, updateStudentTag, updateStudentDetails } = useStudentsHook();
+  const { updateStudentFlag, updateStudentDetails } = useStudentsHook();
 
   const [selectedTag, setSelectedTag] = useState<string>("standard");
   const [newNote, setNewNote] = useState("");
@@ -194,7 +194,6 @@ export function StudentSidePanel({
       profileId: student.id,
       flag: newFlag,
       reason,
-      changedBy: profile.id,
     });
   };
 
