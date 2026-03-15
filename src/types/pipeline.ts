@@ -23,6 +23,12 @@ export interface CrmContact {
   created_by: string | null;
   created_at: string;
   updated_at: string;
+  // Enrichment
+  linkedin_url: string | null;
+  instagram_url: string | null;
+  enrichment_data: Record<string, unknown>;
+  enrichment_status: "pending" | "enriched" | "failed" | null;
+  last_enriched_at: string | null;
   // Joined
   assigned_profile?: { id: string; full_name: string } | null;
 }

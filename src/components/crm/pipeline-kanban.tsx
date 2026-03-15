@@ -30,7 +30,11 @@ import {
   Trash2,
   User,
   Loader2,
+  Sparkles,
+  Linkedin,
+  Instagram,
 } from "lucide-react";
+import { EnrichmentPanel } from "@/components/crm/enrichment-panel";
 
 // ─── Contact Card ────────────────────────────────────────────
 
@@ -38,11 +42,14 @@ function ContactCard({
   contact,
   isDragging,
   onDelete,
+  onEnrich,
 }: {
   contact: CrmContact;
   isDragging?: boolean;
   onDelete?: () => void;
+  onEnrich?: () => void;
 }) {
+  const enrichmentStatus = contact.enrichment_status;
   return (
     <div
       className={cn(
@@ -59,17 +66,36 @@ function ContactCard({
             <p className="text-[13px] font-medium text-foreground truncate">
               {contact.full_name}
             </p>
-            {onDelete && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onDelete();
-                }}
-                className="p-1 text-transparent group-hover:text-muted-foreground hover:!text-red-500 transition-colors"
-              >
-                <Trash2 className="w-3 h-3" />
-              </button>
-            )}
+            <div className="flex items-center gap-0.5">
+              {onEnrich && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEnrich();
+                  }}
+                  className={cn(
+                    "p-1 transition-colors",
+                    enrichmentStatus === "enriched"
+                      ? "text-emerald-500"
+                      : "text-transparent group-hover:text-muted-foreground hover:!text-red-500",
+                  )}
+                  title="Enrichir via Apify"
+                >
+                  <Sparkles className="w-3 h-3" />
+                </button>
+              )}
+              {onDelete && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete();
+                  }}
+                  className="p-1 text-transparent group-hover:text-muted-foreground hover:!text-red-500 transition-colors"
+                >
+                  <Trash2 className="w-3 h-3" />
+                </button>
+              )}
+            </div>
           </div>
 
           {(contact.company || contact.email || contact.phone) && (
@@ -106,6 +132,12 @@ function ContactCard({
                 {contact.assigned_profile.full_name.split(" ")[0]}
               </span>
             )}
+            {contact.linkedin_url && (
+              <Linkedin className="w-3 h-3 text-[#0A66C2]" />
+            )}
+            {contact.instagram_url && (
+              <Instagram className="w-3 h-3 text-[#E4405F]" />
+            )}
           </div>
         </div>
       </div>
@@ -118,9 +150,11 @@ function ContactCard({
 function DraggableContact({
   contact,
   onDelete,
+  onEnrich,
 }: {
   contact: CrmContact;
   onDelete: () => void;
+  onEnrich: () => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } =
     useDraggable({ id: contact.id });
@@ -137,7 +171,7 @@ function DraggableContact({
       {...attributes}
       className={cn(isDragging && "opacity-30")}
     >
-      <ContactCard contact={contact} onDelete={onDelete} />
+      <ContactCard contact={contact} onDelete={onDelete} onEnrich={onEnrich} />
     </div>
   );
 }
@@ -149,11 +183,13 @@ function StageColumn({
   contacts,
   total,
   onDelete,
+  onEnrich,
 }: {
   stage: (typeof PIPELINE_STAGES)[number];
   contacts: CrmContact[];
   total: number;
   onDelete: (id: string) => void;
+  onEnrich: (id: string) => void;
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: stage.value });
 
@@ -192,6 +228,7 @@ function StageColumn({
             key={contact.id}
             contact={contact}
             onDelete={() => onDelete(contact.id)}
+            onEnrich={() => onEnrich(contact.id)}
           />
         ))}
       </div>
@@ -217,6 +254,8 @@ function AddContactForm({
     source?: string;
     estimated_value?: number;
     notes?: string;
+    linkedin_url?: string;
+    instagram_url?: string;
   }) => void;
   isPending: boolean;
 }) {
@@ -227,6 +266,8 @@ function AddContactForm({
   const [source, setSource] = useState("");
   const [value, setValue] = useState("");
   const [notes, setNotes] = useState("");
+  const [linkedinUrl, setLinkedinUrl] = useState("");
+  const [instagramUrl, setInstagramUrl] = useState("");
 
   if (!open) return null;
 
@@ -241,6 +282,8 @@ function AddContactForm({
       source: source || undefined,
       estimated_value: parseFloat(value) || undefined,
       notes: notes.trim() || undefined,
+      linkedin_url: linkedinUrl.trim() || undefined,
+      instagram_url: instagramUrl.trim() || undefined,
     });
     setName("");
     setEmail("");
@@ -249,6 +292,8 @@ function AddContactForm({
     setSource("");
     setValue("");
     setNotes("");
+    setLinkedinUrl("");
+    setInstagramUrl("");
   };
 
   return (
@@ -373,6 +418,33 @@ function AddContactForm({
             />
           </div>
 
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="flex items-center gap-1 text-xs font-medium text-foreground mb-1">
+                <Linkedin className="w-3 h-3 text-[#0A66C2]" />
+                LinkedIn
+              </label>
+              <input
+                value={linkedinUrl}
+                onChange={(e) => setLinkedinUrl(e.target.value)}
+                placeholder="linkedin.com/in/..."
+                className="w-full h-10 px-3 bg-muted border border-border rounded-xl text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-red-600/20 focus:border-red-600/30 transition-all"
+              />
+            </div>
+            <div>
+              <label className="flex items-center gap-1 text-xs font-medium text-foreground mb-1">
+                <Instagram className="w-3 h-3 text-[#E4405F]" />
+                Instagram
+              </label>
+              <input
+                value={instagramUrl}
+                onChange={(e) => setInstagramUrl(e.target.value)}
+                placeholder="@username"
+                className="w-full h-10 px-3 bg-muted border border-border rounded-xl text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-red-600/20 focus:border-red-600/30 transition-all"
+              />
+            </div>
+          </div>
+
           <div className="flex gap-2 pt-2">
             <button
               type="button"
@@ -403,6 +475,10 @@ export function PipelineKanban() {
     usePipelineContacts();
   const [showAdd, setShowAdd] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [enrichContactId, setEnrichContactId] = useState<string | null>(null);
+  const enrichContact = enrichContactId
+    ? contacts.find((c) => c.id === enrichContactId) ?? null
+    : null;
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -505,6 +581,7 @@ export function PipelineKanban() {
                 contacts={stageContacts}
                 total={stageTotal}
                 onDelete={(id) => deleteContact.mutate(id)}
+                onEnrich={(id) => setEnrichContactId(id)}
               />
             );
           })}
@@ -530,6 +607,15 @@ export function PipelineKanban() {
         }
         isPending={createContact.isPending}
       />
+
+      {/* Enrichment panel */}
+      {enrichContact && (
+        <EnrichmentPanel
+          contact={enrichContact}
+          open={!!enrichContactId}
+          onClose={() => setEnrichContactId(null)}
+        />
+      )}
     </div>
   );
 }
