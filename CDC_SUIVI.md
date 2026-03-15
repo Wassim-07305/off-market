@@ -1,7 +1,7 @@
 # Suivi d'avancement - Cahier des Charges Off-Market
 
 > Derniere mise a jour : 2026-03-15
-> Avancement global : **~95%** (CDC technique) / **~90%** (besoins Alexia Call1+Call2)
+> Avancement global : **~98%** (CDC technique) / **~95%** (besoins Alexia Call1+Call2)
 
 ---
 
@@ -24,13 +24,13 @@
 | F3   | Dashboard Client         | Done    | Progression, XP, badges, appels                                                                  |
 | F4   | Dashboard Sales          | Done    | KPIs financiers, MRR, forecast, top clients (Sprint 22)                                          |
 | F4.1 | Widgets KPI              | Done    | MRR/ARR, retention, NPS basique                                                                  |
-| F4.2 | Graphiques & Historiques | Partiel | Courbes revenus + export PDF/CSV OK (Sprint 25). Manque heatmaps activite, comparaisons periodes |
+| F4.2 | Graphiques & Historiques | Done    | Courbes revenus + export + heatmaps activite + comparaisons periodes + closing rate (Sprint 38) |
 
 ### Manques Dashboard
 
 - [x] Export PDF/Excel des rapports (Sprint 25)
-- [ ] Heatmaps d'activite par jour/heure
-- [ ] Comparaisons periode a periode
+- [x] Heatmaps d'activite par jour/heure (activity-heatmap.tsx Sprint 38)
+- [x] Comparaisons periode a periode (period-comparison.tsx Sprint 38)
 - [ ] Widgets configurables (drag-drop dashboard)
 
 ---
@@ -86,7 +86,7 @@
 | ----- | -------------------------- | ------- | -------------------------------------------------------------- |
 | F13   | Chat Temps Reel            | Done    | Messages, typing, fichiers, reactions, edit/delete             |
 | F14   | Canaux et Fils             | Done    | Canaux publics/prives, threads, mentions                       |
-| F15   | Assistant IA Chat          | Partiel | Chat IA separe existe. Pas integre directement dans messagerie |
+| F15   | Assistant IA Chat          | Done    | Slash commands /resume /translate /suggest integres dans chat (Sprint 38) |
 | F16   | Recherche et Notifications | Partiel | Recherche messages OK. Notifications in-app OK                 |
 | F16.1 | Canaux Personnalises       | Done    | Publics, prives, par equipe, permissions                       |
 | F16.2 | Gestion Conversations      | Done    | Favoris (bookmarks), mute, epinglage, templates reponses rapides (Sprint 37) |
@@ -95,9 +95,9 @@
 
 - [x] Epinglage de messages (is_pinned dans schema messages)
 - [x] Templates / reponses rapides (template-picker.tsx + template-manager-modal.tsx Sprint 37)
-- [ ] Archive de conversations
-- [ ] IA integree dans le chat (slash commands /help, /summarize)
-- [ ] Mode "Do Not Disturb"
+- [x] Archive de conversations (Sprint 38)
+- [x] IA integree dans le chat — /resume, /translate, /suggest (Sprint 38)
+- [x] Mode "Do Not Disturb" — hook + header toggle + durees (Sprint 38)
 
 ---
 
@@ -108,15 +108,15 @@
 | F17   | Planification d'Appels    | Done    | Slots, reservation, calendrier semaine/liste                   |
 | F18   | Calendrier Integre        | Done    | Vue semaine, sync Google Calendar                              |
 | F19   | Appels Video WebRTC       | Done    | Video room, controles, screen sharing                          |
-| F20   | Transcription Automatique | Partiel | Table DB + hook existent. Manque UI lecture/export             |
+| F20   | Transcription Automatique | Done    | Transcription + enregistrement video + player + download (Sprint 38) |
 | F20.1 | Rescheduling et Absence   | Done    | Report avec raison, date originale tracee (Sprint 23)          |
 | F20.2 | Notes et Follow-up        | Done    | Notes post-appel, templates, action items (Sprint 23)          |
 | F20.3 | Metriques et Reporting    | Done    | KPIs, taux completion, satisfaction, par type/jour (Sprint 23) |
 
 ### Manques Appels
 
-- [ ] Enregistrement des appels video
-- [ ] UI de lecture des transcriptions
+- [x] Enregistrement des appels video (Sprint 38)
+- [x] UI de lecture des transcriptions — recording-player.tsx (Sprint 38)
 - [ ] Export transcriptions en PDF/texte
 - [ ] Rappels email/SMS avant appel
 - [ ] Support multi-participants (appels groupe)
@@ -133,13 +133,13 @@
 | F24   | Challenges Hebdomadaires  | Done    | Types varies, progression, participants                           |
 | F25   | Check-Ins Quotidiens      | Done    | Check-in matinal + soir, mood, energie (Sprint 21)                |
 | F25.1 | Streaks et Habits         | Done    | Streak tracking, compteur                                         |
-| F25.2 | Social Proof              | Partiel | Leaderboard public OK. Manque filtres periode, anonymat optionnel |
+| F25.2 | Social Proof              | Done    | Leaderboard avec filtres semaine/mois/tout + rank changes (Sprint 38) |
 | F25.3 | Rewards et Privileges     | Done    | Catalogue rewards, redemption XP, admin gestion, stock (use-rewards.ts + admin-rewards.tsx + rewards-catalog.tsx) |
 
 ### Manques Gamification
 
 - [x] Systeme de rewards/redemption (convertir XP en avantages) (Sprint 36)
-- [ ] Filtres leaderboard (semaine/mois/tout)
+- [x] Filtres leaderboard (semaine/mois/tout) (Sprint 38)
 - [ ] Anonymat optionnel leaderboard
 - [ ] Team competitions / defis d'equipe
 - [ ] Badges rares et exclusifs configurables par admin
@@ -221,7 +221,7 @@
 | F40   | Profils Publics             | Done    | Page profil complete: avatar, role, bio, follow/unfollow, stats XP/badges/followers, posts recents (Sprint 27) |
 | F40.1 | Regles Communautaires       | Partiel | Moderation OK. Manque code of conduct affiche                                                                  |
 | F40.2 | Moderation et Reporting     | Done    | Report, admin review, pin, delete                                                                              |
-| F40.3 | Communautes Specialisees    | Manque  | Pas de sous-groupes thematiques                                                                                |
+| F40.3 | Communautes Specialisees    | Done    | Sous-communautes thematiques avec cards, CRUD, feed filtre (Sprint 38)                                         |
 
 ### Manques Communaute
 
@@ -391,6 +391,7 @@
 | 35     | Stripe complet (refunds, cron overdue/reminders/recurring) + Wise API (quotes, transfers, balance)                                               | 2026-03-14   |
 | 36     | CDC gap fill — gamification (challenges, badges), coaching (sessions, alertes), formations (comments, prereqs), contenu (kanban, calendrier), objectifs, CSM auto-assign, roadmap IA, rituels/streaks | 2026-03-15 |
 | 37     | Enrichissement Apify 5 plateformes, lead scoring auto, templates messages, sequences relance, import CSV CRM, video onboarding CSM, dashboard client premium | 2026-03-15 |
+| 38     | IA slash commands chat, archive conversations, DND, enregistrement video, notif flag, leaderboard filtres, sous-communautes, roadmap PDF, heatmap, comparaison periodes, closing rate | 2026-03-15 |
 
 ---
 
@@ -448,7 +449,7 @@
 | Questions pre-appel standardisees             | Done    | use-pre-call-questions.ts avec questions configurables                         |
 | Reponse video au lieu d'appel                 | Manque  | Pas de systeme de reponse video asynchrone                                      |
 | Systeme de flags (Green/Orange/Red)           | Done    | student_details.flag + flag history + UI dans side panel                       |
-| Notification auto quand flag change           | Partiel | Flag history existe. Manque notification push a Alexia                         |
+| Notification auto quand flag change           | Done    | Auto-notification admin + coach sur changement flag (Sprint 38)                |
 | Attribution auto CSM                          | Done    | csm-auto-assign.ts avec algo specialite + charge (Sprint 36)                  |
 | Override manuel CSM                           | Done    | csm-dashboard.tsx avec UI attribution + batch assign                           |
 | Vue groupee par CSM                           | Done    | csm-dashboard.tsx avec metriques par coach + clients groupes (Sprint 36)       |
@@ -464,7 +465,7 @@
 | Cash collecte vs cash facture             | Done    | Vue comparee dans financial-dashboard.tsx (Sprint 22)          |
 | LTV par client                            | Done    | use-ltv.ts + ltv-ranking.tsx (calcul auto, classement top N)   |
 | Ventes par canal                          | Done    | Revenue by channel dans financial-dashboard.tsx (pie chart)    |
-| Taux de closing + commentaires            | Partiel | Pipeline existe. Manque taux closing par source et raisons     |
+| Taux de closing + commentaires            | Done    | Closing rate par source + lost_reason + temps moyen (Sprint 38) |
 | Calcul auto paiements contracteurs        | Done    | Auto-commission a la conversion client (use-pipeline.ts moveContact) |
 | Generation auto contrats/factures         | Done    | Templates + PDF + envoi email                                  |
 | Signature electronique                    | Done    | E-signature integree : signature-pad.tsx + API sign + metadata IP |
@@ -486,7 +487,7 @@
 | Tutorial guide interactif              | Done    | Walkthrough provider (Sprint 30)                        |
 | Notifications differenciees son        | Manque  | Pas de sons differents urgent vs normal                 |
 | Badge rouge messages non lus           | Done    | Unread counter dans sidebar                             |
-| Roadmap imprimable client              | Manque  | Pas d'export roadmap PDF                                |
+| Roadmap imprimable client              | Done    | /api/roadmap/[id]/pdf + bouton telecharger (Sprint 38)  |
 | Mobile-first CRM setter               | Partiel | PWA responsive mais pas optimise mobile setter          |
 
 ---
@@ -509,12 +510,12 @@
 11. ~~Upsell automatise~~ — Done (use-upsell.ts avec rules + triggers)
 
 ### ✅ Priorite Basse — Majorite faite
-12. Enregistrement appels video — Partiel (WebRTC existe, manque sauvegarde enregistrement)
+12. ~~Enregistrement appels video~~ — Done (use-call-recording.ts + recording-controls.tsx + recording-player.tsx Sprint 38)
 13. LinkedIn API integration (anti-triche) — Manque
 14. ~~Lead magnet forms publics~~ — Done (/api/leads/capture + /f/[formId])
 15. ~~E-signature integree~~ — Done (signature-pad.tsx + /api/contracts/[id]/sign)
 16. Multi-devises — Manque
-17. Sous-communautes thematiques — Manque
+17. ~~Sous-communautes thematiques~~ — Done (communities tables + hooks + UI Sprint 38)
 
 ### Nouveaux ajouts Sprint 37
 18. **Templates messages / reponses rapides** — Done (template-picker.tsx + template-manager-modal.tsx + use-message-templates.ts)
