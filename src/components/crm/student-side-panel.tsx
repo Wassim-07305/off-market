@@ -162,7 +162,7 @@ export function StudentSidePanel({
   const details = student?.student_details?.[0];
   const score = details?.health_score ?? 0;
   const flag = details?.flag ?? ("green" as const);
-  const pipelineStage = details?.pipeline_stage ?? ("lead" as const);
+  const pipelineStage = details?.pipeline_stage ?? ("onboarding" as const);
   const stageConfig = STUDENT_PIPELINE_STAGES.find(
     (s) => s.value === pipelineStage,
   );
@@ -186,7 +186,7 @@ export function StudentSidePanel({
   };
 
   const handleFlagChange = (
-    newFlag: "green" | "orange" | "red",
+    newFlag: "green" | "yellow" | "orange" | "red",
     reason?: string,
   ) => {
     if (!profile || !student) return;

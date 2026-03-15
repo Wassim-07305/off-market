@@ -260,6 +260,8 @@ export interface StudentDetail {
   revenue_objective: number;
   obstacles: string | null;
   assigned_coach: string | null;
+  // Joined via query (not always present)
+  assigned_coach_profile?: { full_name: string } | null;
   revenue: number;
   lifetime_value: number;
   acquisition_source: string | null;
@@ -269,6 +271,7 @@ export interface StudentDetail {
   coach_notes: string | null;
   health_score: number;
   last_engagement_at: string | null;
+  stage_entered_at: string | null;
   created_at: string;
   updated_at: string;
 }

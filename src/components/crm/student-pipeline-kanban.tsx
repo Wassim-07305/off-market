@@ -78,10 +78,10 @@ function StudentCard({
                 showIcon={false}
               />
             )}
-            {details?.assigned_coach && (
+            {details?.assigned_coach_profile && (
               <span className="inline-flex items-center gap-0.5 text-[10px] text-muted-foreground">
                 <User className="w-2.5 h-2.5" />
-                {details.assigned_coach.full_name.split(" ")[0]}
+                {details.assigned_coach_profile.full_name.split(" ")[0]}
               </span>
             )}
           </div>
@@ -164,10 +164,10 @@ function StageColumn({
 
   // Count flags
   const flagCounts = useMemo(() => {
-    const counts = { green: 0, orange: 0, red: 0 };
+    const counts: Record<string, number> = { green: 0, yellow: 0, orange: 0, red: 0 };
     for (const s of students) {
       const f = s.student_details?.[0]?.flag ?? "green";
-      counts[f]++;
+      counts[f] = (counts[f] ?? 0) + 1;
     }
     return counts;
   }, [students]);
@@ -283,7 +283,7 @@ export function StudentPipelineKanban() {
     const map = new Map<StudentPipelineStage, StudentWithDetails[]>();
     STUDENT_PIPELINE_STAGES.forEach((s) => map.set(s.value, []));
     students.forEach((student) => {
-      const stage = student.student_details?.[0]?.pipeline_stage ?? "lead";
+      const stage = student.student_details?.[0]?.pipeline_stage ?? "onboarding";
       const list = map.get(stage);
       if (list) list.push(student);
     });

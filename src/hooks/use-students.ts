@@ -3,7 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
-import type { Profile, StudentDetail, StudentFlag } from "@/types/database";
+import type { Profile, StudentDetail, StudentFlag, StudentPipelineStage } from "@/types/database";
 import { useEffect } from "react";
 
 export type StudentWithDetails = Profile & {
@@ -28,7 +28,7 @@ export function useStudents(options: UseStudentsOptions = {}) {
     queryFn: async () => {
       let query = supabase
         .from("profiles")
-        .select("*, student_details(*)")
+        .select("*, student_details(*, assigned_coach_profile:profiles!student_details_assigned_coach_fkey(full_name))")
         .eq("role", "client")
         .order("created_at", { ascending: false })
         .limit(limit);
@@ -175,6 +175,27 @@ export function useStudents(options: UseStudentsOptions = {}) {
     },
   });
 
+  const updateStudentPipelineStage = useMutation({
+    mutationFn: async ({
+      profileId,
+      stage,
+    }: {
+      profileId: string;
+      stage: StudentPipelineStage;
+    }) => {
+      await ensureStudentDetails(profileId);
+      const { error } = await supabase
+        .from("student_details")
+        .update({ pipeline_stage: stage })
+        .eq("profile_id", profileId);
+      if (error) throw error;
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["students"] });
+      queryClient.invalidateQueries({ queryKey: ["student", variables.profileId] });
+    },
+  });
+
   return {
     students: studentsQuery.data ?? [],
     isLoading: studentsQuery.isLoading,
@@ -182,6 +203,7 @@ export function useStudents(options: UseStudentsOptions = {}) {
     updateStudentTag,
     updateStudentFlag,
     updateStudentDetails,
+    updateStudentPipelineStage,
   };
 }
 
@@ -193,7 +215,7 @@ export function useStudent(id: string) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("profiles")
-        .select("*, student_details(*)")
+        .select("*, student_details(*, assigned_coach_profile:profiles!student_details_assigned_coach_fkey(full_name))")
         .eq("id", id)
         .single();
       if (error) throw error;

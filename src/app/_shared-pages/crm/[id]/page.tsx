@@ -11,6 +11,7 @@ import {
   useStudents as useStudentsHook,
 } from "@/hooks/use-students";
 import { useAuth } from "@/hooks/use-auth";
+import type { StudentFlag } from "@/types/database";
 import { STUDENT_PIPELINE_STAGES, ACTIVITY_TYPES } from "@/lib/constants";
 import { getInitials, formatDate, formatCurrency, cn } from "@/lib/utils";
 import { motion } from "framer-motion";
@@ -107,7 +108,7 @@ export default function StudentDetailPage({
   const details = student.student_details?.[0];
   const score = details?.health_score ?? 0;
   const flag = details?.flag ?? ("green" as const);
-  const pipelineStage = details?.pipeline_stage ?? ("lead" as const);
+  const pipelineStage = details?.pipeline_stage ?? ("onboarding" as const);
   const stageConfig = STUDENT_PIPELINE_STAGES.find(
     (s) => s.value === pipelineStage,
   );
@@ -131,7 +132,7 @@ export default function StudentDetailPage({
   };
 
   const handleFlagChange = (
-    newFlag: "green" | "orange" | "red",
+    newFlag: StudentFlag,
     reason?: string,
   ) => {
     if (!profile) return;
@@ -139,7 +140,6 @@ export default function StudentDetailPage({
       profileId: student.id,
       flag: newFlag,
       reason,
-      changedBy: profile.id,
     });
   };
 
@@ -241,10 +241,10 @@ export default function StudentDetailPage({
                   {student.phone}
                 </span>
               )}
-              {details?.assigned_coach && (
+              {details?.assigned_coach_profile && (
                 <span className="flex items-center gap-1">
                   <User className="w-3.5 h-3.5" />
-                  Coach: {details.assigned_coach.full_name}
+                  Coach: {details.assigned_coach_profile.full_name}
                 </span>
               )}
             </div>

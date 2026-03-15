@@ -119,6 +119,28 @@ export function useContracts(options: UseContractsOptions = {}) {
     },
   });
 
+  const cancelContract = useMutation({
+    mutationFn: async ({
+      id,
+      reason,
+    }: {
+      id: string;
+      reason?: string;
+    }) => {
+      const { error } = await supabase
+        .from("contracts")
+        .update({
+          status: "cancelled",
+          cancellation_reason: reason ?? null,
+        })
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["contracts"] });
+    },
+  });
+
   return {
     contracts: contractsQuery.data ?? [],
     isLoading: contractsQuery.isLoading,
@@ -127,6 +149,7 @@ export function useContracts(options: UseContractsOptions = {}) {
     updateContract,
     sendContract,
     signContract,
+    cancelContract,
   };
 }
 

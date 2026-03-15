@@ -14,6 +14,7 @@ export interface TemplateVariable {
   key: string;
   label: string;
   type: "text" | "number" | "date" | "email";
+  defaultValue?: string;
 }
 
 // ─── CONTRACTS ──────────────────────────
@@ -29,6 +30,8 @@ export interface Contract {
   sent_at: string | null;
   signed_at: string | null;
   expires_at: string | null;
+  cancellation_reason: string | null;
+  version: number;
   created_by: string | null;
   created_at: string;
   updated_at: string;
@@ -47,6 +50,7 @@ export interface SignatureData {
   signed_at: string;
   ip_address: string;
   user_agent: string;
+  signer_name?: string;
 }
 
 // ─── INVOICES ───────────────────────────
@@ -63,6 +67,8 @@ export interface Invoice {
   paid_at: string | null;
   stripe_invoice_id: string | null;
   notes: string | null;
+  discount: number;
+  line_items: InvoiceLineItem[];
   created_by: string | null;
   created_at: string;
   updated_at: string;
@@ -76,7 +82,14 @@ export interface Invoice {
   contract?: { id: string; title: string } | null;
 }
 
-export type InvoiceStatus = "draft" | "sent" | "paid" | "overdue" | "cancelled";
+export interface InvoiceLineItem {
+  description: string;
+  quantity: number;
+  unit_price: number;
+  total: number;
+}
+
+export type InvoiceStatus = "draft" | "sent" | "paid" | "overdue" | "cancelled" | "partial" | "refunded";
 
 // ─── PAYMENT SCHEDULES ──────────────────
 export interface PaymentSchedule {
@@ -87,13 +100,39 @@ export interface PaymentSchedule {
   installments: number;
   frequency: PaymentFrequency;
   start_date: string;
+  installment_details: PaymentScheduleInstallment[];
   created_at: string;
   updated_at: string;
   // Joined
   client?: { id: string; full_name: string };
 }
 
+export interface PaymentScheduleInstallment {
+  index: number;
+  amount: number;
+  due_date: string;
+  status: "pending" | "paid" | "overdue";
+  paid_at: string | null;
+}
+
 export type PaymentFrequency = "monthly" | "weekly" | "biweekly" | "custom";
+
+export const FREQUENCY_LABELS: Record<PaymentFrequency, string> = {
+  monthly: "Mensuel",
+  weekly: "Hebdomadaire",
+  biweekly: "Bi-mensuel",
+  custom: "Personnalise",
+};
+
+// ─── COMMISSIONS ───────────────────────
+export type CommissionRole = "closer" | "setter" | "coach" | "referral";
+
+export const COMMISSION_ROLE_LABELS: Record<CommissionRole, string> = {
+  closer: "Closer",
+  setter: "Setter",
+  coach: "Coach",
+  referral: "Parrainage",
+};
 
 // ─── PAYMENT REMINDERS ──────────────────
 export interface PaymentReminder {

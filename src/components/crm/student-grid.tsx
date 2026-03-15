@@ -148,11 +148,11 @@ export function StudentGrid({
                 </div>
 
                 {/* Coach */}
-                {details?.assigned_coach && (
+                {details?.assigned_coach_profile && (
                   <div className="mt-3 pt-3 border-t border-border/50">
                     <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
                       <User className="w-3 h-3" />
-                      <span>Coach: {details.assigned_coach.full_name}</span>
+                      <span>Coach: {details.assigned_coach_profile.full_name}</span>
                     </div>
                   </div>
                 )}

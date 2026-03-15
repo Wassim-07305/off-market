@@ -236,9 +236,111 @@ export function usePaymentSchedules(clientId?: string) {
     },
   });
 
+  const updateInstallmentStatus = useMutation({
+    mutationFn: async ({
+      scheduleId,
+      installmentIndex,
+      status,
+    }: {
+      scheduleId: string;
+      installmentIndex: number;
+      status: "pending" | "paid" | "overdue";
+    }) => {
+      // Get current schedule
+      const { data: schedule, error: fetchError } = await supabase
+        .from("payment_schedules")
+        .select("installment_details")
+        .eq("id", scheduleId)
+        .single();
+      if (fetchError) throw fetchError;
+
+      const details = (schedule?.installment_details as Array<Record<string, unknown>>) ?? [];
+      if (details[installmentIndex]) {
+        details[installmentIndex].status = status;
+        if (status === "paid") {
+          details[installmentIndex].paid_at = new Date().toISOString();
+        }
+      }
+
+      const { error } = await supabase
+        .from("payment_schedules")
+        .update({ installment_details: details })
+        .eq("id", scheduleId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["payment-schedules"] });
+    },
+  });
+
   return {
     schedules: schedulesQuery.data ?? [],
     isLoading: schedulesQuery.isLoading,
     createSchedule,
+    updateInstallmentStatus,
   };
+}
+
+// ─── Financial Dashboard ────────────────
+
+export function useFinancialDashboard() {
+  const supabase = useSupabase();
+  const { user } = useAuth();
+
+  return useQuery({
+    queryKey: ["financial-dashboard"],
+    enabled: !!user,
+    queryFn: async () => {
+      const now = new Date();
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+      const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString();
+      const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0).toISOString();
+
+      const [currentRes, lastRes, allRes] = await Promise.all([
+        supabase
+          .from("invoices")
+          .select("status, total, paid_at")
+          .gte("created_at", startOfMonth),
+        supabase
+          .from("invoices")
+          .select("status, total")
+          .gte("created_at", startOfLastMonth)
+          .lte("created_at", endOfLastMonth),
+        supabase
+          .from("invoices")
+          .select("status, total, created_at, paid_at"),
+      ]);
+
+      if (currentRes.error) throw currentRes.error;
+      if (lastRes.error) throw lastRes.error;
+      if (allRes.error) throw allRes.error;
+
+      const currentMonthRevenue = (currentRes.data ?? [])
+        .filter((i) => i.status === "paid")
+        .reduce((sum, i) => sum + Number(i.total), 0);
+
+      const lastMonthRevenue = (lastRes.data ?? [])
+        .filter((i) => i.status === "paid")
+        .reduce((sum, i) => sum + Number(i.total), 0);
+
+      const totalRevenue = (allRes.data ?? [])
+        .filter((i) => i.status === "paid")
+        .reduce((sum, i) => sum + Number(i.total), 0);
+
+      const pendingAmount = (allRes.data ?? [])
+        .filter((i) => i.status === "sent" || i.status === "overdue")
+        .reduce((sum, i) => sum + Number(i.total), 0);
+
+      return {
+        currentMonthRevenue,
+        lastMonthRevenue,
+        totalRevenue,
+        pendingAmount,
+        invoiceCount: allRes.data?.length ?? 0,
+        paidCount: (allRes.data ?? []).filter((i) => i.status === "paid").length,
+        overdueCount: (allRes.data ?? []).filter((i) => i.status === "overdue").length,
+        monthlyData: allRes.data ?? [],
+      };
+    },
+  });
 }
