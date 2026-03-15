@@ -62,9 +62,23 @@ export function usePipelineContacts(stage?: PipelineStage) {
       if (error) throw error;
       return data as CrmContact;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["pipeline-contacts"] });
       toast.success("Contact ajoute");
+
+      // Auto-enrich if social URLs provided
+      if (data.linkedin_url || data.instagram_url || data.tiktok_url || data.facebook_url || data.website_url) {
+        fetch("/api/enrichment", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ contactId: data.id, type: "all" }),
+        }).then(() => {
+          queryClient.invalidateQueries({ queryKey: ["pipeline-contacts"] });
+          toast.success("Enrichissement auto lance");
+        }).catch(() => {
+          // Silent fail — enrichment is best-effort
+        });
+      }
     },
     onError: (err: unknown) => {
       const pg = err as { message?: string; code?: string; details?: string };

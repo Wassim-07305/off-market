@@ -33,8 +33,12 @@ import {
   Sparkles,
   Linkedin,
   Instagram,
+  Video,
+  Facebook,
+  Globe,
 } from "lucide-react";
 import { EnrichmentPanel } from "@/components/crm/enrichment-panel";
+import { useBulkEnrich } from "@/hooks/use-enrichment";
 
 // ─── Contact Card ────────────────────────────────────────────
 
@@ -137,6 +141,15 @@ function ContactCard({
             )}
             {contact.instagram_url && (
               <Instagram className="w-3 h-3 text-[#E4405F]" />
+            )}
+            {contact.tiktok_url && (
+              <Video className="w-3 h-3 text-zinc-600 dark:text-zinc-400" />
+            )}
+            {contact.facebook_url && (
+              <Facebook className="w-3 h-3 text-[#1877F2]" />
+            )}
+            {contact.website_url && (
+              <Globe className="w-3 h-3 text-zinc-500" />
             )}
           </div>
         </div>
@@ -256,6 +269,9 @@ function AddContactForm({
     notes?: string;
     linkedin_url?: string;
     instagram_url?: string;
+    tiktok_url?: string;
+    facebook_url?: string;
+    website_url?: string;
   }) => void;
   isPending: boolean;
 }) {
@@ -268,6 +284,9 @@ function AddContactForm({
   const [notes, setNotes] = useState("");
   const [linkedinUrl, setLinkedinUrl] = useState("");
   const [instagramUrl, setInstagramUrl] = useState("");
+  const [tiktokUrl, setTiktokUrl] = useState("");
+  const [facebookUrl, setFacebookUrl] = useState("");
+  const [websiteUrl, setWebsiteUrl] = useState("");
 
   if (!open) return null;
 
@@ -284,6 +303,9 @@ function AddContactForm({
       notes: notes.trim() || undefined,
       linkedin_url: linkedinUrl.trim() || undefined,
       instagram_url: instagramUrl.trim() || undefined,
+      tiktok_url: tiktokUrl.trim() || undefined,
+      facebook_url: facebookUrl.trim() || undefined,
+      website_url: websiteUrl.trim() || undefined,
     });
     setName("");
     setEmail("");
@@ -294,6 +316,9 @@ function AddContactForm({
     setNotes("");
     setLinkedinUrl("");
     setInstagramUrl("");
+    setTiktokUrl("");
+    setFacebookUrl("");
+    setWebsiteUrl("");
   };
 
   return (
@@ -445,6 +470,45 @@ function AddContactForm({
             </div>
           </div>
 
+          <div className="grid grid-cols-3 gap-3">
+            <div>
+              <label className="flex items-center gap-1 text-xs font-medium text-foreground mb-1">
+                <Video className="w-3 h-3" />
+                TikTok
+              </label>
+              <input
+                value={tiktokUrl}
+                onChange={(e) => setTiktokUrl(e.target.value)}
+                placeholder="@username"
+                className="w-full h-10 px-3 bg-muted border border-border rounded-xl text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-red-600/20 focus:border-red-600/30 transition-all"
+              />
+            </div>
+            <div>
+              <label className="flex items-center gap-1 text-xs font-medium text-foreground mb-1">
+                <Facebook className="w-3 h-3 text-[#1877F2]" />
+                Facebook
+              </label>
+              <input
+                value={facebookUrl}
+                onChange={(e) => setFacebookUrl(e.target.value)}
+                placeholder="facebook.com/page"
+                className="w-full h-10 px-3 bg-muted border border-border rounded-xl text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-red-600/20 focus:border-red-600/30 transition-all"
+              />
+            </div>
+            <div>
+              <label className="flex items-center gap-1 text-xs font-medium text-foreground mb-1">
+                <Globe className="w-3 h-3 text-zinc-500" />
+                Site web
+              </label>
+              <input
+                value={websiteUrl}
+                onChange={(e) => setWebsiteUrl(e.target.value)}
+                placeholder="https://..."
+                className="w-full h-10 px-3 bg-muted border border-border rounded-xl text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-red-600/20 focus:border-red-600/30 transition-all"
+              />
+            </div>
+          </div>
+
           <div className="flex gap-2 pt-2">
             <button
               type="button"
@@ -473,6 +537,7 @@ function AddContactForm({
 export function PipelineKanban() {
   const { contacts, isLoading, createContact, moveContact, deleteContact } =
     usePipelineContacts();
+  const bulkEnrich = useBulkEnrich();
   const [showAdd, setShowAdd] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [enrichContactId, setEnrichContactId] = useState<string | null>(null);
@@ -552,13 +617,23 @@ export function PipelineKanban() {
             </span>
           )}
         </div>
-        <button
-          onClick={() => setShowAdd(true)}
-          className="h-9 px-4 rounded-xl bg-red-600 text-white text-sm font-medium hover:bg-red-700 transition-all active:scale-[0.98] flex items-center gap-1.5"
-        >
-          <Plus className="w-4 h-4" />
-          Contact
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => bulkEnrich.mutate(contacts)}
+            disabled={bulkEnrich.isPending}
+            className="h-9 px-4 rounded-xl border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors disabled:opacity-50 flex items-center gap-1.5"
+          >
+            {bulkEnrich.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+            {bulkEnrich.isPending ? "Enrichissement..." : "Enrichir tout"}
+          </button>
+          <button
+            onClick={() => setShowAdd(true)}
+            className="h-9 px-4 rounded-xl bg-red-600 text-white text-sm font-medium hover:bg-red-700 transition-all active:scale-[0.98] flex items-center gap-1.5"
+          >
+            <Plus className="w-4 h-4" />
+            Contact
+          </button>
+        </div>
       </div>
 
       {/* Kanban board */}

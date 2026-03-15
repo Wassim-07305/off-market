@@ -26,6 +26,10 @@ export interface CrmContact {
   // Enrichment
   linkedin_url: string | null;
   instagram_url: string | null;
+  tiktok_url: string | null;
+  facebook_url: string | null;
+  website_url: string | null;
+  youtube_url: string | null;
   enrichment_data: Record<string, unknown>;
   enrichment_status: "pending" | "enriched" | "failed" | null;
   last_enriched_at: string | null;

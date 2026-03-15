@@ -21,6 +21,14 @@ import {
   Image,
   Heart,
   MessageCircle,
+  Video,
+  Facebook,
+  Youtube,
+  Link,
+  Building2,
+  Star,
+  Megaphone,
+  Tag,
 } from "lucide-react";
 
 interface EnrichmentPanelProps {
@@ -28,6 +36,8 @@ interface EnrichmentPanelProps {
   open: boolean;
   onClose: () => void;
 }
+
+type EnrichmentType = "linkedin" | "instagram" | "tiktok" | "facebook" | "website" | "all";
 
 export function EnrichmentPanel({
   contact,
@@ -38,6 +48,10 @@ export function EnrichmentPanel({
   const { updateContact } = usePipelineContacts();
   const [linkedinUrl, setLinkedinUrl] = useState(contact.linkedin_url || "");
   const [instagramUrl, setInstagramUrl] = useState(contact.instagram_url || "");
+  const [tiktokUrl, setTiktokUrl] = useState(contact.tiktok_url || "");
+  const [facebookUrl, setFacebookUrl] = useState(contact.facebook_url || "");
+  const [websiteUrl, setWebsiteUrl] = useState(contact.website_url || "");
+  const [youtubeUrl, setYoutubeUrl] = useState(contact.youtube_url || "");
 
   if (!open) return null;
 
@@ -45,20 +59,31 @@ export function EnrichmentPanel({
   const enrichmentStatus = contact.enrichment_status;
   const linkedin = enrichmentData.linkedin as Record<string, unknown> | undefined;
   const instagram = enrichmentData.instagram as Record<string, unknown> | undefined;
+  const tiktok = enrichmentData.tiktok as Record<string, unknown> | undefined;
+  const facebook = enrichmentData.facebook as Record<string, unknown> | undefined;
+  const website = enrichmentData.website as Record<string, unknown> | undefined;
 
   const handleSaveUrls = () => {
     updateContact.mutate({
       id: contact.id,
       linkedin_url: linkedinUrl.trim() || null,
       instagram_url: instagramUrl.trim() || null,
+      tiktok_url: tiktokUrl.trim() || null,
+      facebook_url: facebookUrl.trim() || null,
+      website_url: websiteUrl.trim() || null,
+      youtube_url: youtubeUrl.trim() || null,
     } as Parameters<typeof updateContact.mutate>[0]);
   };
 
-  const handleEnrich = (type: "linkedin" | "instagram" | "both") => {
+  const handleEnrich = (type: EnrichmentType) => {
     // Save URLs first if changed
     const urlUpdates: Record<string, unknown> = {};
     if (linkedinUrl.trim()) urlUpdates.linkedin_url = linkedinUrl.trim();
     if (instagramUrl.trim()) urlUpdates.instagram_url = instagramUrl.trim();
+    if (tiktokUrl.trim()) urlUpdates.tiktok_url = tiktokUrl.trim();
+    if (facebookUrl.trim()) urlUpdates.facebook_url = facebookUrl.trim();
+    if (websiteUrl.trim()) urlUpdates.website_url = websiteUrl.trim();
+    if (youtubeUrl.trim()) urlUpdates.youtube_url = youtubeUrl.trim();
 
     if (Object.keys(urlUpdates).length > 0) {
       updateContact.mutate({
@@ -72,7 +97,11 @@ export function EnrichmentPanel({
 
   const canEnrichLinkedin = !!linkedinUrl.trim();
   const canEnrichInstagram = !!instagramUrl.trim();
-  const canEnrichBoth = canEnrichLinkedin && canEnrichInstagram;
+  const canEnrichTiktok = !!tiktokUrl.trim();
+  const canEnrichFacebook = !!facebookUrl.trim();
+  const canEnrichWebsite = !!websiteUrl.trim();
+  const canEnrichAny = canEnrichLinkedin || canEnrichInstagram || canEnrichTiktok || canEnrichFacebook || canEnrichWebsite;
+  const hasAnyData = linkedin || instagram || tiktok || facebook || website;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -121,29 +150,83 @@ export function EnrichmentPanel({
         <div className="p-5 overflow-y-auto max-h-[calc(85vh-80px)] space-y-5">
           {/* URL inputs */}
           <div className="space-y-3">
-            <div>
-              <label className="flex items-center gap-1.5 text-xs font-medium text-foreground mb-1">
-                <Linkedin className="w-3.5 h-3.5 text-[#0A66C2]" />
-                Profil LinkedIn
-              </label>
-              <input
-                value={linkedinUrl}
-                onChange={(e) => setLinkedinUrl(e.target.value)}
-                placeholder="https://linkedin.com/in/username"
-                className="w-full h-10 px-3 bg-muted border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-red-600/20 focus:border-red-600/30 transition-all"
-              />
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="flex items-center gap-1.5 text-xs font-medium text-foreground mb-1">
+                  <Linkedin className="w-3.5 h-3.5 text-[#0A66C2]" />
+                  LinkedIn
+                </label>
+                <input
+                  value={linkedinUrl}
+                  onChange={(e) => setLinkedinUrl(e.target.value)}
+                  placeholder="https://linkedin.com/in/username"
+                  className="w-full h-10 px-3 bg-muted border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-red-600/20 focus:border-red-600/30 transition-all"
+                />
+              </div>
+              <div>
+                <label className="flex items-center gap-1.5 text-xs font-medium text-foreground mb-1">
+                  <Instagram className="w-3.5 h-3.5 text-[#E4405F]" />
+                  Instagram
+                </label>
+                <input
+                  value={instagramUrl}
+                  onChange={(e) => setInstagramUrl(e.target.value)}
+                  placeholder="@username ou instagram.com/..."
+                  className="w-full h-10 px-3 bg-muted border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-red-600/20 focus:border-red-600/30 transition-all"
+                />
+              </div>
             </div>
-            <div>
-              <label className="flex items-center gap-1.5 text-xs font-medium text-foreground mb-1">
-                <Instagram className="w-3.5 h-3.5 text-[#E4405F]" />
-                Profil Instagram
-              </label>
-              <input
-                value={instagramUrl}
-                onChange={(e) => setInstagramUrl(e.target.value)}
-                placeholder="https://instagram.com/username ou @username"
-                className="w-full h-10 px-3 bg-muted border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-red-600/20 focus:border-red-600/30 transition-all"
-              />
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="flex items-center gap-1.5 text-xs font-medium text-foreground mb-1">
+                  <Video className="w-3.5 h-3.5 text-[#000000] dark:text-white" />
+                  TikTok
+                </label>
+                <input
+                  value={tiktokUrl}
+                  onChange={(e) => setTiktokUrl(e.target.value)}
+                  placeholder="@username ou tiktok.com/@..."
+                  className="w-full h-10 px-3 bg-muted border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-red-600/20 focus:border-red-600/30 transition-all"
+                />
+              </div>
+              <div>
+                <label className="flex items-center gap-1.5 text-xs font-medium text-foreground mb-1">
+                  <Facebook className="w-3.5 h-3.5 text-[#1877F2]" />
+                  Facebook
+                </label>
+                <input
+                  value={facebookUrl}
+                  onChange={(e) => setFacebookUrl(e.target.value)}
+                  placeholder="facebook.com/page"
+                  className="w-full h-10 px-3 bg-muted border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-red-600/20 focus:border-red-600/30 transition-all"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="flex items-center gap-1.5 text-xs font-medium text-foreground mb-1">
+                  <Globe className="w-3.5 h-3.5 text-zinc-600 dark:text-zinc-400" />
+                  Site web
+                </label>
+                <input
+                  value={websiteUrl}
+                  onChange={(e) => setWebsiteUrl(e.target.value)}
+                  placeholder="https://website.com"
+                  className="w-full h-10 px-3 bg-muted border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-red-600/20 focus:border-red-600/30 transition-all"
+                />
+              </div>
+              <div>
+                <label className="flex items-center gap-1.5 text-xs font-medium text-foreground mb-1">
+                  <Youtube className="w-3.5 h-3.5 text-[#FF0000]" />
+                  YouTube
+                </label>
+                <input
+                  value={youtubeUrl}
+                  onChange={(e) => setYoutubeUrl(e.target.value)}
+                  placeholder="youtube.com/@channel"
+                  className="w-full h-10 px-3 bg-muted border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-red-600/20 focus:border-red-600/30 transition-all"
+                />
+              </div>
             </div>
           </div>
 
@@ -166,7 +249,7 @@ export function EnrichmentPanel({
               ) : (
                 <Linkedin className="w-3.5 h-3.5" />
               )}
-              Enrichir LinkedIn
+              LinkedIn
             </button>
             <button
               onClick={() => handleEnrich("instagram")}
@@ -178,11 +261,47 @@ export function EnrichmentPanel({
               ) : (
                 <Instagram className="w-3.5 h-3.5" />
               )}
-              Enrichir Instagram
+              Instagram
             </button>
-            {canEnrichBoth && (
+            <button
+              onClick={() => handleEnrich("tiktok")}
+              disabled={!canEnrichTiktok || enrichMutation.isPending}
+              className="h-9 px-4 rounded-xl bg-black dark:bg-white dark:text-black text-white text-sm font-medium hover:opacity-90 transition-all disabled:opacity-50 flex items-center gap-1.5"
+            >
+              {enrichMutation.isPending ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <Video className="w-3.5 h-3.5" />
+              )}
+              TikTok
+            </button>
+            <button
+              onClick={() => handleEnrich("facebook")}
+              disabled={!canEnrichFacebook || enrichMutation.isPending}
+              className="h-9 px-4 rounded-xl bg-[#1877F2] text-white text-sm font-medium hover:bg-[#1466D8] transition-all disabled:opacity-50 flex items-center gap-1.5"
+            >
+              {enrichMutation.isPending ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <Facebook className="w-3.5 h-3.5" />
+              )}
+              Facebook
+            </button>
+            <button
+              onClick={() => handleEnrich("website")}
+              disabled={!canEnrichWebsite || enrichMutation.isPending}
+              className="h-9 px-4 rounded-xl bg-zinc-700 dark:bg-zinc-300 dark:text-zinc-900 text-white text-sm font-medium hover:opacity-90 transition-all disabled:opacity-50 flex items-center gap-1.5"
+            >
+              {enrichMutation.isPending ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <Globe className="w-3.5 h-3.5" />
+              )}
+              Site web
+            </button>
+            {canEnrichAny && (
               <button
-                onClick={() => handleEnrich("both")}
+                onClick={() => handleEnrich("all")}
                 disabled={enrichMutation.isPending}
                 className="h-9 px-4 rounded-xl bg-red-600 text-white text-sm font-medium hover:bg-red-700 transition-all disabled:opacity-50 flex items-center gap-1.5"
               >
@@ -468,15 +587,308 @@ export function EnrichmentPanel({
             </div>
           )}
 
+          {/* TikTok results */}
+          {tiktok && (
+            <div className="space-y-3">
+              <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                <Video className="w-4 h-4" />
+                Donnees TikTok
+              </h3>
+              <div className="bg-muted/50 border border-border rounded-xl p-4 space-y-3">
+                <div className="flex items-center gap-3">
+                  {tiktok.profilePicUrl && (
+                    <img
+                      src={tiktok.profilePicUrl as string}
+                      alt=""
+                      className="w-12 h-12 rounded-full object-cover border-2 border-zinc-300 dark:border-zinc-600"
+                    />
+                  )}
+                  <div>
+                    <div className="flex items-center gap-1.5">
+                      <p className="text-sm font-medium text-foreground">
+                        {tiktok.fullName as string}
+                      </p>
+                      {tiktok.verified && (
+                        <CheckCircle className="w-3.5 h-3.5 text-blue-500" />
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {tiktok.bio && (
+                  <p className="text-xs text-muted-foreground">
+                    {tiktok.bio as string}
+                  </p>
+                )}
+
+                {/* Stats */}
+                <div className="grid grid-cols-4 gap-2">
+                  <div className="text-center p-2 rounded-lg bg-surface border border-border">
+                    <p className="text-lg font-bold text-foreground">
+                      {formatNumber(tiktok.followersCount as number)}
+                    </p>
+                    <p className="text-[10px] text-muted-foreground">Abonnes</p>
+                  </div>
+                  <div className="text-center p-2 rounded-lg bg-surface border border-border">
+                    <p className="text-lg font-bold text-foreground">
+                      {formatNumber(tiktok.followingCount as number)}
+                    </p>
+                    <p className="text-[10px] text-muted-foreground">Abonnements</p>
+                  </div>
+                  <div className="text-center p-2 rounded-lg bg-surface border border-border">
+                    <p className="text-lg font-bold text-foreground">
+                      {formatNumber(tiktok.heartsCount as number)}
+                    </p>
+                    <p className="text-[10px] text-muted-foreground">Likes</p>
+                  </div>
+                  <div className="text-center p-2 rounded-lg bg-surface border border-border">
+                    <p className="text-lg font-bold text-foreground">
+                      {formatNumber(tiktok.videoCount as number)}
+                    </p>
+                    <p className="text-[10px] text-muted-foreground">Videos</p>
+                  </div>
+                </div>
+
+                <p className="text-[10px] text-muted-foreground/60">
+                  Scrape le{" "}
+                  {new Date(tiktok.scraped_at as string).toLocaleString("fr-FR")}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Facebook results */}
+          {facebook && (
+            <div className="space-y-3">
+              <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                <Facebook className="w-4 h-4 text-[#1877F2]" />
+                Donnees Facebook
+              </h3>
+              <div className="bg-muted/50 border border-border rounded-xl p-4 space-y-3">
+                <div className="flex items-center gap-1.5">
+                  <p className="text-sm font-medium text-foreground">
+                    {facebook.name as string}
+                  </p>
+                  {facebook.isAdRunning && (
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-600 font-medium flex items-center gap-0.5">
+                      <Megaphone className="w-3 h-3" />
+                      Ads actives
+                    </span>
+                  )}
+                </div>
+
+                {facebook.about && (
+                  <p className="text-xs text-muted-foreground line-clamp-3">
+                    {facebook.about as string}
+                  </p>
+                )}
+
+                {/* Stats */}
+                <div className="grid grid-cols-3 gap-3">
+                  {facebook.followers != null && (
+                    <div className="text-center p-2 rounded-lg bg-surface border border-border">
+                      <p className="text-lg font-bold text-foreground">
+                        {formatNumber(facebook.followers as number)}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground">Abonnes</p>
+                    </div>
+                  )}
+                  {facebook.likes != null && (
+                    <div className="text-center p-2 rounded-lg bg-surface border border-border">
+                      <p className="text-lg font-bold text-foreground">
+                        {formatNumber(facebook.likes as number)}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground">Likes</p>
+                    </div>
+                  )}
+                  {facebook.rating != null && (
+                    <div className="text-center p-2 rounded-lg bg-surface border border-border">
+                      <p className="text-lg font-bold text-foreground flex items-center justify-center gap-1">
+                        <Star className="w-4 h-4 text-amber-500" />
+                        {String(facebook.rating)}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground">Note</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Categories */}
+                {facebook.categories && (
+                  <div className="flex flex-wrap gap-1">
+                    {(Array.isArray(facebook.categories)
+                      ? (facebook.categories as string[])
+                      : [facebook.categories as string]
+                    ).map((cat, i) => (
+                      <span
+                        key={i}
+                        className="text-[10px] px-2 py-0.5 rounded-full bg-[#1877F2]/10 text-[#1877F2] font-medium flex items-center gap-0.5"
+                      >
+                        <Tag className="w-2.5 h-2.5" />
+                        {cat}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                {/* Contact info */}
+                <div className="grid grid-cols-2 gap-2">
+                  {facebook.email && (
+                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <Mail className="w-3 h-3" />
+                      {facebook.email as string}
+                    </div>
+                  )}
+                  {facebook.phone && (
+                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <Phone className="w-3 h-3" />
+                      {facebook.phone as string}
+                    </div>
+                  )}
+                  {facebook.website && (
+                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <Globe className="w-3 h-3" />
+                      <a
+                        href={facebook.website as string}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary hover:underline truncate"
+                      >
+                        {facebook.website as string}
+                      </a>
+                    </div>
+                  )}
+                  {facebook.address && (
+                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <MapPin className="w-3 h-3" />
+                      {typeof facebook.address === "string"
+                        ? facebook.address
+                        : JSON.stringify(facebook.address)}
+                    </div>
+                  )}
+                </div>
+
+                <p className="text-[10px] text-muted-foreground/60">
+                  Scrape le{" "}
+                  {new Date(facebook.scraped_at as string).toLocaleString("fr-FR")}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Website results */}
+          {website && (
+            <div className="space-y-3">
+              <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                <Globe className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
+                Donnees du site web
+              </h3>
+              <div className="bg-muted/50 border border-border rounded-xl p-4 space-y-3">
+                {(website.companyName as string) && (
+                  <div className="flex items-center gap-1.5">
+                    <Building2 className="w-4 h-4 text-muted-foreground" />
+                    <p className="text-sm font-medium text-foreground">
+                      {website.companyName as string}
+                    </p>
+                  </div>
+                )}
+
+                {/* Emails found */}
+                {Array.isArray(website.emails) && (website.emails as string[]).length > 0 && (
+                  <div className="space-y-1">
+                    <p className="text-xs font-semibold text-foreground flex items-center gap-1">
+                      <Mail className="w-3 h-3" />
+                      Emails trouves
+                    </p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {(website.emails as string[]).map((email, i) => (
+                        <span
+                          key={i}
+                          className="text-[11px] px-2 py-0.5 rounded-lg bg-emerald-500/10 text-emerald-600 font-medium"
+                        >
+                          {email}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Phones found */}
+                {Array.isArray(website.phones) && (website.phones as string[]).length > 0 && (
+                  <div className="space-y-1">
+                    <p className="text-xs font-semibold text-foreground flex items-center gap-1">
+                      <Phone className="w-3 h-3" />
+                      Telephones trouves
+                    </p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {(website.phones as string[]).map((phone, i) => (
+                        <span
+                          key={i}
+                          className="text-[11px] px-2 py-0.5 rounded-lg bg-blue-500/10 text-blue-600 font-medium"
+                        >
+                          {phone}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Social links */}
+                {website.socialLinks && (
+                  <div className="space-y-1">
+                    <p className="text-xs font-semibold text-foreground flex items-center gap-1">
+                      <Link className="w-3 h-3" />
+                      Liens sociaux
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {Object.entries(
+                        website.socialLinks as Record<string, string | null>,
+                      )
+                        .filter(([, url]) => url)
+                        .map(([platform, url]) => (
+                          <a
+                            key={platform}
+                            href={url as string}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1 text-[11px] px-2 py-1 rounded-lg bg-surface border border-border text-muted-foreground hover:text-foreground hover:border-zinc-400 transition-colors"
+                          >
+                            {platform === "linkedin" && <Linkedin className="w-3 h-3 text-[#0A66C2]" />}
+                            {platform === "instagram" && <Instagram className="w-3 h-3 text-[#E4405F]" />}
+                            {platform === "facebook" && <Facebook className="w-3 h-3 text-[#1877F2]" />}
+                            {platform === "youtube" && <Youtube className="w-3 h-3 text-[#FF0000]" />}
+                            {platform === "tiktok" && <Video className="w-3 h-3" />}
+                            {platform === "twitter" && <Globe className="w-3 h-3" />}
+                            {platform.charAt(0).toUpperCase() + platform.slice(1)}
+                          </a>
+                        ))}
+                    </div>
+                  </div>
+                )}
+
+                {(website.address as string) && (
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <MapPin className="w-3 h-3" />
+                    {website.address as string}
+                  </div>
+                )}
+
+                <p className="text-[10px] text-muted-foreground/60">
+                  Scrape le{" "}
+                  {new Date(website.scraped_at as string).toLocaleString("fr-FR")}
+                </p>
+              </div>
+            </div>
+          )}
+
           {/* Empty state */}
-          {!linkedin && !instagram && !enrichMutation.isPending && (
+          {!hasAnyData && !enrichMutation.isPending && (
             <div className="text-center py-8">
               <Sparkles className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
               <p className="text-sm text-muted-foreground">
-                Ajoutez une URL LinkedIn ou Instagram puis cliquez sur Enrichir
+                Ajoutez des URLs puis cliquez sur Enrichir pour extraire les donnees
               </p>
               <p className="text-xs text-muted-foreground/60 mt-1">
-                Les donnees publiques du profil seront extraites via Apify
+                Les donnees publiques seront extraites via Apify (LinkedIn, Instagram, TikTok, Facebook, site web)
               </p>
             </div>
           )}

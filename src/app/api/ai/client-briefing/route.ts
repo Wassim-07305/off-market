@@ -26,12 +26,166 @@ Format de sortie en Markdown :
 ## Signaux d'alerte
 - Points d'attention (desengagement, retard paiement, objectif en retard, etc.)
 
+## Contexte enrichi (si disponible)
+- Utilise les donnees d'enrichissement (LinkedIn, Instagram, TikTok, Facebook, site web) pour personnaliser le briefing
+- Mentionne des elements pertinents (niche, audience, positionnement) qui pourraient orienter le coaching
+
 Regles :
 - Sois factuel, base-toi uniquement sur les donnees fournies
 - Tutoie le coach dans le briefing
 - Pas d'emojis
 - Si une section manque de donnees, indique-le en une phrase
 - Maximum 500 mots au total`;
+
+interface EnrichmentLinkedIn {
+  headline?: string;
+  summary?: string;
+  company?: string;
+  position?: string;
+  location?: string;
+  connections?: number;
+  followers?: number;
+  experience?: Array<{ title?: string; company?: string }>;
+  skills?: string[];
+  email?: string;
+  phone?: string;
+}
+
+interface EnrichmentInstagram {
+  fullName?: string;
+  biography?: string;
+  followersCount?: number;
+  followsCount?: number;
+  postsCount?: number;
+  isBusinessAccount?: boolean;
+  businessCategory?: string;
+  externalUrl?: string;
+}
+
+interface EnrichmentTikTok {
+  fullName?: string;
+  bio?: string;
+  followersCount?: number;
+  followingCount?: number;
+  heartsCount?: number;
+  videoCount?: number;
+}
+
+interface EnrichmentFacebook {
+  name?: string;
+  about?: string;
+  followers?: number;
+  likes?: number;
+  categories?: string[];
+  email?: string;
+  phone?: string;
+  website?: string;
+}
+
+interface EnrichmentWebsite {
+  emails?: string[];
+  phones?: string[];
+  socialLinks?: string[];
+  companyName?: string;
+}
+
+interface EnrichmentData {
+  linkedin?: EnrichmentLinkedIn;
+  instagram?: EnrichmentInstagram;
+  tiktok?: EnrichmentTikTok;
+  facebook?: EnrichmentFacebook;
+  website?: EnrichmentWebsite;
+}
+
+function formatEnrichmentContext(data: EnrichmentData): string {
+  const sections: string[] = [];
+
+  if (data.linkedin) {
+    const li = data.linkedin;
+    const lines: string[] = [];
+    if (li.position || li.company) {
+      lines.push(`- Poste: ${li.position ?? "?"} chez ${li.company ?? "?"}`);
+    }
+    if (li.headline) lines.push(`- Headline: ${li.headline}`);
+    if (li.location) lines.push(`- Localisation: ${li.location}`);
+    if (li.connections) lines.push(`- Connexions: ${li.connections}`);
+    if (li.followers) lines.push(`- Followers: ${li.followers}`);
+    if (li.skills && li.skills.length > 0) {
+      lines.push(`- Competences: ${li.skills.join(", ")}`);
+    }
+    if (li.summary) lines.push(`- Resume: ${li.summary.slice(0, 300)}`);
+    if (lines.length > 0) {
+      sections.push(`### LinkedIn\n${lines.join("\n")}`);
+    }
+  }
+
+  if (data.instagram) {
+    const ig = data.instagram;
+    const lines: string[] = [];
+    if (ig.followersCount != null || ig.postsCount != null) {
+      lines.push(`- ${ig.followersCount ?? 0} abonnes, ${ig.postsCount ?? 0} posts`);
+    }
+    if (ig.biography) lines.push(`- Bio: ${ig.biography}`);
+    if (ig.isBusinessAccount != null) {
+      lines.push(`- Compte business: ${ig.isBusinessAccount ? "Oui" : "Non"}${ig.businessCategory ? ` (${ig.businessCategory})` : ""}`);
+    }
+    if (ig.externalUrl) lines.push(`- Site externe: ${ig.externalUrl}`);
+    if (lines.length > 0) {
+      sections.push(`### Instagram\n${lines.join("\n")}`);
+    }
+  }
+
+  if (data.tiktok) {
+    const tt = data.tiktok;
+    const lines: string[] = [];
+    if (tt.followersCount != null || tt.heartsCount != null) {
+      lines.push(`- ${tt.followersCount ?? 0} abonnes, ${tt.heartsCount ?? 0} likes`);
+    }
+    if (tt.bio) lines.push(`- Bio: ${tt.bio}`);
+    if (tt.videoCount != null) lines.push(`- Videos: ${tt.videoCount}`);
+    if (lines.length > 0) {
+      sections.push(`### TikTok\n${lines.join("\n")}`);
+    }
+  }
+
+  if (data.facebook) {
+    const fb = data.facebook;
+    const lines: string[] = [];
+    if (fb.followers != null || fb.likes != null) {
+      lines.push(`- ${fb.followers ?? 0} abonnes, ${fb.likes ?? 0} likes`);
+    }
+    if (fb.categories && fb.categories.length > 0) {
+      lines.push(`- Categories: ${fb.categories.join(", ")}`);
+    }
+    if (fb.about) lines.push(`- A propos: ${fb.about.slice(0, 300)}`);
+    if (fb.website) lines.push(`- Site: ${fb.website}`);
+    if (lines.length > 0) {
+      sections.push(`### Facebook\n${lines.join("\n")}`);
+    }
+  }
+
+  if (data.website) {
+    const ws = data.website;
+    const lines: string[] = [];
+    if (ws.companyName) lines.push(`- Entreprise: ${ws.companyName}`);
+    if (ws.emails && ws.emails.length > 0) {
+      lines.push(`- Emails: ${ws.emails.join(", ")}`);
+    }
+    if (ws.phones && ws.phones.length > 0) {
+      lines.push(`- Telephones: ${ws.phones.join(", ")}`);
+    }
+    if (ws.socialLinks && ws.socialLinks.length > 0) {
+      lines.push(`- Liens sociaux: ${ws.socialLinks.join(", ")}`);
+    }
+    if (lines.length > 0) {
+      sections.push(`### Site web\n${lines.join("\n")}`);
+    }
+  }
+
+  if (sections.length === 0) return "";
+
+  return `\n## Donnees d'enrichissement (profils publics du client)\n\n${sections.join("\n\n")}\n`;
+}
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -152,6 +306,34 @@ export async function POST(request: Request) {
     const tasks = tasksRes.data ?? [];
     const activeGoals = goalsRes.data ?? [];
 
+    // Fetch enrichment data from crm_contacts (match by converted_profile_id or email)
+    let enrichmentData: Record<string, unknown> | null = null;
+    {
+      // Try by converted_profile_id first
+      const { data: contactByProfile } = await (supabase as any)
+        .from("crm_contacts")
+        .select("enrichment_data")
+        .eq("converted_profile_id", clientId)
+        .not("enrichment_data", "is", null)
+        .maybeSingle();
+
+      if (contactByProfile?.enrichment_data) {
+        enrichmentData = contactByProfile.enrichment_data;
+      } else if (profile.email) {
+        // Fallback: match by email
+        const { data: contactByEmail } = await (supabase as any)
+          .from("crm_contacts")
+          .select("enrichment_data")
+          .eq("email", profile.email)
+          .not("enrichment_data", "is", null)
+          .maybeSingle();
+
+        if (contactByEmail?.enrichment_data) {
+          enrichmentData = contactByEmail.enrichment_data;
+        }
+      }
+    }
+
     // Fetch call notes for recent calls
     let callNotes: Array<{ call_id: string; summary: string | null; next_steps: string | null; action_items: unknown[] }> = [];
     if (calls.length > 0) {
@@ -267,6 +449,14 @@ export async function POST(request: Request) {
         if (goal.description) {
           userPrompt += `  ${goal.description}\n`;
         }
+      }
+    }
+
+    // Enrichment data from Apify scraping (crm_contacts)
+    if (enrichmentData && typeof enrichmentData === "object") {
+      const enrichmentBlock = formatEnrichmentContext(enrichmentData as EnrichmentData);
+      if (enrichmentBlock) {
+        userPrompt += enrichmentBlock;
       }
     }
 
