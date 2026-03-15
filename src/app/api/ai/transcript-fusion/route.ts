@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import { callOpenRouter } from "@/lib/openrouter";
 import { createClient } from "@/lib/supabase/server";
 
 const SYSTEM_PROMPT = `Tu es un assistant specialise dans la generation de documents de coaching pour la plateforme Off-Market.
@@ -60,14 +60,6 @@ export async function POST(request: Request) {
 
   if (!callId) {
     return NextResponse.json({ error: "callId requis" }, { status: 400 });
-  }
-
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    return NextResponse.json(
-      { error: "ANTHROPIC_API_KEY non configuree" },
-      { status: 500 },
-    );
   }
 
   try {
@@ -226,20 +218,17 @@ export async function POST(request: Request) {
 
     userPrompt += `\n---\nGenere le document en deux formats : d'abord le HTML complet (entre les balises <html_output> et </html_output>), puis le Markdown (entre <markdown_output> et </markdown_output>).`;
 
-    // Call Claude
+    // Call AI
     const startTime = Date.now();
-    const anthropic = new Anthropic({ apiKey });
 
-    const response = await anthropic.messages.create({
-      model: "claude-sonnet-4-5-20250514",
-      max_tokens: 8192,
+    const result = await callOpenRouter({
       system: SYSTEM_PROMPT,
+      maxTokens: 8192,
       messages: [{ role: "user", content: userPrompt }],
     });
 
     const generationTime = Date.now() - startTime;
-    const textContent = response.content.find((c) => c.type === "text");
-    const fullText = textContent?.text ?? "";
+    const fullText = result.text;
 
     // Parse HTML and Markdown from response
     const htmlMatch = fullText.match(
@@ -264,7 +253,7 @@ export async function POST(request: Request) {
         content_html: contentHtml,
         content_markdown: contentMarkdown,
         generated_by: "ai",
-        model: "claude-sonnet-4-5-20250514",
+        model: "openrouter",
       })
       .select()
       .single();
@@ -286,7 +275,7 @@ export async function POST(request: Request) {
       ...doc,
       generation_time_ms: generationTime,
       tokens_used:
-        response.usage.input_tokens + response.usage.output_tokens,
+        result.usage.input_tokens + result.usage.output_tokens,
       saved: true,
     });
   } catch (error) {

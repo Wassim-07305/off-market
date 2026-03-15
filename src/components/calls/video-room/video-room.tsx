@@ -37,19 +37,21 @@ export function VideoRoom({ callId }: VideoRoomProps) {
   const { data: call, isLoading } = useCallById(callId);
   const { updateRoomStatus, saveTranscript } = useCalls();
   const supabase = useSupabase();
-  const store = useCallStore();
+  const phase = useCallStore((s) => s.phase);
+  const resetCall = useCallStore((s) => s.resetCall);
 
   const [showTranscript, setShowTranscript] = useState(false);
   const [showNotes, setShowNotes] = useState(false);
   const [showPreCallResponses, setShowPreCallResponses] = useState(false);
   const [hasJoined, setHasJoined] = useState(false);
+  const [isJoining, setIsJoining] = useState(false);
   const [preCallCompleted, setPreCallCompleted] = useState(false);
   const [showHangUpConfirm, setShowHangUpConfirm] = useState(false);
 
   // Reset call store when mounting (cleans up stale "ended" state from previous calls)
   useEffect(() => {
-    store.resetCall();
-  }, [callId]); // eslint-disable-line react-hooks/exhaustive-deps
+    resetCall();
+  }, [callId, resetCall]);
 
   // Preview lobby state
   const [previewStream, setPreviewStream] = useState<MediaStream | null>(null);
@@ -235,17 +237,35 @@ export function VideoRoom({ callId }: VideoRoomProps) {
 
   // Join the call
   const handleJoin = useCallback(async () => {
-    if (!call || !user) return;
+    if (!call || !user || isJoining) return;
+
+    setIsJoining(true);
 
     // Stop preview stream before WebRTC takes over
     cleanupPreview();
+
+    // Reset store in case of a previous failed attempt
+    resetCall();
 
     // Carry over preview toggles to the call store
     const s = useCallStore.getState();
     if (!previewMic) s.toggleMic();
     if (!previewCamera) s.toggleCamera();
 
+    // Join the call (getUserMedia + WebRTC + signaling) — wait for completion
+    // so the UI only transitions when media is ready
+    await joinCall();
+
+    // If setup failed (phase set to "ended"), don't transition
+    const phase = useCallStore.getState().phase;
+    if (phase === "ended") {
+      setIsJoining(false);
+      return;
+    }
+
+    // Transition to the in-call view
     setHasJoined(true);
+    setIsJoining(false);
 
     // Update room status
     updateRoomStatus.mutate({
@@ -271,8 +291,6 @@ export function VideoRoom({ callId }: VideoRoomProps) {
         }
       });
     }
-
-    await joinCall();
   }, [
     call,
     user,
@@ -284,6 +302,8 @@ export function VideoRoom({ callId }: VideoRoomProps) {
     cleanupPreview,
     previewMic,
     previewCamera,
+    isJoining,
+    resetCall,
   ]);
 
   // Actual hang-up logic (after confirmation)
@@ -363,15 +383,15 @@ export function VideoRoom({ callId }: VideoRoomProps) {
 
   // Show reconnection toast when phase changes to reconnecting
   useEffect(() => {
-    if (store.phase === "reconnecting" && hasJoined) {
+    if (phase === "reconnecting" && hasJoined) {
       toast.warning("Reconnexion en cours...", {
         id: "reconnecting-toast",
         duration: Infinity,
       });
-    } else if (store.phase === "connected" && hasJoined) {
+    } else if (phase === "connected" && hasJoined) {
       toast.dismiss("reconnecting-toast");
     }
-  }, [store.phase, hasJoined]);
+  }, [phase, hasJoined]);
 
   // Download transcript as TXT
   const handleDownloadTranscript = () => {
@@ -410,7 +430,7 @@ export function VideoRoom({ callId }: VideoRoomProps) {
   }
 
   // Ended state
-  if (store.phase === "ended" && hasJoined) {
+  if (phase === "ended" && hasJoined) {
     return (
       <CallEndedSummary
         callId={callId}
@@ -551,9 +571,17 @@ export function VideoRoom({ callId }: VideoRoomProps) {
 
             <button
               onClick={handleJoin}
-              className="h-12 px-8 rounded-full bg-green-600 text-white text-sm font-semibold hover:bg-green-700 transition-all active:scale-[0.97] flex items-center gap-2 ml-2"
+              disabled={isJoining}
+              className="h-12 px-8 rounded-full bg-green-600 text-white text-sm font-semibold hover:bg-green-700 transition-all active:scale-[0.97] flex items-center gap-2 ml-2 disabled:opacity-70 disabled:pointer-events-none"
             >
-              Rejoindre
+              {isJoining ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Connexion...
+                </>
+              ) : (
+                "Rejoindre"
+              )}
             </button>
           </div>
 

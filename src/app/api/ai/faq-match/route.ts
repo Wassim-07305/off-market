@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import { callOpenRouter } from "@/lib/openrouter";
 import { createClient } from "@/lib/supabase/server";
 
 export async function POST(request: Request) {
@@ -21,14 +21,6 @@ export async function POST(request: Request) {
     );
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    return NextResponse.json(
-      { error: "ANTHROPIC_API_KEY non configuree" },
-      { status: 500 },
-    );
-  }
-
   try {
     // 1. Fetch all FAQ entries with auto_answer enabled
     const { data: faqEntries, error: faqError } = await supabase
@@ -43,9 +35,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ match: null });
     }
 
-    // 2. Use Claude to find the best match
-    const anthropic = new Anthropic({ apiKey });
-
+    // 2. Use AI to find the best match
     const faqList = faqEntries
       .map(
         (e, i) =>
@@ -53,9 +43,8 @@ export async function POST(request: Request) {
       )
       .join("\n\n");
 
-    const response = await anthropic.messages.create({
-      model: "claude-sonnet-4-5-20250514",
-      max_tokens: 512,
+    const aiResult = await callOpenRouter({
+      maxTokens: 512,
       system: `Tu es un systeme de matching de FAQ. On te donne un message utilisateur et une liste de questions FAQ existantes.
 
 Tu dois :
@@ -78,8 +67,7 @@ ${faqList}`,
       ],
     });
 
-    const textContent = response.content.find((c) => c.type === "text");
-    const rawText = textContent?.text ?? "{}";
+    const rawText = aiResult.text || "{}";
 
     let result: {
       match_index: number | null;

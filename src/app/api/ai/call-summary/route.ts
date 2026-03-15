@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import { callOpenRouter } from "@/lib/openrouter";
 import { createClient } from "@/lib/supabase/server";
 
 const SYSTEM_PROMPT = `Tu es un assistant specialise dans la synthese d'appels de coaching pour la plateforme Off-Market.
@@ -44,14 +44,6 @@ export async function POST(request: Request) {
     return NextResponse.json(
       { error: "callId requis" },
       { status: 400 },
-    );
-  }
-
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    return NextResponse.json(
-      { error: "ANTHROPIC_API_KEY non configuree" },
-      { status: 500 },
     );
   }
 
@@ -193,20 +185,17 @@ export async function POST(request: Request) {
       }
     }
 
-    // Call Claude
+    // Call AI
     const startTime = Date.now();
-    const anthropic = new Anthropic({ apiKey });
 
-    const response = await anthropic.messages.create({
-      model: "claude-sonnet-4-5-20250514",
-      max_tokens: 4096,
+    const result = await callOpenRouter({
       system: SYSTEM_PROMPT,
+      maxTokens: 4096,
       messages: [{ role: "user", content: userPrompt }],
     });
 
     const generationTime = Date.now() - startTime;
-    const textContent = response.content.find((c) => c.type === "text");
-    const content = textContent?.text ?? "";
+    const content = result.text;
 
     // Parse sections from markdown content
     const sections: Record<string, string> = {};
@@ -230,8 +219,8 @@ export async function POST(request: Request) {
           author_id: user.id,
           content,
           sections,
-          model: "claude-sonnet-4-5-20250514",
-          tokens_used: response.usage.input_tokens + response.usage.output_tokens,
+          model: "openrouter",
+          tokens_used: result.usage.input_tokens + result.usage.output_tokens,
           generation_time_ms: generationTime,
           sources,
         },
@@ -256,7 +245,7 @@ export async function POST(request: Request) {
       content: summary.content,
       sections: summary.sections,
       sources,
-      tokens_used: response.usage.input_tokens + response.usage.output_tokens,
+      tokens_used: result.usage.input_tokens + result.usage.output_tokens,
       generation_time_ms: generationTime,
       saved: true,
     });

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import { callOpenRouter } from "@/lib/openrouter";
 import { createClient } from "@/lib/supabase/server";
 
 const SYSTEM_PROMPT = `Tu es un expert en coaching business pour freelances et consultants ciblant 10k+ EUR/mois.
@@ -64,14 +64,6 @@ export async function POST(request: Request) {
     return NextResponse.json(
       { error: "clientId requis" },
       { status: 400 },
-    );
-  }
-
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    return NextResponse.json(
-      { error: "ANTHROPIC_API_KEY non configuree" },
-      { status: 500 },
     );
   }
 
@@ -199,18 +191,14 @@ export async function POST(request: Request) {
         userPrompt += `- **Etape pipeline** : ${studentDetail.pipeline_stage}\n`;
     }
 
-    // Call Claude
-    const anthropic = new Anthropic({ apiKey });
-
-    const response = await anthropic.messages.create({
-      model: "claude-sonnet-4-5-20250514",
-      max_tokens: 4096,
+    // Call AI
+    const result = await callOpenRouter({
       system: SYSTEM_PROMPT,
+      maxTokens: 4096,
       messages: [{ role: "user", content: userPrompt }],
     });
 
-    const textContent = response.content.find((c) => c.type === "text");
-    const rawText = textContent?.text ?? "";
+    const rawText = result.text;
 
     // Parse JSON response
     let parsed;
@@ -254,7 +242,7 @@ export async function POST(request: Request) {
         }),
       ),
       tokens_used:
-        response.usage.input_tokens + response.usage.output_tokens,
+        result.usage.input_tokens + result.usage.output_tokens,
     });
   } catch (error) {
     console.error("Roadmap generation error:", error);

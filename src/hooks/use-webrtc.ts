@@ -18,8 +18,8 @@ function getIceServers(): RTCIceServer[] {
     { urls: "stun:stun1.l.google.com:19302" },
   ];
 
-  const turnId = import.meta.env.VITE_CLOUDFLARE_TURN_TOKEN_ID;
-  const turnToken = import.meta.env.VITE_CLOUDFLARE_TURN_API_TOKEN;
+  const turnId = process.env.NEXT_PUBLIC_CLOUDFLARE_TURN_TOKEN_ID;
+  const turnToken = process.env.NEXT_PUBLIC_CLOUDFLARE_TURN_API_TOKEN;
   if (turnId && turnToken) {
     servers.push({
       urls: "turn:turn.cloudflare.com:3478?transport=udp",
@@ -76,17 +76,19 @@ export function useWebRTC({ callId, onError }: UseWebRTCOptions) {
   const myId = user?.id ?? "";
   const myName = profile?.full_name ?? "Utilisateur";
 
+  // Store latest onError in a ref to avoid dependency cascades
+  const onErrorRef = useRef(onError);
+  onErrorRef.current = onError;
+
   // "Polite peer" pattern: lower ID = polite (yields on collision)
   const isPolite = useCallback((remoteId: string) => myId < remoteId, [myId]);
 
-  // Report error to UI
-  const reportError = useCallback(
-    (message: string) => {
-      useCallStore.getState().setLastError(message);
-      onError?.(message);
-    },
-    [onError],
-  );
+  // Report error to UI — uses ref so identity never changes
+  const reportError = useCallback((message: string) => {
+    console.error("[WebRTC]", message);
+    useCallStore.getState().setLastError(message);
+    onErrorRef.current?.(message);
+  }, []);
 
   // Network quality monitoring via RTCStatsReport
   const startStatsPolling = useCallback(() => {
@@ -144,7 +146,7 @@ export function useWebRTC({ callId, onError }: UseWebRTCOptions) {
     useCallStore.getState().setNetworkQuality("unknown");
   }, []);
 
-  // Use getState() everywhere to avoid stale closures and dependency cascades
+  // Cleanup — uses refs internally so identity is fully stable
   const cleanup = useCallback(() => {
     isCleanedUpRef.current = true;
 
@@ -188,6 +190,10 @@ export function useWebRTC({ callId, onError }: UseWebRTCOptions) {
     useCallStore.getState().setReconnectAttempt(0);
   }, [supabase, stopStatsPolling]);
 
+  // Keep cleanup ref up-to-date for unmount effect
+  const cleanupRef = useRef(cleanup);
+  cleanupRef.current = cleanup;
+
   // Attempt ICE restart for reconnection
   const attemptReconnect = useCallback(() => {
     const pc = pcRef.current;
@@ -226,7 +232,7 @@ export function useWebRTC({ callId, onError }: UseWebRTCOptions) {
           },
         });
       } catch (err) {
-        console.error(`Reconnect attempt ${attempt} failed:`, err);
+        console.error(`[WebRTC] Reconnect attempt ${attempt} failed:`, err);
         // Try again
         attemptReconnect();
       }
@@ -235,7 +241,10 @@ export function useWebRTC({ callId, onError }: UseWebRTCOptions) {
 
   // Create peer connection and wire up signaling
   const setupConnection = useCallback(async () => {
-    if (!myId) return;
+    if (!myId) {
+      reportError("Utilisateur non authentifie.");
+      return;
+    }
     isCleanedUpRef.current = false;
 
     const store = useCallStore.getState();
@@ -244,22 +253,19 @@ export function useWebRTC({ callId, onError }: UseWebRTCOptions) {
     store.setReconnectAttempt(0);
 
     // 1. Get local media
+    let stream: MediaStream;
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
+      stream = await navigator.mediaDevices.getUserMedia({
         video: true,
         audio: true,
       });
-      localStreamRef.current = stream;
-      setLocalStream(stream);
-    } catch (mediaErr) {
+    } catch {
       // Fallback: audio only
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({
+        stream = await navigator.mediaDevices.getUserMedia({
           video: false,
           audio: true,
         });
-        localStreamRef.current = stream;
-        setLocalStream(stream);
         useCallStore.getState().toggleCamera();
         reportError(
           "Camera indisponible. L'appel continue en audio uniquement.",
@@ -273,223 +279,247 @@ export function useWebRTC({ callId, onError }: UseWebRTCOptions) {
       }
     }
 
+    // Store the stream immediately
+    localStreamRef.current = stream;
+    setLocalStream(stream);
+
+    // Check if cleanup happened while we were waiting for getUserMedia
+    if (isCleanedUpRef.current) {
+      stream.getTracks().forEach((t) => t.stop());
+      return;
+    }
+
     useCallStore.getState().setPhase("connecting");
 
-    // 2. Create RTCPeerConnection
-    const pc = new RTCPeerConnection({ iceServers: getIceServers() });
-    pcRef.current = pc;
+    try {
+      // 2. Create RTCPeerConnection
+      const pc = new RTCPeerConnection({ iceServers: getIceServers() });
+      pcRef.current = pc;
 
-    // Add local tracks
-    localStreamRef.current!.getTracks().forEach((track) => {
-      pc.addTrack(track, localStreamRef.current!);
-    });
-
-    // Remote stream with duplicate track prevention
-    const remote = new MediaStream();
-    const addedTrackIds = new Set<string>();
-    setRemoteStream(remote);
-
-    pc.ontrack = (e) => {
-      e.streams[0]?.getTracks().forEach((track) => {
-        if (!addedTrackIds.has(track.id)) {
-          addedTrackIds.add(track.id);
-          remote.addTrack(track);
-
-          // Clean up when track ends
-          track.onended = () => {
-            addedTrackIds.delete(track.id);
-            try {
-              remote.removeTrack(track);
-            } catch {
-              /* track already removed */
-            }
-          };
-        }
+      // Add local tracks
+      stream.getTracks().forEach((track) => {
+        pc.addTrack(track, stream);
       });
-    };
 
-    // Connection state with reconnection logic
-    pc.onconnectionstatechange = () => {
-      if (isCleanedUpRef.current) return;
-      const s = useCallStore.getState();
-      switch (pc.connectionState) {
-        case "connected":
-          s.setPhase("connected");
-          s.setRemoteConnected(true);
-          s.setReconnectAttempt(0);
-          s.setLastError(null);
-          if (!s.callStartTime) s.setCallStartTime(Date.now());
-          startStatsPolling();
-          break;
-        case "disconnected":
-          // Brief disconnection — wait before attempting reconnect
-          s.setPhase("reconnecting");
-          s.setRemoteConnected(false);
-          reconnectTimerRef.current = setTimeout(() => {
-            if (
-              pcRef.current?.connectionState === "disconnected" &&
-              !isCleanedUpRef.current
-            ) {
-              attemptReconnect();
-            }
-          }, 2000);
-          break;
-        case "failed":
-          s.setRemoteConnected(false);
+      // Remote stream with duplicate track prevention
+      const remote = new MediaStream();
+      const addedTrackIds = new Set<string>();
+      setRemoteStream(remote);
+
+      pc.ontrack = (e) => {
+        e.streams[0]?.getTracks().forEach((track) => {
+          if (!addedTrackIds.has(track.id)) {
+            addedTrackIds.add(track.id);
+            remote.addTrack(track);
+
+            // Clean up when track ends
+            track.onended = () => {
+              addedTrackIds.delete(track.id);
+              try {
+                remote.removeTrack(track);
+              } catch {
+                /* track already removed */
+              }
+            };
+          }
+        });
+      };
+
+      // Connection state with reconnection logic
+      pc.onconnectionstatechange = () => {
+        if (isCleanedUpRef.current) return;
+        const s = useCallStore.getState();
+        switch (pc.connectionState) {
+          case "connected":
+            s.setPhase("connected");
+            s.setRemoteConnected(true);
+            s.setReconnectAttempt(0);
+            s.setLastError(null);
+            if (!s.callStartTime) s.setCallStartTime(Date.now());
+            startStatsPolling();
+            break;
+          case "disconnected":
+            // Brief disconnection — wait before attempting reconnect
+            s.setPhase("reconnecting");
+            s.setRemoteConnected(false);
+            reconnectTimerRef.current = setTimeout(() => {
+              if (
+                pcRef.current?.connectionState === "disconnected" &&
+                !isCleanedUpRef.current
+              ) {
+                attemptReconnect();
+              }
+            }, 2000);
+            break;
+          case "failed":
+            s.setRemoteConnected(false);
+            attemptReconnect();
+            break;
+          case "closed":
+            s.setRemoteConnected(false);
+            stopStatsPolling();
+            break;
+        }
+      };
+
+      // ICE connection state for extra resilience
+      pc.oniceconnectionstatechange = () => {
+        if (
+          pc.iceConnectionState === "failed" &&
+          pc.connectionState !== "failed" &&
+          !isCleanedUpRef.current
+        ) {
           attemptReconnect();
-          break;
-        case "closed":
-          s.setRemoteConnected(false);
-          stopStatsPolling();
-          break;
-      }
-    };
+        }
+      };
 
-    // ICE connection state for extra resilience
-    pc.oniceconnectionstatechange = () => {
-      if (
-        pc.iceConnectionState === "failed" &&
-        pc.connectionState !== "failed" &&
-        !isCleanedUpRef.current
-      ) {
-        attemptReconnect();
-      }
-    };
+      // 3. Supabase broadcast channel for signaling
+      const sigChannel = supabase.channel(`call-signal-${callId}`, {
+        config: { broadcast: { self: false } },
+      });
+      channelRef.current = sigChannel;
 
-    // 3. Supabase broadcast channel for signaling
-    const sigChannel = supabase.channel(`call-signal-${callId}`, {
-      config: { broadcast: { self: false } },
-    });
-    channelRef.current = sigChannel;
-
-    // ICE candidates
-    pc.onicecandidate = (e) => {
-      if (e.candidate) {
-        sigChannel.send({
-          type: "broadcast",
-          event: "ice-candidate",
-          payload: { candidate: e.candidate.toJSON(), senderId: myId },
-        });
-      }
-    };
-
-    // Handle negotiation needed (polite peer pattern)
-    pc.onnegotiationneeded = async () => {
-      try {
-        makingOfferRef.current = true;
-        await pc.setLocalDescription();
-        sigChannel.send({
-          type: "broadcast",
-          event: "offer",
-          payload: {
-            sdp: pc.localDescription,
-            senderId: myId,
-            senderName: myName,
-          },
-        });
-      } catch (err) {
-        console.error("Negotiation error:", err);
-      } finally {
-        makingOfferRef.current = false;
-      }
-    };
-
-    // Subscribe to signaling events
-    sigChannel
-      .on("broadcast", { event: "offer" }, async ({ payload }) => {
-        if (!pcRef.current || payload.senderId === myId) return;
-        const currentPc = pcRef.current;
-        const polite = isPolite(payload.senderId);
-
-        const offerCollision =
-          makingOfferRef.current || currentPc.signalingState !== "stable";
-
-        ignoringOfferRef.current = !polite && offerCollision;
-        if (ignoringOfferRef.current) return;
-
-        useCallStore
-          .getState()
-          .setRemotePeer(payload.senderId, payload.senderName);
-
-        try {
-          await currentPc.setRemoteDescription(payload.sdp);
-          await currentPc.setLocalDescription();
+      // ICE candidates
+      pc.onicecandidate = (e) => {
+        if (e.candidate) {
           sigChannel.send({
             type: "broadcast",
-            event: "answer",
-            payload: { sdp: currentPc.localDescription, senderId: myId },
+            event: "ice-candidate",
+            payload: { candidate: e.candidate.toJSON(), senderId: myId },
+          });
+        }
+      };
+
+      // Handle negotiation needed (polite peer pattern)
+      pc.onnegotiationneeded = async () => {
+        try {
+          makingOfferRef.current = true;
+          await pc.setLocalDescription();
+          sigChannel.send({
+            type: "broadcast",
+            event: "offer",
+            payload: {
+              sdp: pc.localDescription,
+              senderId: myId,
+              senderName: myName,
+            },
           });
         } catch (err) {
-          console.error("Error handling offer:", err);
+          console.error("[WebRTC] Negotiation error:", err);
+        } finally {
+          makingOfferRef.current = false;
         }
-      })
-      .on("broadcast", { event: "answer" }, async ({ payload }) => {
-        if (!pcRef.current || payload.senderId === myId) return;
-        try {
-          await pcRef.current.setRemoteDescription(payload.sdp);
-        } catch (err) {
-          console.error("Error handling answer:", err);
-        }
-      })
-      .on("broadcast", { event: "ice-candidate" }, async ({ payload }) => {
-        if (!pcRef.current || payload.senderId === myId) return;
-        try {
-          await pcRef.current.addIceCandidate(payload.candidate);
-        } catch (err) {
-          if (!ignoringOfferRef.current) console.error("ICE error:", err);
-        }
-      })
-      .on("broadcast", { event: "join" }, async ({ payload }) => {
-        if (payload.senderId === myId) return;
-        useCallStore
-          .getState()
-          .setRemotePeer(payload.senderId, payload.senderName);
-        // If we're the impolite peer (higher ID), create offer
-        if (!isPolite(payload.senderId)) {
+      };
+
+      // Subscribe to signaling events
+      sigChannel
+        .on("broadcast", { event: "offer" }, async ({ payload }) => {
+          if (!pcRef.current || payload.senderId === myId) return;
+          const currentPc = pcRef.current;
+          const polite = isPolite(payload.senderId);
+
+          const offerCollision =
+            makingOfferRef.current || currentPc.signalingState !== "stable";
+
+          ignoringOfferRef.current = !polite && offerCollision;
+          if (ignoringOfferRef.current) return;
+
+          useCallStore
+            .getState()
+            .setRemotePeer(payload.senderId, payload.senderName);
+
           try {
-            makingOfferRef.current = true;
-            await pc.setLocalDescription();
+            await currentPc.setRemoteDescription(payload.sdp);
+            await currentPc.setLocalDescription();
             sigChannel.send({
               type: "broadcast",
-              event: "offer",
-              payload: {
-                sdp: pc.localDescription,
-                senderId: myId,
-                senderName: myName,
-              },
+              event: "answer",
+              payload: { sdp: currentPc.localDescription, senderId: myId },
             });
           } catch (err) {
-            console.error("Join offer error:", err);
-          } finally {
-            makingOfferRef.current = false;
+            console.error("[WebRTC] Error handling offer:", err);
           }
-        }
-      })
-      .on("broadcast", { event: "leave" }, ({ payload }) => {
-        if (payload.senderId === myId) return;
-        useCallStore.getState().setRemoteConnected(false);
-        useCallStore.getState().setPhase("ended");
-      })
-      .on("broadcast", { event: "transcript" }, ({ payload }) => {
-        if (payload.senderId === myId) return;
-        useCallStore.getState().addTranscriptEntry(payload.entry);
-      })
-      .subscribe(async (status) => {
-        if (status === "SUBSCRIBED") {
-          // We're in the room — mark as connected (waiting for peer)
-          useCallStore.getState().setPhase("connected");
-          if (!useCallStore.getState().callStartTime) {
-            useCallStore.getState().setCallStartTime(Date.now());
+        })
+        .on("broadcast", { event: "answer" }, async ({ payload }) => {
+          if (!pcRef.current || payload.senderId === myId) return;
+          try {
+            await pcRef.current.setRemoteDescription(payload.sdp);
+          } catch (err) {
+            console.error("[WebRTC] Error handling answer:", err);
           }
+        })
+        .on("broadcast", { event: "ice-candidate" }, async ({ payload }) => {
+          if (!pcRef.current || payload.senderId === myId) return;
+          try {
+            await pcRef.current.addIceCandidate(payload.candidate);
+          } catch (err) {
+            if (!ignoringOfferRef.current)
+              console.error("[WebRTC] ICE error:", err);
+          }
+        })
+        .on("broadcast", { event: "join" }, async ({ payload }) => {
+          if (payload.senderId === myId) return;
+          useCallStore
+            .getState()
+            .setRemotePeer(payload.senderId, payload.senderName);
+          // If we're the impolite peer (higher ID), create offer
+          if (!isPolite(payload.senderId)) {
+            try {
+              makingOfferRef.current = true;
+              await pc.setLocalDescription();
+              sigChannel.send({
+                type: "broadcast",
+                event: "offer",
+                payload: {
+                  sdp: pc.localDescription,
+                  senderId: myId,
+                  senderName: myName,
+                },
+              });
+            } catch (err) {
+              console.error("[WebRTC] Join offer error:", err);
+            } finally {
+              makingOfferRef.current = false;
+            }
+          }
+        })
+        .on("broadcast", { event: "leave" }, ({ payload }) => {
+          if (payload.senderId === myId) return;
+          useCallStore.getState().setRemoteConnected(false);
+          useCallStore.getState().setPhase("ended");
+        })
+        .on("broadcast", { event: "transcript" }, ({ payload }) => {
+          if (payload.senderId === myId) return;
+          useCallStore.getState().addTranscriptEntry(payload.entry);
+        })
+        .subscribe(async (status) => {
+          if (status === "SUBSCRIBED") {
+            // We're in the room — mark as connected (waiting for peer)
+            useCallStore.getState().setPhase("connected");
+            if (!useCallStore.getState().callStartTime) {
+              useCallStore.getState().setCallStartTime(Date.now());
+            }
 
-          // Announce our presence
-          sigChannel.send({
-            type: "broadcast",
-            event: "join",
-            payload: { senderId: myId, senderName: myName },
-          });
-        }
-      });
+            // Announce our presence
+            sigChannel.send({
+              type: "broadcast",
+              event: "join",
+              payload: { senderId: myId, senderName: myName },
+            });
+          } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+            console.error("[WebRTC] Supabase channel error:", status);
+            reportError(
+              "Erreur de connexion au serveur de signalisation. Veuillez reessayer.",
+            );
+          }
+        });
+    } catch (err) {
+      console.error("[WebRTC] Setup error:", err);
+      reportError(
+        "Erreur lors de la configuration de l'appel. Veuillez reessayer.",
+      );
+      useCallStore.getState().setPhase("ended");
+    }
   }, [
     myId,
     myName,
@@ -619,12 +649,12 @@ export function useWebRTC({ callId, onError }: UseWebRTCOptions) {
     [myId],
   );
 
-  // Cleanup on unmount only — stable deps so this won't re-fire on state changes
+  // Cleanup on unmount only — use ref so the effect never re-fires due to identity changes
   useEffect(() => {
     return () => {
-      cleanup();
+      cleanupRef.current();
     };
-  }, [cleanup]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return {
     localStream,
