@@ -3,7 +3,7 @@ import { CheckCheck, Bell } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useNotificationStore } from "@/stores/notification-store";
 import { useMarkAsRead, useMarkAllAsRead } from "@/hooks/useNotifications";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/use-auth";
 import type { Notification } from "@/types/database";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";

@@ -5,7 +5,7 @@ import { fr } from "date-fns/locale";
 import { Drawer } from "@/components/shared/Drawer";
 import { useUIStore } from "@/stores/ui-store";
 import { useNotificationStore } from "@/stores/notification-store";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/use-auth";
 import { useMarkAsRead, useMarkAllAsRead } from "@/hooks/useNotifications";
 import { cn } from "@/lib/utils";
 import type { Notification } from "@/types/database";

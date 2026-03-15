@@ -1,6 +1,6 @@
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/use-auth";
 import { TimeFilter } from "@/components/shared/TimeFilter";
 import type { TimePeriod } from "@/components/shared/TimeFilter";
 

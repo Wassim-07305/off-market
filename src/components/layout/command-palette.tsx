@@ -3,6 +3,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useUIStore } from "@/stores/ui-store";
+import { useRoutePrefix } from "@/hooks/use-route-prefix";
 import {
   LayoutDashboard,
   Users,
@@ -14,57 +15,71 @@ import {
   Settings,
   Plus,
   Search,
+  Calendar,
+  UserCog,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const pages = [
+const pageDefinitions = [
   {
     name: "Dashboard",
-    href: "/dashboard",
+    path: "/dashboard",
     icon: LayoutDashboard,
     section: "Navigation",
   },
-  { name: "CRM - Eleves", href: "/crm", icon: Users, section: "Navigation" },
+  { name: "CRM - Eleves", path: "/crm", icon: Users, section: "Navigation" },
   {
     name: "Messagerie",
-    href: "/messaging",
+    path: "/messaging",
     icon: MessageSquare,
     section: "Navigation",
   },
   {
+    name: "Calendrier",
+    path: "/calendar",
+    icon: Calendar,
+    section: "Navigation",
+  },
+  {
     name: "Formation",
-    href: "/school",
+    path: "/school",
     icon: GraduationCap,
     section: "Navigation",
   },
   {
     name: "Formulaires",
-    href: "/forms",
+    path: "/forms",
     icon: FileText,
     section: "Navigation",
   },
-  { name: "Assistant IA", href: "/ai", icon: Bot, section: "Navigation" },
+  { name: "Assistant IA", path: "/ai", icon: Bot, section: "Navigation" },
   {
     name: "Analytics",
-    href: "/analytics",
+    path: "/analytics",
     icon: BarChart3,
     section: "Navigation",
   },
   {
+    name: "Equipe CSM",
+    path: "/csm",
+    icon: UserCog,
+    section: "Navigation",
+  },
+  {
     name: "Reglages",
-    href: "/settings",
+    path: "/settings",
     icon: Settings,
     section: "Navigation",
   },
   {
     name: "Nouveau cours",
-    href: "/school/builder",
+    path: "/school/builder",
     icon: Plus,
     section: "Actions",
   },
   {
     name: "Nouveau formulaire",
-    href: "/forms/builder",
+    path: "/forms/builder",
     icon: Plus,
     section: "Actions",
   },
@@ -75,13 +90,24 @@ export function CommandPalette() {
   const [query, setQuery] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
   const router = useRouter();
+  const prefix = useRoutePrefix();
+
+  // Build role-prefixed pages
+  const pages = useMemo(
+    () =>
+      pageDefinitions.map((p) => ({
+        ...p,
+        href: `${prefix}${p.path}`,
+      })),
+    [prefix],
+  );
 
   const filteredPages = useMemo(() => {
     if (!query) return pages;
     return pages.filter((page) =>
       page.name.toLowerCase().includes(query.toLowerCase()),
     );
-  }, [query]);
+  }, [query, pages]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

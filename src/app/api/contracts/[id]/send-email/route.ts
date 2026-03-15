@@ -19,6 +19,16 @@ export async function POST(
       return NextResponse.json({ error: "Non autorise" }, { status: 401 });
     }
 
+    // Authorization: only admin/coach can send contract emails
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+    if (!profile || !["admin", "coach"].includes(profile.role)) {
+      return NextResponse.json({ error: "Acces refuse" }, { status: 403 });
+    }
+
     const { data: contract, error } = await supabase
       .from("contracts")
       .select(

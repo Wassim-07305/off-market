@@ -13,6 +13,10 @@ export interface CrmContact {
   last_contact_at: string | null;
   converted_profile_id: string | null;
   lead_score: number;
+  qualification_score: number | null;
+  revenue_range: string | null;
+  goals: string | null;
+  captured_at: string | null;
   last_interaction_at: string | null;
   interaction_count: number;
   sort_order: number;
@@ -35,6 +39,7 @@ export type ContactSource =
   | "linkedin"
   | "referral"
   | "website"
+  | "lead_magnet"
   | "other";
 
 export const PIPELINE_STAGES: {
@@ -93,6 +98,7 @@ export const CONTACT_SOURCES: { value: ContactSource; label: string }[] = [
   { value: "linkedin", label: "LinkedIn" },
   { value: "referral", label: "Recommandation" },
   { value: "website", label: "Site web" },
+  { value: "lead_magnet", label: "Lead Magnet" },
   { value: "other", label: "Autre" },
 ];
 

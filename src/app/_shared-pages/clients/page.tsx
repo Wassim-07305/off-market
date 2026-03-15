@@ -7,6 +7,7 @@ import { getInitials, formatDate, formatCurrency } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import { useRoutePrefix } from "@/hooks/use-route-prefix";
 import { useSupabase } from "@/hooks/use-supabase";
+import { useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 import { toast } from "sonner";
@@ -33,6 +34,7 @@ export default function ClientsPage() {
   const [bulkLoading, setBulkLoading] = useState(false);
   const prefix = useRoutePrefix();
   const supabase = useSupabase();
+  const queryClient = useQueryClient();
   const { students, isLoading, updateStudentTag } = useStudents({
     search,
     tag: activeTag,
@@ -74,7 +76,7 @@ export default function ClientsPage() {
       toast.success(`Tag mis a jour pour ${ids.length} eleve(s)`);
       clearSelection();
       setBulkAction(null);
-      window.location.reload();
+      queryClient.invalidateQueries({ queryKey: ["students"], refetchType: "all" });
     } catch {
       toast.error("Erreur lors de la mise a jour");
     } finally {
