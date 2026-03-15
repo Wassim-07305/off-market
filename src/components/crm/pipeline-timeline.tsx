@@ -146,9 +146,12 @@ export function PipelineTimeline() {
           return (
             <div
               key={stage.value}
-              className={cn("rounded-xl border p-3 text-center", stage.bg)}
+              className="rounded-xl border border-border bg-surface p-3 text-center"
             >
-              <p className={cn("text-lg font-bold", stage.color)}>{count}</p>
+              <div className="flex items-center justify-center gap-1.5 mb-1">
+                <div className={cn("w-2 h-2 rounded-full", stage.dotColor)} />
+                <p className="text-lg font-bold text-foreground font-mono tabular-nums">{count}</p>
+              </div>
               <p className="text-[10px] text-muted-foreground">{stage.label}</p>
             </div>
           );
@@ -177,10 +180,10 @@ export function PipelineTimeline() {
                       className={cn(
                         "absolute -left-6 top-3 w-3 h-3 rounded-full border-2 border-background",
                         event.type === "created"
-                          ? "bg-blue-500"
+                          ? "bg-zinc-400"
                           : event.type === "interaction"
-                            ? "bg-emerald-500"
-                            : "bg-amber-500",
+                            ? "bg-red-500"
+                            : "bg-zinc-600",
                       )}
                     />
 
@@ -195,13 +198,8 @@ export function PipelineTimeline() {
                               {event.contact.full_name}
                             </p>
                             {stage && (
-                              <span
-                                className={cn(
-                                  "inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium border",
-                                  stage.bg,
-                                  stage.color,
-                                )}
-                              >
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium border border-border bg-muted text-muted-foreground">
+                                <span className={cn("w-1.5 h-1.5 rounded-full", stage.dotColor)} />
                                 {stage.label}
                               </span>
                             )}

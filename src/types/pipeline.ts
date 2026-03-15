@@ -42,42 +42,49 @@ export const PIPELINE_STAGES: {
   label: string;
   color: string;
   bg: string;
+  dotColor: string;
 }[] = [
   {
     value: "prospect",
     label: "Prospect",
-    color: "text-blue-600",
-    bg: "bg-blue-500/10 border-blue-500/20",
+    color: "text-zinc-600 dark:text-zinc-300",
+    bg: "bg-zinc-100 dark:bg-zinc-800/50 border-zinc-200 dark:border-zinc-700",
+    dotColor: "bg-zinc-400",
   },
   {
     value: "qualifie",
     label: "Qualifie",
-    color: "text-indigo-600",
-    bg: "bg-indigo-500/10 border-indigo-500/20",
+    color: "text-zinc-700 dark:text-zinc-200",
+    bg: "bg-zinc-100 dark:bg-zinc-800/50 border-zinc-200 dark:border-zinc-700",
+    dotColor: "bg-zinc-500",
   },
   {
     value: "proposition",
     label: "Proposition",
-    color: "text-amber-600",
-    bg: "bg-amber-500/10 border-amber-500/20",
+    color: "text-zinc-700 dark:text-zinc-200",
+    bg: "bg-zinc-100 dark:bg-zinc-800/50 border-zinc-200 dark:border-zinc-700",
+    dotColor: "bg-zinc-600",
   },
   {
     value: "closing",
     label: "Closing",
-    color: "text-orange-600",
-    bg: "bg-orange-500/10 border-orange-500/20",
+    color: "text-red-600 dark:text-red-400",
+    bg: "bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-900/40",
+    dotColor: "bg-red-500",
   },
   {
     value: "client",
     label: "Client",
-    color: "text-emerald-600",
-    bg: "bg-emerald-500/10 border-emerald-500/20",
+    color: "text-emerald-700 dark:text-emerald-400",
+    bg: "bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-900/40",
+    dotColor: "bg-emerald-500",
   },
   {
     value: "perdu",
     label: "Perdu",
-    color: "text-zinc-500",
-    bg: "bg-zinc-500/10 border-zinc-500/20",
+    color: "text-zinc-400 dark:text-zinc-500",
+    bg: "bg-zinc-50 dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800",
+    dotColor: "bg-zinc-300",
   },
 ];
 

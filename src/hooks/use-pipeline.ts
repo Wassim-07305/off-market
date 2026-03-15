@@ -64,7 +64,11 @@ export function usePipelineContacts(stage?: PipelineStage) {
       queryClient.invalidateQueries({ queryKey: ["pipeline-contacts"] });
       toast.success("Contact ajoute");
     },
-    onError: () => toast.error("Erreur lors de l'ajout"),
+    onError: (err: unknown) => {
+      const msg = err instanceof Error ? err.message : "Erreur inconnue";
+      console.error("CRM contact create error:", err);
+      toast.error(`Erreur lors de l'ajout: ${msg}`);
+    },
   });
 
   const updateContact = useMutation({
