@@ -521,7 +521,11 @@ export function PipelineKanban() {
       <AddContactForm
         open={showAdd}
         onClose={() => setShowAdd(false)}
-        onAdd={(data) => createContact.mutate(data)}
+        onAdd={(data) =>
+          createContact.mutate(data, {
+            onSuccess: () => setShowAdd(false),
+          })
+        }
         isPending={createContact.isPending}
       />
     </div>
