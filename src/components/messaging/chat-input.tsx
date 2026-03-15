@@ -8,6 +8,7 @@ import { VoiceRecorder } from "./voice-recorder";
 import { MentionAutocomplete } from "./mention-autocomplete";
 import { TemplatePicker } from "./template-picker";
 import { TemplateManagerModal } from "./template-manager-modal";
+import { AiSlashCommands, isAiSlashCommand } from "./ai-slash-commands";
 import {
   Send,
   Paperclip,
@@ -63,6 +64,7 @@ export function ChatInput({
     string | null
   >(null);
   const [templateSlashStartPos, setTemplateSlashStartPos] = useState(0);
+  const [showAiCommands, setShowAiCommands] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -106,6 +108,7 @@ export function ChatInput({
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (mentionQuery !== null) return;
     if (showTemplatePicker) return;
+    if (showAiCommands) return;
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSend();
@@ -154,18 +157,39 @@ export function ChatInput({
       setMentionQuery(null);
     }
 
-    // Detect /template shortcut (only at start of input or after whitespace)
-    const slashMatch = textBefore.match(/(^|\s)(\/\w*)$/);
-    if (slashMatch) {
-      const fullMatch = slashMatch[2]; // the /word part
-      setTemplateShortcutQuery(fullMatch);
-      setTemplateSlashStartPos(cursorPos - fullMatch.length);
-      setShowTemplatePicker(true);
-    } else if (templateShortcutQuery !== null) {
+    // Detect AI slash commands (priority check before template shortcuts)
+    if (isAiSlashCommand(val)) {
+      setShowAiCommands(true);
+      setShowTemplatePicker(false);
       setTemplateShortcutQuery(null);
-      // Only close if it was opened via shortcut, not via button
-      if (showTemplatePicker && templateShortcutQuery) {
-        setShowTemplatePicker(false);
+    } else {
+      setShowAiCommands(false);
+
+      // Detect /template shortcut (only at start of input or after whitespace)
+      const slashMatch = textBefore.match(/(^|\s)(\/\w*)$/);
+      if (slashMatch) {
+        const fullMatch = slashMatch[2]; // the /word part
+        // Check if the partial command matches an AI command prefix — if so, show AI panel instead
+        const partialCmd = fullMatch.replace(/^\//, "").toLowerCase();
+        const aiCommandNames = ["help", "resume", "translate", "suggest"];
+        const matchesAiPrefix = aiCommandNames.some((c) =>
+          c.startsWith(partialCmd),
+        );
+        if (matchesAiPrefix && textBefore.trim() === fullMatch) {
+          setShowAiCommands(true);
+          setShowTemplatePicker(false);
+          setTemplateShortcutQuery(null);
+        } else {
+          setTemplateShortcutQuery(fullMatch);
+          setTemplateSlashStartPos(cursorPos - fullMatch.length);
+          setShowTemplatePicker(true);
+        }
+      } else if (templateShortcutQuery !== null) {
+        setTemplateShortcutQuery(null);
+        // Only close if it was opened via shortcut, not via button
+        if (showTemplatePicker && templateShortcutQuery) {
+          setShowTemplatePicker(false);
+        }
       }
     }
   };
@@ -438,8 +462,22 @@ export function ChatInput({
             />
           )}
 
+          {showAiCommands && (
+            <AiSlashCommands
+              query={message.trim()}
+              channelId={channelId}
+              onInsertResult={(text) => {
+                setMessage(text);
+                setShowAiCommands(false);
+                textareaRef.current?.focus();
+              }}
+              onClose={() => setShowAiCommands(false)}
+              onClearInput={() => setMessage("")}
+            />
+          )}
+
           <TemplatePicker
-            open={showTemplatePicker}
+            open={showTemplatePicker && !showAiCommands}
             onSelect={handleTemplateSelect}
             onManage={() => setShowTemplateManager(true)}
             shortcutQuery={templateShortcutQuery}

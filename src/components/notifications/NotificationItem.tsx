@@ -1,4 +1,4 @@
-import { Bell, Target, Phone, DollarSign } from "lucide-react";
+import { Bell, Target, Phone, DollarSign, Flag } from "lucide-react";
 import { cn, formatRelativeDate } from "@/lib/utils";
 import type { Notification } from "@/types/database";
 
@@ -12,6 +12,7 @@ const TYPE_ICONS: Record<string, React.ReactNode> = {
   lead_status: <Target className="h-4 w-4" />,
   new_call: <Phone className="h-4 w-4" />,
   call_closed: <DollarSign className="h-4 w-4" />,
+  flag_change: <Flag className="h-4 w-4" />,
 };
 
 const TYPE_ICON_COLORS: Record<string, string> = {
@@ -19,6 +20,7 @@ const TYPE_ICON_COLORS: Record<string, string> = {
   lead_status: "bg-blue-100 text-blue-600",
   new_call: "bg-green-100 text-green-600",
   call_closed: "bg-yellow-100 text-yellow-600",
+  flag_change: "bg-orange-100 text-orange-600",
 };
 
 export function NotificationItem({

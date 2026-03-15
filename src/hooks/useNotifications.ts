@@ -5,12 +5,14 @@ import type { Notification } from "@/types/database";
 import { useNotificationStore } from "@/stores/notification-store";
 import { playNotificationSound } from "@/lib/notification-sound";
 import { toast } from "sonner";
+import { useDndMode } from "./use-dnd-mode";
 
 export function useNotifications(userId: string | undefined) {
   const { setNotifications, setUnreadCount, addNotification } =
     useNotificationStore();
   const queryClient = useQueryClient();
   const prefsRef = useRef({ sound_enabled: true });
+  const { isDnd } = useDndMode();
 
   const query = useQuery({
     queryKey: ["notifications", userId],
@@ -37,6 +39,12 @@ export function useNotifications(userId: string | undefined) {
     }
   }, [query.data, setNotifications, setUnreadCount]);
 
+  // Keep a ref to isDnd so the realtime callback reads the latest value
+  const dndRef = useRef(isDnd);
+  useEffect(() => {
+    dndRef.current = isDnd;
+  }, [isDnd]);
+
   // Realtime subscription
   useEffect(() => {
     if (!userId) return;
@@ -57,13 +65,17 @@ export function useNotifications(userId: string | undefined) {
           queryClient.invalidateQueries({
             queryKey: ["notifications", userId],
           });
-          toast.info(notification.title, {
-            description: notification.body ?? undefined,
-          });
 
-          // Play notification sound if enabled
-          if (prefsRef.current?.sound_enabled !== false) {
-            playNotificationSound();
+          // Respect DND: still queue the notification but no toast or sound
+          if (!dndRef.current) {
+            toast.info(notification.title, {
+              description: notification.body ?? undefined,
+            });
+
+            // Play notification sound if enabled
+            if (prefsRef.current?.sound_enabled !== false) {
+              playNotificationSound();
+            }
           }
         },
       )

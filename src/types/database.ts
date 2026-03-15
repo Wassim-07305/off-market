@@ -318,6 +318,8 @@ export interface Channel {
   is_default: boolean;
   avatar_url: string | null;
   last_message_at: string | null;
+  archived_at: string | null;
+  archived_by: string | null;
   created_at: string;
 }
 

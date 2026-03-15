@@ -4,12 +4,15 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 import { cn } from "@/lib/utils";
-import { DollarSign, Phone, Users, Activity } from "lucide-react";
+import { DollarSign, Phone, Users, Activity, BarChart3 } from "lucide-react";
 import { PeriodSelector } from "@/components/analytics/period-selector";
 import { FinancialTab } from "@/components/analytics/financial-tab";
 import { CallsTab } from "@/components/analytics/calls-tab";
 import { PipelineTab } from "@/components/analytics/pipeline-tab";
 import { EngagementTab } from "@/components/analytics/engagement-tab";
+import { AnalyticsActivityHeatmap } from "@/components/analytics/activity-heatmap";
+import { AnalyticsPeriodComparison } from "@/components/analytics/period-comparison";
+import { ClosingRateChart } from "@/components/analytics/closing-rate-chart";
 import { ReportExportButton } from "@/components/analytics/report-export";
 import {
   periodToDateRange,
@@ -20,7 +23,7 @@ import {
 } from "@/hooks/use-reports";
 import type { PeriodPreset } from "@/types/analytics";
 
-type AnalyticsTab = "finances" | "appels" | "pipeline" | "engagement";
+type AnalyticsTab = "finances" | "appels" | "pipeline" | "engagement" | "avance";
 
 const TABS: { value: AnalyticsTab; label: string; icon: typeof DollarSign }[] =
   [
@@ -28,6 +31,7 @@ const TABS: { value: AnalyticsTab; label: string; icon: typeof DollarSign }[] =
     { value: "appels", label: "Appels", icon: Phone },
     { value: "pipeline", label: "Pipeline", icon: Users },
     { value: "engagement", label: "Engagement", icon: Activity },
+    { value: "avance", label: "Avance", icon: BarChart3 },
   ];
 
 const PERIOD_LABELS: Record<PeriodPreset, string> = {
@@ -180,6 +184,18 @@ function useReportSections(
         },
       ];
     }
+    case "avance": {
+      return [
+        {
+          title: "Analyse avancee",
+          rows: [
+            { label: "Heatmap d'activite", value: "Voir ci-dessous" },
+            { label: "Comparaison de periodes", value: "Voir ci-dessous" },
+            { label: "Taux de closing par source", value: "Voir ci-dessous" },
+          ],
+        },
+      ];
+    }
   }
 }
 
@@ -253,6 +269,13 @@ export default function AnalyticsPage() {
         {activeTab === "appels" && <CallsTab range={range} />}
         {activeTab === "pipeline" && <PipelineTab />}
         {activeTab === "engagement" && <EngagementTab range={range} />}
+        {activeTab === "avance" && (
+          <div className="space-y-6">
+            <AnalyticsActivityHeatmap />
+            <AnalyticsPeriodComparison />
+            <ClosingRateChart />
+          </div>
+        )}
       </motion.div>
     </motion.div>
   );

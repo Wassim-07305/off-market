@@ -5,7 +5,33 @@ import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
 import type { LeaderboardEntry } from "@/types/gamification";
 
-export type LeaderboardPeriod = "7d" | "30d" | "all";
+export type LeaderboardPeriod = "week" | "month" | "all";
+
+/** Get the ISO start of the current week (Monday 00:00) */
+function getWeekStart(): string {
+  const now = new Date();
+  const day = now.getDay();
+  const diff = day === 0 ? -6 : 1 - day; // Monday = 1
+  const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate() + diff);
+  return monday.toISOString();
+}
+
+/** Get the ISO start of the current month */
+function getMonthStart(): string {
+  const now = new Date();
+  return new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+}
+
+function getPeriodSince(period: LeaderboardPeriod): string | null {
+  switch (period) {
+    case "week":
+      return getWeekStart();
+    case "month":
+      return getMonthStart();
+    case "all":
+      return null;
+  }
+}
 
 export function useLeaderboard(period: LeaderboardPeriod = "all") {
   const supabase = useSupabase();
@@ -39,12 +65,10 @@ export function useLeaderboard(period: LeaderboardPeriod = "all") {
       }
 
       // For time-filtered queries, aggregate from xp_transactions
-      const daysAgo = period === "7d" ? 7 : 30;
-      const since = new Date(
-        Date.now() - daysAgo * 24 * 60 * 60 * 1000,
-      ).toISOString();
+      const since = getPeriodSince(period)!;
 
-      const { data: transactions, error: txError } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: transactions, error: txError } = await (supabase as any)
         .from("xp_transactions")
         .select("profile_id, xp_amount")
         .gte("created_at", since);
@@ -53,7 +77,7 @@ export function useLeaderboard(period: LeaderboardPeriod = "all") {
 
       // Aggregate XP by profile
       const xpMap = new Map<string, number>();
-      for (const tx of transactions ?? []) {
+      for (const tx of (transactions ?? []) as { profile_id: string; xp_amount: number }[]) {
         xpMap.set(
           tx.profile_id,
           (xpMap.get(tx.profile_id) ?? 0) + tx.xp_amount,
@@ -69,24 +93,25 @@ export function useLeaderboard(period: LeaderboardPeriod = "all") {
 
       // Fetch profiles (including anonymity) and badge counts
       const profileIds = sorted.map(([id]) => id);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const [profilesRes, badgesRes] = await Promise.all([
-        supabase
+        (supabase as any)
           .from("profiles")
           .select("id, full_name, avatar_url, leaderboard_anonymous")
           .in("id", profileIds),
-        supabase
+        (supabase as any)
           .from("user_badges")
           .select("profile_id")
           .in("profile_id", profileIds),
       ]);
 
       const profileMap = new Map(
-        (profilesRes.data ?? []).map((p) => [p.id, p]),
+        ((profilesRes.data ?? []) as { id: string; full_name: string; avatar_url: string | null; leaderboard_anonymous: boolean }[]).map((p) => [p.id, p]),
       );
 
       // Count badges per profile
       const badgeCountMap = new Map<string, number>();
-      for (const b of badgesRes.data ?? []) {
+      for (const b of (badgesRes.data ?? []) as { profile_id: string }[]) {
         badgeCountMap.set(
           b.profile_id,
           (badgeCountMap.get(b.profile_id) ?? 0) + 1,
@@ -113,9 +138,76 @@ export function useLeaderboard(period: LeaderboardPeriod = "all") {
     },
   });
 
+  // Fetch previous period ranks for rank change indicators
+  const previousPeriodQuery = useQuery({
+    queryKey: ["leaderboard-previous", period],
+    enabled: !!user && period !== "all",
+    queryFn: async () => {
+      // Compute the previous period boundary
+      let previousSince: string;
+      let previousUntil: string;
+
+      if (period === "week") {
+        const weekStart = new Date(getWeekStart());
+        const prevWeekEnd = new Date(weekStart.getTime() - 1);
+        const prevWeekStart = new Date(weekStart.getTime() - 7 * 24 * 60 * 60 * 1000);
+        previousSince = prevWeekStart.toISOString();
+        previousUntil = prevWeekEnd.toISOString();
+      } else {
+        const monthStart = new Date(getMonthStart());
+        const prevMonthEnd = new Date(monthStart.getTime() - 1);
+        const prevMonthStart = new Date(prevMonthEnd.getFullYear(), prevMonthEnd.getMonth(), 1);
+        previousSince = prevMonthStart.toISOString();
+        previousUntil = prevMonthEnd.toISOString();
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: transactions, error } = await (supabase as any)
+        .from("xp_transactions")
+        .select("profile_id, xp_amount")
+        .gte("created_at", previousSince)
+        .lte("created_at", previousUntil);
+
+      if (error) throw error;
+
+      const xpMap = new Map<string, number>();
+      for (const tx of (transactions ?? []) as { profile_id: string; xp_amount: number }[]) {
+        xpMap.set(
+          tx.profile_id,
+          (xpMap.get(tx.profile_id) ?? 0) + tx.xp_amount,
+        );
+      }
+
+      const sorted = [...xpMap.entries()]
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 50);
+
+      // Return a map of profile_id -> previous rank
+      const rankMap = new Map<string, number>();
+      sorted.forEach(([profileId], index) => {
+        rankMap.set(profileId, index + 1);
+      });
+      return rankMap;
+    },
+  });
+
+  // Build rank changes map
+  const rankChanges = new Map<string, number>();
+  if (period !== "all" && previousPeriodQuery.data && leaderboardQuery.data) {
+    const prevRanks = previousPeriodQuery.data;
+    for (const entry of leaderboardQuery.data) {
+      const prevRank = prevRanks.get(entry.profile_id);
+      if (prevRank !== undefined) {
+        // Positive = improved (went up), negative = dropped
+        rankChanges.set(entry.profile_id, prevRank - entry.rank);
+      }
+    }
+  }
+
   return {
     entries: leaderboardQuery.data ?? [],
     isLoading: leaderboardQuery.isLoading,
+    rankChanges,
   };
 }
 

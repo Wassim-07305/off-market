@@ -339,7 +339,11 @@ export function useChannels() {
     mutationFn: async (channelId: string) => {
       const { error } = await supabase
         .from("channels")
-        .update({ is_archived: true })
+        .update({
+          is_archived: true,
+          archived_at: new Date().toISOString(),
+          archived_by: user?.id ?? null,
+        })
         .eq("id", channelId);
       if (error) throw error;
     },
@@ -356,7 +360,11 @@ export function useChannels() {
     mutationFn: async (channelId: string) => {
       const { error } = await supabase
         .from("channels")
-        .update({ is_archived: false })
+        .update({
+          is_archived: false,
+          archived_at: null,
+          archived_by: null,
+        })
         .eq("id", channelId);
       if (error) throw error;
     },

@@ -22,7 +22,8 @@ export function useClientFlag(clientId?: string) {
     queryKey: ["client-flag", effectiveClientId],
     enabled: !!effectiveClientId,
     queryFn: async () => {
-      const { data, error } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data, error } = await (supabase as any)
         .from("client_flags")
         .select(
           "*, client:profiles!client_flags_client_id_fkey(id, full_name, avatar_url), changer:profiles!client_flags_changed_by_fkey(id, full_name)",
@@ -38,6 +39,12 @@ export function useClientFlag(clientId?: string) {
 
 // ─── Set / update client flag ────────────────────────────────
 
+const FLAG_LABELS: Record<ClientFlagValue, string> = {
+  green: "Vert",
+  orange: "Orange",
+  red: "Rouge",
+};
+
 export function useSetClientFlag() {
   const supabase = useSupabase();
   const queryClient = useQueryClient();
@@ -52,17 +59,27 @@ export function useSetClientFlag() {
       clientId: string;
       flag: ClientFlagValue;
       reason?: string;
-    }) => {
+    }): Promise<{
+      clientId: string;
+      oldFlag: ClientFlagValue | null;
+      newFlag: ClientFlagValue;
+      reason?: string;
+    }> => {
       if (!user) throw new Error("Non authentifie");
 
-      const { data: existing } = await supabase
+      // Fetch current flag before updating (for notification)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: currentFlag } = await (supabase as any)
         .from("client_flags")
-        .select("id")
+        .select("id, flag")
         .eq("client_id", clientId)
         .maybeSingle();
 
-      if (existing) {
-        const { error } = await supabase
+      const oldFlag = (currentFlag?.flag as ClientFlagValue) ?? null;
+
+      if (currentFlag) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { error } = await (supabase as any)
           .from("client_flags")
           .update({
             flag,
@@ -73,7 +90,8 @@ export function useSetClientFlag() {
           .eq("client_id", clientId);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("client_flags").insert({
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { error } = await (supabase as any).from("client_flags").insert({
           client_id: clientId,
           flag,
           reason: reason ?? null,
@@ -81,8 +99,10 @@ export function useSetClientFlag() {
         });
         if (error) throw error;
       }
+
+      return { clientId, oldFlag, newFlag: flag, reason };
     },
-    onSuccess: (_data, variables) => {
+    onSuccess: async (result, variables) => {
       queryClient.invalidateQueries({
         queryKey: ["client-flag", variables.clientId],
       });
@@ -91,6 +111,81 @@ export function useSetClientFlag() {
         queryKey: ["client-flag-history", variables.clientId],
       });
       toast.success("Drapeau mis a jour");
+
+      // ── Auto-notifications on flag change ──────────────────────
+      if (!result || result.oldFlag === result.newFlag) return;
+
+      try {
+        // Fetch student name
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data: studentProfile } = await (supabase as any)
+          .from("profiles")
+          .select("full_name")
+          .eq("id", result.clientId)
+          .single();
+
+        const studentName = studentProfile?.full_name ?? "Client";
+        const oldLabel = result.oldFlag ? FLAG_LABELS[result.oldFlag] : "Aucun";
+        const newLabel = FLAG_LABELS[result.newFlag];
+        const reasonSuffix = result.reason ? ` — ${result.reason}` : "";
+        const title = `Drapeau change : ${studentName}`;
+        const body = `${oldLabel} → ${newLabel}${reasonSuffix}`;
+        const notifData = {
+          student_id: result.clientId,
+          old_flag: result.oldFlag,
+          new_flag: result.newFlag,
+        };
+
+        // Fetch admin users
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data: adminProfiles } = await (supabase as any)
+          .from("profiles")
+          .select("id")
+          .eq("role", "admin");
+
+        const adminIds = (adminProfiles ?? []).map(
+          (p: { id: string }) => p.id,
+        );
+
+        // Fetch assigned coach for this client
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data: assignment } = await (supabase as any)
+          .from("coach_assignments")
+          .select("coach_id")
+          .eq("client_id", result.clientId)
+          .eq("status", "active")
+          .maybeSingle();
+
+        const assignedCoachId = assignment?.coach_id as string | null;
+
+        // Build notification inserts (deduplicate if admin is also the coach)
+        const recipientIds = new Set<string>();
+        adminIds.forEach((id: string) => recipientIds.add(id));
+        if (assignedCoachId) recipientIds.add(assignedCoachId);
+
+        // Don't notify the user who made the change
+        recipientIds.delete(user!.id);
+
+        if (recipientIds.size === 0) return;
+
+        const notifications = Array.from(recipientIds).map((recipientId) => ({
+          user_id: recipientId,
+          type: "flag_change",
+          title,
+          body,
+          data: notifData,
+          category: "system",
+          action_url: `/clients/${result.clientId}`,
+          is_read: false,
+          is_archived: false,
+        }));
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await (supabase as any).from("notifications").insert(notifications);
+      } catch (err) {
+        // Notification failure should not block the main mutation
+        console.error("[FlagNotification] Error sending notifications:", err);
+      }
     },
     onError: () => {
       toast.error("Erreur lors de la mise a jour du drapeau");
@@ -108,7 +203,8 @@ export function useFlaggedClients() {
     queryKey: ["flagged-clients"],
     enabled: !!user,
     queryFn: async () => {
-      const { data, error } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data, error } = await (supabase as any)
         .from("client_flags")
         .select(
           "*, client:profiles!client_flags_client_id_fkey(id, full_name, avatar_url, email), changer:profiles!client_flags_changed_by_fkey(id, full_name)",
@@ -131,7 +227,8 @@ export function useFlagHistory(clientId?: string) {
     queryKey: ["client-flag-history", clientId],
     enabled: !!clientId,
     queryFn: async () => {
-      const { data, error } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data, error } = await (supabase as any)
         .from("client_flag_history")
         .select(
           "*, changer:profiles!client_flag_history_changed_by_fkey(id, full_name)",

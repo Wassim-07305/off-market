@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import { cn, formatDate } from "@/lib/utils";
+import { useState } from "react";
 import {
   Map,
   Printer,
@@ -10,6 +11,8 @@ import {
   CheckCircle,
   Clock,
   Target,
+  Download,
+  Loader2 as DownloadLoader,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { staggerContainer, staggerItem, defaultTransition } from "@/lib/animations";
@@ -34,6 +37,7 @@ export function RoadmapViewer({
   isPending = false,
 }: RoadmapViewerProps) {
   const printRef = useRef<HTMLDivElement>(null);
+  const [downloadingPdf, setDownloadingPdf] = useState(false);
 
   const milestones = roadmap.milestones ?? [];
   const completed = milestones.filter((m) => m.status === "completed").length;
@@ -45,6 +49,27 @@ export function RoadmapViewer({
 
   const handlePrint = () => {
     window.print();
+  };
+
+  const handleDownloadPdf = async () => {
+    try {
+      setDownloadingPdf(true);
+      const res = await fetch(`/api/roadmap/${roadmap.id}/pdf`);
+      if (!res.ok) throw new Error("Erreur de telechargement");
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `roadmap-${roadmap.title.replace(/[^a-zA-Z0-9]/g, "-").toLowerCase()}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch {
+      // Silently fail — user will see the button reset
+    } finally {
+      setDownloadingPdf(false);
+    }
   };
 
   const sourceLabel = {
@@ -83,13 +108,27 @@ export function RoadmapViewer({
           </div>
         </div>
 
-        <button
-          onClick={handlePrint}
-          className="h-8 px-3 rounded-lg border border-border text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center gap-1.5 print:hidden"
-        >
-          <Printer className="w-3.5 h-3.5" />
-          Imprimer
-        </button>
+        <div className="flex items-center gap-2 print:hidden">
+          <button
+            onClick={handleDownloadPdf}
+            disabled={downloadingPdf}
+            className="h-8 px-3 rounded-lg bg-primary text-white text-xs font-medium hover:bg-primary/90 disabled:opacity-50 transition-colors flex items-center gap-1.5"
+          >
+            {downloadingPdf ? (
+              <DownloadLoader className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <Download className="w-3.5 h-3.5" />
+            )}
+            Telecharger PDF
+          </button>
+          <button
+            onClick={handlePrint}
+            className="h-8 px-3 rounded-lg border border-border text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center gap-1.5"
+          >
+            <Printer className="w-3.5 h-3.5" />
+            Imprimer
+          </button>
+        </div>
       </div>
 
       {/* Progress bar */}

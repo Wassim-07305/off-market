@@ -4,6 +4,7 @@ export interface FeedPost {
   content: string;
   post_type: PostType;
   media_urls: string[];
+  community_id: string | null;
   is_pinned: boolean;
   likes_count: number;
   comments_count: number;

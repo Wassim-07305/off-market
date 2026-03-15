@@ -33,6 +33,9 @@ export interface CrmContact {
   enrichment_data: Record<string, unknown>;
   enrichment_status: "pending" | "enriched" | "failed" | null;
   last_enriched_at: string | null;
+  // Closing analytics
+  lost_reason: string | null;
+  stage_changed_at: string | null;
   // Joined
   assigned_profile?: { id: string; full_name: string } | null;
 }

@@ -13,7 +13,7 @@ import {
 } from "@/hooks/use-leaderboard";
 import { useXp } from "@/hooks/use-xp";
 import { useAuth } from "@/hooks/use-auth";
-import { Crown, Medal, Award, TrendingUp, UserX } from "lucide-react";
+import { Crown, Medal, Award, TrendingUp, UserX, ArrowUp, ArrowDown, Minus } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const PODIUM_CONFIG = [
@@ -41,14 +41,39 @@ const PODIUM_CONFIG = [
 ];
 
 const PERIOD_TABS: { value: LeaderboardPeriod; label: string }[] = [
-  { value: "7d", label: "Cette semaine" },
-  { value: "30d", label: "Ce mois" },
+  { value: "week", label: "Cette semaine" },
+  { value: "month", label: "Ce mois" },
   { value: "all", label: "Tout" },
 ];
 
+function RankChangeIndicator({ change }: { change: number | undefined }) {
+  if (change === undefined) return null;
+  if (change > 0) {
+    return (
+      <span className="inline-flex items-center gap-0.5 text-[10px] font-medium text-emerald-600">
+        <ArrowUp className="w-3 h-3" />
+        {change}
+      </span>
+    );
+  }
+  if (change < 0) {
+    return (
+      <span className="inline-flex items-center gap-0.5 text-[10px] font-medium text-red-500">
+        <ArrowDown className="w-3 h-3" />
+        {Math.abs(change)}
+      </span>
+    );
+  }
+  return (
+    <span className="inline-flex items-center text-[10px] text-muted-foreground">
+      <Minus className="w-3 h-3" />
+    </span>
+  );
+}
+
 export default function ClientLeaderboardPage() {
   const [period, setPeriod] = useState<LeaderboardPeriod>("all");
-  const { entries, isLoading } = useLeaderboard(period);
+  const { entries, isLoading, rankChanges } = useLeaderboard(period);
   const { summary } = useXp();
   const { user } = useAuth();
 
@@ -68,7 +93,11 @@ export default function ClientLeaderboardPage() {
       <motion.div variants={fadeInUp} transition={defaultTransition}>
         <h1 className="text-3xl font-semibold text-foreground">Classement</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Ton rang parmi les autres freelances
+          {period === "week"
+            ? "Classement de la semaine en cours"
+            : period === "month"
+              ? "Classement du mois en cours"
+              : "Ton rang parmi les autres freelances"}
         </p>
       </motion.div>
 
@@ -203,6 +232,11 @@ export default function ClientLeaderboardPage() {
                         {entry.badge_count} badges
                       </p>
                     )}
+                    {period !== "all" && (
+                      <div className="mt-1">
+                        <RankChangeIndicator change={rankChanges.get(entry.profile_id)} />
+                      </div>
+                    )}
                   </div>
                 );
               })}
@@ -262,9 +296,14 @@ export default function ClientLeaderboardPage() {
                         </p>
                       )}
                     </div>
-                    <span className="text-sm font-semibold text-foreground font-serif">
-                      {entry.total_xp} XP
-                    </span>
+                    <div className="flex items-center gap-2 shrink-0">
+                      {period !== "all" && (
+                        <RankChangeIndicator change={rankChanges.get(entry.profile_id)} />
+                      )}
+                      <span className="text-sm font-semibold text-foreground font-serif">
+                        {entry.total_xp} XP
+                      </span>
+                    </div>
                   </div>
                 );
               })}
