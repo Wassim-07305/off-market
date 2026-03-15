@@ -583,3 +583,159 @@ export function generateCallSummaryPDF(data: CallSummaryPDFData) {
   const safeTitle = data.callTitle.replace(/[^a-zA-Z0-9]/g, "_");
   doc.save(`synthese_${safeTitle}.pdf`);
 }
+
+// ═══════════════════════════════════════════════════
+// Workbook Fusion PDF (Transcript + Workbook)
+// ═══════════════════════════════════════════════════
+
+interface WorkbookFusionPDFData {
+  content: string;
+  title: string;
+  clientName: string;
+  workbookTitle: string;
+  callDate?: string;
+}
+
+export function generateWorkbookFusionPDF(data: WorkbookFusionPDFData) {
+  const doc = new jsPDF();
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const margin = 20;
+  const contentWidth = pageWidth - margin * 2;
+
+  // ── En-tete ────────────────────────────────────
+  doc.setFillColor(...PRIMARY_COLOR);
+  doc.rect(0, 0, pageWidth, 4, "F");
+
+  // Titre
+  doc.setFontSize(22);
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(...PRIMARY_COLOR);
+  doc.text("FUSION WORKBOOK + APPEL", pageWidth / 2, 25, { align: "center" });
+
+  doc.setFontSize(12);
+  doc.setTextColor(107, 114, 128);
+  doc.text(BUSINESS.company, pageWidth / 2, 34, { align: "center" });
+
+  // Titre du document
+  doc.setFontSize(11);
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(31, 41, 55);
+  doc.text(data.title, pageWidth / 2, 48, { align: "center" });
+
+  // Meta
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(107, 114, 128);
+
+  const metaParts = [
+    data.clientName && `Client : ${data.clientName}`,
+    data.workbookTitle && `Workbook : ${data.workbookTitle}`,
+    data.callDate && `Date appel : ${formatDate(data.callDate)}`,
+  ].filter(Boolean);
+
+  if (metaParts.length > 0) {
+    doc.text(metaParts.join("  |  "), pageWidth / 2, 56, { align: "center" });
+  }
+
+  // Separator
+  doc.setDrawColor(209, 213, 219);
+  doc.setLineWidth(0.5);
+  doc.line(margin, 62, pageWidth - margin, 62);
+
+  // ── Contenu Markdown simplifie ──────────────────
+  let currentY = 72;
+
+  const lines = data.content.split("\n");
+
+  for (const line of lines) {
+    if (currentY > pageHeight - 30) {
+      doc.addPage();
+      doc.setFillColor(...PRIMARY_COLOR);
+      doc.rect(0, 0, pageWidth, 2, "F");
+      currentY = 20;
+    }
+
+    const trimmed = line.trim();
+
+    if (!trimmed) {
+      currentY += 4;
+      continue;
+    }
+
+    // ## Heading
+    if (trimmed.startsWith("## ")) {
+      currentY += 4;
+      doc.setFontSize(13);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(...PRIMARY_COLOR);
+      doc.text(trimmed.replace("## ", ""), margin, currentY);
+      currentY += 8;
+      continue;
+    }
+
+    // ### Sub-heading
+    if (trimmed.startsWith("### ")) {
+      currentY += 2;
+      doc.setFontSize(11);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(31, 41, 55);
+      doc.text(trimmed.replace("### ", ""), margin, currentY);
+      currentY += 7;
+      continue;
+    }
+
+    // **Bold text** (standalone)
+    if (trimmed.startsWith("**") && trimmed.endsWith("**")) {
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(31, 41, 55);
+      doc.text(trimmed.replace(/\*\*/g, ""), margin, currentY);
+      currentY += 6;
+      continue;
+    }
+
+    // Bullet point
+    if (trimmed.startsWith("- ") || trimmed.startsWith("* ")) {
+      doc.setFontSize(9);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(55, 65, 81);
+      const bulletText = trimmed.replace(/^[-*] /, "").replace(/\*\*/g, "");
+      const wrapped = doc.splitTextToSize(bulletText, contentWidth - 10);
+      doc.text("\u2022", margin + 2, currentY);
+      doc.text(wrapped, margin + 8, currentY);
+      currentY += wrapped.length * 5 + 2;
+      continue;
+    }
+
+    // Normal paragraph
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(75, 85, 99);
+    const cleanText = trimmed.replace(/\*\*/g, "");
+    const wrapped = doc.splitTextToSize(cleanText, contentWidth);
+    doc.text(wrapped, margin, currentY);
+    currentY += wrapped.length * 5 + 2;
+  }
+
+  // ── Footer ─────────────────────────────────────
+  const lastPage = doc.getNumberOfPages();
+  for (let i = 1; i <= lastPage; i++) {
+    doc.setPage(i);
+    doc.setFillColor(...PRIMARY_COLOR);
+    doc.rect(0, pageHeight - 4, pageWidth, 4, "F");
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(156, 163, 175);
+    doc.text(
+      `Fusion generee par IA — ${BUSINESS.company}`,
+      pageWidth / 2,
+      pageHeight - 8,
+      { align: "center" },
+    );
+  }
+
+  // Telecharger
+  const safeTitle = data.title.replace(/[^a-zA-Z0-9]/g, "_");
+  doc.save(`fusion_${safeTitle}.pdf`);
+}

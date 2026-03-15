@@ -3,6 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
+import { toast } from "sonner";
 import type {
   Commission,
   CommissionRole,
@@ -63,6 +64,7 @@ export function useCommissions(options: UseCommissionsOptions = {}) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["commissions"] });
     },
+    onError: () => { toast.error("Erreur lors de la création de la commission"); },
   });
 
   const markAsPaid = useMutation({
@@ -76,6 +78,7 @@ export function useCommissions(options: UseCommissionsOptions = {}) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["commissions"] });
     },
+    onError: () => { toast.error("Erreur lors du marquage comme payé"); },
   });
 
   const commissions = commissionsQuery.data ?? [];

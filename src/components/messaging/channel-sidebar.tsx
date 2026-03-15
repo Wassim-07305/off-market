@@ -15,6 +15,8 @@ import {
   MessageSquare,
   BellOff,
   Archive,
+  LayoutGrid,
+  List,
 } from "lucide-react";
 import type { ChannelWithMeta } from "@/types/messaging";
 import { CreateChannelModal } from "./create-channel-modal";
@@ -55,6 +57,7 @@ export function ChannelSidebar({
   const [dmsOpen, setDmsOpen] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [dmSearch, setDmSearch] = useState("");
+  const [viewMode, setViewMode] = useState<"list" | "mosaic">("list");
   const { user } = useAuth();
   const supabase = useSupabase();
 
@@ -270,6 +273,20 @@ export function ChannelSidebar({
                   )}
                   Messages directs
                 </div>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setViewMode(viewMode === "list" ? "mosaic" : "list");
+                  }}
+                  className="w-5 h-5 rounded flex items-center justify-center hover:bg-muted transition-colors"
+                  title={viewMode === "list" ? "Vue mosaïque" : "Vue liste"}
+                >
+                  {viewMode === "list" ? (
+                    <LayoutGrid className="w-3.5 h-3.5" />
+                  ) : (
+                    <List className="w-3.5 h-3.5" />
+                  )}
+                </button>
               </div>
 
               {dmsOpen && (
@@ -287,110 +304,207 @@ export function ChannelSidebar({
                     </div>
                   </div>
 
-                  <div className="px-2 space-y-0.5">
-                    {/* Conversations DM existantes */}
-                    {filteredDmChannels.map((ch) => {
-                      const isActive = ch.id === activeChannelId;
-                      const partner = ch.dmPartner;
-                      const online = partner
-                        ? (isOnline?.(partner.id) ?? false)
-                        : false;
-                      const hasUrgent = ch.urgentUnreadCount > 0;
-                      return (
+                  {viewMode === "mosaic" ? (
+                    /* ── Mosaic view ── */
+                    <div className="px-2 grid grid-cols-3 gap-1.5">
+                      {filteredDmChannels.map((ch) => {
+                        const isActive = ch.id === activeChannelId;
+                        const partner = ch.dmPartner;
+                        const online = partner
+                          ? (isOnline?.(partner.id) ?? false)
+                          : false;
+                        const hasUrgent = ch.urgentUnreadCount > 0;
+                        return (
+                          <button
+                            key={ch.id}
+                            onClick={() => onSelectChannel(ch.id)}
+                            className={cn(
+                              "flex flex-col items-center gap-1 p-2 rounded-xl text-[11px] transition-all duration-150",
+                              isActive
+                                ? "bg-primary/10 text-primary font-medium ring-1 ring-primary/20"
+                                : "text-muted-foreground hover:text-foreground hover:bg-muted/60 active:scale-[0.96]",
+                              ch.isMuted && !isActive && "opacity-50",
+                            )}
+                          >
+                            <div className="relative">
+                              <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
+                                {partner?.avatar_url ? (
+                                  <img
+                                    src={partner.avatar_url}
+                                    alt=""
+                                    className="w-9 h-9 rounded-full object-cover"
+                                  />
+                                ) : (
+                                  <span className="text-xs font-medium text-primary">
+                                    {partner ? getInitials(partner.full_name) : "?"}
+                                  </span>
+                                )}
+                              </div>
+                              {online && (
+                                <div className="absolute -bottom-px -right-px w-2.5 h-2.5 bg-emerald-500 border-[1.5px] border-surface rounded-full" />
+                              )}
+                              {ch.unreadCount > 0 && !ch.isMuted && (
+                                <span
+                                  className={cn(
+                                    "absolute -top-1 -right-1 min-w-[16px] h-[16px] rounded-full text-white text-[9px] font-bold flex items-center justify-center px-0.5",
+                                    hasUrgent ? "bg-red-500" : "bg-primary",
+                                  )}
+                                >
+                                  {ch.unreadCount > 99 ? "99+" : ch.unreadCount}
+                                </span>
+                              )}
+                            </div>
+                            <span className="truncate w-full text-center leading-tight">
+                              {partner?.full_name?.split(" ")[0] ?? ch.name}
+                            </span>
+                          </button>
+                        );
+                      })}
+
+                      {filteredUsersWithoutDM.map((p) => (
                         <button
-                          key={ch.id}
-                          onClick={() => onSelectChannel(ch.id)}
-                          className={cn(
-                            "w-full flex items-center gap-2.5 px-2.5 h-9 rounded-lg text-[13px] transition-all duration-150",
-                            isActive
-                              ? "bg-primary/10 text-primary font-medium shadow-sm"
-                              : "text-muted-foreground hover:text-foreground hover:bg-muted/60 active:scale-[0.98]",
-                            ch.isMuted && !isActive && "opacity-50",
-                          )}
+                          key={`new-dm-${p.id}`}
+                          onClick={async () => { await onCreateDM(p.id); }}
+                          className="flex flex-col items-center gap-1 p-2 rounded-xl text-[11px] text-muted-foreground hover:text-foreground hover:bg-muted/60 active:scale-[0.96] transition-all duration-150"
+                        >
+                          <div className="relative">
+                            <div className="w-9 h-9 rounded-full bg-muted flex items-center justify-center overflow-hidden">
+                              {p.avatar_url ? (
+                                <img
+                                  src={p.avatar_url}
+                                  alt=""
+                                  className="w-9 h-9 rounded-full object-cover"
+                                />
+                              ) : (
+                                <span className="text-xs font-medium text-muted-foreground">
+                                  {getInitials(p.full_name)}
+                                </span>
+                              )}
+                            </div>
+                            {isOnline?.(p.id) && (
+                              <div className="absolute -bottom-px -right-px w-2.5 h-2.5 bg-emerald-500 border-[1.5px] border-surface rounded-full" />
+                            )}
+                          </div>
+                          <span className="truncate w-full text-center leading-tight">
+                            {p.full_name.split(" ")[0]}
+                          </span>
+                        </button>
+                      ))}
+
+                      {filteredDmChannels.length === 0 &&
+                        filteredUsersWithoutDM.length === 0 && (
+                          <p className="text-xs text-muted-foreground col-span-3 px-2.5 py-2 text-center">
+                            Aucun resultat
+                          </p>
+                        )}
+                    </div>
+                  ) : (
+                    /* ── List view (default) ── */
+                    <div className="px-2 space-y-0.5">
+                      {/* Conversations DM existantes */}
+                      {filteredDmChannels.map((ch) => {
+                        const isActive = ch.id === activeChannelId;
+                        const partner = ch.dmPartner;
+                        const online = partner
+                          ? (isOnline?.(partner.id) ?? false)
+                          : false;
+                        const hasUrgent = ch.urgentUnreadCount > 0;
+                        return (
+                          <button
+                            key={ch.id}
+                            onClick={() => onSelectChannel(ch.id)}
+                            className={cn(
+                              "w-full flex items-center gap-2.5 px-2.5 h-9 rounded-lg text-[13px] transition-all duration-150",
+                              isActive
+                                ? "bg-primary/10 text-primary font-medium shadow-sm"
+                                : "text-muted-foreground hover:text-foreground hover:bg-muted/60 active:scale-[0.98]",
+                              ch.isMuted && !isActive && "opacity-50",
+                            )}
+                          >
+                            <div className="relative shrink-0">
+                              <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
+                                {partner?.avatar_url ? (
+                                  <img
+                                    src={partner.avatar_url}
+                                    alt=""
+                                    className="w-6 h-6 rounded-full object-cover"
+                                  />
+                                ) : (
+                                  <span className="text-[10px] font-medium text-primary">
+                                    {partner
+                                      ? getInitials(partner.full_name)
+                                      : "?"}
+                                  </span>
+                                )}
+                              </div>
+                              {online && (
+                                <div className="absolute -bottom-px -right-px w-2.5 h-2.5 bg-emerald-500 border-[1.5px] border-surface rounded-full" />
+                              )}
+                            </div>
+                            <span className="truncate flex-1 text-left">
+                              {partner?.full_name ?? ch.name}
+                            </span>
+                            {ch.isMuted && (
+                              <BellOff className="w-3 h-3 text-muted-foreground/50 shrink-0" />
+                            )}
+                            {ch.unreadCount > 0 && !ch.isMuted && (
+                              <span
+                                className={cn(
+                                  "min-w-[18px] h-[18px] rounded-full text-white text-[10px] font-bold flex items-center justify-center px-1",
+                                  hasUrgent ? "bg-red-500" : "bg-primary",
+                                )}
+                              >
+                                {ch.unreadCount > 99 ? "99+" : ch.unreadCount}
+                              </span>
+                            )}
+                          </button>
+                        );
+                      })}
+
+                      {/* Users sans conversation — affichés directement */}
+                      {filteredUsersWithoutDM.map((p) => (
+                        <button
+                          key={`new-dm-${p.id}`}
+                          onClick={async () => {
+                            await onCreateDM(p.id);
+                          }}
+                          className="w-full flex items-center gap-2.5 px-2.5 h-9 rounded-lg text-[13px] text-muted-foreground hover:text-foreground hover:bg-muted/60 active:scale-[0.98] transition-all duration-150"
                         >
                           <div className="relative shrink-0">
-                            <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
-                              {partner?.avatar_url ? (
+                            <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center overflow-hidden">
+                              {p.avatar_url ? (
                                 <img
-                                  src={partner.avatar_url}
+                                  src={p.avatar_url}
                                   alt=""
                                   className="w-6 h-6 rounded-full object-cover"
                                 />
                               ) : (
-                                <span className="text-[10px] font-medium text-primary">
-                                  {partner
-                                    ? getInitials(partner.full_name)
-                                    : "?"}
+                                <span className="text-[10px] font-medium text-muted-foreground">
+                                  {getInitials(p.full_name)}
                                 </span>
                               )}
                             </div>
-                            {online && (
+                            {isOnline?.(p.id) && (
                               <div className="absolute -bottom-px -right-px w-2.5 h-2.5 bg-emerald-500 border-[1.5px] border-surface rounded-full" />
                             )}
                           </div>
                           <span className="truncate flex-1 text-left">
-                            {partner?.full_name ?? ch.name}
+                            {p.full_name}
                           </span>
-                          {ch.isMuted && (
-                            <BellOff className="w-3 h-3 text-muted-foreground/50 shrink-0" />
-                          )}
-                          {ch.unreadCount > 0 && !ch.isMuted && (
-                            <span
-                              className={cn(
-                                "min-w-[18px] h-[18px] rounded-full text-white text-[10px] font-bold flex items-center justify-center px-1",
-                                hasUrgent ? "bg-red-500" : "bg-primary",
-                              )}
-                            >
-                              {ch.unreadCount > 99 ? "99+" : ch.unreadCount}
-                            </span>
-                          )}
+                          <span className="text-[10px] text-muted-foreground/60 capitalize">
+                            {p.role}
+                          </span>
                         </button>
-                      );
-                    })}
+                      ))}
 
-                    {/* Users sans conversation — affichés directement */}
-                    {filteredUsersWithoutDM.map((p) => (
-                      <button
-                        key={`new-dm-${p.id}`}
-                        onClick={async () => {
-                          await onCreateDM(p.id);
-                        }}
-                        className="w-full flex items-center gap-2.5 px-2.5 h-9 rounded-lg text-[13px] text-muted-foreground hover:text-foreground hover:bg-muted/60 active:scale-[0.98] transition-all duration-150"
-                      >
-                        <div className="relative shrink-0">
-                          <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center overflow-hidden">
-                            {p.avatar_url ? (
-                              <img
-                                src={p.avatar_url}
-                                alt=""
-                                className="w-6 h-6 rounded-full object-cover"
-                              />
-                            ) : (
-                              <span className="text-[10px] font-medium text-muted-foreground">
-                                {getInitials(p.full_name)}
-                              </span>
-                            )}
-                          </div>
-                          {isOnline?.(p.id) && (
-                            <div className="absolute -bottom-px -right-px w-2.5 h-2.5 bg-emerald-500 border-[1.5px] border-surface rounded-full" />
-                          )}
-                        </div>
-                        <span className="truncate flex-1 text-left">
-                          {p.full_name}
-                        </span>
-                        <span className="text-[10px] text-muted-foreground/60 capitalize">
-                          {p.role}
-                        </span>
-                      </button>
-                    ))}
-
-                    {filteredDmChannels.length === 0 &&
-                      filteredUsersWithoutDM.length === 0 && (
-                        <p className="text-xs text-muted-foreground px-2.5 py-2">
-                          Aucun resultat
-                        </p>
-                      )}
-                  </div>
+                      {filteredDmChannels.length === 0 &&
+                        filteredUsersWithoutDM.length === 0 && (
+                          <p className="text-xs text-muted-foreground px-2.5 py-2">
+                            Aucun resultat
+                          </p>
+                        )}
+                    </div>
+                  )}
                 </>
               )}
             </div>

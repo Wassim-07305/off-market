@@ -3,6 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
+import { toast } from "sonner";
 import type { CoachingGoal, GoalStatus } from "@/types/coaching";
 
 export function useCoachingGoals(clientId?: string) {
@@ -52,6 +53,7 @@ export function useCoachingGoals(clientId?: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["coaching-goals"] });
     },
+    onError: () => { toast.error("Erreur lors de la création de l'objectif"); },
   });
 
   const updateGoal = useMutation({
@@ -68,6 +70,7 @@ export function useCoachingGoals(clientId?: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["coaching-goals"] });
     },
+    onError: () => { toast.error("Erreur lors de la mise à jour de l'objectif"); },
   });
 
   const updateProgress = useMutation({
@@ -87,6 +90,7 @@ export function useCoachingGoals(clientId?: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["coaching-goals"] });
     },
+    onError: () => { toast.error("Erreur lors de la mise à jour de la progression"); },
   });
 
   return {

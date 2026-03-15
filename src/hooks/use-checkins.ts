@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
 import { useMemo } from "react";
+import { toast } from "sonner";
 import type { WeeklyCheckin, Mood, Energy } from "@/types/coaching";
 
 export function useCheckins(clientId?: string) {
@@ -62,6 +63,7 @@ export function useCheckins(clientId?: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["checkins"] });
     },
+    onError: () => { toast.error("Erreur lors de la soumission du check-in"); },
   });
 
   const addFeedback = useMutation({
@@ -81,6 +83,7 @@ export function useCheckins(clientId?: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["checkins"] });
     },
+    onError: () => { toast.error("Erreur lors de l'ajout du feedback"); },
   });
 
   // Computed stats

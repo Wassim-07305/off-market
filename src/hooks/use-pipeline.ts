@@ -11,6 +11,8 @@ import type {
   ContactInteraction,
   InteractionType,
 } from "@/types/pipeline";
+import type { CommissionRole } from "@/types/billing";
+import { DEFAULT_COMMISSION_RATES } from "@/types/billing";
 
 // ─── Pipeline Contacts ───────────────────────────────────────
 
@@ -86,6 +88,7 @@ export function usePipelineContacts(stage?: PipelineStage) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["pipeline-contacts"] });
     },
+    onError: () => { toast.error("Erreur lors de la mise à jour du contact"); },
   });
 
   const moveContact = useMutation({
@@ -105,9 +108,91 @@ export function usePipelineContacts(stage?: PipelineStage) {
         .update(updates)
         .eq("id", id);
       if (error) throw error;
+      return { id, stage };
     },
-    onSuccess: () => {
+    onSuccess: async (result) => {
       queryClient.invalidateQueries({ queryKey: ["pipeline-contacts"] });
+
+      // Auto-create commissions when contact moves to "client" stage
+      if (result.stage === "client") {
+        try {
+          // Fetch the contact to get deal value and assigned user
+          const { data: contact } = await supabase
+            .from("crm_contacts")
+            .select("id, full_name, estimated_value, assigned_to, created_by")
+            .eq("id", result.id)
+            .single();
+
+          if (!contact || !contact.estimated_value) return;
+
+          const saleAmount = Number(contact.estimated_value);
+          if (saleAmount <= 0) return;
+
+          // Check if commissions already exist for this contact
+          const { count: existingCount } = await supabase
+            .from("commissions")
+            .select("id", { count: "exact", head: true })
+            .eq("sale_id", contact.id);
+
+          if (existingCount && existingCount > 0) return; // Already created
+
+          // Determine commission recipients
+          const commissionEntries: Array<{
+            sale_id: string;
+            contractor_id: string;
+            contractor_role: CommissionRole;
+            sale_amount: number;
+            commission_rate: number;
+            commission_amount: number;
+          }> = [];
+
+          // Assigned user gets closer commission
+          if (contact.assigned_to) {
+            const rate = DEFAULT_COMMISSION_RATES.closer;
+            commissionEntries.push({
+              sale_id: contact.id,
+              contractor_id: contact.assigned_to,
+              contractor_role: "closer",
+              sale_amount: saleAmount,
+              commission_rate: rate,
+              commission_amount: Math.round(saleAmount * rate * 100) / 100,
+            });
+          }
+
+          // Creator (if different from assignee) gets setter commission
+          if (
+            contact.created_by &&
+            contact.created_by !== contact.assigned_to
+          ) {
+            const rate = DEFAULT_COMMISSION_RATES.setter;
+            commissionEntries.push({
+              sale_id: contact.id,
+              contractor_id: contact.created_by,
+              contractor_role: "setter",
+              sale_amount: saleAmount,
+              commission_rate: rate,
+              commission_amount: Math.round(saleAmount * rate * 100) / 100,
+            });
+          }
+
+          if (commissionEntries.length > 0) {
+            const { error: commError } = await supabase
+              .from("commissions")
+              .insert(commissionEntries);
+
+            if (commError) {
+              console.error("Auto-commission creation error:", commError);
+            } else {
+              queryClient.invalidateQueries({ queryKey: ["commissions"] });
+              toast.success(
+                `${commissionEntries.length} commission(s) creee(s) automatiquement`,
+              );
+            }
+          }
+        } catch (err) {
+          console.error("Auto-commission error:", err);
+        }
+      }
     },
   });
 

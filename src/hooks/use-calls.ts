@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
 import { useMemo } from "react";
+import { toast } from "sonner";
 import type {
   CallCalendarWithRelations,
   RoomStatus,
@@ -73,6 +74,7 @@ export function useCalls(weekStart?: Date) {
       return data;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["calls"] }),
+    onError: () => { toast.error("Erreur lors de la création de l'appel"); },
   });
 
   const updateCall = useMutation({
@@ -87,6 +89,7 @@ export function useCalls(weekStart?: Date) {
       if (error) throw error;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["calls"] }),
+    onError: () => { toast.error("Erreur lors de la mise à jour de l'appel"); },
   });
 
   const deleteCall = useMutation({
@@ -98,6 +101,7 @@ export function useCalls(weekStart?: Date) {
       if (error) throw error;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["calls"] }),
+    onError: () => { toast.error("Erreur lors de la suppression de l'appel"); },
   });
 
   const updateRoomStatus = useMutation({
@@ -126,6 +130,7 @@ export function useCalls(weekStart?: Date) {
       if (error) throw error;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["calls"] }),
+    onError: () => { toast.error("Erreur lors de la mise à jour du statut de la salle"); },
   });
 
   const saveTranscript = useMutation({
@@ -153,6 +158,7 @@ export function useCalls(weekStart?: Date) {
       if (error) throw error;
       return data;
     },
+    onError: () => { toast.error("Erreur lors de la sauvegarde de la transcription"); },
   });
 
   const rescheduleCall = useMutation({
@@ -189,6 +195,7 @@ export function useCalls(weekStart?: Date) {
       if (error) throw error;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["calls"] }),
+    onError: () => { toast.error("Erreur lors du report de l'appel"); },
   });
 
   const rateSatisfaction = useMutation({
@@ -200,6 +207,7 @@ export function useCalls(weekStart?: Date) {
       if (error) throw error;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["calls"] }),
+    onError: () => { toast.error("Erreur lors de l'évaluation de la satisfaction"); },
   });
 
   return {

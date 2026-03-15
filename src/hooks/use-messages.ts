@@ -5,6 +5,7 @@ import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
 import { useEffect, useCallback, useRef } from "react";
 import type { EnrichedMessage } from "@/types/messaging";
+import { playUrgentSound } from "@/lib/sounds";
 
 export function useMessages(channelId: string | null) {
   const supabase = useSupabase();
@@ -47,8 +48,17 @@ export function useMessages(channelId: string | null) {
           table: "messages",
           filter: `channel_id=eq.${channelId}`,
         },
-        () =>
-          queryClient.invalidateQueries({ queryKey: ["messages", channelId] }),
+        (payload) => {
+          queryClient.invalidateQueries({ queryKey: ["messages", channelId] });
+          // Play urgent sound on new urgent messages from other users
+          if (
+            payload.eventType === "INSERT" &&
+            payload.new?.is_urgent &&
+            payload.new?.sender_id !== user?.id
+          ) {
+            playUrgentSound();
+          }
+        },
       )
       .on(
         "postgres_changes",
@@ -61,7 +71,7 @@ export function useMessages(channelId: string | null) {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [supabase, channelId, queryClient]);
+  }, [supabase, channelId, queryClient, user?.id]);
 
   // --- Optimistic send ---
   const sendMessage = useMutation({

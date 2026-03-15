@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 interface ApiKey {
   id: string;
@@ -42,6 +43,7 @@ export function useCreateApiKey() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["api-keys"] });
     },
+    onError: () => { toast.error("Erreur lors de la création de la clé API"); },
   });
 }
 
@@ -61,5 +63,6 @@ export function useRevokeApiKey() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["api-keys"] });
     },
+    onError: () => { toast.error("Erreur lors de la révocation de la clé API"); },
   });
 }

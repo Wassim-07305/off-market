@@ -93,9 +93,83 @@ export function useOnboarding() {
         .update({ onboarding_step: 7, onboarding_completed: true } as never)
         .eq("id", user.id);
       if (error) throw error;
+
+      // Auto-action: create a welcome DM channel with the assigned coach
+      try {
+        const { data: profileData } = await supabase
+          .from("profiles")
+          .select("assigned_coach")
+          .eq("id", user.id)
+          .single();
+
+        const coachId = (profileData as { assigned_coach?: string } | null)?.assigned_coach;
+        if (coachId) {
+          // Check if DM channel already exists
+          const { data: existingChannels } = await supabase
+            .from("channels")
+            .select("id, channel_members!inner(profile_id)")
+            .eq("type", "dm");
+
+          const hasDm = (existingChannels ?? []).some((ch) => {
+            const members = (ch.channel_members as Array<{ profile_id: string }>) ?? [];
+            return members.some((m) => m.profile_id === coachId);
+          });
+
+          if (!hasDm) {
+            const { data: newChannel } = await supabase
+              .from("channels")
+              .insert({ name: "DM", type: "dm", created_by: user.id })
+              .select("id")
+              .single();
+
+            if (newChannel) {
+              await supabase.from("channel_members").insert([
+                { channel_id: newChannel.id, profile_id: user.id },
+                { channel_id: newChannel.id, profile_id: coachId },
+              ]);
+
+              // Send automatic welcome message from the system
+              await supabase.from("messages").insert({
+                channel_id: newChannel.id,
+                sender_id: coachId,
+                content: `Bienvenue ! 🎉 Je suis ton coach attitré. N'hésite pas à me poser toutes tes questions ici.`,
+                content_type: "text",
+              });
+            }
+          }
+        }
+      } catch {
+        // Non-critical — onboarding completion should not fail because of DM creation
+        console.warn("Auto-DM creation skipped");
+      }
+
+      // Auto-action: notify admins of onboarding completion
+      try {
+        const { data: admins } = await supabase
+          .from("profiles")
+          .select("id")
+          .eq("role", "admin");
+
+        if (admins?.length) {
+          const userName = user.user_metadata?.full_name ?? user.email ?? "Un utilisateur";
+          await supabase.from("notifications").insert(
+            admins.map((admin) => ({
+              profile_id: admin.id,
+              type: "onboarding_complete",
+              title: "Onboarding terminé",
+              body: `${userName} a terminé son onboarding.`,
+              link: `/admin/clients`,
+            })),
+          );
+        }
+      } catch {
+        // Non-critical
+        console.warn("Admin notification skipped");
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["auth"] });
+      queryClient.invalidateQueries({ queryKey: ["channels"] });
     },
   });
 

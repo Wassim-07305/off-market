@@ -3,6 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
+import { toast } from "sonner";
 import type {
   Contract,
   ContractTemplate,
@@ -61,6 +62,7 @@ export function useContracts(options: UseContractsOptions = {}) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["contracts"] });
     },
+    onError: () => { toast.error("Erreur lors de la création du contrat"); },
   });
 
   const updateContract = useMutation({
@@ -77,6 +79,7 @@ export function useContracts(options: UseContractsOptions = {}) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["contracts"] });
     },
+    onError: () => { toast.error("Erreur lors de la mise à jour du contrat"); },
   });
 
   const sendContract = useMutation({
@@ -90,6 +93,7 @@ export function useContracts(options: UseContractsOptions = {}) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["contracts"] });
     },
+    onError: () => { toast.error("Erreur lors de l'envoi du contrat"); },
   });
 
   const signContract = useMutation({
@@ -117,6 +121,7 @@ export function useContracts(options: UseContractsOptions = {}) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["contracts"] });
     },
+    onError: () => { toast.error("Erreur lors de la signature du contrat"); },
   });
 
   const cancelContract = useMutation({
@@ -139,6 +144,7 @@ export function useContracts(options: UseContractsOptions = {}) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["contracts"] });
     },
+    onError: () => { toast.error("Erreur lors de l'annulation du contrat"); },
   });
 
   return {
@@ -210,6 +216,7 @@ export function useContractTemplates() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["contract-templates"] });
     },
+    onError: () => { toast.error("Erreur lors de la création du modèle"); },
   });
 
   const updateTemplate = useMutation({
@@ -226,6 +233,7 @@ export function useContractTemplates() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["contract-templates"] });
     },
+    onError: () => { toast.error("Erreur lors de la mise à jour du modèle"); },
   });
 
   return {

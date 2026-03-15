@@ -133,6 +133,8 @@ export function useSubmitWorkbook() {
         submitted_at: status === "submitted" ? new Date().toISOString() : null,
       };
 
+      let submission: WorkbookSubmission;
+
       if (existing) {
         const { data, error } = await supabase
           .from("workbook_submissions")
@@ -141,16 +143,73 @@ export function useSubmitWorkbook() {
           .select()
           .single();
         if (error) throw error;
-        return data as WorkbookSubmission;
+        submission = data as WorkbookSubmission;
+      } else {
+        const { data, error } = await supabase
+          .from("workbook_submissions")
+          .insert(payload)
+          .select()
+          .single();
+        if (error) throw error;
+        submission = data as WorkbookSubmission;
       }
 
-      const { data, error } = await supabase
-        .from("workbook_submissions")
-        .insert(payload)
-        .select()
-        .single();
-      if (error) throw error;
-      return data as WorkbookSubmission;
+      // Notify admin users when workbook is submitted
+      if (status === "submitted") {
+        try {
+          // Fetch client name and workbook title for the notification
+          const [clientRes, workbookRes, adminsRes] = await Promise.all([
+            supabase
+              .from("profiles")
+              .select("full_name")
+              .eq("id", clientId)
+              .single(),
+            supabase
+              .from("workbooks")
+              .select("title")
+              .eq("id", workbookId)
+              .single(),
+            supabase
+              .from("user_roles")
+              .select("user_id")
+              .eq("role", "admin"),
+          ]);
+
+          const clientName =
+            (clientRes.data as { full_name: string } | null)?.full_name ?? "Un client";
+          const workbookTitle =
+            (workbookRes.data as { title: string } | null)?.title ?? "un workbook";
+          const adminIds = (
+            (adminsRes.data ?? []) as Array<{ user_id: string }>
+          ).map((r) => r.user_id);
+
+          if (adminIds.length > 0) {
+            const notifications = adminIds.map((adminId) => ({
+              user_id: adminId,
+              type: "workbook_completed",
+              title: "Workbook complete",
+              message: `Le client ${clientName} a complete le workbook ${workbookTitle}`,
+              data: {
+                workbook_id: workbookId,
+                submission_id: submission.id,
+                client_id: clientId,
+              },
+            }));
+
+            await supabase
+              .from("notifications")
+              .insert(notifications as never[]);
+          }
+        } catch (notifError) {
+          // Don't fail the submission if notification fails
+          console.error(
+            "Error sending workbook completion notifications:",
+            notifError,
+          );
+        }
+      }
+
+      return submission;
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({

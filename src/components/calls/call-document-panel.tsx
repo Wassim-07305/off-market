@@ -11,6 +11,7 @@ import {
   ChevronUp,
 } from "lucide-react";
 import { useState } from "react";
+import DOMPurify from "dompurify";
 import { cn, formatRelativeDate } from "@/lib/utils";
 import {
   useCallDocuments,
@@ -201,7 +202,7 @@ export function CallDocumentPanel({ callId }: CallDocumentPanelProps) {
                           [&_li]:text-sm
                           [&_strong]:text-foreground"
                         dangerouslySetInnerHTML={{
-                          __html: doc.content_html,
+                          __html: DOMPurify.sanitize(doc.content_html),
                         }}
                       />
                     </div>

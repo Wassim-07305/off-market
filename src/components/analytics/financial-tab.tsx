@@ -9,6 +9,9 @@ import {
   AlertTriangle,
   FileText,
   Download,
+  Heart,
+  Percent,
+  Users,
 } from "lucide-react";
 import {
   AreaChart,
@@ -287,6 +290,67 @@ export function FinancialTab({ range }: FinancialTabProps) {
               </div>
             </>
           )}
+        </div>
+      </div>
+
+      {/* LTV, Collection rate, Active clients */}
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+        <div
+          className="bg-surface rounded-2xl p-5"
+          style={{ boxShadow: "var(--shadow-card)" }}
+        >
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+              <Heart className="w-4 h-4 text-emerald-600" />
+            </div>
+            <p className="text-[11px] text-muted-foreground uppercase tracking-wider">
+              LTV moyen
+            </p>
+          </div>
+          <p className="text-xl font-display font-bold text-foreground">
+            {formatCurrency(data.ltv)}
+          </p>
+          <p className="text-[11px] text-muted-foreground mt-1">
+            Revenu total / clients payants
+          </p>
+        </div>
+        <div
+          className="bg-surface rounded-2xl p-5"
+          style={{ boxShadow: "var(--shadow-card)" }}
+        >
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
+              <Percent className="w-4 h-4 text-blue-600" />
+            </div>
+            <p className="text-[11px] text-muted-foreground uppercase tracking-wider">
+              Taux de recouvrement
+            </p>
+          </div>
+          <p className="text-xl font-display font-bold text-foreground">
+            {data.collectionRate}%
+          </p>
+          <p className="text-[11px] text-muted-foreground mt-1">
+            Montant encaisse / facture
+          </p>
+        </div>
+        <div
+          className="bg-surface rounded-2xl p-5"
+          style={{ boxShadow: "var(--shadow-card)" }}
+        >
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-8 h-8 rounded-lg bg-violet-500/10 flex items-center justify-center">
+              <Users className="w-4 h-4 text-violet-600" />
+            </div>
+            <p className="text-[11px] text-muted-foreground uppercase tracking-wider">
+              Clients actifs
+            </p>
+          </div>
+          <p className="text-xl font-display font-bold text-foreground">
+            {data.activeClients}
+          </p>
+          <p className="text-[11px] text-muted-foreground mt-1">
+            Actifs ces 30 derniers jours
+          </p>
         </div>
       </div>
 

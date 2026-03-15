@@ -18,6 +18,7 @@ import { ActionChecklist } from "@/components/school/action-checklist";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import DOMPurify from "dompurify";
 import type { Lesson } from "@/types/database";
 import type { QuizConfig } from "@/types/quiz";
 import { QuizPlayer } from "@/components/school/quiz-player";
@@ -531,7 +532,7 @@ export default function CourseViewPage({
               {htmlContent && (
                 <div
                   className="prose prose-stone dark:prose-invert max-w-none mt-6 prose-headings:font-display prose-headings:tracking-tight"
-                  dangerouslySetInnerHTML={{ __html: htmlContent }}
+                  dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(htmlContent) }}
                 />
               )}
 

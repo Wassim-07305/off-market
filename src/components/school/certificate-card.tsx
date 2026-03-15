@@ -3,6 +3,9 @@
 import { Award, Download, Calendar } from "lucide-react";
 import type { Certificate } from "@/types/database";
 
+const escapeHtml = (str: string) =>
+  str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+
 export function CertificateCard({ certificate }: { certificate: Certificate }) {
   const date = new Date(certificate.issued_at).toLocaleDateString("fr-FR", {
     day: "numeric",
@@ -16,7 +19,7 @@ export function CertificateCard({ certificate }: { certificate: Certificate }) {
       <!DOCTYPE html>
       <html>
       <head>
-        <title>Certificat - ${certificate.course_title}</title>
+        <title>Certificat - ${escapeHtml(certificate.course_title)}</title>
         <style>
           @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
           * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -45,9 +48,9 @@ export function CertificateCard({ certificate }: { certificate: Certificate }) {
           </div>
           <div class="body">
             <p>Ce certificat est decerne a</p>
-            <div class="name">${certificate.student_name}</div>
+            <div class="name">${escapeHtml(certificate.student_name)}</div>
             <p>pour avoir complete avec succes la formation</p>
-            <div class="course">${certificate.course_title}</div>
+            <div class="course">${escapeHtml(certificate.course_title)}</div>
             <p style="margin-top: 20px; font-size: 14px;">
               ${certificate.total_modules} module${certificate.total_modules > 1 ? "s" : ""} · ${certificate.total_lessons} lecon${certificate.total_lessons > 1 ? "s" : ""}
               ${certificate.quiz_average ? ` · Moyenne quiz : ${certificate.quiz_average}%` : ""}

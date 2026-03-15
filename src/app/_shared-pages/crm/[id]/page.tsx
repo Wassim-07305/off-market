@@ -11,6 +11,7 @@ import {
   useStudents as useStudentsHook,
 } from "@/hooks/use-students";
 import { useAuth } from "@/hooks/use-auth";
+import { useClientBriefing } from "@/hooks/use-client-briefing";
 import type { StudentFlag } from "@/types/database";
 import { STUDENT_PIPELINE_STAGES, ACTIVITY_TYPES } from "@/lib/constants";
 import { getInitials, formatDate, formatCurrency, cn } from "@/lib/utils";
@@ -45,8 +46,12 @@ import {
   FileText,
   DollarSign,
   Zap,
+  Brain,
+  Loader2,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
+import ReactMarkdown from "react-markdown";
 
 type TabType =
   | "overview"
@@ -73,6 +78,18 @@ export default function StudentDetailPage({
 
   const [newNote, setNewNote] = useState("");
   const [newTaskTitle, setNewTaskTitle] = useState("");
+  const [briefingOpen, setBriefingOpen] = useState(false);
+  const { briefing, isLoading: briefingLoading, generateBriefing } =
+    useClientBriefing(id);
+
+  const handleGenerateBriefing = () => {
+    setBriefingOpen(true);
+    if (!briefing) {
+      generateBriefing.mutate(id, {
+        onError: () => toast.error("Erreur lors de la generation du briefing"),
+      });
+    }
+  };
 
   if (isLoading) {
     return (
@@ -255,6 +272,18 @@ export default function StudentDetailPage({
               onSelect={handleFlagChange}
               isPending={updateStudentFlag.isPending}
             />
+            <button
+              onClick={handleGenerateBriefing}
+              disabled={briefingLoading}
+              className="h-9 px-3 rounded-[10px] border border-primary/30 bg-primary/5 text-sm flex items-center gap-2 text-primary hover:bg-primary/10 transition-colors disabled:opacity-50"
+            >
+              {briefingLoading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Brain className="w-4 h-4" />
+              )}
+              Briefing IA
+            </button>
             <Link
               href={`${prefix}/messaging`}
               className="h-9 px-3 rounded-[10px] border border-border text-sm flex items-center gap-2 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
@@ -783,6 +812,72 @@ export default function StudentDetailPage({
           </div>
         )}
       </div>
+
+      {/* Briefing IA Modal */}
+      {briefingOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setBriefingOpen(false)}
+          />
+          <div className="relative bg-surface border border-border rounded-2xl shadow-xl w-full max-w-2xl max-h-[80vh] overflow-hidden mx-4">
+            <div className="flex items-center justify-between p-5 border-b border-border">
+              <div className="flex items-center gap-2">
+                <Brain className="w-5 h-5 text-primary" />
+                <h2 className="text-base font-semibold text-foreground">
+                  Briefing IA — {student.full_name}
+                </h2>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => generateBriefing.mutate(id)}
+                  disabled={briefingLoading}
+                  className="h-8 px-3 rounded-lg border border-border text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors disabled:opacity-50 flex items-center gap-1.5"
+                >
+                  {briefingLoading ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <Zap className="w-3.5 h-3.5" />
+                  )}
+                  Regenerer
+                </button>
+                <button
+                  onClick={() => setBriefingOpen(false)}
+                  className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+            <div className="p-6 overflow-y-auto max-h-[calc(80vh-80px)]">
+              {briefingLoading && !briefing ? (
+                <div className="flex flex-col items-center justify-center py-12 gap-3">
+                  <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                  <p className="text-sm text-muted-foreground">
+                    Generation du briefing en cours...
+                  </p>
+                </div>
+              ) : briefing ? (
+                <div className="prose prose-sm max-w-none text-foreground prose-headings:text-foreground prose-strong:text-foreground prose-p:text-foreground/80">
+                  <ReactMarkdown>{briefing.briefing}</ReactMarkdown>
+                  <div className="mt-4 pt-4 border-t border-border flex items-center gap-4 text-[11px] text-muted-foreground not-prose">
+                    <span>
+                      Genere le{" "}
+                      {new Date(briefing.generatedAt).toLocaleString("fr-FR")}
+                    </span>
+                    <span>{briefing.tokensUsed} tokens</span>
+                    <span>{briefing.generationTimeMs}ms</span>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground text-center py-8">
+                  Clique sur Regenerer pour lancer le briefing
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </motion.div>
   );
 }

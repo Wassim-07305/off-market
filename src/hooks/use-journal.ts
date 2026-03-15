@@ -57,6 +57,7 @@ export function useJournal(options?: { sharedOnly?: boolean }) {
       queryClient.invalidateQueries({ queryKey: ["journal"] });
       toast.success("Entree ajoutee !");
     },
+    onError: () => { toast.error("Erreur lors de la création de l'entrée"); },
   });
 
   const updateEntry = useMutation({
@@ -73,6 +74,7 @@ export function useJournal(options?: { sharedOnly?: boolean }) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["journal"] });
     },
+    onError: () => { toast.error("Erreur lors de la mise à jour de l'entrée"); },
   });
 
   const deleteEntry = useMutation({
@@ -86,6 +88,7 @@ export function useJournal(options?: { sharedOnly?: boolean }) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["journal"] });
     },
+    onError: () => { toast.error("Erreur lors de la suppression de l'entrée"); },
   });
 
   const toggleShare = useMutation({

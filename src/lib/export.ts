@@ -2,6 +2,16 @@
 // Lightweight export without external dependencies.
 // CSV files open natively in Excel / Google Sheets / Numbers.
 
+/** Escape text for safe embedding in HTML templates */
+function escapeHtml(str: unknown): string {
+  const s = str === null || str === undefined ? "" : String(str);
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
 /**
  * Convert an array of objects to a CSV string.
  * Handles French characters, commas, quotes, and newlines.
@@ -74,7 +84,7 @@ export function exportToPDF(config: {
         <h2>${s.title}</h2>
         <table>
           <tbody>
-            ${s.rows.map((r) => `<tr><td class="label">${r.label}</td><td class="value">${r.value}</td></tr>`).join("")}
+            ${s.rows.map((r) => `<tr><td class="label">${escapeHtml(r.label)}</td><td class="value">${escapeHtml(r.value)}</td></tr>`).join("")}
           </tbody>
         </table>
       </div>`,
@@ -84,7 +94,7 @@ export function exportToPDF(config: {
   const html = `<!DOCTYPE html>
 <html>
 <head>
-  <title>${config.title}</title>
+  <title>${escapeHtml(config.title)}</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -106,9 +116,9 @@ export function exportToPDF(config: {
 </head>
 <body>
   <div class="header">
-    <h1>${config.title}</h1>
+    <h1>${escapeHtml(config.title)}</h1>
     <div class="meta">
-      ${config.subtitle ? `<span>${config.subtitle}</span>` : ""}
+      ${config.subtitle ? `<span>${escapeHtml(config.subtitle)}</span>` : ""}
       <span>Genere le ${new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}</span>
     </div>
   </div>
@@ -135,18 +145,18 @@ export function exportTableToPDF(config: {
   columns: { key: string; label: string }[];
   rows: Record<string, unknown>[];
 }) {
-  const thHtml = config.columns.map((c) => `<th>${c.label}</th>`).join("");
+  const thHtml = config.columns.map((c) => `<th>${escapeHtml(c.label)}</th>`).join("");
   const bodyHtml = config.rows
     .map(
       (row) =>
-        `<tr>${config.columns.map((c) => `<td>${row[c.key] ?? "—"}</td>`).join("")}</tr>`,
+        `<tr>${config.columns.map((c) => `<td>${escapeHtml(row[c.key] ?? "—")}</td>`).join("")}</tr>`,
     )
     .join("");
 
   const html = `<!DOCTYPE html>
 <html>
 <head>
-  <title>${config.title}</title>
+  <title>${escapeHtml(config.title)}</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -165,9 +175,9 @@ export function exportTableToPDF(config: {
 </head>
 <body>
   <div class="header">
-    <h1>${config.title}</h1>
+    <h1>${escapeHtml(config.title)}</h1>
     <div class="meta">
-      ${config.subtitle ? `<span>${config.subtitle}</span>` : ""}
+      ${config.subtitle ? `<span>${escapeHtml(config.subtitle)}</span>` : ""}
       <span>Genere le ${new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}</span>
     </div>
   </div>

@@ -45,6 +45,9 @@ export interface FinancialReport {
   invoiceStatus: InvoiceStatusBreakdown;
   revenueTrend: number; // % change vs previous period
   avgDealValue: number;
+  ltv: number; // Average lifetime value = total revenue / unique paying clients
+  collectionRate: number; // % of invoiced amount collected (paid / total × 100)
+  activeClients: number; // Clients with activity in last 30 days
 }
 
 /* ─── Call metrics ─── */
@@ -85,6 +88,12 @@ export interface StageMetric {
   color: string;
 }
 
+export interface SourceByMonth {
+  month: string; // "2026-01"
+  label: string; // "Jan 2026"
+  sources: Record<string, number>;
+}
+
 export interface PipelineReport {
   totalContacts: number;
   totalPipelineValue: number;
@@ -92,6 +101,7 @@ export interface PipelineReport {
   conversionRate: number; // % prospect → client
   avgDealValue: number;
   contactsBySource: { source: string; label: string; count: number }[];
+  sourcesByMonth: SourceByMonth[]; // Monthly breakdown of acquisition sources
   recentlyConverted: number; // contacts moved to "client" in period
   recentlyLost: number; // contacts moved to "perdu" in period
 }

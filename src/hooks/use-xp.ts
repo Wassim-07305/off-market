@@ -3,6 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
+import { toast } from "sonner";
 import type {
   XpTransaction,
   XpConfig,
@@ -103,6 +104,7 @@ export function useXp() {
       queryClient.invalidateQueries({ queryKey: ["my-rank"] });
       queryClient.invalidateQueries({ queryKey: ["leaderboard"] });
     },
+    onError: () => { toast.error("Erreur lors de l'attribution des XP"); },
   });
 
   // Compute summary
@@ -186,6 +188,7 @@ export function useXpConfig() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["xp-config"] });
     },
+    onError: () => { toast.error("Erreur lors de la mise à jour de la configuration XP"); },
   });
 
   return {

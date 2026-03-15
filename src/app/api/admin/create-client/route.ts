@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { randomBytes } from "crypto";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -31,8 +32,8 @@ export async function POST(request: Request) {
 
   const admin = createAdminClient();
 
-  // Create auth user with a temporary password
-  const tempPassword = `OffMarket_${Date.now()}!`;
+  // Create auth user with a secure random password
+  const tempPassword = `OM_${randomBytes(16).toString("base64url")}!`;
   const { data: newUser, error: createError } =
     await admin.auth.admin.createUser({
       email,

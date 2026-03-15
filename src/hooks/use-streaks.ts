@@ -3,6 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
+import { toast } from "sonner";
 import type {
   Streak,
   DailyActivity,
@@ -62,6 +63,7 @@ export function useStreak() {
       queryClient.invalidateQueries({ queryKey: ["streak"] });
       queryClient.invalidateQueries({ queryKey: ["daily-activity"] });
     },
+    onError: () => { toast.error("Erreur lors de l'enregistrement de l'activité"); },
   });
 
   return {

@@ -13,13 +13,25 @@ import {
 import {
   BarChart,
   Bar,
+  AreaChart,
+  Area,
   XAxis,
   YAxis,
   Tooltip,
+  Legend,
   ResponsiveContainer,
   Cell,
 } from "recharts";
 import { usePipelineReport, exportToCSV } from "@/hooks/use-reports";
+import { CONTACT_SOURCES } from "@/types/pipeline";
+
+const SOURCE_COLORS: Record<string, string> = {
+  instagram: "#E4405F",
+  linkedin: "#0A66C2",
+  referral: "#22c55e",
+  website: "#6366f1",
+  other: "#a1a1aa",
+};
 
 const STAGE_CHART_COLORS = [
   "#3b82f6", // prospect - blue
@@ -169,6 +181,108 @@ export function PipelineTab() {
           )}
         </div>
       </div>
+
+      {/* Source evolution over time */}
+      {data.sourcesByMonth && data.sourcesByMonth.length > 1 && (
+        <div
+          className="bg-surface rounded-2xl p-6"
+          style={{ boxShadow: "var(--shadow-card)" }}
+        >
+          <div className="mb-6">
+            <h3 className="text-[13px] font-semibold text-foreground">
+              Evolution des sources d&apos;acquisition
+            </h3>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Repartition mensuelle des sources
+            </p>
+          </div>
+          <div className="h-72">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart
+                data={data.sourcesByMonth.map((m) => ({
+                  label: m.label,
+                  ...m.sources,
+                }))}
+              >
+                <defs>
+                  {CONTACT_SOURCES.map((src) => (
+                    <linearGradient
+                      key={src.value}
+                      id={`srcGrad-${src.value}`}
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
+                      <stop
+                        offset="0%"
+                        stopColor={SOURCE_COLORS[src.value] ?? "#a1a1aa"}
+                        stopOpacity={0.3}
+                      />
+                      <stop
+                        offset="100%"
+                        stopColor={SOURCE_COLORS[src.value] ?? "#a1a1aa"}
+                        stopOpacity={0}
+                      />
+                    </linearGradient>
+                  ))}
+                </defs>
+                <XAxis
+                  dataKey="label"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: "var(--muted-foreground)", fontSize: 11 }}
+                  dy={8}
+                />
+                <YAxis
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{
+                    fill: "var(--muted-foreground)",
+                    fontSize: 11,
+                    fontFamily: "var(--font-mono)",
+                  }}
+                  width={30}
+                  allowDecimals={false}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "var(--surface)",
+                    border: "none",
+                    borderRadius: "12px",
+                    fontSize: "13px",
+                    boxShadow: "var(--shadow-elevated)",
+                    padding: "8px 12px",
+                  }}
+                />
+                <Legend
+                  wrapperStyle={{ fontSize: "11px" }}
+                  iconType="circle"
+                  iconSize={8}
+                />
+                {CONTACT_SOURCES.map((src) => (
+                  <Area
+                    key={src.value}
+                    type="monotone"
+                    dataKey={src.value}
+                    name={src.label}
+                    stroke={SOURCE_COLORS[src.value] ?? "#a1a1aa"}
+                    strokeWidth={2}
+                    fill={`url(#srcGrad-${src.value})`}
+                    dot={false}
+                    activeDot={{
+                      r: 4,
+                      fill: SOURCE_COLORS[src.value] ?? "#a1a1aa",
+                      stroke: "var(--surface)",
+                      strokeWidth: 2,
+                    }}
+                  />
+                ))}
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      )}
 
       {/* Bottom: sources + recent activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

@@ -11,9 +11,25 @@ export async function POST(
     const body = await req.json();
     const { signature_image } = body as { signature_image: string };
 
-    if (!signature_image) {
+    if (!signature_image || typeof signature_image !== "string") {
       return NextResponse.json(
         { error: "Signature manquante" },
+        { status: 400 },
+      );
+    }
+
+    // Validate signature size (max 5MB) and format
+    const MAX_SIGNATURE_SIZE = 5 * 1024 * 1024;
+    if (signature_image.length > MAX_SIGNATURE_SIZE) {
+      return NextResponse.json(
+        { error: "Signature trop volumineuse" },
+        { status: 413 },
+      );
+    }
+
+    if (!signature_image.startsWith("data:image/")) {
+      return NextResponse.json(
+        { error: "Format de signature invalide" },
         { status: 400 },
       );
     }

@@ -126,6 +126,41 @@ export const FREQUENCY_LABELS: Record<PaymentFrequency, string> = {
 
 // ─── COMMISSIONS ───────────────────────
 export type CommissionRole = "closer" | "setter" | "coach" | "referral";
+export type CommissionStatus = "pending" | "paid" | "cancelled";
+
+export interface Commission {
+  id: string;
+  sale_id: string | null;
+  contractor_id: string;
+  contractor_role: CommissionRole;
+  sale_amount: number;
+  commission_rate: number;
+  commission_amount: number;
+  status: CommissionStatus;
+  paid_at: string | null;
+  created_at: string;
+  updated_at: string;
+  // Joined
+  contractor?: { id: string; full_name: string; email: string } | null;
+}
+
+export interface CommissionSummary {
+  contractor_id: string;
+  contractor_name: string;
+  role: CommissionRole;
+  total_owed: number;
+  total_paid: number;
+  remaining: number;
+  count: number;
+}
+
+/** Default commission rates by role (as decimal, e.g. 0.10 = 10%) */
+export const DEFAULT_COMMISSION_RATES: Record<CommissionRole, number> = {
+  closer: 0.10,
+  setter: 0.05,
+  coach: 0.03,
+  referral: 0.05,
+};
 
 export const COMMISSION_ROLE_LABELS: Record<CommissionRole, string> = {
   closer: "Closer",

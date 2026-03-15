@@ -3,6 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
+import { toast } from "sonner";
 import type { Session, SessionType, ActionItem } from "@/types/coaching";
 
 export function useSessions(clientId?: string) {
@@ -50,6 +51,7 @@ export function useSessions(clientId?: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["sessions"] });
     },
+    onError: () => { toast.error("Erreur lors de la création de la session"); },
   });
 
   const updateSession = useMutation({
@@ -66,6 +68,7 @@ export function useSessions(clientId?: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["sessions"] });
     },
+    onError: () => { toast.error("Erreur lors de la mise à jour de la session"); },
   });
 
   const completeSession = useMutation({
@@ -91,6 +94,7 @@ export function useSessions(clientId?: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["sessions"] });
     },
+    onError: () => { toast.error("Erreur lors de la complétion de la session"); },
   });
 
   return {

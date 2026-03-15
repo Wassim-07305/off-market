@@ -11,6 +11,7 @@ import type {
   InvoiceStatusBreakdown,
   CallMetrics,
   PipelineReport,
+  SourceByMonth,
   EngagementReport,
 } from "@/types/analytics";
 import { PIPELINE_STAGES, CONTACT_SOURCES } from "@/types/pipeline";
@@ -88,14 +89,23 @@ export function useFinancialReport(range: DateRange) {
     queryKey: ["financial-report", range.from, range.to],
     enabled: !!user,
     queryFn: async (): Promise<FinancialReport> => {
-      const { data: invoices, error } = await supabase
-        .from("invoices")
-        .select("total, status, created_at, paid_at")
-        .gte("created_at", range.from)
-        .lte("created_at", range.to + "T23:59:59");
+      // Fetch invoices and active clients in parallel
+      const thirtyDaysAgo = new Date(Date.now() - 30 * 86400000).toISOString();
+      const [invoicesRes, activeClientsRes] = await Promise.all([
+        supabase
+          .from("invoices")
+          .select("total, status, created_at, paid_at, client_id")
+          .gte("created_at", range.from)
+          .lte("created_at", range.to + "T23:59:59"),
+        supabase
+          .from("student_details")
+          .select("profile_id", { count: "exact", head: true })
+          .gte("last_engagement_at", thirtyDaysAgo),
+      ]);
 
-      if (error) throw error;
-      const rows = invoices ?? [];
+      if (invoicesRes.error) throw invoicesRes.error;
+      const rows = invoicesRes.data ?? [];
+      const activeClients = activeClientsRes.count ?? 0;
 
       // Status breakdown
       const invoiceStatus: InvoiceStatusBreakdown = {
@@ -175,6 +185,26 @@ export function useFinancialReport(range: DateRange) {
           ? Math.round(totalRevenue / paidInvoices.length)
           : 0;
 
+      // LTV: total revenue / unique paying clients
+      const uniquePayingClients = new Set(
+        paidInvoices
+          .map((i) => (i as { client_id?: string }).client_id)
+          .filter(Boolean),
+      ).size;
+      const ltv =
+        uniquePayingClients > 0
+          ? Math.round(totalRevenue / uniquePayingClients)
+          : 0;
+
+      // Collection rate: paid amount / total invoiced amount × 100
+      const totalInvoicedAmount = rows
+        .filter((i) => i.status !== "draft" && i.status !== "cancelled")
+        .reduce((s, i) => s + Number(i.total ?? 0), 0);
+      const collectionRate =
+        totalInvoicedAmount > 0
+          ? Math.round((totalRevenue / totalInvoicedAmount) * 100)
+          : 0;
+
       return {
         totalRevenue,
         mrr,
@@ -185,6 +215,9 @@ export function useFinancialReport(range: DateRange) {
         invoiceStatus,
         revenueTrend,
         avgDealValue,
+        ltv,
+        collectionRate,
+        activeClients,
       };
     },
   });
@@ -398,6 +431,24 @@ export function usePipelineReport() {
         count: rows.filter((c) => c.source === src.value).length,
       }));
 
+      // Sources by month (time evolution)
+      const sourceMonthMap = new Map<string, Record<string, number>>();
+      for (const c of rows) {
+        const mKey = c.created_at ? c.created_at.slice(0, 7) : null;
+        if (!mKey) continue;
+        const src = c.source ?? "other";
+        const entry = sourceMonthMap.get(mKey) ?? {};
+        entry[src] = (entry[src] ?? 0) + 1;
+        sourceMonthMap.set(mKey, entry);
+      }
+      const sourcesByMonth: SourceByMonth[] = Array.from(sourceMonthMap.entries())
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([m, sources]) => ({
+          month: m,
+          label: monthLabel(m),
+          sources,
+        }));
+
       // Recently converted / lost (last 30 days)
       const thirtyDaysAgo = new Date(Date.now() - 30 * 86400000).toISOString();
       const recentlyConverted = rows.filter(
@@ -414,6 +465,7 @@ export function usePipelineReport() {
         conversionRate,
         avgDealValue,
         contactsBySource,
+        sourcesByMonth,
         recentlyConverted,
         recentlyLost,
       };

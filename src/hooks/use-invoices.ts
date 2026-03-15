@@ -3,6 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
+import { toast } from "sonner";
 import type {
   Invoice,
   InvoiceStatus,
@@ -66,6 +67,7 @@ export function useInvoices(options: UseInvoicesOptions = {}) {
       queryClient.invalidateQueries({ queryKey: ["invoices"] });
       queryClient.invalidateQueries({ queryKey: ["billing-stats"] });
     },
+    onError: () => { toast.error("Erreur lors de la création de la facture"); },
   });
 
   const updateInvoice = useMutation({
@@ -83,6 +85,7 @@ export function useInvoices(options: UseInvoicesOptions = {}) {
       queryClient.invalidateQueries({ queryKey: ["invoices"] });
       queryClient.invalidateQueries({ queryKey: ["billing-stats"] });
     },
+    onError: () => { toast.error("Erreur lors de la mise à jour de la facture"); },
   });
 
   const markAsPaid = useMutation({
@@ -97,6 +100,7 @@ export function useInvoices(options: UseInvoicesOptions = {}) {
       queryClient.invalidateQueries({ queryKey: ["invoices"] });
       queryClient.invalidateQueries({ queryKey: ["billing-stats"] });
     },
+    onError: () => { toast.error("Erreur lors du marquage comme payé"); },
   });
 
   const sendInvoice = useMutation({
@@ -115,6 +119,7 @@ export function useInvoices(options: UseInvoicesOptions = {}) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["invoices"] });
     },
+    onError: () => { toast.error("Erreur lors de l'envoi de la facture"); },
   });
 
   return {
@@ -234,6 +239,7 @@ export function usePaymentSchedules(clientId?: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["payment-schedules"] });
     },
+    onError: () => { toast.error("Erreur lors de la création de l'échéancier"); },
   });
 
   const updateInstallmentStatus = useMutation({
@@ -271,6 +277,7 @@ export function usePaymentSchedules(clientId?: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["payment-schedules"] });
     },
+    onError: () => { toast.error("Erreur lors de la mise à jour de l'échéance"); },
   });
 
   return {

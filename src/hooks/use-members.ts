@@ -39,10 +39,11 @@ export function useMembers() {
       const profileIds = profiles.map((p) => p.id);
 
       // Get XP totals
-      const { data: xpData } = await supabase
+      const { data: xpData, error: xpError } = await supabase
         .from("xp_transactions")
         .select("profile_id, xp_amount")
         .in("profile_id", profileIds);
+      if (xpError) throw xpError;
 
       const xpMap = new Map<string, number>();
       for (const tx of xpData ?? []) {
@@ -53,10 +54,11 @@ export function useMembers() {
       }
 
       // Get badge counts
-      const { data: badgeData } = await supabase
+      const { data: badgeData, error: badgeError } = await supabase
         .from("user_badges")
         .select("profile_id")
         .in("profile_id", profileIds);
+      if (badgeError) throw badgeError;
 
       const badgeMap = new Map<string, number>();
       for (const b of badgeData ?? []) {
@@ -64,10 +66,11 @@ export function useMembers() {
       }
 
       // Get level config
-      const { data: levels } = await supabase
+      const { data: levels, error: levelError } = await supabase
         .from("level_config")
         .select("*")
         .order("min_xp", { ascending: true });
+      if (levelError) throw levelError;
 
       const levelConfig = levels ?? [];
 

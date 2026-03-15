@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import DOMPurify from "dompurify";
 import { FileText, Printer, Download } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,6 +18,9 @@ export function ContractPreview({
 }: ContractPreviewProps) {
   const contentRef = useRef<HTMLDivElement>(null);
 
+  const escapeHtml = (str: string) =>
+    str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+
   function handlePrint() {
     const printWindow = window.open("", "_blank");
     if (!printWindow) return;
@@ -25,7 +29,7 @@ export function ContractPreview({
       <!DOCTYPE html>
       <html>
         <head>
-          <title>${title}</title>
+          <title>${escapeHtml(title)}</title>
           <style>
             body {
               font-family: 'Georgia', serif;
@@ -47,7 +51,7 @@ export function ContractPreview({
           </style>
         </head>
         <body>
-          ${content}
+          ${DOMPurify.sanitize(content)}
         </body>
       </html>
     `);
@@ -90,7 +94,7 @@ export function ContractPreview({
         <div
           ref={contentRef}
           className="prose prose-sm max-w-none border border-border/50 rounded-xl p-6 bg-white min-h-[400px]"
-          dangerouslySetInnerHTML={{ __html: content }}
+          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content) }}
         />
       </CardContent>
     </Card>

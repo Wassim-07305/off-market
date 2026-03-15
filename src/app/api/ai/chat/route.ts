@@ -68,6 +68,36 @@ async function buildContext(supabase: ReturnType<typeof Object>, userId: string,
         context += `- ${status} : ${count}\n`;
       }
     }
+
+    // Fetch past admin messages from channels (Alexia's answers) to train on patterns
+    const { data: adminProfiles } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("role", "admin")
+      .limit(5);
+
+    if (adminProfiles && adminProfiles.length > 0) {
+      const adminIds = adminProfiles.map((p: { id: string }) => p.id);
+      const { data: adminMessages } = await supabase
+        .from("messages")
+        .select("content, created_at, channel:channels!messages_channel_id_fkey(name)")
+        .in("sender_id", adminIds)
+        .not("content", "is", null)
+        .order("created_at", { ascending: false })
+        .limit(50);
+
+      if (adminMessages && adminMessages.length > 0) {
+        context += `\n### Reponses recentes d'Alexia (admin) dans les channels — inspire-toi de son ton et style\n`;
+        for (const msg of adminMessages) {
+          const content = (msg.content ?? "").slice(0, 300);
+          if (content.length > 10) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const channel = msg.channel as any;
+            context += `- [${channel?.name ?? "DM"}] ${content}\n`;
+          }
+        }
+      }
+    }
   }
 
   return context;

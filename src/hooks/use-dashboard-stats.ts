@@ -142,12 +142,13 @@ export function useRevenueChart() {
       const now = new Date();
       const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1);
 
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("invoices")
         .select("total, created_at")
         .eq("status", "paid")
         .gte("created_at", sixMonthsAgo.toISOString())
         .order("created_at", { ascending: true });
+      if (error) throw error;
 
       const months = [
         "Jan",
@@ -204,15 +205,17 @@ export function useEngagementChart() {
 
       const days = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
 
-      const { data: messages } = await supabase
+      const { data: messages, error: messagesErr } = await supabase
         .from("messages")
         .select("created_at")
         .gte("created_at", monday.toISOString());
+      if (messagesErr) throw messagesErr;
 
-      const { data: checkins } = await supabase
+      const { data: checkins, error: checkinsErr } = await supabase
         .from("weekly_checkins")
         .select("created_at")
         .gte("created_at", monday.toISOString());
+      if (checkinsErr) throw checkinsErr;
 
       const result = days.map((day, i) => {
         const dayDate = new Date(monday);

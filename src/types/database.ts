@@ -664,6 +664,12 @@ export interface WorkbookFieldOption {
   value: string;
 }
 
+export interface WorkbookFieldCondition {
+  field_id: string;
+  operator: "equals" | "not_equals" | "contains";
+  value: string;
+}
+
 export interface WorkbookField {
   id: string;
   type: "text" | "textarea" | "select" | "number" | "rating";
@@ -674,6 +680,7 @@ export interface WorkbookField {
   options?: WorkbookFieldOption[];
   min?: number;
   max?: number;
+  condition?: WorkbookFieldCondition;
 }
 
 export interface Workbook {

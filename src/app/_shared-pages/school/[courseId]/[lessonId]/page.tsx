@@ -14,6 +14,7 @@ import { useSupabase } from "@/hooks/use-supabase";
 import { toast } from "sonner";
 import type { Lesson, LessonAttachment } from "@/types/database";
 import type { QuizConfig } from "@/types/quiz";
+import DOMPurify from "dompurify";
 import { QuizPlayer } from "@/components/school/quiz-player";
 import { AssignmentSubmission } from "@/components/school/assignment-submission";
 import { ExerciseReview } from "@/components/school/exercise-review";
@@ -351,7 +352,7 @@ export default function LessonPage({
         {lesson.content_type === "text" && htmlContent && (
           <div
             className="prose prose-stone dark:prose-invert max-w-none prose-headings:font-display prose-headings:tracking-tight"
-            dangerouslySetInnerHTML={{ __html: htmlContent }}
+            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(htmlContent) }}
           />
         )}
 

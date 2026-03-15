@@ -112,6 +112,23 @@ export function WorkbookPlayer({
     readOnly || existingSubmission?.status === "submitted" || existingSubmission?.status === "reviewed";
   const fields = workbook.fields as WorkbookField[];
 
+  // Filter fields based on conditional logic
+  const visibleFields = fields.filter((field) => {
+    if (!field.condition) return true;
+    const { field_id, operator, value } = field.condition;
+    const currentValue = String(answers[field_id] ?? "");
+    switch (operator) {
+      case "equals":
+        return currentValue === value;
+      case "not_equals":
+        return currentValue !== value;
+      case "contains":
+        return currentValue.toLowerCase().includes(value.toLowerCase());
+      default:
+        return true;
+    }
+  });
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -154,7 +171,7 @@ export function WorkbookPlayer({
 
       {/* Fields */}
       <div className="space-y-5">
-        {fields.map((field, index) => (
+        {visibleFields.map((field, index) => (
           <FieldRenderer
             key={field.id}
             field={field}
