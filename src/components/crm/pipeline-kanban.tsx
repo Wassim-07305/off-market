@@ -160,10 +160,7 @@ function StageColumn({
   return (
     <div
       ref={setNodeRef}
-      className={cn(
-        "flex flex-col min-w-[260px] w-[260px] shrink-0 transition-all duration-200",
-        isOver && "ring-2 ring-red-500/20 rounded-xl",
-      )}
+      className="flex flex-col min-w-[260px] w-[260px] shrink-0"
     >
       {/* Column header */}
       <div className="flex items-center justify-between px-1 mb-3">
@@ -184,7 +181,12 @@ function StageColumn({
       </div>
 
       {/* Cards */}
-      <div className="flex-1 space-y-2 min-h-[100px]">
+      <div
+        className={cn(
+          "flex-1 space-y-2 min-h-[60vh] rounded-xl p-2 -m-2 transition-colors duration-200",
+          isOver && "bg-red-500/5 ring-1 ring-inset ring-red-500/20",
+        )}
+      >
         {contacts.map((contact) => (
           <DraggableContact
             key={contact.id}
