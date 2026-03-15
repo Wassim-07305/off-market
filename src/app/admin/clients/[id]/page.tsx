@@ -1,1 +1,1 @@
-export { default } from "@/app/_shared-pages/crm/[id]/page";
+export { default } from "@/app/_shared-pages/clients/[id]/page";

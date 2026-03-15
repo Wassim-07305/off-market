@@ -21,7 +21,9 @@ import {
   Video,
   VideoOff,
   AlertTriangle,
+  ArrowLeft,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
   PreCallQuestions,
@@ -72,6 +74,7 @@ export function VideoRoom({ callId }: VideoRoomProps) {
   const audioCtxRef = useRef<AudioContext | null>(null);
   const rafRef = useRef<number>(0);
 
+  const router = useRouter();
   const myName = profile?.full_name ?? "Utilisateur";
 
   // Error callback from WebRTC — show toast
@@ -450,7 +453,14 @@ export function VideoRoom({ callId }: VideoRoomProps) {
 
     if (showPreCallGate) {
       return (
-        <div className="flex-1 flex items-center justify-center bg-zinc-950 p-4 overflow-y-auto">
+        <div className="flex-1 flex items-center justify-center bg-zinc-950 p-4 overflow-y-auto relative">
+          <button
+            onClick={() => router.back()}
+            className="absolute top-4 left-4 flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Retour
+          </button>
           <PreCallQuestions
             callId={callId}
             callTitle={call.title}
@@ -464,7 +474,16 @@ export function VideoRoom({ callId }: VideoRoomProps) {
       previewStream?.getVideoTracks().some((t) => t.enabled) && previewCamera;
 
     return (
-      <div className="flex-1 flex items-center justify-center bg-zinc-950 p-4">
+      <div className="flex-1 flex items-center justify-center bg-zinc-950 p-4 relative">
+        {/* Back button */}
+        <button
+          onClick={() => router.back()}
+          className="absolute top-4 left-4 flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Retour
+        </button>
+
         <div className="flex flex-col items-center gap-6 w-full max-w-lg">
           {/* Title */}
           <div className="text-center">
