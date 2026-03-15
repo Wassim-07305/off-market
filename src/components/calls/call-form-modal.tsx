@@ -219,11 +219,9 @@ export function CallFormModal({
           <div className="flex items-center gap-2">
             {editCall && (() => {
               if (editCall.status === "annule") return null;
-              const [y, mo, d] = editCall.date.split("-").map(Number);
-              const [hh, mm] = (editCall.time ?? "00:00").split(":").map(Number);
-              const callDate = new Date(y, mo - 1, d, hh, mm);
-              const now = Date.now();
-              if (now >= callDate.getTime() - 15 * 60_000 && now <= callDate.getTime() + 30 * 60_000) {
+              const today = new Date();
+              const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+              if (editCall.date === todayStr) {
                 return (
                   <Link
                     href={`${prefix}/calls/${editCall.id}`}

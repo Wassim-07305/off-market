@@ -58,17 +58,12 @@ export default function CallsPage() {
     isGoogleConnected && showGoogle,
   );
 
-  /** An appointment is joinable 15 min before → 30 min after its scheduled time */
+  /** An appointment is joinable all day on its scheduled date */
   const isJoinable = (call: CallCalendarWithRelations) => {
     if (call.status === "annule") return false;
-    // Use local time — avoids UTC shift that could make the date off by a day
-    const [year, month, day] = call.date.split("-").map(Number);
-    const [hh, mm] = call.time.split(":").map(Number);
-    const callDate = new Date(year, month - 1, day, hh, mm);
-    const now = Date.now();
-    const fifteenMinBefore = callDate.getTime() - 15 * 60_000;
-    const thirtyMinAfter = callDate.getTime() + 30 * 60_000;
-    return now >= fifteenMinBefore && now <= thirtyMinAfter;
+    const today = new Date();
+    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+    return call.date === todayStr;
   };
 
   const navigateWeek = (direction: number) => {
