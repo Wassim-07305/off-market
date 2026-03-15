@@ -190,56 +190,61 @@ export function WeekView({
                     )}
                   >
                     {/* Off-Market calls */}
-                    {slotCalls.map((call) => (
-                      <button
-                        key={call.id}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onCallClick(call);
-                        }}
-                        className={cn(
-                          "w-full text-left p-1.5 rounded-lg mb-0.5 transition-all hover:scale-[1.02]",
-                          call.call_type === "iclosed"
-                            ? "bg-blue-50 dark:bg-blue-900/20 border border-blue-200/50 dark:border-blue-800/50"
-                            : "bg-muted/80",
-                        )}
-                        style={{ boxShadow: "var(--shadow-xs)" }}
-                      >
-                        <div className="flex items-center gap-1">
-                          <div
-                            className={cn(
-                              "w-1.5 h-1.5 rounded-full shrink-0",
-                              CALL_STATUS_COLORS[call.status],
-                            )}
-                          />
-                          <span className="text-[10px] font-medium text-foreground truncate font-mono">
-                            {call.time.slice(0, 5)}
-                          </span>
-                          <CallTypeBadge
-                            type={call.call_type}
-                            className="ml-auto"
-                          />
-                        </div>
-                        <p className="text-[10px] text-foreground truncate mt-0.5 font-medium">
-                          {call.title}
-                        </p>
-                        {call.client && (
-                          <p className="text-[10px] text-muted-foreground truncate">
-                            {call.client.full_name}
+                    {slotCalls.map((call) => {
+                      const joinable = isJoinable(call);
+                      return (
+                        <div
+                          key={call.id}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onCallClick(call);
+                          }}
+                          role="button"
+                          tabIndex={0}
+                          className={cn(
+                            "w-full text-left p-1.5 rounded-lg mb-0.5 transition-all hover:scale-[1.02] cursor-pointer",
+                            call.call_type === "iclosed"
+                              ? "bg-blue-50 dark:bg-blue-900/20 border border-blue-200/50 dark:border-blue-800/50"
+                              : "bg-muted/80",
+                          )}
+                          style={{ boxShadow: "var(--shadow-xs)" }}
+                        >
+                          <div className="flex items-center gap-1">
+                            <div
+                              className={cn(
+                                "w-1.5 h-1.5 rounded-full shrink-0",
+                                CALL_STATUS_COLORS[call.status],
+                              )}
+                            />
+                            <span className="text-[10px] font-medium text-foreground truncate font-mono">
+                              {call.time.slice(0, 5)}
+                            </span>
+                            <CallTypeBadge
+                              type={call.call_type}
+                              className="ml-auto"
+                            />
+                          </div>
+                          <p className="text-[10px] text-foreground truncate mt-0.5 font-medium">
+                            {call.title}
                           </p>
-                        )}
-                        {isJoinable(call) && (
-                          <Link
-                            href={`${prefix}/calls/${call.id}`}
-                            onClick={(e) => e.stopPropagation()}
-                            className="mt-1 flex items-center justify-center gap-1 h-5 rounded bg-green-600 text-white text-[9px] font-medium hover:bg-green-700 transition-colors"
-                          >
-                            <Video className="w-2.5 h-2.5" />
-                            Rejoindre
-                          </Link>
-                        )}
-                      </button>
-                    ))}
+                          {call.client && (
+                            <p className="text-[10px] text-muted-foreground truncate">
+                              {call.client.full_name}
+                            </p>
+                          )}
+                          {joinable && (
+                            <Link
+                              href={`${prefix}/calls/${call.id}`}
+                              onClick={(e) => e.stopPropagation()}
+                              className="mt-1 flex items-center justify-center gap-1 h-5 rounded bg-green-600 text-white text-[9px] font-medium hover:bg-green-700 transition-colors"
+                            >
+                              <Video className="w-2.5 h-2.5" />
+                              Rejoindre
+                            </Link>
+                          )}
+                        </div>
+                      );
+                    })}
 
                     {/* Google Calendar events */}
                     {slotGoogleEvents.map((event) => (
