@@ -3,20 +3,19 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useCalls, useCallById } from "@/hooks/use-calls";
-import { useCreateWherebyRoom } from "@/hooks/use-whereby";
+import { useWebRTC } from "@/hooks/use-webrtc";
 import { useTranscription } from "@/hooks/use-transcription";
 import { useSupabase } from "@/hooks/use-supabase";
 import { useCallStore } from "@/stores/call-store";
+import { VideoGrid } from "./video-grid";
 import { CallControls } from "./call-controls";
 import { CallTimer } from "./call-timer";
+import { ConnectionStatus } from "./connection-status";
 import { TranscriptPanel } from "./transcript-panel";
 import { SessionNotesPanel } from "./session-notes-panel";
 import { CallEndedSummary } from "./call-ended-summary";
 import { Loader2, Mic, MicOff, Video, VideoOff } from "lucide-react";
-import {
-  PreCallQuestions,
-  PreCallResponsesView,
-} from "@/components/calls/pre-call-questions";
+import { PreCallQuestions, PreCallResponsesView } from "@/components/calls/pre-call-questions";
 
 interface VideoRoomProps {
   callId: string;
@@ -26,7 +25,6 @@ export function VideoRoom({ callId }: VideoRoomProps) {
   const { user, profile } = useAuth();
   const { data: call, isLoading } = useCallById(callId);
   const { updateRoomStatus, saveTranscript } = useCalls();
-  const createRoom = useCreateWherebyRoom();
   const supabase = useSupabase();
   const store = useCallStore();
 
@@ -35,9 +33,11 @@ export function VideoRoom({ callId }: VideoRoomProps) {
   const [showPreCallResponses, setShowPreCallResponses] = useState(false);
   const [hasJoined, setHasJoined] = useState(false);
   const [preCallCompleted, setPreCallCompleted] = useState(false);
-  const [wherebyUrl, setWherebyUrl] = useState<string | null>(null);
-  const [creatingRoom, setCreatingRoom] = useState(false);
-  const wherebyRef = useRef<HTMLIFrameElement | null>(null);
+
+  // Reset call store when mounting (cleans up stale "ended" state from previous calls)
+  useEffect(() => {
+    store.resetCall();
+  }, [callId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Preview lobby state
   const [previewStream, setPreviewStream] = useState<MediaStream | null>(null);
@@ -45,6 +45,7 @@ export function VideoRoom({ callId }: VideoRoomProps) {
   const [previewCamera, setPreviewCamera] = useState(true);
   const [previewError, setPreviewError] = useState<string | null>(null);
   const [previewAudioLevel, setPreviewAudioLevel] = useState(0);
+  // Callback ref: sets srcObject every time the video element mounts/remounts
   const previewVideoRef = useCallback(
     (el: HTMLVideoElement | null) => {
       if (el && previewStream) {
@@ -58,11 +59,6 @@ export function VideoRoom({ callId }: VideoRoomProps) {
   const rafRef = useRef<number>(0);
 
   const myName = profile?.full_name ?? "Utilisateur";
-
-  // Reset call store when mounting
-  useEffect(() => {
-    store.resetCall();
-  }, [callId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Request preview media on mount
   useEffect(() => {
@@ -80,6 +76,7 @@ export function VideoRoom({ callId }: VideoRoomProps) {
         }
         setPreviewStream(stream);
 
+        // Audio analyser for mic level indicator
         const audioCtx = new AudioContext();
         const source = audioCtx.createMediaStreamSource(stream);
         const analyser = audioCtx.createAnalyser();
@@ -88,6 +85,7 @@ export function VideoRoom({ callId }: VideoRoomProps) {
         audioCtxRef.current = audioCtx;
         analyserRef.current = analyser;
       } catch {
+        // Try audio-only
         try {
           const stream = await navigator.mediaDevices.getUserMedia({
             video: false,
@@ -125,13 +123,14 @@ export function VideoRoom({ callId }: VideoRoomProps) {
     function tick() {
       analyser.getByteFrequencyData(data);
       const avg = data.reduce((a, b) => a + b, 0) / data.length;
-      setPreviewAudioLevel(Math.min(avg / 80, 1));
+      setPreviewAudioLevel(Math.min(avg / 80, 1)); // normalize 0..1
       rafRef.current = requestAnimationFrame(tick);
     }
     rafRef.current = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafRef.current);
   }, [previewMic]);
 
+  // Toggle preview mic
   const togglePreviewMic = useCallback(() => {
     previewStream?.getAudioTracks().forEach((t) => {
       t.enabled = !t.enabled;
@@ -139,6 +138,7 @@ export function VideoRoom({ callId }: VideoRoomProps) {
     setPreviewMic((v) => !v);
   }, [previewStream]);
 
+  // Toggle preview camera
   const togglePreviewCamera = useCallback(() => {
     previewStream?.getVideoTracks().forEach((t) => {
       t.enabled = !t.enabled;
@@ -146,6 +146,7 @@ export function VideoRoom({ callId }: VideoRoomProps) {
     setPreviewCamera((v) => !v);
   }, [previewStream]);
 
+  // Cleanup preview when joining or unmounting
   const cleanupPreview = useCallback(() => {
     cancelAnimationFrame(rafRef.current);
     audioCtxRef.current?.close();
@@ -164,7 +165,18 @@ export function VideoRoom({ callId }: VideoRoomProps) {
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Transcription (browser Speech API — works independently of Whereby)
+  const {
+    localStream,
+    remoteStream,
+    joinCall,
+    leaveCall,
+    toggleMic,
+    toggleCamera,
+    startScreenShare,
+    stopScreenShare,
+    broadcastTranscript,
+  } = useWebRTC({ callId });
+
   const {
     isSupported: isTranscriptionSupported,
     startTranscription,
@@ -172,57 +184,30 @@ export function VideoRoom({ callId }: VideoRoomProps) {
   } = useTranscription({
     speakerId: user?.id ?? "",
     speakerName: myName,
-    onEntry: () => {
-      // Transcript entries are added to the store by useTranscription
-    },
+    onEntry: (entry) => broadcastTranscript(entry),
   });
 
-  // Join the call — create or reuse Whereby room
+  // Join the call
   const handleJoin = useCallback(async () => {
     if (!call || !user) return;
 
+    // Stop preview stream before WebRTC takes over
     cleanupPreview();
+
+    // Carry over preview toggles to the call store
+    const s = useCallStore.getState();
+    if (!previewMic) s.toggleMic();
+    if (!previewCamera) s.toggleCamera();
+
     setHasJoined(true);
-    setCreatingRoom(true);
 
     // Update room status
     updateRoomStatus.mutate({
       id: callId,
       room_status: "waiting",
-      started_at: new Date().toISOString(),
     });
 
-    // Check if call already has a Whereby room URL
-    const existingRoomUrl =
-      (call as Record<string, unknown>).whereby_room_url as string | null;
-    const existingHostUrl =
-      (call as Record<string, unknown>).whereby_host_url as string | null;
-
-    const isStaff = profile?.role === "admin" || profile?.role === "coach";
-
-    if (existingRoomUrl) {
-      // Reuse existing room
-      const url = isStaff && existingHostUrl ? existingHostUrl : existingRoomUrl;
-      setWherebyUrl(buildWherebyUrl(url, myName, !previewMic, !previewCamera));
-      setCreatingRoom(false);
-    } else {
-      // Create new Whereby room
-      try {
-        const result = await createRoom.mutateAsync({
-          callId,
-          callTitle: call.title,
-        });
-        const url = isStaff ? result.hostRoomUrl : result.roomUrl;
-        setWherebyUrl(buildWherebyUrl(url, myName, !previewMic, !previewCamera));
-      } catch {
-        // Fall back — room creation failed
-        setHasJoined(false);
-      } finally {
-        setCreatingRoom(false);
-      }
-    }
-
-    // Notify the other participant
+    // Notify the other participant via one-shot broadcast
     const peerId =
       call.assigned_to === user.id ? call.client_id : call.assigned_to;
     if (peerId) {
@@ -241,16 +226,13 @@ export function VideoRoom({ callId }: VideoRoomProps) {
       });
     }
 
-    // Mark as connected
-    useCallStore.getState().setPhase("connected");
-    useCallStore.getState().setCallStartTime(Date.now());
+    await joinCall();
   }, [
     call,
     user,
     callId,
     myName,
-    profile,
-    createRoom,
+    joinCall,
     updateRoomStatus,
     supabase,
     cleanupPreview,
@@ -259,7 +241,7 @@ export function VideoRoom({ callId }: VideoRoomProps) {
   ]);
 
   // Leave / hang up
-  const handleHangUp = useCallback(() => {
+  const handleHangUp = useCallback(async () => {
     const s = useCallStore.getState();
 
     // Save transcript if any
@@ -286,9 +268,8 @@ export function VideoRoom({ callId }: VideoRoomProps) {
     });
 
     stopTranscription();
-    setWherebyUrl(null);
-    useCallStore.getState().setPhase("ended");
-  }, [callId, saveTranscript, updateRoomStatus, stopTranscription]);
+    leaveCall();
+  }, [callId, saveTranscript, updateRoomStatus, stopTranscription, leaveCall]);
 
   // Toggle transcription
   const handleToggleTranscript = useCallback(() => {
@@ -301,13 +282,16 @@ export function VideoRoom({ callId }: VideoRoomProps) {
     }
   }, [startTranscription, stopTranscription]);
 
-  // Whereby handles screen share natively — just toggle in store for UI state
+  // Toggle screen share
   const handleToggleScreenShare = useCallback(() => {
-    // Screen sharing is handled directly by Whereby UI
-    // This button is kept for visual consistency but Whereby manages it
-  }, []);
+    if (useCallStore.getState().isScreenSharing) {
+      stopScreenShare();
+    } else {
+      startScreenShare();
+    }
+  }, [startScreenShare, stopScreenShare]);
 
-  // Cleanup on unmount
+  // Cleanup on unmount / beforeunload
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       const { phase } = useCallStore.getState();
@@ -319,7 +303,7 @@ export function VideoRoom({ callId }: VideoRoomProps) {
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, []);
 
-  // Download transcript
+  // Download transcript as TXT
   const handleDownloadTranscript = () => {
     const s = useCallStore.getState();
     const callStart = s.callStartTime ?? Date.now();
@@ -338,53 +322,7 @@ export function VideoRoom({ callId }: VideoRoomProps) {
     URL.revokeObjectURL(url);
   };
 
-  // Toggle mic/camera via Whereby postMessage
-  const toggleWherebyMic = useCallback(() => {
-    wherebyRef.current?.contentWindow?.postMessage(
-      { type: "whereby:toggle_microphone" },
-      "*",
-    );
-    useCallStore.getState().toggleMic();
-  }, []);
-
-  const toggleWherebyCamera = useCallback(() => {
-    wherebyRef.current?.contentWindow?.postMessage(
-      { type: "whereby:toggle_camera" },
-      "*",
-    );
-    useCallStore.getState().toggleCamera();
-  }, []);
-
-  // Listen for Whereby events via postMessage
-  useEffect(() => {
-    function handleMessage(event: MessageEvent) {
-      if (typeof event.data !== "object" || !event.data.type) return;
-
-      switch (event.data.type) {
-        case "whereby:participant_joined":
-          useCallStore.getState().setRemoteConnected(true);
-          useCallStore.getState().setPhase("connected");
-          updateRoomStatus.mutate({
-            id: callId,
-            room_status: "active",
-          });
-          break;
-        case "whereby:participant_left":
-          // Don't end immediately — other participant may rejoin
-          useCallStore.getState().setRemoteConnected(false);
-          break;
-        case "whereby:meeting_end":
-          handleHangUp();
-          break;
-      }
-    }
-
-    window.addEventListener("message", handleMessage);
-    return () => window.removeEventListener("message", handleMessage);
-  }, [callId, updateRoomStatus, handleHangUp]);
-
-  // --- RENDER ---
-
+  // Loading state
   if (isLoading) {
     return (
       <div className="flex-1 flex items-center justify-center bg-zinc-950">
@@ -412,10 +350,12 @@ export function VideoRoom({ callId }: VideoRoomProps) {
     );
   }
 
+  // Determine if the current user is staff (coach/admin) — they skip pre-call questions
   const isStaffUser = profile?.role === "admin" || profile?.role === "coach";
 
-  // Pre-join lobby
+  // Pre-join lobby with camera/mic preview
   if (!hasJoined) {
+    // Non-staff users must complete pre-call questions before seeing the lobby
     const showPreCallGate = !isStaffUser && !preCallCompleted;
 
     if (showPreCallGate) {
@@ -436,6 +376,7 @@ export function VideoRoom({ callId }: VideoRoomProps) {
     return (
       <div className="flex-1 flex items-center justify-center bg-zinc-950 p-4">
         <div className="flex flex-col items-center gap-6 w-full max-w-lg">
+          {/* Title */}
           <div className="text-center">
             <h2 className="text-xl font-semibold text-white">{call.title}</h2>
             <p className="text-sm text-zinc-400 mt-1">
@@ -445,12 +386,9 @@ export function VideoRoom({ callId }: VideoRoomProps) {
                   ? `Avec ${call.assigned_profile.full_name}`
                   : ""}
             </p>
-            <p className="text-xs text-zinc-500 mt-2 flex items-center justify-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-              Appel video via Whereby
-            </p>
           </div>
 
+          {/* Pre-call responses summary for staff in the lobby */}
           {isStaffUser && (
             <div className="w-full">
               <PreCallResponsesView callId={callId} />
@@ -478,6 +416,7 @@ export function VideoRoom({ callId }: VideoRoomProps) {
               </div>
             )}
 
+            {/* Mic level indicator (bottom left) */}
             {previewMic && (
               <div className="absolute bottom-3 left-3 flex items-center gap-1.5 bg-black/50 backdrop-blur-sm rounded-lg px-2.5 py-1.5">
                 <Mic className="w-3.5 h-3.5 text-green-400" />
@@ -499,6 +438,7 @@ export function VideoRoom({ callId }: VideoRoomProps) {
               </div>
             )}
 
+            {/* Name tag (bottom right) */}
             <div className="absolute bottom-3 right-3 bg-black/50 backdrop-blur-sm rounded-lg px-2.5 py-1">
               <span className="text-xs text-white font-medium">Vous</span>
             </div>
@@ -541,17 +481,9 @@ export function VideoRoom({ callId }: VideoRoomProps) {
 
             <button
               onClick={handleJoin}
-              disabled={creatingRoom}
-              className="h-12 px-8 rounded-full bg-green-600 text-white text-sm font-semibold hover:bg-green-700 transition-all active:scale-[0.97] flex items-center gap-2 ml-2 disabled:opacity-60"
+              className="h-12 px-8 rounded-full bg-green-600 text-white text-sm font-semibold hover:bg-green-700 transition-all active:scale-[0.97] flex items-center gap-2 ml-2"
             >
-              {creatingRoom ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Preparation...
-                </>
-              ) : (
-                "Rejoindre"
-              )}
+              Rejoindre
             </button>
           </div>
 
@@ -567,19 +499,14 @@ export function VideoRoom({ callId }: VideoRoomProps) {
     );
   }
 
-  // In-call view — Whereby iframe + side panels
+  // In-call view
   return (
     <div className="flex-1 flex bg-zinc-950 h-full">
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top bar */}
         <div className="flex items-center justify-between px-4 py-2 bg-zinc-950/80 backdrop-blur-md border-b border-white/5">
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-              <span className="text-xs text-green-400 font-medium">
-                En cours
-              </span>
-            </div>
+            <ConnectionStatus />
             <span className="text-xs text-zinc-400 hidden sm:inline">
               {call.title}
             </span>
@@ -587,27 +514,17 @@ export function VideoRoom({ callId }: VideoRoomProps) {
           <CallTimer />
         </div>
 
-        {/* Whereby iframe */}
-        <div className="flex-1 min-h-0">
-          {wherebyUrl ? (
-            <iframe
-              ref={wherebyRef}
-              src={wherebyUrl}
-              allow="camera; microphone; autoplay; display-capture; compute-pressure"
-              className="w-full h-full border-0"
-              title="Appel video Whereby"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <Loader2 className="w-8 h-8 text-zinc-400 animate-spin" />
-            </div>
-          )}
-        </div>
+        {/* Video grid */}
+        <VideoGrid
+          localStream={localStream}
+          remoteStream={remoteStream}
+          localName={myName}
+        />
 
-        {/* Controls — transcription, notes, pre-call responses, hang up */}
+        {/* Controls */}
         <CallControls
-          onToggleMic={toggleWherebyMic}
-          onToggleCamera={toggleWherebyCamera}
+          onToggleMic={toggleMic}
+          onToggleCamera={toggleCamera}
           onToggleScreenShare={handleToggleScreenShare}
           onToggleTranscript={handleToggleTranscript}
           onToggleNotes={() => setShowNotes((v) => !v)}
@@ -624,7 +541,7 @@ export function VideoRoom({ callId }: VideoRoomProps) {
         />
       </div>
 
-      {/* Transcript panel */}
+      {/* Transcript panel (slides in from right) */}
       {showTranscript && (
         <TranscriptPanel onClose={() => setShowTranscript(false)} />
       )}
@@ -638,7 +555,7 @@ export function VideoRoom({ callId }: VideoRoomProps) {
         />
       )}
 
-      {/* Pre-call responses panel (staff only) */}
+      {/* Pre-call responses panel (staff only, slides in from right) */}
       {showPreCallResponses && isStaffUser && (
         <div className="w-80 lg:w-96 bg-zinc-900/95 border-l border-white/5 flex flex-col h-full">
           <div className="flex items-center justify-between px-4 py-3 border-b border-white/5">
@@ -660,27 +577,4 @@ export function VideoRoom({ callId }: VideoRoomProps) {
       )}
     </div>
   );
-}
-
-// Build Whereby embed URL with display name and initial media state
-function buildWherebyUrl(
-  baseUrl: string,
-  displayName: string,
-  micOff: boolean,
-  cameraOff: boolean,
-): string {
-  const url = new URL(baseUrl);
-  // Embed params
-  url.searchParams.set("displayName", displayName);
-  url.searchParams.set("minimal", "true"); // Hide Whereby UI chrome (we have our own controls)
-  url.searchParams.set("screenshare", "on");
-  url.searchParams.set("chat", "off"); // We have our own messaging
-  url.searchParams.set("leaveButton", "off"); // We have our own hang up
-  url.searchParams.set("precallReview", "off"); // We have our own lobby
-  url.searchParams.set("logo", "off");
-  url.searchParams.set("background", "off");
-  url.searchParams.set("lang", "fr");
-  if (micOff) url.searchParams.set("audio", "off");
-  if (cameraOff) url.searchParams.set("video", "off");
-  return url.toString();
 }

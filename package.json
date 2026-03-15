@@ -26,7 +26,6 @@
     "@tiptap/react": "^3.20.0",
     "@tiptap/starter-kit": "^3.20.0",
     "@types/papaparse": "^5.5.2",
-    "@whereby.com/browser-sdk": "^3.18.29",
     "canvas-confetti": "^1.9.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
