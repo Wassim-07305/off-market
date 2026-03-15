@@ -5,6 +5,8 @@ import { useCommissions } from "@/hooks/use-commissions";
 import { useStudents } from "@/hooks/use-students";
 import { COMMISSION_ROLE_LABELS, type CommissionRole } from "@/types/billing";
 import { formatCurrency } from "@/lib/utils";
+import { useUserCurrency, useConvertCurrency } from "@/hooks/use-currency";
+import { CurrencySelector } from "@/components/ui/currency-selector";
 import { exportToCSV, exportToPDF } from "@/lib/export";
 import { ExportDropdown } from "@/components/shared/export-dropdown";
 import {
@@ -26,6 +28,10 @@ export function CommissionTable() {
   const { students: contractors } = useStudents();
   const [showAddModal, setShowAddModal] = useState(false);
   const [view, setView] = useState<"detail" | "summary">("summary");
+  const currency = useUserCurrency();
+  const convert = useConvertCurrency();
+  const fmt = (amount: number) =>
+    formatCurrency(convert(amount, "EUR", currency), currency);
 
   return (
     <div className="space-y-6">
@@ -38,6 +44,9 @@ export function CommissionTable() {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <div className="w-32">
+            <CurrencySelector />
+          </div>
           <ExportDropdown
             disabled={isLoading}
             options={[
@@ -53,12 +62,12 @@ export function CommissionTable() {
                         { label: "Ventes", value: String(s.count) },
                         {
                           label: "Du",
-                          value: formatCurrency(s.total_owed + s.total_paid),
+                          value: fmt(s.total_owed + s.total_paid),
                         },
-                        { label: "Paye", value: formatCurrency(s.total_paid) },
+                        { label: "Paye", value: fmt(s.total_paid) },
                         {
                           label: "Restant",
-                          value: formatCurrency(s.remaining),
+                          value: fmt(s.remaining),
                         },
                       ],
                     })),
@@ -189,10 +198,10 @@ export function CommissionTable() {
                       {s.count}
                     </td>
                     <td className="px-4 py-3 text-right text-sm font-medium text-foreground">
-                      {formatCurrency(s.total_owed + s.total_paid)}
+                      {fmt(s.total_owed + s.total_paid)}
                     </td>
                     <td className="px-4 py-3 text-right text-sm text-emerald-600">
-                      {formatCurrency(s.total_paid)}
+                      {fmt(s.total_paid)}
                     </td>
                     <td className="px-4 py-3 text-right">
                       <span
@@ -202,7 +211,7 @@ export function CommissionTable() {
                             : "text-emerald-600"
                         }`}
                       >
-                        {formatCurrency(s.remaining)}
+                        {fmt(s.remaining)}
                       </span>
                     </td>
                   </tr>
@@ -217,7 +226,7 @@ export function CommissionTable() {
                     Total
                   </td>
                   <td className="px-4 py-3 text-right text-sm font-semibold text-foreground">
-                    {formatCurrency(
+                    {fmt(
                       summaries.reduce(
                         (sum, s) => sum + s.total_owed + s.total_paid,
                         0,
@@ -225,12 +234,12 @@ export function CommissionTable() {
                     )}
                   </td>
                   <td className="px-4 py-3 text-right text-sm font-semibold text-emerald-600">
-                    {formatCurrency(
+                    {fmt(
                       summaries.reduce((sum, s) => sum + s.total_paid, 0),
                     )}
                   </td>
                   <td className="px-4 py-3 text-right text-sm font-semibold text-amber-600">
-                    {formatCurrency(
+                    {fmt(
                       summaries.reduce((sum, s) => sum + s.remaining, 0),
                     )}
                   </td>
@@ -292,13 +301,13 @@ export function CommissionTable() {
                         </span>
                       </td>
                       <td className="px-4 py-3 text-right text-sm text-foreground">
-                        {formatCurrency(c.sale_amount)}
+                        {fmt(c.sale_amount)}
                       </td>
                       <td className="px-4 py-3 text-right text-sm text-foreground">
                         {c.commission_rate}%
                       </td>
                       <td className="px-4 py-3 text-right text-sm font-medium text-foreground">
-                        {formatCurrency(c.commission_amount)}
+                        {fmt(c.commission_amount)}
                       </td>
                       <td className="px-4 py-3">
                         {c.status === "paid" ? (
@@ -375,6 +384,7 @@ function AddCommissionModal({
   }) => void;
   isPending: boolean;
 }) {
+  const currency = useUserCurrency();
   const [contractorId, setContractorId] = useState("");
   const [role, setRole] = useState<CommissionRole>("setter");
   const [saleAmount, setSaleAmount] = useState("");
@@ -481,7 +491,7 @@ function AddCommissionModal({
               <span className="text-sm text-muted-foreground">Commission</span>
             </div>
             <span className="text-lg font-semibold text-foreground">
-              {formatCurrency(commissionAmount)}
+              {formatCurrency(commissionAmount, currency)}
             </span>
           </div>
         </div>

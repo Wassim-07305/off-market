@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { calculateLeadScore } from "@/lib/lead-score-calculator";
+import {
+  checkRateLimit,
+  enrichmentTypeToAction,
+  formatRateLimitError,
+  buildRateLimitHeaders,
+} from "@/lib/rate-limiter";
 
 const APIFY_TOKEN = process.env.APIFY_TOKEN;
 const APIFY_API = "https://api.apify.com/v2";
@@ -105,6 +111,21 @@ export async function POST(req: NextRequest) {
   }
 
   const admin = createAdminClient();
+
+  // ─── Rate limit check ──────────────────────────────────
+  const rateLimitAction = enrichmentTypeToAction(type);
+  const rateLimitResult = await checkRateLimit(admin, user.id, rateLimitAction);
+
+  if (!rateLimitResult.allowed) {
+    const headers = buildRateLimitHeaders(rateLimitResult);
+    return NextResponse.json(
+      {
+        error: formatRateLimitError(rateLimitResult.reset_at),
+        reset_at: rateLimitResult.reset_at,
+      },
+      { status: 429, headers },
+    );
+  }
 
   // Fetch contact
   const { data: contact, error: contactErr } = await admin
@@ -389,10 +410,14 @@ export async function POST(req: NextRequest) {
       created_by: user.id,
     });
 
-    return NextResponse.json({
-      success: true,
-      enrichment_data: enrichmentData,
-    });
+    const rateLimitHeaders = buildRateLimitHeaders(rateLimitResult);
+    return NextResponse.json(
+      {
+        success: true,
+        enrichment_data: enrichmentData,
+      },
+      { headers: rateLimitHeaders },
+    );
   } catch (err) {
     console.error("Enrichment error:", err);
 

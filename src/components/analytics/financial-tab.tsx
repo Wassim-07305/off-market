@@ -1,6 +1,8 @@
 "use client";
 
 import { formatCurrency } from "@/lib/utils";
+import { useUserCurrency, useConvertCurrency } from "@/hooks/use-currency";
+import { CurrencySelector } from "@/components/ui/currency-selector";
 import { StatCard } from "@/components/dashboard/stat-card";
 import {
   DollarSign,
@@ -51,6 +53,10 @@ const INVOICE_STATUS_LABELS: Record<string, string> = {
 
 export function FinancialTab({ range }: FinancialTabProps) {
   const { data, isLoading } = useFinancialReport(range);
+  const currency = useUserCurrency();
+  const convert = useConvertCurrency();
+  const fmt = (amount: number) =>
+    formatCurrency(convert(amount, "EUR", currency), currency);
 
   if (isLoading) {
     return (
@@ -95,28 +101,35 @@ export function FinancialTab({ range }: FinancialTabProps) {
 
   return (
     <div className="space-y-6">
+      {/* Currency selector */}
+      <div className="flex items-center justify-end">
+        <div className="w-36">
+          <CurrencySelector label="Devise" />
+        </div>
+      </div>
+
       {/* KPI cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           title="Revenus total"
-          value={formatCurrency(data.totalRevenue)}
+          value={fmt(data.totalRevenue)}
           change={data.revenueTrend}
           changeLabel="vs periode"
           icon={DollarSign}
         />
         <StatCard
           title="MRR"
-          value={formatCurrency(data.mrr)}
+          value={fmt(data.mrr)}
           icon={TrendingUp}
         />
         <StatCard
           title="En attente"
-          value={formatCurrency(data.pendingAmount)}
+          value={fmt(data.pendingAmount)}
           icon={Clock}
         />
         <StatCard
           title="En retard"
-          value={formatCurrency(data.overdueAmount)}
+          value={fmt(data.overdueAmount)}
           icon={AlertTriangle}
         />
       </div>
@@ -134,7 +147,7 @@ export function FinancialTab({ range }: FinancialTabProps) {
                 Evolution des revenus
               </h3>
               <p className="text-xs text-muted-foreground mt-0.5">
-                ARR estim&eacute; : {formatCurrency(data.arr)}
+                ARR estim&eacute; : {fmt(data.arr)}
               </p>
             </div>
             <button
@@ -308,7 +321,7 @@ export function FinancialTab({ range }: FinancialTabProps) {
             </p>
           </div>
           <p className="text-xl font-display font-bold text-foreground">
-            {formatCurrency(data.ltv)}
+            {fmt(data.ltv)}
           </p>
           <p className="text-[11px] text-muted-foreground mt-1">
             Revenu total / clients payants
@@ -364,7 +377,7 @@ export function FinancialTab({ range }: FinancialTabProps) {
             Valeur moyenne / facture
           </p>
           <p className="text-xl font-display font-bold text-foreground">
-            {formatCurrency(data.avgDealValue)}
+            {fmt(data.avgDealValue)}
           </p>
         </div>
         <div

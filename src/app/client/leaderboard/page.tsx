@@ -13,8 +13,18 @@ import {
 } from "@/hooks/use-leaderboard";
 import { useXp } from "@/hooks/use-xp";
 import { useAuth } from "@/hooks/use-auth";
-import { Crown, Medal, Award, TrendingUp, UserX, ArrowUp, ArrowDown, Minus } from "lucide-react";
+import { useRole } from "@/hooks/useRole";
+import { useCompetitions } from "@/hooks/use-competitions";
+import { useTeams, useMyTeam } from "@/hooks/use-teams";
+import { Crown, Medal, Award, TrendingUp, UserX, ArrowUp, ArrowDown, Minus, Trophy, Users, Plus, Flame } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { CompetitionCard } from "@/components/gamification/competition-card";
+import { CompetitionLeaderboard } from "@/components/gamification/competition-leaderboard";
+import { TeamCard } from "@/components/gamification/team-card";
+import { CreateCompetitionModal } from "@/components/gamification/create-competition-modal";
+import type { Competition } from "@/types/gamification";
+
+type MainTab = "classement" | "competitions" | "equipes";
 
 const PODIUM_CONFIG = [
   {
@@ -46,6 +56,12 @@ const PERIOD_TABS: { value: LeaderboardPeriod; label: string }[] = [
   { value: "all", label: "Tout" },
 ];
 
+const MAIN_TABS: { value: MainTab; label: string; icon: typeof Trophy }[] = [
+  { value: "classement", label: "Classement", icon: Crown },
+  { value: "competitions", label: "Competitions", icon: Trophy },
+  { value: "equipes", label: "Equipes", icon: Users },
+];
+
 function RankChangeIndicator({ change }: { change: number | undefined }) {
   if (change === undefined) return null;
   if (change > 0) {
@@ -71,7 +87,8 @@ function RankChangeIndicator({ change }: { change: number | undefined }) {
   );
 }
 
-export default function ClientLeaderboardPage() {
+// ─── Individual Leaderboard Tab ─────────────────────────────
+function IndividualLeaderboard() {
   const [period, setPeriod] = useState<LeaderboardPeriod>("all");
   const { entries, isLoading, rankChanges } = useLeaderboard(period);
   const { summary } = useXp();
@@ -83,24 +100,7 @@ export default function ClientLeaderboardPage() {
   const isAnonymousEntry = (name: string) => name === "Utilisateur anonyme";
 
   return (
-    <motion.div
-      variants={staggerContainer}
-      initial="hidden"
-      animate="visible"
-      className="space-y-6"
-    >
-      {/* Header */}
-      <motion.div variants={fadeInUp} transition={defaultTransition}>
-        <h1 className="text-3xl font-semibold text-foreground">Classement</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          {period === "week"
-            ? "Classement de la semaine en cours"
-            : period === "month"
-              ? "Classement du mois en cours"
-              : "Ton rang parmi les autres freelances"}
-        </p>
-      </motion.div>
-
+    <div className="space-y-6">
       {/* Period filter tabs */}
       <motion.div
         variants={fadeInUp}
@@ -112,7 +112,7 @@ export default function ClientLeaderboardPage() {
             key={tab.value}
             onClick={() => setPeriod(tab.value)}
             className={cn(
-              "h-9 px-4 rounded-lg text-sm font-medium transition-all",
+              "h-9 px-4 rounded-lg text-sm font-medium transition-all cursor-pointer",
               period === tab.value
                 ? "bg-surface text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground",
@@ -143,7 +143,7 @@ export default function ClientLeaderboardPage() {
           </div>
           <div className="text-right">
             <p className="text-3xl font-semibold text-foreground font-serif">
-              #{summary.rank || "—"}
+              #{summary.rank || "\u2014"}
             </p>
             <p className="text-xs text-muted-foreground">
               sur {entries.length} freelances
@@ -178,7 +178,6 @@ export default function ClientLeaderboardPage() {
               transition={defaultTransition}
               className="grid grid-cols-3 gap-3"
             >
-              {/* Reorder: 2nd, 1st, 3rd for visual podium */}
               {[top3[1], top3[0], top3[2]].map((entry, visualIndex) => {
                 if (!entry) return <div key={visualIndex} />;
                 const podium = PODIUM_CONFIG.find(
@@ -311,6 +310,278 @@ export default function ClientLeaderboardPage() {
           )}
         </>
       )}
+    </div>
+  );
+}
+
+// ─── Competitions Tab ───────────────────────────────────────
+function CompetitionsTab() {
+  const { isAdmin } = useRole();
+  const { data: competitions = [], isLoading } = useCompetitions();
+  const [showCreate, setShowCreate] = useState(false);
+  const [selectedCompetition, setSelectedCompetition] = useState<Competition | null>(null);
+
+  const activeComps = competitions.filter((c: Competition) => c.status === "active");
+  const upcomingComps = competitions.filter((c: Competition) => c.status === "upcoming");
+  const completedComps = competitions.filter((c: Competition) => c.status === "completed");
+
+  if (selectedCompetition) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setSelectedCompetition(null)}
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+          >
+            &larr; Retour aux competitions
+          </button>
+        </div>
+        <div className="space-y-2">
+          <h2 className="text-xl font-semibold text-foreground">
+            {selectedCompetition.title}
+          </h2>
+          {selectedCompetition.description && (
+            <p className="text-sm text-muted-foreground">
+              {selectedCompetition.description}
+            </p>
+          )}
+        </div>
+        <CompetitionLeaderboard
+          competitionId={selectedCompetition.id}
+          isTeamCompetition={selectedCompetition.type === "team_vs_team"}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Admin create button */}
+      {isAdmin && (
+        <motion.div variants={fadeInUp} transition={defaultTransition}>
+          <button
+            onClick={() => setShowCreate(true)}
+            className={cn(
+              "inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all cursor-pointer",
+              "bg-[#DC2626] text-white hover:bg-[#DC2626]/90",
+            )}
+          >
+            <Plus className="w-4 h-4" />
+            Nouvelle competition
+          </button>
+        </motion.div>
+      )}
+
+      {isLoading ? (
+        <div className="space-y-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-40 bg-muted animate-pulse rounded-2xl" />
+          ))}
+        </div>
+      ) : competitions.length === 0 ? (
+        <motion.div
+          variants={fadeInUp}
+          transition={defaultTransition}
+          className="bg-surface border border-border rounded-2xl p-12 text-center"
+        >
+          <Trophy className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
+          <p className="text-base font-medium text-foreground mb-1">
+            Aucune competition
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Les competitions entre equipes apparaitront ici. Restez a l'affut !
+          </p>
+        </motion.div>
+      ) : (
+        <>
+          {/* Active competitions */}
+          {activeComps.length > 0 && (
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Flame className="w-4 h-4 text-emerald-500" />
+                <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">
+                  En cours
+                </h3>
+                <span className="text-xs bg-emerald-500/10 text-emerald-600 px-2 py-0.5 rounded-full font-medium">
+                  {activeComps.length}
+                </span>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {activeComps.map((comp: Competition) => (
+                  <CompetitionCard
+                    key={comp.id}
+                    competition={comp}
+                    onClick={() => setSelectedCompetition(comp)}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Upcoming */}
+          {upcomingComps.length > 0 && (
+            <div className="space-y-3">
+              <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider flex items-center gap-2">
+                <Trophy className="w-4 h-4 text-blue-500" />
+                A venir
+              </h3>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {upcomingComps.map((comp: Competition) => (
+                  <CompetitionCard
+                    key={comp.id}
+                    competition={comp}
+                    onClick={() => setSelectedCompetition(comp)}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Completed */}
+          {completedComps.length > 0 && (
+            <div className="space-y-3">
+              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                Terminees
+              </h3>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {completedComps.map((comp: Competition) => (
+                  <CompetitionCard
+                    key={comp.id}
+                    competition={comp}
+                    onClick={() => setSelectedCompetition(comp)}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+        </>
+      )}
+
+      <CreateCompetitionModal
+        open={showCreate}
+        onClose={() => setShowCreate(false)}
+      />
+    </div>
+  );
+}
+
+// ─── Teams Tab ──────────────────────────────────────────────
+function TeamsTab() {
+  const { data: teams = [], isLoading } = useTeams();
+  const { data: myTeam } = useMyTeam();
+
+  return (
+    <div className="space-y-6">
+      {/* My team highlight */}
+      {myTeam && (
+        <motion.div
+          variants={fadeInUp}
+          transition={defaultTransition}
+          className="bg-surface border border-[#DC2626]/20 rounded-2xl p-5"
+        >
+          <div className="flex items-center gap-3 mb-2">
+            <span className="text-2xl">{myTeam.avatar_emoji ?? "🔥"}</span>
+            <div>
+              <p className="text-sm font-semibold text-foreground">
+                Ton equipe
+              </p>
+              <p className="text-base font-bold text-foreground">
+                {myTeam.name}
+              </p>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {isLoading ? (
+        <div className="grid gap-4 sm:grid-cols-2">
+          {[1, 2, 3, 4].map((i) => (
+            <div
+              key={i}
+              className="h-48 bg-muted animate-pulse rounded-2xl"
+            />
+          ))}
+        </div>
+      ) : teams.length === 0 ? (
+        <motion.div
+          variants={fadeInUp}
+          transition={defaultTransition}
+          className="bg-surface border border-border rounded-2xl p-12 text-center"
+        >
+          <Users className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
+          <p className="text-base font-medium text-foreground mb-1">
+            Aucune equipe
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Les equipes seront creees par les administrateurs pour les competitions.
+          </p>
+        </motion.div>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2">
+          {teams.map((team: import("@/types/gamification").Team) => (
+            <TeamCard key={team.id} team={team} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Main page ──────────────────────────────────────────────
+export default function ClientLeaderboardPage() {
+  const [mainTab, setMainTab] = useState<MainTab>("classement");
+
+  return (
+    <motion.div
+      variants={staggerContainer}
+      initial="hidden"
+      animate="visible"
+      className="space-y-6"
+    >
+      {/* Header */}
+      <motion.div variants={fadeInUp} transition={defaultTransition}>
+        <h1 className="text-3xl font-semibold text-foreground">
+          Classement & Competitions
+        </h1>
+        <p className="text-sm text-muted-foreground mt-1">
+          {mainTab === "classement"
+            ? "Ton rang parmi les autres freelances"
+            : mainTab === "competitions"
+              ? "Competitions en cours et a venir"
+              : "Decouvre et rejoins les equipes"}
+        </p>
+      </motion.div>
+
+      {/* Main tabs */}
+      <motion.div
+        variants={fadeInUp}
+        transition={defaultTransition}
+        className="flex items-center gap-1 bg-muted p-1 rounded-xl w-fit"
+      >
+        {MAIN_TABS.map((tab) => {
+          const Icon = tab.icon;
+          return (
+            <button
+              key={tab.value}
+              onClick={() => setMainTab(tab.value)}
+              className={cn(
+                "h-9 px-4 rounded-lg text-sm font-medium transition-all inline-flex items-center gap-1.5 cursor-pointer",
+                mainTab === tab.value
+                  ? "bg-surface text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              <Icon className="w-3.5 h-3.5" />
+              {tab.label}
+            </button>
+          );
+        })}
+      </motion.div>
+
+      {/* Tab content */}
+      {mainTab === "classement" && <IndividualLeaderboard />}
+      {mainTab === "competitions" && <CompetitionsTab />}
+      {mainTab === "equipes" && <TeamsTab />}
     </motion.div>
   );
 }

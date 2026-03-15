@@ -270,3 +270,114 @@ export interface HallOfFameEntry {
     bio: string | null;
   };
 }
+
+// ─── TEAMS ──────────────────────────────
+export interface Team {
+  id: string;
+  name: string;
+  description: string | null;
+  avatar_emoji: string;
+  color: string;
+  captain_id: string;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
+  // Joined
+  member_count?: number;
+  members?: TeamMember[];
+  captain?: {
+    id: string;
+    full_name: string;
+    avatar_url: string | null;
+  };
+}
+
+export interface TeamMember {
+  id: string;
+  team_id: string;
+  user_id: string;
+  joined_at: string;
+  profile?: {
+    id: string;
+    full_name: string;
+    avatar_url: string | null;
+  };
+}
+
+// ─── COMPETITIONS ───────────────────────
+export type CompetitionType = "team_vs_team" | "free_for_all";
+export type CompetitionMetric = "xp" | "calls" | "clients" | "revenue";
+export type CompetitionStatus = "upcoming" | "active" | "completed";
+
+export const COMPETITION_TYPE_CONFIG: Record<
+  CompetitionType,
+  { label: string; icon: string }
+> = {
+  team_vs_team: { label: "Equipe vs Equipe", icon: "Users" },
+  free_for_all: { label: "Tous contre tous", icon: "Swords" },
+};
+
+export const COMPETITION_METRIC_CONFIG: Record<
+  CompetitionMetric,
+  { label: string; icon: string; unit: string }
+> = {
+  xp: { label: "XP", icon: "Zap", unit: "XP" },
+  calls: { label: "Appels", icon: "Phone", unit: "appels" },
+  clients: { label: "Clients", icon: "UserPlus", unit: "clients" },
+  revenue: { label: "Chiffre d'affaires", icon: "Euro", unit: "EUR" },
+};
+
+export const COMPETITION_STATUS_CONFIG: Record<
+  CompetitionStatus,
+  { label: string; color: string; bg: string }
+> = {
+  upcoming: {
+    label: "A venir",
+    color: "text-blue-600",
+    bg: "bg-blue-500/10",
+  },
+  active: {
+    label: "En cours",
+    color: "text-emerald-600",
+    bg: "bg-emerald-500/10",
+  },
+  completed: {
+    label: "Terminee",
+    color: "text-zinc-500",
+    bg: "bg-zinc-500/10",
+  },
+};
+
+export interface Competition {
+  id: string;
+  title: string;
+  description: string | null;
+  type: CompetitionType;
+  metric: CompetitionMetric;
+  start_date: string;
+  end_date: string;
+  status: CompetitionStatus;
+  prize_description: string | null;
+  created_by: string;
+  created_at: string;
+  // Joined
+  participant_count?: number;
+  participants?: CompetitionParticipant[];
+}
+
+export interface CompetitionParticipant {
+  id: string;
+  competition_id: string;
+  team_id: string | null;
+  user_id: string | null;
+  score: number;
+  rank: number | null;
+  updated_at: string;
+  // Joined
+  team?: Team;
+  profile?: {
+    id: string;
+    full_name: string;
+    avatar_url: string | null;
+  };
+}

@@ -15,6 +15,8 @@ import {
 } from "recharts";
 import { useFinancialDashboard } from "@/hooks/use-invoices";
 import { formatCurrency } from "@/lib/utils";
+import { useUserCurrency, useConvertCurrency } from "@/hooks/use-currency";
+import { CurrencySelector } from "@/components/ui/currency-selector";
 import {
   TrendingUp,
   TrendingDown,
@@ -37,17 +39,14 @@ const CHART_COLORS = [
   "#06b6d4",
 ];
 
-function formatEUR(amount: number) {
-  return new Intl.NumberFormat("fr-FR", {
-    style: "currency",
-    currency: "EUR",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount);
-}
-
 export function FinancialDashboard() {
   const { data, isLoading } = useFinancialDashboard();
+  const currency = useUserCurrency();
+  const convert = useConvertCurrency();
+
+  /** Convert from EUR (data source) to the user's display currency */
+  const c = (amount: number) => convert(amount, "EUR", currency);
+  const fmt = (amount: number) => formatCurrency(c(amount), currency);
 
   if (isLoading) {
     return (
@@ -70,7 +69,7 @@ export function FinancialDashboard() {
   const kpis = [
     {
       label: "Revenu total",
-      value: formatEUR(data.totalRevenue),
+      value: fmt(data.totalRevenue),
       icon: DollarSign,
       color: "text-emerald-500",
       bgColor: "bg-emerald-500/10",
@@ -78,15 +77,15 @@ export function FinancialDashboard() {
     },
     {
       label: "MRR",
-      value: formatEUR(data.mrr),
+      value: fmt(data.mrr),
       icon: Repeat,
       color: "text-blue-500",
       bgColor: "bg-blue-500/10",
-      subtitle: `ARR: ${formatEUR(data.arr)}`,
+      subtitle: `ARR: ${fmt(data.arr)}`,
     },
     {
       label: "LTV moyen / client",
-      value: formatEUR(data.avgLTV),
+      value: fmt(data.avgLTV),
       icon: Target,
       color: "text-violet-500",
       bgColor: "bg-violet-500/10",
@@ -101,14 +100,14 @@ export function FinancialDashboard() {
     },
     {
       label: "Encaisse",
-      value: formatEUR(data.cashCollected),
+      value: fmt(data.cashCollected),
       icon: TrendingUp,
       color: "text-emerald-500",
       bgColor: "bg-emerald-500/10",
     },
     {
       label: "Facture",
-      value: formatEUR(data.cashInvoiced),
+      value: fmt(data.cashInvoiced),
       icon: BarChart3,
       color: "text-blue-500",
       bgColor: "bg-blue-500/10",
@@ -138,6 +137,13 @@ export function FinancialDashboard() {
 
   return (
     <div className="space-y-6">
+      {/* Currency selector */}
+      <div className="flex items-center justify-end">
+        <div className="w-36">
+          <CurrencySelector label="Devise" />
+        </div>
+      </div>
+
       {/* KPI Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {kpis.map((kpi) => {
@@ -232,12 +238,12 @@ export function FinancialDashboard() {
                     tick={{ fontSize: 11 }}
                     tickLine={false}
                     axisLine={false}
-                    tickFormatter={(v: number) => formatEUR(v)}
+                    tickFormatter={(v: number) => fmt(v)}
                     width={60}
                   />
                   <Tooltip
                     formatter={(value: number, name: string) => [
-                      formatEUR(value),
+                      fmt(value),
                       name === "invoiced" ? "Facture" : "Encaisse",
                     ]}
                     contentStyle={{
@@ -342,7 +348,7 @@ export function FinancialDashboard() {
                         {channel.percentage}%
                       </span>
                       <span className="text-xs text-muted-foreground ml-2">
-                        {formatEUR(channel.amount)}
+                        {fmt(channel.amount)}
                       </span>
                     </div>
                   </div>
@@ -382,11 +388,11 @@ export function FinancialDashboard() {
                   tick={{ fontSize: 11 }}
                   tickLine={false}
                   axisLine={false}
-                  tickFormatter={(v: number) => formatEUR(v)}
+                  tickFormatter={(v: number) => fmt(v)}
                   width={60}
                 />
                 <Tooltip
-                  formatter={(value: number) => [formatEUR(value), "Encaisse"]}
+                  formatter={(value: number) => [fmt(value), "Encaisse"]}
                   contentStyle={{
                     background: "hsl(var(--surface))",
                     border: "1px solid hsl(var(--border))",

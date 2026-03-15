@@ -4,7 +4,11 @@ import { useState } from "react";
 import type { CrmContact } from "@/types/pipeline";
 import { useEnrichContact } from "@/hooks/use-enrichment";
 import { usePipelineContacts } from "@/hooks/use-pipeline";
+import { useRateLimitStatus } from "@/hooks/use-rate-limit";
 import { cn } from "@/lib/utils";
+import { formatResetTime } from "@/lib/rate-limiter";
+import { RateLimitBadge } from "@/components/ui/rate-limit-badge";
+import { Tooltip } from "@/components/ui/tooltip";
 import {
   Linkedin,
   Instagram,
@@ -46,12 +50,18 @@ export function EnrichmentPanel({
 }: EnrichmentPanelProps) {
   const enrichMutation = useEnrichContact();
   const { updateContact } = usePipelineContacts();
+  const linkedinLimit = useRateLimitStatus("linkedin_enrich");
+  const instagramLimit = useRateLimitStatus("instagram_enrich");
+  const bulkLimit = useRateLimitStatus("bulk_enrich");
   const [linkedinUrl, setLinkedinUrl] = useState(contact.linkedin_url || "");
   const [instagramUrl, setInstagramUrl] = useState(contact.instagram_url || "");
   const [tiktokUrl, setTiktokUrl] = useState(contact.tiktok_url || "");
   const [facebookUrl, setFacebookUrl] = useState(contact.facebook_url || "");
   const [websiteUrl, setWebsiteUrl] = useState(contact.website_url || "");
   const [youtubeUrl, setYoutubeUrl] = useState(contact.youtube_url || "");
+
+  const limitTooltip = (resetAt: string) =>
+    `Limite atteinte, reessayez a ${formatResetTime(resetAt)}`;
 
   if (!open) return null;
 
@@ -138,6 +148,12 @@ export function EnrichmentPanel({
                     : "Echoue"}
               </span>
             )}
+            <RateLimitBadge
+              remaining={linkedinLimit.remaining}
+              limit={linkedinLimit.limit}
+              resetAt={linkedinLimit.resetAt}
+              isLimited={linkedinLimit.isLimited}
+            />
           </div>
           <button
             onClick={onClose}
@@ -239,79 +255,103 @@ export function EnrichmentPanel({
             >
               Sauvegarder les URLs
             </button>
-            <button
-              onClick={() => handleEnrich("linkedin")}
-              disabled={!canEnrichLinkedin || enrichMutation.isPending}
-              className="h-9 px-4 rounded-xl bg-[#0A66C2] text-white text-sm font-medium hover:bg-[#084d93] transition-all disabled:opacity-50 flex items-center gap-1.5"
+            <Tooltip
+              content={linkedinLimit.isLimited ? limitTooltip(linkedinLimit.resetAt) : null}
             >
-              {enrichMutation.isPending ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              ) : (
-                <Linkedin className="w-3.5 h-3.5" />
-              )}
-              LinkedIn
-            </button>
-            <button
-              onClick={() => handleEnrich("instagram")}
-              disabled={!canEnrichInstagram || enrichMutation.isPending}
-              className="h-9 px-4 rounded-xl bg-gradient-to-r from-[#833AB4] via-[#E4405F] to-[#F77737] text-white text-sm font-medium hover:opacity-90 transition-all disabled:opacity-50 flex items-center gap-1.5"
-            >
-              {enrichMutation.isPending ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              ) : (
-                <Instagram className="w-3.5 h-3.5" />
-              )}
-              Instagram
-            </button>
-            <button
-              onClick={() => handleEnrich("tiktok")}
-              disabled={!canEnrichTiktok || enrichMutation.isPending}
-              className="h-9 px-4 rounded-xl bg-black dark:bg-white dark:text-black text-white text-sm font-medium hover:opacity-90 transition-all disabled:opacity-50 flex items-center gap-1.5"
-            >
-              {enrichMutation.isPending ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              ) : (
-                <Video className="w-3.5 h-3.5" />
-              )}
-              TikTok
-            </button>
-            <button
-              onClick={() => handleEnrich("facebook")}
-              disabled={!canEnrichFacebook || enrichMutation.isPending}
-              className="h-9 px-4 rounded-xl bg-[#1877F2] text-white text-sm font-medium hover:bg-[#1466D8] transition-all disabled:opacity-50 flex items-center gap-1.5"
-            >
-              {enrichMutation.isPending ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              ) : (
-                <Facebook className="w-3.5 h-3.5" />
-              )}
-              Facebook
-            </button>
-            <button
-              onClick={() => handleEnrich("website")}
-              disabled={!canEnrichWebsite || enrichMutation.isPending}
-              className="h-9 px-4 rounded-xl bg-zinc-700 dark:bg-zinc-300 dark:text-zinc-900 text-white text-sm font-medium hover:opacity-90 transition-all disabled:opacity-50 flex items-center gap-1.5"
-            >
-              {enrichMutation.isPending ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              ) : (
-                <Globe className="w-3.5 h-3.5" />
-              )}
-              Site web
-            </button>
-            {canEnrichAny && (
               <button
-                onClick={() => handleEnrich("all")}
-                disabled={enrichMutation.isPending}
-                className="h-9 px-4 rounded-xl bg-red-600 text-white text-sm font-medium hover:bg-red-700 transition-all disabled:opacity-50 flex items-center gap-1.5"
+                onClick={() => handleEnrich("linkedin")}
+                disabled={!canEnrichLinkedin || enrichMutation.isPending || linkedinLimit.isLimited}
+                className="h-9 px-4 rounded-xl bg-[#0A66C2] text-white text-sm font-medium hover:bg-[#084d93] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
               >
                 {enrichMutation.isPending ? (
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
                 ) : (
-                  <Sparkles className="w-3.5 h-3.5" />
+                  <Linkedin className="w-3.5 h-3.5" />
                 )}
-                Tout enrichir
+                LinkedIn
               </button>
+            </Tooltip>
+            <Tooltip
+              content={instagramLimit.isLimited ? limitTooltip(instagramLimit.resetAt) : null}
+            >
+              <button
+                onClick={() => handleEnrich("instagram")}
+                disabled={!canEnrichInstagram || enrichMutation.isPending || instagramLimit.isLimited}
+                className="h-9 px-4 rounded-xl bg-gradient-to-r from-[#833AB4] via-[#E4405F] to-[#F77737] text-white text-sm font-medium hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
+              >
+                {enrichMutation.isPending ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <Instagram className="w-3.5 h-3.5" />
+                )}
+                Instagram
+              </button>
+            </Tooltip>
+            <Tooltip
+              content={linkedinLimit.isLimited ? limitTooltip(linkedinLimit.resetAt) : null}
+            >
+              <button
+                onClick={() => handleEnrich("tiktok")}
+                disabled={!canEnrichTiktok || enrichMutation.isPending || linkedinLimit.isLimited}
+                className="h-9 px-4 rounded-xl bg-black dark:bg-white dark:text-black text-white text-sm font-medium hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
+              >
+                {enrichMutation.isPending ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <Video className="w-3.5 h-3.5" />
+                )}
+                TikTok
+              </button>
+            </Tooltip>
+            <Tooltip
+              content={linkedinLimit.isLimited ? limitTooltip(linkedinLimit.resetAt) : null}
+            >
+              <button
+                onClick={() => handleEnrich("facebook")}
+                disabled={!canEnrichFacebook || enrichMutation.isPending || linkedinLimit.isLimited}
+                className="h-9 px-4 rounded-xl bg-[#1877F2] text-white text-sm font-medium hover:bg-[#1466D8] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
+              >
+                {enrichMutation.isPending ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <Facebook className="w-3.5 h-3.5" />
+                )}
+                Facebook
+              </button>
+            </Tooltip>
+            <Tooltip
+              content={linkedinLimit.isLimited ? limitTooltip(linkedinLimit.resetAt) : null}
+            >
+              <button
+                onClick={() => handleEnrich("website")}
+                disabled={!canEnrichWebsite || enrichMutation.isPending || linkedinLimit.isLimited}
+                className="h-9 px-4 rounded-xl bg-zinc-700 dark:bg-zinc-300 dark:text-zinc-900 text-white text-sm font-medium hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
+              >
+                {enrichMutation.isPending ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <Globe className="w-3.5 h-3.5" />
+                )}
+                Site web
+              </button>
+            </Tooltip>
+            {canEnrichAny && (
+              <Tooltip
+                content={bulkLimit.isLimited ? limitTooltip(bulkLimit.resetAt) : null}
+              >
+                <button
+                  onClick={() => handleEnrich("all")}
+                  disabled={enrichMutation.isPending || bulkLimit.isLimited}
+                  className="h-9 px-4 rounded-xl bg-red-600 text-white text-sm font-medium hover:bg-red-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
+                >
+                  {enrichMutation.isPending ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <Sparkles className="w-3.5 h-3.5" />
+                  )}
+                  Tout enrichir
+                </button>
+              </Tooltip>
             )}
           </div>
 

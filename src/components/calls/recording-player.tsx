@@ -5,6 +5,7 @@ import {
   Play,
   Pause,
   Download,
+  FileDown,
   Maximize,
   Minimize,
   Volume2,
@@ -12,11 +13,14 @@ import {
   SkipBack,
   SkipForward,
   ScrollText,
+  Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useExportTranscriptionPdf } from "@/hooks/use-transcription-export";
 
 interface RecordingPlayerProps {
   src: string;
+  recordingId?: string | null;
   durationSeconds?: number;
   transcriptText?: string | null;
   fileName?: string;
@@ -35,6 +39,7 @@ function formatTime(seconds: number): string {
 
 export function RecordingPlayer({
   src,
+  recordingId,
   durationSeconds,
   transcriptText,
   fileName,
@@ -53,6 +58,8 @@ export function RecordingPlayer({
   const [showControls, setShowControls] = useState(true);
 
   const hideControlsTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const { exportPdf, isExporting } = useExportTranscriptionPdf(recordingId ?? null);
 
   // Update duration when video metadata loads
   useEffect(() => {
@@ -317,6 +324,27 @@ export function RecordingPlayer({
                     title="Transcription"
                   >
                     <ScrollText className="w-4 h-4" />
+                  </button>
+                )}
+
+                {/* Export PDF (only if transcript available) */}
+                {transcriptText && recordingId && (
+                  <button
+                    onClick={exportPdf}
+                    disabled={isExporting}
+                    className={cn(
+                      "w-8 h-8 rounded-full flex items-center justify-center transition-colors",
+                      isExporting
+                        ? "text-white/40 cursor-not-allowed"
+                        : "text-white/70 hover:text-white hover:bg-white/10",
+                    )}
+                    title="Exporter PDF"
+                  >
+                    {isExporting ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <FileDown className="w-4 h-4" />
+                    )}
                   </button>
                 )}
 

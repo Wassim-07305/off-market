@@ -7,6 +7,26 @@ export type UserRole = {
   created_at: string;
 };
 
+export interface OnboardingOffer {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  modules: string[];
+  welcome_message: string | null;
+  recommended_actions: OnboardingAction[];
+  sort_order: number;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface OnboardingAction {
+  key: string;
+  label: string;
+  href: string;
+  icon: string;
+}
+
 export interface CallCalendar {
   id: string;
   title: string;
@@ -226,8 +246,12 @@ export interface Profile {
   phone: string | null;
   bio: string | null;
   timezone: string;
+  default_currency: string;
   onboarding_completed: boolean;
   onboarding_step: number;
+  onboarding_offer_id: string | null;
+  onboarding_answers: Record<string, string> | null;
+  onboarding_completed_at: string | null;
   last_seen_at: string | null;
   created_at: string;
   updated_at: string;
@@ -636,6 +660,21 @@ export interface AuditLog {
   ip_address: string | null;
   created_at: string;
   user?: Profile;
+}
+
+export interface SmsReminder {
+  id: string;
+  user_id: string;
+  recipient_phone: string;
+  message: string;
+  scheduled_at: string;
+  sent_at: string | null;
+  status: "pending" | "sent" | "failed" | "cancelled";
+  related_type: "call" | "coaching" | "payment" | null;
+  related_id: string | null;
+  error_message: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface ContactInteraction {

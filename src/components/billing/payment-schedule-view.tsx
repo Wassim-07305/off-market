@@ -9,6 +9,8 @@ import {
   type PaymentScheduleInstallment,
 } from "@/types/billing";
 import { formatCurrency } from "@/lib/utils";
+import { useUserCurrency, useConvertCurrency } from "@/hooks/use-currency";
+import { CurrencySelector } from "@/components/ui/currency-selector";
 import {
   Plus,
   X,
@@ -24,6 +26,10 @@ export function PaymentScheduleView() {
   const { schedules, isLoading, createSchedule, updateInstallmentStatus } =
     usePaymentSchedules();
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const currency = useUserCurrency();
+  const convert = useConvertCurrency();
+  const fmt = (amount: number) =>
+    formatCurrency(convert(amount, "EUR", currency), currency);
 
   return (
     <div className="space-y-6">
@@ -36,13 +42,18 @@ export function PaymentScheduleView() {
             Suivi des paiements en plusieurs fois
           </p>
         </div>
-        <button
-          onClick={() => setShowCreateModal(true)}
-          className="h-9 px-3 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors flex items-center gap-1.5"
-        >
-          <Plus className="w-4 h-4" />
-          Nouvel echeancier
-        </button>
+        <div className="flex items-center gap-3">
+          <div className="w-32">
+            <CurrencySelector />
+          </div>
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="h-9 px-3 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors flex items-center gap-1.5"
+          >
+            <Plus className="w-4 h-4" />
+            Nouvel echeancier
+          </button>
+        </div>
       </div>
 
       {isLoading ? (
@@ -96,7 +107,7 @@ export function PaymentScheduleView() {
                     </div>
                     <div className="text-right">
                       <p className="text-lg font-semibold text-foreground">
-                        {formatCurrency(schedule.total_amount)}
+                        {fmt(schedule.total_amount)}
                       </p>
                       <p className="text-xs text-muted-foreground">
                         {paidCount}/{totalInstallments} payee
@@ -148,7 +159,7 @@ export function PaymentScheduleView() {
                         </div>
                         <div className="flex items-center gap-3">
                           <span className="text-sm font-medium text-foreground">
-                            {formatCurrency(inst.amount)}
+                            {fmt(inst.amount)}
                           </span>
                           {inst.status === "paid" ? (
                             <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600">
@@ -224,6 +235,10 @@ function CreateScheduleModal({
   isPending: boolean;
 }) {
   const { students: clients } = useStudents();
+  const currency = useUserCurrency();
+  const convert = useConvertCurrency();
+  const fmt = (amount: number) =>
+    formatCurrency(convert(amount, "EUR", currency), currency);
   const [clientId, setClientId] = useState("");
   const [totalAmount, setTotalAmount] = useState("");
   const [installmentCount, setInstallmentCount] = useState("3");
@@ -401,7 +416,7 @@ function CreateScheduleModal({
                   Apercu des echeances
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  {formatCurrency(perInstallment)} / echeance
+                  {fmt(perInstallment)} / echeance
                 </p>
               </div>
               <div className="space-y-1.5 max-h-48 overflow-y-auto">
@@ -423,7 +438,7 @@ function CreateScheduleModal({
                       </span>
                     </div>
                     <span className="text-xs font-medium text-foreground">
-                      {formatCurrency(inst.amount)}
+                      {fmt(inst.amount)}
                     </span>
                   </div>
                 ))}

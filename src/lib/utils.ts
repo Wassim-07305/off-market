@@ -40,10 +40,22 @@ export function formatDate(
   });
 }
 
-export function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat("fr-FR", {
+export type SupportedCurrency = "EUR" | "USD" | "GBP" | "CHF";
+
+const CURRENCY_LOCALES: Record<SupportedCurrency, string> = {
+  EUR: "fr-FR",
+  USD: "en-US",
+  GBP: "en-GB",
+  CHF: "de-CH",
+};
+
+export function formatCurrency(
+  amount: number,
+  currency: SupportedCurrency = "EUR",
+): string {
+  return new Intl.NumberFormat(CURRENCY_LOCALES[currency] ?? "fr-FR", {
     style: "currency",
-    currency: "EUR",
+    currency,
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(amount);
