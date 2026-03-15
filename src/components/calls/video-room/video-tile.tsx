@@ -32,7 +32,7 @@ export function VideoTile({
     stream?.getVideoTracks().some((t) => t.enabled) && !isCameraOff;
 
   return (
-    <div className="relative bg-zinc-900 rounded-2xl overflow-hidden flex items-center justify-center aspect-video">
+    <div className="relative bg-zinc-900 rounded-2xl overflow-hidden flex items-center justify-center aspect-video group">
       {/* Video element */}
       <video
         ref={videoRef}
@@ -52,7 +52,7 @@ export function VideoTile({
         </div>
       )}
 
-      {/* Name tag */}
+      {/* Name tag + status indicators */}
       <div className="absolute bottom-3 left-3 flex items-center gap-1.5 bg-black/50 backdrop-blur-sm rounded-lg px-2.5 py-1">
         <span className="text-xs text-white font-medium truncate max-w-[120px]">
           {isLocal ? "Vous" : name}
@@ -60,6 +60,15 @@ export function VideoTile({
         {isMuted && <MicOff className="w-3 h-3 text-red-400" />}
         {isCameraOff && <VideoOff className="w-3 h-3 text-yellow-400" />}
       </div>
+
+      {/* Screen share indicator */}
+      {isScreenShare && (
+        <div className="absolute top-3 left-3 bg-primary/80 backdrop-blur-sm rounded-lg px-2 py-0.5">
+          <span className="text-[10px] text-white font-medium">
+            Partage d&apos;ecran
+          </span>
+        </div>
+      )}
     </div>
   );
 }

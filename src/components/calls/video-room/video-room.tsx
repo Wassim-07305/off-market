@@ -14,8 +14,19 @@ import { ConnectionStatus } from "./connection-status";
 import { TranscriptPanel } from "./transcript-panel";
 import { SessionNotesPanel } from "./session-notes-panel";
 import { CallEndedSummary } from "./call-ended-summary";
-import { Loader2, Mic, MicOff, Video, VideoOff } from "lucide-react";
-import { PreCallQuestions, PreCallResponsesView } from "@/components/calls/pre-call-questions";
+import {
+  Loader2,
+  Mic,
+  MicOff,
+  Video,
+  VideoOff,
+  AlertTriangle,
+} from "lucide-react";
+import { toast } from "sonner";
+import {
+  PreCallQuestions,
+  PreCallResponsesView,
+} from "@/components/calls/pre-call-questions";
 
 interface VideoRoomProps {
   callId: string;
@@ -33,6 +44,7 @@ export function VideoRoom({ callId }: VideoRoomProps) {
   const [showPreCallResponses, setShowPreCallResponses] = useState(false);
   const [hasJoined, setHasJoined] = useState(false);
   const [preCallCompleted, setPreCallCompleted] = useState(false);
+  const [showHangUpConfirm, setShowHangUpConfirm] = useState(false);
 
   // Reset call store when mounting (cleans up stale "ended" state from previous calls)
   useEffect(() => {
@@ -60,6 +72,11 @@ export function VideoRoom({ callId }: VideoRoomProps) {
 
   const myName = profile?.full_name ?? "Utilisateur";
 
+  // Error callback from WebRTC — show toast
+  const handleWebRTCError = useCallback((message: string) => {
+    toast.error(message, { duration: 5000 });
+  }, []);
+
   // Request preview media on mount
   useEffect(() => {
     let cancelled = false;
@@ -78,6 +95,10 @@ export function VideoRoom({ callId }: VideoRoomProps) {
 
         // Audio analyser for mic level indicator
         const audioCtx = new AudioContext();
+        // Resume AudioContext on mobile (required after user gesture)
+        if (audioCtx.state === "suspended") {
+          await audioCtx.resume();
+        }
         const source = audioCtx.createMediaStreamSource(stream);
         const analyser = audioCtx.createAnalyser();
         analyser.fftSize = 256;
@@ -99,8 +120,13 @@ export function VideoRoom({ callId }: VideoRoomProps) {
           setPreviewCamera(false);
           setPreviewError("Camera indisponible, audio uniquement");
         } catch {
-          if (!cancelled)
+          if (!cancelled) {
             setPreviewError("Impossible d'acceder au micro et a la camera");
+            toast.error(
+              "Verifiez les permissions de votre navigateur pour le micro et la camera.",
+              { duration: 6000 },
+            );
+          }
         }
       }
     }
@@ -132,6 +158,10 @@ export function VideoRoom({ callId }: VideoRoomProps) {
 
   // Toggle preview mic
   const togglePreviewMic = useCallback(() => {
+    // Resume AudioContext on user gesture (mobile)
+    if (audioCtxRef.current?.state === "suspended") {
+      audioCtxRef.current.resume();
+    }
     previewStream?.getAudioTracks().forEach((t) => {
       t.enabled = !t.enabled;
     });
@@ -175,7 +205,7 @@ export function VideoRoom({ callId }: VideoRoomProps) {
     startScreenShare,
     stopScreenShare,
     broadcastTranscript,
-  } = useWebRTC({ callId });
+  } = useWebRTC({ callId, onError: handleWebRTCError });
 
   const {
     isSupported: isTranscriptionSupported,
@@ -186,6 +216,22 @@ export function VideoRoom({ callId }: VideoRoomProps) {
     speakerName: myName,
     onEntry: (entry) => broadcastTranscript(entry),
   });
+
+  // Save transcript helper (used for hangup and beforeunload)
+  const saveTranscriptNow = useCallback(() => {
+    const s = useCallStore.getState();
+    if (s.transcriptEntries.length === 0) return;
+
+    const durationSeconds = s.callStartTime
+      ? Math.floor((Date.now() - s.callStartTime) / 1000)
+      : undefined;
+
+    saveTranscript.mutate({
+      call_id: callId,
+      content: s.transcriptEntries,
+      duration_seconds: durationSeconds,
+    });
+  }, [callId, saveTranscript]);
 
   // Join the call
   const handleJoin = useCallback(async () => {
@@ -240,24 +286,15 @@ export function VideoRoom({ callId }: VideoRoomProps) {
     previewCamera,
   ]);
 
-  // Leave / hang up
-  const handleHangUp = useCallback(async () => {
-    const s = useCallStore.getState();
+  // Actual hang-up logic (after confirmation)
+  const executeHangUp = useCallback(() => {
+    setShowHangUpConfirm(false);
 
-    // Save transcript if any
-    if (s.transcriptEntries.length > 0) {
-      const durationSeconds = s.callStartTime
-        ? Math.floor((Date.now() - s.callStartTime) / 1000)
-        : undefined;
-
-      saveTranscript.mutate({
-        call_id: callId,
-        content: s.transcriptEntries,
-        duration_seconds: durationSeconds,
-      });
-    }
+    // Save transcript
+    saveTranscriptNow();
 
     // Update room status
+    const s = useCallStore.getState();
     updateRoomStatus.mutate({
       id: callId,
       room_status: "ended",
@@ -269,7 +306,24 @@ export function VideoRoom({ callId }: VideoRoomProps) {
 
     stopTranscription();
     leaveCall();
-  }, [callId, saveTranscript, updateRoomStatus, stopTranscription, leaveCall]);
+  }, [
+    callId,
+    saveTranscriptNow,
+    updateRoomStatus,
+    stopTranscription,
+    leaveCall,
+  ]);
+
+  // Leave / hang up — shows confirmation dialog
+  const handleHangUp = useCallback(() => {
+    const s = useCallStore.getState();
+    // If call lasted > 5 seconds and remote was ever connected, show confirmation
+    if (s.callStartTime && Date.now() - s.callStartTime > 5000) {
+      setShowHangUpConfirm(true);
+    } else {
+      executeHangUp();
+    }
+  }, [executeHangUp]);
 
   // Toggle transcription
   const handleToggleTranscript = useCallback(() => {
@@ -291,17 +345,33 @@ export function VideoRoom({ callId }: VideoRoomProps) {
     }
   }, [startScreenShare, stopScreenShare]);
 
-  // Cleanup on unmount / beforeunload
+  // Save transcript on beforeunload + warn user
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      const { phase } = useCallStore.getState();
+      const { phase, transcriptEntries } = useCallStore.getState();
       if (phase === "connected" || phase === "connecting") {
         e.preventDefault();
+        // Save transcript as a last resort
+        if (transcriptEntries.length > 0) {
+          saveTranscriptNow();
+        }
       }
     };
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, []);
+  }, [saveTranscriptNow]);
+
+  // Show reconnection toast when phase changes to reconnecting
+  useEffect(() => {
+    if (store.phase === "reconnecting" && hasJoined) {
+      toast.warning("Reconnexion en cours...", {
+        id: "reconnecting-toast",
+        duration: Infinity,
+      });
+    } else if (store.phase === "connected" && hasJoined) {
+      toast.dismiss("reconnecting-toast");
+    }
+  }, [store.phase, hasJoined]);
 
   // Download transcript as TXT
   const handleDownloadTranscript = () => {
@@ -572,6 +642,40 @@ export function VideoRoom({ callId }: VideoRoomProps) {
           </div>
           <div className="flex-1 overflow-y-auto p-4">
             <PreCallResponsesView callId={callId} />
+          </div>
+        </div>
+      )}
+
+      {/* Hang-up confirmation dialog */}
+      {showHangUpConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="bg-zinc-900 border border-white/10 rounded-2xl p-6 max-w-sm mx-4 shadow-2xl">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-red-600/20 flex items-center justify-center">
+                <AlertTriangle className="w-5 h-5 text-red-400" />
+              </div>
+              <h3 className="text-lg font-semibold text-white">
+                Quitter l&apos;appel ?
+              </h3>
+            </div>
+            <p className="text-sm text-zinc-400 mb-6">
+              Etes-vous sur de vouloir raccrocher ? L&apos;appel sera termine
+              pour tous les participants.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowHangUpConfirm(false)}
+                className="flex-1 h-10 rounded-xl bg-zinc-800 text-white text-sm font-medium hover:bg-zinc-700 transition-colors"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={executeHangUp}
+                className="flex-1 h-10 rounded-xl bg-red-600 text-white text-sm font-medium hover:bg-red-700 transition-colors"
+              >
+                Raccrocher
+              </button>
+            </div>
           </div>
         </div>
       )}

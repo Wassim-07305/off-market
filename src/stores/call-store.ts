@@ -11,6 +11,8 @@ export type CallPhase =
   | "reconnecting"
   | "ended";
 
+export type NetworkQuality = "excellent" | "good" | "fair" | "poor" | "unknown";
+
 interface CallState {
   // Phase
   phase: CallPhase;
@@ -41,6 +43,18 @@ interface CallState {
   callStartTime: number | null;
   setCallStartTime: (t: number | null) => void;
 
+  // Network quality
+  networkQuality: NetworkQuality;
+  setNetworkQuality: (q: NetworkQuality) => void;
+
+  // Error
+  lastError: string | null;
+  setLastError: (err: string | null) => void;
+
+  // Reconnection
+  reconnectAttempt: number;
+  setReconnectAttempt: (n: number) => void;
+
   // Incoming call notification
   incomingCallId: string | null;
   incomingCallerName: string | null;
@@ -61,6 +75,9 @@ const initialState = {
   remoteUserName: null as string | null,
   isRemoteConnected: false,
   callStartTime: null as number | null,
+  networkQuality: "unknown" as NetworkQuality,
+  lastError: null as string | null,
+  reconnectAttempt: 0,
   incomingCallId: null as string | null,
   incomingCallerName: null as string | null,
 };
@@ -82,6 +99,12 @@ export const useCallStore = create<CallState>((set) => ({
   setRemoteConnected: (v) => set({ isRemoteConnected: v }),
 
   setCallStartTime: (t) => set({ callStartTime: t }),
+
+  setNetworkQuality: (q) => set({ networkQuality: q }),
+
+  setLastError: (err) => set({ lastError: err }),
+
+  setReconnectAttempt: (n) => set({ reconnectAttempt: n }),
 
   setIncomingCall: (callId, callerName) =>
     set({ incomingCallId: callId, incomingCallerName: callerName }),

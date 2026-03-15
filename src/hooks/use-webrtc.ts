@@ -4,7 +4,12 @@ import { useEffect, useRef, useCallback, useState } from "react";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
 import { useCallStore } from "@/stores/call-store";
+import type { NetworkQuality } from "@/stores/call-store";
 import type { RealtimeChannel } from "@supabase/supabase-js";
+
+const MAX_RECONNECT_ATTEMPTS = 5;
+const RECONNECT_BASE_DELAY_MS = 1000;
+const STATS_POLL_INTERVAL_MS = 3000;
 
 // ICE servers: Google STUN (free) + Cloudflare TURN (1000 GB/month free) + Open Relay fallback
 function getIceServers(): RTCIceServer[] {
@@ -13,8 +18,8 @@ function getIceServers(): RTCIceServer[] {
     { urls: "stun:stun1.l.google.com:19302" },
   ];
 
-  const turnId = process.env.NEXT_PUBLIC_CLOUDFLARE_TURN_TOKEN_ID;
-  const turnToken = process.env.NEXT_PUBLIC_CLOUDFLARE_TURN_API_TOKEN;
+  const turnId = import.meta.env.VITE_CLOUDFLARE_TURN_TOKEN_ID;
+  const turnToken = import.meta.env.VITE_CLOUDFLARE_TURN_API_TOKEN;
   if (turnId && turnToken) {
     servers.push({
       urls: "turn:turn.cloudflare.com:3478?transport=udp",
@@ -38,11 +43,20 @@ function getIceServers(): RTCIceServer[] {
   return servers;
 }
 
-interface UseWebRTCOptions {
-  callId: string;
+// Assess network quality from RTCStatsReport
+function assessQuality(rtt: number, packetLoss: number): NetworkQuality {
+  if (rtt < 100 && packetLoss < 1) return "excellent";
+  if (rtt < 200 && packetLoss < 3) return "good";
+  if (rtt < 400 && packetLoss < 8) return "fair";
+  return "poor";
 }
 
-export function useWebRTC({ callId }: UseWebRTCOptions) {
+interface UseWebRTCOptions {
+  callId: string;
+  onError?: (message: string) => void;
+}
+
+export function useWebRTC({ callId, onError }: UseWebRTCOptions) {
   const supabase = useSupabase();
   const { user, profile } = useAuth();
 
@@ -52,6 +66,9 @@ export function useWebRTC({ callId }: UseWebRTCOptions) {
   const screenStreamRef = useRef<MediaStream | null>(null);
   const makingOfferRef = useRef(false);
   const ignoringOfferRef = useRef(false);
+  const reconnectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const statsIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const isCleanedUpRef = useRef(false);
 
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
@@ -62,8 +79,83 @@ export function useWebRTC({ callId }: UseWebRTCOptions) {
   // "Polite peer" pattern: lower ID = polite (yields on collision)
   const isPolite = useCallback((remoteId: string) => myId < remoteId, [myId]);
 
+  // Report error to UI
+  const reportError = useCallback(
+    (message: string) => {
+      useCallStore.getState().setLastError(message);
+      onError?.(message);
+    },
+    [onError],
+  );
+
+  // Network quality monitoring via RTCStatsReport
+  const startStatsPolling = useCallback(() => {
+    if (statsIntervalRef.current) return;
+    let prevBytesSent = 0;
+    let prevPacketsSent = 0;
+    let prevPacketsLost = 0;
+
+    statsIntervalRef.current = setInterval(async () => {
+      const pc = pcRef.current;
+      if (!pc || pc.connectionState !== "connected") return;
+
+      try {
+        const stats = await pc.getStats();
+        let rtt = 0;
+        let currentPacketsSent = 0;
+        let currentPacketsLost = 0;
+
+        stats.forEach((report) => {
+          if (report.type === "candidate-pair" && report.nominated) {
+            rtt = report.currentRoundTripTime
+              ? report.currentRoundTripTime * 1000
+              : 0;
+          }
+          if (report.type === "outbound-rtp" && report.kind === "video") {
+            currentPacketsSent = report.packetsSent ?? 0;
+          }
+          if (report.type === "remote-inbound-rtp" && report.kind === "video") {
+            currentPacketsLost = report.packetsLost ?? 0;
+          }
+        });
+
+        // Calculate packet loss percentage from deltas
+        const deltaSent = currentPacketsSent - prevBytesSent;
+        const deltaLost = currentPacketsLost - prevPacketsLost;
+        prevBytesSent = currentPacketsSent;
+        prevPacketsSent = currentPacketsSent;
+        prevPacketsLost = currentPacketsLost;
+
+        const lossPercent =
+          deltaSent > 0 ? (deltaLost / (deltaSent + deltaLost)) * 100 : 0;
+        const quality = assessQuality(rtt, Math.max(0, lossPercent));
+        useCallStore.getState().setNetworkQuality(quality);
+      } catch {
+        // Stats not available
+      }
+    }, STATS_POLL_INTERVAL_MS);
+  }, []);
+
+  const stopStatsPolling = useCallback(() => {
+    if (statsIntervalRef.current) {
+      clearInterval(statsIntervalRef.current);
+      statsIntervalRef.current = null;
+    }
+    useCallStore.getState().setNetworkQuality("unknown");
+  }, []);
+
   // Use getState() everywhere to avoid stale closures and dependency cascades
   const cleanup = useCallback(() => {
+    isCleanedUpRef.current = true;
+
+    // Clear reconnect timer
+    if (reconnectTimerRef.current) {
+      clearTimeout(reconnectTimerRef.current);
+      reconnectTimerRef.current = null;
+    }
+
+    stopStatsPolling();
+
     try {
       localStreamRef.current?.getTracks().forEach((t) => t.stop());
       screenStreamRef.current?.getTracks().forEach((t) => t.stop());
@@ -93,14 +185,63 @@ export function useWebRTC({ callId }: UseWebRTCOptions) {
 
     useCallStore.getState().setRemoteConnected(false);
     useCallStore.getState().setScreenSharing(false);
-  }, [supabase]);
+    useCallStore.getState().setReconnectAttempt(0);
+  }, [supabase, stopStatsPolling]);
+
+  // Attempt ICE restart for reconnection
+  const attemptReconnect = useCallback(() => {
+    const pc = pcRef.current;
+    const store = useCallStore.getState();
+
+    if (!pc || isCleanedUpRef.current) return;
+
+    const attempt = store.reconnectAttempt + 1;
+    if (attempt > MAX_RECONNECT_ATTEMPTS) {
+      reportError(
+        "Connexion perdue. Impossible de se reconnecter apres plusieurs tentatives.",
+      );
+      store.setPhase("ended");
+      return;
+    }
+
+    store.setReconnectAttempt(attempt);
+    store.setPhase("reconnecting");
+
+    // Exponential backoff: 1s, 2s, 4s, 8s, 16s
+    const delay = RECONNECT_BASE_DELAY_MS * Math.pow(2, attempt - 1);
+
+    reconnectTimerRef.current = setTimeout(async () => {
+      try {
+        if (!pcRef.current || isCleanedUpRef.current) return;
+        // ICE restart via createOffer with iceRestart
+        const offer = await pcRef.current.createOffer({ iceRestart: true });
+        await pcRef.current.setLocalDescription(offer);
+        channelRef.current?.send({
+          type: "broadcast",
+          event: "offer",
+          payload: {
+            sdp: pcRef.current.localDescription,
+            senderId: myId,
+            senderName: myName,
+          },
+        });
+      } catch (err) {
+        console.error(`Reconnect attempt ${attempt} failed:`, err);
+        // Try again
+        attemptReconnect();
+      }
+    }, delay);
+  }, [myId, myName, reportError]);
 
   // Create peer connection and wire up signaling
   const setupConnection = useCallback(async () => {
     if (!myId) return;
+    isCleanedUpRef.current = false;
 
     const store = useCallStore.getState();
     store.setPhase("joining");
+    store.setLastError(null);
+    store.setReconnectAttempt(0);
 
     // 1. Get local media
     try {
@@ -110,7 +251,7 @@ export function useWebRTC({ callId }: UseWebRTCOptions) {
       });
       localStreamRef.current = stream;
       setLocalStream(stream);
-    } catch {
+    } catch (mediaErr) {
       // Fallback: audio only
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
@@ -119,9 +260,14 @@ export function useWebRTC({ callId }: UseWebRTCOptions) {
         });
         localStreamRef.current = stream;
         setLocalStream(stream);
-        useCallStore.getState().toggleCamera(); // camera off since no video
-      } catch (err) {
-        console.error("Cannot access media devices:", err);
+        useCallStore.getState().toggleCamera();
+        reportError(
+          "Camera indisponible. L'appel continue en audio uniquement.",
+        );
+      } catch {
+        reportError(
+          "Impossible d'acceder au micro et a la camera. Verifiez les permissions de votre navigateur.",
+        );
         useCallStore.getState().setPhase("ended");
         return;
       }
@@ -138,32 +284,75 @@ export function useWebRTC({ callId }: UseWebRTCOptions) {
       pc.addTrack(track, localStreamRef.current!);
     });
 
-    // Remote stream
+    // Remote stream with duplicate track prevention
     const remote = new MediaStream();
+    const addedTrackIds = new Set<string>();
     setRemoteStream(remote);
+
     pc.ontrack = (e) => {
       e.streams[0]?.getTracks().forEach((track) => {
-        remote.addTrack(track);
+        if (!addedTrackIds.has(track.id)) {
+          addedTrackIds.add(track.id);
+          remote.addTrack(track);
+
+          // Clean up when track ends
+          track.onended = () => {
+            addedTrackIds.delete(track.id);
+            try {
+              remote.removeTrack(track);
+            } catch {
+              /* track already removed */
+            }
+          };
+        }
       });
     };
 
-    // Connection state
+    // Connection state with reconnection logic
     pc.onconnectionstatechange = () => {
+      if (isCleanedUpRef.current) return;
       const s = useCallStore.getState();
       switch (pc.connectionState) {
         case "connected":
           s.setPhase("connected");
           s.setRemoteConnected(true);
+          s.setReconnectAttempt(0);
+          s.setLastError(null);
           if (!s.callStartTime) s.setCallStartTime(Date.now());
+          startStatsPolling();
           break;
         case "disconnected":
-        case "failed":
+          // Brief disconnection — wait before attempting reconnect
           s.setPhase("reconnecting");
           s.setRemoteConnected(false);
+          reconnectTimerRef.current = setTimeout(() => {
+            if (
+              pcRef.current?.connectionState === "disconnected" &&
+              !isCleanedUpRef.current
+            ) {
+              attemptReconnect();
+            }
+          }, 2000);
+          break;
+        case "failed":
+          s.setRemoteConnected(false);
+          attemptReconnect();
           break;
         case "closed":
           s.setRemoteConnected(false);
+          stopStatsPolling();
           break;
+      }
+    };
+
+    // ICE connection state for extra resilience
+    pc.oniceconnectionstatechange = () => {
+      if (
+        pc.iceConnectionState === "failed" &&
+        pc.connectionState !== "failed" &&
+        !isCleanedUpRef.current
+      ) {
+        attemptReconnect();
       }
     };
 
@@ -222,17 +411,25 @@ export function useWebRTC({ callId }: UseWebRTCOptions) {
           .getState()
           .setRemotePeer(payload.senderId, payload.senderName);
 
-        await currentPc.setRemoteDescription(payload.sdp);
-        await currentPc.setLocalDescription();
-        sigChannel.send({
-          type: "broadcast",
-          event: "answer",
-          payload: { sdp: currentPc.localDescription, senderId: myId },
-        });
+        try {
+          await currentPc.setRemoteDescription(payload.sdp);
+          await currentPc.setLocalDescription();
+          sigChannel.send({
+            type: "broadcast",
+            event: "answer",
+            payload: { sdp: currentPc.localDescription, senderId: myId },
+          });
+        } catch (err) {
+          console.error("Error handling offer:", err);
+        }
       })
       .on("broadcast", { event: "answer" }, async ({ payload }) => {
         if (!pcRef.current || payload.senderId === myId) return;
-        await pcRef.current.setRemoteDescription(payload.sdp);
+        try {
+          await pcRef.current.setRemoteDescription(payload.sdp);
+        } catch (err) {
+          console.error("Error handling answer:", err);
+        }
       })
       .on("broadcast", { event: "ice-candidate" }, async ({ payload }) => {
         if (!pcRef.current || payload.senderId === myId) return;
@@ -293,7 +490,17 @@ export function useWebRTC({ callId }: UseWebRTCOptions) {
           });
         }
       });
-  }, [myId, myName, callId, supabase, isPolite]);
+  }, [
+    myId,
+    myName,
+    callId,
+    supabase,
+    isPolite,
+    reportError,
+    attemptReconnect,
+    startStatsPolling,
+    stopStatsPolling,
+  ]);
 
   // Join call
   const joinCall = useCallback(async () => {
@@ -337,7 +544,7 @@ export function useWebRTC({ callId }: UseWebRTCOptions) {
     }
   }, []);
 
-  // Screen share
+  // Screen share with error feedback
   const startScreenShare = useCallback(async () => {
     if (!pcRef.current) return;
     try {
@@ -363,10 +570,14 @@ export function useWebRTC({ callId }: UseWebRTCOptions) {
       screenTrack.onended = () => {
         stopScreenShare();
       };
-    } catch {
-      // User cancelled
+    } catch (err) {
+      // NotAllowedError = user cancelled (don't show error)
+      if (err instanceof DOMException && err.name === "NotAllowedError") return;
+      reportError(
+        "Le partage d'ecran a echoue. Verifiez les permissions de votre navigateur.",
+      );
     }
-  }, []);
+  }, [reportError]);
 
   const stopScreenShare = useCallback(async () => {
     if (!pcRef.current || !localStreamRef.current) return;

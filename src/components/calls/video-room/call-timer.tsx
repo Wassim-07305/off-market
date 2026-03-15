@@ -5,17 +5,21 @@ import { useCallStore } from "@/stores/call-store";
 
 export function CallTimer() {
   const callStartTime = useCallStore((s) => s.callStartTime);
+  const phase = useCallStore((s) => s.phase);
   const [elapsed, setElapsed] = useState(0);
 
   useEffect(() => {
     if (!callStartTime) return;
+
+    // Stop ticking when call has ended
+    if (phase === "ended") return;
 
     const tick = () =>
       setElapsed(Math.floor((Date.now() - callStartTime) / 1000));
     tick();
     const interval = setInterval(tick, 1000);
     return () => clearInterval(interval);
-  }, [callStartTime]);
+  }, [callStartTime, phase]);
 
   if (!callStartTime) return null;
 
