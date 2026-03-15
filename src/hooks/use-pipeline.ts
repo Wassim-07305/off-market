@@ -65,9 +65,10 @@ export function usePipelineContacts(stage?: PipelineStage) {
       toast.success("Contact ajoute");
     },
     onError: (err: unknown) => {
-      const msg = err instanceof Error ? err.message : "Erreur inconnue";
+      const pg = err as { message?: string; code?: string; details?: string };
+      const msg = pg?.message || (err instanceof Error ? err.message : JSON.stringify(err));
       console.error("CRM contact create error:", err);
-      toast.error(`Erreur lors de l'ajout: ${msg}`);
+      toast.error(`Erreur: ${msg}`, { duration: 8000 });
     },
   });
 
