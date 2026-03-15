@@ -110,23 +110,20 @@ export function WidgetGrid() {
     setActiveId(event.active.id as string);
   }, []);
 
-  const handleDragEnd = useCallback(
-    (event: DragEndEvent) => {
-      setActiveId(null);
-      const { active, over } = event;
-      if (!over || active.id === over.id) return;
+  const handleDragEnd = useCallback((event: DragEndEvent) => {
+    setActiveId(null);
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
 
-      setLocalWidgets((prev) => {
-        const items = prev ?? [];
-        const oldIndex = items.findIndex((w) => w.id === active.id);
-        const newIndex = items.findIndex((w) => w.id === over.id);
-        if (oldIndex === -1 || newIndex === -1) return items;
-        const reordered = arrayMove(items, oldIndex, newIndex);
-        return reordered.map((w, i) => ({ ...w, position: i }));
-      });
-    },
-    [],
-  );
+    setLocalWidgets((prev) => {
+      const items = prev ?? [];
+      const oldIndex = items.findIndex((w) => w.id === active.id);
+      const newIndex = items.findIndex((w) => w.id === over.id);
+      if (oldIndex === -1 || newIndex === -1) return items;
+      const reordered = arrayMove(items, oldIndex, newIndex);
+      return reordered.map((w, i) => ({ ...w, position: i }));
+    });
+  }, []);
 
   const activeWidget = activeId
     ? visibleWidgets.find((w) => w.id === activeId)
@@ -222,7 +219,8 @@ export function WidgetGrid() {
           <div
             className={cn(
               "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5",
-              isEditing && "p-4 rounded-2xl border-2 border-dashed border-border/50 bg-muted/20",
+              isEditing &&
+                "p-4 rounded-2xl border-2 border-dashed border-border/50 bg-muted/20",
             )}
           >
             {visibleWidgets.map((widget) => (

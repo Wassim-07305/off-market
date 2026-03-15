@@ -1,9 +1,10 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { useCallStore } from "@/stores/call-store";
 import { TranscriptEntryComponent } from "./transcript-entry";
-import { ScrollText, X, Download } from "lucide-react";
+import { ScrollText, X, Download, FileDown, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 interface TranscriptPanelProps {
   onClose: () => void;
@@ -19,13 +20,19 @@ export function TranscriptPanel({ onClose }: TranscriptPanelProps) {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [entries.length]);
 
-  const handleDownload = () => {
-    const lines = entries.map((e) => {
+  const [isExportingPdf, setIsExportingPdf] = useState(false);
+
+  const formatEntries = () => {
+    return entries.map((e) => {
       const relSec = Math.floor((e.timestamp_ms - callStartTime) / 1000);
       const min = Math.floor(relSec / 60);
       const sec = relSec % 60;
       return `[${min.toString().padStart(2, "0")}:${sec.toString().padStart(2, "0")}] ${e.speaker_name}: ${e.text}`;
     });
+  };
+
+  const handleDownload = () => {
+    const lines = formatEntries();
     const blob = new Blob([lines.join("\n")], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -33,6 +40,56 @@ export function TranscriptPanel({ onClose }: TranscriptPanelProps) {
     a.download = `transcript-${new Date().toISOString().slice(0, 10)}.txt`;
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  const handleExportPdf = async () => {
+    if (entries.length === 0) return;
+    setIsExportingPdf(true);
+
+    try {
+      const lines = formatEntries();
+      const transcriptText = lines.join("\n");
+
+      const res = await fetch("/api/transcriptions/live/pdf", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          transcriptText,
+          callStartTime,
+          entriesCount: entries.length,
+        }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => null);
+        throw new Error(err?.error ?? "Erreur lors de l'export");
+      }
+
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const disposition = res.headers.get("Content-Disposition");
+      const fileNameMatch = disposition?.match(/filename="(.+?)"/);
+      const fileName =
+        fileNameMatch?.[1] ??
+        `transcription-${new Date().toISOString().slice(0, 10)}.pdf`;
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      toast.success("Transcription exportee en PDF");
+    } catch (err) {
+      console.error("[TranscriptPanel] PDF export error:", err);
+      toast.error(
+        err instanceof Error ? err.message : "Erreur lors de l'export PDF",
+      );
+    } finally {
+      setIsExportingPdf(false);
+    }
   };
 
   return (
@@ -50,13 +107,27 @@ export function TranscriptPanel({ onClose }: TranscriptPanelProps) {
         </div>
         <div className="flex items-center gap-1">
           {entries.length > 0 && (
-            <button
-              onClick={handleDownload}
-              className="w-7 h-7 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-              title="Telecharger"
-            >
-              <Download className="w-3.5 h-3.5" />
-            </button>
+            <>
+              <button
+                onClick={handleExportPdf}
+                disabled={isExportingPdf}
+                className="w-7 h-7 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                title="Telecharger PDF"
+              >
+                {isExportingPdf ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <FileDown className="w-3.5 h-3.5" />
+                )}
+              </button>
+              <button
+                onClick={handleDownload}
+                className="w-7 h-7 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                title="Telecharger TXT"
+              >
+                <Download className="w-3.5 h-3.5" />
+              </button>
+            </>
           )}
           <button
             onClick={onClose}

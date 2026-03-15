@@ -31,12 +31,7 @@ export function ActivityHeatmap() {
   } | null>(null);
 
   const handleMouseEnter = useCallback(
-    (
-      e: React.MouseEvent,
-      day: number,
-      hour: number,
-      count: number,
-    ) => {
+    (e: React.MouseEvent, day: number, hour: number, count: number) => {
       const rect = e.currentTarget.getBoundingClientRect();
       setTooltip({
         day,
@@ -125,9 +120,7 @@ export function ActivityHeatmap() {
             <div className="w-3 h-3 rounded-[2px] bg-primary/40" />
             <div className="w-3 h-3 rounded-[2px] bg-primary/60" />
             <div className="w-3 h-3 rounded-[2px] bg-primary/80" />
-            <span className="text-[10px] text-muted-foreground ml-1">
-              Plus
-            </span>
+            <span className="text-[10px] text-muted-foreground ml-1">Plus</span>
           </div>
 
           {/* Tooltip */}

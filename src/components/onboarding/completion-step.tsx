@@ -86,8 +86,8 @@ export function CompletionStep({
         transition={{ delay: 0.4 }}
         className="text-lg text-white/50 mb-8 max-w-md"
       >
-        Ton onboarding est termine. Tu es pret a demarrer ton aventure
-        Off Market.
+        Ton onboarding est termine. Tu es pret a demarrer ton aventure Off
+        Market.
       </motion.p>
 
       {/* Completed items */}

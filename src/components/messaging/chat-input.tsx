@@ -28,7 +28,11 @@ import {
 
 interface ChatInputProps {
   channelName: string;
-  onSend: (content: string, scheduledAt?: string, isUrgent?: boolean) => Promise<void>;
+  onSend: (
+    content: string,
+    scheduledAt?: string,
+    isUrgent?: boolean,
+  ) => Promise<void>;
   onFileUpload: (file: File) => Promise<void>;
   onVoiceSend: (blob: Blob, duration: number) => Promise<void>;
   replyTo: { id: string; content: string; senderName: string } | null;
@@ -215,8 +219,7 @@ export function ChatInput({
         setMessage(before + content + after);
       } else {
         // Insert at cursor or append
-        const cursorPos =
-          textareaRef.current?.selectionStart ?? message.length;
+        const cursorPos = textareaRef.current?.selectionStart ?? message.length;
         const before = message.slice(0, cursorPos);
         const after = message.slice(cursorPos);
         setMessage(before + content + after);
@@ -439,7 +442,13 @@ export function ChatInput({
                       ? "bg-amber-500 hover:bg-amber-600"
                       : "bg-primary hover:bg-primary/90",
                 )}
-                title={isUrgent ? "Envoyer (urgent)" : scheduledAt ? "Programmer" : "Envoyer"}
+                title={
+                  isUrgent
+                    ? "Envoyer (urgent)"
+                    : scheduledAt
+                      ? "Programmer"
+                      : "Envoyer"
+                }
               >
                 {isSending ? (
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />

@@ -35,8 +35,8 @@ export interface CalendarEventRow {
 // Color constants
 export const EVENT_COLORS: Record<CalendarEventType, string> = {
   session: "#3B82F6", // blue
-  call: "#10B981",    // green
-  event: "#8B5CF6",   // purple
+  call: "#10B981", // green
+  event: "#8B5CF6", // purple
 };
 
 export const EVENT_TYPE_LABELS: Record<CalendarEventType, string> = {

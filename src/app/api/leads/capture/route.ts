@@ -6,17 +6,18 @@ const captureSchema = z.object({
   full_name: z.string().min(2, "Le nom est requis").max(200, "Nom trop long"),
   email: z.string().email("Email invalide").max(320, "Email trop long"),
   phone: z.string().max(30, "Numero trop long").optional().default(""),
-  company: z.string().max(200, "Nom d'entreprise trop long").optional().default(""),
-  revenue_range: z.enum([
-    "less_5k",
-    "5k_10k",
-    "10k_20k",
-    "20k_plus",
-  ]),
+  company: z
+    .string()
+    .max(200, "Nom d'entreprise trop long")
+    .optional()
+    .default(""),
+  revenue_range: z.enum(["less_5k", "5k_10k", "10k_20k", "20k_plus"]),
   goals: z.string().max(2000, "Texte trop long").optional().default(""),
 });
 
-function calculateQualificationScore(data: z.infer<typeof captureSchema>): number {
+function calculateQualificationScore(
+  data: z.infer<typeof captureSchema>,
+): number {
   let score = 0;
 
   // Revenue-based scoring
@@ -36,7 +37,16 @@ function calculateQualificationScore(data: z.infer<typeof captureSchema>): numbe
   if (data.company && data.company.length > 0) score += 10;
 
   // Email domain check (non-free email = more likely business)
-  const freeProviders = ["gmail.com", "hotmail.com", "yahoo.com", "outlook.com", "live.com", "orange.fr", "free.fr", "sfr.fr"];
+  const freeProviders = [
+    "gmail.com",
+    "hotmail.com",
+    "yahoo.com",
+    "outlook.com",
+    "live.com",
+    "orange.fr",
+    "free.fr",
+    "sfr.fr",
+  ];
   const domain = data.email.split("@")[1]?.toLowerCase();
   if (domain && !freeProviders.includes(domain)) score += 20;
 
@@ -50,7 +60,10 @@ export async function POST(request: Request) {
 
     if (!parsed.success) {
       return NextResponse.json(
-        { error: "Donnees invalides", details: parsed.error.flatten().fieldErrors },
+        {
+          error: "Donnees invalides",
+          details: parsed.error.flatten().fieldErrors,
+        },
         { status: 400 },
       );
     }
@@ -97,9 +110,7 @@ export async function POST(request: Request) {
         qualification_score: qualificationScore,
         revenue_range: data.revenue_range,
         goals: data.goals || null,
-        notes: data.goals
-          ? `Objectifs: ${data.goals}`
-          : null,
+        notes: data.goals ? `Objectifs: ${data.goals}` : null,
         captured_at: new Date().toISOString(),
         tags: ["lead_magnet"],
       })
@@ -120,9 +131,6 @@ export async function POST(request: Request) {
     );
   } catch (err) {
     console.error("Lead capture error:", err);
-    return NextResponse.json(
-      { error: "Erreur serveur" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
   }
 }

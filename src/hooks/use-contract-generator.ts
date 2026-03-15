@@ -23,7 +23,9 @@ export function useClientBusinessInfo(clientId: string | undefined) {
     queryFn: async () => {
       const { data, error } = await (supabase as any)
         .from("profiles")
-        .select("siret, company_name, company_address, legal_form, full_name, email")
+        .select(
+          "siret, company_name, company_address, legal_form, full_name, email",
+        )
         .eq("id", clientId!)
         .single();
       if (error) throw error;
@@ -56,7 +58,10 @@ export function useSaveBusinessInfo() {
         .eq("id", clientId);
       if (error) throw error;
     },
-    onSuccess: (_data: unknown, variables: ClientBusinessInfo & { clientId: string }) => {
+    onSuccess: (
+      _data: unknown,
+      variables: ClientBusinessInfo & { clientId: string },
+    ) => {
       queryClient.invalidateQueries({
         queryKey: ["client-business-info", variables.clientId],
       });

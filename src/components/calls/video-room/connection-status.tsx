@@ -1,7 +1,19 @@
 "use client";
 
-import { useCallStore, type CallPhase, type NetworkQuality } from "@/stores/call-store";
-import { Loader2, Wifi, WifiOff, Signal, SignalLow, SignalMedium, SignalHigh } from "lucide-react";
+import {
+  useCallStore,
+  type CallPhase,
+  type NetworkQuality,
+} from "@/stores/call-store";
+import {
+  Loader2,
+  Wifi,
+  WifiOff,
+  Signal,
+  SignalLow,
+  SignalMedium,
+  SignalHigh,
+} from "lucide-react";
 
 const STATUS_CONFIG: Record<
   CallPhase,
@@ -33,7 +45,11 @@ const STATUS_CONFIG: Record<
 
 const QUALITY_CONFIG: Record<
   NetworkQuality,
-  { label: string; color: string; Icon: React.ComponentType<{ className?: string }> }
+  {
+    label: string;
+    color: string;
+    Icon: React.ComponentType<{ className?: string }>;
+  }
 > = {
   excellent: { label: "Excellent", color: "text-green-400", Icon: SignalHigh },
   good: { label: "Bon", color: "text-green-400", Icon: SignalHigh },
@@ -73,17 +89,19 @@ export function ConnectionStatus() {
       </div>
 
       {/* Network quality badge — only show when connected */}
-      {phase === "connected" && isRemoteConnected && networkQuality !== "unknown" && (
-        <div
-          className={`flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-white/5 ${qualityInfo.color}`}
-          title={`Qualite reseau : ${qualityInfo.label}`}
-        >
-          <qualityInfo.Icon className="w-3 h-3" />
-          <span className="text-[10px] font-medium hidden sm:inline">
-            {qualityInfo.label}
-          </span>
-        </div>
-      )}
+      {phase === "connected" &&
+        isRemoteConnected &&
+        networkQuality !== "unknown" && (
+          <div
+            className={`flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-white/5 ${qualityInfo.color}`}
+            title={`Qualite reseau : ${qualityInfo.label}`}
+          >
+            <qualityInfo.Icon className="w-3 h-3" />
+            <span className="text-[10px] font-medium hidden sm:inline">
+              {qualityInfo.label}
+            </span>
+          </div>
+        )}
     </div>
   );
 }

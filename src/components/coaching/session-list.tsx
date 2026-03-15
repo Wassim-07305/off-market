@@ -23,7 +23,10 @@ import { Badge } from "@/components/ui/badge";
 
 const STATUS_CONFIG: Record<
   SessionStatus,
-  { label: string; variant: "default" | "success" | "warning" | "destructive" | "secondary" }
+  {
+    label: string;
+    variant: "default" | "success" | "warning" | "destructive" | "secondary";
+  }
 > = {
   scheduled: { label: "Planifiee", variant: "default" },
   completed: { label: "Terminee", variant: "success" },
@@ -37,22 +40,27 @@ const TYPE_LABELS: Record<string, string> = {
   emergency: "Urgence",
 };
 
-const STATUS_FILTER_OPTIONS: { value: SessionStatus | "all"; label: string }[] = [
-  { value: "all", label: "Toutes" },
-  { value: "scheduled", label: "Planifiees" },
-  { value: "completed", label: "Terminees" },
-  { value: "cancelled", label: "Annulees" },
-  { value: "no_show", label: "Absents" },
-];
+const STATUS_FILTER_OPTIONS: { value: SessionStatus | "all"; label: string }[] =
+  [
+    { value: "all", label: "Toutes" },
+    { value: "scheduled", label: "Planifiees" },
+    { value: "completed", label: "Terminees" },
+    { value: "cancelled", label: "Annulees" },
+    { value: "no_show", label: "Absents" },
+  ];
 
 // ── Component ──────────────────────────────────────────────────────────────
 
 export function SessionList() {
-  const [statusFilter, setStatusFilter] = useState<SessionStatus | "all">("all");
+  const [statusFilter, setStatusFilter] = useState<SessionStatus | "all">(
+    "all",
+  );
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
-  const [editSession, setEditSession] = useState<SessionWithRelations | null>(null);
+  const [editSession, setEditSession] = useState<SessionWithRelations | null>(
+    null,
+  );
 
   const filters: SessionFilters | undefined = useMemo(() => {
     const f: SessionFilters = {};
@@ -207,7 +215,10 @@ export function SessionList() {
                       {new Date(session.scheduled_at).getDate()}
                     </div>
                     <div className="text-[10px] text-muted-foreground uppercase">
-                      {new Date(session.scheduled_at).toLocaleDateString("fr-FR", { month: "short" })}
+                      {new Date(session.scheduled_at).toLocaleDateString(
+                        "fr-FR",
+                        { month: "short" },
+                      )}
                     </div>
                   </div>
 
@@ -221,7 +232,8 @@ export function SessionList() {
                         {statusConfig.label}
                       </Badge>
                       <span className="text-[10px] font-medium text-muted-foreground px-1.5 py-0.5 rounded bg-muted/50">
-                        {TYPE_LABELS[session.session_type] ?? session.session_type}
+                        {TYPE_LABELS[session.session_type] ??
+                          session.session_type}
                       </span>
                     </div>
                     <div className="flex items-center gap-3 text-xs text-muted-foreground">
@@ -233,7 +245,8 @@ export function SessionList() {
                       )}
                       <span className="flex items-center gap-1">
                         <Clock className="w-3 h-3" />
-                        {formatTime(session.scheduled_at)} — {session.duration_minutes} min
+                        {formatTime(session.scheduled_at)} —{" "}
+                        {session.duration_minutes} min
                       </span>
                     </div>
                     {session.notes && (

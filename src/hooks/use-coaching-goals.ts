@@ -53,7 +53,9 @@ export function useCoachingGoals(clientId?: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["coaching-goals"] });
     },
-    onError: () => { toast.error("Erreur lors de la création de l'objectif"); },
+    onError: () => {
+      toast.error("Erreur lors de la création de l'objectif");
+    },
   });
 
   const updateGoal = useMutation({
@@ -70,7 +72,9 @@ export function useCoachingGoals(clientId?: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["coaching-goals"] });
     },
-    onError: () => { toast.error("Erreur lors de la mise à jour de l'objectif"); },
+    onError: () => {
+      toast.error("Erreur lors de la mise à jour de l'objectif");
+    },
   });
 
   const updateProgress = useMutation({
@@ -90,7 +94,9 @@ export function useCoachingGoals(clientId?: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["coaching-goals"] });
     },
-    onError: () => { toast.error("Erreur lors de la mise à jour de la progression"); },
+    onError: () => {
+      toast.error("Erreur lors de la mise à jour de la progression");
+    },
   });
 
   return {

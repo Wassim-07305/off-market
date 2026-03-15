@@ -68,10 +68,7 @@ export function JournalPromptCard({ onUsePrompt }: JournalPromptCardProps) {
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className={cn(
-        "rounded-2xl border bg-gradient-to-br p-5",
-        colorClass,
-      )}
+      className={cn("rounded-2xl border bg-gradient-to-br p-5", colorClass)}
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-3">

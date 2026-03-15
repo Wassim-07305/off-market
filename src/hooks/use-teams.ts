@@ -62,7 +62,9 @@ export function useTeam(id: string | undefined) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data: members, error: mErr } = await (supabase as any)
         .from("team_members")
-        .select("*, profile:profiles!team_members_user_id_fkey(id, full_name, avatar_url)")
+        .select(
+          "*, profile:profiles!team_members_user_id_fkey(id, full_name, avatar_url)",
+        )
         .eq("team_id", id)
         .order("joined_at", { ascending: true });
 
@@ -89,7 +91,9 @@ export function useMyTeam() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data, error } = await (supabase as any)
         .from("team_members")
-        .select("team_id, team:teams!team_members_team_id_fkey(*, captain:profiles!teams_captain_id_fkey(id, full_name, avatar_url))")
+        .select(
+          "team_id, team:teams!team_members_team_id_fkey(*, captain:profiles!teams_captain_id_fkey(id, full_name, avatar_url))",
+        )
         .eq("user_id", user!.id)
         .limit(1)
         .maybeSingle();

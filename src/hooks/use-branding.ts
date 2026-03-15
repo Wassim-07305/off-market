@@ -43,12 +43,15 @@ export function useBranding() {
         .limit(1)
         .maybeSingle();
       if (error) throw error;
-      return (data as BrandingSettings | null) ?? ({
-        ...DEFAULTS,
-        id: "",
-        updated_at: "",
-        updated_by: null,
-      } as BrandingSettings);
+      return (
+        (data as BrandingSettings | null) ??
+        ({
+          ...DEFAULTS,
+          id: "",
+          updated_at: "",
+          updated_by: null,
+        } as BrandingSettings)
+      );
     },
     staleTime: 5 * 60 * 1000, // Cache 5 minutes
   });
@@ -60,11 +63,11 @@ export function useUpdateBranding() {
 
   return useMutation({
     mutationFn: async (updates: Partial<BrandingSettings>) => {
-      const { data: existing } = await supabase
+      const { data: existing } = (await supabase
         .from("branding_settings")
         .select("id")
         .limit(1)
-        .single() as { data: { id: string } | null; error: unknown };
+        .single()) as { data: { id: string } | null; error: unknown };
 
       if (!existing) throw new Error("Branding settings not found");
 
@@ -89,13 +92,7 @@ export function useUploadBrandingAsset() {
   const supabase = useSupabase();
 
   return useMutation({
-    mutationFn: async ({
-      file,
-      path,
-    }: {
-      file: File;
-      path: string;
-    }) => {
+    mutationFn: async ({ file, path }: { file: File; path: string }) => {
       const { error } = await supabase.storage
         .from("branding")
         .upload(path, file, { upsert: true });

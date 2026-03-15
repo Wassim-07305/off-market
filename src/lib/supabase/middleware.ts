@@ -113,7 +113,9 @@ export async function updateSession(request: NextRequest) {
 
       // Enforce onboarding: redirect to /onboarding if not completed
       // Exception: allow call room pages so users can join calls during onboarding
-      const isCallRoom = /^\/(admin|coach|sales|client)\/calls\/[^/]+$/.test(pathname);
+      const isCallRoom = /^\/(admin|coach|sales|client)\/calls\/[^/]+$/.test(
+        pathname,
+      );
       if (!onboardingDone && !isOnboardingPage && !isApiRoute && !isCallRoom) {
         const url = request.nextUrl.clone();
         url.pathname = "/onboarding";

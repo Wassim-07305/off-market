@@ -113,9 +113,7 @@ export function UpsellDashboard() {
             <div className="space-y-3">
               {data.triggers.slice(0, 10).map((trigger) => {
                 const statusConfig =
-                  UPSELL_STATUS_CONFIG[
-                    trigger.status as UpsellTriggerStatus
-                  ];
+                  UPSELL_STATUS_CONFIG[trigger.status as UpsellTriggerStatus];
                 return (
                   <div
                     key={trigger.id}

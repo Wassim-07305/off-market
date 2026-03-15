@@ -89,7 +89,14 @@ export interface InvoiceLineItem {
   total: number;
 }
 
-export type InvoiceStatus = "draft" | "sent" | "paid" | "overdue" | "cancelled" | "partial" | "refunded";
+export type InvoiceStatus =
+  | "draft"
+  | "sent"
+  | "paid"
+  | "overdue"
+  | "cancelled"
+  | "partial"
+  | "refunded";
 
 // ─── PAYMENT SCHEDULES ──────────────────
 export interface PaymentSchedule {
@@ -156,7 +163,7 @@ export interface CommissionSummary {
 
 /** Default commission rates by role (as decimal, e.g. 0.10 = 10%) */
 export const DEFAULT_COMMISSION_RATES: Record<CommissionRole, number> = {
-  closer: 0.10,
+  closer: 0.1,
   setter: 0.05,
   coach: 0.03,
   referral: 0.05,

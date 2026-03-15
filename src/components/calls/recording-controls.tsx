@@ -1,7 +1,14 @@
 "use client";
 
 import { useCallback } from "react";
-import { Circle, Square, Save, Download, RotateCcw, Loader2 } from "lucide-react";
+import {
+  Circle,
+  Square,
+  Save,
+  Download,
+  RotateCcw,
+  Loader2,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCallRecording } from "@/hooks/use-call-recording";
 
@@ -141,7 +148,11 @@ export function RecordingControls({ callId, stream }: RecordingControlsProps) {
  * Compact consent banner shown to all participants when recording is active.
  * Place this in the video room top bar.
  */
-export function RecordingConsentBanner({ isRecording }: { isRecording: boolean }) {
+export function RecordingConsentBanner({
+  isRecording,
+}: {
+  isRecording: boolean;
+}) {
   if (!isRecording) return null;
 
   return (

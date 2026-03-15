@@ -75,10 +75,7 @@ export function useConvertCurrency() {
 export function useUserCurrency(): SupportedCurrency {
   const { profile } = useAuth();
   const raw = profile?.default_currency;
-  if (
-    typeof raw === "string" &&
-    ["EUR", "USD", "GBP", "CHF"].includes(raw)
-  ) {
+  if (typeof raw === "string" && ["EUR", "USD", "GBP", "CHF"].includes(raw)) {
     return raw as SupportedCurrency;
   }
   return "EUR";
@@ -97,8 +94,7 @@ export function useUpdateDefaultCurrency() {
       if (!user) throw new Error("Non authentifie");
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { error } = await (supabase
-        .from("profiles") as any)
+      const { error } = await (supabase.from("profiles") as any)
         .update({ default_currency: currency })
         .eq("id", user.id);
 

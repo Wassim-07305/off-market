@@ -23,7 +23,9 @@ export async function triggerRoadmapGeneration(
 ): Promise<boolean> {
   try {
     // 1. Check if client already has any active roadmap
-    const { data: existing, error: checkError } = await (supabase as SupabaseClient)
+    const { data: existing, error: checkError } = await (
+      supabase as SupabaseClient
+    )
       .from("client_roadmaps")
       .select("id")
       .eq("client_id", clientId)
@@ -32,7 +34,10 @@ export async function triggerRoadmapGeneration(
       .maybeSingle();
 
     if (checkError) {
-      console.error("[auto-roadmap] Error checking existing roadmap:", checkError);
+      console.error(
+        "[auto-roadmap] Error checking existing roadmap:",
+        checkError,
+      );
       return false;
     }
 
@@ -68,7 +73,9 @@ export async function triggerRoadmapGeneration(
       data: { user },
     } = await supabase.auth.getUser();
 
-    const { data: roadmap, error: insertError } = await (supabase as SupabaseClient)
+    const { data: roadmap, error: insertError } = await (
+      supabase as SupabaseClient
+    )
       .from("client_roadmaps")
       .insert({
         client_id: clientId,
@@ -89,7 +96,15 @@ export async function triggerRoadmapGeneration(
     // 4. Insert milestones
     if (generated.milestones?.length && roadmap) {
       const milestonesData = generated.milestones.map(
-        (m: { title: string; description?: string; validation_criteria?: string[]; order_index?: number }, i: number) => ({
+        (
+          m: {
+            title: string;
+            description?: string;
+            validation_criteria?: string[];
+            order_index?: number;
+          },
+          i: number,
+        ) => ({
           roadmap_id: roadmap.id,
           title: m.title,
           description: m.description ?? null,

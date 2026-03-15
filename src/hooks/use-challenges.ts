@@ -38,7 +38,10 @@ export function useChallenges() {
 
       const countMap = new Map<string, number>();
       for (const row of counts ?? []) {
-        countMap.set(row.challenge_id, (countMap.get(row.challenge_id) ?? 0) + 1);
+        countMap.set(
+          row.challenge_id,
+          (countMap.get(row.challenge_id) ?? 0) + 1,
+        );
       }
 
       // Fetch user participations

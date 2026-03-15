@@ -140,9 +140,7 @@ export function useClosingStats(options: UseClosingStatsOptions = {}) {
         return found?.label ?? source;
       };
 
-      const bySource: ClosingStatBySource[] = Array.from(
-        sourceMap.entries(),
-      )
+      const bySource: ClosingStatBySource[] = Array.from(sourceMap.entries())
         .map(([source, data]) => {
           const decided = data.clients + data.perdus;
           const closingRate =

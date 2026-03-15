@@ -218,7 +218,9 @@ export function ChannelSidebar({
                 >
                   <Archive className="w-3 h-3" />
                   <span className="font-medium">
-                    {showArchived ? "Masquer les archives" : "Voir les archives"}
+                    {showArchived
+                      ? "Masquer les archives"
+                      : "Voir les archives"}
                   </span>
                   <span className="text-[10px] opacity-60">
                     ({archivedChannels.length})
@@ -229,7 +231,12 @@ export function ChannelSidebar({
                   <div className="px-2 space-y-0.5 mt-0.5">
                     {archivedChannels.map((ch) => {
                       const isActive = ch.id === activeChannelId;
-                      const Icon = ch.type === "private" ? Lock : ch.type === "dm" ? MessageSquare : Hash;
+                      const Icon =
+                        ch.type === "private"
+                          ? Lock
+                          : ch.type === "dm"
+                            ? MessageSquare
+                            : Hash;
                       return (
                         <button
                           key={ch.id}
@@ -336,7 +343,9 @@ export function ChannelSidebar({
                                   />
                                 ) : (
                                   <span className="text-xs font-medium text-primary">
-                                    {partner ? getInitials(partner.full_name) : "?"}
+                                    {partner
+                                      ? getInitials(partner.full_name)
+                                      : "?"}
                                   </span>
                                 )}
                               </div>
@@ -364,7 +373,9 @@ export function ChannelSidebar({
                       {filteredUsersWithoutDM.map((p) => (
                         <button
                           key={`new-dm-${p.id}`}
-                          onClick={async () => { await onCreateDM(p.id); }}
+                          onClick={async () => {
+                            await onCreateDM(p.id);
+                          }}
                           className="flex flex-col items-center gap-1 p-2 rounded-xl text-[11px] text-muted-foreground hover:text-foreground hover:bg-muted/60 active:scale-[0.96] transition-all duration-150"
                         >
                           <div className="relative">

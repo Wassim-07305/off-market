@@ -85,8 +85,7 @@ export default function ClientRoadmapPage({
     setFlagReason("");
   };
 
-  const isPending =
-    updateMilestone.isPending || completeMilestone.isPending;
+  const isPending = updateMilestone.isPending || completeMilestone.isPending;
 
   return (
     <motion.div

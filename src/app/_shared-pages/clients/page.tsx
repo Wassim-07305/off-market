@@ -23,16 +23,27 @@ import {
 } from "lucide-react";
 import { AddClientModal } from "@/components/crm/add-client-modal";
 import { StudentSidePanel } from "@/components/crm/student-side-panel";
+import { SavedSegments } from "@/components/crm/saved-segments";
+import type { SegmentFilters } from "@/components/crm/saved-segments";
 
 export default function ClientsPage() {
   const [search, setSearch] = useState("");
   const [activeTag, setActiveTag] = useState("all");
   const [showAddModal, setShowAddModal] = useState(false);
-  const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
+  const [selectedStudentId, setSelectedStudentId] = useState<string | null>(
+    null,
+  );
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [bulkAction, setBulkAction] = useState<string | null>(null);
   const [bulkLoading, setBulkLoading] = useState(false);
   const prefix = useRoutePrefix();
+
+  const handleApplySegment = useCallback((filters: SegmentFilters) => {
+    setSearch(filters.search ?? "");
+    setActiveTag(filters.tag ?? "all");
+  }, []);
+
+  const hasActiveFilters = search !== "" || activeTag !== "all";
   const supabase = useSupabase();
   const queryClient = useQueryClient();
   const { students, isLoading, updateStudentTag } = useStudents({
@@ -76,7 +87,10 @@ export default function ClientsPage() {
       toast.success(`Tag mis a jour pour ${ids.length} eleve(s)`);
       clearSelection();
       setBulkAction(null);
-      queryClient.invalidateQueries({ queryKey: ["students"], refetchType: "all" });
+      queryClient.invalidateQueries({
+        queryKey: ["students"],
+        refetchType: "all",
+      });
     } catch {
       toast.error("Erreur lors de la mise a jour");
     } finally {
@@ -223,6 +237,15 @@ export default function ClientsPage() {
           />
         </div>
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
+          <SavedSegments
+            currentFilters={{
+              tag: activeTag !== "all" ? activeTag : undefined,
+              search: search || undefined,
+            }}
+            onApplySegment={handleApplySegment}
+            hasActiveFilters={hasActiveFilters}
+          />
+          <div className="w-px h-5 bg-border/50 mx-0.5" />
           <button
             onClick={() => setActiveTag("all")}
             className={cn(
@@ -406,10 +429,7 @@ export default function ClientsPage() {
                       <td className="px-5 py-3.5 hidden lg:table-cell">
                         <span className="text-[11px] text-muted-foreground font-mono">
                           {details?.last_engagement_at
-                            ? formatDate(
-                                details.last_engagement_at,
-                                "relative",
-                              )
+                            ? formatDate(details.last_engagement_at, "relative")
                             : "-"}
                         </span>
                       </td>

@@ -79,9 +79,11 @@ export function RgpdConsentBanner() {
               Protection de tes donnees
             </h3>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Off Market utilise tes donnees personnelles pour te fournir un accompagnement personnalise.
-              Tes donnees sont stockees de maniere securisee et ne sont jamais partagees avec des tiers.
-              Tu peux exporter ou supprimer tes donnees a tout moment depuis les Reglages.
+              Off Market utilise tes donnees personnelles pour te fournir un
+              accompagnement personnalise. Tes donnees sont stockees de maniere
+              securisee et ne sont jamais partagees avec des tiers. Tu peux
+              exporter ou supprimer tes donnees a tout moment depuis les
+              Reglages.
             </p>
             <p className="text-xs text-muted-foreground mt-2">
               En continuant, tu acceptes notre{" "}

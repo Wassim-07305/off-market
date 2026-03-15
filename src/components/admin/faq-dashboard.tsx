@@ -67,15 +67,11 @@ export function FaqDashboard() {
 
   // Top questions chart data
   const chartData = useMemo(() => {
-    return entries
-      .slice(0, 10)
-      .map((e) => ({
-        name:
-          e.question.length > 30
-            ? e.question.slice(0, 30) + "..."
-            : e.question,
-        occurrences: e.occurrence_count,
-      }));
+    return entries.slice(0, 10).map((e) => ({
+      name:
+        e.question.length > 30 ? e.question.slice(0, 30) + "..." : e.question,
+      occurrences: e.occurrence_count,
+    }));
   }, [entries]);
 
   // Stats
@@ -111,7 +107,10 @@ export function FaqDashboard() {
 
   const categoryOptions = [
     { value: "all", label: "Toutes" },
-    ...categories.map((c) => ({ value: c, label: c.charAt(0).toUpperCase() + c.slice(1) })),
+    ...categories.map((c) => ({
+      value: c,
+      label: c.charAt(0).toUpperCase() + c.slice(1),
+    })),
   ];
 
   return (
@@ -136,10 +135,7 @@ export function FaqDashboard() {
             IA
           </p>
         </div>
-        <Button
-          icon={<Plus className="h-4 w-4" />}
-          onClick={handleCreate}
-        >
+        <Button icon={<Plus className="h-4 w-4" />} onClick={handleCreate}>
           Nouvelle question
         </Button>
       </motion.div>
@@ -168,7 +164,9 @@ export function FaqDashboard() {
             </div>
             <div>
               <p className="text-2xl font-bold">{stats.autoEnabled}</p>
-              <p className="text-xs text-muted-foreground">Auto-reponse active</p>
+              <p className="text-xs text-muted-foreground">
+                Auto-reponse active
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -198,17 +196,13 @@ export function FaqDashboard() {
               <AlertTriangle
                 className={cn(
                   "h-5 w-5",
-                  stats.alertCount > 0
-                    ? "text-amber-600"
-                    : "text-gray-400",
+                  stats.alertCount > 0 ? "text-amber-600" : "text-gray-400",
                 )}
               />
             </div>
             <div>
               <p className="text-2xl font-bold">{stats.alertCount}</p>
-              <p className="text-xs text-muted-foreground">
-                Alertes (5+/sem.)
-              </p>
+              <p className="text-xs text-muted-foreground">Alertes (5+/sem.)</p>
             </div>
           </CardContent>
         </Card>
@@ -235,14 +229,12 @@ export function FaqDashboard() {
                       {alert.question}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      Posee {alert.weekly_count} fois cette semaine
-                      {" "}({alert.occurrence_count} fois au total)
+                      Posee {alert.weekly_count} fois cette semaine (
+                      {alert.occurrence_count} fois au total)
                     </p>
                   </div>
                   <div className="flex items-center gap-2 shrink-0 ml-3">
-                    <Badge variant="warning">
-                      {alert.weekly_count}x/sem.
-                    </Badge>
+                    <Badge variant="warning">{alert.weekly_count}x/sem.</Badge>
                     <Button
                       size="sm"
                       variant="secondary"

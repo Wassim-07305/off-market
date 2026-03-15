@@ -46,9 +46,7 @@ export function CashFlowChart() {
         </div>
         {hasData && (
           <div className="text-right">
-            <p className="text-xs text-muted-foreground">
-              Taux encaissement
-            </p>
+            <p className="text-xs text-muted-foreground">Taux encaissement</p>
             <p className="text-lg font-display font-bold text-foreground tracking-tight">
               {totalInvoiced > 0
                 ? Math.round((totalCollected / totalInvoiced) * 100)

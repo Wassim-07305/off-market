@@ -112,7 +112,7 @@ export function TeamCard({ team, className }: TeamCardProps) {
                       className="w-full h-full rounded-full object-cover"
                     />
                   ) : (
-                    m.profile?.full_name?.charAt(0)?.toUpperCase() ?? "?"
+                    (m.profile?.full_name?.charAt(0)?.toUpperCase() ?? "?")
                   )}
                 </div>
               ))}

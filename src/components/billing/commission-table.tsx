@@ -234,14 +234,10 @@ export function CommissionTable() {
                     )}
                   </td>
                   <td className="px-4 py-3 text-right text-sm font-semibold text-emerald-600">
-                    {fmt(
-                      summaries.reduce((sum, s) => sum + s.total_paid, 0),
-                    )}
+                    {fmt(summaries.reduce((sum, s) => sum + s.total_paid, 0))}
                   </td>
                   <td className="px-4 py-3 text-right text-sm font-semibold text-amber-600">
-                    {fmt(
-                      summaries.reduce((sum, s) => sum + s.remaining, 0),
-                    )}
+                    {fmt(summaries.reduce((sum, s) => sum + s.remaining, 0))}
                   </td>
                 </tr>
               </tfoot>

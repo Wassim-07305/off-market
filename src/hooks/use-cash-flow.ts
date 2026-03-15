@@ -35,11 +35,26 @@ export function useCashFlow() {
         .select("total, status, paid_at, created_at")
         .gte("created_at", twelveMonthsAgo.toISOString());
 
-      const invoices = (data ?? []) as { total: number; status: string; paid_at: string | null; created_at: string }[];
+      const invoices = (data ?? []) as {
+        total: number;
+        status: string;
+        paid_at: string | null;
+        created_at: string;
+      }[];
 
       const months = [
-        "Jan", "Fev", "Mar", "Avr", "Mai", "Juin",
-        "Juil", "Aout", "Sep", "Oct", "Nov", "Dec",
+        "Jan",
+        "Fev",
+        "Mar",
+        "Avr",
+        "Mai",
+        "Juin",
+        "Juil",
+        "Aout",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
       ];
 
       // Initialize 12 months

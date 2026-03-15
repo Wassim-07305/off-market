@@ -1,0 +1,8 @@
+[   44914ms] [WARNING] The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width. @ https://off-market-amber.vercel.app/_next/static/chunks/e68f7e16517d8851.js:0
+[   57742ms] [WARNING] The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width. @ https://off-market-amber.vercel.app/_next/static/chunks/e68f7e16517d8851.js:0

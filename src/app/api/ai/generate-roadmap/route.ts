@@ -61,10 +61,7 @@ export async function POST(request: Request) {
   const { clientId, callTranscript, context, callId } = await request.json();
 
   if (!clientId) {
-    return NextResponse.json(
-      { error: "clientId requis" },
-      { status: 400 },
-    );
+    return NextResponse.json({ error: "clientId requis" }, { status: 400 });
   }
 
   try {
@@ -215,7 +212,11 @@ export async function POST(request: Request) {
     }
 
     // Validate structure
-    if (!parsed.title || !parsed.milestones || !Array.isArray(parsed.milestones)) {
+    if (
+      !parsed.title ||
+      !parsed.milestones ||
+      !Array.isArray(parsed.milestones)
+    ) {
       return NextResponse.json(
         { error: "Format de reponse invalide", raw: rawText },
         { status: 500 },
@@ -241,8 +242,7 @@ export async function POST(request: Request) {
           order_index: m.order_index ?? i,
         }),
       ),
-      tokens_used:
-        result.usage.input_tokens + result.usage.output_tokens,
+      tokens_used: result.usage.input_tokens + result.usage.output_tokens,
     });
   } catch (error) {
     console.error("Roadmap generation error:", error);

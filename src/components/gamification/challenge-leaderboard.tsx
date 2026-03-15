@@ -1,13 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import {
-  Trophy,
-  Medal,
-  CheckCircle,
-  AlertCircle,
-  Crown,
-} from "lucide-react";
+import { Trophy, Medal, CheckCircle, AlertCircle, Crown } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useSupabase } from "@/hooks/use-supabase";
 import { useAuth } from "@/hooks/use-auth";
@@ -81,7 +75,8 @@ export function ChallengeLeaderboard({
 
       // Sort by verified value first, then total
       return [...userMap.values()].sort(
-        (a, b) => b.verified_value - a.verified_value || b.total_value - a.total_value,
+        (a, b) =>
+          b.verified_value - a.verified_value || b.total_value - a.total_value,
       );
     },
   });
@@ -104,10 +99,7 @@ export function ChallengeLeaderboard({
         {isLoading ? (
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
-              <div
-                key={i}
-                className="h-12 rounded-xl bg-muted animate-pulse"
-              />
+              <div key={i} className="h-12 rounded-xl bg-muted animate-pulse" />
             ))}
           </div>
         ) : rows.length === 0 ? (
@@ -180,8 +172,10 @@ export function ChallengeLeaderboard({
                       </p>
                       {row.has_unverified && (
                         <p className="text-xs text-amber-500 flex items-center gap-0.5 justify-end">
-                          <AlertCircle className="h-3 w-3" />
-                          +{(row.total_value - row.verified_value).toLocaleString("fr-FR")}{" "}
+                          <AlertCircle className="h-3 w-3" />+
+                          {(
+                            row.total_value - row.verified_value
+                          ).toLocaleString("fr-FR")}{" "}
                           en attente
                         </p>
                       )}

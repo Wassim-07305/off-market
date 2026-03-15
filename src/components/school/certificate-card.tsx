@@ -4,7 +4,11 @@ import { Award, Download, Calendar } from "lucide-react";
 import type { Certificate } from "@/types/database";
 
 const escapeHtml = (str: string) =>
-  str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 
 export function CertificateCard({ certificate }: { certificate: Certificate }) {
   const date = new Date(certificate.issued_at).toLocaleDateString("fr-FR", {

@@ -21,15 +21,28 @@ export async function GET(request: Request) {
   const supabase = createAdminClient();
   let query = supabase
     .from("clients")
-    .select("id, full_name, email, phone, tag, status, created_at, updated_at", { count: "exact" });
+    .select(
+      "id, full_name, email, phone, tag, status, created_at, updated_at",
+      { count: "exact" },
+    );
 
   if (search) {
-    const sanitized = search.replace(/[%,.()\[\]{}|\\\/'"`;:!@#$^&*+=<>?~]/g, "");
-    if (sanitized) query = query.or(`full_name.ilike.%${sanitized}%,email.ilike.%${sanitized}%`);
+    const sanitized = search.replace(
+      /[%,.()\[\]{}|\\\/'"`;:!@#$^&*+=<>?~]/g,
+      "",
+    );
+    if (sanitized)
+      query = query.or(
+        `full_name.ilike.%${sanitized}%,email.ilike.%${sanitized}%`,
+      );
   }
   if (tag) query = query.eq("tag", tag);
 
-  const { data, error: dbError, count } = await query
+  const {
+    data,
+    error: dbError,
+    count,
+  } = await query
     .order("created_at", { ascending: false })
     .range(offset, offset + limit - 1);
 
@@ -54,14 +67,20 @@ export async function POST(request: Request) {
   const { ctx, error } = await validateApiKey(request);
   if (error) return error;
   if (!hasScope(ctx!, "write")) {
-    return NextResponse.json({ error: "Scope 'write' requis" }, { status: 403 });
+    return NextResponse.json(
+      { error: "Scope 'write' requis" },
+      { status: 403 },
+    );
   }
 
   const body = await request.json();
   const { full_name, email, phone, tag } = body;
 
   if (!full_name || !email) {
-    return NextResponse.json({ error: "full_name et email requis" }, { status: 400 });
+    return NextResponse.json(
+      { error: "full_name et email requis" },
+      { status: 400 },
+    );
   }
 
   const supabase = createAdminClient();

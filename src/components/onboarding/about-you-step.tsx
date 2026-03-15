@@ -4,7 +4,13 @@ import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Briefcase, TrendingUp, Target, UserSearch, ArrowRight } from "lucide-react";
+import {
+  Briefcase,
+  TrendingUp,
+  Target,
+  UserSearch,
+  ArrowRight,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const aboutYouSchema = z.object({
@@ -48,7 +54,11 @@ interface AboutYouStepProps {
   defaultValues?: Partial<AboutYouFormData>;
 }
 
-export function AboutYouStep({ onSubmit, isSubmitting, defaultValues }: AboutYouStepProps) {
+export function AboutYouStep({
+  onSubmit,
+  isSubmitting,
+  defaultValues,
+}: AboutYouStepProps) {
   const {
     register,
     handleSubmit,
@@ -102,7 +112,9 @@ export function AboutYouStep({ onSubmit, isSubmitting, defaultValues }: AboutYou
         </div>
         <input type="hidden" {...register("business_type")} />
         {errors.business_type && (
-          <p className="mt-1.5 text-xs text-red-400">{errors.business_type.message}</p>
+          <p className="mt-1.5 text-xs text-red-400">
+            {errors.business_type.message}
+          </p>
         )}
       </div>
 
@@ -131,7 +143,9 @@ export function AboutYouStep({ onSubmit, isSubmitting, defaultValues }: AboutYou
         </div>
         <input type="hidden" {...register("current_revenue")} />
         {errors.current_revenue && (
-          <p className="mt-1.5 text-xs text-red-400">{errors.current_revenue.message}</p>
+          <p className="mt-1.5 text-xs text-red-400">
+            {errors.current_revenue.message}
+          </p>
         )}
       </div>
 
@@ -177,7 +191,9 @@ export function AboutYouStep({ onSubmit, isSubmitting, defaultValues }: AboutYou
         </div>
         <input type="hidden" {...register("how_found_alexia")} />
         {errors.how_found_alexia && (
-          <p className="mt-1.5 text-xs text-red-400">{errors.how_found_alexia.message}</p>
+          <p className="mt-1.5 text-xs text-red-400">
+            {errors.how_found_alexia.message}
+          </p>
         )}
       </div>
 

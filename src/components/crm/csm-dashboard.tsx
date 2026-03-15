@@ -31,7 +31,8 @@ interface CsmDashboardProps {
 
 export function CsmDashboard({ onFilterByCoach }: CsmDashboardProps) {
   const { byCoach, coaches, isLoading } = useClientsGroupedByCoach();
-  const { data: unassignedClients, isLoading: unassignedLoading } = useUnassignedClients();
+  const { data: unassignedClients, isLoading: unassignedLoading } =
+    useUnassignedClients();
   const autoAssign = useAutoAssignCoach();
 
   const [assignModalOpen, setAssignModalOpen] = useState(false);
@@ -120,7 +121,8 @@ export function CsmDashboard({ onFilterByCoach }: CsmDashboardProps) {
             <div className="flex items-center gap-2">
               <UserX className="w-5 h-5 text-amber-600" />
               <h3 className="font-semibold text-amber-900">
-                {unassigned.length} client{unassigned.length > 1 ? "s" : ""} non assigne{unassigned.length > 1 ? "s" : ""}
+                {unassigned.length} client{unassigned.length > 1 ? "s" : ""} non
+                assigne{unassigned.length > 1 ? "s" : ""}
               </h3>
             </div>
             <button
@@ -260,8 +262,14 @@ function CoachCard({
   onFilterByCoach?: (coachId: string) => void;
   onAssignClient: (client: Profile) => void;
 }) {
-  const { coach, clients, totalClients, atRiskClients, averageHealthScore, totalRevenue } =
-    metrics;
+  const {
+    coach,
+    clients,
+    totalClients,
+    atRiskClients,
+    averageHealthScore,
+    totalRevenue,
+  } = metrics;
 
   // Flag breakdown
   const flagCounts = { green: 0, yellow: 0, orange: 0, red: 0 };
@@ -315,7 +323,9 @@ function CoachCard({
           <div className="text-center">
             <p className="text-lg font-bold text-foreground font-mono tabular-nums">
               {averageHealthScore}
-              <span className="text-xs font-normal text-muted-foreground">%</span>
+              <span className="text-xs font-normal text-muted-foreground">
+                %
+              </span>
             </p>
             <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
               Sante moy.
@@ -394,9 +404,7 @@ function CoachCard({
         <div className="border-t border-border bg-muted/20 px-5 py-3 space-y-2 max-h-64 overflow-y-auto">
           {clients.map((client) => {
             const d = client.student_details?.[0];
-            return (
-              <ClientRow key={client.id} client={client} details={d} />
-            );
+            return <ClientRow key={client.id} client={client} details={d} />;
           })}
         </div>
       )}

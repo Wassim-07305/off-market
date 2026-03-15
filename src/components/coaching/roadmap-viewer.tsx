@@ -15,8 +15,16 @@ import {
   Loader2 as DownloadLoader,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { staggerContainer, staggerItem, defaultTransition } from "@/lib/animations";
-import type { ClientRoadmap, RoadmapMilestone, MilestoneStatus } from "@/types/roadmap";
+import {
+  staggerContainer,
+  staggerItem,
+  defaultTransition,
+} from "@/lib/animations";
+import type {
+  ClientRoadmap,
+  RoadmapMilestone,
+  MilestoneStatus,
+} from "@/types/roadmap";
 import { MilestoneCard } from "./milestone-card";
 
 interface RoadmapViewerProps {
@@ -226,7 +234,6 @@ export function RoadmapViewer({
           </p>
         </div>
       )}
-
     </div>
   );
 }

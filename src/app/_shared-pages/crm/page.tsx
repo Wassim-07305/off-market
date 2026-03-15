@@ -4,13 +4,7 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { staggerContainer, staggerItem } from "@/lib/animations";
-import {
-  Kanban,
-  Clock,
-  Users,
-  Magnet,
-  Zap,
-} from "lucide-react";
+import { Kanban, Clock, Users, Magnet, Zap } from "lucide-react";
 import { PipelineKanban } from "@/components/crm/pipeline-kanban";
 import { PipelineTimeline } from "@/components/crm/pipeline-timeline";
 import { CsmDashboard } from "@/components/crm/csm-dashboard";

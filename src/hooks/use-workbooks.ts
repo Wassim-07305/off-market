@@ -169,16 +169,15 @@ export function useSubmitWorkbook() {
               .select("title")
               .eq("id", workbookId)
               .single(),
-            supabase
-              .from("user_roles")
-              .select("user_id")
-              .eq("role", "admin"),
+            supabase.from("user_roles").select("user_id").eq("role", "admin"),
           ]);
 
           const clientName =
-            (clientRes.data as { full_name: string } | null)?.full_name ?? "Un client";
+            (clientRes.data as { full_name: string } | null)?.full_name ??
+            "Un client";
           const workbookTitle =
-            (workbookRes.data as { title: string } | null)?.title ?? "un workbook";
+            (workbookRes.data as { title: string } | null)?.title ??
+            "un workbook";
           const adminIds = (
             (adminsRes.data ?? []) as Array<{ user_id: string }>
           ).map((r) => r.user_id);

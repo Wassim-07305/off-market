@@ -72,9 +72,7 @@ export function WorkbookEditor({
   const [description, setDescription] = useState(
     existingWorkbook?.description ?? "",
   );
-  const [courseId, setCourseId] = useState(
-    existingWorkbook?.course_id ?? "",
-  );
+  const [courseId, setCourseId] = useState(existingWorkbook?.course_id ?? "");
   const [moduleType, setModuleType] = useState<WorkbookModuleType | "">(
     existingWorkbook?.module_type ?? "",
   );
@@ -101,9 +99,7 @@ export function WorkbookEditor({
   };
 
   const updateField = (index: number, updates: Partial<WorkbookField>) => {
-    setFields(
-      fields.map((f, i) => (i === index ? { ...f, ...updates } : f)),
-    );
+    setFields(fields.map((f, i) => (i === index ? { ...f, ...updates } : f)));
   };
 
   const removeField = (index: number) => {
@@ -335,9 +331,7 @@ export function WorkbookEditor({
             <div
               className="flex items-center gap-2 px-4 py-3 cursor-pointer"
               onClick={() =>
-                setEditingFieldIndex(
-                  editingFieldIndex === index ? null : index,
-                )
+                setEditingFieldIndex(editingFieldIndex === index ? null : index)
               }
             >
               <GripVertical className="w-4 h-4 text-muted-foreground shrink-0" />
@@ -366,7 +360,13 @@ export function WorkbookEditor({
                   className="p-1 text-muted-foreground hover:text-foreground disabled:opacity-30"
                   title="Monter"
                 >
-                  <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <svg
+                    className="w-3.5 h-3.5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
                     <path d="M18 15l-6-6-6 6" />
                   </svg>
                 </button>
@@ -379,7 +379,13 @@ export function WorkbookEditor({
                   className="p-1 text-muted-foreground hover:text-foreground disabled:opacity-30"
                   title="Descendre"
                 >
-                  <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <svg
+                    className="w-3.5 h-3.5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
                     <path d="M6 9l6 6 6-6" />
                   </svg>
                 </button>
@@ -604,9 +610,7 @@ function PreviewField({
         <div>
           <span className="text-sm font-medium text-foreground">
             {field.label}
-            {field.required && (
-              <span className="text-red-500 ml-0.5">*</span>
-            )}
+            {field.required && <span className="text-red-500 ml-0.5">*</span>}
           </span>
           {field.description && (
             <p className="text-xs text-muted-foreground mt-0.5">
@@ -617,13 +621,27 @@ function PreviewField({
       </label>
       <div className="pl-8">
         {field.type === "text" && (
-          <input disabled placeholder={field.placeholder ?? ""} className={baseClass} />
+          <input
+            disabled
+            placeholder={field.placeholder ?? ""}
+            className={baseClass}
+          />
         )}
         {field.type === "textarea" && (
-          <textarea disabled rows={3} placeholder={field.placeholder ?? ""} className={cn(baseClass, "resize-none")} />
+          <textarea
+            disabled
+            rows={3}
+            placeholder={field.placeholder ?? ""}
+            className={cn(baseClass, "resize-none")}
+          />
         )}
         {field.type === "number" && (
-          <input disabled type="number" placeholder={field.placeholder ?? ""} className={cn(baseClass, "max-w-[200px]")} />
+          <input
+            disabled
+            type="number"
+            placeholder={field.placeholder ?? ""}
+            className={cn(baseClass, "max-w-[200px]")}
+          />
         )}
         {field.type === "select" && (
           <select disabled className={cn(baseClass, "max-w-[400px]")}>
@@ -636,10 +654,7 @@ function PreviewField({
         {field.type === "rating" && (
           <div className="flex items-center gap-1">
             {Array.from({ length: field.max ?? 5 }, (_, i) => (
-              <Star
-                key={i}
-                className="w-6 h-6 text-muted-foreground/30"
-              />
+              <Star key={i} className="w-6 h-6 text-muted-foreground/30" />
             ))}
           </div>
         )}

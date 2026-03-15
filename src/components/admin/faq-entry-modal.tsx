@@ -17,7 +17,9 @@ import {
 } from "@/hooks/use-faq";
 
 const faqEntrySchema = z.object({
-  question: z.string().min(5, "La question doit contenir au moins 5 caracteres"),
+  question: z
+    .string()
+    .min(5, "La question doit contenir au moins 5 caracteres"),
   answer: z.string().min(1, "La reponse est requise"),
   category: z.string().min(1, "La categorie est requise"),
   auto_answer_enabled: z.boolean(),

@@ -65,7 +65,13 @@ function extractFacebookPage(url: string): string | null {
   return match ? match[1] : null;
 }
 
-type EnrichmentType = "linkedin" | "instagram" | "tiktok" | "facebook" | "website" | "all";
+type EnrichmentType =
+  | "linkedin"
+  | "instagram"
+  | "tiktok"
+  | "facebook"
+  | "website"
+  | "all";
 
 // POST /api/enrichment
 export async function POST(req: NextRequest) {
@@ -146,7 +152,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const enrichmentData: Record<string, unknown> = {
-      ...(contact.enrichment_data as Record<string, unknown> || {}),
+      ...((contact.enrichment_data as Record<string, unknown>) || {}),
     };
 
     const shouldEnrich = (platform: string) =>
@@ -218,15 +224,15 @@ export async function POST(req: NextRequest) {
             businessCategory: profile.businessCategoryName,
             externalUrl: profile.externalUrl,
             profilePicUrl: profile.profilePicUrlHD || profile.profilePicUrl,
-            recentPosts: (profile.latestPosts || []).slice(0, 5).map(
-              (p: Record<string, unknown>) => ({
+            recentPosts: (profile.latestPosts || [])
+              .slice(0, 5)
+              .map((p: Record<string, unknown>) => ({
                 caption: (p.caption as string)?.slice(0, 200),
                 likesCount: p.likesCount,
                 commentsCount: p.commentsCount,
                 timestamp: p.timestamp,
                 type: p.type,
-              }),
-            ),
+              })),
             scraped_at: new Date().toISOString(),
           };
         }
@@ -248,10 +254,14 @@ export async function POST(req: NextRequest) {
             bio: profile.bio || profile.signature || profile.bioDescription,
             followersCount: profile.followersCount || profile.fans,
             followingCount: profile.followingCount || profile.following,
-            heartsCount: profile.heartsCount || profile.heart || profile.diggCount,
+            heartsCount:
+              profile.heartsCount || profile.heart || profile.diggCount,
             videoCount: profile.videoCount || profile.video,
             verified: profile.verified || profile.isVerified,
-            profilePicUrl: profile.profilePicUrl || profile.avatarLarger || profile.avatarMedium,
+            profilePicUrl:
+              profile.profilePicUrl ||
+              profile.avatarLarger ||
+              profile.avatarMedium,
             scraped_at: new Date().toISOString(),
           };
         }
@@ -333,14 +343,18 @@ export async function POST(req: NextRequest) {
           }
           if (typeof page.phone === "string") allPhones.add(page.phone);
 
-          const links = (page.socialLinks || page.socials || {}) as Record<string, string>;
+          const links = (page.socialLinks || page.socials || {}) as Record<
+            string,
+            string
+          >;
           for (const key of Object.keys(socialLinks)) {
             if (!socialLinks[key] && links[key]) {
               socialLinks[key] = links[key];
             }
           }
 
-          if (!companyName && page.companyName) companyName = page.companyName as string;
+          if (!companyName && page.companyName)
+            companyName = page.companyName as string;
           if (!companyName && page.title) companyName = page.title as string;
           if (!address && page.address) address = page.address as string;
         }
@@ -395,10 +409,17 @@ export async function POST(req: NextRequest) {
       .eq("id", contactId);
 
     // Auto-calculate lead score
-    const updatedContact = await admin.from("crm_contacts").select("*").eq("id", contactId).single();
+    const updatedContact = await admin
+      .from("crm_contacts")
+      .select("*")
+      .eq("id", contactId)
+      .single();
     if (updatedContact.data) {
       const newScore = calculateLeadScore(updatedContact.data);
-      await admin.from("crm_contacts").update({ lead_score: newScore }).eq("id", contactId);
+      await admin
+        .from("crm_contacts")
+        .update({ lead_score: newScore })
+        .eq("id", contactId);
     }
 
     // Log as interaction
@@ -429,7 +450,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         error:
-          err instanceof Error ? err.message : "Erreur lors de l'enrichissement",
+          err instanceof Error
+            ? err.message
+            : "Erreur lors de l'enrichissement",
       },
       { status: 500 },
     );

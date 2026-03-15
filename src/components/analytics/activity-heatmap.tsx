@@ -376,9 +376,7 @@ export function AnalyticsActivityHeatmap() {
             <div className="w-3 h-3 rounded-[2px] bg-red-500/50" />
             <div className="w-3 h-3 rounded-[2px] bg-red-500/65" />
             <div className="w-3 h-3 rounded-[2px] bg-red-500/80" />
-            <span className="text-[10px] text-muted-foreground ml-1">
-              Plus
-            </span>
+            <span className="text-[10px] text-muted-foreground ml-1">Plus</span>
           </div>
 
           {/* Tooltip */}

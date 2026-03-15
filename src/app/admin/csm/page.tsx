@@ -350,10 +350,7 @@ export default function AdminCsmPage() {
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       {Array.from({ length: 4 }).map((_, j) => (
-                        <div
-                          key={j}
-                          className="h-16 bg-muted/50 rounded-xl"
-                        />
+                        <div key={j} className="h-16 bg-muted/50 rounded-xl" />
                       ))}
                     </div>
                   </div>
@@ -430,9 +427,7 @@ export default function AdminCsmPage() {
                         padding: "8px 12px",
                       }}
                       formatter={(value: number | undefined) =>
-                        value != null
-                          ? [value, "Sessions"]
-                          : ["\u2014"]
+                        value != null ? [value, "Sessions"] : ["\u2014"]
                       }
                     />
                     <Bar
@@ -481,9 +476,7 @@ export default function AdminCsmPage() {
                         fill: "var(--muted-foreground)",
                         fontSize: 11,
                       }}
-                      tickFormatter={(v: number) =>
-                        `${(v / 1000).toFixed(0)}k`
-                      }
+                      tickFormatter={(v: number) => `${(v / 1000).toFixed(0)}k`}
                       width={40}
                     />
                     <Tooltip
@@ -561,9 +554,7 @@ export default function AdminCsmPage() {
                         padding: "8px 12px",
                       }}
                       formatter={(value: number | undefined) =>
-                        value != null
-                          ? [`${value}%`, "Retention"]
-                          : ["\u2014"]
+                        value != null ? [`${value}%`, "Retention"] : ["\u2014"]
                       }
                     />
                     <Bar
@@ -732,9 +723,7 @@ function ReassignModal({
             <h3 className="font-semibold text-foreground">
               Reassigner le client
             </h3>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              {clientName}
-            </p>
+            <p className="text-xs text-muted-foreground mt-0.5">{clientName}</p>
           </div>
           <button
             onClick={onClose}

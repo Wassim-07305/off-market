@@ -14,15 +14,24 @@ export async function GET(request: Request) {
       // If this is a password recovery flow, redirect to settings page
       if (type === "recovery") {
         // Get user role to build the correct path
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
         if (user) {
           const { data: profile } = await supabase
             .from("profiles")
             .select("role")
             .eq("id", user.id)
             .single();
-          const rolePrefix = profile?.role === "admin" ? "/admin" : profile?.role === "coach" ? "/coach" : "/client";
-          return NextResponse.redirect(`${origin}${rolePrefix}/settings?tab=security`);
+          const rolePrefix =
+            profile?.role === "admin"
+              ? "/admin"
+              : profile?.role === "coach"
+                ? "/coach"
+                : "/client";
+          return NextResponse.redirect(
+            `${origin}${rolePrefix}/settings?tab=security`,
+          );
         }
       }
       return NextResponse.redirect(`${origin}${next}`);

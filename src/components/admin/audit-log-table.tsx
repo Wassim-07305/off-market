@@ -113,7 +113,8 @@ const columns: ColumnDef<AuditLog>[] = [
     cell: ({ row }) => {
       const type = row.original.entity_type;
       const id = row.original.entity_id;
-      if (!type) return <span className="text-xs text-muted-foreground">-</span>;
+      if (!type)
+        return <span className="text-xs text-muted-foreground">-</span>;
       return (
         <div className="text-xs">
           <span className="text-foreground">{type}</span>
@@ -284,7 +285,8 @@ export function AuditLogTable() {
                       key={header.id}
                       className={cn(
                         "text-[10px] font-medium text-muted-foreground uppercase tracking-wider text-left px-3 py-2.5",
-                        header.column.getCanSort() && "cursor-pointer select-none",
+                        header.column.getCanSort() &&
+                          "cursor-pointer select-none",
                       )}
                       onClick={header.column.getToggleSortingHandler()}
                     >

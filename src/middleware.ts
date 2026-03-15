@@ -24,7 +24,10 @@ export async function middleware(request: NextRequest) {
 
   if (rlConfig) {
     const forwarded = request.headers.get("x-forwarded-for");
-    const ip = forwarded?.split(",")[0]?.trim() ?? request.headers.get("x-real-ip") ?? "unknown";
+    const ip =
+      forwarded?.split(",")[0]?.trim() ??
+      request.headers.get("x-real-ip") ??
+      "unknown";
     const key = `${ip}:${pathname.startsWith("/api/ai/") ? "ai" : pathname.startsWith("/api/v1/") ? "v1" : "api"}`;
 
     const result = rateLimit(key, rlConfig);

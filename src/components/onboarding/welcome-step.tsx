@@ -68,9 +68,8 @@ export function WelcomeStep({ firstName, onNext }: WelcomeStepProps) {
         transition={{ delay: 0.55 }}
         className="mb-8 max-w-lg text-lg text-white/50 leading-relaxed"
       >
-        Tu rejoins une communaute d&apos;entrepreneurs ambitieux.
-        Decouvre en 2 minutes comment la plateforme va t&apos;accompagner
-        vers tes objectifs.
+        Tu rejoins une communaute d&apos;entrepreneurs ambitieux. Decouvre en 2
+        minutes comment la plateforme va t&apos;accompagner vers tes objectifs.
       </motion.p>
 
       {/* Welcome video */}

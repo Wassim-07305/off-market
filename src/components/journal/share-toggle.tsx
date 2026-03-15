@@ -69,11 +69,7 @@ export function ShareToggleInline({ value, onChange }: ShareToggleInlineProps) {
           : "bg-muted text-muted-foreground border border-border hover:bg-muted/80",
       )}
     >
-      {value ? (
-        <Share2 className="w-4 h-4" />
-      ) : (
-        <Lock className="w-4 h-4" />
-      )}
+      {value ? <Share2 className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
       {value ? "Visible par ton coach" : "Entree privee"}
     </button>
   );

@@ -104,10 +104,12 @@ export function UnifiedInbox() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // ── Queries ──
-  const { data: accounts, isLoading: accountsLoading } =
-    useUnipileAccounts();
-  const { data: chats, isLoading: chatsLoading, refetch: refetchChats } =
-    useUnipileChats(selectedAccountId);
+  const { data: accounts, isLoading: accountsLoading } = useUnipileAccounts();
+  const {
+    data: chats,
+    isLoading: chatsLoading,
+    refetch: refetchChats,
+  } = useUnipileChats(selectedAccountId);
   const {
     data: messages,
     isLoading: messagesLoading,
@@ -134,9 +136,7 @@ export function UnifiedInbox() {
   );
 
   // Get selected chat info
-  const selectedChat = chats?.find(
-    (c: UnipileChat) => c.id === selectedChatId,
-  );
+  const selectedChat = chats?.find((c: UnipileChat) => c.id === selectedChatId);
 
   // Filter chats by search
   const filteredChats = (chats ?? []).filter((c: UnipileChat) =>
@@ -146,9 +146,7 @@ export function UnifiedInbox() {
   );
 
   // Get attendee map for display names in messages
-  const attendeeMap = new Map(
-    (attendees ?? []).map((a) => [a.id, a]),
-  );
+  const attendeeMap = new Map((attendees ?? []).map((a) => [a.id, a]));
 
   const handleSend = useCallback(async () => {
     if (!messageInput.trim() || !selectedChatId) return;
@@ -211,9 +209,7 @@ export function UnifiedInbox() {
         className={cn(
           "w-[272px] border-r border-border/40 flex flex-col shrink-0 bg-muted/30",
           "max-sm:absolute max-sm:inset-y-0 max-sm:left-0 max-sm:z-30 max-sm:w-[280px] max-sm:bg-surface max-sm:shadow-xl",
-          mobileChatOpen
-            ? "max-sm:-translate-x-full"
-            : "max-sm:translate-x-0",
+          mobileChatOpen ? "max-sm:-translate-x-full" : "max-sm:translate-x-0",
           "sm:relative sm:translate-x-0 transition-transform duration-200",
         )}
       >
@@ -421,9 +417,7 @@ export function UnifiedInbox() {
                 </div>
               ) : !messages || messages.length === 0 ? (
                 <div className="flex items-center justify-center py-8">
-                  <p className="text-sm text-muted-foreground">
-                    Aucun message
-                  </p>
+                  <p className="text-sm text-muted-foreground">Aucun message</p>
                 </div>
               ) : (
                 [...messages].reverse().map((msg) => {
@@ -436,8 +430,7 @@ export function UnifiedInbox() {
                     attendee?.display_name ??
                     "Inconnu";
                   const avatar =
-                    msg.sender?.profile_picture ??
-                    attendee?.profile_picture;
+                    msg.sender?.profile_picture ?? attendee?.profile_picture;
 
                   return (
                     <div

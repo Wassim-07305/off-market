@@ -48,7 +48,11 @@ export function useChannels() {
 
   // Fetch unread counts for all channels (total + urgent)
   const unreadQuery = useQuery({
-    queryKey: ["channel-unreads", user?.id, channelsQuery.data?.map((c) => c.id).join(",")],
+    queryKey: [
+      "channel-unreads",
+      user?.id,
+      channelsQuery.data?.map((c) => c.id).join(","),
+    ],
     queryFn: async () => {
       if (!channelsQuery.data?.length) return {};
       const unreads: Record<string, { total: number; urgent: number }> = {};

@@ -27,7 +27,13 @@ import { cn } from "@/lib/utils";
 
 const SEVERITY_CONFIG: Record<
   AlertSeverity,
-  { label: string; color: string; bg: string; border: string; icon: typeof AlertCircle }
+  {
+    label: string;
+    color: string;
+    bg: string;
+    border: string;
+    icon: typeof AlertCircle;
+  }
 > = {
   critical: {
     label: "Critique",
@@ -80,7 +86,7 @@ export function AlertsPanel() {
 
   const filteredAlerts =
     filter === "all"
-      ? alerts ?? []
+      ? (alerts ?? [])
       : (alerts ?? []).filter((a) => a.severity === filter);
 
   const formatDate = (dateStr: string) => {

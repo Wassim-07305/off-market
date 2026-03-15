@@ -11,28 +11,30 @@ import { useSupabase } from "@/hooks/use-supabase";
 import type { Profile } from "@/types/database";
 import { cn } from "@/lib/utils";
 
-const createEventSchema = z.object({
-  title: z.string().min(1, "Le titre est requis"),
-  description: z.string().optional(),
-  start_date: z.string().min(1, "La date est requise"),
-  start_time: z.string().min(1, "L'heure est requise"),
-  end_date: z.string().optional(),
-  end_time: z.string().optional(),
-  color: z.string(),
-}).refine(
-  (data) => {
-    if (data.end_date && data.end_time) {
-      const start = new Date(`${data.start_date}T${data.start_time}`);
-      const end = new Date(`${data.end_date}T${data.end_time}`);
-      return end > start;
-    }
-    return true;
-  },
-  {
-    message: "La date de fin doit etre posterieure a la date de debut",
-    path: ["end_time"],
-  },
-);
+const createEventSchema = z
+  .object({
+    title: z.string().min(1, "Le titre est requis"),
+    description: z.string().optional(),
+    start_date: z.string().min(1, "La date est requise"),
+    start_time: z.string().min(1, "L'heure est requise"),
+    end_date: z.string().optional(),
+    end_time: z.string().optional(),
+    color: z.string(),
+  })
+  .refine(
+    (data) => {
+      if (data.end_date && data.end_time) {
+        const start = new Date(`${data.start_date}T${data.start_time}`);
+        const end = new Date(`${data.end_date}T${data.end_time}`);
+        return end > start;
+      }
+      return true;
+    },
+    {
+      message: "La date de fin doit etre posterieure a la date de debut",
+      path: ["end_time"],
+    },
+  );
 
 type CreateEventFormData = z.infer<typeof createEventSchema>;
 
@@ -237,7 +239,9 @@ export function CreateEventModal({
               )}
             />
             {errors.end_time && (
-              <p className="text-xs text-red-500 mt-1">{errors.end_time.message}</p>
+              <p className="text-xs text-red-500 mt-1">
+                {errors.end_time.message}
+              </p>
             )}
           </div>
         </div>
@@ -273,9 +277,7 @@ export function CreateEventModal({
           </label>
           <div className="max-h-32 overflow-y-auto rounded-xl border border-border bg-white p-2 space-y-1">
             {profiles.length === 0 ? (
-              <p className="text-xs text-muted-foreground p-2">
-                Chargement...
-              </p>
+              <p className="text-xs text-muted-foreground p-2">Chargement...</p>
             ) : (
               profiles.map((p) => (
                 <button
@@ -344,7 +346,7 @@ export function CreateEventModal({
             disabled={isSubmitting || createEvent.isPending}
             className="h-9 px-4 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-all active:scale-[0.98] flex items-center gap-2 disabled:opacity-50"
           >
-            {(isSubmitting || createEvent.isPending) ? (
+            {isSubmitting || createEvent.isPending ? (
               <Loader2 className="w-4 h-4 animate-spin" />
             ) : (
               <CalendarPlus className="w-4 h-4" />

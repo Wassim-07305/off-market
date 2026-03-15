@@ -50,7 +50,10 @@ export async function POST(request: Request) {
     const { count } = await supabase
       .from("invoices")
       .update({ status: "overdue" })
-      .in("id", overdueInvoices.map((i) => i.id));
+      .in(
+        "id",
+        overdueInvoices.map((i) => i.id),
+      );
 
     results.overdue_marked = count ?? 0;
   }
@@ -60,7 +63,9 @@ export async function POST(request: Request) {
   // ═══════════════════════════════════════
   const { data: pendingReminders } = await supabase
     .from("payment_reminders")
-    .select("id, invoice_id, reminder_type, invoices(id, invoice_number, total, due_date, client_id)")
+    .select(
+      "id, invoice_id, reminder_type, invoices(id, invoice_number, total, due_date, client_id)",
+    )
     .is("sent_at", null)
     .lte("scheduled_at", now)
     .limit(50);
@@ -85,9 +90,16 @@ export async function POST(request: Request) {
 
       if (client?.email) {
         const formatEUR = (n: number) =>
-          new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(n);
+          new Intl.NumberFormat("fr-FR", {
+            style: "currency",
+            currency: "EUR",
+          }).format(n);
         const formatDate = (d: string) =>
-          new Date(d).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+          new Date(d).toLocaleDateString("fr-FR", {
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          });
 
         try {
           // Calculate days overdue from reminder type (j-3, j0, j+3, j+7, j+14)
@@ -123,7 +135,9 @@ export async function POST(request: Request) {
   // ═══════════════════════════════════════
   const { data: schedules } = await supabase
     .from("payment_schedules")
-    .select("id, client_id, contract_id, total_amount, installments, frequency, installment_details")
+    .select(
+      "id, client_id, contract_id, total_amount, installments, frequency, installment_details",
+    )
     .eq("status", "active");
 
   if (schedules?.length) {

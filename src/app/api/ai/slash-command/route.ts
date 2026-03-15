@@ -44,10 +44,7 @@ export async function POST(request: Request) {
   }
 
   if (!channelId) {
-    return NextResponse.json(
-      { error: "channelId requis" },
-      { status: 400 },
-    );
+    return NextResponse.json({ error: "channelId requis" }, { status: 400 });
   }
 
   try {
@@ -134,9 +131,7 @@ export async function POST(request: Request) {
     if (command === "suggest") {
       const { data: messages } = await supabase
         .from("messages")
-        .select(
-          "content, sender:profiles!messages_sender_id_fkey(full_name)",
-        )
+        .select("content, sender:profiles!messages_sender_id_fkey(full_name)")
         .eq("channel_id", channelId)
         .is("deleted_at", null)
         .order("created_at", { ascending: false })

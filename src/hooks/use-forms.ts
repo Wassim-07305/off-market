@@ -131,19 +131,24 @@ export function useFormMutations() {
   const submitForm = useMutation({
     mutationFn: async ({
       formId,
-      respondentId,
       answers,
     }: {
       formId: string;
       respondentId?: string;
       answers: Record<string, unknown>;
     }) => {
-      const { error } = await supabase.from("form_submissions").insert({
-        form_id: formId,
-        respondent_id: respondentId,
-        answers,
+      // Soumettre via l'API pour declencher les webhooks cote serveur
+      const res = await fetch("/api/forms/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ formId, answers }),
       });
-      if (error) throw error;
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => null);
+        throw new Error(err?.error ?? "Erreur lors de la soumission");
+      }
+
       return formId;
     },
     onSuccess: (_data, variables) => {

@@ -1,0 +1,20 @@
+[    1336ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://srhpdgqqiuzdrlqaitdk.supabase.co/rest/v1/kpi_goals?select=*&order=created_at.desc&is_archived=eq.false:0
+[    1336ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://srhpdgqqiuzdrlqaitdk.supabase.co/rest/v1/notifications?select=*&recipient_id=eq.13df0cc6-9344-40f6-918d-2e36fe28d9ed&is_archived=eq.false&order=created_at.desc&limit=100:0
+[    1366ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://srhpdgqqiuzdrlqaitdk.supabase.co/rest/v1/contacts?select=pipeline_stage:0
+[    1464ms] [WARNING] The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width. @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_f3530cac._.js:2297
+[    1464ms] [WARNING] The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width. @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_f3530cac._.js:2297
+[    2447ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://srhpdgqqiuzdrlqaitdk.supabase.co/rest/v1/contacts?select=pipeline_stage:0
+[    2453ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://srhpdgqqiuzdrlqaitdk.supabase.co/rest/v1/notifications?select=*&recipient_id=eq.13df0cc6-9344-40f6-918d-2e36fe28d9ed&is_archived=eq.false&order=created_at.desc&limit=100:0
+[    2456ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://srhpdgqqiuzdrlqaitdk.supabase.co/rest/v1/kpi_goals?select=*&order=created_at.desc&is_archived=eq.false:0
+[    4551ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://srhpdgqqiuzdrlqaitdk.supabase.co/rest/v1/notifications?select=*&recipient_id=eq.13df0cc6-9344-40f6-918d-2e36fe28d9ed&is_archived=eq.false&order=created_at.desc&limit=100:0
+[    4553ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://srhpdgqqiuzdrlqaitdk.supabase.co/rest/v1/kpi_goals?select=*&order=created_at.desc&is_archived=eq.false:0
+[    4564ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://srhpdgqqiuzdrlqaitdk.supabase.co/rest/v1/contacts?select=pipeline_stage:0
+[    8677ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://srhpdgqqiuzdrlqaitdk.supabase.co/rest/v1/notifications?select=*&recipient_id=eq.13df0cc6-9344-40f6-918d-2e36fe28d9ed&is_archived=eq.false&order=created_at.desc&limit=100:0
+[    8677ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://srhpdgqqiuzdrlqaitdk.supabase.co/rest/v1/kpi_goals?select=*&order=created_at.desc&is_archived=eq.false:0
+[    8678ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://srhpdgqqiuzdrlqaitdk.supabase.co/rest/v1/contacts?select=pipeline_stage:0

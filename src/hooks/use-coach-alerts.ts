@@ -163,7 +163,9 @@ export function useGenerateAlerts() {
 
       // Fetch all clients assigned to this coach (or all if admin)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data: clientProfiles, error: profilesErr } = await (supabase as any)
+      const { data: clientProfiles, error: profilesErr } = await (
+        supabase as any
+      )
         .from("profiles")
         .select("id, full_name, last_sign_in_at")
         .eq("role", "client");

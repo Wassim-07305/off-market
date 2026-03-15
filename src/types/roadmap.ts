@@ -1,6 +1,10 @@
 // ─── ROADMAP ─────────────────────────────────────────────────
 
-export type MilestoneStatus = "pending" | "in_progress" | "completed" | "skipped";
+export type MilestoneStatus =
+  | "pending"
+  | "in_progress"
+  | "completed"
+  | "skipped";
 export type RoadmapSource = "kickoff_call" | "manual" | "ai_suggestion";
 export type ClientFlagValue = "green" | "orange" | "red";
 

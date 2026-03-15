@@ -1,7 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, Loader2, Phone, Trash2, CalendarClock, Star, Video } from "lucide-react";
+import {
+  X,
+  Loader2,
+  Phone,
+  Trash2,
+  CalendarClock,
+  Star,
+  Video,
+} from "lucide-react";
 import { toast } from "sonner";
 import { useCalls } from "@/hooks/use-calls";
 import { useSupabase } from "@/hooks/use-supabase";
@@ -134,20 +142,18 @@ export function CallFormModal({
         toast.success("Appel modifie");
 
         // Auto-generate roadmap when call becomes "realise" and client has no roadmap yet
-        if (
-          status === "realise" &&
-          editCall.status !== "realise" &&
-          clientId
-        ) {
-          const isFirst = await isFirstCompletedCall(supabase, editCall.id, clientId);
+        if (status === "realise" && editCall.status !== "realise" && clientId) {
+          const isFirst = await isFirstCompletedCall(
+            supabase,
+            editCall.id,
+            clientId,
+          );
           if (isFirst) {
             triggerRoadmapGeneration(supabase, editCall.id, clientId).then(
               (generated) => {
                 if (generated) {
                   const name = editCall.client?.full_name ?? "ce client";
-                  toast.success(
-                    `Roadmap personnalisee generee pour ${name}`,
-                  );
+                  toast.success(`Roadmap personnalisee generee pour ${name}`);
                 }
               },
             );
@@ -242,23 +248,24 @@ export function CallFormModal({
             </h3>
           </div>
           <div className="flex items-center gap-2">
-            {editCall && (() => {
-              if (editCall.status === "annule") return null;
-              const today = new Date();
-              const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
-              if (editCall.date === todayStr) {
-                return (
-                  <Link
-                    href={`${prefix}/calls/${editCall.id}`}
-                    className="h-8 px-3 rounded-lg bg-green-600 text-white text-xs font-medium hover:bg-green-700 transition-all flex items-center gap-1.5"
-                  >
-                    <Video className="w-3.5 h-3.5" />
-                    Rejoindre
-                  </Link>
-                );
-              }
-              return null;
-            })()}
+            {editCall &&
+              (() => {
+                if (editCall.status === "annule") return null;
+                const today = new Date();
+                const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+                if (editCall.date === todayStr) {
+                  return (
+                    <Link
+                      href={`${prefix}/calls/${editCall.id}`}
+                      className="h-8 px-3 rounded-lg bg-green-600 text-white text-xs font-medium hover:bg-green-700 transition-all flex items-center gap-1.5"
+                    >
+                      <Video className="w-3.5 h-3.5" />
+                      Rejoindre
+                    </Link>
+                  );
+                }
+                return null;
+              })()}
             <button
               onClick={onClose}
               className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"

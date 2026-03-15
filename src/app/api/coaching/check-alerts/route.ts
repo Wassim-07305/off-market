@@ -47,7 +47,10 @@ export async function POST(request: Request) {
     .lt("scheduled_at", nowISO);
 
   if (missedErr) {
-    console.error("[check-alerts] Erreur sessions manquees:", missedErr.message);
+    console.error(
+      "[check-alerts] Erreur sessions manquees:",
+      missedErr.message,
+    );
   }
 
   if (missedSessions?.length) {
@@ -62,7 +65,12 @@ export async function POST(request: Request) {
 
     // 2. Create coach_alerts for each missed session
     const alerts = missedSessions.map(
-      (s: { id: string; coach_id: string; client_id: string; scheduled_at: string }) => ({
+      (s: {
+        id: string;
+        coach_id: string;
+        client_id: string;
+        scheduled_at: string;
+      }) => ({
         coach_id: s.coach_id,
         client_id: s.client_id,
         type: "session_missed",
@@ -78,7 +86,10 @@ export async function POST(request: Request) {
       .insert(alerts);
 
     if (alertErr) {
-      console.error("[check-alerts] Erreur creation alertes session:", alertErr.message);
+      console.error(
+        "[check-alerts] Erreur creation alertes session:",
+        alertErr.message,
+      );
     } else {
       results.session_missed_alerts = alerts.length;
     }
@@ -87,7 +98,9 @@ export async function POST(request: Request) {
   // ═══════════════════════════════════════
   // 3. Clients with no check-in in 10+ days
   // ═══════════════════════════════════════
-  const tenDaysAgo = new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000).toISOString();
+  const tenDaysAgo = new Date(
+    now.getTime() - 10 * 24 * 60 * 60 * 1000,
+  ).toISOString();
 
   // Get all active client assignments
   const { data: activeAssignments, error: assignErr } = await supabase
@@ -100,7 +113,9 @@ export async function POST(request: Request) {
   }
 
   if (activeAssignments?.length) {
-    const clientIds = activeAssignments.map((a: { client_id: string }) => a.client_id);
+    const clientIds = activeAssignments.map(
+      (a: { client_id: string }) => a.client_id,
+    );
 
     // Find the latest journal entry per client
     const { data: recentCheckins, error: checkinErr } = await supabase
@@ -124,7 +139,9 @@ export async function POST(request: Request) {
 
     if (noCheckinClients.length) {
       // Avoid duplicate alerts: check for existing 'no_checkin' alerts created in the last 3 days
-      const threeDaysAgo = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString();
+      const threeDaysAgo = new Date(
+        now.getTime() - 3 * 24 * 60 * 60 * 1000,
+      ).toISOString();
       const { data: existingNoCheckin } = await supabase
         .from("coach_alerts")
         .select("client_id")
@@ -132,7 +149,9 @@ export async function POST(request: Request) {
         .gte("created_at", threeDaysAgo);
 
       const alreadyAlerted = new Set(
-        (existingNoCheckin ?? []).map((a: { client_id: string }) => a.client_id),
+        (existingNoCheckin ?? []).map(
+          (a: { client_id: string }) => a.client_id,
+        ),
       );
 
       const newNoCheckinAlerts = noCheckinClients
@@ -153,7 +172,10 @@ export async function POST(request: Request) {
           .insert(newNoCheckinAlerts);
 
         if (ncErr) {
-          console.error("[check-alerts] Erreur alertes no_checkin:", ncErr.message);
+          console.error(
+            "[check-alerts] Erreur alertes no_checkin:",
+            ncErr.message,
+          );
         } else {
           results.no_checkin_alerts = newNoCheckinAlerts.length;
         }
@@ -163,7 +185,9 @@ export async function POST(request: Request) {
     // ═══════════════════════════════════════
     // 4. Clients with last login > 7 days
     // ═══════════════════════════════════════
-    const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    const sevenDaysAgo = new Date(
+      now.getTime() - 7 * 24 * 60 * 60 * 1000,
+    ).toISOString();
 
     const { data: inactiveClients, error: inactiveErr } = await supabase
       .from("profiles")
@@ -172,7 +196,10 @@ export async function POST(request: Request) {
       .lt("last_seen_at", sevenDaysAgo);
 
     if (inactiveErr) {
-      console.error("[check-alerts] Erreur profils inactifs:", inactiveErr.message);
+      console.error(
+        "[check-alerts] Erreur profils inactifs:",
+        inactiveErr.message,
+      );
     }
 
     if (inactiveClients?.length) {
@@ -189,7 +216,10 @@ export async function POST(request: Request) {
 
       // Build a map of client_id -> coach_id from active assignments
       const clientCoachMap = new Map<string, string>();
-      for (const a of activeAssignments as { coach_id: string; client_id: string }[]) {
+      for (const a of activeAssignments as {
+        coach_id: string;
+        client_id: string;
+      }[]) {
         clientCoachMap.set(a.client_id, a.coach_id);
       }
 
@@ -212,7 +242,10 @@ export async function POST(request: Request) {
           .insert(newInactiveAlerts);
 
         if (iaErr) {
-          console.error("[check-alerts] Erreur alertes inactive:", iaErr.message);
+          console.error(
+            "[check-alerts] Erreur alertes inactive:",
+            iaErr.message,
+          );
         } else {
           results.inactive_alerts = newInactiveAlerts.length;
         }

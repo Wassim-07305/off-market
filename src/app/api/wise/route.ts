@@ -4,9 +4,10 @@ import { createClient } from "@/lib/supabase/server";
 // Wise (TransferWise) API integration for international payments
 // Requires: WISE_API_KEY and WISE_PROFILE_ID in environment
 
-const WISE_API_URL = process.env.WISE_SANDBOX === "true"
-  ? "https://api.sandbox.transferwise.tech"
-  : "https://api.transferwise.com";
+const WISE_API_URL =
+  process.env.WISE_SANDBOX === "true"
+    ? "https://api.sandbox.transferwise.tech"
+    : "https://api.transferwise.com";
 
 async function wiseRequest(path: string, options: RequestInit = {}) {
   const apiKey = process.env.WISE_API_KEY;
@@ -32,11 +33,19 @@ async function wiseRequest(path: string, options: RequestInit = {}) {
 // GET /api/wise — Get balance + recent transfers
 export async function GET(request: Request) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Non autorise" }, { status: 401 });
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user)
+    return NextResponse.json({ error: "Non autorise" }, { status: 401 });
 
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-  if (profile?.role !== "admin") return NextResponse.json({ error: "Admin requis" }, { status: 403 });
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+  if (profile?.role !== "admin")
+    return NextResponse.json({ error: "Admin requis" }, { status: 403 });
 
   const profileId = process.env.WISE_PROFILE_ID;
   if (!profileId || !process.env.WISE_API_KEY) {
@@ -48,7 +57,9 @@ export async function GET(request: Request) {
     const action = url.searchParams.get("action") || "balance";
 
     if (action === "balance") {
-      const balances = await wiseRequest(`/v4/profiles/${profileId}/balances?types=STANDARD`);
+      const balances = await wiseRequest(
+        `/v4/profiles/${profileId}/balances?types=STANDARD`,
+      );
       return NextResponse.json({ balances });
     }
 
@@ -63,7 +74,9 @@ export async function GET(request: Request) {
     if (action === "rates") {
       const source = url.searchParams.get("source") || "EUR";
       const target = url.searchParams.get("target") || "USD";
-      const rates = await wiseRequest(`/v1/rates?source=${source}&target=${target}`);
+      const rates = await wiseRequest(
+        `/v1/rates?source=${source}&target=${target}`,
+      );
       return NextResponse.json({ rates });
     }
 
@@ -80,11 +93,19 @@ export async function GET(request: Request) {
 // POST /api/wise — Create a transfer quote or transfer
 export async function POST(request: Request) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Non autorise" }, { status: 401 });
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user)
+    return NextResponse.json({ error: "Non autorise" }, { status: 401 });
 
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-  if (profile?.role !== "admin") return NextResponse.json({ error: "Admin requis" }, { status: 403 });
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+  if (profile?.role !== "admin")
+    return NextResponse.json({ error: "Admin requis" }, { status: 403 });
 
   const profileId = process.env.WISE_PROFILE_ID;
   if (!profileId || !process.env.WISE_API_KEY) {
@@ -97,7 +118,8 @@ export async function POST(request: Request) {
   try {
     // Step 1: Create a quote
     if (action === "quote") {
-      const { sourceCurrency, targetCurrency, sourceAmount, targetAmount } = body;
+      const { sourceCurrency, targetCurrency, sourceAmount, targetAmount } =
+        body;
 
       const quote = await wiseRequest("/v3/profiles/" + profileId + "/quotes", {
         method: "POST",

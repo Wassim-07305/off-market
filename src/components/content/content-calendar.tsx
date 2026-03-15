@@ -1,7 +1,10 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { useContentCalendar, type SocialContentItem } from "@/hooks/use-social-content";
+import {
+  useContentCalendar,
+  type SocialContentItem,
+} from "@/hooks/use-social-content";
 import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 
@@ -141,7 +144,10 @@ export function ContentCalendar({
         {cells.map((day, idx) => {
           if (day === null) {
             return (
-              <div key={`empty-${idx}`} className="bg-surface/50 min-h-[100px]" />
+              <div
+                key={`empty-${idx}`}
+                className="bg-surface/50 min-h-[100px]"
+              />
             );
           }
 
@@ -170,9 +176,7 @@ export function ContentCalendar({
                   {day}
                 </span>
                 <button
-                  onClick={() =>
-                    onCreateForDate(dateStr + "T09:00:00")
-                  }
+                  onClick={() => onCreateForDate(dateStr + "T09:00:00")}
                   className="w-5 h-5 rounded-md flex items-center justify-center text-muted-foreground/0 group-hover:text-muted-foreground hover:!bg-muted hover:!text-foreground transition-all"
                 >
                   <Plus className="w-3 h-3" />

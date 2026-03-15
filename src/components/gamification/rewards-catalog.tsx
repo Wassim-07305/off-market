@@ -213,9 +213,7 @@ export function RewardsCatalog() {
                   <button
                     onClick={() => handleRedeem(reward)}
                     disabled={
-                      !canAfford ||
-                      outOfStock ||
-                      redeemReward.isPending
+                      !canAfford || outOfStock || redeemReward.isPending
                     }
                     className={cn(
                       "h-8 px-3 rounded-lg text-xs font-medium transition-all",

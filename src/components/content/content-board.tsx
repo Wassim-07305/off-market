@@ -19,12 +19,7 @@ import {
   type ContentStatus,
 } from "@/hooks/use-social-content";
 import { cn } from "@/lib/utils";
-import {
-  GripVertical,
-  Calendar,
-  Image,
-  Loader2,
-} from "lucide-react";
+import { GripVertical, Calendar, Image, Loader2 } from "lucide-react";
 
 // ─── Column definitions ──────────────────────────────────────
 
@@ -60,10 +55,7 @@ const BOARD_COLUMNS: {
   },
 ];
 
-const PLATFORM_BADGE: Record<
-  string,
-  { label: string; className: string }
-> = {
+const PLATFORM_BADGE: Record<string, { label: string; className: string }> = {
   instagram: {
     label: "Instagram",
     className:
@@ -76,8 +68,7 @@ const PLATFORM_BADGE: Record<
   },
   tiktok: {
     label: "TikTok",
-    className:
-      "bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-200",
+    className: "bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-200",
   },
 };
 

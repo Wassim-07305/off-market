@@ -59,10 +59,7 @@ function getPersistedCompleted(userId: string): Set<string> {
 
 function persistCompleted(userId: string, keys: Set<string>) {
   try {
-    localStorage.setItem(
-      `${STORAGE_KEY}-${userId}`,
-      JSON.stringify([...keys]),
-    );
+    localStorage.setItem(`${STORAGE_KEY}-${userId}`, JSON.stringify([...keys]));
   } catch {
     // localStorage unavailable
   }

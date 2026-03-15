@@ -4,12 +4,7 @@ import { cn, formatDate, getInitials } from "@/lib/utils";
 import { useRoutePrefix } from "@/hooks/use-route-prefix";
 import { useFlaggedClients } from "@/hooks/use-client-flags";
 import { ClientFlagBadge } from "./client-flag-badge";
-import {
-  AlertTriangle,
-  ArrowRight,
-  User,
-  Clock,
-} from "lucide-react";
+import { AlertTriangle, ArrowRight, User, Clock } from "lucide-react";
 import Link from "next/link";
 import type { ClientFlagValue } from "@/types/roadmap";
 
@@ -31,10 +26,7 @@ export function FlagAlertPanel({ className, limit = 10 }: FlagAlertPanelProps) {
       <div className={cn("rounded-xl border border-border p-4", className)}>
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (
-            <div
-              key={i}
-              className="h-14 bg-muted animate-shimmer rounded-lg"
-            />
+            <div key={i} className="h-14 bg-muted animate-shimmer rounded-lg" />
           ))}
         </div>
       </div>
@@ -142,9 +134,11 @@ function FlagAlertItem({
           />
         ) : (
           <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-[10px] text-primary font-medium">
-            {item.client
-              ? getInitials(item.client.full_name)
-              : <User className="w-3.5 h-3.5" />}
+            {item.client ? (
+              getInitials(item.client.full_name)
+            ) : (
+              <User className="w-3.5 h-3.5" />
+            )}
           </div>
         )}
         <div className="absolute -bottom-0.5 -right-0.5">

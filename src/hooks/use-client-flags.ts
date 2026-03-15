@@ -143,9 +143,7 @@ export function useSetClientFlag() {
           .select("id")
           .eq("role", "admin");
 
-        const adminIds = (adminProfiles ?? []).map(
-          (p: { id: string }) => p.id,
-        );
+        const adminIds = (adminProfiles ?? []).map((p: { id: string }) => p.id);
 
         // Fetch assigned coach for this client
         // eslint-disable-next-line @typescript-eslint/no-explicit-any

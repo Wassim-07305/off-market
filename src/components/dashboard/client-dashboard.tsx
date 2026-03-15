@@ -15,10 +15,7 @@ import { useAnnouncements } from "@/hooks/useAnnouncements";
 import { useRoutePrefix } from "@/hooks/use-route-prefix";
 import { OnboardingBanner } from "@/components/onboarding/onboarding-banner";
 import { OnboardingChecklist } from "@/components/onboarding/onboarding-checklist";
-import {
-  staggerContainer,
-  staggerItem,
-} from "@/lib/animations";
+import { staggerContainer, staggerItem } from "@/lib/animations";
 import { cn } from "@/lib/utils";
 import {
   Flame,
@@ -131,21 +128,21 @@ function TopStatsSection({ prefix }: { prefix: string }) {
     if (!courses || !lessonProgress) return 0;
     let count = 0;
     for (const course of courses) {
-      const totalLessons = course.modules?.reduce(
-        (acc, m) => acc + (m.lessons?.length ?? 0),
-        0,
-      ) ?? 0;
+      const totalLessons =
+        course.modules?.reduce((acc, m) => acc + (m.lessons?.length ?? 0), 0) ??
+        0;
       if (totalLessons === 0) continue;
-      const completedLessons = course.modules?.reduce((acc, m) => {
-        return (
-          acc +
-          (m.lessons?.filter((l) =>
-            lessonProgress.some(
-              (p) => p.lesson_id === l.id && p.status === "completed",
-            ),
-          ).length ?? 0)
-        );
-      }, 0) ?? 0;
+      const completedLessons =
+        course.modules?.reduce((acc, m) => {
+          return (
+            acc +
+            (m.lessons?.filter((l) =>
+              lessonProgress.some(
+                (p) => p.lesson_id === l.id && p.status === "completed",
+              ),
+            ).length ?? 0)
+          );
+        }, 0) ?? 0;
       if (completedLessons >= totalLessons) count++;
     }
     return count;
@@ -495,27 +492,29 @@ function CourseProgressSection({ prefix }: { prefix: string }) {
         </div>
       ) : courseProgress.length > 0 ? (
         <div className="space-y-4">
-          {courseProgress.map(({ course, completedLessons, totalLessons, percent }) => (
-            <div key={course.id}>
-              <div className="flex items-center justify-between mb-1.5">
-                <p className="text-sm font-medium text-foreground truncate max-w-[180px]">
-                  {course.title}
+          {courseProgress.map(
+            ({ course, completedLessons, totalLessons, percent }) => (
+              <div key={course.id}>
+                <div className="flex items-center justify-between mb-1.5">
+                  <p className="text-sm font-medium text-foreground truncate max-w-[180px]">
+                    {course.title}
+                  </p>
+                  <span className="text-xs font-mono text-muted-foreground tabular-nums">
+                    {completedLessons}/{totalLessons}
+                  </span>
+                </div>
+                <div className="h-2 bg-muted rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-primary to-primary/70 rounded-full transition-all duration-700"
+                    style={{ width: `${percent}%` }}
+                  />
+                </div>
+                <p className="text-[10px] text-muted-foreground mt-0.5">
+                  {percent}% complete
                 </p>
-                <span className="text-xs font-mono text-muted-foreground tabular-nums">
-                  {completedLessons}/{totalLessons}
-                </span>
               </div>
-              <div className="h-2 bg-muted rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-primary to-primary/70 rounded-full transition-all duration-700"
-                  style={{ width: `${percent}%` }}
-                />
-              </div>
-              <p className="text-[10px] text-muted-foreground mt-0.5">
-                {percent}% complete
-              </p>
-            </div>
-          ))}
+            ),
+          )}
         </div>
       ) : (
         <p className="text-sm text-muted-foreground">
@@ -648,10 +647,7 @@ function RecentJournalSection({ prefix }: { prefix: string }) {
               { day: "numeric", month: "short" },
             );
             return (
-              <div
-                key={entry.id}
-                className="p-3 rounded-xl bg-muted/30 group"
-              >
+              <div key={entry.id} className="p-3 rounded-xl bg-muted/30 group">
                 <div className="flex items-center justify-between mb-1">
                   <p className="text-sm font-medium text-foreground truncate max-w-[200px]">
                     {entry.title}

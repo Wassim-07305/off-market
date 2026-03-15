@@ -52,7 +52,16 @@ export function CoachCard({
   onReassignClient,
 }: CoachCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const { coach, clientCount, totalRevenue, sessionsThisMonth, averageHealthScore, atRiskClients, retentionRate, clients } = data;
+  const {
+    coach,
+    clientCount,
+    totalRevenue,
+    sessionsThisMonth,
+    averageHealthScore,
+    atRiskClients,
+    retentionRate,
+    clients,
+  } = data;
   const workload = getWorkloadColor(clientCount);
 
   return (
@@ -146,7 +155,10 @@ export function CoachCard({
         <div className="flex items-center gap-4 mb-4 text-xs">
           <span className="flex items-center gap-1 text-muted-foreground">
             <ShieldCheck className="w-3.5 h-3.5" />
-            Retention: <span className="font-mono font-semibold text-foreground">{retentionRate}%</span>
+            Retention:{" "}
+            <span className="font-mono font-semibold text-foreground">
+              {retentionRate}%
+            </span>
           </span>
           {atRiskClients > 0 && (
             <span className="flex items-center gap-1 text-red-600 font-medium">

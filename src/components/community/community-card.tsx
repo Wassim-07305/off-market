@@ -40,9 +40,7 @@ export function CommunityCard({
           className="absolute inset-x-0 bottom-0 h-px"
           style={{ backgroundColor: community.color + "30" }}
         />
-        <span className="text-2xl select-none">
-          {community.icon || "💬"}
-        </span>
+        <span className="text-2xl select-none">{community.icon || "💬"}</span>
         {community.is_private && (
           <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-white/80 flex items-center justify-center">
             <Lock className="w-3 h-3 text-muted-foreground" />
@@ -67,7 +65,8 @@ export function CommunityCard({
         <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
           <Users className="w-3.5 h-3.5" />
           <span>
-            {community.member_count} membre{community.member_count !== 1 ? "s" : ""}
+            {community.member_count} membre
+            {community.member_count !== 1 ? "s" : ""}
           </span>
           {community.max_members && (
             <span className="text-muted-foreground/60">

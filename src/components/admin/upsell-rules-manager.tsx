@@ -105,7 +105,9 @@ export function UpsellRulesManager() {
     setModalOpen(true);
   }
 
-  function buildTriggerConfig(data: UpsellRuleFormData): Record<string, unknown> {
+  function buildTriggerConfig(
+    data: UpsellRuleFormData,
+  ): Record<string, unknown> {
     switch (data.trigger_type) {
       case "revenue_threshold":
         return { threshold: data.threshold ?? 7000, currency: "EUR" };
@@ -153,8 +155,8 @@ export function UpsellRulesManager() {
             Regles d&apos;upsell
           </h2>
           <p className="text-sm text-muted-foreground mt-1">
-            Configurez les declencheurs automatiques d&apos;upsell pour maximiser la
-            LTV client.
+            Configurez les declencheurs automatiques d&apos;upsell pour
+            maximiser la LTV client.
           </p>
         </div>
         <Button onClick={openCreate} icon={<Plus className="h-4 w-4" />}>
@@ -183,7 +185,8 @@ export function UpsellRulesManager() {
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
           {rules.map((rule) => {
-            const Icon = TRIGGER_ICONS[rule.trigger_type as UpsellTriggerType] ?? Target;
+            const Icon =
+              TRIGGER_ICONS[rule.trigger_type as UpsellTriggerType] ?? Target;
             const config = rule.trigger_config as Record<string, unknown>;
             return (
               <Card key={rule.id}>
@@ -203,7 +206,11 @@ export function UpsellRulesManager() {
                       <div>
                         <CardTitle className="text-base">{rule.name}</CardTitle>
                         <span className="text-xs text-muted-foreground">
-                          {UPSELL_TRIGGER_TYPE_CONFIG[rule.trigger_type as UpsellTriggerType]?.label}
+                          {
+                            UPSELL_TRIGGER_TYPE_CONFIG[
+                              rule.trigger_type as UpsellTriggerType
+                            ]?.label
+                          }
                         </span>
                       </div>
                     </div>
@@ -239,7 +246,11 @@ export function UpsellRulesManager() {
                     {rule.trigger_type === "revenue_threshold" && (
                       <div className="inline-flex items-center gap-1 text-xs bg-emerald-50 text-emerald-700 px-2 py-1 rounded-full">
                         <Euro className="h-3 w-3" />
-                        Seuil : {(config.threshold as number)?.toLocaleString("fr-FR")} EUR
+                        Seuil :{" "}
+                        {(config.threshold as number)?.toLocaleString(
+                          "fr-FR",
+                        )}{" "}
+                        EUR
                       </div>
                     )}
                   </div>
@@ -289,9 +300,7 @@ export function UpsellRulesManager() {
 
           {triggerType === "revenue_threshold" && (
             <div>
-              <label className="text-sm font-medium">
-                Seuil de CA (EUR)
-              </label>
+              <label className="text-sm font-medium">Seuil de CA (EUR)</label>
               <Input
                 type="number"
                 {...form.register("threshold")}
@@ -351,10 +360,7 @@ export function UpsellRulesManager() {
 
           <div>
             <label className="text-sm font-medium">URL de l&apos;offre</label>
-            <Input
-              {...form.register("offer_url")}
-              placeholder="https://..."
-            />
+            <Input {...form.register("offer_url")} placeholder="https://..." />
           </div>
 
           <div className="flex justify-end gap-2 pt-2">

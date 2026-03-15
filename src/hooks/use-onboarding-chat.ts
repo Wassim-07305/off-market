@@ -73,8 +73,7 @@ const STEPS: StepConfig[] = [
   },
   {
     key: "source",
-    getBotMessage: () =>
-      "Dernière question : comment as-tu connu Off-Market ?",
+    getBotMessage: () => "Dernière question : comment as-tu connu Off-Market ?",
     choices: [
       "Réseaux sociaux",
       "Bouche à oreille",
@@ -85,8 +84,7 @@ const STEPS: StepConfig[] = [
   },
   {
     key: "complete",
-    getBotMessage: (a) =>
-      `Parfait ${a.name} ! Ton espace est prêt 🚀`,
+    getBotMessage: (a) => `Parfait ${a.name} ! Ton espace est prêt 🚀`,
     profileField: undefined,
   },
 ];

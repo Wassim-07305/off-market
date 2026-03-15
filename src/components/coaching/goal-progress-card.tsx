@@ -54,7 +54,11 @@ function getDeadlineStatus(deadline: string | null): {
   urgency: "on_track" | "close" | "overdue";
 } {
   if (!deadline)
-    return { label: "Sans echeance", color: "text-muted-foreground", urgency: "on_track" };
+    return {
+      label: "Sans echeance",
+      color: "text-muted-foreground",
+      urgency: "on_track",
+    };
 
   const now = new Date();
   const target = new Date(deadline);
@@ -97,7 +101,8 @@ function CircularProgress({
 }) {
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (Math.min(percentage, 100) / 100) * circumference;
+  const offset =
+    circumference - (Math.min(percentage, 100) / 100) * circumference;
 
   const getColor = () => {
     if (percentage >= 100) return "#10b981"; // emerald-500
@@ -157,14 +162,22 @@ function MiniSparkline({ points }: { points: number[] }) {
   const pathData = points
     .map((val, i) => {
       const x = padding + (i / (points.length - 1)) * (width - padding * 2);
-      const y = height - padding - ((val - min) / range) * (height - padding * 2);
+      const y =
+        height - padding - ((val - min) / range) * (height - padding * 2);
       return `${i === 0 ? "M" : "L"} ${x} ${y}`;
     })
     .join(" ");
 
   return (
     <svg width={width} height={height} className="text-blue-500">
-      <path d={pathData} fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
+      <path
+        d={pathData}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={1.5}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
@@ -188,7 +201,8 @@ export function GoalProgressCard({
   const [editValue, setEditValue] = useState(goal.current_value);
 
   const targetValue = goal.target_value ?? 0;
-  const percentage = targetValue > 0 ? (goal.current_value / targetValue) * 100 : 0;
+  const percentage =
+    targetValue > 0 ? (goal.current_value / targetValue) * 100 : 0;
   const statusConfig = STATUS_CONFIG[goal.status];
   const deadline = getDeadlineStatus(goal.deadline);
   const StatusIcon = statusConfig.icon;
@@ -244,9 +258,7 @@ export function GoalProgressCard({
         </div>
 
         {/* Circular progress */}
-        {targetValue > 0 && (
-          <CircularProgress percentage={percentage} />
-        )}
+        {targetValue > 0 && <CircularProgress percentage={percentage} />}
       </div>
 
       {/* Progress value */}

@@ -41,8 +41,7 @@ const CATEGORY_COLORS: Record<string, string> = {
   support: "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
   onboarding:
     "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300",
-  relance:
-    "bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300",
+  relance: "bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300",
 };
 
 const VARIABLES = [

@@ -114,9 +114,7 @@ export async function POST(request: Request) {
   // ═══════════════════════════════════════
   const { data: dueEnrollments, error: fetchError } = await supabase
     .from("relance_enrollments")
-    .select(
-      "id, contact_id, sequence_id, current_step, status",
-    )
+    .select("id, contact_id, sequence_id, current_step, status")
     .eq("status", "active")
     .lte("next_step_at", now)
     .limit(100);
@@ -145,7 +143,9 @@ export async function POST(request: Request) {
       // ─── Get the contact ───────────────────
       const { data: contact } = await supabase
         .from("crm_contacts")
-        .select("id, full_name, email, phone, company, stage, estimated_value, last_contact_at")
+        .select(
+          "id, full_name, email, phone, company, stage, estimated_value, last_contact_at",
+        )
         .eq("id", enrollment.contact_id)
         .single();
 

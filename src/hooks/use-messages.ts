@@ -106,7 +106,12 @@ export function useMessages(channelId: string | null) {
       if (error) throw error;
       return data;
     },
-    onMutate: async ({ content, contentType = "text", replyTo, isUrgent = false }) => {
+    onMutate: async ({
+      content,
+      contentType = "text",
+      replyTo,
+      isUrgent = false,
+    }) => {
       if (!user) return;
       // Cancel in-flight fetches
       await queryClient.cancelQueries({ queryKey: ["messages", channelId] });

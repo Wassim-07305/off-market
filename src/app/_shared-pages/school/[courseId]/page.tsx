@@ -513,9 +513,7 @@ export default function CourseViewPage({
           {selectedLesson ? (
             <>
               {/* Video */}
-              {videoUrl && (
-                <EnhancedVideoPlayer videoUrl={videoUrl} />
-              )}
+              {videoUrl && <EnhancedVideoPlayer videoUrl={videoUrl} />}
 
               {/* Lesson title */}
               <h1 className="text-2xl font-display font-bold text-foreground tracking-tight mt-6">
@@ -532,7 +530,9 @@ export default function CourseViewPage({
               {htmlContent && (
                 <div
                   className="prose prose-stone dark:prose-invert max-w-none mt-6 prose-headings:font-display prose-headings:tracking-tight"
-                  dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(htmlContent) }}
+                  dangerouslySetInnerHTML={{
+                    __html: DOMPurify.sanitize(htmlContent),
+                  }}
                 />
               )}
 
@@ -637,4 +637,3 @@ export default function CourseViewPage({
     </div>
   );
 }
-

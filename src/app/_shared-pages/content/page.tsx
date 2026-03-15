@@ -32,9 +32,9 @@ export default function ContentPage() {
   const [showForm, setShowForm] = useState(false);
   const [editItem, setEditItem] = useState<SocialContentItem | null>(null);
   const [defaultScheduledAt, setDefaultScheduledAt] = useState<string>();
-  const [platformFilter, setPlatformFilter] = useState<
-    ContentPlatform | "all"
-  >("all");
+  const [platformFilter, setPlatformFilter] = useState<ContentPlatform | "all">(
+    "all",
+  );
 
   const stats = useContentStats();
 
@@ -93,7 +93,11 @@ export default function ContentPage() {
             {(
               [
                 { key: "board" as const, label: "Board", icon: Kanban },
-                { key: "calendar" as const, label: "Calendrier", icon: Calendar },
+                {
+                  key: "calendar" as const,
+                  label: "Calendrier",
+                  icon: Calendar,
+                },
               ] as const
             ).map((v) => {
               const Icon = v.icon;

@@ -76,10 +76,8 @@ export function useLTVRanking(limit = 20) {
 
         if (existing) {
           existing.totalPaid += Number(inv.total ?? 0);
-          if (paidAt < existing.firstPayment)
-            existing.firstPayment = paidAt;
-          if (paidAt > existing.lastPayment)
-            existing.lastPayment = paidAt;
+          if (paidAt < existing.firstPayment) existing.firstPayment = paidAt;
+          if (paidAt > existing.lastPayment) existing.lastPayment = paidAt;
         } else {
           clientMap.set(clientId, {
             fullName: client.full_name,
@@ -100,7 +98,8 @@ export function useLTVRanking(limit = 20) {
         const monthsActive = Math.max(
           1,
           Math.ceil(
-            (now.getTime() - startDate.getTime()) / (30.44 * 24 * 60 * 60 * 1000),
+            (now.getTime() - startDate.getTime()) /
+              (30.44 * 24 * 60 * 60 * 1000),
           ),
         );
 
@@ -114,9 +113,7 @@ export function useLTVRanking(limit = 20) {
         });
       }
 
-      return results
-        .sort((a, b) => b.ltv - a.ltv)
-        .slice(0, limit);
+      return results.sort((a, b) => b.ltv - a.ltv).slice(0, limit);
     },
     staleTime: 5 * 60 * 1000,
   });
@@ -145,8 +142,16 @@ export function useClientLTV(clientId: string) {
           .single(),
       ]);
 
-      const profile = profileRes.data as { id: string; full_name: string; avatar_url: string | null; created_at: string } | null;
-      const invoices = (invoicesRes.data ?? []) as { total: number; paid_at: string | null }[];
+      const profile = profileRes.data as {
+        id: string;
+        full_name: string;
+        avatar_url: string | null;
+        created_at: string;
+      } | null;
+      const invoices = (invoicesRes.data ?? []) as {
+        total: number;
+        paid_at: string | null;
+      }[];
 
       if (!profile) return null;
 

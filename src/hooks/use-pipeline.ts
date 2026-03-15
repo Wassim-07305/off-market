@@ -67,22 +67,32 @@ export function usePipelineContacts(stage?: PipelineStage) {
       toast.success("Contact ajoute");
 
       // Auto-enrich if social URLs provided
-      if (data.linkedin_url || data.instagram_url || data.tiktok_url || data.facebook_url || data.website_url) {
+      if (
+        data.linkedin_url ||
+        data.instagram_url ||
+        data.tiktok_url ||
+        data.facebook_url ||
+        data.website_url
+      ) {
         fetch("/api/enrichment", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ contactId: data.id, type: "all" }),
-        }).then(() => {
-          queryClient.invalidateQueries({ queryKey: ["pipeline-contacts"] });
-          toast.success("Enrichissement auto lance");
-        }).catch(() => {
-          // Silent fail — enrichment is best-effort
-        });
+        })
+          .then(() => {
+            queryClient.invalidateQueries({ queryKey: ["pipeline-contacts"] });
+            toast.success("Enrichissement auto lance");
+          })
+          .catch(() => {
+            // Silent fail — enrichment is best-effort
+          });
       }
     },
     onError: (err: unknown) => {
       const pg = err as { message?: string; code?: string; details?: string };
-      const msg = pg?.message || (err instanceof Error ? err.message : JSON.stringify(err));
+      const msg =
+        pg?.message ||
+        (err instanceof Error ? err.message : JSON.stringify(err));
       console.error("CRM contact create error:", err);
       toast.error(`Erreur: ${msg}`, { duration: 8000 });
     },
@@ -102,7 +112,9 @@ export function usePipelineContacts(stage?: PipelineStage) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["pipeline-contacts"] });
     },
-    onError: () => { toast.error("Erreur lors de la mise à jour du contact"); },
+    onError: () => {
+      toast.error("Erreur lors de la mise à jour du contact");
+    },
   });
 
   const moveContact = useMutation({

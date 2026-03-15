@@ -16,7 +16,20 @@ import { useAuth } from "@/hooks/use-auth";
 import { useRole } from "@/hooks/useRole";
 import { useCompetitions } from "@/hooks/use-competitions";
 import { useTeams, useMyTeam } from "@/hooks/use-teams";
-import { Crown, Medal, Award, TrendingUp, UserX, ArrowUp, ArrowDown, Minus, Trophy, Users, Plus, Flame } from "lucide-react";
+import {
+  Crown,
+  Medal,
+  Award,
+  TrendingUp,
+  UserX,
+  ArrowUp,
+  ArrowDown,
+  Minus,
+  Trophy,
+  Users,
+  Plus,
+  Flame,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CompetitionCard } from "@/components/gamification/competition-card";
 import { CompetitionLeaderboard } from "@/components/gamification/competition-leaderboard";
@@ -233,7 +246,9 @@ function IndividualLeaderboard() {
                     )}
                     {period !== "all" && (
                       <div className="mt-1">
-                        <RankChangeIndicator change={rankChanges.get(entry.profile_id)} />
+                        <RankChangeIndicator
+                          change={rankChanges.get(entry.profile_id)}
+                        />
                       </div>
                     )}
                   </div>
@@ -297,7 +312,9 @@ function IndividualLeaderboard() {
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       {period !== "all" && (
-                        <RankChangeIndicator change={rankChanges.get(entry.profile_id)} />
+                        <RankChangeIndicator
+                          change={rankChanges.get(entry.profile_id)}
+                        />
                       )}
                       <span className="text-sm font-semibold text-foreground font-serif">
                         {entry.total_xp} XP
@@ -319,11 +336,18 @@ function CompetitionsTab() {
   const { isAdmin } = useRole();
   const { data: competitions = [], isLoading } = useCompetitions();
   const [showCreate, setShowCreate] = useState(false);
-  const [selectedCompetition, setSelectedCompetition] = useState<Competition | null>(null);
+  const [selectedCompetition, setSelectedCompetition] =
+    useState<Competition | null>(null);
 
-  const activeComps = competitions.filter((c: Competition) => c.status === "active");
-  const upcomingComps = competitions.filter((c: Competition) => c.status === "upcoming");
-  const completedComps = competitions.filter((c: Competition) => c.status === "completed");
+  const activeComps = competitions.filter(
+    (c: Competition) => c.status === "active",
+  );
+  const upcomingComps = competitions.filter(
+    (c: Competition) => c.status === "upcoming",
+  );
+  const completedComps = competitions.filter(
+    (c: Competition) => c.status === "completed",
+  );
 
   if (selectedCompetition) {
     return (
@@ -422,8 +446,7 @@ function CompetitionsTab() {
           {upcomingComps.length > 0 && (
             <div className="space-y-3">
               <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider flex items-center gap-2">
-                <Trophy className="w-4 h-4 text-blue-500" />
-                A venir
+                <Trophy className="w-4 h-4 text-blue-500" />A venir
               </h3>
               <div className="grid gap-4 sm:grid-cols-2">
                 {upcomingComps.map((comp: Competition) => (
@@ -496,10 +519,7 @@ function TeamsTab() {
       {isLoading ? (
         <div className="grid gap-4 sm:grid-cols-2">
           {[1, 2, 3, 4].map((i) => (
-            <div
-              key={i}
-              className="h-48 bg-muted animate-pulse rounded-2xl"
-            />
+            <div key={i} className="h-48 bg-muted animate-pulse rounded-2xl" />
           ))}
         </div>
       ) : teams.length === 0 ? (
@@ -513,7 +533,8 @@ function TeamsTab() {
             Aucune equipe
           </p>
           <p className="text-sm text-muted-foreground">
-            Les equipes seront creees par les administrateurs pour les competitions.
+            Les equipes seront creees par les administrateurs pour les
+            competitions.
           </p>
         </motion.div>
       ) : (

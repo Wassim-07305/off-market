@@ -63,7 +63,9 @@ export function useCheckins(clientId?: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["checkins"] });
     },
-    onError: () => { toast.error("Erreur lors de la soumission du check-in"); },
+    onError: () => {
+      toast.error("Erreur lors de la soumission du check-in");
+    },
   });
 
   const addFeedback = useMutation({
@@ -83,7 +85,9 @@ export function useCheckins(clientId?: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["checkins"] });
     },
-    onError: () => { toast.error("Erreur lors de l'ajout du feedback"); },
+    onError: () => {
+      toast.error("Erreur lors de l'ajout du feedback");
+    },
   });
 
   // Computed stats
@@ -198,4 +202,119 @@ function getMonday(date: Date): string {
   const diff = d.getDate() - day + (day === 0 ? -6 : 1);
   d.setDate(diff);
   return d.toISOString().split("T")[0];
+}
+
+// ─── Check-in Trends Report ─────────────────────────
+export interface CheckinTrend {
+  period: string; // week_start
+  avgMood: number;
+  avgEnergy: number;
+  totalRevenue: number;
+  checkinCount: number;
+  topWin: string | null;
+  topBlocker: string | null;
+}
+
+export function useCheckinTrends(clientId?: string, weeks = 12) {
+  const supabase = useSupabase();
+  const { user } = useAuth();
+  const effectiveId = clientId ?? user?.id;
+
+  return useQuery({
+    queryKey: ["checkin-trends", effectiveId, weeks],
+    enabled: !!effectiveId,
+    queryFn: async () => {
+      const cutoff = new Date();
+      cutoff.setDate(cutoff.getDate() - weeks * 7);
+
+      let query = supabase
+        .from("weekly_checkins")
+        .select("*")
+        .gte("week_start", cutoff.toISOString().split("T")[0])
+        .order("week_start", { ascending: true });
+
+      if (effectiveId) query = query.eq("client_id", effectiveId);
+
+      const { data, error } = await query;
+      if (error) throw error;
+
+      const checkins = (data ?? []) as WeeklyCheckin[];
+
+      // Group by week
+      const weekMap = new Map<string, WeeklyCheckin[]>();
+      for (const c of checkins) {
+        const existing = weekMap.get(c.week_start) ?? [];
+        existing.push(c);
+        weekMap.set(c.week_start, existing);
+      }
+
+      const trends: CheckinTrend[] = [];
+      for (const [period, items] of weekMap) {
+        const moods = items.filter((c) => c.mood).map((c) => Number(c.mood));
+        const energies = items
+          .filter((c) => c.energy)
+          .map((c) => Number(c.energy));
+        const avgMood =
+          moods.length > 0
+            ? Math.round(
+                (moods.reduce((a, b) => a + b, 0) / moods.length) * 10,
+              ) / 10
+            : 0;
+        const avgEnergy =
+          energies.length > 0
+            ? Math.round(
+                (energies.reduce((a, b) => a + b, 0) / energies.length) * 10,
+              ) / 10
+            : 0;
+        const totalRevenue = items.reduce(
+          (sum, c) => sum + Number(c.revenue ?? 0),
+          0,
+        );
+        const wins = items.filter((c) => c.win).map((c) => c.win!);
+        const blockers = items.filter((c) => c.blocker).map((c) => c.blocker!);
+
+        trends.push({
+          period,
+          avgMood,
+          avgEnergy,
+          totalRevenue,
+          checkinCount: items.length,
+          topWin: wins[0] ?? null,
+          topBlocker: blockers[0] ?? null,
+        });
+      }
+
+      // Compute overall insights
+      const allMoods = trends
+        .filter((t) => t.avgMood > 0)
+        .map((t) => t.avgMood);
+      const moodTrend =
+        allMoods.length >= 2 ? allMoods[allMoods.length - 1] - allMoods[0] : 0;
+      const allEnergies = trends
+        .filter((t) => t.avgEnergy > 0)
+        .map((t) => t.avgEnergy);
+      const energyTrend =
+        allEnergies.length >= 2
+          ? allEnergies[allEnergies.length - 1] - allEnergies[0]
+          : 0;
+      const revenueTrend = trends.reduce((s, t) => s + t.totalRevenue, 0);
+      const completionRate =
+        weeks > 0 ? Math.round((trends.length / weeks) * 100) : 0;
+
+      return {
+        trends,
+        insights: {
+          moodTrend: Math.round(moodTrend * 10) / 10,
+          energyTrend: Math.round(energyTrend * 10) / 10,
+          totalRevenue: revenueTrend,
+          completionRate,
+          weeksCovered: trends.length,
+          moodDirection:
+            moodTrend > 0.2 ? "up" : moodTrend < -0.2 ? "down" : "stable",
+          energyDirection:
+            energyTrend > 0.2 ? "up" : energyTrend < -0.2 ? "down" : "stable",
+        },
+      };
+    },
+  });
 }

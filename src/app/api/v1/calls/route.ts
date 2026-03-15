@@ -21,17 +21,25 @@ export async function GET(request: Request) {
   const supabase = createAdminClient();
   let query = supabase
     .from("call_calendar")
-    .select("id, title, date, time_start, time_end, call_type, status, client_id, assigned_to, created_at", { count: "exact" });
+    .select(
+      "id, title, date, time_start, time_end, call_type, status, client_id, assigned_to, created_at",
+      { count: "exact" },
+    );
 
   if (status) query = query.eq("status", status);
   if (from) query = query.gte("date", from);
   if (to) query = query.lte("date", to);
 
-  const { data, error: dbError, count } = await query
+  const {
+    data,
+    error: dbError,
+    count,
+  } = await query
     .order("date", { ascending: false })
     .range(offset, offset + limit - 1);
 
-  if (dbError) return NextResponse.json({ error: dbError.message }, { status: 500 });
+  if (dbError)
+    return NextResponse.json({ error: dbError.message }, { status: 500 });
 
   return NextResponse.json({
     data,

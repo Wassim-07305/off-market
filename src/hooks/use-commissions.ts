@@ -64,7 +64,9 @@ export function useCommissions(options: UseCommissionsOptions = {}) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["commissions"] });
     },
-    onError: () => { toast.error("Erreur lors de la création de la commission"); },
+    onError: () => {
+      toast.error("Erreur lors de la création de la commission");
+    },
   });
 
   const markAsPaid = useMutation({
@@ -78,7 +80,9 @@ export function useCommissions(options: UseCommissionsOptions = {}) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["commissions"] });
     },
-    onError: () => { toast.error("Erreur lors du marquage comme payé"); },
+    onError: () => {
+      toast.error("Erreur lors du marquage comme payé");
+    },
   });
 
   const commissions = commissionsQuery.data ?? [];

@@ -38,7 +38,10 @@ export async function autoAssignCSM(
     .eq("role", "coach");
 
   if (coachError) {
-    console.error("[autoAssignCSM] Erreur chargement coaches:", coachError.message);
+    console.error(
+      "[autoAssignCSM] Erreur chargement coaches:",
+      coachError.message,
+    );
     return null;
   }
 
@@ -57,7 +60,10 @@ export async function autoAssignCSM(
     .eq("status", "active");
 
   if (assignError) {
-    console.error("[autoAssignCSM] Erreur chargement assignments:", assignError.message);
+    console.error(
+      "[autoAssignCSM] Erreur chargement assignments:",
+      assignError.message,
+    );
     return null;
   }
 
@@ -130,7 +136,10 @@ export async function autoAssignCSM(
     });
 
   if (insertError) {
-    console.error("[autoAssignCSM] Erreur creation assignment:", insertError.message);
+    console.error(
+      "[autoAssignCSM] Erreur creation assignment:",
+      insertError.message,
+    );
     return null;
   }
 

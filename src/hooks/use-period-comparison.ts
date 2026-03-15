@@ -4,18 +4,15 @@ import { useQuery } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
 
-export type ComparisonPreset =
-  | "month"
-  | "week"
-  | "quarter"
-  | "custom";
+export type ComparisonPreset = "month" | "week" | "quarter" | "custom";
 
-export const COMPARISON_PRESETS: { value: ComparisonPreset; label: string }[] = [
-  { value: "month", label: "Ce mois vs mois dernier" },
-  { value: "week", label: "Cette semaine vs semaine derniere" },
-  { value: "quarter", label: "Ce trimestre vs dernier trimestre" },
-  { value: "custom", label: "Personnalise" },
-];
+export const COMPARISON_PRESETS: { value: ComparisonPreset; label: string }[] =
+  [
+    { value: "month", label: "Ce mois vs mois dernier" },
+    { value: "week", label: "Cette semaine vs semaine derniere" },
+    { value: "quarter", label: "Ce trimestre vs dernier trimestre" },
+    { value: "custom", label: "Personnalise" },
+  ];
 
 export interface MetricComparison {
   label: string;
@@ -182,10 +179,7 @@ function computeDelta(current: number, previous: number): number {
   return Math.round(((current - previous) / previous) * 100);
 }
 
-function getTrend(
-  current: number,
-  previous: number,
-): "up" | "down" | "stable" {
+function getTrend(current: number, previous: number): "up" | "down" | "stable" {
   if (current > previous) return "up";
   if (current < previous) return "down";
   return "stable";
@@ -195,8 +189,13 @@ export function usePeriodComparison(options: UsePeriodComparisonOptions) {
   const supabase = useSupabase();
   const { user } = useAuth();
 
-  const { period1From, period1To, period2From, period2To, enabled = true } =
-    options;
+  const {
+    period1From,
+    period1To,
+    period2From,
+    period2To,
+    enabled = true,
+  } = options;
 
   return useQuery({
     queryKey: [
@@ -224,14 +223,8 @@ export function usePeriodComparison(options: UsePeriodComparisonOptions) {
           period2.lessonsCompleted,
           period1.lessonsCompleted,
         ),
-        messagesSent: computeDelta(
-          period2.messagesSent,
-          period1.messagesSent,
-        ),
-        avgLeadScore: computeDelta(
-          period2.avgLeadScore,
-          period1.avgLeadScore,
-        ),
+        messagesSent: computeDelta(period2.messagesSent, period1.messagesSent),
+        avgLeadScore: computeDelta(period2.avgLeadScore, period1.avgLeadScore),
       };
 
       const metrics: MetricComparison[] = [
@@ -282,10 +275,7 @@ export function usePeriodComparison(options: UsePeriodComparisonOptions) {
           previous: period1.lessonsCompleted,
           change: period2.lessonsCompleted - period1.lessonsCompleted,
           changePercent: deltas.lessonsCompleted,
-          trend: getTrend(
-            period2.lessonsCompleted,
-            period1.lessonsCompleted,
-          ),
+          trend: getTrend(period2.lessonsCompleted, period1.lessonsCompleted),
           format: "number",
         },
         {

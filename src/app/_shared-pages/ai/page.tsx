@@ -20,6 +20,9 @@ import {
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
+import { useAiConsent } from "@/hooks/use-ai-consent";
+import { AiConsentModal } from "@/components/ai/ai-consent-modal";
+import { AiResponseBadge } from "@/components/ai/ai-response-badge";
 
 const suggestions = [
   "Analyse la progression de mes eleves",
@@ -39,6 +42,12 @@ export default function AIPage() {
   const { user } = useAuth();
   const supabase = useSupabase();
   const queryClient = useQueryClient();
+  const {
+    hasConsented,
+    isLoading: consentLoading,
+    accept: acceptConsent,
+    isAccepting,
+  } = useAiConsent();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
@@ -173,10 +182,7 @@ export default function AIPage() {
   const deleteConversation = async (convId: string, e: React.MouseEvent) => {
     e.stopPropagation();
     try {
-      await supabase
-        .from("ai_messages")
-        .delete()
-        .eq("conversation_id", convId);
+      await supabase.from("ai_messages").delete().eq("conversation_id", convId);
       await supabase.from("ai_conversations").delete().eq("id", convId);
       queryClient.invalidateQueries({ queryKey: ["ai-conversations"] });
       if (conversationId === convId) {
@@ -194,6 +200,16 @@ export default function AIPage() {
     setMessages([]);
     inputRef.current?.focus();
   };
+
+  // Afficher la modal de consentement si pas encore accepte (F46.2)
+  if (!consentLoading && !hasConsented) {
+    return (
+      <AiConsentModal
+        onAccept={() => acceptConsent()}
+        isAccepting={isAccepting}
+      />
+    );
+  }
 
   return (
     <div
@@ -327,9 +343,14 @@ export default function AIPage() {
                   )}
                 >
                   {msg.role === "assistant" ? (
-                    <div className="prose prose-sm prose-neutral dark:prose-invert max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 [&_p]:my-1.5 [&_ul]:my-1.5 [&_ol]:my-1.5 [&_li]:my-0.5 [&_h2]:text-sm [&_h2]:font-semibold [&_h2]:mt-3 [&_h2]:mb-1 [&_h3]:text-sm [&_h3]:font-medium [&_h3]:mt-2 [&_h3]:mb-1 [&_code]:text-xs [&_code]:bg-black/5 [&_code]:dark:bg-white/10 [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded [&_pre]:bg-black/5 [&_pre]:dark:bg-white/10 [&_pre]:rounded-lg [&_pre]:p-3 [&_hr]:my-2">
-                      <ReactMarkdown>{msg.content}</ReactMarkdown>
-                    </div>
+                    <>
+                      <div className="prose prose-sm prose-neutral dark:prose-invert max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 [&_p]:my-1.5 [&_ul]:my-1.5 [&_ol]:my-1.5 [&_li]:my-0.5 [&_h2]:text-sm [&_h2]:font-semibold [&_h2]:mt-3 [&_h2]:mb-1 [&_h3]:text-sm [&_h3]:font-medium [&_h3]:mt-2 [&_h3]:mb-1 [&_code]:text-xs [&_code]:bg-black/5 [&_code]:dark:bg-white/10 [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded [&_pre]:bg-black/5 [&_pre]:dark:bg-white/10 [&_pre]:rounded-lg [&_pre]:p-3 [&_hr]:my-2">
+                        <ReactMarkdown>{msg.content}</ReactMarkdown>
+                      </div>
+                      <div className="mt-2 flex justify-end">
+                        <AiResponseBadge />
+                      </div>
+                    </>
                   ) : (
                     <p className="whitespace-pre-wrap">{msg.content}</p>
                   )}

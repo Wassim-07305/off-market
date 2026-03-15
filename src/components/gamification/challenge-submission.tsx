@@ -17,9 +17,7 @@ import { cn } from "@/lib/utils";
 
 const challengeEntrySchema = z.object({
   metric_type: z.string().min(1, "Selectionnez un type de metrique"),
-  metric_value: z.coerce
-    .number()
-    .min(0, "La valeur doit etre positive"),
+  metric_value: z.coerce.number().min(0, "La valeur doit etre positive"),
   proof_url: z.string().url().optional().or(z.literal("")),
 });
 
@@ -71,14 +69,16 @@ export function ChallengeSubmission({
         proofUrl = publicUrl;
       }
 
-      const { error } = await (supabase as any).from("challenge_entries").insert({
-        challenge_id: challengeId,
-        user_id: user.id,
-        metric_type: data.metric_type,
-        metric_value: data.metric_value,
-        proof_url: proofUrl,
-        submitted_at: new Date().toISOString(),
-      });
+      const { error } = await (supabase as any)
+        .from("challenge_entries")
+        .insert({
+          challenge_id: challengeId,
+          user_id: user.id,
+          metric_type: data.metric_type,
+          metric_value: data.metric_value,
+          proof_url: proofUrl,
+          submitted_at: new Date().toISOString(),
+        });
       if (error) throw error;
     },
     onSuccess: () => {

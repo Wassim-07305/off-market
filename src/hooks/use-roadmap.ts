@@ -223,13 +223,7 @@ export function useCompleteMilestone() {
   const { user } = useAuth();
 
   return useMutation({
-    mutationFn: async ({
-      id,
-      notes,
-    }: {
-      id: string;
-      notes?: string;
-    }) => {
+    mutationFn: async ({ id, notes }: { id: string; notes?: string }) => {
       if (!user) throw new Error("Non authentifie");
 
       const { error } = await supabase

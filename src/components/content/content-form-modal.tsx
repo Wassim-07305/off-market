@@ -57,19 +57,22 @@ const PLATFORM_OPTIONS: {
     value: "instagram",
     label: "Instagram",
     icon: Instagram,
-    color: "text-pink-500 bg-pink-50 dark:bg-pink-950/40 border-pink-200 dark:border-pink-800",
+    color:
+      "text-pink-500 bg-pink-50 dark:bg-pink-950/40 border-pink-200 dark:border-pink-800",
   },
   {
     value: "linkedin",
     label: "LinkedIn",
     icon: Linkedin,
-    color: "text-blue-500 bg-blue-50 dark:bg-blue-950/40 border-blue-200 dark:border-blue-800",
+    color:
+      "text-blue-500 bg-blue-50 dark:bg-blue-950/40 border-blue-200 dark:border-blue-800",
   },
   {
     value: "tiktok",
     label: "TikTok",
     icon: Music2,
-    color: "text-zinc-800 dark:text-zinc-200 bg-zinc-100 dark:bg-zinc-800 border-zinc-300 dark:border-zinc-600",
+    color:
+      "text-zinc-800 dark:text-zinc-200 bg-zinc-100 dark:bg-zinc-800 border-zinc-300 dark:border-zinc-600",
   },
 ];
 

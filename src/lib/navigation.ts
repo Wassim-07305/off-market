@@ -62,6 +62,7 @@ export const adminNavigation: NavItem[] = [
   { name: "Invitations", href: "/admin/invitations", icon: Send },
   { name: "Ressources", href: "/admin/resources", icon: FolderOpen },
   { name: "Recompenses", href: "/admin/rewards", icon: Gift },
+  { name: "Badges", href: "/admin/badges", icon: Award },
   { name: "Moderation", href: "/admin/moderation", icon: Shield },
   { name: "Calendrier", href: "/admin/calendar", icon: Calendar },
   { name: "Equipe CSM", href: "/admin/csm", icon: UserCog },

@@ -47,7 +47,10 @@ export function useRelanceSequences() {
         stepCounts.set(s.sequence_id, (stepCounts.get(s.sequence_id) ?? 0) + 1);
       });
       enrollments?.forEach((e) => {
-        enrollCounts.set(e.sequence_id, (enrollCounts.get(e.sequence_id) ?? 0) + 1);
+        enrollCounts.set(
+          e.sequence_id,
+          (enrollCounts.get(e.sequence_id) ?? 0) + 1,
+        );
       });
 
       return (sequences as RelanceSequence[]).map((seq) => ({
@@ -159,7 +162,9 @@ export function useUpdateSequence() {
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["relance-sequences"] });
-      queryClient.invalidateQueries({ queryKey: ["relance-sequence", variables.id] });
+      queryClient.invalidateQueries({
+        queryKey: ["relance-sequence", variables.id],
+      });
       toast.success("Sequence mise a jour");
     },
     onError: () => toast.error("Erreur lors de la mise a jour"),
@@ -234,7 +239,9 @@ export function useAddStep() {
       return step as RelanceStep;
     },
     onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["relance-sequence", variables.sequence_id] });
+      queryClient.invalidateQueries({
+        queryKey: ["relance-sequence", variables.sequence_id],
+      });
       queryClient.invalidateQueries({ queryKey: ["relance-sequences"] });
       toast.success("Etape ajoutee");
     },
@@ -260,7 +267,9 @@ export function useUpdateStep() {
       return { sequence_id };
     },
     onSuccess: (result) => {
-      queryClient.invalidateQueries({ queryKey: ["relance-sequence", result.sequence_id] });
+      queryClient.invalidateQueries({
+        queryKey: ["relance-sequence", result.sequence_id],
+      });
       queryClient.invalidateQueries({ queryKey: ["relance-sequences"] });
       toast.success("Etape mise a jour");
     },
@@ -273,7 +282,13 @@ export function useDeleteStep() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ id, sequence_id }: { id: string; sequence_id: string }) => {
+    mutationFn: async ({
+      id,
+      sequence_id,
+    }: {
+      id: string;
+      sequence_id: string;
+    }) => {
       // Get the step to know its order
       const { data: step } = await supabase
         .from("relance_steps")
@@ -309,7 +324,9 @@ export function useDeleteStep() {
       return { sequence_id };
     },
     onSuccess: (result) => {
-      queryClient.invalidateQueries({ queryKey: ["relance-sequence", result.sequence_id] });
+      queryClient.invalidateQueries({
+        queryKey: ["relance-sequence", result.sequence_id],
+      });
       queryClient.invalidateQueries({ queryKey: ["relance-sequences"] });
       toast.success("Etape supprimee");
     },
@@ -364,7 +381,9 @@ export function useEnrollContact() {
       return data as RelanceEnrollment;
     },
     onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["contact-enrollments", variables.contact_id] });
+      queryClient.invalidateQueries({
+        queryKey: ["contact-enrollments", variables.contact_id],
+      });
       queryClient.invalidateQueries({ queryKey: ["relance-sequences"] });
       queryClient.invalidateQueries({ queryKey: ["relance-stats"] });
       toast.success("Contact inscrit a la sequence");

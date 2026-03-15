@@ -31,8 +31,12 @@ export function CallEndedSummary({
 }: CallEndedSummaryProps) {
   const { transcriptEntries, callStartTime } = useCallStore();
   const prefix = useRoutePrefix();
-  const { summary, isLoading: summaryLoading, generateSummary, isGenerating } =
-    useCallSummary(callId);
+  const {
+    summary,
+    isLoading: summaryLoading,
+    generateSummary,
+    isGenerating,
+  } = useCallSummary(callId);
   const [showSummary, setShowSummary] = useState(false);
 
   const durationSeconds = callStartTime

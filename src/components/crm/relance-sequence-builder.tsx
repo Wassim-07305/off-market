@@ -361,7 +361,12 @@ export function RelanceSequenceBuilder({
           sequence_id: sequence.id,
           ...data,
         },
-        { onSuccess: () => { setStepModalOpen(false); setEditingStep(null); } },
+        {
+          onSuccess: () => {
+            setStepModalOpen(false);
+            setEditingStep(null);
+          },
+        },
       );
     },
     [editingStep, sequence, updateStep],
@@ -408,23 +413,25 @@ export function RelanceSequenceBuilder({
   );
 
   // ─── Initialize editing fields from loaded sequence
-  const effectiveName = isEditMode ? (name || (sequence?.name ?? "")) : name;
+  const effectiveName = isEditMode ? name || (sequence?.name ?? "") : name;
   const effectiveDescription = isEditMode
-    ? (description || (sequence?.description ?? ""))
+    ? description || (sequence?.description ?? "")
     : description;
   const effectiveStage = isEditMode
-    ? (targetStage || (sequence?.target_stage ?? "prospect"))
+    ? targetStage || (sequence?.target_stage ?? "prospect")
     : targetStage;
 
   // For new sequence, display local steps
-  const displaySteps = isEditMode ? steps : localSteps.map((s, i) => ({
-    ...s,
-    id: `local-${i}`,
-    sequence_id: "",
-    step_order: i + 1,
-    is_active: true,
-    created_at: "",
-  }));
+  const displaySteps = isEditMode
+    ? steps
+    : localSteps.map((s, i) => ({
+        ...s,
+        id: `local-${i}`,
+        sequence_id: "",
+        step_order: i + 1,
+        is_active: true,
+        created_at: "",
+      }));
 
   if (isEditMode && isLoading) {
     return (
@@ -446,7 +453,9 @@ export function RelanceSequenceBuilder({
           )}
           <div>
             <h2 className="text-lg font-semibold text-foreground">
-              {isEditMode ? "Modifier la sequence" : "Nouvelle sequence de relance"}
+              {isEditMode
+                ? "Modifier la sequence"
+                : "Nouvelle sequence de relance"}
             </h2>
             <p className="text-sm text-muted-foreground">
               {isEditMode
@@ -459,7 +468,9 @@ export function RelanceSequenceBuilder({
           <div className="flex items-center gap-2">
             <Tooltip
               content={
-                sequence.is_active ? "Desactiver la sequence" : "Activer la sequence"
+                sequence.is_active
+                  ? "Desactiver la sequence"
+                  : "Activer la sequence"
               }
             >
               <Button

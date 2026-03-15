@@ -209,9 +209,14 @@ export function StudentSidePanel({
         .eq("profile_id", student.id)
         .maybeSingle();
       if (!existing) {
-        await supabase.from("student_details").insert({ profile_id: student.id, tag: newTag });
+        await supabase
+          .from("student_details")
+          .insert({ profile_id: student.id, tag: newTag });
       } else {
-        await supabase.from("student_details").update({ tag: newTag }).eq("profile_id", student.id);
+        await supabase
+          .from("student_details")
+          .update({ tag: newTag })
+          .eq("profile_id", student.id);
       }
       toast.success("Tag mis a jour");
     } catch {
@@ -256,8 +261,9 @@ export function StudentSidePanel({
               Fiche eleve
             </h2>
             <div className="flex items-center gap-1.5">
-              {!isLoading && student && (
-                isEditing ? (
+              {!isLoading &&
+                student &&
+                (isEditing ? (
                   <>
                     <button
                       onClick={() => setIsEditing(false)}
@@ -270,7 +276,11 @@ export function StudentSidePanel({
                       disabled={saving}
                       className="h-8 px-3 rounded-lg bg-primary text-white text-xs font-medium hover:bg-primary-hover transition-colors flex items-center gap-1.5 disabled:opacity-50"
                     >
-                      {saving ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
+                      {saving ? (
+                        <Loader2 className="w-3 h-3 animate-spin" />
+                      ) : (
+                        <Save className="w-3 h-3" />
+                      )}
                       Sauvegarder
                     </button>
                   </>
@@ -282,8 +292,7 @@ export function StudentSidePanel({
                     <Pencil className="w-3 h-3" />
                     Modifier
                   </button>
-                )
-              )}
+                ))}
               <button
                 onClick={onClose}
                 className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
@@ -344,7 +353,12 @@ export function StudentSidePanel({
                       <div className="space-y-2">
                         <input
                           value={editForm.full_name}
-                          onChange={(e) => setEditForm((f) => ({ ...f, full_name: e.target.value }))}
+                          onChange={(e) =>
+                            setEditForm((f) => ({
+                              ...f,
+                              full_name: e.target.value,
+                            }))
+                          }
                           className="w-full h-8 px-2.5 bg-muted border border-border rounded-lg text-sm font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
                           placeholder="Nom complet"
                         />
@@ -353,7 +367,12 @@ export function StudentSidePanel({
                             <Mail className="w-3 h-3 text-muted-foreground shrink-0" />
                             <input
                               value={editForm.email}
-                              onChange={(e) => setEditForm((f) => ({ ...f, email: e.target.value }))}
+                              onChange={(e) =>
+                                setEditForm((f) => ({
+                                  ...f,
+                                  email: e.target.value,
+                                }))
+                              }
                               className="w-full h-7 px-2 bg-muted border border-border rounded text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
                               placeholder="Email"
                             />
@@ -362,7 +381,12 @@ export function StudentSidePanel({
                             <Phone className="w-3 h-3 text-muted-foreground shrink-0" />
                             <input
                               value={editForm.phone}
-                              onChange={(e) => setEditForm((f) => ({ ...f, phone: e.target.value }))}
+                              onChange={(e) =>
+                                setEditForm((f) => ({
+                                  ...f,
+                                  phone: e.target.value,
+                                }))
+                              }
                               className="w-full h-7 px-2 bg-muted border border-border rounded text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
                               placeholder="Telephone"
                             />
@@ -484,7 +508,9 @@ export function StudentSidePanel({
                   Tag engagement
                 </p>
                 <EngagementTagSelector
-                  currentTag={selectedTag as import("@/types/database").StudentEngagementTag}
+                  currentTag={
+                    selectedTag as import("@/types/database").StudentEngagementTag
+                  }
                   onSelect={handleTagChange}
                   isPending={false}
                 />
@@ -529,7 +555,12 @@ export function StudentSidePanel({
                       {isEditing ? (
                         <textarea
                           value={editForm.goals}
-                          onChange={(e) => setEditForm((f) => ({ ...f, goals: e.target.value }))}
+                          onChange={(e) =>
+                            setEditForm((f) => ({
+                              ...f,
+                              goals: e.target.value,
+                            }))
+                          }
                           rows={2}
                           className="w-full px-2.5 py-1.5 bg-muted border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
                           placeholder="Objectifs de l'eleve..."
@@ -548,7 +579,12 @@ export function StudentSidePanel({
                       {isEditing ? (
                         <input
                           value={editForm.program}
-                          onChange={(e) => setEditForm((f) => ({ ...f, program: e.target.value }))}
+                          onChange={(e) =>
+                            setEditForm((f) => ({
+                              ...f,
+                              program: e.target.value,
+                            }))
+                          }
                           className="w-full h-8 px-2.5 bg-muted border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
                           placeholder="Programme assigne..."
                         />
@@ -566,7 +602,12 @@ export function StudentSidePanel({
                       {isEditing ? (
                         <textarea
                           value={editForm.coach_notes}
-                          onChange={(e) => setEditForm((f) => ({ ...f, coach_notes: e.target.value }))}
+                          onChange={(e) =>
+                            setEditForm((f) => ({
+                              ...f,
+                              coach_notes: e.target.value,
+                            }))
+                          }
                           rows={3}
                           className="w-full px-2.5 py-1.5 bg-muted border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
                           placeholder="Notes du coach..."
@@ -647,48 +688,90 @@ export function StudentSidePanel({
                     {isEditing ? (
                       <>
                         <div className="p-2.5 rounded-lg bg-muted/50 border border-border space-y-1">
-                          <label className="text-xs text-muted-foreground">Niche</label>
+                          <label className="text-xs text-muted-foreground">
+                            Niche
+                          </label>
                           <input
                             value={editForm.niche}
-                            onChange={(e) => setEditForm((f) => ({ ...f, niche: e.target.value }))}
+                            onChange={(e) =>
+                              setEditForm((f) => ({
+                                ...f,
+                                niche: e.target.value,
+                              }))
+                            }
                             className="w-full h-8 px-2.5 bg-background border border-border rounded-lg text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
                             placeholder="Niche..."
                           />
                         </div>
                         <div className="p-2.5 rounded-lg bg-muted/50 border border-border space-y-1">
-                          <label className="text-xs text-muted-foreground">CA actuel (€)</label>
+                          <label className="text-xs text-muted-foreground">
+                            CA actuel (€)
+                          </label>
                           <input
                             type="number"
                             value={editForm.current_revenue}
-                            onChange={(e) => setEditForm((f) => ({ ...f, current_revenue: Number(e.target.value) }))}
+                            onChange={(e) =>
+                              setEditForm((f) => ({
+                                ...f,
+                                current_revenue: Number(e.target.value),
+                              }))
+                            }
                             className="w-full h-8 px-2.5 bg-background border border-border rounded-lg text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
                           />
                         </div>
                         <div className="p-2.5 rounded-lg bg-muted/50 border border-border space-y-1">
-                          <label className="text-xs text-muted-foreground">Objectif CA (€)</label>
+                          <label className="text-xs text-muted-foreground">
+                            Objectif CA (€)
+                          </label>
                           <input
                             type="number"
                             value={editForm.revenue_objective}
-                            onChange={(e) => setEditForm((f) => ({ ...f, revenue_objective: Number(e.target.value) }))}
+                            onChange={(e) =>
+                              setEditForm((f) => ({
+                                ...f,
+                                revenue_objective: Number(e.target.value),
+                              }))
+                            }
                             className="w-full h-8 px-2.5 bg-background border border-border rounded-lg text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
                           />
                         </div>
                         <div className="p-2.5 rounded-lg bg-muted/50 border border-border space-y-1">
-                          <label className="text-xs text-muted-foreground">Source d&apos;acquisition</label>
+                          <label className="text-xs text-muted-foreground">
+                            Source d&apos;acquisition
+                          </label>
                           <input
                             value={editForm.acquisition_source}
-                            onChange={(e) => setEditForm((f) => ({ ...f, acquisition_source: e.target.value }))}
+                            onChange={(e) =>
+                              setEditForm((f) => ({
+                                ...f,
+                                acquisition_source: e.target.value,
+                              }))
+                            }
                             className="w-full h-8 px-2.5 bg-background border border-border rounded-lg text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
                             placeholder="Source..."
                           />
                         </div>
                       </>
                     ) : (
-                      [{label: "Niche", value: details?.niche},
-                        {label: "CA actuel", value: formatCurrency(details?.current_revenue ?? 0)},
-                        {label: "Objectif CA", value: formatCurrency(details?.revenue_objective ?? 0)},
-                        {label: "LTV", value: formatCurrency(Number(details?.lifetime_value ?? 0))},
-                        {label: "Source", value: details?.acquisition_source},
+                      [
+                        { label: "Niche", value: details?.niche },
+                        {
+                          label: "CA actuel",
+                          value: formatCurrency(details?.current_revenue ?? 0),
+                        },
+                        {
+                          label: "Objectif CA",
+                          value: formatCurrency(
+                            details?.revenue_objective ?? 0,
+                          ),
+                        },
+                        {
+                          label: "LTV",
+                          value: formatCurrency(
+                            Number(details?.lifetime_value ?? 0),
+                          ),
+                        },
+                        { label: "Source", value: details?.acquisition_source },
                       ].map((item) => (
                         <div
                           key={item.label}
@@ -711,7 +794,12 @@ export function StudentSidePanel({
                       {isEditing ? (
                         <textarea
                           value={editForm.obstacles}
-                          onChange={(e) => setEditForm((f) => ({ ...f, obstacles: e.target.value }))}
+                          onChange={(e) =>
+                            setEditForm((f) => ({
+                              ...f,
+                              obstacles: e.target.value,
+                            }))
+                          }
                           rows={3}
                           className="w-full px-2.5 py-1.5 bg-muted border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
                           placeholder="Obstacles identifies..."
@@ -734,9 +822,7 @@ export function StudentSidePanel({
                               {formatCurrency(details?.current_revenue ?? 0)}
                             </span>
                             <span className="text-[10px] text-muted-foreground">
-                              {formatCurrency(
-                                details?.revenue_objective ?? 0,
-                              )}
+                              {formatCurrency(details?.revenue_objective ?? 0)}
                             </span>
                           </div>
                           <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
@@ -780,14 +866,10 @@ export function StudentSidePanel({
                               <div className="absolute -left-5 top-1 w-2.5 h-2.5 rounded-full border-2 border-background bg-primary" />
                               <div>
                                 <p className="text-xs text-foreground">
-                                  {typeConfig?.label ??
-                                    activity.activity_type}
+                                  {typeConfig?.label ?? activity.activity_type}
                                 </p>
                                 <p className="text-[10px] text-muted-foreground">
-                                  {formatDate(
-                                    activity.created_at,
-                                    "relative",
-                                  )}
+                                  {formatDate(activity.created_at, "relative")}
                                 </p>
                               </div>
                             </div>
@@ -806,9 +888,7 @@ export function StudentSidePanel({
                         onChange={(e) => setNewNote(e.target.value)}
                         placeholder="Ajouter une note..."
                         className="flex-1 h-9 px-3 bg-muted border border-border rounded-lg text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
-                        onKeyDown={(e) =>
-                          e.key === "Enter" && handleAddNote()
-                        }
+                        onKeyDown={(e) => e.key === "Enter" && handleAddNote()}
                       />
                       <button
                         onClick={handleAddNote}
@@ -884,9 +964,7 @@ export function StudentSidePanel({
                         onChange={(e) => setNewTaskTitle(e.target.value)}
                         placeholder="Nouvelle tache..."
                         className="flex-1 h-9 px-3 bg-muted border border-border rounded-lg text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
-                        onKeyDown={(e) =>
-                          e.key === "Enter" && handleAddTask()
-                        }
+                        onKeyDown={(e) => e.key === "Enter" && handleAddTask()}
                       />
                       <button
                         onClick={handleAddTask}

@@ -352,7 +352,9 @@ export default function LessonPage({
         {lesson.content_type === "text" && htmlContent && (
           <div
             className="prose prose-stone dark:prose-invert max-w-none prose-headings:font-display prose-headings:tracking-tight"
-            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(htmlContent) }}
+            dangerouslySetInnerHTML={{
+              __html: DOMPurify.sanitize(htmlContent),
+            }}
           />
         )}
 

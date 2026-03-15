@@ -1,7 +1,10 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { usePeriodComparison, type PeriodKPIs } from "@/hooks/use-period-comparison";
+import {
+  usePeriodComparison,
+  type PeriodKPIs,
+} from "@/hooks/use-period-comparison";
 import { formatCurrency, cn } from "@/lib/utils";
 import {
   TrendingUp,
@@ -166,7 +169,10 @@ export function PeriodComparison() {
       {isLoading ? (
         <div className="grid grid-cols-2 gap-3">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="h-28 animate-shimmer rounded-xl bg-muted/30" />
+            <div
+              key={i}
+              className="h-28 animate-shimmer rounded-xl bg-muted/30"
+            />
           ))}
         </div>
       ) : data ? (

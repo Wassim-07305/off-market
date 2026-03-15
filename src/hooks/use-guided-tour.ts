@@ -21,7 +21,9 @@ export function useGuidedTour(variant: RoleVariant) {
   const [isActive, setIsActive] = useState(false);
   const [hasCheckedAutoStart, setHasCheckedAutoStart] = useState(false);
 
-  const currentStep: TourStep | null = isActive ? (steps[currentStepIndex] ?? null) : null;
+  const currentStep: TourStep | null = isActive
+    ? (steps[currentStepIndex] ?? null)
+    : null;
   const totalSteps = steps.length;
 
   // Check if tour was already completed (localStorage + profile flag)

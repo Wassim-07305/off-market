@@ -88,7 +88,12 @@ export function useRateLimitStatus(action: RateLimitAction) {
       toast.error(
         `Limite d'enrichissement atteinte. Reessayez a ${formatResetTime(resetAt)}.`,
       );
-    } else if (remaining > 0 && remaining <= 5 && remaining < limit && !hasWarnedRef.current) {
+    } else if (
+      remaining > 0 &&
+      remaining <= 5 &&
+      remaining < limit &&
+      !hasWarnedRef.current
+    ) {
       hasWarnedRef.current = true;
       toast.warning(
         `Attention : il vous reste ${remaining} enrichissements avant la limite.`,

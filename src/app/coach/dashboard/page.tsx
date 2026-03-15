@@ -6,6 +6,7 @@ import { CoachStudentsOverview } from "@/components/dashboard/coach-students-ove
 import { CoachActivityFeed } from "@/components/dashboard/coach-activity-feed";
 import { CoachMetrics } from "@/components/dashboard/coach-metrics";
 import { RiskAnalysisPanel } from "@/components/dashboard/risk-analysis-panel";
+import { AiPeriodicReport } from "@/components/dashboard/ai-periodic-report";
 import { useStudents } from "@/hooks/use-students";
 import { useCoachAlerts } from "@/hooks/use-coach-alerts";
 import { useSessions } from "@/hooks/use-sessions";
@@ -206,6 +207,7 @@ export default function CoachDashboardPage() {
 
         {/* Right: Activity feed + Metrics (2 cols) */}
         <div className="lg:col-span-2 space-y-6">
+          <AiPeriodicReport />
           <RiskAnalysisPanel />
           <CoachActivityFeed />
           <CoachMetrics />

@@ -1,5 +1,24 @@
 export type AppRole = "admin" | "coach" | "client" | "setter" | "closer";
 
+// Upsell opportunity types used by dashboard components
+export type UpsellStatus = "detected" | "proposed" | "accepted" | "declined";
+
+export interface UpsellOpportunity {
+  id: string;
+  student_id: string;
+  trigger_type: string;
+  trigger_value: string | null;
+  offer_name: string;
+  offer_type: string;
+  amount: number | null;
+  status: UpsellStatus;
+  message: string | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+  student?: unknown;
+}
+
 export type UserRole = {
   id: string;
   user_id: string;
@@ -754,7 +773,10 @@ export interface WorkbookSubmission {
   client?: Profile;
 }
 
-export type CallDocumentType = "transcript_fusion" | "summary" | "workbook_export";
+export type CallDocumentType =
+  | "transcript_fusion"
+  | "summary"
+  | "workbook_export";
 
 export interface CallDocument {
   id: string;

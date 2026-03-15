@@ -57,9 +57,13 @@ export function RecordingPlayer({
   const [showTranscript, setShowTranscript] = useState(false);
   const [showControls, setShowControls] = useState(true);
 
-  const hideControlsTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hideControlsTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
 
-  const { exportPdf, isExporting } = useExportTranscriptionPdf(recordingId ?? null);
+  const { exportPdf, isExporting } = useExportTranscriptionPdf(
+    recordingId ?? null,
+  );
 
   // Update duration when video metadata loads
   useEffect(() => {
@@ -176,7 +180,10 @@ export function RecordingPlayer({
       if (!video || !bar) return;
 
       const rect = bar.getBoundingClientRect();
-      const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+      const ratio = Math.max(
+        0,
+        Math.min(1, (e.clientX - rect.left) / rect.width),
+      );
       video.currentTime = ratio * (totalDuration || video.duration || 0);
     },
     [totalDuration],
@@ -185,7 +192,9 @@ export function RecordingPlayer({
   const handleDownload = useCallback(() => {
     const a = document.createElement("a");
     a.href = src;
-    a.download = fileName ?? `enregistrement-${new Date().toISOString().slice(0, 10)}.webm`;
+    a.download =
+      fileName ??
+      `enregistrement-${new Date().toISOString().slice(0, 10)}.webm`;
     a.target = "_blank";
     document.body.appendChild(a);
     a.click();
@@ -361,7 +370,9 @@ export function RecordingPlayer({
                 <button
                   onClick={toggleFullscreen}
                   className="w-8 h-8 rounded-full flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-colors"
-                  title={isFullscreen ? "Quitter le plein ecran" : "Plein ecran"}
+                  title={
+                    isFullscreen ? "Quitter le plein ecran" : "Plein ecran"
+                  }
                 >
                   {isFullscreen ? (
                     <Minimize className="w-4 h-4" />

@@ -91,7 +91,11 @@ export function CompetitionCard({
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1.5 flex-wrap">
               <Badge
-                className={cn(statusConfig.bg, statusConfig.color, "text-[10px]")}
+                className={cn(
+                  statusConfig.bg,
+                  statusConfig.color,
+                  "text-[10px]",
+                )}
               >
                 {statusConfig.label}
               </Badge>
@@ -105,9 +109,7 @@ export function CompetitionCard({
                 ) : (
                   <Swords className="w-3 h-3 mr-1" />
                 )}
-                {competition.type === "team_vs_team"
-                  ? "Equipes"
-                  : "Individuel"}
+                {competition.type === "team_vs_team" ? "Equipes" : "Individuel"}
               </Badge>
             </div>
             <h3 className="font-semibold text-foreground text-base leading-tight group-hover:text-[#DC2626] transition-colors">
@@ -172,10 +174,9 @@ export function CompetitionCard({
             </p>
             <div className="space-y-1">
               {top3.map((p, i) => {
-                const displayName =
-                  p.team?.name
-                    ? `${p.team.avatar_emoji ?? ""} ${p.team.name}`
-                    : p.profile?.full_name ?? "Participant";
+                const displayName = p.team?.name
+                  ? `${p.team.avatar_emoji ?? ""} ${p.team.name}`
+                  : (p.profile?.full_name ?? "Participant");
 
                 return (
                   <div

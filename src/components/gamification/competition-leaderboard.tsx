@@ -3,22 +3,33 @@
 import { motion } from "framer-motion";
 import { fadeInUp, defaultTransition } from "@/lib/animations";
 import { useCompetitionLeaderboard } from "@/hooks/use-competitions";
-import {
-  Crown,
-  Medal,
-  Award,
-  ArrowUp,
-  ArrowDown,
-  Trophy,
-} from "lucide-react";
+import { Crown, Medal, Award, ArrowUp, ArrowDown, Trophy } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
 import type { CompetitionParticipant } from "@/types/gamification";
 
 const PODIUM_CONFIG = [
-  { position: 1, icon: Crown, color: "text-amber-500", bg: "bg-amber-500/10", ring: "ring-amber-500/30" },
-  { position: 2, icon: Medal, color: "text-zinc-400", bg: "bg-zinc-400/10", ring: "ring-zinc-400/30" },
-  { position: 3, icon: Award, color: "text-amber-700", bg: "bg-amber-700/10", ring: "ring-amber-700/30" },
+  {
+    position: 1,
+    icon: Crown,
+    color: "text-amber-500",
+    bg: "bg-amber-500/10",
+    ring: "ring-amber-500/30",
+  },
+  {
+    position: 2,
+    icon: Medal,
+    color: "text-zinc-400",
+    bg: "bg-zinc-400/10",
+    ring: "ring-zinc-400/30",
+  },
+  {
+    position: 3,
+    icon: Award,
+    color: "text-amber-700",
+    bg: "bg-amber-700/10",
+    ring: "ring-amber-700/30",
+  },
 ];
 
 interface CompetitionLeaderboardProps {
@@ -165,8 +176,8 @@ export function CompetitionLeaderboard({
                           className="w-10 h-10 rounded-full object-cover"
                         />
                       ) : (
-                        entry.profile?.full_name?.charAt(0)?.toUpperCase() ??
-                        "?"
+                        (entry.profile?.full_name?.charAt(0)?.toUpperCase() ??
+                        "?")
                       )}
                     </div>
                     <p
@@ -175,7 +186,9 @@ export function CompetitionLeaderboard({
                         mine ? "text-[#DC2626]" : "text-foreground",
                       )}
                     >
-                      {mine ? "Toi" : (entry.profile?.full_name ?? "Participant")}
+                      {mine
+                        ? "Toi"
+                        : (entry.profile?.full_name ?? "Participant")}
                     </p>
                   </div>
                 )}

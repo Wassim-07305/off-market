@@ -92,7 +92,13 @@ export function LeadMagnetStats() {
     );
   }
 
-  const funnelStages = ["prospect", "qualifie", "proposition", "closing", "client"];
+  const funnelStages = [
+    "prospect",
+    "qualifie",
+    "proposition",
+    "closing",
+    "client",
+  ];
   const maxFunnel = Math.max(
     ...funnelStages.map((s) => stats.byStage[s] ?? 0),
     1,
@@ -143,11 +149,11 @@ export function LeadMagnetStats() {
           <p className="text-2xl font-bold text-foreground">
             {stats.totalAllTime > 0
               ? Math.round(
-                  ((stats.byStage["qualifie"] ?? 0) +
+                  (((stats.byStage["qualifie"] ?? 0) +
                     (stats.byStage["proposition"] ?? 0) +
                     (stats.byStage["closing"] ?? 0) +
                     (stats.byStage["client"] ?? 0)) /
-                    stats.totalAllTime *
+                    stats.totalAllTime) *
                     100,
                 )
               : 0}
@@ -199,7 +205,10 @@ export function LeadMagnetStats() {
               <div key={stage} className="flex items-center gap-3">
                 <div className="w-24 flex items-center gap-1.5">
                   <Icon
-                    className={cn("w-3.5 h-3.5", config?.color ?? "text-muted-foreground")}
+                    className={cn(
+                      "w-3.5 h-3.5",
+                      config?.color ?? "text-muted-foreground",
+                    )}
                   />
                   <span className="text-xs font-medium text-muted-foreground">
                     {config?.label ?? stage}

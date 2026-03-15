@@ -36,7 +36,9 @@ export function useLessonComments(lessonId: string | null) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data, error } = await (supabase as any)
         .from("lesson_comments")
-        .select("*, profile:profiles!lesson_comments_profile_id_fkey(id, full_name, avatar_url, role)")
+        .select(
+          "*, profile:profiles!lesson_comments_profile_id_fkey(id, full_name, avatar_url, role)",
+        )
         .eq("lesson_id", lessonId!)
         .order("created_at", { ascending: true });
       if (error) throw error;
@@ -93,7 +95,9 @@ export function useCreateComment() {
           content,
           parent_id: parentId ?? null,
         })
-        .select("*, profile:profiles!lesson_comments_profile_id_fkey(id, full_name, avatar_url, role)")
+        .select(
+          "*, profile:profiles!lesson_comments_profile_id_fkey(id, full_name, avatar_url, role)",
+        )
         .single();
       if (error) throw error;
       return data as LessonComment;

@@ -94,8 +94,7 @@ export async function POST(request: Request) {
           .eq("id", reminder.id);
         sent++;
       } else {
-        const errorMsg =
-          twilioData.message ?? "Erreur Twilio inconnue";
+        const errorMsg = twilioData.message ?? "Erreur Twilio inconnue";
         await supabase
           .from("sms_reminders")
           .update({
@@ -106,8 +105,7 @@ export async function POST(request: Request) {
         failed++;
       }
     } catch (err) {
-      const errorMsg =
-        err instanceof Error ? err.message : "Erreur inconnue";
+      const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
       await supabase
         .from("sms_reminders")
         .update({

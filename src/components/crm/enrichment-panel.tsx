@@ -41,7 +41,13 @@ interface EnrichmentPanelProps {
   onClose: () => void;
 }
 
-type EnrichmentType = "linkedin" | "instagram" | "tiktok" | "facebook" | "website" | "all";
+type EnrichmentType =
+  | "linkedin"
+  | "instagram"
+  | "tiktok"
+  | "facebook"
+  | "website"
+  | "all";
 
 export function EnrichmentPanel({
   contact,
@@ -67,10 +73,16 @@ export function EnrichmentPanel({
 
   const enrichmentData = contact.enrichment_data || {};
   const enrichmentStatus = contact.enrichment_status;
-  const linkedin = enrichmentData.linkedin as Record<string, unknown> | undefined;
-  const instagram = enrichmentData.instagram as Record<string, unknown> | undefined;
+  const linkedin = enrichmentData.linkedin as
+    | Record<string, unknown>
+    | undefined;
+  const instagram = enrichmentData.instagram as
+    | Record<string, unknown>
+    | undefined;
   const tiktok = enrichmentData.tiktok as Record<string, unknown> | undefined;
-  const facebook = enrichmentData.facebook as Record<string, unknown> | undefined;
+  const facebook = enrichmentData.facebook as
+    | Record<string, unknown>
+    | undefined;
   const website = enrichmentData.website as Record<string, unknown> | undefined;
 
   const handleSaveUrls = () => {
@@ -110,7 +122,12 @@ export function EnrichmentPanel({
   const canEnrichTiktok = !!tiktokUrl.trim();
   const canEnrichFacebook = !!facebookUrl.trim();
   const canEnrichWebsite = !!websiteUrl.trim();
-  const canEnrichAny = canEnrichLinkedin || canEnrichInstagram || canEnrichTiktok || canEnrichFacebook || canEnrichWebsite;
+  const canEnrichAny =
+    canEnrichLinkedin ||
+    canEnrichInstagram ||
+    canEnrichTiktok ||
+    canEnrichFacebook ||
+    canEnrichWebsite;
   const hasAnyData = linkedin || instagram || tiktok || facebook || website;
 
   return (
@@ -256,11 +273,19 @@ export function EnrichmentPanel({
               Sauvegarder les URLs
             </button>
             <Tooltip
-              content={linkedinLimit.isLimited ? limitTooltip(linkedinLimit.resetAt) : null}
+              content={
+                linkedinLimit.isLimited
+                  ? limitTooltip(linkedinLimit.resetAt)
+                  : null
+              }
             >
               <button
                 onClick={() => handleEnrich("linkedin")}
-                disabled={!canEnrichLinkedin || enrichMutation.isPending || linkedinLimit.isLimited}
+                disabled={
+                  !canEnrichLinkedin ||
+                  enrichMutation.isPending ||
+                  linkedinLimit.isLimited
+                }
                 className="h-9 px-4 rounded-xl bg-[#0A66C2] text-white text-sm font-medium hover:bg-[#084d93] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
               >
                 {enrichMutation.isPending ? (
@@ -272,11 +297,19 @@ export function EnrichmentPanel({
               </button>
             </Tooltip>
             <Tooltip
-              content={instagramLimit.isLimited ? limitTooltip(instagramLimit.resetAt) : null}
+              content={
+                instagramLimit.isLimited
+                  ? limitTooltip(instagramLimit.resetAt)
+                  : null
+              }
             >
               <button
                 onClick={() => handleEnrich("instagram")}
-                disabled={!canEnrichInstagram || enrichMutation.isPending || instagramLimit.isLimited}
+                disabled={
+                  !canEnrichInstagram ||
+                  enrichMutation.isPending ||
+                  instagramLimit.isLimited
+                }
                 className="h-9 px-4 rounded-xl bg-gradient-to-r from-[#833AB4] via-[#E4405F] to-[#F77737] text-white text-sm font-medium hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
               >
                 {enrichMutation.isPending ? (
@@ -288,11 +321,19 @@ export function EnrichmentPanel({
               </button>
             </Tooltip>
             <Tooltip
-              content={linkedinLimit.isLimited ? limitTooltip(linkedinLimit.resetAt) : null}
+              content={
+                linkedinLimit.isLimited
+                  ? limitTooltip(linkedinLimit.resetAt)
+                  : null
+              }
             >
               <button
                 onClick={() => handleEnrich("tiktok")}
-                disabled={!canEnrichTiktok || enrichMutation.isPending || linkedinLimit.isLimited}
+                disabled={
+                  !canEnrichTiktok ||
+                  enrichMutation.isPending ||
+                  linkedinLimit.isLimited
+                }
                 className="h-9 px-4 rounded-xl bg-black dark:bg-white dark:text-black text-white text-sm font-medium hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
               >
                 {enrichMutation.isPending ? (
@@ -304,11 +345,19 @@ export function EnrichmentPanel({
               </button>
             </Tooltip>
             <Tooltip
-              content={linkedinLimit.isLimited ? limitTooltip(linkedinLimit.resetAt) : null}
+              content={
+                linkedinLimit.isLimited
+                  ? limitTooltip(linkedinLimit.resetAt)
+                  : null
+              }
             >
               <button
                 onClick={() => handleEnrich("facebook")}
-                disabled={!canEnrichFacebook || enrichMutation.isPending || linkedinLimit.isLimited}
+                disabled={
+                  !canEnrichFacebook ||
+                  enrichMutation.isPending ||
+                  linkedinLimit.isLimited
+                }
                 className="h-9 px-4 rounded-xl bg-[#1877F2] text-white text-sm font-medium hover:bg-[#1466D8] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
               >
                 {enrichMutation.isPending ? (
@@ -320,11 +369,19 @@ export function EnrichmentPanel({
               </button>
             </Tooltip>
             <Tooltip
-              content={linkedinLimit.isLimited ? limitTooltip(linkedinLimit.resetAt) : null}
+              content={
+                linkedinLimit.isLimited
+                  ? limitTooltip(linkedinLimit.resetAt)
+                  : null
+              }
             >
               <button
                 onClick={() => handleEnrich("website")}
-                disabled={!canEnrichWebsite || enrichMutation.isPending || linkedinLimit.isLimited}
+                disabled={
+                  !canEnrichWebsite ||
+                  enrichMutation.isPending ||
+                  linkedinLimit.isLimited
+                }
                 className="h-9 px-4 rounded-xl bg-zinc-700 dark:bg-zinc-300 dark:text-zinc-900 text-white text-sm font-medium hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
               >
                 {enrichMutation.isPending ? (
@@ -337,7 +394,9 @@ export function EnrichmentPanel({
             </Tooltip>
             {canEnrichAny && (
               <Tooltip
-                content={bulkLimit.isLimited ? limitTooltip(bulkLimit.resetAt) : null}
+                content={
+                  bulkLimit.isLimited ? limitTooltip(bulkLimit.resetAt) : null
+                }
               >
                 <button
                   onClick={() => handleEnrich("all")}
@@ -453,12 +512,13 @@ export function EnrichmentPanel({
                         <Briefcase className="w-3 h-3" />
                         Experience
                       </p>
-                      {(
-                        linkedin.experience as Array<Record<string, unknown>>
-                      )
+                      {(linkedin.experience as Array<Record<string, unknown>>)
                         .slice(0, 3)
                         .map((exp, i) => (
-                          <div key={i} className="text-xs text-muted-foreground">
+                          <div
+                            key={i}
+                            className="text-xs text-muted-foreground"
+                          >
                             <span className="font-medium text-foreground">
                               {(exp.title || exp.position) as string}
                             </span>
@@ -477,14 +537,18 @@ export function EnrichmentPanel({
                 {Array.isArray(linkedin.skills) &&
                   linkedin.skills.length > 0 && (
                     <div className="flex flex-wrap gap-1 pt-2 border-t border-border">
-                      {(linkedin.skills as string[]).slice(0, 8).map((skill, i) => (
-                        <span
-                          key={i}
-                          className="text-[10px] px-2 py-0.5 rounded-full bg-[#0A66C2]/10 text-[#0A66C2] font-medium"
-                        >
-                          {typeof skill === "string" ? skill : (skill as Record<string, string>).name}
-                        </span>
-                      ))}
+                      {(linkedin.skills as string[])
+                        .slice(0, 8)
+                        .map((skill, i) => (
+                          <span
+                            key={i}
+                            className="text-[10px] px-2 py-0.5 rounded-full bg-[#0A66C2]/10 text-[#0A66C2] font-medium"
+                          >
+                            {typeof skill === "string"
+                              ? skill
+                              : (skill as Record<string, string>).name}
+                          </span>
+                        ))}
                     </div>
                   )}
 
@@ -548,9 +612,7 @@ export function EnrichmentPanel({
                     <p className="text-lg font-bold text-foreground">
                       {formatNumber(instagram.followersCount as number)}
                     </p>
-                    <p className="text-[10px] text-muted-foreground">
-                      Abonnes
-                    </p>
+                    <p className="text-[10px] text-muted-foreground">Abonnes</p>
                   </div>
                   <div className="text-center p-2 rounded-lg bg-surface border border-border">
                     <p className="text-lg font-bold text-foreground">
@@ -591,9 +653,7 @@ export function EnrichmentPanel({
                         Posts recents
                       </p>
                       {(
-                        instagram.recentPosts as Array<
-                          Record<string, unknown>
-                        >
+                        instagram.recentPosts as Array<Record<string, unknown>>
                       ).map((post, i) => (
                         <div
                           key={i}
@@ -673,7 +733,9 @@ export function EnrichmentPanel({
                     <p className="text-lg font-bold text-foreground">
                       {formatNumber(tiktok.followingCount as number)}
                     </p>
-                    <p className="text-[10px] text-muted-foreground">Abonnements</p>
+                    <p className="text-[10px] text-muted-foreground">
+                      Abonnements
+                    </p>
                   </div>
                   <div className="text-center p-2 rounded-lg bg-surface border border-border">
                     <p className="text-lg font-bold text-foreground">
@@ -691,7 +753,9 @@ export function EnrichmentPanel({
 
                 <p className="text-[10px] text-muted-foreground/60">
                   Scrape le{" "}
-                  {new Date(tiktok.scraped_at as string).toLocaleString("fr-FR")}
+                  {new Date(tiktok.scraped_at as string).toLocaleString(
+                    "fr-FR",
+                  )}
                 </p>
               </div>
             </div>
@@ -730,7 +794,9 @@ export function EnrichmentPanel({
                       <p className="text-lg font-bold text-foreground">
                         {formatNumber(facebook.followers as number)}
                       </p>
-                      <p className="text-[10px] text-muted-foreground">Abonnes</p>
+                      <p className="text-[10px] text-muted-foreground">
+                        Abonnes
+                      </p>
                     </div>
                   )}
                   {facebook.likes != null && (
@@ -809,7 +875,9 @@ export function EnrichmentPanel({
 
                 <p className="text-[10px] text-muted-foreground/60">
                   Scrape le{" "}
-                  {new Date(facebook.scraped_at as string).toLocaleString("fr-FR")}
+                  {new Date(facebook.scraped_at as string).toLocaleString(
+                    "fr-FR",
+                  )}
                 </p>
               </div>
             </div>
@@ -833,44 +901,46 @@ export function EnrichmentPanel({
                 )}
 
                 {/* Emails found */}
-                {Array.isArray(website.emails) && (website.emails as string[]).length > 0 && (
-                  <div className="space-y-1">
-                    <p className="text-xs font-semibold text-foreground flex items-center gap-1">
-                      <Mail className="w-3 h-3" />
-                      Emails trouves
-                    </p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {(website.emails as string[]).map((email, i) => (
-                        <span
-                          key={i}
-                          className="text-[11px] px-2 py-0.5 rounded-lg bg-emerald-500/10 text-emerald-600 font-medium"
-                        >
-                          {email}
-                        </span>
-                      ))}
+                {Array.isArray(website.emails) &&
+                  (website.emails as string[]).length > 0 && (
+                    <div className="space-y-1">
+                      <p className="text-xs font-semibold text-foreground flex items-center gap-1">
+                        <Mail className="w-3 h-3" />
+                        Emails trouves
+                      </p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {(website.emails as string[]).map((email, i) => (
+                          <span
+                            key={i}
+                            className="text-[11px] px-2 py-0.5 rounded-lg bg-emerald-500/10 text-emerald-600 font-medium"
+                          >
+                            {email}
+                          </span>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
                 {/* Phones found */}
-                {Array.isArray(website.phones) && (website.phones as string[]).length > 0 && (
-                  <div className="space-y-1">
-                    <p className="text-xs font-semibold text-foreground flex items-center gap-1">
-                      <Phone className="w-3 h-3" />
-                      Telephones trouves
-                    </p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {(website.phones as string[]).map((phone, i) => (
-                        <span
-                          key={i}
-                          className="text-[11px] px-2 py-0.5 rounded-lg bg-blue-500/10 text-blue-600 font-medium"
-                        >
-                          {phone}
-                        </span>
-                      ))}
+                {Array.isArray(website.phones) &&
+                  (website.phones as string[]).length > 0 && (
+                    <div className="space-y-1">
+                      <p className="text-xs font-semibold text-foreground flex items-center gap-1">
+                        <Phone className="w-3 h-3" />
+                        Telephones trouves
+                      </p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {(website.phones as string[]).map((phone, i) => (
+                          <span
+                            key={i}
+                            className="text-[11px] px-2 py-0.5 rounded-lg bg-blue-500/10 text-blue-600 font-medium"
+                          >
+                            {phone}
+                          </span>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
                 {/* Social links */}
                 {website.socialLinks && (
@@ -892,13 +962,26 @@ export function EnrichmentPanel({
                             rel="noopener noreferrer"
                             className="flex items-center gap-1 text-[11px] px-2 py-1 rounded-lg bg-surface border border-border text-muted-foreground hover:text-foreground hover:border-zinc-400 transition-colors"
                           >
-                            {platform === "linkedin" && <Linkedin className="w-3 h-3 text-[#0A66C2]" />}
-                            {platform === "instagram" && <Instagram className="w-3 h-3 text-[#E4405F]" />}
-                            {platform === "facebook" && <Facebook className="w-3 h-3 text-[#1877F2]" />}
-                            {platform === "youtube" && <Youtube className="w-3 h-3 text-[#FF0000]" />}
-                            {platform === "tiktok" && <Video className="w-3 h-3" />}
-                            {platform === "twitter" && <Globe className="w-3 h-3" />}
-                            {platform.charAt(0).toUpperCase() + platform.slice(1)}
+                            {platform === "linkedin" && (
+                              <Linkedin className="w-3 h-3 text-[#0A66C2]" />
+                            )}
+                            {platform === "instagram" && (
+                              <Instagram className="w-3 h-3 text-[#E4405F]" />
+                            )}
+                            {platform === "facebook" && (
+                              <Facebook className="w-3 h-3 text-[#1877F2]" />
+                            )}
+                            {platform === "youtube" && (
+                              <Youtube className="w-3 h-3 text-[#FF0000]" />
+                            )}
+                            {platform === "tiktok" && (
+                              <Video className="w-3 h-3" />
+                            )}
+                            {platform === "twitter" && (
+                              <Globe className="w-3 h-3" />
+                            )}
+                            {platform.charAt(0).toUpperCase() +
+                              platform.slice(1)}
                           </a>
                         ))}
                     </div>
@@ -914,7 +997,9 @@ export function EnrichmentPanel({
 
                 <p className="text-[10px] text-muted-foreground/60">
                   Scrape le{" "}
-                  {new Date(website.scraped_at as string).toLocaleString("fr-FR")}
+                  {new Date(website.scraped_at as string).toLocaleString(
+                    "fr-FR",
+                  )}
                 </p>
               </div>
             </div>
@@ -925,10 +1010,12 @@ export function EnrichmentPanel({
             <div className="text-center py-8">
               <Sparkles className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
               <p className="text-sm text-muted-foreground">
-                Ajoutez des URLs puis cliquez sur Enrichir pour extraire les donnees
+                Ajoutez des URLs puis cliquez sur Enrichir pour extraire les
+                donnees
               </p>
               <p className="text-xs text-muted-foreground/60 mt-1">
-                Les donnees publiques seront extraites via Apify (LinkedIn, Instagram, TikTok, Facebook, site web)
+                Les donnees publiques seront extraites via Apify (LinkedIn,
+                Instagram, TikTok, Facebook, site web)
               </p>
             </div>
           )}

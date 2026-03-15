@@ -151,9 +151,7 @@ function ContactCard({
             {contact.facebook_url && (
               <Facebook className="w-3 h-3 text-[#1877F2]" />
             )}
-            {contact.website_url && (
-              <Globe className="w-3 h-3 text-zinc-500" />
-            )}
+            {contact.website_url && <Globe className="w-3 h-3 text-zinc-500" />}
             {/* Relance enrollment badge */}
             <RelanceEnrollmentBadge contactId={contact.id} compact />
           </div>
@@ -548,7 +546,7 @@ export function PipelineKanban() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [enrichContactId, setEnrichContactId] = useState<string | null>(null);
   const enrichContact = enrichContactId
-    ? contacts.find((c) => c.id === enrichContactId) ?? null
+    ? (contacts.find((c) => c.id === enrichContactId) ?? null)
     : null;
 
   const sensors = useSensors(
@@ -629,7 +627,11 @@ export function PipelineKanban() {
             disabled={bulkEnrich.isPending}
             className="h-9 px-4 rounded-xl border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors disabled:opacity-50 flex items-center gap-1.5"
           >
-            {bulkEnrich.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+            {bulkEnrich.isPending ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Sparkles className="w-4 h-4" />
+            )}
             {bulkEnrich.isPending ? "Enrichissement..." : "Enrichir tout"}
           </button>
           <button
@@ -697,10 +699,7 @@ export function PipelineKanban() {
       />
 
       {/* CSV import modal */}
-      <CsvImportModal
-        open={showImport}
-        onClose={() => setShowImport(false)}
-      />
+      <CsvImportModal open={showImport} onClose={() => setShowImport(false)} />
 
       {/* Enrichment panel */}
       {enrichContact && (

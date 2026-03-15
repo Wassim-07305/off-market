@@ -36,7 +36,7 @@ export function useCourseAccess(courseId: string | null): CourseAccessResult {
       const { data, error } = await (supabase as any)
         .from("course_prerequisites")
         .select(
-          "id, course_id, prerequisite_course_id, min_progress, prerequisite:courses!course_prerequisites_prerequisite_course_id_fkey(id, title, modules(id, lessons(id)))"
+          "id, course_id, prerequisite_course_id, min_progress, prerequisite:courses!course_prerequisites_prerequisite_course_id_fkey(id, title, modules(id, lessons(id)))",
         )
         .eq("course_id", courseId!);
       if (error) throw error;
@@ -88,7 +88,7 @@ export function useCourseAccess(courseId: string | null): CourseAccessResult {
     const completedLessonIds = new Set(
       (progress ?? [])
         .filter((p) => p.status === "completed")
-        .map((p) => p.lesson_id)
+        .map((p) => p.lesson_id),
     );
 
     const prereqStatuses: PrerequisiteStatus[] = prerequisites.map((prereq) => {
@@ -97,15 +97,17 @@ export function useCourseAccess(courseId: string | null): CourseAccessResult {
       const courseId = prereq.prerequisite_course_id;
 
       // Count total and completed lessons for the prerequisite course
-      const allLessons =
-        course?.modules?.flatMap((m) => m.lessons ?? []) ?? [];
+      const allLessons = course?.modules?.flatMap((m) => m.lessons ?? []) ?? [];
       const totalLessons = allLessons.length;
-      const completedLessons = totalLessons > 0
-        ? allLessons.filter((l) => completedLessonIds.has(l.id)).length
-        : 0;
+      const completedLessons =
+        totalLessons > 0
+          ? allLessons.filter((l) => completedLessonIds.has(l.id)).length
+          : 0;
 
       const currentProgress =
-        totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+        totalLessons > 0
+          ? Math.round((completedLessons / totalLessons) * 100)
+          : 0;
 
       // min_progress defaults to 100 if not set (full completion required)
       const requiredProgress = prereq.min_progress ?? 100;
@@ -126,7 +128,7 @@ export function useCourseAccess(courseId: string | null): CourseAccessResult {
         ? failedPrereqs
             .map(
               (p) =>
-                `Vous devez terminer le cours ${p.course} (${p.required}% requis, ${p.current}% actuel)`
+                `Vous devez terminer le cours ${p.course} (${p.required}% requis, ${p.current}% actuel)`,
             )
             .join(". ")
         : undefined;

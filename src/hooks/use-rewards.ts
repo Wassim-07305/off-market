@@ -122,10 +122,7 @@ export function useXpBalance() {
         .eq("user_id", user.id)
         .neq("status", "cancelled");
       if (rdError) throw rdError;
-      const totalSpent = (rdData ?? []).reduce(
-        (sum, r) => sum + r.xp_spent,
-        0,
-      );
+      const totalSpent = (rdData ?? []).reduce((sum, r) => sum + r.xp_spent, 0);
 
       return totalEarned - totalSpent;
     },

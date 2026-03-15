@@ -123,11 +123,15 @@ function formatEnrichmentContext(data: EnrichmentData): string {
     const ig = data.instagram;
     const lines: string[] = [];
     if (ig.followersCount != null || ig.postsCount != null) {
-      lines.push(`- ${ig.followersCount ?? 0} abonnes, ${ig.postsCount ?? 0} posts`);
+      lines.push(
+        `- ${ig.followersCount ?? 0} abonnes, ${ig.postsCount ?? 0} posts`,
+      );
     }
     if (ig.biography) lines.push(`- Bio: ${ig.biography}`);
     if (ig.isBusinessAccount != null) {
-      lines.push(`- Compte business: ${ig.isBusinessAccount ? "Oui" : "Non"}${ig.businessCategory ? ` (${ig.businessCategory})` : ""}`);
+      lines.push(
+        `- Compte business: ${ig.isBusinessAccount ? "Oui" : "Non"}${ig.businessCategory ? ` (${ig.businessCategory})` : ""}`,
+      );
     }
     if (ig.externalUrl) lines.push(`- Site externe: ${ig.externalUrl}`);
     if (lines.length > 0) {
@@ -139,7 +143,9 @@ function formatEnrichmentContext(data: EnrichmentData): string {
     const tt = data.tiktok;
     const lines: string[] = [];
     if (tt.followersCount != null || tt.heartsCount != null) {
-      lines.push(`- ${tt.followersCount ?? 0} abonnes, ${tt.heartsCount ?? 0} likes`);
+      lines.push(
+        `- ${tt.followersCount ?? 0} abonnes, ${tt.heartsCount ?? 0} likes`,
+      );
     }
     if (tt.bio) lines.push(`- Bio: ${tt.bio}`);
     if (tt.videoCount != null) lines.push(`- Videos: ${tt.videoCount}`);
@@ -211,10 +217,7 @@ export async function POST(request: Request) {
   const { clientId } = await request.json();
 
   if (!clientId) {
-    return NextResponse.json(
-      { error: "clientId requis" },
-      { status: 400 },
-    );
+    return NextResponse.json({ error: "clientId requis" }, { status: 400 });
   }
 
   try {
@@ -246,16 +249,16 @@ export async function POST(request: Request) {
       // 3. Recent messages (last 20)
       supabase
         .from("messages")
-        .select("content, created_at, sender:profiles!messages_sender_id_fkey(full_name)")
+        .select(
+          "content, created_at, sender:profiles!messages_sender_id_fkey(full_name)",
+        )
         .or(`sender_id.eq.${clientId},receiver_id.eq.${clientId}`)
         .order("created_at", { ascending: false })
         .limit(20),
       // 4. Recent calls with notes
       supabase
         .from("call_calendar")
-        .select(
-          "id, title, date, call_type, status, actual_duration_seconds",
-        )
+        .select("id, title, date, call_type, status, actual_duration_seconds")
         .eq("client_id", clientId)
         .order("date", { ascending: false })
         .limit(5),
@@ -269,7 +272,9 @@ export async function POST(request: Request) {
       // 6. Student notes
       supabase
         .from("student_notes")
-        .select("content, is_pinned, created_at, author:profiles!student_notes_author_id_fkey(full_name)")
+        .select(
+          "content, is_pinned, created_at, author:profiles!student_notes_author_id_fkey(full_name)",
+        )
         .eq("student_id", clientId)
         .order("created_at", { ascending: false })
         .limit(10),
@@ -283,7 +288,9 @@ export async function POST(request: Request) {
       // 8. Active coaching goals
       supabase
         .from("coaching_goals")
-        .select("title, description, target_value, current_value, unit, status, deadline")
+        .select(
+          "title, description, target_value, current_value, unit, status, deadline",
+        )
         .eq("client_id", clientId)
         .eq("status", "active")
         .order("created_at", { ascending: false })
@@ -335,7 +342,12 @@ export async function POST(request: Request) {
     }
 
     // Fetch call notes for recent calls
-    let callNotes: Array<{ call_id: string; summary: string | null; next_steps: string | null; action_items: unknown[] }> = [];
+    let callNotes: Array<{
+      call_id: string;
+      summary: string | null;
+      next_steps: string | null;
+      action_items: unknown[];
+    }> = [];
     if (calls.length > 0) {
       const callIds = calls.map((c) => c.id);
       const { data: cn } = await supabase
@@ -394,9 +406,13 @@ export async function POST(request: Request) {
           : "?";
         userPrompt += `- ${call.date} : ${call.title} (${call.call_type}, ${call.status}, ${duration})\n`;
         if (note?.summary) userPrompt += `  Resume : ${note.summary}\n`;
-        if (note?.next_steps) userPrompt += `  Prochaines etapes : ${note.next_steps}\n`;
+        if (note?.next_steps)
+          userPrompt += `  Prochaines etapes : ${note.next_steps}\n`;
         if (note?.action_items && Array.isArray(note.action_items)) {
-          const items = note.action_items as Array<{ title: string; done: boolean }>;
+          const items = note.action_items as Array<{
+            title: string;
+            done: boolean;
+          }>;
           for (const item of items) {
             userPrompt += `  - [${item.done ? "x" : " "}] ${item.title}\n`;
           }
@@ -454,7 +470,9 @@ export async function POST(request: Request) {
 
     // Enrichment data from Apify scraping (crm_contacts)
     if (enrichmentData && typeof enrichmentData === "object") {
-      const enrichmentBlock = formatEnrichmentContext(enrichmentData as EnrichmentData);
+      const enrichmentBlock = formatEnrichmentContext(
+        enrichmentData as EnrichmentData,
+      );
       if (enrichmentBlock) {
         userPrompt += enrichmentBlock;
       }

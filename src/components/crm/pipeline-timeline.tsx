@@ -150,7 +150,9 @@ export function PipelineTimeline() {
             >
               <div className="flex items-center justify-center gap-1.5 mb-1">
                 <div className={cn("w-2 h-2 rounded-full", stage.dotColor)} />
-                <p className="text-lg font-bold text-foreground font-mono tabular-nums">{count}</p>
+                <p className="text-lg font-bold text-foreground font-mono tabular-nums">
+                  {count}
+                </p>
               </div>
               <p className="text-[10px] text-muted-foreground">{stage.label}</p>
             </div>
@@ -199,7 +201,12 @@ export function PipelineTimeline() {
                             </p>
                             {stage && (
                               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium border border-border bg-muted text-muted-foreground">
-                                <span className={cn("w-1.5 h-1.5 rounded-full", stage.dotColor)} />
+                                <span
+                                  className={cn(
+                                    "w-1.5 h-1.5 rounded-full",
+                                    stage.dotColor,
+                                  )}
+                                />
                                 {stage.label}
                               </span>
                             )}

@@ -1,7 +1,11 @@
 "use client";
 
 import { useEffect, createContext, useContext, type ReactNode } from "react";
-import { useBranding, colorVariants, type BrandingSettings } from "@/hooks/use-branding";
+import {
+  useBranding,
+  colorVariants,
+  type BrandingSettings,
+} from "@/hooks/use-branding";
 
 interface BrandingContextValue {
   branding: BrandingSettings | null;
@@ -19,10 +23,14 @@ export function useBrandingContext() {
 
 const FONT_URLS: Record<string, string> = {
   Inter: "",
-  Poppins: "https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap",
-  "DM Sans": "https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap",
-  "Plus Jakarta Sans": "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap",
-  Outfit: "https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap",
+  Poppins:
+    "https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap",
+  "DM Sans":
+    "https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap",
+  "Plus Jakarta Sans":
+    "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap",
+  Outfit:
+    "https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap",
 };
 
 export function BrandingProvider({ children }: { children: ReactNode }) {
@@ -65,13 +73,17 @@ export function BrandingProvider({ children }: { children: ReactNode }) {
           document.head.appendChild(link);
         }
       }
-      root.style.setProperty("--font-sans", `"${branding.font_family}", system-ui, sans-serif`);
+      root.style.setProperty(
+        "--font-sans",
+        `"${branding.font_family}", system-ui, sans-serif`,
+      );
       document.body.style.fontFamily = `"${branding.font_family}", system-ui, sans-serif`;
     }
 
     // Favicon
     if (branding.favicon_url) {
-      const favicon = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
+      const favicon =
+        document.querySelector<HTMLLinkElement>('link[rel="icon"]');
       if (favicon) {
         favicon.href = branding.favicon_url;
       }
@@ -79,7 +91,9 @@ export function BrandingProvider({ children }: { children: ReactNode }) {
 
     // Dark mode overrides — apply via a style tag
     const darkStyleId = "branding-dark-overrides";
-    let darkStyle = document.getElementById(darkStyleId) as HTMLStyleElement | null;
+    let darkStyle = document.getElementById(
+      darkStyleId,
+    ) as HTMLStyleElement | null;
     if (!darkStyle) {
       darkStyle = document.createElement("style");
       darkStyle.id = darkStyleId;

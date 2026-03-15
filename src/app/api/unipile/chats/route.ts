@@ -1,12 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
-const UNIPILE_BASE = process.env.UNIPILE_BASE_URL ?? "https://api33.unipile.com:16338";
+const UNIPILE_BASE =
+  process.env.UNIPILE_BASE_URL ?? "https://api33.unipile.com:16338";
 
 export async function GET(request: NextRequest) {
   // Auth check
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) {
     return NextResponse.json({ error: "Non authentifie" }, { status: 401 });
   }
@@ -32,10 +35,7 @@ export async function GET(request: NextRequest) {
   const limit = searchParams.get("limit") ?? "20";
 
   if (!accountId) {
-    return NextResponse.json(
-      { error: "account_id requis" },
-      { status: 400 },
-    );
+    return NextResponse.json({ error: "account_id requis" }, { status: 400 });
   }
 
   try {

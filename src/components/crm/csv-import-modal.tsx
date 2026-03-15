@@ -162,8 +162,9 @@ function UploadStep({
           <div className="text-center">
             <p className="text-sm font-medium text-foreground">{fileName}</p>
             <p className="text-xs text-muted-foreground mt-1">
-              {formatFileSize(fileSize)} &middot; {rowCount} ligne{rowCount !== 1 ? "s" : ""} &middot;{" "}
-              {columnCount} colonne{columnCount !== 1 ? "s" : ""}
+              {formatFileSize(fileSize)} &middot; {rowCount} ligne
+              {rowCount !== 1 ? "s" : ""} &middot; {columnCount} colonne
+              {columnCount !== 1 ? "s" : ""}
             </p>
             <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1.5 font-medium">
               Fichier charge avec succes
@@ -232,8 +233,9 @@ function MappingStep({
         <div className="flex items-start gap-2 p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-sm text-emerald-700 dark:text-emerald-300">
           <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
           <p>
-            Colonnes &laquo; Prenom &raquo; et &laquo; Nom &raquo; detectees — elles seront
-            combinees en &laquo; Nom complet &raquo; automatiquement.
+            Colonnes &laquo; Prenom &raquo; et &laquo; Nom &raquo; detectees —
+            elles seront combinees en &laquo; Nom complet &raquo;
+            automatiquement.
           </p>
         </div>
       )}
@@ -242,8 +244,8 @@ function MappingStep({
         <div className="flex items-start gap-2 p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-sm text-amber-700 dark:text-amber-300">
           <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
           <p>
-            Le champ &laquo; Nom complet &raquo; est requis. Assignez une colonne a ce
-            champ pour continuer.
+            Le champ &laquo; Nom complet &raquo; est requis. Assignez une
+            colonne a ce champ pour continuer.
           </p>
         </div>
       )}
@@ -352,7 +354,11 @@ function PreviewStep({
   hasFirstLastName: boolean;
   firstNameColumn: string | null;
   lastNameColumn: string | null;
-  validationSummary: { valid: number; invalid: number; duplicateEmails: number };
+  validationSummary: {
+    valid: number;
+    invalid: number;
+    duplicateEmails: number;
+  };
 }) {
   // Build preview rows
   const previewRows = useMemo(() => {
@@ -393,9 +399,7 @@ function PreviewStep({
   const activeFields = useMemo(() => {
     const fields: { key: string; label: string }[] = [];
     const mappedKeys = new Set(
-      Object.values(mapping).filter(
-        (v) => v !== null && !v.startsWith("__"),
-      ),
+      Object.values(mapping).filter((v) => v !== null && !v.startsWith("__")),
     );
     if (hasFirstLastName) mappedKeys.add("full_name");
 
@@ -533,9 +537,7 @@ function PreviewStep({
           </label>
           <div className="flex gap-2">
             <button
-              onClick={() =>
-                onUpdateOptions({ duplicateHandling: "skip" })
-              }
+              onClick={() => onUpdateOptions({ duplicateHandling: "skip" })}
               className={cn(
                 "flex-1 h-9 rounded-lg text-sm font-medium border transition-colors",
                 options.duplicateHandling === "skip"
@@ -546,9 +548,7 @@ function PreviewStep({
               Ignorer les doublons
             </button>
             <button
-              onClick={() =>
-                onUpdateOptions({ duplicateHandling: "update" })
-              }
+              onClick={() => onUpdateOptions({ duplicateHandling: "update" })}
               className={cn(
                 "flex-1 h-9 rounded-lg text-sm font-medium border transition-colors",
                 options.duplicateHandling === "update"
@@ -584,8 +584,12 @@ function ImportStep({
   onReset: () => void;
 }) {
   const processed =
-    progress.imported + progress.skipped + progress.updated + progress.errors.length;
-  const pct = progress.total > 0 ? Math.round((processed / progress.total) * 100) : 0;
+    progress.imported +
+    progress.skipped +
+    progress.updated +
+    progress.errors.length;
+  const pct =
+    progress.total > 0 ? Math.round((processed / progress.total) * 100) : 0;
 
   return (
     <div className="space-y-5">
@@ -650,7 +654,8 @@ function ImportStep({
       {progress.errors.length > 0 && (
         <div className="space-y-2">
           <p className="text-sm font-medium text-red-600 dark:text-red-400">
-            {progress.errors.length} erreur{progress.errors.length !== 1 ? "s" : ""}
+            {progress.errors.length} erreur
+            {progress.errors.length !== 1 ? "s" : ""}
           </p>
           <div className="max-h-[160px] overflow-y-auto space-y-1 pr-1">
             {progress.errors.map((err, i) => (
@@ -725,7 +730,8 @@ export function CsvImportModal({
 
   // Compute validation summary
   const validationSummary = useMemo(() => {
-    if (parser.rows.length === 0) return { valid: 0, invalid: 0, duplicateEmails: 0 };
+    if (parser.rows.length === 0)
+      return { valid: 0, invalid: 0, duplicateEmails: 0 };
 
     const fieldToColumn: Record<string, string> = {};
     for (const [csvCol, crmField] of Object.entries(mapping)) {
@@ -742,7 +748,11 @@ export function CsvImportModal({
     for (const row of parser.rows) {
       let hasName = false;
 
-      if (parser.hasFirstLastName && parser.firstNameColumn && parser.lastNameColumn) {
+      if (
+        parser.hasFirstLastName &&
+        parser.firstNameColumn &&
+        parser.lastNameColumn
+      ) {
         const first = (row[parser.firstNameColumn] ?? "").trim();
         const last = (row[parser.lastNameColumn] ?? "").trim();
         hasName = !!(first || last);
@@ -770,7 +780,13 @@ export function CsvImportModal({
     }
 
     return { valid, invalid, duplicateEmails };
-  }, [parser.rows, mapping, parser.hasFirstLastName, parser.firstNameColumn, parser.lastNameColumn]);
+  }, [
+    parser.rows,
+    mapping,
+    parser.hasFirstLastName,
+    parser.firstNameColumn,
+    parser.lastNameColumn,
+  ]);
 
   // Can proceed to next step?
   const canProceed = useMemo(() => {

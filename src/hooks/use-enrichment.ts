@@ -4,7 +4,13 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { formatResetTime } from "@/lib/rate-limiter";
 
-type EnrichmentType = "linkedin" | "instagram" | "tiktok" | "facebook" | "website" | "all";
+type EnrichmentType =
+  | "linkedin"
+  | "instagram"
+  | "tiktok"
+  | "facebook"
+  | "website"
+  | "all";
 
 interface EnrichmentResult {
   success: boolean;
@@ -62,9 +68,7 @@ export function useBulkEnrich() {
             const resetTime = data.reset_at
               ? formatResetTime(data.reset_at)
               : "";
-            toast.error(
-              `Limite atteinte. Reessayez a ${resetTime}.`,
-            );
+            toast.error(`Limite atteinte. Reessayez a ${resetTime}.`);
             // Stop processing remaining contacts
             break;
           }
@@ -108,12 +112,8 @@ export function useEnrichContact() {
       const data = (await res.json()) as EnrichmentResult;
 
       if (res.status === 429) {
-        const resetTime = data.reset_at
-          ? formatResetTime(data.reset_at)
-          : "";
-        throw new Error(
-          `Limite atteinte. Reessayez a ${resetTime}.`,
-        );
+        const resetTime = data.reset_at ? formatResetTime(data.reset_at) : "";
+        throw new Error(`Limite atteinte. Reessayez a ${resetTime}.`);
       }
 
       if (!res.ok) throw new Error(data.error || "Erreur enrichissement");

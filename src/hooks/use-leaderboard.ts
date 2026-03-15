@@ -12,7 +12,11 @@ function getWeekStart(): string {
   const now = new Date();
   const day = now.getDay();
   const diff = day === 0 ? -6 : 1 - day; // Monday = 1
-  const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate() + diff);
+  const monday = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate() + diff,
+  );
   return monday.toISOString();
 }
 
@@ -54,10 +58,7 @@ export function useLeaderboard(period: LeaderboardPeriod = "all") {
         const profileIds = (data ?? []).map(
           (e: LeaderboardEntry) => e.profile_id,
         );
-        const anonymousSet = await fetchAnonymousProfiles(
-          supabase,
-          profileIds,
-        );
+        const anonymousSet = await fetchAnonymousProfiles(supabase, profileIds);
 
         return (data as LeaderboardEntry[]).map((entry) =>
           applyAnonymity(entry, anonymousSet, user?.id),
@@ -77,7 +78,10 @@ export function useLeaderboard(period: LeaderboardPeriod = "all") {
 
       // Aggregate XP by profile
       const xpMap = new Map<string, number>();
-      for (const tx of (transactions ?? []) as { profile_id: string; xp_amount: number }[]) {
+      for (const tx of (transactions ?? []) as {
+        profile_id: string;
+        xp_amount: number;
+      }[]) {
         xpMap.set(
           tx.profile_id,
           (xpMap.get(tx.profile_id) ?? 0) + tx.xp_amount,
@@ -106,7 +110,14 @@ export function useLeaderboard(period: LeaderboardPeriod = "all") {
       ]);
 
       const profileMap = new Map(
-        ((profilesRes.data ?? []) as { id: string; full_name: string; avatar_url: string | null; leaderboard_anonymous: boolean }[]).map((p) => [p.id, p]),
+        (
+          (profilesRes.data ?? []) as {
+            id: string;
+            full_name: string;
+            avatar_url: string | null;
+            leaderboard_anonymous: boolean;
+          }[]
+        ).map((p) => [p.id, p]),
       );
 
       // Count badges per profile
@@ -121,8 +132,7 @@ export function useLeaderboard(period: LeaderboardPeriod = "all") {
       return sorted.map(([profileId, totalXp], index) => {
         const profile = profileMap.get(profileId);
         const isAnonymous =
-          profile?.leaderboard_anonymous === true &&
-          profileId !== user?.id;
+          profile?.leaderboard_anonymous === true && profileId !== user?.id;
 
         return {
           profile_id: profileId,
@@ -150,13 +160,19 @@ export function useLeaderboard(period: LeaderboardPeriod = "all") {
       if (period === "week") {
         const weekStart = new Date(getWeekStart());
         const prevWeekEnd = new Date(weekStart.getTime() - 1);
-        const prevWeekStart = new Date(weekStart.getTime() - 7 * 24 * 60 * 60 * 1000);
+        const prevWeekStart = new Date(
+          weekStart.getTime() - 7 * 24 * 60 * 60 * 1000,
+        );
         previousSince = prevWeekStart.toISOString();
         previousUntil = prevWeekEnd.toISOString();
       } else {
         const monthStart = new Date(getMonthStart());
         const prevMonthEnd = new Date(monthStart.getTime() - 1);
-        const prevMonthStart = new Date(prevMonthEnd.getFullYear(), prevMonthEnd.getMonth(), 1);
+        const prevMonthStart = new Date(
+          prevMonthEnd.getFullYear(),
+          prevMonthEnd.getMonth(),
+          1,
+        );
         previousSince = prevMonthStart.toISOString();
         previousUntil = prevMonthEnd.toISOString();
       }
@@ -171,7 +187,10 @@ export function useLeaderboard(period: LeaderboardPeriod = "all") {
       if (error) throw error;
 
       const xpMap = new Map<string, number>();
-      for (const tx of (transactions ?? []) as { profile_id: string; xp_amount: number }[]) {
+      for (const tx of (transactions ?? []) as {
+        profile_id: string;
+        xp_amount: number;
+      }[]) {
         xpMap.set(
           tx.profile_id,
           (xpMap.get(tx.profile_id) ?? 0) + tx.xp_amount,

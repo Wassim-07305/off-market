@@ -14,7 +14,10 @@ function getSupportedMimeType(): string {
     "audio/webm",
   ];
   for (const type of types) {
-    if (typeof MediaRecorder !== "undefined" && MediaRecorder.isTypeSupported(type)) {
+    if (
+      typeof MediaRecorder !== "undefined" &&
+      MediaRecorder.isTypeSupported(type)
+    ) {
       return type;
     }
   }

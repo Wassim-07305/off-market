@@ -50,14 +50,62 @@ export const WIDGET_META: Record<
 // ─── Default layout ─────────────────────────────────────────
 
 export const DEFAULT_WIDGETS: WidgetConfig[] = [
-  { id: "w-stats", type: "stats_overview", position: 0, size: "full", visible: true },
-  { id: "w-revenue", type: "revenue_chart", position: 1, size: "2x1", visible: true },
-  { id: "w-engagement", type: "engagement_chart", position: 2, size: "2x1", visible: true },
-  { id: "w-kpi", type: "pipeline_summary", position: 3, size: "2x1", visible: true },
-  { id: "w-funnel", type: "upcoming_calls", position: 4, size: "2x1", visible: true },
-  { id: "w-activity", type: "activity_feed", position: 5, size: "1x1", visible: true },
-  { id: "w-students", type: "recent_clients", position: 6, size: "1x1", visible: true },
-  { id: "w-insights", type: "goals_progress", position: 7, size: "1x1", visible: true },
+  {
+    id: "w-stats",
+    type: "stats_overview",
+    position: 0,
+    size: "full",
+    visible: true,
+  },
+  {
+    id: "w-revenue",
+    type: "revenue_chart",
+    position: 1,
+    size: "2x1",
+    visible: true,
+  },
+  {
+    id: "w-engagement",
+    type: "engagement_chart",
+    position: 2,
+    size: "2x1",
+    visible: true,
+  },
+  {
+    id: "w-kpi",
+    type: "pipeline_summary",
+    position: 3,
+    size: "2x1",
+    visible: true,
+  },
+  {
+    id: "w-funnel",
+    type: "upcoming_calls",
+    position: 4,
+    size: "2x1",
+    visible: true,
+  },
+  {
+    id: "w-activity",
+    type: "activity_feed",
+    position: 5,
+    size: "1x1",
+    visible: true,
+  },
+  {
+    id: "w-students",
+    type: "recent_clients",
+    position: 6,
+    size: "1x1",
+    visible: true,
+  },
+  {
+    id: "w-insights",
+    type: "goals_progress",
+    position: 7,
+    size: "1x1",
+    visible: true,
+  },
 ];
 
 // ─── Hooks ──────────────────────────────────────────────────
@@ -87,9 +135,9 @@ export function useDashboardLayout() {
       // Merge saved widgets with defaults to handle newly added widget types
       const saved = data.widgets as WidgetConfig[];
       const savedTypes = new Set(saved.map((w) => w.type));
-      const missing = DEFAULT_WIDGETS.filter((w) => !savedTypes.has(w.type)).map(
-        (w, i) => ({ ...w, position: saved.length + i, visible: false }),
-      );
+      const missing = DEFAULT_WIDGETS.filter(
+        (w) => !savedTypes.has(w.type),
+      ).map((w, i) => ({ ...w, position: saved.length + i, visible: false }));
 
       return [...saved, ...missing];
     },
@@ -106,12 +154,13 @@ export function useSaveDashboardLayout() {
     mutationFn: async (widgets: WidgetConfig[]) => {
       if (!user) throw new Error("Non authentifie");
 
-      const { error } = await supabase
-        .from("dashboard_layouts")
-        .upsert(
-          { user_id: user.id, widgets: widgets as unknown as Record<string, unknown>[] },
-          { onConflict: "user_id" },
-        );
+      const { error } = await supabase.from("dashboard_layouts").upsert(
+        {
+          user_id: user.id,
+          widgets: widgets as unknown as Record<string, unknown>[],
+        },
+        { onConflict: "user_id" },
+      );
 
       if (error) throw error;
     },

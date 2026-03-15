@@ -164,8 +164,7 @@ const salesSteps: TourStep[] = [
     id: "sales-messaging",
     target: '[data-tour="messaging"]',
     title: "Messagerie d'equipe",
-    description:
-      "Communiquez avec l'equipe et coordonnez-vous en temps reel.",
+    description: "Communiquez avec l'equipe et coordonnez-vous en temps reel.",
     position: "right",
   },
   {

@@ -52,10 +52,7 @@ export async function POST(request: Request) {
   const { callId } = await request.json();
 
   if (!callId) {
-    return NextResponse.json(
-      { error: "callId requis" },
-      { status: 400 },
-    );
+    return NextResponse.json({ error: "callId requis" }, { status: 400 });
   }
 
   try {
@@ -69,10 +66,7 @@ export async function POST(request: Request) {
       .single();
 
     if (callError || !call) {
-      return NextResponse.json(
-        { error: "Appel introuvable" },
-        { status: 404 },
-      );
+      return NextResponse.json({ error: "Appel introuvable" }, { status: 404 });
     }
 
     // 2. Fetch transcript
@@ -114,9 +108,17 @@ export async function POST(request: Request) {
     };
 
     // Check we have at least some data
-    if (!sources.has_transcript && !sources.has_pre_call && !sources.has_session_notes && !sources.has_call_notes) {
+    if (
+      !sources.has_transcript &&
+      !sources.has_pre_call &&
+      !sources.has_session_notes &&
+      !sources.has_call_notes
+    ) {
       return NextResponse.json(
-        { error: "Aucune donnee disponible pour generer la synthese (pas de transcription, pas de questions pre-appel, pas de notes)" },
+        {
+          error:
+            "Aucune donnee disponible pour generer la synthese (pas de transcription, pas de questions pre-appel, pas de notes)",
+        },
         { status: 400 },
       );
     }
@@ -149,27 +151,39 @@ export async function POST(request: Request) {
     }
 
     if (transcript?.content) {
-      const entries = typeof transcript.content === "string"
-        ? JSON.parse(transcript.content)
-        : transcript.content;
+      const entries =
+        typeof transcript.content === "string"
+          ? JSON.parse(transcript.content)
+          : transcript.content;
 
       // Format transcript entries
       const formattedTranscript = entries
-        .map((e: { speaker_name: string; text: string }) => `${e.speaker_name}: ${e.text}`)
+        .map(
+          (e: { speaker_name: string; text: string }) =>
+            `${e.speaker_name}: ${e.text}`,
+        )
         .join("\n");
 
       // Truncate if too long (keep ~50k chars to stay within token limits)
-      const truncated = formattedTranscript.length > 50000
-        ? formattedTranscript.slice(0, 50000) + "\n\n[... transcription tronquee pour longueur]"
-        : formattedTranscript;
+      const truncated =
+        formattedTranscript.length > 50000
+          ? formattedTranscript.slice(0, 50000) +
+            "\n\n[... transcription tronquee pour longueur]"
+          : formattedTranscript;
 
       userPrompt += `\n## Transcription de l'appel\n${truncated}\n`;
     }
 
     if (sessionNotes?.content) {
       userPrompt += `\n## Notes de session (pendant l'appel)\n${sessionNotes.content}\n`;
-      if (sessionNotes.action_items && Array.isArray(sessionNotes.action_items)) {
-        const items = sessionNotes.action_items as Array<{ title: string; done: boolean }>;
+      if (
+        sessionNotes.action_items &&
+        Array.isArray(sessionNotes.action_items)
+      ) {
+        const items = sessionNotes.action_items as Array<{
+          title: string;
+          done: boolean;
+        }>;
         if (items.length > 0) {
           userPrompt += `\n**Actions notees pendant l'appel :**\n`;
           items.forEach((item) => {
@@ -181,12 +195,18 @@ export async function POST(request: Request) {
 
     if (callNotes) {
       userPrompt += `\n## Notes post-appel (debrief coach)\n`;
-      if (callNotes.summary) userPrompt += `**Resume :** ${callNotes.summary}\n`;
-      if (callNotes.client_mood) userPrompt += `**Humeur client :** ${callNotes.client_mood}\n`;
+      if (callNotes.summary)
+        userPrompt += `**Resume :** ${callNotes.summary}\n`;
+      if (callNotes.client_mood)
+        userPrompt += `**Humeur client :** ${callNotes.client_mood}\n`;
       if (callNotes.outcome) userPrompt += `**Issue :** ${callNotes.outcome}\n`;
-      if (callNotes.next_steps) userPrompt += `**Prochaines etapes :** ${callNotes.next_steps}\n`;
+      if (callNotes.next_steps)
+        userPrompt += `**Prochaines etapes :** ${callNotes.next_steps}\n`;
       if (callNotes.action_items && Array.isArray(callNotes.action_items)) {
-        const items = callNotes.action_items as Array<{ title: string; done: boolean }>;
+        const items = callNotes.action_items as Array<{
+          title: string;
+          done: boolean;
+        }>;
         if (items.length > 0) {
           userPrompt += `**Actions :**\n`;
           items.forEach((item) => {
@@ -217,8 +237,12 @@ export async function POST(request: Request) {
       matches.push({ title: match[1], index: match.index + match[0].length });
     }
     for (let i = 0; i < matches.length; i++) {
-      const end = i + 1 < matches.length ? matches[i + 1].index - matches[i + 1].title.length - 3 : content.length;
-      sections[matches[i].title.toLowerCase().replace(/[^a-z0-9]+/g, "_")] = content.slice(matches[i].index, end).trim();
+      const end =
+        i + 1 < matches.length
+          ? matches[i + 1].index - matches[i + 1].title.length - 3
+          : content.length;
+      sections[matches[i].title.toLowerCase().replace(/[^a-z0-9]+/g, "_")] =
+        content.slice(matches[i].index, end).trim();
     }
 
     // Save to DB

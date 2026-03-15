@@ -380,7 +380,9 @@ export default function CalendarPage() {
             day={currentDate}
             events={eventsByDate[toDateKey(currentDate)] ?? []}
             onEventClick={handleEventClick}
-            onCreateClick={canCreate ? () => handleCreateClick(currentDate) : undefined}
+            onCreateClick={
+              canCreate ? () => handleCreateClick(currentDate) : undefined
+            }
           />
         )}
       </motion.div>
@@ -559,7 +561,10 @@ function MonthView({
                       color: e.color,
                     }}
                   >
-                    <span className="w-1 h-1 rounded-full shrink-0" style={{ backgroundColor: e.color }} />
+                    <span
+                      className="w-1 h-1 rounded-full shrink-0"
+                      style={{ backgroundColor: e.color }}
+                    />
                     <span className="truncate">{e.title}</span>
                   </div>
                 ))}
@@ -636,9 +641,7 @@ function WeekView({
                 <span
                   className={cn(
                     "mt-0.5 w-7 h-7 flex items-center justify-center rounded-full text-sm font-semibold",
-                    isToday
-                      ? "bg-primary text-white"
-                      : "text-foreground",
+                    isToday ? "bg-primary text-white" : "text-foreground",
                   )}
                 >
                   {day.getDate()}

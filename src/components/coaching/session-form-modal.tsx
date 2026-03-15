@@ -86,7 +86,9 @@ export function SessionFormModal({
       const m = String(dt.getMonth() + 1).padStart(2, "0");
       const d = String(dt.getDate()).padStart(2, "0");
       setDate(`${y}-${m}-${d}`);
-      setTime(`${String(dt.getHours()).padStart(2, "0")}:${String(dt.getMinutes()).padStart(2, "0")}`);
+      setTime(
+        `${String(dt.getHours()).padStart(2, "0")}:${String(dt.getMinutes()).padStart(2, "0")}`,
+      );
       setDuration(editSession.duration_minutes);
       setNotes(editSession.notes ?? "");
       setActionItems(editSession.action_items ?? []);
@@ -309,10 +311,7 @@ export function SessionFormModal({
             <label className={labelClass}>Actions a suivre</label>
             <div className="space-y-2">
               {actionItems.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex items-center gap-2 group"
-                >
+                <div key={item.id} className="flex items-center gap-2 group">
                   <button
                     type="button"
                     onClick={() => toggleActionItem(item.id)}

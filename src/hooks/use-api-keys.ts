@@ -43,7 +43,9 @@ export function useCreateApiKey() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["api-keys"] });
     },
-    onError: () => { toast.error("Erreur lors de la création de la clé API"); },
+    onError: () => {
+      toast.error("Erreur lors de la création de la clé API");
+    },
   });
 }
 
@@ -63,6 +65,8 @@ export function useRevokeApiKey() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["api-keys"] });
     },
-    onError: () => { toast.error("Erreur lors de la révocation de la clé API"); },
+    onError: () => {
+      toast.error("Erreur lors de la révocation de la clé API");
+    },
   });
 }

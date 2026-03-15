@@ -5,11 +5,19 @@ import { createClient } from "@/lib/supabase/server";
 // POST /api/stripe/refund — Initiate a refund (admin only)
 export async function POST(request: Request) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Non autorise" }, { status: 401 });
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user)
+    return NextResponse.json({ error: "Non autorise" }, { status: 401 });
 
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-  if (profile?.role !== "admin") return NextResponse.json({ error: "Admin requis" }, { status: 403 });
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+  if (profile?.role !== "admin")
+    return NextResponse.json({ error: "Admin requis" }, { status: 403 });
 
   const { invoiceId, amount, reason } = await request.json();
 
@@ -29,23 +37,32 @@ export async function POST(request: Request) {
   }
 
   if (invoice.status !== "paid") {
-    return NextResponse.json({ error: "Seules les factures payees peuvent etre remboursees" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Seules les factures payees peuvent etre remboursees" },
+      { status: 400 },
+    );
   }
 
   if (!invoice.stripe_payment_intent_id) {
-    return NextResponse.json({ error: "Pas de paiement Stripe associe a cette facture" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Pas de paiement Stripe associe a cette facture" },
+      { status: 400 },
+    );
   }
 
   try {
     const stripe = getStripeServer();
-    const refundAmount = amount
-      ? Math.round(Number(amount) * 100)
-      : undefined; // undefined = full refund
+    const refundAmount = amount ? Math.round(Number(amount) * 100) : undefined; // undefined = full refund
 
     const refund = await stripe.refunds.create({
       payment_intent: invoice.stripe_payment_intent_id,
       amount: refundAmount,
-      reason: reason === "duplicate" ? "duplicate" : reason === "fraud" ? "fraudulent" : "requested_by_customer",
+      reason:
+        reason === "duplicate"
+          ? "duplicate"
+          : reason === "fraud"
+            ? "fraudulent"
+            : "requested_by_customer",
       metadata: {
         invoice_id: invoice.id,
         invoice_number: invoice.invoice_number,
@@ -53,7 +70,8 @@ export async function POST(request: Request) {
     });
 
     // Update invoice status
-    const isPartial = refundAmount && refundAmount < Math.round(Number(invoice.total) * 100);
+    const isPartial =
+      refundAmount && refundAmount < Math.round(Number(invoice.total) * 100);
     await supabase
       .from("invoices")
       .update({

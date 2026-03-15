@@ -67,7 +67,9 @@ export function useInvoices(options: UseInvoicesOptions = {}) {
       queryClient.invalidateQueries({ queryKey: ["invoices"] });
       queryClient.invalidateQueries({ queryKey: ["billing-stats"] });
     },
-    onError: () => { toast.error("Erreur lors de la création de la facture"); },
+    onError: () => {
+      toast.error("Erreur lors de la création de la facture");
+    },
   });
 
   const updateInvoice = useMutation({
@@ -85,7 +87,9 @@ export function useInvoices(options: UseInvoicesOptions = {}) {
       queryClient.invalidateQueries({ queryKey: ["invoices"] });
       queryClient.invalidateQueries({ queryKey: ["billing-stats"] });
     },
-    onError: () => { toast.error("Erreur lors de la mise à jour de la facture"); },
+    onError: () => {
+      toast.error("Erreur lors de la mise à jour de la facture");
+    },
   });
 
   const markAsPaid = useMutation({
@@ -100,7 +104,9 @@ export function useInvoices(options: UseInvoicesOptions = {}) {
       queryClient.invalidateQueries({ queryKey: ["invoices"] });
       queryClient.invalidateQueries({ queryKey: ["billing-stats"] });
     },
-    onError: () => { toast.error("Erreur lors du marquage comme payé"); },
+    onError: () => {
+      toast.error("Erreur lors du marquage comme payé");
+    },
   });
 
   const sendInvoice = useMutation({
@@ -119,7 +125,9 @@ export function useInvoices(options: UseInvoicesOptions = {}) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["invoices"] });
     },
-    onError: () => { toast.error("Erreur lors de l'envoi de la facture"); },
+    onError: () => {
+      toast.error("Erreur lors de l'envoi de la facture");
+    },
   });
 
   return {
@@ -239,7 +247,9 @@ export function usePaymentSchedules(clientId?: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["payment-schedules"] });
     },
-    onError: () => { toast.error("Erreur lors de la création de l'échéancier"); },
+    onError: () => {
+      toast.error("Erreur lors de la création de l'échéancier");
+    },
   });
 
   const updateInstallmentStatus = useMutation({
@@ -260,7 +270,8 @@ export function usePaymentSchedules(clientId?: string) {
         .single();
       if (fetchError) throw fetchError;
 
-      const details = (schedule?.installment_details as Array<Record<string, unknown>>) ?? [];
+      const details =
+        (schedule?.installment_details as Array<Record<string, unknown>>) ?? [];
       if (details[installmentIndex]) {
         details[installmentIndex].status = status;
         if (status === "paid") {
@@ -277,7 +288,9 @@ export function usePaymentSchedules(clientId?: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["payment-schedules"] });
     },
-    onError: () => { toast.error("Erreur lors de la mise à jour de l'échéance"); },
+    onError: () => {
+      toast.error("Erreur lors de la mise à jour de l'échéance");
+    },
   });
 
   return {
@@ -299,9 +312,21 @@ export function useFinancialDashboard() {
     enabled: !!user,
     queryFn: async () => {
       const now = new Date();
-      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
-      const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString();
-      const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0).toISOString();
+      const startOfMonth = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        1,
+      ).toISOString();
+      const startOfLastMonth = new Date(
+        now.getFullYear(),
+        now.getMonth() - 1,
+        1,
+      ).toISOString();
+      const endOfLastMonth = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        0,
+      ).toISOString();
 
       const [currentRes, lastRes, allRes] = await Promise.all([
         supabase
@@ -313,9 +338,7 @@ export function useFinancialDashboard() {
           .select("status, total")
           .gte("created_at", startOfLastMonth)
           .lte("created_at", endOfLastMonth),
-        supabase
-          .from("invoices")
-          .select("status, total, created_at, paid_at"),
+        supabase.from("invoices").select("status, total, created_at, paid_at"),
       ]);
 
       if (currentRes.error) throw currentRes.error;
@@ -344,8 +367,10 @@ export function useFinancialDashboard() {
         totalRevenue,
         pendingAmount,
         invoiceCount: allRes.data?.length ?? 0,
-        paidCount: (allRes.data ?? []).filter((i) => i.status === "paid").length,
-        overdueCount: (allRes.data ?? []).filter((i) => i.status === "overdue").length,
+        paidCount: (allRes.data ?? []).filter((i) => i.status === "paid")
+          .length,
+        overdueCount: (allRes.data ?? []).filter((i) => i.status === "overdue")
+          .length,
         monthlyData: allRes.data ?? [],
       };
     },

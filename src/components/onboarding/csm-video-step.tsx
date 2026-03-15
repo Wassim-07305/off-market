@@ -109,8 +109,8 @@ export function CsmVideoStep({
           Ton coach sera bientot assigne
         </h3>
         <p className="text-white/50 max-w-md mb-8">
-          L&apos;equipe Off Market te contactera sous 24h pour te presenter
-          ton coach personnalise.
+          L&apos;equipe Off Market te contactera sous 24h pour te presenter ton
+          coach personnalise.
         </p>
         <button
           onClick={onNext}
@@ -167,9 +167,7 @@ export function CsmVideoStep({
           <p className="text-xs font-medium text-primary uppercase tracking-wider mb-1">
             Ton CSM dedie
           </p>
-          <h3 className="text-xl font-bold text-white mb-2">
-            {csm.full_name}
-          </h3>
+          <h3 className="text-xl font-bold text-white mb-2">{csm.full_name}</h3>
 
           {/* Quick stats/badges */}
           <div className="flex items-center justify-center gap-3 mt-3">
@@ -362,13 +360,7 @@ export function CsmVideoStep({
 
 // ─── Step progress indicator ──────────────────────────────────
 
-function StepProgress({
-  current,
-  total,
-}: {
-  current: number;
-  total: number;
-}) {
+function StepProgress({ current, total }: { current: number; total: number }) {
   return (
     <div className="flex items-center gap-1.5 mb-8">
       {Array.from({ length: total }).map((_, i) => (

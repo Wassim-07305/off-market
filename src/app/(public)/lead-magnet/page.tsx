@@ -138,8 +138,8 @@ export default function LeadMagnetPage() {
 
           <p className="text-center text-lg sm:text-xl text-zinc-400 max-w-2xl mx-auto mt-6 leading-relaxed">
             Rejoignez les entrepreneurs et coaches qui ont transforme leur
-            activite avec notre methode prouvee. Passez de freelance a
-            business structure.
+            activite avec notre methode prouvee. Passez de freelance a business
+            structure.
           </p>
 
           {/* Stats bar */}
@@ -334,7 +334,11 @@ export default function LeadMagnetPage() {
                       <button
                         key={opt.value}
                         type="button"
-                        onClick={() => setValue("revenue_range", opt.value, { shouldValidate: true })}
+                        onClick={() =>
+                          setValue("revenue_range", opt.value, {
+                            shouldValidate: true,
+                          })
+                        }
                         className={cn(
                           "py-2.5 px-3 rounded-xl border text-sm font-medium transition-all",
                           selectedRevenue === opt.value
@@ -394,9 +398,9 @@ export default function LeadMagnetPage() {
                 )}
 
                 <p className="text-[11px] text-zinc-600 text-center">
-                  En soumettant ce formulaire, vous acceptez d&apos;etre contacte
-                  par notre equipe. Vos donnees sont protegees et ne seront
-                  jamais partagees.
+                  En soumettant ce formulaire, vous acceptez d&apos;etre
+                  contacte par notre equipe. Vos donnees sont protegees et ne
+                  seront jamais partagees.
                 </p>
               </form>
             </div>

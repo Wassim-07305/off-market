@@ -24,7 +24,10 @@ interface RateLimitStatus {
 }
 
 // Default limits (fallback if DB config is unavailable)
-const DEFAULT_LIMITS: Record<RateLimitAction, { maxCount: number; windowMinutes: number }> = {
+const DEFAULT_LIMITS: Record<
+  RateLimitAction,
+  { maxCount: number; windowMinutes: number }
+> = {
   linkedin_enrich: { maxCount: 30, windowMinutes: 60 },
   instagram_enrich: { maxCount: 50, windowMinutes: 60 },
   bulk_enrich: { maxCount: 100, windowMinutes: 1440 }, // 24h
@@ -47,9 +50,10 @@ export async function checkRateLimit(
   const minutes = windowMinutes ?? defaults.windowMinutes;
 
   // Convert minutes to PostgreSQL interval string
-  const intervalStr = minutes >= 1440
-    ? `${Math.floor(minutes / 1440)} days`
-    : `${minutes} minutes`;
+  const intervalStr =
+    minutes >= 1440
+      ? `${Math.floor(minutes / 1440)} days`
+      : `${minutes} minutes`;
 
   const { data, error } = await supabase.rpc("check_rate_limit", {
     p_user_id: userId,
@@ -93,7 +97,9 @@ export async function getRateLimitStatus(
     return {
       remaining: defaults.maxCount,
       limit: defaults.maxCount,
-      resetAt: new Date(Date.now() + defaults.windowMinutes * 60_000).toISOString(),
+      resetAt: new Date(
+        Date.now() + defaults.windowMinutes * 60_000,
+      ).toISOString(),
       isLimited: false,
       currentCount: 0,
     };
@@ -119,9 +125,7 @@ export async function getRateLimitStatus(
 /**
  * Map enrichment type to rate limit action
  */
-export function enrichmentTypeToAction(
-  type: string,
-): RateLimitAction {
+export function enrichmentTypeToAction(type: string): RateLimitAction {
   switch (type) {
     case "linkedin":
       return "linkedin_enrich";
@@ -173,7 +177,9 @@ export function formatResetTime(resetAt: string): string {
 /**
  * Build rate limit headers for API responses
  */
-export function buildRateLimitHeaders(result: RateLimitResult): Record<string, string> {
+export function buildRateLimitHeaders(
+  result: RateLimitResult,
+): Record<string, string> {
   return {
     "X-RateLimit-Limit": String(result.max_count),
     "X-RateLimit-Remaining": String(result.remaining),

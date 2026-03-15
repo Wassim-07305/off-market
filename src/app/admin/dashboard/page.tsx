@@ -12,6 +12,7 @@ import { KpiGoalsWidget } from "@/components/dashboard/kpi-goals";
 import { ActivityHeatmap } from "@/components/dashboard/activity-heatmap";
 import { PeriodComparison } from "@/components/dashboard/period-comparison";
 import { LTVRanking } from "@/components/dashboard/ltv-ranking";
+import { AiPeriodicReport } from "@/components/dashboard/ai-periodic-report";
 import { formatCurrency, cn } from "@/lib/utils";
 import {
   DollarSign,
@@ -542,6 +543,11 @@ export default function AdminDashboardPage() {
           </div>
         </motion.div>
       )}
+
+      {/* Rapport IA periodique */}
+      <motion.div variants={staggerItem}>
+        <AiPeriodicReport />
+      </motion.div>
 
       {/* Activity Heatmap + Period Comparison */}
       <motion.div

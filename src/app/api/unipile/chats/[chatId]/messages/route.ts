@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
-const UNIPILE_BASE = process.env.UNIPILE_BASE_URL ?? "https://api33.unipile.com:16338";
+const UNIPILE_BASE =
+  process.env.UNIPILE_BASE_URL ?? "https://api33.unipile.com:16338";
 
 async function requireAuth() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) return null;
   const { data: profile } = await supabase
     .from("profiles")

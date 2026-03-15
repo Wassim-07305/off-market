@@ -646,9 +646,7 @@ export function VideoRoom({ callId }: VideoRoomProps) {
           onToggleTranscript={handleToggleTranscript}
           onToggleNotes={() => setShowNotes((v) => !v)}
           onTogglePreCallResponses={
-            isStaffUser
-              ? () => setShowPreCallResponses((v) => !v)
-              : undefined
+            isStaffUser ? () => setShowPreCallResponses((v) => !v) : undefined
           }
           onHangUp={handleHangUp}
           showTranscript={showTranscript}

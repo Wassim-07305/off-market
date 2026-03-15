@@ -43,7 +43,8 @@ export function useTodayPrompt() {
     (today.getTime() - new Date(today.getFullYear(), 0, 0).getTime()) /
       (1000 * 60 * 60 * 24),
   );
-  const prompt = prompts.length > 0 ? prompts[dayOfYear % prompts.length] : null;
+  const prompt =
+    prompts.length > 0 ? prompts[dayOfYear % prompts.length] : null;
 
   return { prompt, isLoading };
 }

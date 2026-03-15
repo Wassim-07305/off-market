@@ -68,15 +68,39 @@ export const RELANCE_VARIABLES = [
   { key: "{{jours_sans_contact}}", label: "Jours sans contact", example: "7" },
 ] as const;
 
-export const RELANCE_CHANNELS: { value: RelanceChannel; label: string; icon: string }[] = [
+export const RELANCE_CHANNELS: {
+  value: RelanceChannel;
+  label: string;
+  icon: string;
+}[] = [
   { value: "email", label: "Email", icon: "Mail" },
   { value: "sms", label: "SMS", icon: "Smartphone" },
   { value: "notification", label: "Notification", icon: "Bell" },
 ];
 
-export const ENROLLMENT_STATUSES: { value: EnrollmentStatus; label: string; color: string }[] = [
-  { value: "active", label: "Active", color: "text-emerald-600 bg-emerald-500/10" },
-  { value: "completed", label: "Terminee", color: "text-blue-600 bg-blue-500/10" },
-  { value: "paused", label: "En pause", color: "text-amber-600 bg-amber-500/10" },
-  { value: "cancelled", label: "Annulee", color: "text-zinc-500 bg-zinc-500/10" },
+export const ENROLLMENT_STATUSES: {
+  value: EnrollmentStatus;
+  label: string;
+  color: string;
+}[] = [
+  {
+    value: "active",
+    label: "Active",
+    color: "text-emerald-600 bg-emerald-500/10",
+  },
+  {
+    value: "completed",
+    label: "Terminee",
+    color: "text-blue-600 bg-blue-500/10",
+  },
+  {
+    value: "paused",
+    label: "En pause",
+    color: "text-amber-600 bg-amber-500/10",
+  },
+  {
+    value: "cancelled",
+    label: "Annulee",
+    color: "text-zinc-500 bg-zinc-500/10",
+  },
 ];

@@ -91,7 +91,9 @@ interface RecordingData {
 function generateTranscriptionPDF(recording: RecordingData): Buffer {
   const title = "Transcription d'appel";
   const callTitle = escapePDF(recording.call_title ?? "Appel");
-  const callDate = escapePDF(formatDate(recording.call_date ?? recording.created_at));
+  const callDate = escapePDF(
+    formatDate(recording.call_date ?? recording.created_at),
+  );
   const duration = escapePDF(formatDuration(recording.duration_seconds));
   const recorderName = escapePDF(recording.recorded_by_name);
   const clientName = escapePDF(recording.client_name ?? "-");
@@ -226,7 +228,9 @@ ET
         }
 
         // Metadata lines (before transcription)
-        const isMetadata = line.match(/^(Appel|Date|Duree|Enregistre par|Client) :/);
+        const isMetadata = line.match(
+          /^(Appel|Date|Duree|Enregistre par|Client) :/,
+        );
         const fontCmd = isMetadata ? "/F1 9 Tf" : "/F2 9 Tf";
 
         stream += `
@@ -404,7 +408,9 @@ export async function GET(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: recording, error: recordingError } = await (supabase as any)
       .from("call_recordings")
-      .select("id, call_id, transcript_text, duration_seconds, created_at, recorded_by")
+      .select(
+        "id, call_id, transcript_text, duration_seconds, created_at, recorded_by",
+      )
       .eq("id", id)
       .single();
 
@@ -432,7 +438,9 @@ export async function GET(
     // Try to fetch related call info from call_calendar
     const { data: callInfo } = await supabase
       .from("call_calendar")
-      .select("title, date, client:profiles!call_calendar_client_id_fkey(full_name)")
+      .select(
+        "title, date, client:profiles!call_calendar_client_id_fkey(full_name)",
+      )
       .eq("id", recording.call_id)
       .single();
 

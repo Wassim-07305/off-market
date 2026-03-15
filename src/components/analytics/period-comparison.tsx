@@ -32,7 +32,10 @@ import {
   Cell,
 } from "recharts";
 
-const METRIC_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+const METRIC_ICONS: Record<
+  string,
+  React.ComponentType<{ className?: string }>
+> = {
   revenue: DollarSign,
   newClients: Users,
   callsCompleted: Phone,
@@ -50,7 +53,13 @@ const METRIC_COLORS: Record<string, { current: string; previous: string }> = {
   avgLeadScore: { current: "#ec4899", previous: "#ec489960" },
 };
 
-function DeltaBadge({ delta, trend }: { delta: number; trend: "up" | "down" | "stable" }) {
+function DeltaBadge({
+  delta,
+  trend,
+}: {
+  delta: number;
+  trend: "up" | "down" | "stable";
+}) {
   if (trend === "stable") {
     return (
       <span className="inline-flex items-center gap-1 text-xs font-mono text-muted-foreground">
@@ -79,7 +88,10 @@ function DeltaBadge({ delta, trend }: { delta: number; trend: "up" | "down" | "s
   );
 }
 
-function formatMetricValue(value: number, format: MetricComparison["format"]): string {
+function formatMetricValue(
+  value: number,
+  format: MetricComparison["format"],
+): string {
   if (format === "currency") return formatCurrency(value);
   if (format === "percent") return `${value}%`;
   return value.toLocaleString("fr-FR");
@@ -87,7 +99,10 @@ function formatMetricValue(value: number, format: MetricComparison["format"]): s
 
 function MetricCard({ metric }: { metric: MetricComparison }) {
   const Icon = METRIC_ICONS[metric.key] ?? Target;
-  const colors = METRIC_COLORS[metric.key] ?? { current: "#ef4444", previous: "#ef444460" };
+  const colors = METRIC_COLORS[metric.key] ?? {
+    current: "#ef4444",
+    previous: "#ef444460",
+  };
 
   const chartData = [
     { name: "Precedent", value: metric.previous },

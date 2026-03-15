@@ -12,14 +12,15 @@ interface ContractPreviewProps {
   onPrint?: () => void;
 }
 
-export function ContractPreview({
-  title,
-  content,
-}: ContractPreviewProps) {
+export function ContractPreview({ title, content }: ContractPreviewProps) {
   const contentRef = useRef<HTMLDivElement>(null);
 
   const escapeHtml = (str: string) =>
-    str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    str
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
 
   function handlePrint() {
     const printWindow = window.open("", "_blank");

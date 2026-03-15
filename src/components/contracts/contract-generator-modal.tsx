@@ -31,9 +31,9 @@ export function ContractGeneratorModal({
   const [step, setStep] = useState<Step>("template");
   const [selectedTemplate, setSelectedTemplate] =
     useState<ContractTemplate | null>(null);
-  const [variableValues, setVariableValues] = useState<
-    Record<string, string>
-  >({});
+  const [variableValues, setVariableValues] = useState<Record<string, string>>(
+    {},
+  );
   const [generatedContent, setGeneratedContent] = useState("");
 
   const { templates, isLoading: templatesLoading } = useContractTemplates();
@@ -53,8 +53,7 @@ export function ContractGeneratorModal({
       if (!vars.company_address)
         vars.company_address = businessInfo.company_address ?? "";
       if (!vars.legal_form) vars.legal_form = businessInfo.legal_form ?? "";
-      if (!vars.date)
-        vars.date = new Date().toLocaleDateString("fr-FR");
+      if (!vars.date) vars.date = new Date().toLocaleDateString("fr-FR");
     }
     return vars;
   }, [selectedTemplate, variableValues, businessInfo]);
@@ -223,7 +222,13 @@ export function ContractGeneratorModal({
               <div key={v.key}>
                 <label className="text-sm font-medium">{v.label}</label>
                 <Input
-                  type={v.type === "number" ? "number" : v.type === "date" ? "date" : "text"}
+                  type={
+                    v.type === "number"
+                      ? "number"
+                      : v.type === "date"
+                        ? "date"
+                        : "text"
+                  }
                   value={allVariables[v.key] ?? ""}
                   onChange={(e) =>
                     setVariableValues((prev) => ({

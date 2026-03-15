@@ -43,7 +43,7 @@ function CommentInput({
           setContent("");
           onCancel?.();
         },
-      }
+      },
     );
   };
 

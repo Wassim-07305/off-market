@@ -22,7 +22,11 @@ import type { CoachingGoal, GoalStatus } from "@/types/coaching";
 
 type FilterValue = "all" | GoalStatus;
 
-const FILTER_OPTIONS: { value: FilterValue; label: string; icon: typeof Target }[] = [
+const FILTER_OPTIONS: {
+  value: FilterValue;
+  label: string;
+  icon: typeof Target;
+}[] = [
   { value: "all", label: "Tous", icon: BarChart3 },
   { value: "active", label: "Actifs", icon: Target },
   { value: "completed", label: "Termines", icon: CheckCircle2 },
@@ -113,7 +117,10 @@ export function GoalsDashboard({ clientId }: GoalsDashboardProps) {
         <div className="h-8 w-48 rounded-lg bg-zinc-100 animate-pulse" />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-48 rounded-2xl bg-zinc-50 border border-border/40 animate-pulse" />
+            <div
+              key={i}
+              className="h-48 rounded-2xl bg-zinc-50 border border-border/40 animate-pulse"
+            />
           ))}
         </div>
       </div>
@@ -164,18 +171,24 @@ export function GoalsDashboard({ clientId }: GoalsDashboardProps) {
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-1.5 text-sm">
             <div className="w-2 h-2 rounded-full bg-blue-500" />
-            <span className="font-semibold text-foreground">{stats.active}</span>
+            <span className="font-semibold text-foreground">
+              {stats.active}
+            </span>
             <span className="text-muted-foreground">actifs</span>
           </div>
           <div className="flex items-center gap-1.5 text-sm">
             <div className="w-2 h-2 rounded-full bg-emerald-500" />
-            <span className="font-semibold text-foreground">{stats.completed}</span>
+            <span className="font-semibold text-foreground">
+              {stats.completed}
+            </span>
             <span className="text-muted-foreground">termines</span>
           </div>
           {stats.overdue > 0 && (
             <div className="flex items-center gap-1.5 text-sm">
               <AlertTriangle className="w-3.5 h-3.5 text-red-500" />
-              <span className="font-semibold text-red-600">{stats.overdue}</span>
+              <span className="font-semibold text-red-600">
+                {stats.overdue}
+              </span>
               <span className="text-red-600/70">en retard</span>
             </div>
           )}

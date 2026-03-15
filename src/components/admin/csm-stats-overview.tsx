@@ -1,13 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import {
-  Users,
-  UserCheck,
-  UserX,
-  CalendarCheck,
-  Heart,
-} from "lucide-react";
+import { Users, UserCheck, UserX, CalendarCheck, Heart } from "lucide-react";
 import type { CsmOverviewStats } from "@/hooks/use-csm-management";
 
 interface CsmStatsOverviewProps {

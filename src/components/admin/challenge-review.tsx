@@ -90,9 +90,7 @@ export function ChallengeReview({ challengeId }: ChallengeReviewProps) {
         queryKey: ["challenge-leaderboard"],
       });
       toast.success(
-        variables.verified
-          ? "Soumission verifiee"
-          : "Soumission rejetee",
+        variables.verified ? "Soumission verifiee" : "Soumission rejetee",
       );
     },
     onError: () => {
@@ -142,10 +140,7 @@ export function ChallengeReview({ challengeId }: ChallengeReviewProps) {
       {isLoading ? (
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (
-            <div
-              key={i}
-              className="h-20 rounded-xl bg-muted animate-pulse"
-            />
+            <div key={i} className="h-20 rounded-xl bg-muted animate-pulse" />
           ))}
         </div>
       ) : (
@@ -182,7 +177,8 @@ export function ChallengeReview({ challengeId }: ChallengeReviewProps) {
                         />
                       ) : (
                         <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-xs font-semibold text-primary mt-0.5">
-                          {entry.user?.full_name?.charAt(0)?.toUpperCase() ?? "?"}
+                          {entry.user?.full_name?.charAt(0)?.toUpperCase() ??
+                            "?"}
                         </div>
                       )}
 
@@ -211,7 +207,9 @@ export function ChallengeReview({ challengeId }: ChallengeReviewProps) {
                             rel="noopener noreferrer"
                             className="inline-flex items-center gap-1 text-xs text-primary hover:underline mt-1"
                           >
-                            {entry.proof_url.match(/\.(png|jpg|jpeg|gif|webp)/i) ? (
+                            {entry.proof_url.match(
+                              /\.(png|jpg|jpeg|gif|webp)/i,
+                            ) ? (
                               <ImageIcon className="h-3 w-3" />
                             ) : (
                               <ExternalLink className="h-3 w-3" />

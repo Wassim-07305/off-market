@@ -29,7 +29,9 @@ export function CommunityList({ onSelectCommunity }: CommunityListProps) {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<"all" | "joined" | "available">("all");
   const [createOpen, setCreateOpen] = useState(false);
-  const [actionCommunityId, setActionCommunityId] = useState<string | null>(null);
+  const [actionCommunityId, setActionCommunityId] = useState<string | null>(
+    null,
+  );
 
   const canCreate = isAdmin || isCoach;
 
@@ -94,7 +96,8 @@ export function CommunityList({ onSelectCommunity }: CommunityListProps) {
             Groupes thematiques
           </h2>
           <p className="text-sm text-muted-foreground mt-0.5">
-            {communities.length} groupe{communities.length !== 1 ? "s" : ""} disponible{communities.length !== 1 ? "s" : ""}
+            {communities.length} groupe{communities.length !== 1 ? "s" : ""}{" "}
+            disponible{communities.length !== 1 ? "s" : ""}
           </p>
         </div>
         {canCreate && (

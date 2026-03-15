@@ -95,7 +95,8 @@ export function GoalFormModal({
         reset({
           title: editGoal.title,
           description: editGoal.description ?? "",
-          target_value: editGoal.target_value != null ? String(editGoal.target_value) : "",
+          target_value:
+            editGoal.target_value != null ? String(editGoal.target_value) : "",
           unit: editGoal.unit ?? "",
           deadline: editGoal.deadline?.split("T")[0] ?? "",
         });
@@ -142,10 +143,15 @@ export function GoalFormModal({
           <input
             {...register("title")}
             placeholder="Ex: Atteindre 10 clients actifs"
-            className={cn(inputClass, errors.title && "border-red-300 focus:ring-red-200")}
+            className={cn(
+              inputClass,
+              errors.title && "border-red-300 focus:ring-red-200",
+            )}
           />
           {errors.title && (
-            <p className="text-[11px] text-red-500 mt-1">{errors.title.message}</p>
+            <p className="text-[11px] text-red-500 mt-1">
+              {errors.title.message}
+            </p>
           )}
         </div>
 
@@ -156,10 +162,7 @@ export function GoalFormModal({
             {...register("description")}
             placeholder="Details et contexte de l'objectif..."
             rows={3}
-            className={cn(
-              inputClass,
-              "h-auto py-2.5 resize-none",
-            )}
+            className={cn(inputClass, "h-auto py-2.5 resize-none")}
           />
         </div>
 
@@ -223,12 +226,7 @@ export function GoalFormModal({
 
         {/* Actions */}
         <div className="flex items-center justify-end gap-2 pt-2">
-          <Button
-            type="button"
-            variant="secondary"
-            size="sm"
-            onClick={onClose}
-          >
+          <Button type="button" variant="secondary" size="sm" onClick={onClose}>
             Annuler
           </Button>
           <Button

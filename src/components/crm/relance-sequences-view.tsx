@@ -28,7 +28,9 @@ export function RelanceSequencesView() {
   const { data: stats } = useRelanceStats();
   const deleteSequence = useDeleteSequence();
 
-  const [selectedSequenceId, setSelectedSequenceId] = useState<string | null>(null);
+  const [selectedSequenceId, setSelectedSequenceId] = useState<string | null>(
+    null,
+  );
   const [showCreate, setShowCreate] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
@@ -197,11 +199,13 @@ export function RelanceSequencesView() {
                   </span>
                   <span className="text-xs text-muted-foreground flex items-center gap-1">
                     <Clock className="h-3 w-3" />
-                    {seq.step_count} etape{(seq.step_count ?? 0) !== 1 ? "s" : ""}
+                    {seq.step_count} etape
+                    {(seq.step_count ?? 0) !== 1 ? "s" : ""}
                   </span>
                   <span className="text-xs text-muted-foreground flex items-center gap-1">
                     <Users className="h-3 w-3" />
-                    {seq.enrollment_count} inscrit{(seq.enrollment_count ?? 0) !== 1 ? "s" : ""}
+                    {seq.enrollment_count} inscrit
+                    {(seq.enrollment_count ?? 0) !== 1 ? "s" : ""}
                   </span>
                 </div>
                 {seq.description && (

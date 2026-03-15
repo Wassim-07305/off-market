@@ -184,14 +184,10 @@ export function AiSlashCommands({
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "ArrowDown") {
         e.preventDefault();
-        setActiveIndex((i) =>
-          i < filteredCommands.length - 1 ? i + 1 : 0,
-        );
+        setActiveIndex((i) => (i < filteredCommands.length - 1 ? i + 1 : 0));
       } else if (e.key === "ArrowUp") {
         e.preventDefault();
-        setActiveIndex((i) =>
-          i > 0 ? i - 1 : filteredCommands.length - 1,
-        );
+        setActiveIndex((i) => (i > 0 ? i - 1 : filteredCommands.length - 1));
       } else if (e.key === "Enter" && filteredCommands[activeIndex]) {
         e.preventDefault();
         const cmd = filteredCommands[activeIndex];
@@ -326,7 +322,11 @@ export function AiSlashCommands({
 
       {/* Command list (shown when not executing/showing result) */}
       {!isExecuting && !result && !error && (
-        <div ref={listRef} className="overflow-y-auto" style={{ maxHeight: 280 }}>
+        <div
+          ref={listRef}
+          className="overflow-y-auto"
+          style={{ maxHeight: 280 }}
+        >
           {filteredCommands.map((cmd, i) => {
             const Icon = cmd.icon;
             return (

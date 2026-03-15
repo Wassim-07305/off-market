@@ -60,7 +60,9 @@ export function AssignCoachModal({
               <UserCheck className="w-5 h-5 text-primary" />
             </div>
             <div>
-              <h3 className="font-semibold text-foreground">Assigner un coach</h3>
+              <h3 className="font-semibold text-foreground">
+                Assigner un coach
+              </h3>
               <p className="text-xs text-muted-foreground">{clientName}</p>
             </div>
           </div>
@@ -86,7 +88,9 @@ export function AssignCoachModal({
           Assignation automatique (equilibrage de charge)
         </button>
 
-        <div className="text-xs text-muted-foreground text-center mb-4">ou choisir manuellement</div>
+        <div className="text-xs text-muted-foreground text-center mb-4">
+          ou choisir manuellement
+        </div>
 
         {/* Coach list */}
         <div className="space-y-2 max-h-64 overflow-y-auto">

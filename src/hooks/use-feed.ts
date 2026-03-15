@@ -287,3 +287,33 @@ export function useComments(postId: string) {
     deleteComment,
   };
 }
+
+export function useTrendingPosts(limit = 5) {
+  const supabase = useSupabase();
+  const { user } = useAuth();
+
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+  const trendingQuery = useQuery({
+    queryKey: ["feed-trending", limit],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("feed_posts")
+        .select(
+          "*, author:profiles!feed_posts_author_id_fkey(id, full_name, avatar_url, role)",
+        )
+        .gte("created_at", sevenDaysAgo.toISOString())
+        .order("likes_count", { ascending: false })
+        .limit(limit);
+      if (error) throw error;
+      return data as FeedPost[];
+    },
+  });
+
+  return {
+    trendingPosts: trendingQuery.data ?? [],
+    isLoading: trendingQuery.isLoading,
+  };
+}

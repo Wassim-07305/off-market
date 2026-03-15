@@ -90,9 +90,7 @@ function EnrollmentDetail({ contactId, onClose }: EnrollmentDetailProps) {
   if (!enrollments?.length) {
     return (
       <div className="text-center py-4">
-        <p className="text-xs text-muted-foreground">
-          Aucune sequence active
-        </p>
+        <p className="text-xs text-muted-foreground">Aucune sequence active</p>
       </div>
     );
   }
@@ -406,10 +404,7 @@ export function EnrollContactButton({
 // ─── Enrollment Modal ────────────────────────────────────
 
 import { Modal } from "@/components/ui/modal";
-import {
-  useRelanceSequences,
-  useEnrollContact,
-} from "@/hooks/use-relance";
+import { useRelanceSequences, useEnrollContact } from "@/hooks/use-relance";
 
 interface EnrollContactModalProps {
   contactId: string;
@@ -490,7 +485,8 @@ function EnrollContactModal({
                   </p>
                   <div className="flex items-center gap-2 mt-0.5">
                     <span className="text-[11px] text-muted-foreground">
-                      {seq.step_count} etape{(seq.step_count ?? 0) !== 1 ? "s" : ""}
+                      {seq.step_count} etape
+                      {(seq.step_count ?? 0) !== 1 ? "s" : ""}
                     </span>
                     {seq.description && (
                       <span className="text-[11px] text-muted-foreground truncate">

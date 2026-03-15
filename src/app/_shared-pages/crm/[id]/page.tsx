@@ -79,8 +79,11 @@ export default function StudentDetailPage({
   const [newNote, setNewNote] = useState("");
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [briefingOpen, setBriefingOpen] = useState(false);
-  const { briefing, isLoading: briefingLoading, generateBriefing } =
-    useClientBriefing(id);
+  const {
+    briefing,
+    isLoading: briefingLoading,
+    generateBriefing,
+  } = useClientBriefing(id);
 
   const handleGenerateBriefing = () => {
     setBriefingOpen(true);
@@ -148,10 +151,7 @@ export default function StudentDetailPage({
     toast.success("Tache ajoutee");
   };
 
-  const handleFlagChange = (
-    newFlag: StudentFlag,
-    reason?: string,
-  ) => {
+  const handleFlagChange = (newFlag: StudentFlag, reason?: string) => {
     if (!profile) return;
     updateStudentFlag.mutate({
       profileId: student.id,

@@ -44,11 +44,18 @@ export default function LoginPage() {
     }
 
     // Check if MFA is required
-    const { data: aalData } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
-    if (aalData && aalData.currentLevel === "aal1" && aalData.nextLevel === "aal2") {
+    const { data: aalData } =
+      await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+    if (
+      aalData &&
+      aalData.currentLevel === "aal1" &&
+      aalData.nextLevel === "aal2"
+    ) {
       // User has 2FA enabled — need TOTP verification
       const { data: factorsData } = await supabase.auth.mfa.listFactors();
-      const verifiedFactor = factorsData?.totp?.find((f) => f.status === "verified");
+      const verifiedFactor = factorsData?.totp?.find(
+        (f) => f.status === "verified",
+      );
       if (verifiedFactor) {
         setMfaFactorId(verifiedFactor.id);
         setNeeds2FA(true);
@@ -94,7 +101,10 @@ export default function LoginPage() {
 
   const handleTotpPaste = (e: React.ClipboardEvent) => {
     e.preventDefault();
-    const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
+    const pasted = e.clipboardData
+      .getData("text")
+      .replace(/\D/g, "")
+      .slice(0, 6);
     if (pasted.length === 6) {
       const newCode = pasted.split("");
       setTotpCode(newCode);
@@ -150,7 +160,8 @@ export default function LoginPage() {
             Verification 2FA
           </h1>
           <p className="text-white/40 text-sm">
-            Entre le code a 6 chiffres de ton application d&apos;authentification
+            Entre le code a 6 chiffres de ton application
+            d&apos;authentification
           </p>
         </div>
 
@@ -161,11 +172,16 @@ export default function LoginPage() {
               "0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05)",
           }}
         >
-          <div className="flex justify-center gap-2 mb-6" onPaste={handleTotpPaste}>
+          <div
+            className="flex justify-center gap-2 mb-6"
+            onPaste={handleTotpPaste}
+          >
             {totpCode.map((digit, i) => (
               <input
                 key={i}
-                ref={(el) => { totpRefs.current[i] = el; }}
+                ref={(el) => {
+                  totpRefs.current[i] = el;
+                }}
                 type="text"
                 inputMode="numeric"
                 maxLength={1}

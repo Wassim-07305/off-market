@@ -57,71 +57,136 @@ export type CrmFieldKey = (typeof CRM_FIELDS)[number]["key"];
 
 const COLUMN_ALIASES: Record<CrmFieldKey, string[]> = {
   full_name: [
-    "full_name", "fullname", "nom complet", "nom_complet", "name", "nom",
-    "contact", "contact name", "nom du contact",
+    "full_name",
+    "fullname",
+    "nom complet",
+    "nom_complet",
+    "name",
+    "nom",
+    "contact",
+    "contact name",
+    "nom du contact",
   ],
   email: [
-    "email", "e-mail", "mail", "courriel", "adresse email", "adresse mail",
+    "email",
+    "e-mail",
+    "mail",
+    "courriel",
+    "adresse email",
+    "adresse mail",
     "email address",
   ],
   phone: [
-    "phone", "telephone", "tel", "tel.", "mobile", "portable", "numero",
-    "phone number", "numero de telephone",
+    "phone",
+    "telephone",
+    "tel",
+    "tel.",
+    "mobile",
+    "portable",
+    "numero",
+    "phone number",
+    "numero de telephone",
   ],
   company: [
-    "company", "entreprise", "societe", "organisation", "org", "niche",
-    "business", "company name", "nom entreprise",
+    "company",
+    "entreprise",
+    "societe",
+    "organisation",
+    "org",
+    "niche",
+    "business",
+    "company name",
+    "nom entreprise",
   ],
-  source: [
-    "source", "origine", "canal", "channel", "provenance",
-  ],
-  stage: [
-    "stage", "etape", "statut", "status", "pipeline", "phase",
-  ],
+  source: ["source", "origine", "canal", "channel", "provenance"],
+  stage: ["stage", "etape", "statut", "status", "pipeline", "phase"],
   estimated_value: [
-    "estimated_value", "valeur", "valeur estimee", "value", "montant",
-    "deal value", "amount", "prix", "price", "ca", "revenue",
+    "estimated_value",
+    "valeur",
+    "valeur estimee",
+    "value",
+    "montant",
+    "deal value",
+    "amount",
+    "prix",
+    "price",
+    "ca",
+    "revenue",
   ],
   notes: [
-    "notes", "note", "commentaire", "commentaires", "comment", "comments",
-    "description", "remarques",
+    "notes",
+    "note",
+    "commentaire",
+    "commentaires",
+    "comment",
+    "comments",
+    "description",
+    "remarques",
   ],
-  tags: [
-    "tags", "tag", "etiquettes", "labels", "categories",
-  ],
+  tags: ["tags", "tag", "etiquettes", "labels", "categories"],
   linkedin_url: [
-    "linkedin_url", "linkedin", "profil linkedin", "linkedin url",
+    "linkedin_url",
+    "linkedin",
+    "profil linkedin",
+    "linkedin url",
     "linkedin profile",
   ],
   instagram_url: [
-    "instagram_url", "instagram", "insta", "profil instagram", "instagram url",
+    "instagram_url",
+    "instagram",
+    "insta",
+    "profil instagram",
+    "instagram url",
   ],
-  tiktok_url: [
-    "tiktok_url", "tiktok", "tik tok", "profil tiktok",
-  ],
-  facebook_url: [
-    "facebook_url", "facebook", "fb", "profil facebook",
-  ],
+  tiktok_url: ["tiktok_url", "tiktok", "tik tok", "profil tiktok"],
+  facebook_url: ["facebook_url", "facebook", "fb", "profil facebook"],
   website_url: [
-    "website_url", "website", "site", "site web", "url", "site internet", "web",
+    "website_url",
+    "website",
+    "site",
+    "site web",
+    "url",
+    "site internet",
+    "web",
   ],
 };
 
 // Special columns that combine into full_name
 const FIRST_NAME_ALIASES = [
-  "prenom", "prénom", "first_name", "firstname", "first name", "given name",
+  "prenom",
+  "prénom",
+  "first_name",
+  "firstname",
+  "first name",
+  "given name",
 ];
 const LAST_NAME_ALIASES = [
-  "nom", "nom de famille", "last_name", "lastname", "last name", "family name", "surname",
+  "nom",
+  "nom de famille",
+  "last_name",
+  "lastname",
+  "last name",
+  "family name",
+  "surname",
 ];
 
 // ─── Valid values ─────────────────────────────────────────────
 
 const VALID_STAGES: PipelineStage[] = [
-  "prospect", "qualifie", "proposition", "closing", "client", "perdu",
+  "prospect",
+  "qualifie",
+  "proposition",
+  "closing",
+  "client",
+  "perdu",
 ];
 const VALID_SOURCES: ContactSource[] = [
-  "instagram", "linkedin", "referral", "website", "lead_magnet", "other",
+  "instagram",
+  "linkedin",
+  "referral",
+  "website",
+  "lead_magnet",
+  "other",
 ];
 
 // ─── Hook: CSV Parser ─────────────────────────────────────────
@@ -319,7 +384,14 @@ export function useImportContacts() {
       let updated = 0;
       const errors: { row: number; message: string }[] = [];
 
-      setProgress({ total, imported: 0, skipped: 0, updated: 0, errors: [], done: false });
+      setProgress({
+        total,
+        imported: 0,
+        skipped: 0,
+        updated: 0,
+        errors: [],
+        done: false,
+      });
 
       // Build reverse mapping: crm field -> csv column(s)
       const fieldToColumn: Record<string, string> = {};
@@ -394,7 +466,9 @@ export function useImportContacts() {
                 break;
               }
               case "estimated_value": {
-                const numVal = parseFloat(value.replace(/[^\d.,\-]/g, "").replace(",", "."));
+                const numVal = parseFloat(
+                  value.replace(/[^\d.,\-]/g, "").replace(",", "."),
+                );
                 if (!isNaN(numVal)) {
                   contact.estimated_value = numVal;
                 }
@@ -419,7 +493,10 @@ export function useImportContacts() {
 
           contacts.push({ rowIndex: i + 2, data: contact });
         } catch {
-          errors.push({ row: i + 2, message: "Erreur de traitement de la ligne" });
+          errors.push({
+            row: i + 2,
+            message: "Erreur de traitement de la ligne",
+          });
         }
       }
 
@@ -457,7 +534,11 @@ export function useImportContacts() {
 
               if (existing) {
                 // Update existing contact (don't overwrite created_by/assigned_to)
-                const { created_by: _cb, assigned_to: _at, ...updateData } = data as Record<string, unknown>;
+                const {
+                  created_by: _cb,
+                  assigned_to: _at,
+                  ...updateData
+                } = data as Record<string, unknown>;
                 const { error: updateError } = await supabase
                   .from("crm_contacts")
                   .update(updateData as never)
@@ -529,7 +610,8 @@ export function useImportContacts() {
       }
     },
     onError: (err: unknown) => {
-      const msg = err instanceof Error ? err.message : "Erreur lors de l'import";
+      const msg =
+        err instanceof Error ? err.message : "Erreur lors de l'import";
       toast.error(msg);
     },
   });

@@ -6,7 +6,6 @@ import { useSupabase } from "@/hooks/use-supabase";
 import { useAuth } from "@/hooks/use-auth";
 import { Phone, Calendar, Clock } from "lucide-react";
 
-
 function UpcomingCallsWidgetBase() {
   const supabase = useSupabase();
   const { user } = useAuth();
@@ -38,10 +37,7 @@ function UpcomingCallsWidgetBase() {
         <div className="h-4 w-32 bg-muted rounded-lg mb-4 animate-shimmer" />
         <div className="space-y-3">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div
-              key={i}
-              className="h-12 bg-muted rounded-lg animate-shimmer"
-            />
+            <div key={i} className="h-12 bg-muted rounded-lg animate-shimmer" />
           ))}
         </div>
       </div>
@@ -65,9 +61,7 @@ function UpcomingCallsWidgetBase() {
       {!calls || calls.length === 0 ? (
         <div className="py-6 text-center">
           <Calendar className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
-          <p className="text-xs text-muted-foreground">
-            Aucun appel programme
-          </p>
+          <p className="text-xs text-muted-foreground">Aucun appel programme</p>
         </div>
       ) : (
         <div className="space-y-2.5">
@@ -86,7 +80,8 @@ function UpcomingCallsWidgetBase() {
                     {client?.full_name ?? "Contact"}
                   </p>
                   <p className="text-[11px] text-muted-foreground font-mono">
-                    {call.date}{call.time ? ` a ${call.time}` : ""}
+                    {call.date}
+                    {call.time ? ` a ${call.time}` : ""}
                   </p>
                 </div>
               </div>

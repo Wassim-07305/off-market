@@ -90,9 +90,7 @@ function generateRoadmapPDF(roadmap: RoadmapData): Buffer {
   const title = escapePDF(roadmap.title);
   const description = escapePDF(roadmap.description ?? "");
   const dateCreated = escapePDF(formatDate(roadmap.created_at));
-  const dateGenerated = escapePDF(
-    formatDate(new Date().toISOString()),
-  );
+  const dateGenerated = escapePDF(formatDate(new Date().toISOString()));
 
   const milestones = roadmap.milestones.sort(
     (a, b) => a.order_index - b.order_index,
@@ -152,7 +150,9 @@ function generateRoadmapPDF(roadmap: RoadmapData): Buffer {
     const statusText = statusLabels[milestone.status] ?? milestone.status;
     const milestoneTitle = escapePDF(milestone.title);
 
-    contentLines.push(`${symbol} Etape ${milestone.order_index + 1} : ${milestoneTitle}`);
+    contentLines.push(
+      `${symbol} Etape ${milestone.order_index + 1} : ${milestoneTitle}`,
+    );
     contentLines.push(`     Statut : ${escapePDF(statusText)}`);
 
     if (milestone.status === "completed" && milestone.completed_at) {
@@ -194,9 +194,7 @@ function generateRoadmapPDF(roadmap: RoadmapData): Buffer {
     contentLines.push("");
     for (const step of nextSteps.slice(0, 5)) {
       const prefix = step.status === "in_progress" ? "(en cours)" : "(a venir)";
-      contentLines.push(
-        `  ${prefix} ${escapePDF(step.title)}`,
-      );
+      contentLines.push(`  ${prefix} ${escapePDF(step.title)}`);
     }
     if (nextSteps.length > 5) {
       contentLines.push(`  ... et ${nextSteps.length - 5} autre(s)`);

@@ -4,10 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
 import { toast } from "sonner";
-import type {
-  CalendarEvent,
-  CalendarEventRow,
-} from "@/types/calendar";
+import type { CalendarEvent, CalendarEventRow } from "@/types/calendar";
 import { EVENT_COLORS } from "@/types/calendar";
 
 // Row shapes returned by Supabase selects (tables not in Database type map)
@@ -90,7 +87,8 @@ export function useCalendarEvents(rangeStart: Date, rangeEnd: Date) {
 
       const sessions = (sessionsResult.data ?? []) as unknown as SessionRow[];
       const calls = (callsResult.data ?? []) as unknown as CallRow[];
-      const customEvents = (customResult.data ?? []) as unknown as CalendarEventRow[];
+      const customEvents = (customResult.data ??
+        []) as unknown as CalendarEventRow[];
 
       const merged: CalendarEvent[] = [];
 
@@ -99,8 +97,7 @@ export function useCalendarEvents(rangeStart: Date, rangeEnd: Date) {
         const clientName = s.client?.full_name;
         const endAt = s.duration_minutes
           ? new Date(
-              new Date(s.scheduled_at).getTime() +
-                s.duration_minutes * 60_000,
+              new Date(s.scheduled_at).getTime() + s.duration_minutes * 60_000,
             ).toISOString()
           : undefined;
         merged.push({

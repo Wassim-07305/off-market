@@ -30,9 +30,7 @@ export function ClientFlagBadge({
   if (!showLabel) {
     return (
       <span className={cn("relative inline-flex", className)}>
-        <span
-          className={cn("rounded-full", dotSizes[size], config.dotColor)}
-        />
+        <span className={cn("rounded-full", dotSizes[size], config.dotColor)} />
         {pulse && flag !== "green" && (
           <span
             className={cn(

@@ -12,7 +12,11 @@ Regles strictes :
 - Si tu n'as pas assez d'info, dis-le en une phrase et pose la question precise.
 - Ne repete pas la question de l'utilisateur.`;
 
-async function buildContext(supabase: ReturnType<typeof Object>, userId: string, role: string) {
+async function buildContext(
+  supabase: ReturnType<typeof Object>,
+  userId: string,
+  role: string,
+) {
   let context = "";
 
   if (role === "admin" || role === "coach") {
@@ -23,10 +27,35 @@ async function buildContext(supabase: ReturnType<typeof Object>, userId: string,
       { data: recentCalls },
       { data: atRiskClients },
     ] = await Promise.all([
-      supabase.from("profiles").select("*", { count: "exact", head: true }).eq("role", "prospect"),
-      supabase.from("profiles").select("*", { count: "exact", head: true }).eq("role", "prospect").eq("is_active", true),
-      supabase.from("call_calendar").select("id, title, date, call_type, client:profiles!call_calendar_client_id_fkey(full_name)").gte("date", new Date(Date.now() - 7 * 86400000).toISOString().split("T")[0]).order("date", { ascending: false }).limit(10),
-      supabase.from("profiles").select("id, full_name, last_active_at").eq("role", "prospect").lt("last_active_at", new Date(Date.now() - 14 * 86400000).toISOString()).limit(20),
+      supabase
+        .from("profiles")
+        .select("*", { count: "exact", head: true })
+        .eq("role", "prospect"),
+      supabase
+        .from("profiles")
+        .select("*", { count: "exact", head: true })
+        .eq("role", "prospect")
+        .eq("is_active", true),
+      supabase
+        .from("call_calendar")
+        .select(
+          "id, title, date, call_type, client:profiles!call_calendar_client_id_fkey(full_name)",
+        )
+        .gte(
+          "date",
+          new Date(Date.now() - 7 * 86400000).toISOString().split("T")[0],
+        )
+        .order("date", { ascending: false })
+        .limit(10),
+      supabase
+        .from("profiles")
+        .select("id, full_name, last_active_at")
+        .eq("role", "prospect")
+        .lt(
+          "last_active_at",
+          new Date(Date.now() - 14 * 86400000).toISOString(),
+        )
+        .limit(20),
     ]);
 
     context += `\n## Contexte plateforme (donnees en temps reel)\n`;
@@ -46,7 +75,9 @@ async function buildContext(supabase: ReturnType<typeof Object>, userId: string,
       context += `\n### Clients inactifs depuis 14+ jours\n`;
       for (const c of atRiskClients) {
         const daysAgo = c.last_active_at
-          ? Math.round((Date.now() - new Date(c.last_active_at).getTime()) / 86400000)
+          ? Math.round(
+              (Date.now() - new Date(c.last_active_at).getTime()) / 86400000,
+            )
           : "?";
         context += `- ${c.full_name} — inactif depuis ${daysAgo} jours\n`;
       }
@@ -80,7 +111,9 @@ async function buildContext(supabase: ReturnType<typeof Object>, userId: string,
       const adminIds = adminProfiles.map((p: { id: string }) => p.id);
       const { data: adminMessages } = await supabase
         .from("messages")
-        .select("content, created_at, channel:channels!messages_channel_id_fkey(name)")
+        .select(
+          "content, created_at, channel:channels!messages_channel_id_fkey(name)",
+        )
         .in("sender_id", adminIds)
         .not("content", "is", null)
         .order("created_at", { ascending: false })
@@ -145,7 +178,9 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("AI chat error:", error);
     return NextResponse.json(
-      { error: "Erreur lors de la communication avec l'IA. Veuillez reessayer." },
+      {
+        error: "Erreur lors de la communication avec l'IA. Veuillez reessayer.",
+      },
       { status: 500 },
     );
   }

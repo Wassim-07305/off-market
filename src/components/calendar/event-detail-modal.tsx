@@ -53,7 +53,8 @@ export function EventDetailModal({
 
   const handleDelete = async () => {
     if (!window.confirm("Supprimer cet evenement ?")) return;
-    const eventId = (event.metadata?.event_id as string) ?? event.id.replace("event-", "");
+    const eventId =
+      (event.metadata?.event_id as string) ?? event.id.replace("event-", "");
     await deleteEvent.mutateAsync(eventId);
     onClose();
   };
@@ -114,7 +115,8 @@ export function EventDetailModal({
         {/* Metadata */}
         {event.metadata?.status != null ? (
           <div className="text-xs text-muted-foreground">
-            Statut : <span className="font-medium">{String(event.metadata.status)}</span>
+            Statut :{" "}
+            <span className="font-medium">{String(event.metadata.status)}</span>
           </div>
         ) : null}
 

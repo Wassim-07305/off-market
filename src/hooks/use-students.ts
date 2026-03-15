@@ -3,7 +3,12 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
-import type { Profile, StudentDetail, StudentFlag, StudentPipelineStage } from "@/types/database";
+import type {
+  Profile,
+  StudentDetail,
+  StudentFlag,
+  StudentPipelineStage,
+} from "@/types/database";
 import { useEffect } from "react";
 
 export type StudentWithDetails = Profile & {
@@ -28,7 +33,9 @@ export function useStudents(options: UseStudentsOptions = {}) {
     queryFn: async () => {
       let query = supabase
         .from("profiles")
-        .select("*, student_details(*, assigned_coach_profile:profiles!student_details_assigned_coach_fkey(full_name))")
+        .select(
+          "*, student_details(*, assigned_coach_profile:profiles!student_details_assigned_coach_fkey(full_name))",
+        )
         .eq("role", "client")
         .order("created_at", { ascending: false })
         .limit(limit);
@@ -106,7 +113,9 @@ export function useStudents(options: UseStudentsOptions = {}) {
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["students"] });
-      queryClient.invalidateQueries({ queryKey: ["student", variables.profileId] });
+      queryClient.invalidateQueries({
+        queryKey: ["student", variables.profileId],
+      });
     },
   });
 
@@ -127,7 +136,9 @@ export function useStudents(options: UseStudentsOptions = {}) {
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["students"] });
-      queryClient.invalidateQueries({ queryKey: ["student", variables.profileId] });
+      queryClient.invalidateQueries({
+        queryKey: ["student", variables.profileId],
+      });
     },
   });
 
@@ -170,8 +181,12 @@ export function useStudents(options: UseStudentsOptions = {}) {
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["students"] });
-      queryClient.invalidateQueries({ queryKey: ["student", variables.profileId] });
-      queryClient.invalidateQueries({ queryKey: ["student-flag-history", variables.profileId] });
+      queryClient.invalidateQueries({
+        queryKey: ["student", variables.profileId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["student-flag-history", variables.profileId],
+      });
     },
   });
 
@@ -192,7 +207,9 @@ export function useStudents(options: UseStudentsOptions = {}) {
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["students"] });
-      queryClient.invalidateQueries({ queryKey: ["student", variables.profileId] });
+      queryClient.invalidateQueries({
+        queryKey: ["student", variables.profileId],
+      });
     },
   });
 
@@ -215,7 +232,9 @@ export function useStudent(id: string) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("profiles")
-        .select("*, student_details(*, assigned_coach_profile:profiles!student_details_assigned_coach_fkey(full_name))")
+        .select(
+          "*, student_details(*, assigned_coach_profile:profiles!student_details_assigned_coach_fkey(full_name))",
+        )
         .eq("id", id)
         .single();
       if (error) throw error;

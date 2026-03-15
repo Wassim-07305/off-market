@@ -21,7 +21,10 @@ export async function validateApiKey(
     return {
       ctx: null,
       error: NextResponse.json(
-        { error: "Missing or invalid Authorization header. Use: Bearer <api_key>" },
+        {
+          error:
+            "Missing or invalid Authorization header. Use: Bearer <api_key>",
+        },
         { status: 401 },
       ),
     };
@@ -63,10 +66,7 @@ export async function validateApiKey(
   if (keyRecord.expires_at && new Date(keyRecord.expires_at) < new Date()) {
     return {
       ctx: null,
-      error: NextResponse.json(
-        { error: "API key expired" },
-        { status: 401 },
-      ),
+      error: NextResponse.json({ error: "API key expired" }, { status: 401 }),
     };
   }
 
@@ -93,7 +93,11 @@ export function hasScope(ctx: ApiKeyContext, scope: string): boolean {
 }
 
 /** Generate a new API key and return the plaintext + hash */
-export function generateApiKey(): { key: string; hash: string; prefix: string } {
+export function generateApiKey(): {
+  key: string;
+  hash: string;
+  prefix: string;
+} {
   const random = crypto.randomBytes(32).toString("base64url");
   const key = `om_live_${random}`;
   const hash = crypto.createHash("sha256").update(key).digest("hex");

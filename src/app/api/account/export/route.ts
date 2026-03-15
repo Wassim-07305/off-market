@@ -56,7 +56,9 @@ export async function GET() {
       .order("created_at", { ascending: false }),
     supabase
       .from("sessions")
-      .select("id, title, session_type, scheduled_at, duration_minutes, status, notes")
+      .select(
+        "id, title, session_type, scheduled_at, duration_minutes, status, notes",
+      )
       .or(`client_id.eq.${userId},coach_id.eq.${userId}`)
       .order("scheduled_at", { ascending: false }),
     supabase

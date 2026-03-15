@@ -63,10 +63,12 @@ export function useCommunities() {
           .eq("user_id", user.id);
 
         const memberMap = new Map(
-          (memberships ?? []).map((m: { community_id: string; role: string }) => [
-            m.community_id,
-            m.role,
-          ]),
+          (memberships ?? []).map(
+            (m: { community_id: string; role: string }) => [
+              m.community_id,
+              m.role,
+            ],
+          ),
         );
 
         return (data as Community[]).map((c) => ({
@@ -250,7 +252,15 @@ export function useUpdateCommunity() {
     mutationFn: async ({
       id,
       ...updates
-    }: { id: string; name?: string; description?: string | null; icon?: string | null; color?: string; is_private?: boolean; max_members?: number | null }) => {
+    }: {
+      id: string;
+      name?: string;
+      description?: string | null;
+      icon?: string | null;
+      color?: string;
+      is_private?: boolean;
+      max_members?: number | null;
+    }) => {
       const { error } = await supabase
         .from("communities")
         .update(updates)

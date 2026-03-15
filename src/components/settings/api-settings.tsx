@@ -1,7 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { useApiKeys, useCreateApiKey, useRevokeApiKey } from "@/hooks/use-api-keys";
+import {
+  useApiKeys,
+  useCreateApiKey,
+  useRevokeApiKey,
+} from "@/hooks/use-api-keys";
 import {
   useWebhooks,
   useCreateWebhook,
@@ -63,7 +67,10 @@ export function ApiSettings() {
 
   const handleCreateKey = async () => {
     if (!newKeyName) return;
-    const result = await createKey.mutateAsync({ name: newKeyName, scopes: newKeyScopes });
+    const result = await createKey.mutateAsync({
+      name: newKeyName,
+      scopes: newKeyScopes,
+    });
     setGeneratedKey(result.key);
     setNewKeyName("");
     toast.success("Cle API creee");
@@ -129,7 +136,10 @@ export function ApiSettings() {
 
         <p className="text-xs text-muted-foreground">
           Les cles API permettent l&apos;acces aux endpoints REST /api/v1/*.
-          Format: <code className="bg-muted px-1 rounded">Authorization: Bearer om_live_...</code>
+          Format:{" "}
+          <code className="bg-muted px-1 rounded">
+            Authorization: Bearer om_live_...
+          </code>
         </p>
 
         {/* New key form */}
@@ -196,7 +206,9 @@ export function ApiSettings() {
                   disabled={!newKeyName || createKey.isPending}
                   className="h-8 px-4 rounded-lg text-xs font-medium bg-primary text-white hover:bg-primary-hover disabled:opacity-50 transition-colors flex items-center gap-1.5"
                 >
-                  {createKey.isPending && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                  {createKey.isPending && (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  )}
                   Generer la cle
                 </button>
               </>
@@ -216,12 +228,16 @@ export function ApiSettings() {
                 key={key.id}
                 className={cn(
                   "flex items-center justify-between p-3 rounded-xl border",
-                  key.is_active ? "border-border" : "border-border/50 opacity-50",
+                  key.is_active
+                    ? "border-border"
+                    : "border-border/50 opacity-50",
                 )}
               >
                 <div className="space-y-0.5">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-foreground">{key.name}</span>
+                    <span className="text-sm font-medium text-foreground">
+                      {key.name}
+                    </span>
                     <code className="text-[11px] font-mono text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
                       {key.key_prefix}...
                     </code>
@@ -229,9 +245,13 @@ export function ApiSettings() {
                   <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
                     <span>{key.scopes.join(", ")}</span>
                     {key.last_used_at && (
-                      <span>Utilise {formatRelativeDate(key.last_used_at)}</span>
+                      <span>
+                        Utilise {formatRelativeDate(key.last_used_at)}
+                      </span>
                     )}
-                    {key.revoked_at && <span className="text-error">Revoquee</span>}
+                    {key.revoked_at && (
+                      <span className="text-error">Revoquee</span>
+                    )}
                   </div>
                 </div>
                 {key.is_active && (
@@ -280,8 +300,9 @@ export function ApiSettings() {
         </div>
 
         <p className="text-xs text-muted-foreground">
-          Recois des notifications HTTP POST en temps reel quand des evenements se produisent.
-          Signatures HMAC-SHA256 via header <code className="bg-muted px-1 rounded">X-Webhook-Signature</code>.
+          Recois des notifications HTTP POST en temps reel quand des evenements
+          se produisent. Signatures HMAC-SHA256 via header{" "}
+          <code className="bg-muted px-1 rounded">X-Webhook-Signature</code>.
         </p>
 
         {/* New webhook form */}
@@ -323,7 +344,9 @@ export function ApiSettings() {
                   className="w-full h-9 px-3 rounded-lg bg-muted border border-border text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
                 />
                 <div>
-                  <p className="text-xs font-medium text-foreground mb-2">Evenements</p>
+                  <p className="text-xs font-medium text-foreground mb-2">
+                    Evenements
+                  </p>
                   <div className="flex flex-wrap gap-1.5">
                     {WEBHOOK_EVENTS.map((evt) => (
                       <button
@@ -343,10 +366,17 @@ export function ApiSettings() {
                 </div>
                 <button
                   onClick={handleCreateWebhook}
-                  disabled={!webhookName || !webhookUrl || !webhookEvents.length || createWebhook.isPending}
+                  disabled={
+                    !webhookName ||
+                    !webhookUrl ||
+                    !webhookEvents.length ||
+                    createWebhook.isPending
+                  }
                   className="h-8 px-4 rounded-lg text-xs font-medium bg-primary text-white hover:bg-primary-hover disabled:opacity-50 transition-colors flex items-center gap-1.5"
                 >
-                  {createWebhook.isPending && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                  {createWebhook.isPending && (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  )}
                   Creer le webhook
                 </button>
               </>
@@ -362,11 +392,16 @@ export function ApiSettings() {
         ) : webhooks?.length ? (
           <div className="space-y-2">
             {webhooks.map((wh) => (
-              <div key={wh.id} className="border border-border rounded-xl p-3 space-y-2">
+              <div
+                key={wh.id}
+                className="border border-border rounded-xl p-3 space-y-2"
+              >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Globe className="w-3.5 h-3.5 text-muted-foreground" />
-                    <span className="text-sm font-medium text-foreground">{wh.name}</span>
+                    <span className="text-sm font-medium text-foreground">
+                      {wh.name}
+                    </span>
                     {wh.is_active ? (
                       <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-success/10 text-success font-medium">
                         Actif
@@ -379,7 +414,12 @@ export function ApiSettings() {
                   </div>
                   <div className="flex items-center gap-1">
                     <button
-                      onClick={() => toggleWebhook.mutate({ id: wh.id, is_active: !wh.is_active })}
+                      onClick={() =>
+                        toggleWebhook.mutate({
+                          id: wh.id,
+                          is_active: !wh.is_active,
+                        })
+                      }
                       className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                       title={wh.is_active ? "Desactiver" : "Activer"}
                     >
@@ -417,9 +457,14 @@ export function ApiSettings() {
                 {/* Recent logs */}
                 {wh.webhook_logs && wh.webhook_logs.length > 0 && (
                   <div className="flex items-center gap-2 pt-1 border-t border-border">
-                    <span className="text-[10px] text-muted-foreground">Derniers envois:</span>
+                    <span className="text-[10px] text-muted-foreground">
+                      Derniers envois:
+                    </span>
                     {wh.webhook_logs.slice(0, 5).map((log) => (
-                      <span key={log.id} title={`${log.event} — ${log.response_status}`}>
+                      <span
+                        key={log.id}
+                        title={`${log.event} — ${log.response_status}`}
+                      >
                         {log.success ? (
                           <CheckCircle2 className="w-3 h-3 text-success" />
                         ) : (

@@ -117,7 +117,9 @@ export function BrandingSettings() {
     }
   };
 
-  const handleFaviconUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFaviconUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -330,7 +332,9 @@ export function BrandingSettings() {
                 const r = Math.min(255, parseInt(hex.slice(1, 3), 16) + 20);
                 const g = Math.min(255, parseInt(hex.slice(3, 5), 16) + 20);
                 const b = Math.min(255, parseInt(hex.slice(5, 7), 16) + 20);
-                setPrimaryColorDark(`#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`);
+                setPrimaryColorDark(
+                  `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`,
+                );
               }}
               className="w-10 h-10 rounded-xl cursor-pointer border-2 border-border"
               title="Couleur personnalisee"
@@ -368,7 +372,9 @@ export function BrandingSettings() {
               const r = Math.min(255, parseInt(hex.slice(1, 3), 16) + 20);
               const g = Math.min(255, parseInt(hex.slice(3, 5), 16) + 20);
               const b = Math.min(255, parseInt(hex.slice(5, 7), 16) + 20);
-              setAccentColorDark(`#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`);
+              setAccentColorDark(
+                `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`,
+              );
             }}
             className="w-10 h-10 rounded-xl cursor-pointer border-2 border-border"
           />

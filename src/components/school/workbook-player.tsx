@@ -48,7 +48,8 @@ export function WorkbookPlayer({
 
   const [answers, setAnswers] = useState<Record<string, unknown>>({});
   const [reviewNotes, setReviewNotes] = useState("");
-  const isReviewMode = readOnly && isStaff && existingSubmission?.status === "submitted";
+  const isReviewMode =
+    readOnly && isStaff && existingSubmission?.status === "submitted";
 
   // Load existing answers
   useEffect(() => {
@@ -109,7 +110,9 @@ export function WorkbookPlayer({
   }
 
   const isReadOnly =
-    readOnly || existingSubmission?.status === "submitted" || existingSubmission?.status === "reviewed";
+    readOnly ||
+    existingSubmission?.status === "submitted" ||
+    existingSubmission?.status === "reviewed";
   const fields = workbook.fields as WorkbookField[];
 
   // Filter fields based on conditional logic
@@ -287,9 +290,7 @@ function FieldRenderer({
         <div className="flex-1">
           <span className="text-sm font-medium text-foreground">
             {field.label}
-            {field.required && (
-              <span className="text-red-500 ml-0.5">*</span>
-            )}
+            {field.required && <span className="text-red-500 ml-0.5">*</span>}
           </span>
           {field.description && (
             <p className="text-xs text-muted-foreground mt-0.5">

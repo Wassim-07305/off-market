@@ -4,10 +4,7 @@ import { ClientDashboard } from "@/components/dashboard/client-dashboard";
 import { WidgetGrid } from "@/components/dashboard/widget-grid";
 import { useAuth } from "@/hooks/use-auth";
 import { motion } from "framer-motion";
-import {
-  staggerContainer,
-  staggerItem,
-} from "@/lib/animations";
+import { staggerContainer, staggerItem } from "@/lib/animations";
 
 export default function DashboardPage() {
   const { profile } = useAuth();

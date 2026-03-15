@@ -62,7 +62,9 @@ export function useContracts(options: UseContractsOptions = {}) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["contracts"] });
     },
-    onError: () => { toast.error("Erreur lors de la création du contrat"); },
+    onError: () => {
+      toast.error("Erreur lors de la création du contrat");
+    },
   });
 
   const updateContract = useMutation({
@@ -79,7 +81,9 @@ export function useContracts(options: UseContractsOptions = {}) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["contracts"] });
     },
-    onError: () => { toast.error("Erreur lors de la mise à jour du contrat"); },
+    onError: () => {
+      toast.error("Erreur lors de la mise à jour du contrat");
+    },
   });
 
   const sendContract = useMutation({
@@ -93,7 +97,9 @@ export function useContracts(options: UseContractsOptions = {}) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["contracts"] });
     },
-    onError: () => { toast.error("Erreur lors de l'envoi du contrat"); },
+    onError: () => {
+      toast.error("Erreur lors de l'envoi du contrat");
+    },
   });
 
   const signContract = useMutation({
@@ -121,17 +127,13 @@ export function useContracts(options: UseContractsOptions = {}) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["contracts"] });
     },
-    onError: () => { toast.error("Erreur lors de la signature du contrat"); },
+    onError: () => {
+      toast.error("Erreur lors de la signature du contrat");
+    },
   });
 
   const cancelContract = useMutation({
-    mutationFn: async ({
-      id,
-      reason,
-    }: {
-      id: string;
-      reason?: string;
-    }) => {
+    mutationFn: async ({ id, reason }: { id: string; reason?: string }) => {
       const { error } = await supabase
         .from("contracts")
         .update({
@@ -144,7 +146,9 @@ export function useContracts(options: UseContractsOptions = {}) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["contracts"] });
     },
-    onError: () => { toast.error("Erreur lors de l'annulation du contrat"); },
+    onError: () => {
+      toast.error("Erreur lors de l'annulation du contrat");
+    },
   });
 
   return {
@@ -216,7 +220,9 @@ export function useContractTemplates() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["contract-templates"] });
     },
-    onError: () => { toast.error("Erreur lors de la création du modèle"); },
+    onError: () => {
+      toast.error("Erreur lors de la création du modèle");
+    },
   });
 
   const updateTemplate = useMutation({
@@ -233,7 +239,9 @@ export function useContractTemplates() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["contract-templates"] });
     },
-    onError: () => { toast.error("Erreur lors de la mise à jour du modèle"); },
+    onError: () => {
+      toast.error("Erreur lors de la mise à jour du modèle");
+    },
   });
 
   return {
@@ -241,5 +249,106 @@ export function useContractTemplates() {
     isLoading: templatesQuery.isLoading,
     createTemplate,
     updateTemplate,
+  };
+}
+
+// ─── Contract Renewal ───────────────────────────────
+export function useContractRenewal() {
+  const supabase = useSupabase();
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+
+  // Get contracts expiring soon (within N days)
+  const expiringQuery = useQuery({
+    queryKey: ["contracts-expiring"],
+    enabled: !!user,
+    queryFn: async () => {
+      const now = new Date();
+      const in30Days = new Date();
+      in30Days.setDate(in30Days.getDate() + 30);
+
+      const { data, error } = await supabase
+        .from("contracts")
+        .select(
+          "*, client:profiles!contracts_client_id_fkey(id, full_name, email, avatar_url)",
+        )
+        .in("status", ["signed", "active"])
+        .gte("end_date", now.toISOString().split("T")[0])
+        .lte("end_date", in30Days.toISOString().split("T")[0])
+        .order("end_date", { ascending: true });
+      if (error) {
+        console.warn("Expiring contracts query:", error.message);
+        return [] as Contract[];
+      }
+      return (data ?? []) as Contract[];
+    },
+  });
+
+  // Renew a contract: creates a new one based on the existing template
+  const renewContract = useMutation({
+    mutationFn: async ({
+      contractId,
+      durationMonths = 3,
+      newAmount,
+    }: {
+      contractId: string;
+      durationMonths?: number;
+      newAmount?: number;
+    }) => {
+      // Fetch original contract
+      const { data: original, error: fetchError } = await supabase
+        .from("contracts")
+        .select("*")
+        .eq("id", contractId)
+        .single();
+      if (fetchError) throw fetchError;
+
+      const orig = original as Contract;
+      const newStartDate =
+        orig.end_date ?? new Date().toISOString().split("T")[0];
+      const endDate = new Date(newStartDate);
+      endDate.setMonth(endDate.getMonth() + durationMonths);
+
+      // Create renewed contract
+      const { data: renewed, error: createError } = await supabase
+        .from("contracts")
+        .insert({
+          template_id: orig.template_id,
+          client_id: orig.client_id,
+          title: `${orig.title} (Renouvellement)`,
+          content: orig.content,
+          created_by: user!.id,
+          status: "draft" as ContractStatus,
+          amount: newAmount ?? orig.amount,
+          start_date: newStartDate,
+          end_date: endDate.toISOString().split("T")[0],
+          renewal_of: contractId,
+        })
+        .select()
+        .single();
+      if (createError) throw createError;
+
+      // Mark original as renewed
+      await supabase
+        .from("contracts")
+        .update({ status: "renewed" as ContractStatus, renewed_to: renewed.id })
+        .eq("id", contractId);
+
+      return renewed as Contract;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["contracts"] });
+      queryClient.invalidateQueries({ queryKey: ["contracts-expiring"] });
+      toast.success("Contrat renouvele avec succes");
+    },
+    onError: () => {
+      toast.error("Erreur lors du renouvellement du contrat");
+    },
+  });
+
+  return {
+    expiringContracts: expiringQuery.data ?? [],
+    isLoading: expiringQuery.isLoading,
+    renewContract,
   };
 }

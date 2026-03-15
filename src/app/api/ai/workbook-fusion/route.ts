@@ -80,10 +80,7 @@ export async function POST(request: Request) {
       .single();
 
     if (callError || !call) {
-      return NextResponse.json(
-        { error: "Appel introuvable" },
-        { status: 404 },
-      );
+      return NextResponse.json({ error: "Appel introuvable" }, { status: 404 });
     }
 
     // 3. Fetch transcript
@@ -178,8 +175,7 @@ export async function POST(request: Request) {
           metadata: {
             submission_id: submissionId,
             workbook_id: submission.workbook_id,
-            tokens_used:
-              result.usage.input_tokens + result.usage.output_tokens,
+            tokens_used: result.usage.input_tokens + result.usage.output_tokens,
             generation_time_ms: generationTime,
           },
         },

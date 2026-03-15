@@ -73,10 +73,7 @@ export async function POST(request: Request) {
       .single();
 
     if (callError || !call) {
-      return NextResponse.json(
-        { error: "Appel introuvable" },
-        { status: 404 },
-      );
+      return NextResponse.json({ error: "Appel introuvable" }, { status: 404 });
     }
 
     // 2. Fetch transcript
@@ -102,13 +99,19 @@ export async function POST(request: Request) {
     let workbookSubmissions: Array<{
       answers: Record<string, unknown>;
       status: string;
-      workbook: { title: string; module_type: string; fields: unknown[] } | null;
+      workbook: {
+        title: string;
+        module_type: string;
+        fields: unknown[];
+      } | null;
     }> = [];
 
     if (clientId) {
       const { data: submissions } = await supabase
         .from("workbook_submissions")
-        .select("answers, status, workbook:workbooks(title, module_type, fields)")
+        .select(
+          "answers, status, workbook:workbooks(title, module_type, fields)",
+        )
         .eq("client_id", clientId)
         .in("status", ["submitted", "reviewed"])
         .order("created_at", { ascending: false });
@@ -231,9 +234,7 @@ export async function POST(request: Request) {
     const fullText = result.text;
 
     // Parse HTML and Markdown from response
-    const htmlMatch = fullText.match(
-      /<html_output>([\s\S]*?)<\/html_output>/,
-    );
+    const htmlMatch = fullText.match(/<html_output>([\s\S]*?)<\/html_output>/);
     const mdMatch = fullText.match(
       /<markdown_output>([\s\S]*?)<\/markdown_output>/,
     );
@@ -274,8 +275,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       ...doc,
       generation_time_ms: generationTime,
-      tokens_used:
-        result.usage.input_tokens + result.usage.output_tokens,
+      tokens_used: result.usage.input_tokens + result.usage.output_tokens,
       saved: true,
     });
   } catch (error) {

@@ -38,7 +38,13 @@ function TypingIndicator() {
 }
 
 // ─── Single chat bubble ───────────────────────────────────────
-function ChatBubble({ message, isLatest }: { message: ChatMessage; isLatest: boolean }) {
+function ChatBubble({
+  message,
+  isLatest,
+}: {
+  message: ChatMessage;
+  isLatest: boolean;
+}) {
   const isBot = message.role === "bot";
 
   return (
@@ -157,7 +163,13 @@ function ChatChoices({
 }
 
 // ─── CTA button for completion ────────────────────────────────
-function CompletionCTA({ onClick, isLoading }: { onClick: () => void; isLoading: boolean }) {
+function CompletionCTA({
+  onClick,
+  isLoading,
+}: {
+  onClick: () => void;
+  isLoading: boolean;
+}) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
@@ -281,10 +293,7 @@ export function ChatbotOnboarding() {
       </div>
 
       {/* Chat area */}
-      <div
-        ref={scrollRef}
-        className="flex-1 overflow-y-auto px-6 py-6"
-      >
+      <div ref={scrollRef} className="flex-1 overflow-y-auto px-6 py-6">
         <div className="max-w-xl mx-auto flex flex-col gap-4">
           <AnimatePresence mode="sync">
             {messages.map((msg, i) => (

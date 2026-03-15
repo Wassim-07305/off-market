@@ -441,7 +441,9 @@ export function usePipelineReport() {
         entry[src] = (entry[src] ?? 0) + 1;
         sourceMonthMap.set(mKey, entry);
       }
-      const sourcesByMonth: SourceByMonth[] = Array.from(sourceMonthMap.entries())
+      const sourcesByMonth: SourceByMonth[] = Array.from(
+        sourceMonthMap.entries(),
+      )
         .sort(([a], [b]) => a.localeCompare(b))
         .map(([m, sources]) => ({
           month: m,

@@ -1,0 +1,3 @@
+[   26601ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/dashboard?_rsc=970e3:0
+[   26707ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/dashboard?_rsc=yxb8z:0
+[   26939ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/dashboard:0

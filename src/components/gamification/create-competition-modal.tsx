@@ -38,17 +38,18 @@ const competitionSchema = z
     end_date: z.string().min(1, "Date de fin requise"),
     prize_description: z.string().optional(),
   })
-  .refine(
-    (data) => new Date(data.end_date) > new Date(data.start_date),
-    {
-      message: "La date de fin doit etre apres la date de debut",
-      path: ["end_date"],
-    },
-  );
+  .refine((data) => new Date(data.end_date) > new Date(data.start_date), {
+    message: "La date de fin doit etre apres la date de debut",
+    path: ["end_date"],
+  });
 
 type CompetitionFormValues = z.infer<typeof competitionSchema>;
 
-const TYPE_OPTIONS: { value: CompetitionType; label: string; icon: typeof Users }[] = [
+const TYPE_OPTIONS: {
+  value: CompetitionType;
+  label: string;
+  icon: typeof Users;
+}[] = [
   { value: "team_vs_team", label: "Equipe vs Equipe", icon: Users },
   { value: "free_for_all", label: "Tous contre tous", icon: Swords },
 ];
@@ -107,7 +108,8 @@ export function CreateCompetitionModal({
     onClose();
   };
 
-  const selectedMetricConfig = COMPETITION_METRIC_CONFIG[watchedValues.metric ?? "xp"];
+  const selectedMetricConfig =
+    COMPETITION_METRIC_CONFIG[watchedValues.metric ?? "xp"];
 
   return (
     <Modal

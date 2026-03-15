@@ -145,7 +145,9 @@ export function exportTableToPDF(config: {
   columns: { key: string; label: string }[];
   rows: Record<string, unknown>[];
 }) {
-  const thHtml = config.columns.map((c) => `<th>${escapeHtml(c.label)}</th>`).join("");
+  const thHtml = config.columns
+    .map((c) => `<th>${escapeHtml(c.label)}</th>`)
+    .join("");
   const bodyHtml = config.rows
     .map(
       (row) =>

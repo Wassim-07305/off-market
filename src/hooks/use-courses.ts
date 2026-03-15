@@ -89,7 +89,9 @@ export function useCourseMutations() {
       return data as Course;
     },
     onSuccess: invalidate,
-    onError: () => { toast.error("Erreur lors de la création de la formation"); },
+    onError: () => {
+      toast.error("Erreur lors de la création de la formation");
+    },
   });
 
   const updateCourse = useMutation({
@@ -107,7 +109,9 @@ export function useCourseMutations() {
       return data as Course;
     },
     onSuccess: invalidate,
-    onError: () => { toast.error("Erreur lors de la mise à jour de la formation"); },
+    onError: () => {
+      toast.error("Erreur lors de la mise à jour de la formation");
+    },
   });
 
   const deleteCourse = useMutation({
@@ -116,7 +120,9 @@ export function useCourseMutations() {
       if (error) throw error;
     },
     onSuccess: invalidate,
-    onError: () => { toast.error("Erreur lors de la suppression de la formation"); },
+    onError: () => {
+      toast.error("Erreur lors de la suppression de la formation");
+    },
   });
 
   const reorderCourses = useMutation({
@@ -130,7 +136,9 @@ export function useCourseMutations() {
       }
     },
     onSuccess: invalidate,
-    onError: () => { toast.error("Erreur lors du réordonnancement des formations"); },
+    onError: () => {
+      toast.error("Erreur lors du réordonnancement des formations");
+    },
   });
 
   // -------------------------------------------------------------------------
@@ -153,7 +161,9 @@ export function useCourseMutations() {
       return data as Module;
     },
     onSuccess: invalidate,
-    onError: () => { toast.error("Erreur lors de la création du module"); },
+    onError: () => {
+      toast.error("Erreur lors de la création du module");
+    },
   });
 
   const updateModule = useMutation({
@@ -168,7 +178,9 @@ export function useCourseMutations() {
       if (error) throw error;
     },
     onSuccess: invalidate,
-    onError: () => { toast.error("Erreur lors de la mise à jour du module"); },
+    onError: () => {
+      toast.error("Erreur lors de la mise à jour du module");
+    },
   });
 
   const deleteModule = useMutation({
@@ -177,7 +189,9 @@ export function useCourseMutations() {
       if (error) throw error;
     },
     onSuccess: invalidate,
-    onError: () => { toast.error("Erreur lors de la suppression du module"); },
+    onError: () => {
+      toast.error("Erreur lors de la suppression du module");
+    },
   });
 
   const reorderModules = useMutation({
@@ -198,7 +212,9 @@ export function useCourseMutations() {
       }
     },
     onSuccess: invalidate,
-    onError: () => { toast.error("Erreur lors du réordonnancement des modules"); },
+    onError: () => {
+      toast.error("Erreur lors du réordonnancement des modules");
+    },
   });
 
   // -------------------------------------------------------------------------
@@ -224,7 +240,9 @@ export function useCourseMutations() {
       return data as Lesson;
     },
     onSuccess: invalidate,
-    onError: () => { toast.error("Erreur lors de la création de la leçon"); },
+    onError: () => {
+      toast.error("Erreur lors de la création de la leçon");
+    },
   });
 
   const updateLesson = useMutation({
@@ -239,7 +257,9 @@ export function useCourseMutations() {
       if (error) throw error;
     },
     onSuccess: invalidate,
-    onError: () => { toast.error("Erreur lors de la mise à jour de la leçon"); },
+    onError: () => {
+      toast.error("Erreur lors de la mise à jour de la leçon");
+    },
   });
 
   const deleteLesson = useMutation({
@@ -248,7 +268,9 @@ export function useCourseMutations() {
       if (error) throw error;
     },
     onSuccess: invalidate,
-    onError: () => { toast.error("Erreur lors de la suppression de la leçon"); },
+    onError: () => {
+      toast.error("Erreur lors de la suppression de la leçon");
+    },
   });
 
   const reorderLessons = useMutation({
@@ -269,7 +291,9 @@ export function useCourseMutations() {
       }
     },
     onSuccess: invalidate,
-    onError: () => { toast.error("Erreur lors du réordonnancement des leçons"); },
+    onError: () => {
+      toast.error("Erreur lors du réordonnancement des leçons");
+    },
   });
 
   const addAttachment = useMutation({
@@ -296,7 +320,9 @@ export function useCourseMutations() {
       if (error) throw error;
     },
     onSuccess: invalidate,
-    onError: () => { toast.error("Erreur lors de l'ajout de la pièce jointe"); },
+    onError: () => {
+      toast.error("Erreur lors de l'ajout de la pièce jointe");
+    },
   });
 
   const removeAttachment = useMutation({
@@ -323,7 +349,9 @@ export function useCourseMutations() {
       if (error) throw error;
     },
     onSuccess: invalidate,
-    onError: () => { toast.error("Erreur lors de la suppression de la pièce jointe"); },
+    onError: () => {
+      toast.error("Erreur lors de la suppression de la pièce jointe");
+    },
   });
 
   return {
@@ -401,6 +429,8 @@ export function useMarkLessonComplete() {
         metadata: { lesson_id: lessonId },
       });
     },
-    onError: () => { toast.error("Erreur lors de la validation de la leçon"); },
+    onError: () => {
+      toast.error("Erreur lors de la validation de la leçon");
+    },
   });
 }

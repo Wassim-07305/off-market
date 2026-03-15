@@ -316,7 +316,10 @@ export function SmsReminderButton({
                         className="flex items-center gap-2 p-2 rounded-lg bg-muted/30"
                       >
                         <StatusIcon
-                          className={cn("w-3.5 h-3.5 shrink-0", config.className)}
+                          className={cn(
+                            "w-3.5 h-3.5 shrink-0",
+                            config.className,
+                          )}
                         />
                         <div className="flex-1 min-w-0">
                           <p className="text-[11px] text-foreground truncate">

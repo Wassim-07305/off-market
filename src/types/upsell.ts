@@ -23,7 +23,8 @@ export const UPSELL_TRIGGER_TYPE_CONFIG: Record<
 > = {
   revenue_threshold: {
     label: "Seuil de chiffre d'affaires",
-    description: "Declenche quand le client atteint un CA defini (ex: 7000 EUR)",
+    description:
+      "Declenche quand le client atteint un CA defini (ex: 7000 EUR)",
   },
   milestone_completion: {
     label: "Etape atteinte",

@@ -50,7 +50,7 @@ function RitualItem({
     <div
       className={cn(
         "group flex items-center gap-3 rounded-xl border border-border px-4 py-3 transition-all duration-200",
-        completed && "border-green-200 bg-green-50/50 opacity-75"
+        completed && "border-green-200 bg-green-50/50 opacity-75",
       )}
     >
       {/* Checkbox */}
@@ -63,12 +63,22 @@ function RitualItem({
           completed
             ? "border-green-500 bg-green-500 text-white"
             : "border-gray-300 hover:border-primary cursor-pointer",
-          isCompleting && "animate-pulse"
+          isCompleting && "animate-pulse",
         )}
       >
         {completed && (
-          <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+          <svg
+            className="h-3 w-3"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={3}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M5 13l4 4L19 7"
+            />
           </svg>
         )}
       </button>
@@ -78,7 +88,7 @@ function RitualItem({
         <p
           className={cn(
             "text-sm font-medium",
-            completed && "line-through text-muted-foreground"
+            completed && "line-through text-muted-foreground",
           )}
         >
           {ritual.title}
@@ -132,12 +142,15 @@ function AddRitualForm({ onClose }: { onClose: () => void }) {
           setFrequency("quotidien");
           onClose();
         },
-      }
+      },
     );
   };
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-xl border border-dashed border-border p-4 space-y-3">
+    <form
+      onSubmit={handleSubmit}
+      className="rounded-xl border border-dashed border-border p-4 space-y-3"
+    >
       <div className="flex items-center justify-between">
         <p className="text-sm font-medium">Nouveau rituel</p>
         <button
@@ -184,7 +197,8 @@ export function RitualTracker() {
   const completeRitual = useCompleteRitual();
   const deleteRitual = useDeleteRitual();
 
-  const completedCount = rituals?.filter((r) => isCompletedToday(r)).length ?? 0;
+  const completedCount =
+    rituals?.filter((r) => isCompletedToday(r)).length ?? 0;
   const totalCount = rituals?.length ?? 0;
 
   return (
@@ -214,7 +228,10 @@ export function RitualTracker() {
         {isLoading ? (
           <div className="space-y-2">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-14 animate-pulse rounded-xl bg-muted/50" />
+              <div
+                key={i}
+                className="h-14 animate-pulse rounded-xl bg-muted/50"
+              />
             ))}
           </div>
         ) : rituals && rituals.length > 0 ? (

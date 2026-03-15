@@ -71,7 +71,10 @@ export default function OnboardingPage() {
 
   // Sync initial step from progress
   useEffect(() => {
-    if (currentStepIndex > 0 && currentStepIndex < ONBOARDING_STEP_KEYS.length) {
+    if (
+      currentStepIndex > 0 &&
+      currentStepIndex < ONBOARDING_STEP_KEYS.length
+    ) {
       setStep(currentStepIndex);
     }
   }, [currentStepIndex]);
@@ -83,12 +86,21 @@ export default function OnboardingPage() {
       if (!user) return null;
       const { data } = await supabase
         .from("coach_assignments" as never)
-        .select("coach:profiles!coach_assignments_coach_id_fkey(id, full_name, avatar_url, bio)")
+        .select(
+          "coach:profiles!coach_assignments_coach_id_fkey(id, full_name, avatar_url, bio)",
+        )
         .eq("client_id", user.id)
         .eq("status", "active")
         .limit(1)
         .maybeSingle();
-      const row = data as { coach: { id: string; full_name: string; avatar_url: string | null; bio: string | null } } | null;
+      const row = data as {
+        coach: {
+          id: string;
+          full_name: string;
+          avatar_url: string | null;
+          bio: string | null;
+        };
+      } | null;
       return row?.coach ?? null;
     },
     enabled: !!user,
@@ -114,7 +126,10 @@ export default function OnboardingPage() {
   }, [step]);
 
   const handleStepComplete = useCallback(
-    (stepKey: (typeof ONBOARDING_STEP_KEYS)[number], data?: Record<string, unknown>) => {
+    (
+      stepKey: (typeof ONBOARDING_STEP_KEYS)[number],
+      data?: Record<string, unknown>,
+    ) => {
       completeStep.mutate({ stepKey, data });
       goNext();
     },
@@ -169,7 +184,8 @@ export default function OnboardingPage() {
                 Parle-nous de toi
               </h2>
               <p className="mt-2 text-base text-white/40">
-                Ces informations nous permettent de personnaliser ton experience.
+                Ces informations nous permettent de personnaliser ton
+                experience.
               </p>
             </div>
             <AboutYouStep

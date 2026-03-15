@@ -46,8 +46,7 @@ const FEATURES: FeatureItem[] = [
   {
     icon: MessageCircle,
     title: "Messagerie",
-    description:
-      "Communique avec ton coach et la communaute en temps reel.",
+    description: "Communique avec ton coach et la communaute en temps reel.",
     aiExplanation:
       "La messagerie te connecte directement avec ton CSM et les autres membres. Tu peux envoyer des messages, fichiers et vocaux.",
     color: "text-emerald-400",
@@ -55,8 +54,7 @@ const FEATURES: FeatureItem[] = [
   {
     icon: Users,
     title: "Communaute",
-    description:
-      "Echange avec les autres entrepreneurs du programme.",
+    description: "Echange avec les autres entrepreneurs du programme.",
     aiExplanation:
       "Le feed communautaire te permet de partager tes victoires, poser des questions et t'inspirer des succes des autres.",
     color: "text-amber-400",
@@ -64,8 +62,7 @@ const FEATURES: FeatureItem[] = [
   {
     icon: ClipboardCheck,
     title: "Check-ins & Journal",
-    description:
-      "Fais le point chaque semaine et tiens ton journal de bord.",
+    description: "Fais le point chaque semaine et tiens ton journal de bord.",
     aiExplanation:
       "Les check-ins hebdomadaires permettent a ton coach de suivre ta progression. Le journal t'aide a garder le focus.",
     color: "text-rose-400",
@@ -73,8 +70,7 @@ const FEATURES: FeatureItem[] = [
   {
     icon: BarChart3,
     title: "Analytics",
-    description:
-      "Suis l'evolution de tes metriques business en detail.",
+    description: "Suis l'evolution de tes metriques business en detail.",
     aiExplanation:
       "Les graphiques te montrent tes tendances de revenus, ta conversion et tes performances. Chaque semaine, tu vois le progres.",
     color: "text-cyan-400",
@@ -131,7 +127,12 @@ export function FeatureTourStep({ onNext }: FeatureTourStepProps) {
         >
           {/* Feature header */}
           <div className="p-6 pb-4">
-            <div className={cn("w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center mb-4", feature.color)}>
+            <div
+              className={cn(
+                "w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center mb-4",
+                feature.color,
+              )}
+            >
               <Icon className="w-6 h-6" />
             </div>
             <h3 className="text-xl font-bold text-white mb-2">

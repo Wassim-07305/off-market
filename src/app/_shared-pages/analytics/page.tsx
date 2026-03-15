@@ -23,7 +23,12 @@ import {
 } from "@/hooks/use-reports";
 import type { PeriodPreset } from "@/types/analytics";
 
-type AnalyticsTab = "finances" | "appels" | "pipeline" | "engagement" | "avance";
+type AnalyticsTab =
+  | "finances"
+  | "appels"
+  | "pipeline"
+  | "engagement"
+  | "avance";
 
 const TABS: { value: AnalyticsTab; label: string; icon: typeof DollarSign }[] =
   [

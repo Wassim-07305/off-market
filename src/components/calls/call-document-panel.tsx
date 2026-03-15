@@ -92,9 +92,7 @@ export function CallDocumentPanel({ callId }: CallDocumentPanelProps) {
               >
                 {/* Doc header */}
                 <button
-                  onClick={() =>
-                    setExpandedDoc(isExpanded ? null : doc.id)
-                  }
+                  onClick={() => setExpandedDoc(isExpanded ? null : doc.id)}
                   className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-muted/30 transition-colors"
                 >
                   <FileText className="w-4 h-4 text-indigo-500 shrink-0" />
@@ -144,10 +142,9 @@ export function CallDocumentPanel({ callId }: CallDocumentPanelProps) {
                       {doc.content_markdown && (
                         <button
                           onClick={() => {
-                            const blob = new Blob(
-                              [doc.content_markdown!],
-                              { type: "text/markdown" },
-                            );
+                            const blob = new Blob([doc.content_markdown!], {
+                              type: "text/markdown",
+                            });
                             const url = URL.createObjectURL(blob);
                             const a = document.createElement("a");
                             a.href = url;
@@ -216,8 +213,8 @@ export function CallDocumentPanel({ callId }: CallDocumentPanelProps) {
 
       {!hasDocs && !generateFusion.isPending && (
         <p className="text-xs text-muted-foreground text-center py-2">
-          Aucun document genere pour cet appel. Cliquez sur le bouton
-          ci-dessus pour lancer la generation.
+          Aucun document genere pour cet appel. Cliquez sur le bouton ci-dessus
+          pour lancer la generation.
         </p>
       )}
     </div>

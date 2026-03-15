@@ -65,7 +65,9 @@ export function useJournal(options?: { sharedOnly?: boolean }) {
       // Check streaks and award bonus XP if milestones reached
       checkStreakRewards(supabase, user!.id, awardXp);
     },
-    onError: () => { toast.error("Erreur lors de la création de l'entrée"); },
+    onError: () => {
+      toast.error("Erreur lors de la création de l'entrée");
+    },
   });
 
   const updateEntry = useMutation({
@@ -82,7 +84,9 @@ export function useJournal(options?: { sharedOnly?: boolean }) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["journal"] });
     },
-    onError: () => { toast.error("Erreur lors de la mise à jour de l'entrée"); },
+    onError: () => {
+      toast.error("Erreur lors de la mise à jour de l'entrée");
+    },
   });
 
   const deleteEntry = useMutation({
@@ -96,17 +100,13 @@ export function useJournal(options?: { sharedOnly?: boolean }) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["journal"] });
     },
-    onError: () => { toast.error("Erreur lors de la suppression de l'entrée"); },
+    onError: () => {
+      toast.error("Erreur lors de la suppression de l'entrée");
+    },
   });
 
   const toggleShare = useMutation({
-    mutationFn: async ({
-      id,
-      shared,
-    }: {
-      id: string;
-      shared: boolean;
-    }) => {
+    mutationFn: async ({ id, shared }: { id: string; shared: boolean }) => {
       const { error } = await supabase
         .from("journal_entries")
         .update({ shared_with_coach: shared } as never)
@@ -116,9 +116,7 @@ export function useJournal(options?: { sharedOnly?: boolean }) {
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["journal"] });
       toast.success(
-        variables.shared
-          ? "Entree partagee avec ton coach"
-          : "Partage annule",
+        variables.shared ? "Entree partagee avec ton coach" : "Partage annule",
       );
     },
     onError: () => {

@@ -27,7 +27,9 @@ export function useExportTranscriptionPdf(recordingId: string | null) {
 
       const disposition = response.headers.get("Content-Disposition");
       const fileNameMatch = disposition?.match(/filename="(.+?)"/);
-      const fileName = fileNameMatch?.[1] ?? `transcription-${new Date().toISOString().slice(0, 10)}.pdf`;
+      const fileName =
+        fileNameMatch?.[1] ??
+        `transcription-${new Date().toISOString().slice(0, 10)}.pdf`;
 
       const a = document.createElement("a");
       a.href = url;

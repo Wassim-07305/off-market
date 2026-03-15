@@ -53,7 +53,7 @@ export function CourseLockGate({ courseId, children }: CourseLockGateProps) {
                     "text-xs font-medium",
                     prereq.current >= prereq.required
                       ? "text-green-600"
-                      : "text-amber-600"
+                      : "text-amber-600",
                   )}
                 >
                   {prereq.current}% / {prereq.required}%
@@ -67,7 +67,7 @@ export function CourseLockGate({ courseId, children }: CourseLockGateProps) {
                     "h-full rounded-full transition-all duration-500",
                     prereq.current >= prereq.required
                       ? "bg-green-500"
-                      : "bg-amber-500"
+                      : "bg-amber-500",
                   )}
                   style={{
                     width: `${Math.min(prereq.current, 100)}%`,

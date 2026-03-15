@@ -31,21 +31,21 @@ export function MessageTestStep({ onNext }: MessageTestStepProps) {
     setSending(true);
     try {
       // Find or create the default/general channel to send the test message
-      const { data: channels } = await supabase
+      const { data: channels } = (await supabase
         .from("channels")
         .select("id")
         .eq("is_default", true)
-        .limit(1) as { data: { id: string }[] | null };
+        .limit(1)) as { data: { id: string }[] | null };
 
       let channelId: string | null = channels?.[0]?.id ?? null;
 
       // Fallback: find any public channel
       if (!channelId) {
-        const { data: publicChannels } = await supabase
+        const { data: publicChannels } = (await supabase
           .from("channels")
           .select("id")
           .eq("type", "public")
-          .limit(1) as { data: { id: string }[] | null };
+          .limit(1)) as { data: { id: string }[] | null };
         channelId = publicChannels?.[0]?.id ?? null;
       }
 
@@ -57,16 +57,14 @@ export function MessageTestStep({ onNext }: MessageTestStepProps) {
       }
 
       // Ensure user is a member of the channel
-      await supabase
-        .from("channel_members")
-        .upsert(
-          {
-            channel_id: channelId,
-            profile_id: user.id,
-            role: "member",
-          } as never,
-          { onConflict: "channel_id,profile_id" },
-        );
+      await supabase.from("channel_members").upsert(
+        {
+          channel_id: channelId,
+          profile_id: user.id,
+          role: "member",
+        } as never,
+        { onConflict: "channel_id,profile_id" },
+      );
 
       // Send the actual message
       const { error } = await supabase.from("messages").insert({
@@ -134,7 +132,8 @@ export function MessageTestStep({ onNext }: MessageTestStepProps) {
                 <div>
                   <p className="text-[11px] text-white/40 mb-0.5">Alexia</p>
                   <div className="rounded-xl bg-white/10 px-3 py-2 text-sm text-white/70">
-                    Bienvenue dans la communaute ! N&apos;hesite pas a te presenter
+                    Bienvenue dans la communaute ! N&apos;hesite pas a te
+                    presenter
                   </div>
                 </div>
               </div>

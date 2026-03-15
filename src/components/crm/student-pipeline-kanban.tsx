@@ -164,7 +164,12 @@ function StageColumn({
 
   // Count flags
   const flagCounts = useMemo(() => {
-    const counts: Record<string, number> = { green: 0, yellow: 0, orange: 0, red: 0 };
+    const counts: Record<string, number> = {
+      green: 0,
+      yellow: 0,
+      orange: 0,
+      red: 0,
+    };
     for (const s of students) {
       const f = s.student_details?.[0]?.flag ?? "green";
       counts[f] = (counts[f] ?? 0) + 1;
@@ -283,7 +288,8 @@ export function StudentPipelineKanban() {
     const map = new Map<StudentPipelineStage, StudentWithDetails[]>();
     STUDENT_PIPELINE_STAGES.forEach((s) => map.set(s.value, []));
     students.forEach((student) => {
-      const stage = student.student_details?.[0]?.pipeline_stage ?? "onboarding";
+      const stage =
+        student.student_details?.[0]?.pipeline_stage ?? "onboarding";
       const list = map.get(stage);
       if (list) list.push(student);
     });

@@ -25,8 +25,7 @@ const CATEGORY_COLORS: Record<string, string> = {
   support: "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
   onboarding:
     "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300",
-  relance:
-    "bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300",
+  relance: "bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300",
 };
 
 interface TemplatePickerProps {
@@ -110,14 +109,10 @@ export function TemplatePicker({
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "ArrowDown") {
         e.preventDefault();
-        setActiveIndex((i) =>
-          i < displayTemplates.length - 1 ? i + 1 : 0,
-        );
+        setActiveIndex((i) => (i < displayTemplates.length - 1 ? i + 1 : 0));
       } else if (e.key === "ArrowUp") {
         e.preventDefault();
-        setActiveIndex((i) =>
-          i > 0 ? i - 1 : displayTemplates.length - 1,
-        );
+        setActiveIndex((i) => (i > 0 ? i - 1 : displayTemplates.length - 1));
       } else if (e.key === "Enter" && displayTemplates[activeIndex]) {
         e.preventDefault();
         handleSelect(displayTemplates[activeIndex]);
@@ -229,9 +224,7 @@ export function TemplatePicker({
               onClick={() => handleSelect(template)}
               className={cn(
                 "w-full flex items-start gap-3 px-3 py-2.5 text-left transition-colors border-b border-border/10 last:border-0",
-                i === activeIndex
-                  ? "bg-primary/8"
-                  : "hover:bg-muted/50",
+                i === activeIndex ? "bg-primary/8" : "hover:bg-muted/50",
               )}
             >
               <div className="flex-1 min-w-0">

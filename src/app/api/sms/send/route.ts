@@ -70,8 +70,7 @@ export async function POST(req: NextRequest) {
     const twilioData = await twilioResponse.json();
 
     if (!twilioResponse.ok) {
-      const errorMsg =
-        twilioData.message ?? "Erreur lors de l'envoi du SMS";
+      const errorMsg = twilioData.message ?? "Erreur lors de l'envoi du SMS";
 
       // Update reminder status to failed if reminderId provided
       if (reminderId) {

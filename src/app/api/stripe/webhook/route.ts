@@ -120,9 +120,10 @@ export async function POST(req: NextRequest) {
 
     case "charge.refunded": {
       const charge = event.data.object as Stripe.Charge;
-      const paymentIntentId = typeof charge.payment_intent === "string"
-        ? charge.payment_intent
-        : charge.payment_intent?.id;
+      const paymentIntentId =
+        typeof charge.payment_intent === "string"
+          ? charge.payment_intent
+          : charge.payment_intent?.id;
 
       if (paymentIntentId) {
         const { data: invoice } = await supabase

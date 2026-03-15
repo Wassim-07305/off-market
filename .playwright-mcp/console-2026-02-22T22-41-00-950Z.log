@@ -1,0 +1,24 @@
+[   11545ms] [WARNING] The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width. @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_f3530cac._.js:2297
+[   11545ms] [WARNING] The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width. @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_f3530cac._.js:2297
+[   21284ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://srhpdgqqiuzdrlqaitdk.supabase.co/rest/v1/call_calendar?select=*%2Cclient%3Aprofiles%21call_calendar_client_id_fkey%28id%2Cfull_name%2Cavatar_url%29%2Cassigned_profile%3Aprofiles%21call_calendar_assigned_to_fkey%28id%2Cfull_name%29&order=date.asc%2Ctime.asc:0
+[   21284ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://srhpdgqqiuzdrlqaitdk.supabase.co/rest/v1/call_calendar?select=*%2Cclient%3Aprofiles%21call_calendar_client_id_fkey%28id%2Cfull_name%2Cavatar_url%29%2Cassigned_profile%3Aprofiles%21call_calendar_assigned_to_fkey%28id%2Cfull_name%29&order=date.asc%2Ctime.asc&date=gte.2026-02-15&date=lte.2026-02-21:0
+[   22401ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://srhpdgqqiuzdrlqaitdk.supabase.co/rest/v1/call_calendar?select=*%2Cclient%3Aprofiles%21call_calendar_client_id_fkey%28id%2Cfull_name%2Cavatar_url%29%2Cassigned_profile%3Aprofiles%21call_calendar_assigned_to_fkey%28id%2Cfull_name%29&order=date.asc%2Ctime.asc&date=gte.2026-02-15&date=lte.2026-02-21:0
+[   22401ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://srhpdgqqiuzdrlqaitdk.supabase.co/rest/v1/call_calendar?select=*%2Cclient%3Aprofiles%21call_calendar_client_id_fkey%28id%2Cfull_name%2Cavatar_url%29%2Cassigned_profile%3Aprofiles%21call_calendar_assigned_to_fkey%28id%2Cfull_name%29&order=date.asc%2Ctime.asc:0
+[   24490ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://srhpdgqqiuzdrlqaitdk.supabase.co/rest/v1/call_calendar?select=*%2Cclient%3Aprofiles%21call_calendar_client_id_fkey%28id%2Cfull_name%2Cavatar_url%29%2Cassigned_profile%3Aprofiles%21call_calendar_assigned_to_fkey%28id%2Cfull_name%29&order=date.asc%2Ctime.asc&date=gte.2026-02-15&date=lte.2026-02-21:0
+[   24495ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://srhpdgqqiuzdrlqaitdk.supabase.co/rest/v1/call_calendar?select=*%2Cclient%3Aprofiles%21call_calendar_client_id_fkey%28id%2Cfull_name%2Cavatar_url%29%2Cassigned_profile%3Aprofiles%21call_calendar_assigned_to_fkey%28id%2Cfull_name%29&order=date.asc%2Ctime.asc:0
+[   28625ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://srhpdgqqiuzdrlqaitdk.supabase.co/rest/v1/call_calendar?select=*%2Cclient%3Aprofiles%21call_calendar_client_id_fkey%28id%2Cfull_name%2Cavatar_url%29%2Cassigned_profile%3Aprofiles%21call_calendar_assigned_to_fkey%28id%2Cfull_name%29&order=date.asc%2Ctime.asc&date=gte.2026-02-15&date=lte.2026-02-21:0
+[   28625ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://srhpdgqqiuzdrlqaitdk.supabase.co/rest/v1/call_calendar?select=*%2Cclient%3Aprofiles%21call_calendar_client_id_fkey%28id%2Cfull_name%2Cavatar_url%29%2Cassigned_profile%3Aprofiles%21call_calendar_assigned_to_fkey%28id%2Cfull_name%29&order=date.asc%2Ctime.asc:0
+[   47922ms] [WARNING] The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width. @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_f3530cac._.js:2297
+[   47922ms] [WARNING] The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width. @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_f3530cac._.js:2297

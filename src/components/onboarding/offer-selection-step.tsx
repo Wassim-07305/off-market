@@ -19,7 +19,10 @@ import {
   FileSignature,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useOnboardingOffers, useSelectOffer } from "@/hooks/use-onboarding-offers";
+import {
+  useOnboardingOffers,
+  useSelectOffer,
+} from "@/hooks/use-onboarding-offers";
 
 // ─── Module display config ───────────────────────────────────
 const MODULE_LABELS: Record<string, { label: string; icon: typeof Check }> = {
@@ -157,7 +160,12 @@ export function OfferSelectionStep({ onNext }: OfferSelectionStepProps) {
 
               {/* Header */}
               <div className="flex items-center justify-between mb-3">
-                <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center", style.iconBg)}>
+                <div
+                  className={cn(
+                    "w-10 h-10 rounded-xl flex items-center justify-center",
+                    style.iconBg,
+                  )}
+                >
                   {isPremium ? (
                     <Crown className="w-5 h-5" />
                   ) : offer.slug === "growth" ? (
@@ -197,10 +205,7 @@ export function OfferSelectionStep({ onNext }: OfferSelectionStepProps) {
                   if (!config) return null;
                   const Icon = config.icon;
                   return (
-                    <div
-                      key={mod}
-                      className="flex items-center gap-2.5"
-                    >
+                    <div key={mod} className="flex items-center gap-2.5">
                       <div className="w-5 h-5 rounded-md bg-white/[0.06] flex items-center justify-center shrink-0">
                         <Icon className="w-3 h-3 text-white/50" />
                       </div>

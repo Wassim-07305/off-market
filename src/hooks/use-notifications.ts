@@ -3,8 +3,12 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import type { Notification, NotificationCategory } from "@/types/database";
+import {
+  useNotificationSound,
+  isUrgentNotification,
+} from "./use-notification-sound";
 
 interface UseNotificationsOptions {
   category?: NotificationCategory;
@@ -15,6 +19,9 @@ export function useNotifications(options?: UseNotificationsOptions) {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const category = options?.category;
+  const { playSound } = useNotificationSound();
+  const playSoundRef = useRef(playSound);
+  playSoundRef.current = playSound;
 
   const notificationsQuery = useQuery({
     queryKey: ["notifications", { category }],
@@ -51,7 +58,19 @@ export function useNotifications(options?: UseNotificationsOptions) {
           table: "notifications",
           filter: `recipient_id=eq.${user.id}`,
         },
-        () => queryClient.invalidateQueries({ queryKey: ["notifications"] }),
+        (payload) => {
+          queryClient.invalidateQueries({ queryKey: ["notifications"] });
+
+          // Jouer un son uniquement pour les nouvelles notifications (INSERT)
+          if (payload.eventType === "INSERT") {
+            const newNotif = payload.new as Notification;
+            const urgent = isUrgentNotification(
+              newNotif.type,
+              newNotif.category,
+            );
+            playSoundRef.current(urgent ? "urgent" : "normal");
+          }
+        },
       )
       .subscribe();
 

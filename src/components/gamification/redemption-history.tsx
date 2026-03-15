@@ -8,13 +8,7 @@ import {
   REDEMPTION_STATUS_CONFIG,
 } from "@/types/gamification";
 import type { RewardType, RedemptionStatus } from "@/types/gamification";
-import {
-  Clock,
-  CheckCircle,
-  XCircle,
-  Coins,
-  History,
-} from "lucide-react";
+import { Clock, CheckCircle, XCircle, Coins, History } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const STATUS_ICONS: Record<RedemptionStatus, React.ElementType> = {

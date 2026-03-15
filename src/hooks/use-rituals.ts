@@ -53,7 +53,7 @@ function isRitualDueToday(ritual: Ritual): boolean {
     const lastDate = new Date(
       lastCompleted.getFullYear(),
       lastCompleted.getMonth(),
-      lastCompleted.getDate()
+      lastCompleted.getDate(),
     );
 
     if (ritual.frequency === "quotidien") {
@@ -120,7 +120,7 @@ export function useTodayRituals() {
   const todayRituals = useMemo(() => {
     if (!rituals) return [];
     return rituals.filter(
-      (r) => r.is_active && (isRitualDueToday(r) || isCompletedToday(r))
+      (r) => r.is_active && (isRitualDueToday(r) || isCompletedToday(r)),
     );
   }, [rituals]);
 

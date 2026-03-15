@@ -150,8 +150,8 @@ export function PreCallQuestions({
         <div className="bg-zinc-900/80 rounded-2xl border border-white/5 p-5 space-y-2">
           <label className="flex items-center gap-2 text-sm font-medium text-white">
             <Target className="w-4 h-4 text-amber-500" />
-            Quel est l&apos;objectif de cet appel / quel probleme veux-tu resoudre ?
-            <span className="text-red-400">*</span>
+            Quel est l&apos;objectif de cet appel / quel probleme veux-tu
+            resoudre ?<span className="text-red-400">*</span>
           </label>
           <p className="text-[11px] text-zinc-500">
             Quel probleme voulez-vous resoudre ou quel sujet souhaitez-vous

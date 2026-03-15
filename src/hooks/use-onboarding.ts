@@ -104,7 +104,8 @@ export function useOnboarding() {
           .eq("id", user.id)
           .single();
 
-        let coachId = (profileData as { assigned_coach?: string } | null)?.assigned_coach;
+        let coachId = (profileData as { assigned_coach?: string } | null)
+          ?.assigned_coach;
 
         // Fallback: check coach_assignments table
         if (!coachId) {
@@ -126,7 +127,8 @@ export function useOnboarding() {
             .eq("type", "dm");
 
           const hasDm = (existingChannels ?? []).some((ch) => {
-            const members = (ch.channel_members as Array<{ profile_id: string }>) ?? [];
+            const members =
+              (ch.channel_members as Array<{ profile_id: string }>) ?? [];
             return members.some((m) => m.profile_id === coachId);
           });
 
@@ -166,7 +168,8 @@ export function useOnboarding() {
           .eq("role", "admin");
 
         if (admins?.length) {
-          const userName = user.user_metadata?.full_name ?? user.email ?? "Un utilisateur";
+          const userName =
+            user.user_metadata?.full_name ?? user.email ?? "Un utilisateur";
           await supabase.from("notifications").insert(
             admins.map((admin) => ({
               profile_id: admin.id,
@@ -265,14 +268,17 @@ export function useOnboardingProgress(userId?: string) {
         .select("*")
         .eq("user_id", targetId);
       if (error) throw error;
-      return (data ?? []) as Array<{ id: string; user_id: string; step: string; completed_at: string | null }>;
+      return (data ?? []) as Array<{
+        id: string;
+        user_id: string;
+        step: string;
+        completed_at: string | null;
+      }>;
     },
     enabled: !!targetId,
   });
 
-  const completedKeys = new Set(
-    (stepsQuery.data ?? []).map((s) => s.step),
-  );
+  const completedKeys = new Set((stepsQuery.data ?? []).map((s) => s.step));
 
   const currentStepIndex = ONBOARDING_STEP_KEYS.findIndex(
     (key) => !completedKeys.has(key),
@@ -281,7 +287,8 @@ export function useOnboardingProgress(userId?: string) {
   return {
     steps: stepsQuery.data ?? [],
     completedKeys,
-    currentStepIndex: currentStepIndex === -1 ? ONBOARDING_STEP_KEYS.length : currentStepIndex,
+    currentStepIndex:
+      currentStepIndex === -1 ? ONBOARDING_STEP_KEYS.length : currentStepIndex,
     isAllComplete: currentStepIndex === -1,
     isLoading: stepsQuery.isLoading,
   };
@@ -312,13 +319,11 @@ export function useCompleteStep() {
 
       if (existing) return; // Already done
 
-      const { error } = await supabase
-        .from("onboarding_progress")
-        .insert({
-          user_id: user.id,
-          step: stepKey,
-          completed_at: new Date().toISOString(),
-        });
+      const { error } = await supabase.from("onboarding_progress").insert({
+        user_id: user.id,
+        step: stepKey,
+        completed_at: new Date().toISOString(),
+      });
       if (error) throw error;
     },
     onSuccess: () => {
@@ -392,13 +397,11 @@ export function useOnboardingForm() {
         .maybeSingle();
 
       if (!existing) {
-        const { error } = await supabase
-          .from("onboarding_progress")
-          .insert({
-            user_id: user.id,
-            step: "about_you",
-            completed_at: new Date().toISOString(),
-          });
+        const { error } = await supabase.from("onboarding_progress").insert({
+          user_id: user.id,
+          step: "about_you",
+          completed_at: new Date().toISOString(),
+        });
         if (error) throw error;
       }
 

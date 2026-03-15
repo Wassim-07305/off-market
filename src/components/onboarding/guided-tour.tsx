@@ -135,29 +135,17 @@ function TooltipArrow({ position }: { position: TourPosition }) {
   const base = "absolute w-3 h-3 bg-white dark:bg-stone-900 rotate-45";
   switch (position) {
     case "right":
-      return (
-        <div
-          className={cn(base, "-left-1.5 top-1/2 -translate-y-1/2")}
-        />
-      );
+      return <div className={cn(base, "-left-1.5 top-1/2 -translate-y-1/2")} />;
     case "left":
       return (
-        <div
-          className={cn(base, "-right-1.5 top-1/2 -translate-y-1/2")}
-        />
+        <div className={cn(base, "-right-1.5 top-1/2 -translate-y-1/2")} />
       );
     case "top":
       return (
-        <div
-          className={cn(base, "-bottom-1.5 left-1/2 -translate-x-1/2")}
-        />
+        <div className={cn(base, "-bottom-1.5 left-1/2 -translate-x-1/2")} />
       );
     case "bottom":
-      return (
-        <div
-          className={cn(base, "-top-1.5 left-1/2 -translate-x-1/2")}
-        />
-      );
+      return <div className={cn(base, "-top-1.5 left-1/2 -translate-x-1/2")} />;
   }
 }
 
@@ -334,9 +322,7 @@ export function GuidedTour({
           ref={tooltipRef}
           className={cn(
             "absolute z-[10000] transition-all duration-300 ease-in-out",
-            isVisible
-              ? "opacity-100 translate-y-0"
-              : "opacity-0 translate-y-2",
+            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2",
           )}
           style={{
             top: tooltipPos.top,

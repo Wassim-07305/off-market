@@ -117,11 +117,7 @@ export function FinancialTab({ range }: FinancialTabProps) {
           changeLabel="vs periode"
           icon={DollarSign}
         />
-        <StatCard
-          title="MRR"
-          value={fmt(data.mrr)}
-          icon={TrendingUp}
-        />
+        <StatCard title="MRR" value={fmt(data.mrr)} icon={TrendingUp} />
         <StatCard
           title="En attente"
           value={fmt(data.pendingAmount)}

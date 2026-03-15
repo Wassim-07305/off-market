@@ -3,10 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { fadeInUp, defaultTransition } from "@/lib/animations";
-import {
-  useManageRewards,
-  usePendingRedemptions,
-} from "@/hooks/use-rewards";
+import { useManageRewards, usePendingRedemptions } from "@/hooks/use-rewards";
 import {
   REWARD_TYPE_CONFIG,
   REDEMPTION_STATUS_CONFIG,
@@ -57,13 +54,8 @@ const EMPTY_FORM: RewardFormData = {
 };
 
 export function AdminRewards() {
-  const {
-    rewards,
-    isLoading,
-    createReward,
-    updateReward,
-    toggleActive,
-  } = useManageRewards();
+  const { rewards, isLoading, createReward, updateReward, toggleActive } =
+    useManageRewards();
   const {
     redemptions,
     isLoading: redemptionsLoading,
@@ -149,9 +141,7 @@ export function AdminRewards() {
               const profile = redemption.profile;
               const reward = redemption.reward;
               const statusConfig =
-                REDEMPTION_STATUS_CONFIG[
-                  redemption.status as RedemptionStatus
-                ];
+                REDEMPTION_STATUS_CONFIG[redemption.status as RedemptionStatus];
 
               return (
                 <div
@@ -198,9 +188,7 @@ export function AdminRewards() {
                   {/* Actions */}
                   <div className="flex items-center gap-1.5 shrink-0">
                     <button
-                      onClick={() =>
-                        fulfillRedemption.mutate(redemption.id)
-                      }
+                      onClick={() => fulfillRedemption.mutate(redemption.id)}
                       disabled={fulfillRedemption.isPending}
                       className="h-8 px-3 rounded-lg bg-emerald-500/10 text-emerald-600 text-xs font-medium hover:bg-emerald-500/20 transition-colors flex items-center gap-1.5"
                       title="Marquer comme rempli"
@@ -209,9 +197,7 @@ export function AdminRewards() {
                       Rempli
                     </button>
                     <button
-                      onClick={() =>
-                        cancelRedemption.mutate(redemption.id)
-                      }
+                      onClick={() => cancelRedemption.mutate(redemption.id)}
                       disabled={cancelRedemption.isPending}
                       className="h-8 px-2 rounded-lg text-muted-foreground hover:bg-muted hover:text-error transition-colors"
                       title="Annuler"
@@ -245,10 +231,7 @@ export function AdminRewards() {
         {isLoading ? (
           <div className="space-y-2">
             {[...Array(3)].map((_, i) => (
-              <div
-                key={i}
-                className="h-16 bg-muted animate-pulse rounded-xl"
-              />
+              <div key={i} className="h-16 bg-muted animate-pulse rounded-xl" />
             ))}
           </div>
         ) : rewards.length === 0 ? (

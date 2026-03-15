@@ -100,7 +100,8 @@ export function MessageBubble({
         isFirstInGroup ? "pt-2" : "pt-0.5",
         showActions && "bg-muted/30",
         isOptimistic && "opacity-50",
-        message.is_urgent && "bg-red-50 dark:bg-red-950/20 border-l-3 border-l-red-500 pl-3",
+        message.is_urgent &&
+          "bg-red-50 dark:bg-red-950/20 border-l-3 border-l-red-500 pl-3",
       )}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -287,7 +288,9 @@ export function MessageBubble({
             )}
             title={isBookmarked ? "Retirer le signet" : "Ajouter un signet"}
           >
-            <Bookmark className={cn("w-3.5 h-3.5", isBookmarked && "fill-primary")} />
+            <Bookmark
+              className={cn("w-3.5 h-3.5", isBookmarked && "fill-primary")}
+            />
           </button>
         )}
         {isOwn && (

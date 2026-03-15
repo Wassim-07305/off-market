@@ -110,20 +110,16 @@ export function useSendUnipileMessage() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({
-      chatId,
-      text,
-    }: {
-      chatId: string;
-      text: string;
-    }) => {
+    mutationFn: async ({ chatId, text }: { chatId: string; text: string }) => {
       const res = await fetch(`/api/unipile/chats/${chatId}/messages`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text }),
       });
       if (!res.ok) {
-        const body = await res.json().catch(() => ({ error: "Erreur inconnue" }));
+        const body = await res
+          .json()
+          .catch(() => ({ error: "Erreur inconnue" }));
         throw new Error(body.error ?? `Erreur ${res.status}`);
       }
       return res.json();

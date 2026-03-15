@@ -69,7 +69,11 @@ export function useLeadMagnetStats() {
     queryKey: ["lead-magnet-stats"],
     queryFn: async (): Promise<LeadMagnetStats> => {
       const now = new Date();
-      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+      const startOfMonth = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        1,
+      ).toISOString();
 
       // Total all time (count only)
       const { count: totalAllTime, error: totalErr } = await supabase
@@ -98,14 +102,23 @@ export function useLeadMagnetStats() {
 
       if (scoreErr) throw scoreErr;
 
-      const scores = (scoreRows ?? []).map((r: { qualification_score: number }) => r.qualification_score);
+      const scores = (scoreRows ?? []).map(
+        (r: { qualification_score: number }) => r.qualification_score,
+      );
       const avgScore =
         scores.length > 0
           ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length)
           : 0;
 
       // By stage — separate count queries
-      const stages = ["prospect", "qualifie", "proposition", "closing", "client", "perdu"];
+      const stages = [
+        "prospect",
+        "qualifie",
+        "proposition",
+        "closing",
+        "client",
+        "perdu",
+      ];
       const stageCounts = await Promise.all(
         stages.map(async (stage) => {
           const { count, error: sErr } = await supabase

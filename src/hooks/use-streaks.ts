@@ -63,7 +63,9 @@ export function useStreak() {
       queryClient.invalidateQueries({ queryKey: ["streak"] });
       queryClient.invalidateQueries({ queryKey: ["daily-activity"] });
     },
-    onError: () => { toast.error("Erreur lors de l'enregistrement de l'activité"); },
+    onError: () => {
+      toast.error("Erreur lors de l'enregistrement de l'activité");
+    },
   });
 
   return {

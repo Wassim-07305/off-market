@@ -35,7 +35,11 @@ export function useCreateWebhook() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (params: { name: string; url: string; events: string[] }) => {
+    mutationFn: async (params: {
+      name: string;
+      url: string;
+      events: string[];
+    }) => {
       const res = await fetch("/api/admin/webhooks", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -73,7 +77,13 @@ export function useToggleWebhook() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ id, is_active }: { id: string; is_active: boolean }) => {
+    mutationFn: async ({
+      id,
+      is_active,
+    }: {
+      id: string;
+      is_active: boolean;
+    }) => {
       const res = await fetch("/api/admin/webhooks", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
