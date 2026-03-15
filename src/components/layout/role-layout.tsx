@@ -5,6 +5,8 @@ import { Header } from "@/components/layout/header";
 import { RoleMobileNav } from "@/components/layout/role-mobile-nav";
 import { CommandPalette } from "@/components/layout/command-palette";
 import { NotificationPanel } from "@/components/layout/notification-panel";
+import { GuidedTour } from "@/components/onboarding/guided-tour";
+import { useGuidedTour } from "@/hooks/use-guided-tour";
 import { useAuth } from "@/hooks/use-auth";
 import { useUIStore } from "@/stores/ui-store";
 import { cn } from "@/lib/utils";
@@ -19,6 +21,7 @@ interface RoleLayoutProps {
 export function RoleLayout({ variant, children }: RoleLayoutProps) {
   const { sidebarCollapsed } = useUIStore();
   const { loading } = useAuth();
+  const tour = useGuidedTour(variant);
 
   // Gate: don't render page content until auth is ready
   // This prevents hooks from firing queries before the Supabase client has a valid session
@@ -45,6 +48,17 @@ export function RoleLayout({ variant, children }: RoleLayoutProps) {
       <RoleMobileNav variant={variant} />
       <CommandPalette />
       <NotificationPanel />
+
+      {/* Guided tour overlay */}
+      <GuidedTour
+        isActive={tour.isActive}
+        currentStep={tour.currentStep}
+        currentStepIndex={tour.currentStepIndex}
+        totalSteps={tour.totalSteps}
+        onNext={tour.nextStep}
+        onPrev={tour.prevStep}
+        onSkip={tour.skipTour}
+      />
     </div>
   );
 }

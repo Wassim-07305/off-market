@@ -32,7 +32,7 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
           ? "Sales"
           : "Client";
 
-  // Map nav item names to data-tour attributes for walkthrough
+  // Map nav item names to data-tour attributes for guided tour
   const tourMap: Record<string, string> = {
     Dashboard: "dashboard",
     Formation: "school",
@@ -40,6 +40,36 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
     Feed: "community",
     "Check-in": "checkin",
     "Check-ins": "checkin",
+    CRM: "crm",
+    Clients: "clients",
+    Appels: "calls",
+    Facturation: "billing",
+    Analytics: "analytics",
+    Journal: "journal",
+    Communaute: "community",
+    Pipeline: "pipeline",
+    Formulaires: "forms",
+    "Assistant IA": "ai",
+    Invitations: "invitations",
+    Ressources: "resources",
+    Recompenses: "rewards",
+    Moderation: "moderation",
+    Seances: "sessions",
+    Alertes: "alerts",
+    Disponibilites: "availability",
+    Contrats: "contracts",
+    Factures: "invoices",
+    Objectifs: "goals",
+    Certificats: "certificates",
+    Progression: "progress",
+    Defis: "challenges",
+    Classement: "leaderboard",
+    Roadmap: "roadmap",
+    "Hall of Fame": "hall-of-fame",
+    Reserver: "booking",
+    Audit: "audit",
+    "FAQ / Base IA": "faq",
+    Upsell: "upsell",
   };
 
   return (
