@@ -13,6 +13,16 @@ export async function GET(request: NextRequest) {
     return redirectToSettings(request, "error", "admin");
   }
 
+  // Verify the authenticated user matches the state parameter
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user || user.id !== state) {
+    return redirectToSettings(request, "error", "admin");
+  }
+
   try {
     const oauth2Client = createOAuth2Client();
     const { tokens } = await oauth2Client.getToken(code);

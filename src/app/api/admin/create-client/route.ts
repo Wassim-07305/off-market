@@ -91,5 +91,5 @@ export async function POST(request: Request) {
     }
   }
 
-  return NextResponse.json({ user: newUser.user, tempPassword });
+  return NextResponse.json({ success: true, userId: newUser.user?.id });
 }

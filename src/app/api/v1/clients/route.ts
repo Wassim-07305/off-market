@@ -23,14 +23,20 @@ export async function GET(request: Request) {
     .from("clients")
     .select("id, full_name, email, phone, tag, status, created_at, updated_at", { count: "exact" });
 
-  if (search) query = query.or(`full_name.ilike.%${search}%,email.ilike.%${search}%`);
+  if (search) {
+    const sanitized = search.replace(/[%,.()\[\]{}|\\\/'"`;:!@#$^&*+=<>?~]/g, "");
+    if (sanitized) query = query.or(`full_name.ilike.%${sanitized}%,email.ilike.%${sanitized}%`);
+  }
   if (tag) query = query.eq("tag", tag);
 
   const { data, error: dbError, count } = await query
     .order("created_at", { ascending: false })
     .range(offset, offset + limit - 1);
 
-  if (dbError) return NextResponse.json({ error: dbError.message }, { status: 500 });
+  if (dbError) {
+    console.error("v1/clients error:", dbError);
+    return NextResponse.json({ error: "Erreur interne" }, { status: 500 });
+  }
 
   return NextResponse.json({
     data,
@@ -65,7 +71,10 @@ export async function POST(request: Request) {
     .select()
     .single();
 
-  if (dbError) return NextResponse.json({ error: dbError.message }, { status: 500 });
+  if (dbError) {
+    console.error("v1/clients error:", dbError);
+    return NextResponse.json({ error: "Erreur interne" }, { status: 500 });
+  }
 
   // Dispatch webhook
   dispatchWebhook("client.created", { client: data }).catch(() => {});

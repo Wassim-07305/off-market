@@ -38,6 +38,17 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Non autorise" }, { status: 401 });
   }
 
+  // Only admin and coach can generate call summaries
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+
+  if (!profile || !["admin", "coach"].includes(profile.role)) {
+    return NextResponse.json({ error: "Acces refuse" }, { status: 403 });
+  }
+
   const { callId } = await request.json();
 
   if (!callId) {

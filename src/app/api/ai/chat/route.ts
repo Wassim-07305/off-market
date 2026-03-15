@@ -144,10 +144,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ response: result.text });
   } catch (error) {
     console.error("AI chat error:", error);
-    const message =
-      error instanceof Error
-        ? error.message
-        : "Erreur lors de la communication avec l'IA. Veuillez reessayer.";
-    return NextResponse.json({ response: message }, { status: 200 });
+    return NextResponse.json(
+      { error: "Erreur lors de la communication avec l'IA. Veuillez reessayer." },
+      { status: 500 },
+    );
   }
 }

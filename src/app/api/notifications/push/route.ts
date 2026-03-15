@@ -14,7 +14,7 @@ export async function POST(request: Request) {
   const authHeader = request.headers.get("authorization");
   const cronSecret = process.env.CRON_SECRET;
 
-  const isAuthorizedCron = cronSecret && authHeader === `Bearer ${cronSecret}`;
+  const isAuthorizedCron = !!cronSecret && authHeader === `Bearer ${cronSecret}`;
 
   if (!isAuthorizedCron) {
     // Check if caller is admin via service role

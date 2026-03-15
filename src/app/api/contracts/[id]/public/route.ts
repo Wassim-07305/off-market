@@ -14,7 +14,7 @@ export async function GET(
     const { data: contract, error } = await supabase
       .from("contracts")
       .select(
-        "id, title, content, status, signature_image, signature_data, signed_at, created_at, expires_at, client:profiles!contracts_client_id_fkey(id, full_name, email, avatar_url)",
+        "id, title, content, status, signature_image, signature_data, signed_at, created_at, expires_at, client:profiles!contracts_client_id_fkey(id, full_name)",
       )
       .eq("id", id)
       .single();
