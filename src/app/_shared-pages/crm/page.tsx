@@ -8,12 +8,14 @@ import {
   Kanban,
   Clock,
   Users,
+  Magnet,
 } from "lucide-react";
 import { PipelineKanban } from "@/components/crm/pipeline-kanban";
 import { PipelineTimeline } from "@/components/crm/pipeline-timeline";
 import { CsmDashboard } from "@/components/crm/csm-dashboard";
+import { LeadMagnetStats } from "@/components/leads/lead-magnet-stats";
 
-type CrmView = "pipeline" | "timeline" | "coach";
+type CrmView = "pipeline" | "timeline" | "coach" | "leads";
 
 export default function CRMPage() {
   const [view, setView] = useState<CrmView>("pipeline");
@@ -39,7 +41,9 @@ export default function CRMPage() {
               ? "Pipeline commercial"
               : view === "coach"
                 ? "Vue par coach / CSM"
-                : "Activite recente"}
+                : view === "leads"
+                  ? "Leads entrants & qualification"
+                  : "Activite recente"}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -53,6 +57,7 @@ export default function CRMPage() {
                 { key: "pipeline" as const, label: "Pipeline", icon: Kanban },
                 { key: "timeline" as const, label: "Timeline", icon: Clock },
                 { key: "coach" as const, label: "Par Coach", icon: Users },
+                { key: "leads" as const, label: "Leads", icon: Magnet },
               ] as const
             ).map((v) => {
               const Icon = v.icon;
@@ -76,7 +81,7 @@ export default function CRMPage() {
         </div>
       </motion.div>
 
-      {/* Pipeline / Timeline / Coach view */}
+      {/* Pipeline / Timeline / Coach / Leads view */}
       {view === "timeline" ? (
         <motion.div variants={staggerItem}>
           <PipelineTimeline />
@@ -88,6 +93,10 @@ export default function CRMPage() {
               setView("pipeline");
             }}
           />
+        </motion.div>
+      ) : view === "leads" ? (
+        <motion.div variants={staggerItem}>
+          <LeadMagnetStats />
         </motion.div>
       ) : (
         <motion.div variants={staggerItem}>

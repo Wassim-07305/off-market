@@ -19,7 +19,20 @@ const createEventSchema = z.object({
   end_date: z.string().optional(),
   end_time: z.string().optional(),
   color: z.string(),
-});
+}).refine(
+  (data) => {
+    if (data.end_date && data.end_time) {
+      const start = new Date(`${data.start_date}T${data.start_time}`);
+      const end = new Date(`${data.end_date}T${data.end_time}`);
+      return end > start;
+    }
+    return true;
+  },
+  {
+    message: "La date de fin doit etre posterieure a la date de debut",
+    path: ["end_time"],
+  },
+);
 
 type CreateEventFormData = z.infer<typeof createEventSchema>;
 
@@ -81,7 +94,11 @@ export function CreateEventModal({
       .from("profiles")
       .select("id, full_name, email, avatar_url, role")
       .order("full_name")
-      .then(({ data }) => {
+      .then(({ data, error }) => {
+        if (error) {
+          console.error("Erreur chargement des profils :", error.message);
+          return;
+        }
         if (data) setProfiles(data as Profile[]);
       });
   }, [open, supabase]);
@@ -213,8 +230,15 @@ export function CreateEventModal({
             <input
               type="time"
               {...register("end_time")}
-              className="w-full h-10 px-3 rounded-xl border border-border bg-white text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              className={cn(
+                "w-full h-10 px-3 rounded-xl border bg-white text-sm transition-colors",
+                "focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary",
+                errors.end_time ? "border-red-300" : "border-border",
+              )}
             />
+            {errors.end_time && (
+              <p className="text-xs text-red-500 mt-1">{errors.end_time.message}</p>
+            )}
           </div>
         </div>
 

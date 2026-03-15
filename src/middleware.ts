@@ -31,7 +31,7 @@ export async function middleware(request: NextRequest) {
 
     if (!result.allowed) {
       return NextResponse.json(
-        { error: "Too Many Requests" },
+        { error: "Trop de requetes, veuillez reessayer plus tard" },
         {
           status: 429,
           headers: {

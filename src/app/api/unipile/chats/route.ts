@@ -1,8 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 
-const UNIPILE_BASE = "https://api33.unipile.com:16338/api/v1";
+const UNIPILE_BASE = process.env.UNIPILE_BASE_URL ?? "https://api33.unipile.com:16338";
 
 export async function GET(request: NextRequest) {
+  // Auth check
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ error: "Non authentifie" }, { status: 401 });
+  }
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+  if (!profile || !["admin", "coach"].includes(profile.role)) {
+    return NextResponse.json({ error: "Acces refuse" }, { status: 403 });
+  }
+
   const apiKey = process.env.UNIPILE_API_KEY;
   if (!apiKey) {
     return NextResponse.json(
@@ -23,15 +39,14 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const url = `${UNIPILE_BASE}/chats?account_id=${encodeURIComponent(accountId)}&limit=${encodeURIComponent(limit)}`;
+    const url = `${UNIPILE_BASE}/api/v1/chats?account_id=${encodeURIComponent(accountId)}&limit=${encodeURIComponent(limit)}`;
     const res = await fetch(url, {
       headers: { "X-API-KEY": apiKey },
     });
 
     if (!res.ok) {
-      const text = await res.text();
       return NextResponse.json(
-        { error: `Unipile error: ${res.status} — ${text}` },
+        { error: "Erreur lors du chargement des conversations" },
         { status: res.status },
       );
     }

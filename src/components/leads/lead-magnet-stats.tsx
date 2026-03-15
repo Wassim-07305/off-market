@@ -265,7 +265,7 @@ export function LeadMagnetStats() {
                       className={cn(
                         "text-xs font-medium px-2 py-0.5 rounded-full",
                         stageConfig
-                          ? `${stageConfig.color} bg-current/10`
+                          ? `${stageConfig.color} bg-muted`
                           : "text-muted-foreground",
                       )}
                     >

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 import { cn, getInitials, formatCurrency } from "@/lib/utils";
@@ -120,8 +121,25 @@ export default function AdminCsmPage() {
   };
 
   const handleAutoAssignAll = async () => {
-    for (const client of unassignedClients) {
-      await autoAssign.mutateAsync({ clientId: client.id });
+    const results = await Promise.all(
+      unassignedClients.map((client) =>
+        autoAssign
+          .mutateAsync({ clientId: client.id })
+          .then(() => ({ success: true }))
+          .catch(() => ({ success: false })),
+      ),
+    );
+    const successes = results.filter((r) => r.success).length;
+    const failures = results.length - successes;
+    if (failures > 0) {
+      toast.error(
+        `${failures} assignation${failures > 1 ? "s" : ""} en echec sur ${results.length}`,
+      );
+    }
+    if (successes > 0) {
+      toast.success(
+        `${successes} client${successes > 1 ? "s" : ""} assigne${successes > 1 ? "s" : ""} avec succes`,
+      );
     }
   };
 

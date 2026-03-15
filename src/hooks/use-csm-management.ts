@@ -289,30 +289,36 @@ export function useBulkAssign() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const sb = supabase as any;
 
-      for (const clientId of clientIds) {
-        // End existing active assignment
-        await sb
-          .from("coach_assignments")
-          .update({ status: "ended", updated_at: new Date().toISOString() })
-          .eq("client_id", clientId)
-          .eq("status", "active");
+      // End all existing active assignments for these clients
+      const { error: endErr } = await sb
+        .from("coach_assignments")
+        .update({ status: "ended", updated_at: new Date().toISOString() })
+        .in("client_id", clientIds)
+        .eq("status", "active");
 
-        // Create new assignment
-        const { error } = await sb.from("coach_assignments").insert({
-          client_id: clientId,
-          coach_id: coachId,
-          status: "active",
-          assigned_by: user?.id ?? null,
-        });
+      if (endErr) throw endErr;
 
-        if (error) throw error;
+      // Create new assignments in batch
+      const newAssignments = clientIds.map((clientId) => ({
+        client_id: clientId,
+        coach_id: coachId,
+        status: "active",
+        assigned_by: user?.id ?? null,
+      }));
 
-        // Update student_details
-        await sb
-          .from("student_details")
-          .update({ assigned_coach: coachId })
-          .eq("profile_id", clientId);
-      }
+      const { error: insertErr } = await sb
+        .from("coach_assignments")
+        .upsert(newAssignments);
+
+      if (insertErr) throw insertErr;
+
+      // Update student_details in batch
+      const { error: sdErr } = await sb
+        .from("student_details")
+        .update({ assigned_coach: coachId })
+        .in("profile_id", clientIds);
+
+      if (sdErr) throw sdErr;
     },
     onSuccess: (_data, variables) => {
       toast.success(

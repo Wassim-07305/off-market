@@ -59,39 +59,38 @@ export function useCalendarEvents(rangeStart: Date, rangeEnd: Date) {
     queryKey: ["calendar-events", startISO, endISO],
     enabled: !!user,
     queryFn: async () => {
-      // 1. Fetch sessions in range
-      const { data: rawSessions } = await supabase
-        .from("sessions")
-        .select(
-          "id, title, scheduled_at, duration_minutes, status, session_type, client:profiles!sessions_client_id_fkey(full_name)",
-        )
-        .gte("scheduled_at", startISO)
-        .lte("scheduled_at", endISO)
-        .neq("status", "cancelled");
+      // Fetch sessions, calls, and custom events in parallel
+      const [sessionsResult, callsResult, customResult] = await Promise.all([
+        // 1. Sessions in range
+        supabase
+          .from("sessions")
+          .select(
+            "id, title, scheduled_at, duration_minutes, status, session_type, client:profiles!sessions_client_id_fkey(full_name)",
+          )
+          .gte("scheduled_at", startISO)
+          .lte("scheduled_at", endISO)
+          .neq("status", "cancelled"),
+        // 2. Calls in range
+        supabase
+          .from("call_calendar")
+          .select(
+            "id, title, date, time, duration_minutes, status, call_type, client:profiles!call_calendar_client_id_fkey(full_name)",
+          )
+          .gte("date", startDate)
+          .lte("date", endDate)
+          .neq("status", "annule"),
+        // 3. Custom calendar events
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (supabase as any)
+          .from("calendar_events")
+          .select("*")
+          .gte("start_at", startISO)
+          .lte("start_at", endISO),
+      ]);
 
-      const sessions = (rawSessions ?? []) as unknown as SessionRow[];
-
-      // 2. Fetch calls in range
-      const { data: rawCalls } = await supabase
-        .from("call_calendar")
-        .select(
-          "id, title, date, time, duration_minutes, status, call_type, client:profiles!call_calendar_client_id_fkey(full_name)",
-        )
-        .gte("date", startDate)
-        .lte("date", endDate)
-        .neq("status", "annule");
-
-      const calls = (rawCalls ?? []) as unknown as CallRow[];
-
-      // 3. Fetch custom calendar events
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data: rawCustom } = await (supabase as any)
-        .from("calendar_events")
-        .select("*")
-        .gte("start_at", startISO)
-        .lte("start_at", endISO);
-
-      const customEvents = (rawCustom ?? []) as unknown as CalendarEventRow[];
+      const sessions = (sessionsResult.data ?? []) as unknown as SessionRow[];
+      const calls = (callsResult.data ?? []) as unknown as CallRow[];
+      const customEvents = (customResult.data ?? []) as unknown as CalendarEventRow[];
 
       const merged: CalendarEvent[] = [];
 

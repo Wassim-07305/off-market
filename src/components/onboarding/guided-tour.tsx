@@ -40,8 +40,8 @@ function getTargetRect(selector: string): TargetRect | null {
   if (!el) return null;
   const rect = el.getBoundingClientRect();
   return {
-    top: rect.top + window.scrollY,
-    left: rect.left + window.scrollX,
+    top: rect.top,
+    left: rect.left,
     width: rect.width,
     height: rect.height,
   };
@@ -56,14 +56,11 @@ function computeTooltipPosition(
   const vw = window.innerWidth;
   const vh = window.innerHeight;
 
-  // Viewport-relative target rect
-  const tTop = targetRect.top - window.scrollY;
-  const tLeft = targetRect.left - window.scrollX;
-
-  const spaceTop = tTop;
-  const spaceBottom = vh - (tTop + targetRect.height);
-  const spaceLeft = tLeft;
-  const spaceRight = vw - (tLeft + targetRect.width);
+  // targetRect is already viewport-relative (from getBoundingClientRect)
+  const spaceTop = targetRect.top;
+  const spaceBottom = vh - (targetRect.top + targetRect.height);
+  const spaceLeft = targetRect.left;
+  const spaceRight = vw - (targetRect.left + targetRect.width);
 
   // Try preferred position, then fallback
   const order: TourPosition[] = [preferred];
@@ -174,10 +171,13 @@ export function GuidedTour({
   onPrev,
   onSkip,
 }: GuidedTourProps) {
+  const [mounted, setMounted] = useState(false);
   const [targetRect, setTargetRect] = useState<TargetRect | null>(null);
   const [tooltipPos, setTooltipPos] = useState<TooltipPosition | null>(null);
   const [isVisible, setIsVisible] = useState(false);
   const tooltipRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => setMounted(true), []);
 
   // Find target element and compute position
   const recalculate = useCallback(() => {
@@ -278,7 +278,7 @@ export function GuidedTour({
     return () => window.removeEventListener("keydown", handler);
   }, [isActive, onNext, onPrev, onSkip]);
 
-  if (!isActive || !currentStep) return null;
+  if (!mounted || !isActive || !currentStep) return null;
 
   // Spotlight cutout values (for box-shadow technique)
   const spotlightStyle = targetRect

@@ -152,11 +152,15 @@ export function UnifiedInbox() {
 
   const handleSend = useCallback(async () => {
     if (!messageInput.trim() || !selectedChatId) return;
-    await sendMessage.mutateAsync({
-      chatId: selectedChatId,
-      text: messageInput.trim(),
-    });
-    setMessageInput("");
+    try {
+      await sendMessage.mutateAsync({
+        chatId: selectedChatId,
+        text: messageInput.trim(),
+      });
+      setMessageInput("");
+    } catch {
+      // L'erreur est geree par la mutation (onError)
+    }
   }, [messageInput, selectedChatId, sendMessage]);
 
   const handleKeyDown = useCallback(

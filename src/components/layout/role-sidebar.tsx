@@ -70,6 +70,8 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
     Audit: "audit",
     "FAQ / Base IA": "faq",
     Upsell: "upsell",
+    Calendrier: "calendar",
+    "Equipe CSM": "csm",
   };
 
   return (

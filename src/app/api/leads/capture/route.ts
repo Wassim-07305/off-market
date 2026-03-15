@@ -3,17 +3,17 @@ import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 const captureSchema = z.object({
-  full_name: z.string().min(2, "Le nom est requis"),
-  email: z.string().email("Email invalide"),
-  phone: z.string().optional().default(""),
-  company: z.string().optional().default(""),
+  full_name: z.string().min(2, "Le nom est requis").max(200, "Nom trop long"),
+  email: z.string().email("Email invalide").max(320, "Email trop long"),
+  phone: z.string().max(30, "Numero trop long").optional().default(""),
+  company: z.string().max(200, "Nom d'entreprise trop long").optional().default(""),
   revenue_range: z.enum([
     "less_5k",
     "5k_10k",
     "10k_20k",
     "20k_plus",
   ]),
-  goals: z.string().optional().default(""),
+  goals: z.string().max(2000, "Texte trop long").optional().default(""),
 });
 
 function calculateQualificationScore(data: z.infer<typeof captureSchema>): number {
@@ -75,10 +75,11 @@ export async function POST(request: Request) {
       .eq("email", data.email)
       .maybeSingle();
 
+    // Return generic success to prevent email enumeration
     if (existing) {
       return NextResponse.json(
-        { error: "Un contact avec cet email existe deja" },
-        { status: 409 },
+        { success: true, id: existing.id, score: 0 },
+        { status: 201 },
       );
     }
 

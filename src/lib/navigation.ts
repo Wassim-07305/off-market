@@ -22,6 +22,7 @@ import {
   Phone,
   Send,
   CalendarCheck,
+  Calendar,
   Clock,
   Kanban,
   Shield,
@@ -32,6 +33,7 @@ import {
   Star,
   Map,
   TrendingUp,
+  UserCog,
   type LucideIcon,
 } from "lucide-react";
 
@@ -59,6 +61,8 @@ export const adminNavigation: NavItem[] = [
   { name: "Ressources", href: "/admin/resources", icon: FolderOpen },
   { name: "Recompenses", href: "/admin/rewards", icon: Gift },
   { name: "Moderation", href: "/admin/moderation", icon: Shield },
+  { name: "Calendrier", href: "/admin/calendar", icon: Calendar },
+  { name: "Equipe CSM", href: "/admin/csm", icon: UserCog },
   { name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
   { name: "Audit", href: "/admin/audit", icon: ClipboardCheck },
   { name: "FAQ / Base IA", href: "/admin/faq", icon: BookOpen },
@@ -77,6 +81,7 @@ export const coachNavigation: NavItem[] = [
   { name: "Alertes", href: "/coach/alerts", icon: Bell },
   { name: "Seances", href: "/coach/sessions", icon: Video },
   { name: "Appels", href: "/coach/calls", icon: Phone },
+  { name: "Calendrier", href: "/coach/calendar", icon: Calendar },
   { name: "Ressources", href: "/coach/resources", icon: FolderOpen },
   { name: "Disponibilites", href: "/coach/settings/availability", icon: Clock },
 ];
