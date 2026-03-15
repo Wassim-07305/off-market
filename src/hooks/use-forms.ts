@@ -3,6 +3,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
+import { useAwardXp } from "./use-auto-xp";
+import { toast } from "sonner";
 import type { Form, FormField, FormSubmission } from "@/types/database";
 
 export function useForms(status?: string) {
@@ -75,6 +77,7 @@ export function useFormSubmissions(formId: string) {
 export function useFormMutations() {
   const supabase = useSupabase();
   const queryClient = useQueryClient();
+  const awardXp = useAwardXp();
 
   const createForm = useMutation({
     mutationFn: async (form: {
@@ -141,6 +144,20 @@ export function useFormMutations() {
         answers,
       });
       if (error) throw error;
+      return formId;
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["form-submissions"] });
+      toast.success("Formulaire soumis !");
+
+      // Award XP for completing a workbook/form
+      awardXp.mutate({
+        action: "complete_workbook",
+        metadata: { form_id: variables.formId },
+      });
+    },
+    onError: () => {
+      toast.error("Erreur lors de la soumission du formulaire");
     },
   });
 

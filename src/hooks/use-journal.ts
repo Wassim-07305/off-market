@@ -3,6 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
+import { useAwardXp } from "./use-auto-xp";
 import { toast } from "sonner";
 import type { JournalEntry, Mood } from "@/types/coaching";
 
@@ -10,6 +11,7 @@ export function useJournal(options?: { sharedOnly?: boolean }) {
   const supabase = useSupabase();
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const awardXp = useAwardXp();
 
   const entriesQuery = useQuery({
     queryKey: ["journal", user?.id, options?.sharedOnly],
@@ -56,6 +58,12 @@ export function useJournal(options?: { sharedOnly?: boolean }) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["journal"] });
       toast.success("Entree ajoutee !");
+
+      // Award XP for journal entry
+      awardXp.mutate({ action: "journal_entry" });
+
+      // Check streaks and award bonus XP if milestones reached
+      checkStreakRewards(supabase, user!.id, awardXp);
     },
     onError: () => { toast.error("Erreur lors de la création de l'entrée"); },
   });
@@ -149,6 +157,39 @@ export function useJournal(options?: { sharedOnly?: boolean }) {
     toggleShare,
     uploadMedia,
   };
+}
+
+// ─── Streak → XP reward helper ───────────────────────────────────
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function checkStreakRewards(supabase: any, userId: string, awardXp: any) {
+  try {
+    const { data: streak } = await supabase
+      .from("streaks")
+      .select("current_streak")
+      .eq("profile_id", userId)
+      .maybeSingle();
+    if (!streak) return;
+
+    const days = streak.current_streak;
+
+    // 7-day streak bonus
+    if (days === 7) {
+      awardXp.mutate({
+        action: "streak_7d",
+        metadata: { streak_days: 7 },
+      });
+    }
+
+    // 30-day streak bonus
+    if (days === 30) {
+      awardXp.mutate({
+        action: "streak_30d",
+        metadata: { streak_days: 30 },
+      });
+    }
+  } catch {
+    // Silently ignore streak check errors
+  }
 }
 
 // ─── Coach view: entries shared by assigned clients ──────────────

@@ -5,6 +5,7 @@ import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
 import { toast } from "sonner";
 import type { OnboardingStep } from "@/types/billing";
+import { autoAssignCSM } from "@/lib/csm-auto-assign";
 
 // ─── Step keys for the enhanced onboarding flow ──────────────────
 export const ONBOARDING_STEP_KEYS = [
@@ -96,13 +97,27 @@ export function useOnboarding() {
 
       // Auto-action: create a welcome DM channel with the assigned coach
       try {
+        // First try profiles.assigned_coach (set by autoAssignCSM)
         const { data: profileData } = await supabase
           .from("profiles")
           .select("assigned_coach")
           .eq("id", user.id)
           .single();
 
-        const coachId = (profileData as { assigned_coach?: string } | null)?.assigned_coach;
+        let coachId = (profileData as { assigned_coach?: string } | null)?.assigned_coach;
+
+        // Fallback: check coach_assignments table
+        if (!coachId) {
+          const { data: assignment } = await supabase
+            .from("coach_assignments")
+            .select("coach_id")
+            .eq("client_id", user.id)
+            .eq("status", "active")
+            .order("assigned_at", { ascending: false })
+            .limit(1)
+            .maybeSingle();
+          coachId = (assignment as { coach_id?: string } | null)?.coach_id;
+        }
         if (coachId) {
           // Check if DM channel already exists
           const { data: existingChannels } = await supabase
@@ -386,9 +401,18 @@ export function useOnboardingForm() {
           });
         if (error) throw error;
       }
+
+      // Auto-assign a CSM/coach based on the client's business type
+      try {
+        await autoAssignCSM(supabase, user.id, formData.business_type);
+      } catch {
+        // Non-critical — onboarding should not fail because of auto-assignment
+        console.warn("[onboarding] Auto-assign CSM skipped");
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["onboarding-steps"] });
+      queryClient.invalidateQueries({ queryKey: ["coach-assignments"] });
       toast.success("Informations enregistrees !");
     },
     onError: () => {

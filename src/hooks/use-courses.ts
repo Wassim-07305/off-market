@@ -3,6 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
+import { useAwardXp } from "./use-auto-xp";
 import { toast } from "sonner";
 import type {
   Course,
@@ -373,6 +374,7 @@ export function useMarkLessonComplete() {
   const supabase = useSupabase();
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const awardXp = useAwardXp();
 
   return useMutation({
     mutationFn: async (lessonId: string) => {
@@ -388,9 +390,16 @@ export function useMarkLessonComplete() {
         { onConflict: "lesson_id,student_id" },
       );
       if (error) throw error;
+      return lessonId;
     },
-    onSuccess: () => {
+    onSuccess: (_data, lessonId) => {
       queryClient.invalidateQueries({ queryKey: ["lesson-progress"] });
+
+      // Award XP for completing a lesson/module
+      awardXp.mutate({
+        action: "complete_module",
+        metadata: { lesson_id: lessonId },
+      });
     },
     onError: () => { toast.error("Erreur lors de la validation de la leçon"); },
   });

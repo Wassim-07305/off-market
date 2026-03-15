@@ -34,6 +34,7 @@ import {
   Map,
   TrendingUp,
   UserCog,
+  Palette,
   type LucideIcon,
 } from "lucide-react";
 
@@ -53,6 +54,7 @@ export const adminNavigation: NavItem[] = [
   { name: "Formulaires", href: "/admin/forms", icon: FileText },
   { name: "Facturation", href: "/admin/billing", icon: CreditCard },
 
+  { name: "Contenu", href: "/admin/content", icon: Palette },
   { name: "Feed", href: "/admin/feed", icon: Rss },
   { name: "Appels", href: "/admin/calls", icon: Phone },
   { name: "Disponibilites", href: "/admin/settings/availability", icon: Clock },
@@ -75,6 +77,7 @@ export const coachNavigation: NavItem[] = [
   { name: "CRM", href: "/coach/crm", icon: Users },
   { name: "Messagerie", href: "/coach/messaging", icon: MessageSquare },
   { name: "Formation", href: "/coach/school", icon: GraduationCap },
+  { name: "Contenu", href: "/coach/content", icon: Palette },
   { name: "Feed", href: "/coach/feed", icon: Rss },
   { name: "Communaute", href: "/coach/community", icon: Users },
   { name: "Check-ins", href: "/coach/checkins", icon: ClipboardCheck },

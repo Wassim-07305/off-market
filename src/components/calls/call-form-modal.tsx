@@ -5,6 +5,10 @@ import { X, Loader2, Phone, Trash2, CalendarClock, Star, Video } from "lucide-re
 import { toast } from "sonner";
 import { useCalls } from "@/hooks/use-calls";
 import { useSupabase } from "@/hooks/use-supabase";
+import {
+  triggerRoadmapGeneration,
+  isFirstCompletedCall,
+} from "@/lib/auto-roadmap-trigger";
 import { useRoutePrefix } from "@/hooks/use-route-prefix";
 import Link from "next/link";
 import {
@@ -128,6 +132,27 @@ export function CallFormModal({
           notes: notes || null,
         });
         toast.success("Appel modifie");
+
+        // Auto-generate roadmap when call becomes "realise" and client has no roadmap yet
+        if (
+          status === "realise" &&
+          editCall.status !== "realise" &&
+          clientId
+        ) {
+          const isFirst = await isFirstCompletedCall(supabase, editCall.id, clientId);
+          if (isFirst) {
+            triggerRoadmapGeneration(supabase, editCall.id, clientId).then(
+              (generated) => {
+                if (generated) {
+                  const name = editCall.client?.full_name ?? "ce client";
+                  toast.success(
+                    `Roadmap personnalisee generee pour ${name}`,
+                  );
+                }
+              },
+            );
+          }
+        }
       } else {
         await createCall.mutateAsync({
           title,

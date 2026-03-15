@@ -19,8 +19,12 @@ Format de sortie en Markdown :
 ## Actions en cours
 - Suivi des action items des sessions precedentes
 
+## Progression des objectifs
+- Resume de la progression sur les objectifs actifs
+- Objectifs en retard ou a risque
+
 ## Signaux d'alerte
-- Points d'attention (desengagement, retard paiement, etc.)
+- Points d'attention (desengagement, retard paiement, objectif en retard, etc.)
 
 Regles :
 - Sois factuel, base-toi uniquement sur les donnees fournies
@@ -69,6 +73,7 @@ export async function POST(request: Request) {
       flagHistoryRes,
       notesRes,
       tasksRes,
+      goalsRes,
     ] = await Promise.all([
       // 1. Student profile
       supabase
@@ -121,6 +126,14 @@ export async function POST(request: Request) {
         .eq("student_id", clientId)
         .order("created_at", { ascending: false })
         .limit(10),
+      // 8. Active coaching goals
+      supabase
+        .from("coaching_goals")
+        .select("title, description, target_value, current_value, unit, status, deadline")
+        .eq("client_id", clientId)
+        .eq("status", "active")
+        .order("created_at", { ascending: false })
+        .limit(10),
     ]);
 
     const profile = profileRes.data;
@@ -137,6 +150,7 @@ export async function POST(request: Request) {
     const flagHistory = flagHistoryRes.data ?? [];
     const notes = notesRes.data ?? [];
     const tasks = tasksRes.data ?? [];
+    const activeGoals = goalsRes.data ?? [];
 
     // Fetch call notes for recent calls
     let callNotes: Array<{ call_id: string; summary: string | null; next_steps: string | null; action_items: unknown[] }> = [];
@@ -231,6 +245,28 @@ export async function POST(request: Request) {
       userPrompt += `\n## Taches en cours\n`;
       for (const task of tasks) {
         userPrompt += `- [${task.status}] ${task.title} (priorite: ${task.priority}${task.due_date ? `, echeance: ${task.due_date}` : ""})\n`;
+      }
+    }
+
+    // Active coaching goals
+    if (activeGoals.length > 0) {
+      userPrompt += `\n## Objectifs de coaching actifs (${activeGoals.length})\n`;
+      for (const goal of activeGoals) {
+        const progress =
+          goal.target_value && goal.target_value > 0
+            ? Math.round((goal.current_value / goal.target_value) * 100)
+            : null;
+        const deadlineStr = goal.deadline
+          ? `, echeance: ${goal.deadline.split("T")[0]}`
+          : "";
+        const progressStr =
+          progress !== null
+            ? ` — ${goal.current_value}/${goal.target_value} ${goal.unit ?? ""} (${progress}%)`
+            : "";
+        userPrompt += `- **${goal.title}**${progressStr}${deadlineStr}\n`;
+        if (goal.description) {
+          userPrompt += `  ${goal.description}\n`;
+        }
       }
     }
 
