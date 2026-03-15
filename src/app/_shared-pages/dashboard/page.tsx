@@ -6,11 +6,9 @@ import { EngagementChart } from "@/components/dashboard/engagement-chart";
 import { ActivityFeed } from "@/components/dashboard/activity-feed";
 import { TopStudents } from "@/components/dashboard/top-students";
 import { AIInsightsCard } from "@/components/dashboard/ai-insights-card";
-import { StreakWidget } from "@/components/dashboard/streak-widget";
 import { KpiGoalsWidget } from "@/components/dashboard/kpi-goals";
 import { ConversionFunnel } from "@/components/dashboard/conversion-funnel";
-import { OnboardingBanner } from "@/components/onboarding/onboarding-banner";
-import { OnboardingChecklist } from "@/components/onboarding/onboarding-checklist";
+import { ClientDashboard } from "@/components/dashboard/client-dashboard";
 import { useDashboardStats } from "@/hooks/use-dashboard-stats";
 import { useAuth } from "@/hooks/use-auth";
 import { Users, DollarSign, GraduationCap, CalendarCheck } from "lucide-react";
@@ -18,13 +16,24 @@ import { motion } from "framer-motion";
 import {
   staggerContainer,
   staggerItem,
-  defaultTransition,
 } from "@/lib/animations";
 
 export default function DashboardPage() {
-  const { stats, isLoading } = useDashboardStats();
   const { profile } = useAuth();
   const isClient = profile?.role === "client";
+
+  // Clients get the enhanced dedicated dashboard
+  if (isClient) {
+    return <ClientDashboard />;
+  }
+
+  return <StaffDashboard />;
+}
+
+// ─── Staff / Admin / Coach dashboard (unchanged) ────────────────
+
+function StaffDashboard() {
+  const { stats, isLoading } = useDashboardStats();
 
   const formatRevenue = (amount: number) => {
     if (amount === 0) return "0 EUR";
@@ -47,13 +56,6 @@ export default function DashboardPage() {
           Vue d&apos;ensemble de ton activite
         </p>
       </motion.div>
-
-      {/* Onboarding banner (clients only) */}
-      {isClient && (
-        <motion.div variants={staggerItem}>
-          <OnboardingBanner />
-        </motion.div>
-      )}
 
       {/* Stats cards */}
       <motion.div
@@ -110,23 +112,14 @@ export default function DashboardPage() {
         <EngagementChart />
       </motion.div>
 
-      {/* KPI & Funnel (staff only) */}
-      {!isClient && (
-        <motion.div
-          variants={staggerItem}
-          className="grid grid-cols-1 lg:grid-cols-2 gap-6"
-        >
-          <KpiGoalsWidget />
-          <ConversionFunnel />
-        </motion.div>
-      )}
-
-      {/* Onboarding checklist (clients only) */}
-      {isClient && (
-        <motion.div variants={staggerItem}>
-          <OnboardingChecklist />
-        </motion.div>
-      )}
+      {/* KPI & Funnel */}
+      <motion.div
+        variants={staggerItem}
+        className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+      >
+        <KpiGoalsWidget />
+        <ConversionFunnel />
+      </motion.div>
 
       {/* Bottom section */}
       <motion.div
@@ -135,7 +128,7 @@ export default function DashboardPage() {
       >
         <ActivityFeed />
         <TopStudents />
-        {isClient ? <StreakWidget /> : <AIInsightsCard />}
+        <AIInsightsCard />
       </motion.div>
     </motion.div>
   );

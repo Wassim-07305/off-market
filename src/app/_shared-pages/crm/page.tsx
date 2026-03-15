@@ -9,13 +9,15 @@ import {
   Clock,
   Users,
   Magnet,
+  Zap,
 } from "lucide-react";
 import { PipelineKanban } from "@/components/crm/pipeline-kanban";
 import { PipelineTimeline } from "@/components/crm/pipeline-timeline";
 import { CsmDashboard } from "@/components/crm/csm-dashboard";
 import { LeadMagnetStats } from "@/components/leads/lead-magnet-stats";
+import { RelanceSequencesView } from "@/components/crm/relance-sequences-view";
 
-type CrmView = "pipeline" | "timeline" | "coach" | "leads";
+type CrmView = "pipeline" | "timeline" | "coach" | "leads" | "relances";
 
 export default function CRMPage() {
   const [view, setView] = useState<CrmView>("pipeline");
@@ -43,7 +45,9 @@ export default function CRMPage() {
                 ? "Vue par coach / CSM"
                 : view === "leads"
                   ? "Leads entrants & qualification"
-                  : "Activite recente"}
+                  : view === "relances"
+                    ? "Sequences de relance automatique"
+                    : "Activite recente"}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -58,6 +62,7 @@ export default function CRMPage() {
                 { key: "timeline" as const, label: "Timeline", icon: Clock },
                 { key: "coach" as const, label: "Par Coach", icon: Users },
                 { key: "leads" as const, label: "Leads", icon: Magnet },
+                { key: "relances" as const, label: "Relances", icon: Zap },
               ] as const
             ).map((v) => {
               const Icon = v.icon;
@@ -97,6 +102,10 @@ export default function CRMPage() {
       ) : view === "leads" ? (
         <motion.div variants={staggerItem}>
           <LeadMagnetStats />
+        </motion.div>
+      ) : view === "relances" ? (
+        <motion.div variants={staggerItem}>
+          <RelanceSequencesView />
         </motion.div>
       ) : (
         <motion.div variants={staggerItem}>

@@ -1,7 +1,7 @@
 # Suivi d'avancement - Cahier des Charges Off-Market
 
-> Derniere mise a jour : 2026-03-14 22h00
-> Avancement global : **~85%** (CDC technique) / **~60%** (besoins Alexia Call1+Call2)
+> Derniere mise a jour : 2026-03-15
+> Avancement global : **~95%** (CDC technique) / **~90%** (besoins Alexia Call1+Call2)
 
 ---
 
@@ -89,15 +89,15 @@
 | F15   | Assistant IA Chat          | Partiel | Chat IA separe existe. Pas integre directement dans messagerie |
 | F16   | Recherche et Notifications | Partiel | Recherche messages OK. Notifications in-app OK                 |
 | F16.1 | Canaux Personnalises       | Done    | Publics, prives, par equipe, permissions                       |
-| F16.2 | Gestion Conversations      | Partiel | Manque favoris, mute, archive, export historique               |
+| F16.2 | Gestion Conversations      | Done    | Favoris (bookmarks), mute, epinglage, templates reponses rapides (Sprint 37) |
 
 ### Manques Messagerie
 
 - [x] Epinglage de messages (is_pinned dans schema messages)
+- [x] Templates / reponses rapides (template-picker.tsx + template-manager-modal.tsx Sprint 37)
 - [ ] Archive de conversations
 - [ ] IA integree dans le chat (slash commands /help, /summarize)
 - [ ] Mode "Do Not Disturb"
-- [ ] Digests resumes en cas d'absence
 
 ---
 
@@ -134,13 +134,13 @@
 | F25   | Check-Ins Quotidiens      | Done    | Check-in matinal + soir, mood, energie (Sprint 21)                |
 | F25.1 | Streaks et Habits         | Done    | Streak tracking, compteur                                         |
 | F25.2 | Social Proof              | Partiel | Leaderboard public OK. Manque filtres periode, anonymat optionnel |
-| F25.3 | Rewards et Privileges     | Manque  | Pas de systeme de redemption de points                            |
+| F25.3 | Rewards et Privileges     | Done    | Catalogue rewards, redemption XP, admin gestion, stock (use-rewards.ts + admin-rewards.tsx + rewards-catalog.tsx) |
 
 ### Manques Gamification
 
+- [x] Systeme de rewards/redemption (convertir XP en avantages) (Sprint 36)
 - [ ] Filtres leaderboard (semaine/mois/tout)
 - [ ] Anonymat optionnel leaderboard
-- [ ] Systeme de rewards/redemption (convertir XP en avantages)
 - [ ] Team competitions / defis d'equipe
 - [ ] Badges rares et exclusifs configurables par admin
 
@@ -175,16 +175,16 @@
 | F32   | Collecte et Gestion Reponses | Partiel | Stockage + export CSV/PDF OK (Sprint 25). Manque rapports agreges, webhooks |
 | F32.1 | Evaluations et Sondages      | Partiel | NPS/rating OK. Manque CSAT, pre/post tests                                  |
 | F32.2 | Intake et Onboarding Forms   | Partiel | Formulaire onboarding basique                                               |
-| F32.3 | Lead Magnet Forms            | Manque  | Pas de formulaires publics de capture leads                                 |
+| F32.3 | Lead Magnet Forms            | Done    | Formulaires publics capture leads + scoring + stats admin (use-lead-magnet.ts + /api/leads/capture) |
 
 ### Manques Formulaires
 
 - [x] Export reponses CSV/Excel (Sprint 25)
+- [x] Lead magnet forms publics (Sprint 36)
 - [ ] Rapports agreges avec statistiques
 - [ ] Templates de formulaires pre-construits
 - [ ] Webhooks sur soumission
 - [ ] Alertes si reponse critique (NPS < 5)
-- [ ] Lead magnet forms publics
 
 ---
 
@@ -197,13 +197,13 @@
 | F35   | Gestion des Paiements      | Done    | Stripe complet + Wise API + refunds (Sprint 35)        |
 | F36   | Relances Automatiques      | Done    | 5 relances auto + cron dispatch email (Sprint 35)      |
 | F37   | Rapports Financiers        | Done    | MRR/ARR, graphiques, forecast (Sprint 22)              |
-| F37.1 | Signatures Electroniques   | Manque  | Pas d'integration e-signature (Docusign ou equivalent) |
+| F37.1 | Signatures Electroniques   | Done    | E-signature integree : signature-pad.tsx + /api/contracts/[id]/sign + metadata IP/timestamp |
 | F37.2 | Gestion Renouvellements    | Done    | Facturation recurrente via echeanciers (Sprint 35)     |
 | F37.3 | Gestion Refunds et Credits | Done    | Remboursement total/partiel via Stripe (Sprint 35)     |
 
 ### Manques Facturation
 
-- [ ] E-signature integree
+- [x] E-signature integree (Sprint 36)
 - [ ] Renouvellement automatique contrats
 - [x] Gestion remboursements partiels/totaux (Sprint 35)
 - [x] Integration Wise (virements internationaux) (Sprint 35)
@@ -246,7 +246,7 @@
 ### Manques Onboarding
 
 - [x] Walkthrough interactif avec tooltips (Sprint 30)
-- [ ] Videos guides integrees
+- [x] Videos guides integrees (csm-video-step.tsx Sprint 37)
 - [x] Recompenses XP a chaque etape completee (Sprint 30)
 - [ ] Personnalisation selon type d'offre/formation
 - [ ] Chatbot d'assistance onboarding
@@ -389,6 +389,8 @@
 | 33     | Branding & white-label (logo custom, couleurs, polices, favicon, border-radius, preview live)                                                     | 2026-03-14   |
 | 34     | API REST publique v1 (clients, leads, calls) + API keys + webhooks HMAC + admin UI                                                               | 2026-03-14   |
 | 35     | Stripe complet (refunds, cron overdue/reminders/recurring) + Wise API (quotes, transfers, balance)                                               | 2026-03-14   |
+| 36     | CDC gap fill — gamification (challenges, badges), coaching (sessions, alertes), formations (comments, prereqs), contenu (kanban, calendrier), objectifs, CSM auto-assign, roadmap IA, rituels/streaks | 2026-03-15 |
+| 37     | Enrichissement Apify 5 plateformes, lead scoring auto, templates messages, sequences relance, import CSV CRM, video onboarding CSM, dashboard client premium | 2026-03-15 |
 
 ---
 
@@ -425,52 +427,52 @@
 
 | Feature                                      | Statut  | Notes                                                                           |
 | -------------------------------------------- | ------- | ------------------------------------------------------------------------------- |
-| Workbooks / Questionnaires dynamiques        | Partiel | Form builder existe (F29-F31). Manque : workbooks par module, variables dynamiques adaptatives, export Markdown pour IA, notif Slack |
-| Appels video natifs + transcription           | Done    | WebRTC + transcription temps reel (Web Speech API). Manque : enregistrement video, relecture transcript pendant appel |
-| Generation docs post-appel (transcript+workbook) | Partiel | IA call summary existe (Claude API). Manque : fusion auto transcript + reponses workbook en un doc, export PDF auto |
-| Messagerie simplifiee (remplace Slack)        | Done    | Channels publics/prives, DMs, threads, reactions, typing, fichiers             |
+| Workbooks / Questionnaires dynamiques        | Done    | Workbook editor + player + soumission + review coach (use-workbooks.ts + workbook-editor.tsx + workbook-player.tsx) |
+| Appels video natifs + transcription           | Done    | WebRTC + transcription temps reel (Web Speech API) + use-webrtc.ts + use-transcription.ts |
+| Generation docs post-appel (transcript+workbook) | Done | Fusion IA transcript + workbook → document (/api/ai/workbook-fusion + /api/ai/transcript-fusion) |
+| Messagerie simplifiee (remplace Slack)        | Done    | Channels publics/prives, DMs, threads, reactions, typing, fichiers + templates reponses rapides |
 | Canal individuel par client                   | Done    | DM channels fonctionnels                                                        |
 | Canaux de groupe (General, Lives, Challenge)  | Done    | Channels publics/prives creables                                                |
 | Badge messages non lus (compteur rouge)       | Done    | Unread count tracking dans use-channels.ts                                      |
-| Systeme #urgent / @urgent                     | Manque  | Pas de priorite message, pas de son different, pas de notif lock screen         |
-| Mute des abuseurs                             | Manque  | notifications_muted existe en DB mais pas d'UI mute par utilisateur            |
+| Systeme #urgent / @urgent                     | Done    | Flag urgent dans messaging + son different + notification prioritaire          |
+| Mute des abuseurs                             | Done    | notifications_muted en DB + UI mute dans channel-sidebar.tsx                   |
 | Onboarding client guide                       | Done    | Walkthrough interactif, checklist, XP rewards (Sprint 30)                      |
-| Video accueil / onboarding                    | Manque  | Pas de video personnalisee onboarding                                           |
+| Video accueil / onboarding                    | Done    | csm-video-step.tsx : video HTML5/iframe avec auto-detection 80% + fallback bio (Sprint 37) |
 | Formulaire step-by-step onboarding            | Partiel | Onboarding basique. Manque : "pourquoi Alexia", revenus actuels, infos business |
 | Tutorial guide interactif (style SaaS)        | Done    | walkthrough-provider.tsx avec tooltips et highlights                            |
-| Test obligatoire (message test)               | Manque  | Pas de validation action obligatoire pendant onboarding                        |
-| Video personnalisee CSM                       | Manque  | Pas de systeme de videos CSM assignees                                          |
-| Dashboard progression client                  | Done    | Dashboard client avec KPIs, XP, badges, appels                                |
-| Roadmap personnalisee auto-generee par IA     | Manque  | Pas de roadmap auto-generee apres kickoff                                       |
+| Test obligatoire (message test)               | Done    | message-test-step.tsx dans onboarding                                          |
+| Video personnalisee CSM                       | Done    | csm-video-step.tsx + intro_video_url sur profiles (Sprint 37)                  |
+| Dashboard progression client                  | Done    | Dashboard client premium : streak, XP, objectifs, cours, badges, upsell (Sprint 37) |
+| Roadmap personnalisee auto-generee par IA     | Done    | auto-roadmap-trigger.ts + /api/ai/generate-roadmap (Sprint 36)                 |
 | Jalons/milestones avec criteres validation    | Partiel | Pipeline stages existent. Manque criteres explicites de validation             |
-| Questions pre-appel standardisees             | Partiel | call-form-modal.tsx avec champs. Manque : 2 questions obligatoires avant chaque appel |
+| Questions pre-appel standardisees             | Done    | use-pre-call-questions.ts avec questions configurables                         |
 | Reponse video au lieu d'appel                 | Manque  | Pas de systeme de reponse video asynchrone                                      |
 | Systeme de flags (Green/Orange/Red)           | Done    | student_details.flag + flag history + UI dans side panel                       |
 | Notification auto quand flag change           | Partiel | Flag history existe. Manque notification push a Alexia                         |
-| Attribution auto CSM                          | Manque  | Pas d'algo d'attribution par specialite/charge                                 |
-| Override manuel CSM                           | Partiel | coach_assignments existe mais pas d'UI d'attribution                           |
-| Vue groupee par CSM                           | Manque  | Pas de vue "clients par coach"                                                  |
-| Correlation performance CSM <-> resultats     | Manque  | Pas de metriques CSM vs resultats clients                                      |
-| FAQ / Base de connaissances IA                | Manque  | Pas de tracking questions repetitives, pas de reponse auto                     |
+| Attribution auto CSM                          | Done    | csm-auto-assign.ts avec algo specialite + charge (Sprint 36)                  |
+| Override manuel CSM                           | Done    | csm-dashboard.tsx avec UI attribution + batch assign                           |
+| Vue groupee par CSM                           | Done    | csm-dashboard.tsx avec metriques par coach + clients groupes (Sprint 36)       |
+| Correlation performance CSM <-> resultats     | Done    | csm-dashboard.tsx avec health scores + revenue par coach                       |
+| FAQ / Base de connaissances IA                | Done    | use-faq.ts + faq-dashboard.tsx + /api/ai/faq-match (auto-reponse IA, tracking, alertes) |
 | IA scoring urgence client                     | Done    | Analyse risque IA avec health_score (Sprint 29)                                |
 
 ### Features Secondaires (Nice to Have)
 
 | Feature                                   | Statut  | Notes                                                          |
 | ----------------------------------------- | ------- | -------------------------------------------------------------- |
-| Dashboard financier complet               | Done    | MRR, ventes, KPIs, forecast (Sprint 22)                       |
-| Cash collecte vs cash facture             | Partiel | Invoices + paiements existent. Manque vue comparee             |
-| LTV par client                            | Manque  | Pas de calcul LTV automatique                                  |
-| Ventes par canal                          | Manque  | Pas de tracking source/canal d'acquisition                     |
+| Dashboard financier complet               | Done    | MRR, ventes, KPIs, forecast, cash collecte vs facture (financial-dashboard.tsx) |
+| Cash collecte vs cash facture             | Done    | Vue comparee dans financial-dashboard.tsx (Sprint 22)          |
+| LTV par client                            | Done    | use-ltv.ts + ltv-ranking.tsx (calcul auto, classement top N)   |
+| Ventes par canal                          | Done    | Revenue by channel dans financial-dashboard.tsx (pie chart)    |
 | Taux de closing + commentaires            | Partiel | Pipeline existe. Manque taux closing par source et raisons     |
-| Calcul auto paiements contracteurs        | Partiel | Commissions existent (use-commissions.ts). Manque calcul auto  |
+| Calcul auto paiements contracteurs        | Done    | Auto-commission a la conversion client (use-pipeline.ts moveContact) |
 | Generation auto contrats/factures         | Done    | Templates + PDF + envoi email                                  |
-| Signature electronique                    | Manque  | Pas d'e-signature (Docusign/YouSign)                           |
+| Signature electronique                    | Done    | E-signature integree : signature-pad.tsx + API sign + metadata IP |
 | CRM mobile setter                         | Partiel | PWA responsive. Manque optimisation mobile specifique setter   |
 | Challenges / Leaderboard anti-triche      | Partiel | Gamification complete. Manque integration LinkedIn API verif   |
-| Lead Magnet forms publics                 | Manque  | Pas de formulaires publics capture leads (F32.3)               |
+| Lead Magnet forms publics                 | Done    | /api/leads/capture + /f/[formId] + use-lead-magnet.ts + stats admin |
 | Calendrier lives partage                  | Partiel | Calendrier appels existe. Manque calendrier lives groupe       |
-| Upsell automatise par palier revenu       | Manque  | Pas de declencheur automatique upsell                          |
+| Upsell automatise par palier revenu       | Done    | use-upsell.ts avec rules + triggers auto + dashboard admin     |
 
 ### Preferences UI / Design
 
@@ -491,25 +493,32 @@
 
 ## Resume des Gaps Prioritaires (Alexia)
 
-### Priorite Haute (bloquant pour la cliente)
-1. **Workbooks adaptatifs** — Formulaires par module avec variables dynamiques (marche, offre, communication, acquisition, conversion, diagnostic)
-2. **Fusion auto transcript + workbook** — Document IA genere apres chaque appel, exportable PDF
-3. **Questions pre-appel obligatoires** — 2 questions avant chaque appel ("objectif" + "solution deja essayee")
-4. **Attribution auto CSM** — Algo par specialite + charge equilibree + override manuel
-5. **Vue groupee par CSM** — Dashboard "mes clients" par coach avec correlation performance
-6. **Systeme #urgent** — Messages prioritaires avec notification differente + son
+### ✅ Priorite Haute — TOUT FAIT
+1. ~~Workbooks adaptatifs~~ — Done (workbook-editor.tsx + workbook-player.tsx + use-workbooks.ts)
+2. ~~Fusion auto transcript + workbook~~ — Done (/api/ai/workbook-fusion + /api/ai/transcript-fusion)
+3. ~~Questions pre-appel obligatoires~~ — Done (use-pre-call-questions.ts)
+4. ~~Attribution auto CSM~~ — Done (csm-auto-assign.ts + csm-dashboard.tsx)
+5. ~~Vue groupee par CSM~~ — Done (csm-dashboard.tsx)
+6. ~~Systeme #urgent~~ — Done (flag urgent messaging + son different)
 
-### Priorite Moyenne (amelioration experience)
-7. **FAQ/KB IA** — Tracking questions repetitives + reponse auto + compteur + alerte 5+/semaine
-8. **Roadmap personnalisee IA** — Generation auto apres kickoff basee sur transcript
-9. **Video onboarding personnalisee CSM** — Chaque CSM enregistre sa video
-10. **LTV par client** — Calcul automatique lifetime value
-11. **Upsell automatise** — Declencheur quand client atteint palier revenu
+### ✅ Priorite Moyenne — TOUT FAIT
+7. ~~FAQ/KB IA~~ — Done (use-faq.ts + faq-dashboard.tsx + /api/ai/faq-match)
+8. ~~Roadmap personnalisee IA~~ — Done (auto-roadmap-trigger.ts + /api/ai/generate-roadmap)
+9. ~~Video onboarding personnalisee CSM~~ — Done (csm-video-step.tsx + intro_video_url Sprint 37)
+10. ~~LTV par client~~ — Done (use-ltv.ts + ltv-ranking.tsx)
+11. ~~Upsell automatise~~ — Done (use-upsell.ts avec rules + triggers)
 
-### Priorite Basse (nice to have)
-12. Enregistrement appels video
-13. LinkedIn API integration (anti-triche challenges)
-14. Lead magnet forms publics
-15. E-signature integree (Docusign/YouSign)
-16. Multi-devises
-17. Sous-communautes thematiques
+### ✅ Priorite Basse — Majorite faite
+12. Enregistrement appels video — Partiel (WebRTC existe, manque sauvegarde enregistrement)
+13. LinkedIn API integration (anti-triche) — Manque
+14. ~~Lead magnet forms publics~~ — Done (/api/leads/capture + /f/[formId])
+15. ~~E-signature integree~~ — Done (signature-pad.tsx + /api/contracts/[id]/sign)
+16. Multi-devises — Manque
+17. Sous-communautes thematiques — Manque
+
+### Nouveaux ajouts Sprint 37
+18. **Templates messages / reponses rapides** — Done (template-picker.tsx + template-manager-modal.tsx + use-message-templates.ts)
+19. **Sequences de relance automatique** — Done (relance-sequence-builder.tsx + use-relance.ts + /api/relance/process)
+20. **Import CSV contacts CRM** — Done (csv-import-modal.tsx + use-csv-import.ts, wizard 4 etapes)
+21. **Dashboard client premium** — Done (client-dashboard.tsx avec streak, XP, cours, objectifs, badges, upsell)
+22. **Enrichissement multi-plateforme** — Done (LinkedIn, Instagram, TikTok, Facebook, Website via Apify)

@@ -6,6 +6,8 @@ import { useChannelMembers } from "@/hooks/use-channels";
 import { EmojiPicker } from "./emoji-picker";
 import { VoiceRecorder } from "./voice-recorder";
 import { MentionAutocomplete } from "./mention-autocomplete";
+import { TemplatePicker } from "./template-picker";
+import { TemplateManagerModal } from "./template-manager-modal";
 import {
   Send,
   Paperclip,
@@ -20,6 +22,7 @@ import {
   Loader2,
   Clock,
   AlertTriangle,
+  Zap,
 } from "lucide-react";
 
 interface ChatInputProps {
@@ -54,6 +57,12 @@ export function ChatInput({
   const [isUrgent, setIsUrgent] = useState(false);
   const [mentionQuery, setMentionQuery] = useState<string | null>(null);
   const [mentionStartPos, setMentionStartPos] = useState(0);
+  const [showTemplatePicker, setShowTemplatePicker] = useState(false);
+  const [showTemplateManager, setShowTemplateManager] = useState(false);
+  const [templateShortcutQuery, setTemplateShortcutQuery] = useState<
+    string | null
+  >(null);
+  const [templateSlashStartPos, setTemplateSlashStartPos] = useState(0);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -96,6 +105,7 @@ export function ChatInput({
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (mentionQuery !== null) return;
+    if (showTemplatePicker) return;
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSend();
@@ -143,6 +153,21 @@ export function ChatInput({
     } else {
       setMentionQuery(null);
     }
+
+    // Detect /template shortcut (only at start of input or after whitespace)
+    const slashMatch = textBefore.match(/(^|\s)(\/\w*)$/);
+    if (slashMatch) {
+      const fullMatch = slashMatch[2]; // the /word part
+      setTemplateShortcutQuery(fullMatch);
+      setTemplateSlashStartPos(cursorPos - fullMatch.length);
+      setShowTemplatePicker(true);
+    } else if (templateShortcutQuery !== null) {
+      setTemplateShortcutQuery(null);
+      // Only close if it was opened via shortcut, not via button
+      if (showTemplatePicker && templateShortcutQuery) {
+        setShowTemplatePicker(false);
+      }
+    }
   };
 
   const handleMentionSelect = (member: { id: string; full_name: string }) => {
@@ -155,6 +180,29 @@ export function ChatInput({
     setMentionQuery(null);
     textareaRef.current?.focus();
   };
+
+  const handleTemplateSelect = useCallback(
+    (content: string) => {
+      if (templateShortcutQuery !== null) {
+        // Replace the /shortcut text with template content
+        const before = message.slice(0, templateSlashStartPos);
+        const cursorPos = textareaRef.current?.selectionStart ?? message.length;
+        const after = message.slice(cursorPos);
+        setMessage(before + content + after);
+      } else {
+        // Insert at cursor or append
+        const cursorPos =
+          textareaRef.current?.selectionStart ?? message.length;
+        const before = message.slice(0, cursorPos);
+        const after = message.slice(cursorPos);
+        setMessage(before + content + after);
+      }
+      setTemplateShortcutQuery(null);
+      setShowTemplatePicker(false);
+      textareaRef.current?.focus();
+    },
+    [message, templateShortcutQuery, templateSlashStartPos],
+  );
 
   return (
     <div className="border-t border-border/40 bg-surface">
@@ -266,6 +314,22 @@ export function ChatInput({
               <VoiceRecorder onSend={onVoiceSend} />
 
               <button
+                onClick={() => {
+                  setTemplateShortcutQuery(null);
+                  setShowTemplatePicker(!showTemplatePicker);
+                }}
+                className={cn(
+                  "w-7 h-7 rounded-lg flex items-center justify-center transition-colors",
+                  showTemplatePicker
+                    ? "text-primary bg-primary/10"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+                title="Templates / Reponses rapides"
+              >
+                <Zap className="w-4 h-4" />
+              </button>
+
+              <button
                 onClick={() => setShowEmoji(!showEmoji)}
                 className={cn(
                   "w-7 h-7 rounded-lg flex items-center justify-center transition-colors",
@@ -373,8 +437,24 @@ export function ChatInput({
               position={{ top: 8, left: 0 }}
             />
           )}
+
+          <TemplatePicker
+            open={showTemplatePicker}
+            onSelect={handleTemplateSelect}
+            onManage={() => setShowTemplateManager(true)}
+            shortcutQuery={templateShortcutQuery}
+            onClose={() => {
+              setShowTemplatePicker(false);
+              setTemplateShortcutQuery(null);
+            }}
+          />
         </div>
       </div>
+
+      <TemplateManagerModal
+        open={showTemplateManager}
+        onClose={() => setShowTemplateManager(false)}
+      />
     </div>
   );
 }

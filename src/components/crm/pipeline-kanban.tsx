@@ -36,8 +36,11 @@ import {
   Video,
   Facebook,
   Globe,
+  Upload,
 } from "lucide-react";
 import { EnrichmentPanel } from "@/components/crm/enrichment-panel";
+import { CsvImportModal } from "@/components/crm/csv-import-modal";
+import { RelanceEnrollmentBadge } from "@/components/crm/relance-enrollment-badge";
 import { useBulkEnrich } from "@/hooks/use-enrichment";
 
 // ─── Contact Card ────────────────────────────────────────────
@@ -151,6 +154,8 @@ function ContactCard({
             {contact.website_url && (
               <Globe className="w-3 h-3 text-zinc-500" />
             )}
+            {/* Relance enrollment badge */}
+            <RelanceEnrollmentBadge contactId={contact.id} compact />
           </div>
         </div>
       </div>
@@ -539,6 +544,7 @@ export function PipelineKanban() {
     usePipelineContacts();
   const bulkEnrich = useBulkEnrich();
   const [showAdd, setShowAdd] = useState(false);
+  const [showImport, setShowImport] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [enrichContactId, setEnrichContactId] = useState<string | null>(null);
   const enrichContact = enrichContactId
@@ -627,6 +633,13 @@ export function PipelineKanban() {
             {bulkEnrich.isPending ? "Enrichissement..." : "Enrichir tout"}
           </button>
           <button
+            onClick={() => setShowImport(true)}
+            className="h-9 px-4 rounded-xl border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center gap-1.5"
+          >
+            <Upload className="w-4 h-4" />
+            Importer CSV
+          </button>
+          <button
             onClick={() => setShowAdd(true)}
             className="h-9 px-4 rounded-xl bg-red-600 text-white text-sm font-medium hover:bg-red-700 transition-all active:scale-[0.98] flex items-center gap-1.5"
           >
@@ -681,6 +694,12 @@ export function PipelineKanban() {
           })
         }
         isPending={createContact.isPending}
+      />
+
+      {/* CSV import modal */}
+      <CsvImportModal
+        open={showImport}
+        onClose={() => setShowImport(false)}
       />
 
       {/* Enrichment panel */}
