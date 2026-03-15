@@ -36,6 +36,9 @@ export interface CallCalendar {
   original_date: string | null;
   original_time: string | null;
   satisfaction_rating: number | null;
+  whereby_room_url: string | null;
+  whereby_host_url: string | null;
+  whereby_meeting_id: string | null;
   created_at: string;
   updated_at: string;
 }
