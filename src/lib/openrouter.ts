@@ -4,7 +4,7 @@
  */
 
 const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1/chat/completions";
-const DEFAULT_MODEL = "anthropic/claude-sonnet-4-5-20250514";
+const DEFAULT_MODEL = "anthropic/claude-sonnet-4.6";
 
 interface OpenRouterMessage {
   role: "system" | "user" | "assistant";

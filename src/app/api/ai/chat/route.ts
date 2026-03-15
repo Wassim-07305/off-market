@@ -41,7 +41,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("AI chat error:", error);
     const message =
-      error instanceof Error && error.message.includes("OPENROUTER_API_KEY")
+      error instanceof Error
         ? error.message
         : "Erreur lors de la communication avec l'IA. Veuillez reessayer.";
     return NextResponse.json({ response: message }, { status: 200 });
