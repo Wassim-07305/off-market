@@ -30,9 +30,16 @@ export function useCalls(weekStart?: Date) {
       if (weekStart) {
         const weekEnd = new Date(weekStart);
         weekEnd.setDate(weekEnd.getDate() + 6);
+        // Use local date to avoid UTC shift (e.g. CET midnight → previous day in UTC)
+        const toLocal = (d: Date) => {
+          const y = d.getFullYear();
+          const m = String(d.getMonth() + 1).padStart(2, "0");
+          const day = String(d.getDate()).padStart(2, "0");
+          return `${y}-${m}-${day}`;
+        };
         query = query
-          .gte("date", weekStart.toISOString().split("T")[0])
-          .lte("date", weekEnd.toISOString().split("T")[0]);
+          .gte("date", toLocal(weekStart))
+          .lte("date", toLocal(weekEnd));
       }
 
       const { data, error } = await query;

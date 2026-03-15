@@ -89,7 +89,9 @@ export function CallFormModal({
     } else {
       setTitle("");
       setClientId("");
-      setDate(defaultDate ?? new Date().toISOString().split("T")[0]);
+      const now = new Date();
+      const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+      setDate(defaultDate ?? todayStr);
       setTime(defaultTime ?? "09:00");
       setDuration(30);
       setCallType("manuel");

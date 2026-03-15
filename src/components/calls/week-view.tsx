@@ -20,6 +20,14 @@ interface WeekViewProps {
 const HOURS = Array.from({ length: 13 }, (_, i) => i + 8); // 8h to 20h
 const DAYS = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
 
+// Format a Date as YYYY-MM-DD in local timezone (avoids UTC shift from toISOString)
+function toLocalDateStr(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
 export function WeekView({
   calls,
   weekStart,
@@ -28,7 +36,7 @@ export function WeekView({
   onSlotClick,
   googleEvents,
 }: WeekViewProps) {
-  const today = new Date().toISOString().split("T")[0];
+  const today = toLocalDateStr(new Date());
 
   const getDayDate = (dayIndex: number) => {
     const d = new Date(weekStart);
@@ -37,7 +45,7 @@ export function WeekView({
   };
 
   const getCallsForSlot = (dayIndex: number, hour: number) => {
-    const dayStr = getDayDate(dayIndex).toISOString().split("T")[0];
+    const dayStr = toLocalDateStr(getDayDate(dayIndex));
     return calls.filter((call) => {
       if (call.date !== dayStr) return false;
       const callHour = parseInt(call.time.split(":")[0]);
@@ -47,11 +55,11 @@ export function WeekView({
 
   const getGoogleEventsForSlot = (dayIndex: number, hour: number) => {
     if (!googleEvents) return [];
-    const dayStr = getDayDate(dayIndex).toISOString().split("T")[0];
+    const dayStr = toLocalDateStr(getDayDate(dayIndex));
     return googleEvents.filter((event) => {
       if (event.allDay) return false;
       const start = new Date(event.start);
-      const eventDate = start.toISOString().split("T")[0];
+      const eventDate = toLocalDateStr(start);
       if (eventDate !== dayStr) return false;
       return start.getHours() === hour;
     });
@@ -59,7 +67,7 @@ export function WeekView({
 
   const getAllDayEventsForDay = (dayIndex: number) => {
     if (!googleEvents) return [];
-    const dayStr = getDayDate(dayIndex).toISOString().split("T")[0];
+    const dayStr = toLocalDateStr(getDayDate(dayIndex));
     return googleEvents.filter((event) => {
       if (!event.allDay) return false;
       // All-day events: start is a date string like "2026-03-01"
@@ -96,7 +104,7 @@ export function WeekView({
             <div className="p-2" />
             {DAYS.map((day, i) => {
               const date = getDayDate(i);
-              const dateStr = date.toISOString().split("T")[0];
+              const dateStr = toLocalDateStr(date);
               const isToday = dateStr === today;
               const allDayEvents = getAllDayEventsForDay(i);
               return (
@@ -148,9 +156,7 @@ export function WeekView({
               {DAYS.map((_, dayIndex) => {
                 const slotCalls = getCallsForSlot(dayIndex, hour);
                 const slotGoogleEvents = getGoogleEventsForSlot(dayIndex, hour);
-                const dateStr = getDayDate(dayIndex)
-                  .toISOString()
-                  .split("T")[0];
+                const dateStr = toLocalDateStr(getDayDate(dayIndex));
                 const isToday = dateStr === today;
 
                 return (

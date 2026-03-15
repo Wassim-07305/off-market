@@ -27,11 +27,20 @@ export function BookingCalendar() {
     const sunday = new Date(monday);
     sunday.setDate(monday.getDate() + 6);
 
+    // Format date in local timezone to avoid UTC shift
+    const toLocal = (d: Date) => {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const dd = String(d.getDate()).padStart(2, "0");
+      return `${y}-${m}-${dd}`;
+    };
+
+    const todayStr = toLocal(new Date());
     const days: { date: string; label: string; isToday: boolean }[] = [];
     for (let i = 0; i < 7; i++) {
       const d = new Date(monday);
       d.setDate(monday.getDate() + i);
-      const dateStr = d.toISOString().split("T")[0];
+      const dateStr = toLocal(d);
       days.push({
         date: dateStr,
         label: d.toLocaleDateString("fr-FR", {
@@ -39,13 +48,13 @@ export function BookingCalendar() {
           day: "numeric",
           month: "short",
         }),
-        isToday: dateStr === new Date().toISOString().split("T")[0],
+        isToday: dateStr === todayStr,
       });
     }
 
     return {
-      startDate: monday.toISOString().split("T")[0],
-      endDate: sunday.toISOString().split("T")[0],
+      startDate: toLocal(monday),
+      endDate: toLocal(sunday),
       weekDays: days,
     };
   }, [weekOffset]);

@@ -61,7 +61,10 @@ export default function CallsPage() {
   /** An appointment is joinable 15 min before → 30 min after its scheduled time */
   const isJoinable = (call: CallCalendarWithRelations) => {
     if (call.status === "annule") return false;
-    const callDate = new Date(`${call.date}T${call.time}`);
+    // Use local time — avoids UTC shift that could make the date off by a day
+    const [year, month, day] = call.date.split("-").map(Number);
+    const [hh, mm] = call.time.split(":").map(Number);
+    const callDate = new Date(year, month - 1, day, hh, mm);
     const now = Date.now();
     const fifteenMinBefore = callDate.getTime() - 15 * 60_000;
     const thirtyMinAfter = callDate.getTime() + 30 * 60_000;
