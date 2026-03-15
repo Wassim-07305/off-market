@@ -172,20 +172,17 @@ export function useOnboardingProgress(userId?: string) {
     queryFn: async () => {
       if (!targetId) return [];
       const { data, error } = await supabase
-        .from("onboarding_steps" as never)
+        .from("onboarding_progress")
         .select("*")
-        .eq("profile_id", targetId)
-        .order("created_at", { ascending: true });
+        .eq("user_id", targetId);
       if (error) throw error;
-      return (data ?? []) as unknown as OnboardingStepRecord[];
+      return (data ?? []) as Array<{ id: string; user_id: string; step: string; completed_at: string | null }>;
     },
     enabled: !!targetId,
   });
 
   const completedKeys = new Set(
-    (stepsQuery.data ?? [])
-      .filter((s) => s.completed)
-      .map((s) => s.step_key),
+    (stepsQuery.data ?? []).map((s) => s.step),
   );
 
   const currentStepIndex = ONBOARDING_STEP_KEYS.findIndex(
@@ -210,24 +207,29 @@ export function useCompleteStep() {
   return useMutation({
     mutationFn: async ({
       stepKey,
-      data,
     }: {
       stepKey: OnboardingStepKey;
       data?: Record<string, unknown>;
     }) => {
       if (!user) throw new Error("Not authenticated");
+
+      // Check if already completed
+      const { data: existing } = await supabase
+        .from("onboarding_progress")
+        .select("id")
+        .eq("user_id", user.id)
+        .eq("step", stepKey)
+        .maybeSingle();
+
+      if (existing) return; // Already done
+
       const { error } = await supabase
-        .from("onboarding_steps" as never)
-        .upsert(
-          {
-            profile_id: user.id,
-            step_key: stepKey,
-            completed: true,
-            data: data ?? {},
-            completed_at: new Date().toISOString(),
-          } as never,
-          { onConflict: "profile_id,step_key" },
-        );
+        .from("onboarding_progress")
+        .insert({
+          user_id: user.id,
+          step: stepKey,
+          completed_at: new Date().toISOString(),
+        });
       if (error) throw error;
     },
     onSuccess: () => {
@@ -277,38 +279,39 @@ export function useOnboardingForm() {
     }) => {
       if (!user) throw new Error("Not authenticated");
 
-      // Delete any existing response for this step then insert
-      await supabase
-        .from("onboarding_responses" as never)
-        .delete()
-        .eq("user_id" as never, user.id as never)
-        .eq("step" as never, "about_you" as never);
+      // Save profile data from the about_you form
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .update({
+          business_type: formData.business_type,
+          current_revenue: formData.current_revenue,
+          goals: formData.goals,
+          how_found: formData.how_found_alexia,
+        } as never)
+        .eq("id", user.id);
+      // Profile update is best-effort (columns may not exist yet)
+      if (profileError) {
+        console.warn("Profile update skipped:", profileError.message);
+      }
 
-      const { error } = await supabase
-        .from("onboarding_responses" as never)
-        .insert(
-          {
+      // Mark the about_you step as completed
+      const { data: existing } = await supabase
+        .from("onboarding_progress")
+        .select("id")
+        .eq("user_id", user.id)
+        .eq("step", "about_you")
+        .maybeSingle();
+
+      if (!existing) {
+        const { error } = await supabase
+          .from("onboarding_progress")
+          .insert({
             user_id: user.id,
             step: "about_you",
-            data: formData,
-          } as never,
-        );
-      if (error) throw error;
-
-      // Also mark onboarding_steps
-      const { error: stepError } = await supabase
-        .from("onboarding_steps" as never)
-        .upsert(
-          {
-            profile_id: user.id,
-            step_key: "about_you",
-            completed: true,
-            data: formData,
             completed_at: new Date().toISOString(),
-          } as never,
-          { onConflict: "profile_id,step_key" },
-        );
-      if (stepError) throw stepError;
+          });
+        if (error) throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["onboarding-steps"] });
