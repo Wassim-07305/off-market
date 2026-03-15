@@ -276,21 +276,27 @@ export function useOnboardingForm() {
       how_found_alexia: string;
     }) => {
       if (!user) throw new Error("Not authenticated");
-      // Save to onboarding_responses (existing table from migration 011)
+
+      // Delete any existing response for this step then insert
+      await supabase
+        .from("onboarding_responses" as never)
+        .delete()
+        .eq("user_id" as never, user.id as never)
+        .eq("step" as never, "about_you" as never);
+
       const { error } = await supabase
         .from("onboarding_responses" as never)
-        .upsert(
+        .insert(
           {
             user_id: user.id,
             step: "about_you",
             data: formData,
           } as never,
-          { onConflict: "user_id" },
         );
       if (error) throw error;
 
       // Also mark onboarding_steps
-      await supabase
+      const { error: stepError } = await supabase
         .from("onboarding_steps" as never)
         .upsert(
           {
@@ -302,6 +308,7 @@ export function useOnboardingForm() {
           } as never,
           { onConflict: "profile_id,step_key" },
         );
+      if (stepError) throw stepError;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["onboarding-steps"] });
