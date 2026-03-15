@@ -7,6 +7,9 @@ import {
   type CallCalendarWithRelations,
 } from "@/types/calls";
 import type { GoogleCalendarEvent } from "@/types/google-calendar";
+import { useRoutePrefix } from "@/hooks/use-route-prefix";
+import Link from "next/link";
+import { Video } from "lucide-react";
 
 interface WeekViewProps {
   calls: CallCalendarWithRelations[];
@@ -15,6 +18,18 @@ interface WeekViewProps {
   onCallClick: (call: CallCalendarWithRelations) => void;
   onSlotClick: (date: string, time: string) => void;
   googleEvents?: GoogleCalendarEvent[];
+}
+
+/** An appointment is joinable 15 min before → 30 min after its scheduled time */
+function isJoinable(call: CallCalendarWithRelations): boolean {
+  if (call.status === "annule") return false;
+  const [year, month, day] = call.date.split("-").map(Number);
+  const [hh, mm] = call.time.split(":").map(Number);
+  const callDate = new Date(year, month - 1, day, hh, mm);
+  const now = Date.now();
+  const fifteenMinBefore = callDate.getTime() - 15 * 60_000;
+  const thirtyMinAfter = callDate.getTime() + 30 * 60_000;
+  return now >= fifteenMinBefore && now <= thirtyMinAfter;
 }
 
 const HOURS = Array.from({ length: 13 }, (_, i) => i + 8); // 8h to 20h
@@ -36,6 +51,7 @@ export function WeekView({
   onSlotClick,
   googleEvents,
 }: WeekViewProps) {
+  const prefix = useRoutePrefix();
   const today = toLocalDateStr(new Date());
 
   const getDayDate = (dayIndex: number) => {
@@ -211,6 +227,16 @@ export function WeekView({
                           <p className="text-[10px] text-muted-foreground truncate">
                             {call.client.full_name}
                           </p>
+                        )}
+                        {isJoinable(call) && (
+                          <Link
+                            href={`${prefix}/calls/${call.id}`}
+                            onClick={(e) => e.stopPropagation()}
+                            className="mt-1 flex items-center justify-center gap-1 h-5 rounded bg-green-600 text-white text-[9px] font-medium hover:bg-green-700 transition-colors"
+                          >
+                            <Video className="w-2.5 h-2.5" />
+                            Rejoindre
+                          </Link>
                         )}
                       </button>
                     ))}

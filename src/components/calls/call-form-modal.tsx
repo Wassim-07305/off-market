@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, Loader2, Phone, Trash2, CalendarClock, Star } from "lucide-react";
+import { X, Loader2, Phone, Trash2, CalendarClock, Star, Video } from "lucide-react";
 import { toast } from "sonner";
 import { useCalls } from "@/hooks/use-calls";
 import { useSupabase } from "@/hooks/use-supabase";
+import { useRoutePrefix } from "@/hooks/use-route-prefix";
+import Link from "next/link";
 import {
   CALL_TYPES,
   CALL_STATUSES,
@@ -43,6 +45,7 @@ export function CallFormModal({
     rateSatisfaction,
   } = useCalls();
   const supabase = useSupabase();
+  const prefix = useRoutePrefix();
   const [title, setTitle] = useState("");
   const [clientId, setClientId] = useState<string>("");
   const [date, setDate] = useState("");
@@ -213,12 +216,33 @@ export function CallFormModal({
               {editCall ? "Modifier l'appel" : "Nouvel appel"}
             </h3>
           </div>
-          <button
-            onClick={onClose}
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-          >
-            <X className="w-4 h-4" />
-          </button>
+          <div className="flex items-center gap-2">
+            {editCall && (() => {
+              if (editCall.status === "annule") return null;
+              const [y, mo, d] = editCall.date.split("-").map(Number);
+              const [hh, mm] = (editCall.time ?? "00:00").split(":").map(Number);
+              const callDate = new Date(y, mo - 1, d, hh, mm);
+              const now = Date.now();
+              if (now >= callDate.getTime() - 15 * 60_000 && now <= callDate.getTime() + 30 * 60_000) {
+                return (
+                  <Link
+                    href={`${prefix}/calls/${editCall.id}`}
+                    className="h-8 px-3 rounded-lg bg-green-600 text-white text-xs font-medium hover:bg-green-700 transition-all flex items-center gap-1.5"
+                  >
+                    <Video className="w-3.5 h-3.5" />
+                    Rejoindre
+                  </Link>
+                );
+              }
+              return null;
+            })()}
+            <button
+              onClick={onClose}
+              className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
         <form onSubmit={handleSubmit} className="p-5 space-y-4">
