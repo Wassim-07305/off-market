@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState, useEffect, useRef, type ReactNode } from "react";
 import {
-  Crown,
   Users,
   GraduationCap,
   MessageCircle,
@@ -450,15 +450,13 @@ export default function LandingPage() {
       >
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-2.5">
-            <div
-              className="flex size-8 items-center justify-center rounded-lg"
-              style={{
-                background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_LIGHT})`,
-                boxShadow: `0 0 16px ${ACCENT_GLOW}`,
-              }}
-            >
-              <Crown className="size-4 text-white" />
-            </div>
+            <Image
+              src="/logo.png"
+              alt="Off-Market"
+              width={36}
+              height={36}
+              className="shrink-0 rounded-lg"
+            />
             <span className="text-lg font-bold tracking-tight text-gray-900">
               Off-Market
             </span>
@@ -1043,14 +1041,13 @@ export default function LandingPage() {
             {/* Brand */}
             <div className="col-span-2 md:col-span-1">
               <Link href="/" className="flex items-center gap-2.5">
-                <div
-                  className="flex size-7 items-center justify-center rounded-md"
-                  style={{
-                    background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_LIGHT})`,
-                  }}
-                >
-                  <Crown className="size-3.5 text-white" />
-                </div>
+                <Image
+                  src="/logo.png"
+                  alt="Off-Market"
+                  width={30}
+                  height={30}
+                  className="shrink-0 rounded-md"
+                />
                 <span className="text-[15px] font-bold text-white">
                   Off-Market
                 </span>
