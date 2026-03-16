@@ -52,12 +52,12 @@ function getGreeting(): string {
 }
 
 const CHANNEL_COLORS = [
-  "#6366f1",
-  "#f59e0b",
-  "#10b981",
-  "#ef4444",
-  "#8b5cf6",
-  "#ec4899",
+  "#AF0000",
+  "#71717a",
+  "#a1a1aa",
+  "#d4d4d8",
+  "#52525b",
+  "#3f3f46",
 ];
 
 function MiniKPI({
@@ -65,31 +65,24 @@ function MiniKPI({
   value,
   icon: Icon,
   color,
-  bgColor,
 }: {
   label: string;
   value: string;
   icon: React.ComponentType<{ className?: string }>;
   color: string;
-  bgColor: string;
+  bgColor?: string;
 }) {
   return (
-    <div
-      className="bg-surface border border-border rounded-xl p-4"
-      style={{ boxShadow: "var(--shadow-card)" }}
-    >
+    <div className="bg-white border border-zinc-200 rounded-[14px] p-4 transition-shadow duration-200 hover:shadow-md">
       <div className="flex items-center gap-3">
-        <div
-          className={cn(
-            "w-9 h-9 rounded-lg flex items-center justify-center shrink-0",
-            bgColor,
-          )}
-        >
-          <Icon className={cn("w-4 h-4", color)} />
+        <div className="size-8 rounded-lg bg-zinc-50 flex items-center justify-center shrink-0">
+          <Icon className={cn("size-4", color)} />
         </div>
         <div>
           <p className="text-xs text-muted-foreground">{label}</p>
-          <p className="text-lg font-semibold text-foreground">{value}</p>
+          <p className="text-lg font-semibold text-foreground tabular-nums">
+            {value}
+          </p>
         </div>
       </div>
     </div>
@@ -108,11 +101,10 @@ function CashCard({
   color: string;
 }) {
   return (
-    <div
-      className="bg-surface border border-border rounded-xl p-4 flex items-center gap-3"
-      style={{ boxShadow: "var(--shadow-card)" }}
-    >
-      <Icon className={cn("w-4 h-4 shrink-0", color)} />
+    <div className="bg-white border border-zinc-200 rounded-[14px] p-4 flex items-center gap-3">
+      <div className="size-8 rounded-lg bg-zinc-50 flex items-center justify-center shrink-0">
+        <Icon className={cn("size-4", color)} />
+      </div>
       <div>
         <p className="text-xs text-muted-foreground">{label}</p>
         <p className="text-sm font-semibold text-foreground">{value}</p>
@@ -123,12 +115,9 @@ function CashCard({
 
 function MiniStatSkeleton() {
   return (
-    <div
-      className="bg-surface border border-border rounded-xl p-4 animate-pulse"
-      style={{ boxShadow: "var(--shadow-card)" }}
-    >
-      <div className="h-4 w-20 bg-muted rounded mb-2" />
-      <div className="h-6 w-16 bg-muted rounded" />
+    <div className="bg-white border border-zinc-200 rounded-[14px] p-4 animate-pulse">
+      <div className="h-4 w-20 bg-zinc-100 rounded mb-2" />
+      <div className="h-6 w-16 bg-zinc-100 rounded" />
     </div>
   );
 }
@@ -149,14 +138,14 @@ export default function AdminDashboardPage() {
       variants={staggerContainer}
       initial="hidden"
       animate="visible"
-      className="space-y-6"
+      className="space-y-5"
     >
       {/* Header */}
       <motion.div variants={staggerItem}>
-        <h1 className="text-2xl font-display font-bold text-foreground tracking-tight">
+        <h1 className="text-lg font-semibold text-foreground">
           {getGreeting()}, {firstName}
         </h1>
-        <p className="text-sm text-muted-foreground mt-1">
+        <p className="text-sm text-muted-foreground mt-0.5">
           Vue d&apos;ensemble de la plateforme
         </p>
       </motion.div>
@@ -165,14 +154,14 @@ export default function AdminDashboardPage() {
       {!isLoading && alertsCount > 0 && (
         <motion.div
           variants={staggerItem}
-          className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 flex items-center gap-3"
+          className="bg-amber-50 border border-amber-200 rounded-[14px] p-4 flex items-center gap-3"
         >
-          <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0" />
+          <AlertTriangle className="size-4 text-amber-600 shrink-0" />
           <div className="flex-1">
-            <p className="text-sm font-medium text-amber-700 dark:text-amber-400">
+            <p className="text-sm font-medium text-amber-800">
               {alertsCount} alerte{alertsCount > 1 ? "s" : ""} systeme
             </p>
-            <p className="text-xs text-amber-600/80 dark:text-amber-500/80">
+            <p className="text-xs text-amber-600">
               {data!.inactiveStudents > 0 &&
                 `${data!.inactiveStudents} eleve${data!.inactiveStudents > 1 ? "s" : ""} inactif${data!.inactiveStudents > 1 ? "s" : ""}`}
               {data!.inactiveStudents > 0 && data!.atRiskStudents > 0 && " · "}
@@ -196,11 +185,10 @@ export default function AdminDashboardPage() {
           Array.from({ length: 4 }).map((_, i) => (
             <div
               key={i}
-              className="bg-surface rounded-2xl p-6 animate-shimmer"
-              style={{ boxShadow: "var(--shadow-card)" }}
+              className="bg-white border border-zinc-200 rounded-[14px] p-5 animate-pulse"
             >
-              <div className="h-4 w-24 bg-muted rounded-lg mb-4" />
-              <div className="h-8 w-16 bg-muted rounded-lg" />
+              <div className="h-4 w-24 bg-zinc-100 rounded mb-4" />
+              <div className="h-7 w-16 bg-zinc-100 rounded" />
             </div>
           ))
         ) : (
@@ -244,8 +232,7 @@ export default function AdminDashboardPage() {
               label="Retention"
               value={`${data?.retentionRate ?? 0}%`}
               icon={ShieldCheck}
-              color="text-emerald-500"
-              bgColor="bg-emerald-500/10"
+              color="text-emerald-600"
             />
             <MiniKPI
               label="Churn"
@@ -253,26 +240,21 @@ export default function AdminDashboardPage() {
               icon={UserMinus}
               color={
                 (data?.churnRate ?? 0) > 10
-                  ? "text-red-500"
+                  ? "text-red-600"
                   : "text-muted-foreground"
-              }
-              bgColor={
-                (data?.churnRate ?? 0) > 10 ? "bg-red-500/10" : "bg-muted/50"
               }
             />
             <MiniKPI
               label="Taux closing"
               value={`${data?.globalClosingRate ?? 0}%`}
               icon={Target}
-              color="text-blue-500"
-              bgColor="bg-blue-500/10"
+              color="text-primary"
             />
             <MiniKPI
               label="Completion formations"
               value={`${data?.formationCompletionRate ?? 0}%`}
               icon={GraduationCap}
-              color="text-violet-500"
-              bgColor="bg-violet-500/10"
+              color="text-zinc-700"
             />
           </>
         )}
@@ -281,17 +263,14 @@ export default function AdminDashboardPage() {
       {/* Charts row: Revenue evolution + Channel distribution */}
       <motion.div
         variants={staggerItem}
-        className="grid grid-cols-1 lg:grid-cols-3 gap-6"
+        className="grid grid-cols-1 lg:grid-cols-3 gap-4"
       >
         {/* Revenue evolution (2 cols) */}
-        <div
-          className="lg:col-span-2 bg-surface rounded-2xl p-6"
-          style={{ boxShadow: "var(--shadow-card)" }}
-        >
+        <div className="lg:col-span-2 bg-white border border-zinc-200 rounded-[14px] p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="text-[13px] font-semibold text-foreground flex items-center gap-2">
-                <BarChart3 className="w-4 h-4 text-muted-foreground" />
+              <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                <BarChart3 className="size-4" />
                 Evolution CA
               </h3>
               <p className="text-xs text-muted-foreground mt-0.5">
@@ -299,7 +278,7 @@ export default function AdminDashboardPage() {
               </p>
             </div>
             {data && (
-              <span className="text-xl font-display font-bold text-foreground tracking-tight">
+              <span className="text-xl font-semibold text-foreground tracking-tight">
                 {formatCurrency(
                   data.revenueByMonth.reduce((s, m) => s + m.revenue, 0),
                 )}
@@ -308,7 +287,7 @@ export default function AdminDashboardPage() {
           </div>
           <div className="h-64">
             {isLoading ? (
-              <div className="h-full animate-shimmer rounded-xl" />
+              <div className="h-full bg-zinc-50 rounded-xl animate-pulse" />
             ) : (
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={data?.revenueByMonth ?? []}>
@@ -322,12 +301,12 @@ export default function AdminDashboardPage() {
                     >
                       <stop
                         offset="0%"
-                        stopColor="var(--primary)"
-                        stopOpacity={0.15}
+                        stopColor="#AF0000"
+                        stopOpacity={0.1}
                       />
                       <stop
                         offset="100%"
-                        stopColor="var(--primary)"
+                        stopColor="#AF0000"
                         stopOpacity={0}
                       />
                     </linearGradient>
@@ -336,23 +315,24 @@ export default function AdminDashboardPage() {
                     dataKey="label"
                     axisLine={false}
                     tickLine={false}
-                    tick={{ fill: "var(--muted-foreground)", fontSize: 11 }}
+                    tick={{ fill: "#a1a1aa", fontSize: 11 }}
                     dy={8}
                   />
                   <YAxis
                     axisLine={false}
                     tickLine={false}
-                    tick={{ fill: "var(--muted-foreground)", fontSize: 11 }}
+                    tick={{ fill: "#a1a1aa", fontSize: 11 }}
                     tickFormatter={(v: number) => `${(v / 1000).toFixed(0)}k`}
                     width={40}
                   />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: "var(--surface)",
-                      border: "none",
-                      borderRadius: "12px",
+                      backgroundColor: "#fff",
+                      border: "1px solid #e4e4e7",
+                      borderRadius: "10px",
                       fontSize: "13px",
-                      boxShadow: "var(--shadow-elevated)",
+                      boxShadow:
+                        "0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05)",
                       padding: "8px 12px",
                     }}
                     formatter={(value: number | undefined) =>
@@ -362,14 +342,14 @@ export default function AdminDashboardPage() {
                   <Area
                     type="monotone"
                     dataKey="revenue"
-                    stroke="var(--primary)"
-                    strokeWidth={2.5}
+                    stroke="#AF0000"
+                    strokeWidth={2}
                     fill="url(#adminRevGrad)"
                     dot={false}
                     activeDot={{
-                      r: 5,
-                      fill: "var(--primary)",
-                      stroke: "var(--surface)",
+                      r: 4,
+                      fill: "#AF0000",
+                      stroke: "#fff",
                       strokeWidth: 2,
                     }}
                   />
@@ -380,16 +360,13 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Channel distribution (1 col) */}
-        <div
-          className="bg-surface rounded-2xl p-6"
-          style={{ boxShadow: "var(--shadow-card)" }}
-        >
-          <h3 className="text-[13px] font-semibold text-foreground flex items-center gap-2 mb-4">
-            <PieChartIcon className="w-4 h-4 text-muted-foreground" />
+        <div className="bg-white border border-zinc-200 rounded-[14px] p-6">
+          <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-2 mb-4">
+            <PieChartIcon className="size-4" />
             CA par canal
           </h3>
           {isLoading ? (
-            <div className="h-48 animate-shimmer rounded-xl" />
+            <div className="h-48 bg-zinc-50 rounded-xl animate-pulse" />
           ) : !data?.revenueByChannel.length ? (
             <div className="h-48 flex items-center justify-center text-sm text-muted-foreground">
               Aucune donnee
@@ -419,11 +396,12 @@ export default function AdminDashboardPage() {
                     </Pie>
                     <Tooltip
                       contentStyle={{
-                        backgroundColor: "var(--surface)",
-                        border: "none",
-                        borderRadius: "12px",
+                        backgroundColor: "#fff",
+                        border: "1px solid #e4e4e7",
+                        borderRadius: "10px",
                         fontSize: "13px",
-                        boxShadow: "var(--shadow-elevated)",
+                        boxShadow:
+                          "0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05)",
                         padding: "8px 12px",
                       }}
                       formatter={(value: number | undefined) =>
@@ -437,11 +415,11 @@ export default function AdminDashboardPage() {
                 {data.revenueByChannel.map((item, i) => (
                   <div
                     key={item.channel}
-                    className="flex items-center justify-between text-[12px]"
+                    className="flex items-center justify-between text-xs"
                   >
                     <div className="flex items-center gap-2">
                       <div
-                        className="w-2.5 h-2.5 rounded-full"
+                        className="size-2.5 rounded-full"
                         style={{
                           backgroundColor:
                             CHANNEL_COLORS[i % CHANNEL_COLORS.length],
@@ -473,19 +451,19 @@ export default function AdminDashboardPage() {
               label="Cash encaisse"
               value={formatCurrency(data?.cashCollected ?? 0)}
               icon={DollarSign}
-              color="text-emerald-500"
+              color="text-emerald-600"
             />
             <CashCard
               label="Cash facture"
               value={formatCurrency(data?.cashInvoiced ?? 0)}
               icon={Receipt}
-              color="text-blue-500"
+              color="text-primary"
             />
             <CashCard
               label="Check-ins semaine"
               value={String(data?.weeklyCheckins ?? 0)}
               icon={CalendarCheck}
-              color="text-violet-500"
+              color="text-zinc-700"
             />
           </>
         )}
@@ -495,11 +473,10 @@ export default function AdminDashboardPage() {
       {data && data.revenueByQuarter.length > 0 && (
         <motion.div
           variants={staggerItem}
-          className="bg-surface rounded-2xl p-6"
-          style={{ boxShadow: "var(--shadow-card)" }}
+          className="bg-white border border-zinc-200 rounded-[14px] p-6"
         >
-          <h3 className="text-[13px] font-semibold text-foreground mb-4 flex items-center gap-2">
-            <Percent className="w-4 h-4 text-muted-foreground" />
+          <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-4 flex items-center gap-2">
+            <Percent className="size-4" />
             CA par trimestre
           </h3>
           <div className="h-48">
@@ -509,23 +486,24 @@ export default function AdminDashboardPage() {
                   dataKey="quarter"
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: "var(--muted-foreground)", fontSize: 11 }}
+                  tick={{ fill: "#a1a1aa", fontSize: 11 }}
                   dy={4}
                 />
                 <YAxis
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: "var(--muted-foreground)", fontSize: 11 }}
+                  tick={{ fill: "#a1a1aa", fontSize: 11 }}
                   tickFormatter={(v: number) => `${(v / 1000).toFixed(0)}k`}
                   width={40}
                 />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "var(--surface)",
-                    border: "none",
-                    borderRadius: "12px",
+                    backgroundColor: "#fff",
+                    border: "1px solid #e4e4e7",
+                    borderRadius: "10px",
                     fontSize: "13px",
-                    boxShadow: "var(--shadow-elevated)",
+                    boxShadow:
+                      "0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05)",
                     padding: "8px 12px",
                   }}
                   formatter={(value: number | undefined) =>
@@ -534,7 +512,7 @@ export default function AdminDashboardPage() {
                 />
                 <Bar
                   dataKey="revenue"
-                  fill="var(--primary)"
+                  fill="#AF0000"
                   radius={[6, 6, 0, 0]}
                   maxBarSize={60}
                 />
@@ -552,7 +530,7 @@ export default function AdminDashboardPage() {
       {/* Activity Heatmap + Period Comparison */}
       <motion.div
         variants={staggerItem}
-        className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+        className="grid grid-cols-1 lg:grid-cols-2 gap-4"
       >
         <ActivityHeatmap />
         <PeriodComparison />
@@ -566,7 +544,7 @@ export default function AdminDashboardPage() {
       {/* KPI Goals + Funnel */}
       <motion.div
         variants={staggerItem}
-        className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+        className="grid grid-cols-1 lg:grid-cols-2 gap-4"
       >
         <KpiGoalsWidget />
         <ConversionFunnel />
@@ -575,23 +553,23 @@ export default function AdminDashboardPage() {
       {/* Bottom: Activity feed + Coach leaderboard */}
       <motion.div
         variants={staggerItem}
-        className="grid grid-cols-1 lg:grid-cols-3 gap-6"
+        className="grid grid-cols-1 lg:grid-cols-3 gap-4"
       >
         <div className="lg:col-span-2">
           <ActivityFeed />
         </div>
-        <div
-          className="bg-surface rounded-2xl p-6"
-          style={{ boxShadow: "var(--shadow-card)" }}
-        >
-          <h3 className="text-[13px] font-semibold text-foreground flex items-center gap-2 mb-4">
-            <Crown className="w-4 h-4 text-amber-500" />
+        <div className="bg-white border border-zinc-200 rounded-[14px] p-6">
+          <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-2 mb-4">
+            <Crown className="size-4 text-amber-500" />
             Leaderboard coaches
           </h3>
           {isLoading ? (
             <div className="space-y-3">
               {Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="h-10 animate-shimmer rounded-lg" />
+                <div
+                  key={i}
+                  className="h-10 bg-zinc-50 rounded-lg animate-pulse"
+                />
               ))}
             </div>
           ) : !data?.coachLeaderboard.length ? (
@@ -599,28 +577,28 @@ export default function AdminDashboardPage() {
               Aucun coach
             </p>
           ) : (
-            <div className="space-y-2.5">
+            <div className="space-y-1">
               {data.coachLeaderboard.map((coach, i) => (
                 <div
                   key={coach.name}
-                  className="flex items-center gap-3 p-2 rounded-xl hover:bg-muted/30 transition-colors"
+                  className="flex items-center gap-3 p-2 rounded-lg hover:bg-zinc-50 transition-colors"
                 >
-                  <span className="text-xs text-muted-foreground w-5 text-center font-mono">
+                  <span className="text-xs text-muted-foreground w-5 text-center font-mono tabular-nums">
                     {i + 1}
                   </span>
                   {coach.avatar ? (
                     <img
                       src={coach.avatar}
                       alt=""
-                      className="w-8 h-8 rounded-full object-cover"
+                      className="size-8 rounded-full object-cover"
                     />
                   ) : (
-                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-xs text-primary font-semibold">
+                    <div className="size-8 rounded-full bg-primary/5 flex items-center justify-center text-xs text-primary font-semibold">
                       {coach.name.charAt(0)}
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
-                    <p className="text-[13px] font-medium text-foreground truncate">
+                    <p className="text-sm font-medium text-foreground truncate">
                       {coach.name}
                     </p>
                     <p className="text-[10px] text-muted-foreground">

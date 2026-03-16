@@ -33,7 +33,7 @@ import {
   Clock,
 } from "lucide-react";
 
-// ─── Greeting helper ──────────────────────────────────────────
+// --- Greeting helper ---
 
 function getGreeting(): string {
   const hour = new Date().getHours();
@@ -42,7 +42,7 @@ function getGreeting(): string {
   return "Bonsoir";
 }
 
-// ─── Main component ───────────────────────────────────────────
+// --- Main component ---
 
 export function ClientDashboard() {
   const { profile } = useAuth();
@@ -54,14 +54,14 @@ export function ClientDashboard() {
       variants={staggerContainer}
       initial="hidden"
       animate="visible"
-      className="space-y-8"
+      className="space-y-5"
     >
       {/* Page title with greeting */}
       <motion.div variants={staggerItem}>
-        <h1 className="text-2xl font-display font-bold text-foreground tracking-tight">
+        <h1 className="text-lg font-semibold text-foreground">
           {getGreeting()} {firstName} !
         </h1>
-        <p className="text-sm text-muted-foreground mt-1">
+        <p className="text-sm text-muted-foreground mt-0.5">
           Voici ton espace personnel — ta progression, tes prochaines etapes et
           ton activite.
         </p>
@@ -90,7 +90,7 @@ export function ClientDashboard() {
       {/* Bottom section: Recent activity */}
       <motion.div
         variants={staggerItem}
-        className="grid grid-cols-1 lg:grid-cols-3 gap-6"
+        className="grid grid-cols-1 lg:grid-cols-3 gap-4"
       >
         <CourseProgressSection prefix={prefix} />
         <GoalProgressSection prefix={prefix} />
@@ -100,7 +100,7 @@ export function ClientDashboard() {
       {/* Side widgets: Upsell + Announcements */}
       <motion.div
         variants={staggerItem}
-        className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+        className="grid grid-cols-1 lg:grid-cols-2 gap-4"
       >
         <BadgesSection />
         <CommunitySection prefix={prefix} />
@@ -109,9 +109,9 @@ export function ClientDashboard() {
   );
 }
 
-// ═════════════════════════════════════════════════════════════════
+// ===================================================================
 // TOP STATS SECTION
-// ═════════════════════════════════════════════════════════════════
+// ===================================================================
 
 function TopStatsSection({ prefix }: { prefix: string }) {
   const { streak, isLoading: streakLoading } = useStreak();
@@ -153,15 +153,14 @@ function TopStatsSection({ prefix }: { prefix: string }) {
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {Array.from({ length: 4 }).map((_, i) => (
           <div
             key={i}
-            className="bg-surface rounded-2xl p-6 animate-shimmer"
-            style={{ boxShadow: "var(--shadow-card)" }}
+            className="bg-white border border-zinc-200 rounded-[14px] p-5 animate-pulse"
           >
-            <div className="h-4 w-24 bg-muted rounded-lg mb-4" />
-            <div className="h-8 w-16 bg-muted rounded-lg" />
+            <div className="h-4 w-24 bg-zinc-100 rounded mb-4" />
+            <div className="h-7 w-16 bg-zinc-100 rounded" />
           </div>
         ))}
       </div>
@@ -169,92 +168,77 @@ function TopStatsSection({ prefix }: { prefix: string }) {
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {/* Streak card */}
-      <div
-        className="bg-surface rounded-2xl p-6 transition-all duration-300 hover:translate-y-[-2px] group relative overflow-hidden"
-        style={{ boxShadow: "var(--shadow-card)" }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-transparent" />
-        <div className="relative">
-          <div className="flex items-start justify-between mb-4">
-            <span className="text-[13px] text-muted-foreground font-medium">
-              Streak
-            </span>
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500/10 to-orange-600/20 flex items-center justify-center">
-              <Flame className="w-[18px] h-[18px] text-orange-500" />
-            </div>
+      <div className="bg-white border border-zinc-200 rounded-[14px] p-5 transition-shadow duration-200 hover:shadow-md">
+        <div className="flex items-center gap-3 mb-3">
+          <div className="size-8 rounded-lg bg-orange-50 flex items-center justify-center">
+            <Flame className="size-4 text-orange-500" />
           </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-display font-bold text-foreground tabular-nums">
-              {currentStreak}
-            </span>
-            <span className="text-sm text-muted-foreground">
-              jour{currentStreak !== 1 ? "s" : ""}
-            </span>
-          </div>
-          {multiplier > 1 && (
-            <div className="flex items-center gap-1 mt-2">
-              <Zap className="w-3 h-3 text-amber-500" />
-              <span className="text-xs font-bold text-amber-600">
-                {multiplier}x XP
-              </span>
-            </div>
-          )}
+          <span className="text-sm text-muted-foreground font-medium">
+            Streak
+          </span>
         </div>
+        <div className="flex items-baseline gap-2">
+          <span className="text-2xl font-semibold text-foreground tabular-nums">
+            {currentStreak}
+          </span>
+          <span className="text-sm text-muted-foreground">
+            jour{currentStreak !== 1 ? "s" : ""}
+          </span>
+        </div>
+        {multiplier > 1 && (
+          <div className="flex items-center gap-1 mt-1.5">
+            <Zap className="size-3 text-amber-500" />
+            <span className="text-xs font-semibold text-amber-600">
+              {multiplier}x XP
+            </span>
+          </div>
+        )}
       </div>
 
       {/* XP / Level card */}
-      <div
-        className="bg-surface rounded-2xl p-6 transition-all duration-300 hover:translate-y-[-2px] group relative overflow-hidden"
-        style={{ boxShadow: "var(--shadow-card)" }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent" />
-        <div className="relative">
-          <div className="flex items-start justify-between mb-4">
-            <span className="text-[13px] text-muted-foreground font-medium">
-              Niveau
-            </span>
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/5 to-primary/10 flex items-center justify-center">
-              <Star className="w-[18px] h-[18px] text-primary" />
-            </div>
+      <div className="bg-white border border-zinc-200 rounded-[14px] p-5 transition-shadow duration-200 hover:shadow-md">
+        <div className="flex items-center gap-3 mb-3">
+          <div className="size-8 rounded-lg bg-primary/5 flex items-center justify-center">
+            <Star className="size-4 text-primary" />
           </div>
-          <div className="flex items-baseline gap-2 mb-2">
-            <span className="text-3xl font-display font-bold text-foreground tabular-nums">
-              {summary.level.level}
-            </span>
-            <span className="text-sm text-muted-foreground">
-              {summary.level.name}
-            </span>
-          </div>
-          {/* XP progress bar */}
-          <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-primary to-primary/70 rounded-full transition-all duration-700"
-              style={{ width: `${summary.progressToNext}%` }}
-            />
-          </div>
-          <p className="text-[10px] text-muted-foreground mt-1">
-            {summary.totalXp} XP · {summary.progressToNext}% vers niveau{" "}
-            {summary.nextLevel ? summary.nextLevel.level : "max"}
-          </p>
+          <span className="text-sm text-muted-foreground font-medium">
+            Niveau
+          </span>
         </div>
+        <div className="flex items-baseline gap-2 mb-2">
+          <span className="text-2xl font-semibold text-foreground tabular-nums">
+            {summary.level.level}
+          </span>
+          <span className="text-sm text-muted-foreground">
+            {summary.level.name}
+          </span>
+        </div>
+        {/* XP progress bar */}
+        <div className="h-1.5 bg-zinc-100 rounded-full overflow-hidden">
+          <div
+            className="h-full bg-primary rounded-full transition-all duration-700"
+            style={{ width: `${summary.progressToNext}%` }}
+          />
+        </div>
+        <p className="text-[10px] text-muted-foreground mt-1">
+          {summary.totalXp} XP · {summary.progressToNext}% vers niveau{" "}
+          {summary.nextLevel ? summary.nextLevel.level : "max"}
+        </p>
       </div>
 
       {/* Formations completed */}
-      <div
-        className="bg-surface rounded-2xl p-6 transition-all duration-300 hover:translate-y-[-2px] group"
-        style={{ boxShadow: "var(--shadow-card)" }}
-      >
-        <div className="flex items-start justify-between mb-4">
-          <span className="text-[13px] text-muted-foreground font-medium">
+      <div className="bg-white border border-zinc-200 rounded-[14px] p-5 transition-shadow duration-200 hover:shadow-md">
+        <div className="flex items-center gap-3 mb-3">
+          <div className="size-8 rounded-lg bg-emerald-50 flex items-center justify-center">
+            <GraduationCap className="size-4 text-emerald-600" />
+          </div>
+          <span className="text-sm text-muted-foreground font-medium">
             Formations terminees
           </span>
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500/5 to-emerald-500/10 flex items-center justify-center">
-            <GraduationCap className="w-[18px] h-[18px] text-emerald-500" />
-          </div>
         </div>
-        <div className="text-3xl font-display font-bold text-foreground tracking-tight">
+        <div className="text-2xl font-semibold text-foreground tracking-tight">
           {completedFormations}
         </div>
         <p className="text-xs text-muted-foreground mt-1">
@@ -264,19 +248,16 @@ function TopStatsSection({ prefix }: { prefix: string }) {
       </div>
 
       {/* Goals achieved */}
-      <div
-        className="bg-surface rounded-2xl p-6 transition-all duration-300 hover:translate-y-[-2px] group"
-        style={{ boxShadow: "var(--shadow-card)" }}
-      >
-        <div className="flex items-start justify-between mb-4">
-          <span className="text-[13px] text-muted-foreground font-medium">
+      <div className="bg-white border border-zinc-200 rounded-[14px] p-5 transition-shadow duration-200 hover:shadow-md">
+        <div className="flex items-center gap-3 mb-3">
+          <div className="size-8 rounded-lg bg-amber-50 flex items-center justify-center">
+            <Target className="size-4 text-amber-500" />
+          </div>
+          <span className="text-sm text-muted-foreground font-medium">
             Objectifs atteints
           </span>
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500/5 to-amber-500/10 flex items-center justify-center">
-            <Target className="w-[18px] h-[18px] text-amber-500" />
-          </div>
         </div>
-        <div className="text-3xl font-display font-bold text-foreground tracking-tight">
+        <div className="text-2xl font-semibold text-foreground tracking-tight">
           {achievedGoals}
         </div>
         <p className="text-xs text-muted-foreground mt-1">
@@ -287,9 +268,9 @@ function TopStatsSection({ prefix }: { prefix: string }) {
   );
 }
 
-// ═════════════════════════════════════════════════════════════════
+// ===================================================================
 // NEXT ACTIONS SECTION
-// ═════════════════════════════════════════════════════════════════
+// ===================================================================
 
 function NextActionsSection({ prefix }: { prefix: string }) {
   const { data: todayRituals } = useTodayRituals();
@@ -347,7 +328,7 @@ function NextActionsSection({ prefix }: { prefix: string }) {
       items.push({
         id: "lesson",
         icon: BookOpen,
-        iconColor: "text-blue-500",
+        iconColor: "text-primary",
         title: nextLesson.lesson.title,
         description: `Suite de : ${nextLesson.course.title}`,
         href: `${prefix}/school`,
@@ -358,7 +339,7 @@ function NextActionsSection({ prefix }: { prefix: string }) {
     items.push({
       id: "journal",
       icon: PenLine,
-      iconColor: "text-purple-500",
+      iconColor: "text-zinc-700",
       title: "Ecrire dans ton journal",
       description: "Partage tes reflexions du jour",
       href: `${prefix}/journal`,
@@ -370,46 +351,39 @@ function NextActionsSection({ prefix }: { prefix: string }) {
   if (actions.length === 0) return null;
 
   return (
-    <div
-      className="bg-surface rounded-2xl overflow-hidden"
-      style={{ boxShadow: "var(--shadow-card)" }}
-    >
+    <div className="bg-white border border-zinc-200 rounded-[14px] overflow-hidden">
       {/* Header */}
-      <div className="px-5 py-4 border-b border-border">
+      <div className="px-5 py-4 border-b border-zinc-200">
         <div className="flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-primary" />
-          <h3 className="text-[13px] font-semibold text-foreground">
+          <Sparkles className="size-4 text-primary" />
+          <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
             Prochaines etapes
           </h3>
         </div>
       </div>
 
       {/* Action items */}
-      <div className="divide-y divide-border">
+      <div className="divide-y divide-zinc-100">
         {actions.map((action) => {
           const Icon = action.icon;
           return (
             <Link
               key={action.id}
               href={action.href}
-              className="flex items-center gap-4 px-5 py-4 hover:bg-muted/50 transition-colors group"
+              className="flex items-center gap-4 px-5 py-4 hover:bg-zinc-50 transition-colors group"
             >
-              <div
-                className={cn(
-                  "w-10 h-10 rounded-xl bg-muted flex items-center justify-center shrink-0 transition-transform group-hover:scale-105",
-                )}
-              >
-                <Icon className={cn("w-5 h-5", action.iconColor)} />
+              <div className="size-9 rounded-lg bg-zinc-50 flex items-center justify-center shrink-0">
+                <Icon className={cn("size-4", action.iconColor)} />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-foreground truncate">
                   {action.title}
                 </p>
-                <p className="text-[11px] text-muted-foreground">
+                <p className="text-xs text-muted-foreground">
                   {action.description}
                 </p>
               </div>
-              <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0 group-hover:text-foreground transition-colors" />
+              <ChevronRight className="size-4 text-muted-foreground shrink-0 group-hover:text-foreground transition-colors" />
             </Link>
           );
         })}
@@ -418,9 +392,9 @@ function NextActionsSection({ prefix }: { prefix: string }) {
   );
 }
 
-// ═════════════════════════════════════════════════════════════════
+// ===================================================================
 // COURSE PROGRESS SECTION
-// ═════════════════════════════════════════════════════════════════
+// ===================================================================
 
 function CourseProgressSection({ prefix }: { prefix: string }) {
   const { data: courses, isLoading } = useCourses("published");
@@ -464,13 +438,10 @@ function CourseProgressSection({ prefix }: { prefix: string }) {
   }, [courses, lessonProgress]);
 
   return (
-    <div
-      className="bg-surface rounded-2xl p-6"
-      style={{ boxShadow: "var(--shadow-card)" }}
-    >
+    <div className="bg-white border border-zinc-200 rounded-[14px] p-5">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-          <GraduationCap className="w-4 h-4 text-primary" />
+        <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+          <GraduationCap className="size-4 text-primary" />
           Formations en cours
         </h3>
         <Link
@@ -484,9 +455,9 @@ function CourseProgressSection({ prefix }: { prefix: string }) {
       {isLoading ? (
         <div className="space-y-4">
           {Array.from({ length: 2 }).map((_, i) => (
-            <div key={i} className="animate-shimmer">
-              <div className="h-4 w-40 bg-muted rounded-lg mb-2" />
-              <div className="h-2 bg-muted rounded-full" />
+            <div key={i} className="animate-pulse">
+              <div className="h-4 w-40 bg-zinc-100 rounded mb-2" />
+              <div className="h-2 bg-zinc-100 rounded-full" />
             </div>
           ))}
         </div>
@@ -503,9 +474,9 @@ function CourseProgressSection({ prefix }: { prefix: string }) {
                     {completedLessons}/{totalLessons}
                   </span>
                 </div>
-                <div className="h-2 bg-muted rounded-full overflow-hidden">
+                <div className="h-1.5 bg-zinc-100 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-primary to-primary/70 rounded-full transition-all duration-700"
+                    className="h-full bg-primary rounded-full transition-all duration-700"
                     style={{ width: `${percent}%` }}
                   />
                 </div>
@@ -525,21 +496,18 @@ function CourseProgressSection({ prefix }: { prefix: string }) {
   );
 }
 
-// ═════════════════════════════════════════════════════════════════
+// ===================================================================
 // GOAL PROGRESS SECTION
-// ═════════════════════════════════════════════════════════════════
+// ===================================================================
 
 function GoalProgressSection({ prefix }: { prefix: string }) {
   const { activeGoals, isLoading } = useCoachingGoals();
 
   return (
-    <div
-      className="bg-surface rounded-2xl p-6"
-      style={{ boxShadow: "var(--shadow-card)" }}
-    >
+    <div className="bg-white border border-zinc-200 rounded-[14px] p-5">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-          <Target className="w-4 h-4 text-amber-500" />
+        <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+          <Target className="size-4 text-amber-500" />
           Objectifs actifs
         </h3>
         <Link
@@ -553,7 +521,10 @@ function GoalProgressSection({ prefix }: { prefix: string }) {
       {isLoading ? (
         <div className="space-y-3">
           {Array.from({ length: 2 }).map((_, i) => (
-            <div key={i} className="h-12 bg-muted rounded-xl animate-shimmer" />
+            <div
+              key={i}
+              className="h-12 bg-zinc-50 rounded-xl animate-pulse"
+            />
           ))}
         </div>
       ) : activeGoals.length > 0 ? (
@@ -570,7 +541,7 @@ function GoalProgressSection({ prefix }: { prefix: string }) {
                 : 0;
 
             return (
-              <div key={goal.id} className="p-3 rounded-xl bg-muted/30">
+              <div key={goal.id} className="p-3 rounded-xl bg-zinc-50">
                 <div className="flex items-center justify-between mb-1.5">
                   <p className="text-sm font-medium text-foreground truncate max-w-[200px]">
                     {goal.title}
@@ -583,9 +554,9 @@ function GoalProgressSection({ prefix }: { prefix: string }) {
                   ) : null}
                 </div>
                 {goal.target_value ? (
-                  <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                  <div className="h-1.5 bg-zinc-200 rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-gradient-to-r from-amber-400 to-amber-600 rounded-full transition-all duration-700"
+                      className="h-full bg-amber-500 rounded-full transition-all duration-700"
                       style={{ width: `${progress}%` }}
                     />
                   </div>
@@ -607,22 +578,19 @@ function GoalProgressSection({ prefix }: { prefix: string }) {
   );
 }
 
-// ═════════════════════════════════════════════════════════════════
+// ===================================================================
 // RECENT JOURNAL SECTION
-// ═════════════════════════════════════════════════════════════════
+// ===================================================================
 
 function RecentJournalSection({ prefix }: { prefix: string }) {
   const { entries, isLoading } = useJournal();
   const recentEntries = entries.slice(0, 3);
 
   return (
-    <div
-      className="bg-surface rounded-2xl p-6"
-      style={{ boxShadow: "var(--shadow-card)" }}
-    >
+    <div className="bg-white border border-zinc-200 rounded-[14px] p-5">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-          <PenLine className="w-4 h-4 text-purple-500" />
+        <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+          <PenLine className="size-4 text-zinc-700" />
           Journal recent
         </h3>
         <Link
@@ -636,18 +604,21 @@ function RecentJournalSection({ prefix }: { prefix: string }) {
       {isLoading ? (
         <div className="space-y-3">
           {Array.from({ length: 2 }).map((_, i) => (
-            <div key={i} className="h-12 bg-muted rounded-xl animate-shimmer" />
+            <div
+              key={i}
+              className="h-12 bg-zinc-50 rounded-xl animate-pulse"
+            />
           ))}
         </div>
       ) : recentEntries.length > 0 ? (
-        <div className="space-y-3">
+        <div className="space-y-2">
           {recentEntries.map((entry) => {
             const dateStr = new Date(entry.created_at).toLocaleDateString(
               "fr-FR",
               { day: "numeric", month: "short" },
             );
             return (
-              <div key={entry.id} className="p-3 rounded-xl bg-muted/30 group">
+              <div key={entry.id} className="p-3 rounded-xl bg-zinc-50">
                 <div className="flex items-center justify-between mb-1">
                   <p className="text-sm font-medium text-foreground truncate max-w-[200px]">
                     {entry.title}
@@ -661,7 +632,7 @@ function RecentJournalSection({ prefix }: { prefix: string }) {
                     {entry.tags.slice(0, 3).map((tag) => (
                       <span
                         key={tag}
-                        className="text-[9px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground"
+                        className="text-[9px] px-1.5 py-0.5 rounded-full bg-zinc-200/60 text-muted-foreground"
                       >
                         {tag}
                       </span>
@@ -689,9 +660,9 @@ function RecentJournalSection({ prefix }: { prefix: string }) {
   );
 }
 
-// ═════════════════════════════════════════════════════════════════
+// ===================================================================
 // BADGES SECTION
-// ═════════════════════════════════════════════════════════════════
+// ===================================================================
 
 function BadgesSection() {
   const { summary, isLoading } = useXp();
@@ -700,13 +671,10 @@ function BadgesSection() {
   const recentBadges = badges.slice(0, 5);
 
   return (
-    <div
-      className="bg-surface rounded-2xl p-6"
-      style={{ boxShadow: "var(--shadow-card)" }}
-    >
+    <div className="bg-white border border-zinc-200 rounded-[14px] p-5">
       <div className="flex items-center gap-2 mb-4">
-        <Trophy className="w-4 h-4 text-amber-500" />
-        <h3 className="text-sm font-semibold text-foreground">
+        <Trophy className="size-4 text-amber-500" />
+        <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
           Badges obtenus
         </h3>
         <span className="ml-auto text-xs text-muted-foreground tabular-nums">
@@ -719,7 +687,7 @@ function BadgesSection() {
           {Array.from({ length: 3 }).map((_, i) => (
             <div
               key={i}
-              className="w-12 h-12 bg-muted rounded-xl animate-shimmer"
+              className="size-12 bg-zinc-50 rounded-xl animate-pulse"
             />
           ))}
         </div>
@@ -728,11 +696,11 @@ function BadgesSection() {
           {recentBadges.map((userBadge) => (
             <div
               key={userBadge.id}
-              className="flex flex-col items-center gap-1.5 p-2 rounded-xl bg-gradient-to-b from-amber-500/5 to-transparent border border-amber-500/10"
+              className="flex flex-col items-center gap-1.5 p-2 rounded-xl bg-zinc-50 border border-zinc-200"
               title={userBadge.badge?.description ?? userBadge.badge?.name}
             >
-              <div className="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center text-lg">
-                {userBadge.badge?.icon ?? "🏅"}
+              <div className="size-10 rounded-lg bg-amber-50 flex items-center justify-center text-lg">
+                {userBadge.badge?.icon ?? "\ud83c\udfc5"}
               </div>
               <span className="text-[9px] font-medium text-foreground text-center max-w-[60px] truncate">
                 {userBadge.badge?.name ?? "Badge"}
@@ -748,10 +716,10 @@ function BadgesSection() {
 
       {/* Upsell offer card */}
       {offers && offers.length > 0 && (
-        <div className="mt-4 pt-4 border-t border-border">
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-primary/5 to-amber-500/5 border border-primary/10">
-            <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-              <Gift className="w-4.5 h-4.5 text-primary" />
+        <div className="mt-4 pt-4 border-t border-zinc-200">
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-zinc-50 border border-zinc-200">
+            <div className="size-8 rounded-lg bg-primary/5 flex items-center justify-center shrink-0">
+              <Gift className="size-4 text-primary" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-xs font-medium text-foreground">
@@ -762,7 +730,7 @@ function BadgesSection() {
                   "Decouvre notre offre exclusive"}
               </p>
             </div>
-            <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
+            <ChevronRight className="size-4 text-muted-foreground shrink-0" />
           </div>
         </div>
       )}
@@ -770,22 +738,19 @@ function BadgesSection() {
   );
 }
 
-// ═════════════════════════════════════════════════════════════════
+// ===================================================================
 // COMMUNITY HIGHLIGHTS SECTION
-// ═════════════════════════════════════════════════════════════════
+// ===================================================================
 
 function CommunitySection({ prefix }: { prefix: string }) {
   const { data: announcements, isLoading } = useAnnouncements();
   const recentAnnouncements = (announcements ?? []).slice(0, 3);
 
   return (
-    <div
-      className="bg-surface rounded-2xl p-6"
-      style={{ boxShadow: "var(--shadow-card)" }}
-    >
+    <div className="bg-white border border-zinc-200 rounded-[14px] p-5">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-          <Megaphone className="w-4 h-4 text-blue-500" />
+        <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+          <Megaphone className="size-4 text-primary" />
           Actualites
         </h3>
         <Link
@@ -799,11 +764,14 @@ function CommunitySection({ prefix }: { prefix: string }) {
       {isLoading ? (
         <div className="space-y-3">
           {Array.from({ length: 2 }).map((_, i) => (
-            <div key={i} className="h-12 bg-muted rounded-xl animate-shimmer" />
+            <div
+              key={i}
+              className="h-12 bg-zinc-50 rounded-xl animate-pulse"
+            />
           ))}
         </div>
       ) : recentAnnouncements.length > 0 ? (
-        <div className="space-y-3">
+        <div className="space-y-2">
           {recentAnnouncements.map((ann) => {
             const dateStr = new Date(ann.created_at).toLocaleDateString(
               "fr-FR",
@@ -812,23 +780,23 @@ function CommunitySection({ prefix }: { prefix: string }) {
             return (
               <div
                 key={ann.id}
-                className="p-3 rounded-xl bg-muted/30 flex items-start gap-3"
+                className="p-3 rounded-xl bg-zinc-50 flex items-start gap-3"
               >
                 <div
                   className={cn(
-                    "w-8 h-8 rounded-lg flex items-center justify-center shrink-0",
+                    "size-8 rounded-lg flex items-center justify-center shrink-0",
                     ann.type === "info"
-                      ? "bg-blue-500/10"
+                      ? "bg-blue-50"
                       : ann.type === "success"
-                        ? "bg-emerald-500/10"
+                        ? "bg-emerald-50"
                         : ann.type === "warning"
-                          ? "bg-amber-500/10"
-                          : "bg-muted",
+                          ? "bg-amber-50"
+                          : "bg-zinc-100",
                   )}
                 >
                   <Megaphone
                     className={cn(
-                      "w-4 h-4",
+                      "size-4",
                       ann.type === "info"
                         ? "text-blue-500"
                         : ann.type === "success"

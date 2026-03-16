@@ -149,16 +149,16 @@ export default function ClientsPage() {
         <div className="flex items-center gap-2">
           <button
             onClick={handleExportCSV}
-            className="h-9 px-3 rounded-xl border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-all duration-200 flex items-center gap-2"
+            className="h-8 px-3 rounded-lg border border-border text-[13px] text-muted-foreground hover:text-foreground hover:border-zinc-300 transition-all duration-200 flex items-center gap-1.5"
           >
-            <Download className="w-4 h-4" />
+            <Download className="w-3.5 h-3.5" />
             Export{selectedIds.size > 0 ? ` (${selectedIds.size})` : ""}
           </button>
           <button
             onClick={() => setShowAddModal(true)}
-            className="h-9 px-4 rounded-xl bg-red-600 text-white text-sm font-medium hover:bg-red-700 transition-all duration-200 active:scale-[0.98] flex items-center gap-2"
+            className="h-8 px-3.5 rounded-lg bg-primary text-white text-[13px] font-medium hover:bg-primary/90 transition-all duration-200 active:scale-[0.98] flex items-center gap-1.5"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-3.5 h-3.5" />
             Ajouter
           </button>
         </div>
@@ -169,10 +169,10 @@ export default function ClientsPage() {
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-red-600/5 border border-red-600/20 rounded-xl p-3 flex items-center gap-3 flex-wrap"
+          className="bg-primary/5 border border-primary/10 rounded-lg p-2.5 flex items-center gap-2.5 flex-wrap"
         >
-          <span className="text-sm font-medium text-foreground flex items-center gap-2">
-            <CheckSquare className="w-4 h-4 text-red-600" />
+          <span className="text-[13px] font-medium text-foreground flex items-center gap-1.5 pl-1">
+            <CheckSquare className="w-3.5 h-3.5 text-primary" />
             {selectedIds.size} selectionne{selectedIds.size > 1 ? "s" : ""}
           </span>
 
@@ -182,7 +182,7 @@ export default function ClientsPage() {
             <button
               onClick={() => setBulkAction(bulkAction === "tag" ? null : "tag")}
               disabled={bulkLoading}
-              className="h-8 px-3 rounded-lg border border-border text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center gap-1.5 disabled:opacity-50"
+              className="h-7 px-2.5 rounded-md border border-border text-[11px] font-medium text-muted-foreground hover:text-foreground hover:border-zinc-300 transition-colors flex items-center gap-1 disabled:opacity-50"
             >
               {bulkLoading ? (
                 <Loader2 className="w-3 h-3 animate-spin" />
@@ -192,16 +192,16 @@ export default function ClientsPage() {
               Changer le tag
             </button>
             {bulkAction === "tag" && (
-              <div className="absolute top-full mt-1 right-0 bg-surface border border-border rounded-xl shadow-lg z-50 py-1 w-40">
+              <div className="absolute top-full mt-1 right-0 bg-white border border-border rounded-lg shadow-sm z-50 py-0.5 w-36">
                 {STUDENT_TAGS.map((tag) => (
                   <button
                     key={tag.value}
                     onClick={() => handleBulkTag(tag.value)}
-                    className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted transition-colors text-left"
+                    className="w-full flex items-center gap-2 px-2.5 py-1.5 text-[13px] hover:bg-muted/50 transition-colors text-left"
                   >
                     <span
                       className={cn(
-                        "w-2 h-2 rounded-full",
+                        "w-1.5 h-1.5 rounded-full",
                         tag.color.split(" ")[0].replace("text-", "bg-"),
                       )}
                     />
@@ -214,9 +214,9 @@ export default function ClientsPage() {
 
           <button
             onClick={clearSelection}
-            className="h-8 px-2 rounded-lg text-muted-foreground hover:text-foreground transition-colors"
+            className="h-7 w-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors flex items-center justify-center"
           >
-            <X className="w-4 h-4" />
+            <X className="w-3.5 h-3.5" />
           </button>
         </motion.div>
       )}
@@ -227,16 +227,16 @@ export default function ClientsPage() {
         className="flex flex-col sm:flex-row gap-3"
       >
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/60" />
           <input
             type="text"
             placeholder="Rechercher un client..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full h-10 pl-10 pr-4 bg-surface border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-red-600/20 focus:border-red-600/30 transition-all duration-200"
+            className="w-full h-9 pl-9 pr-4 bg-muted/50 rounded-lg text-sm text-foreground placeholder:text-muted-foreground/60 border-0 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all duration-200"
           />
         </div>
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
+        <div className="flex items-center gap-1 overflow-x-auto pb-1">
           <SavedSegments
             currentFilters={{
               tag: activeTag !== "all" ? activeTag : undefined,
@@ -245,40 +245,41 @@ export default function ClientsPage() {
             onApplySegment={handleApplySegment}
             hasActiveFilters={hasActiveFilters}
           />
-          <div className="w-px h-5 bg-border/50 mx-0.5" />
-          <button
-            onClick={() => setActiveTag("all")}
-            className={cn(
-              "h-8 px-3 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-200",
-              activeTag === "all"
-                ? "bg-foreground text-background"
-                : "bg-muted text-muted-foreground hover:text-foreground",
-            )}
-          >
-            Tous
-          </button>
-          {STUDENT_TAGS.map((tag) => (
+          <div className="w-px h-4 bg-border/40 mx-1" />
+          <div className="flex items-center bg-muted rounded-lg p-0.5">
             <button
-              key={tag.value}
-              onClick={() => setActiveTag(tag.value)}
+              onClick={() => setActiveTag("all")}
               className={cn(
-                "h-8 px-3 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-200",
-                activeTag === tag.value
-                  ? "bg-foreground text-background"
-                  : "bg-muted text-muted-foreground hover:text-foreground",
+                "h-7 px-2.5 rounded-md text-[11px] font-medium whitespace-nowrap transition-all duration-200",
+                activeTag === "all"
+                  ? "bg-white text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground",
               )}
             >
-              {tag.label}
+              Tous
             </button>
-          ))}
+            {STUDENT_TAGS.map((tag) => (
+              <button
+                key={tag.value}
+                onClick={() => setActiveTag(tag.value)}
+                className={cn(
+                  "h-7 px-2.5 rounded-md text-[11px] font-medium whitespace-nowrap transition-all duration-200",
+                  activeTag === tag.value
+                    ? "bg-white text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                {tag.label}
+              </button>
+            ))}
+          </div>
         </div>
       </motion.div>
 
       {/* Table */}
       <motion.div
         variants={staggerItem}
-        className="bg-surface rounded-2xl overflow-hidden"
-        style={{ boxShadow: "var(--shadow-card)" }}
+        className="bg-white border border-border rounded-xl overflow-hidden"
       >
         {isLoading ? (
           <div className="p-6 space-y-4">
@@ -302,8 +303,8 @@ export default function ClientsPage() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-border/50">
-                  <th className="w-10 px-3 py-3">
+                <tr className="border-b border-border">
+                  <th className="w-10 px-3 py-2.5">
                     <input
                       type="checkbox"
                       checked={
@@ -311,25 +312,25 @@ export default function ClientsPage() {
                         students.length > 0
                       }
                       onChange={toggleSelectAll}
-                      className="w-4 h-4 rounded border-border text-red-600 focus:ring-red-600/20 cursor-pointer"
+                      className="w-3.5 h-3.5 rounded border-zinc-300 text-primary focus:ring-primary/20 cursor-pointer"
                     />
                   </th>
-                  <th className="text-left text-[11px] font-medium text-muted-foreground uppercase tracking-wider px-5 py-3">
+                  <th className="text-left text-[11px] font-medium text-muted-foreground/70 uppercase tracking-wider px-4 py-2.5">
                     Client
                   </th>
-                  <th className="text-left text-[11px] font-medium text-muted-foreground uppercase tracking-wider px-5 py-3 hidden md:table-cell">
+                  <th className="text-left text-[11px] font-medium text-muted-foreground/70 uppercase tracking-wider px-4 py-2.5 hidden md:table-cell">
                     Tag
                   </th>
-                  <th className="text-left text-[11px] font-medium text-muted-foreground uppercase tracking-wider px-5 py-3 hidden lg:table-cell">
+                  <th className="text-left text-[11px] font-medium text-muted-foreground/70 uppercase tracking-wider px-4 py-2.5 hidden lg:table-cell">
                     Progression
                   </th>
-                  <th className="text-left text-[11px] font-medium text-muted-foreground uppercase tracking-wider px-5 py-3 hidden md:table-cell">
+                  <th className="text-left text-[11px] font-medium text-muted-foreground/70 uppercase tracking-wider px-4 py-2.5 hidden md:table-cell">
                     Revenus
                   </th>
-                  <th className="text-left text-[11px] font-medium text-muted-foreground uppercase tracking-wider px-5 py-3 hidden lg:table-cell">
+                  <th className="text-left text-[11px] font-medium text-muted-foreground/70 uppercase tracking-wider px-4 py-2.5 hidden lg:table-cell">
                     Score
                   </th>
-                  <th className="text-left text-[11px] font-medium text-muted-foreground uppercase tracking-wider px-5 py-3 hidden lg:table-cell">
+                  <th className="text-left text-[11px] font-medium text-muted-foreground/70 uppercase tracking-wider px-4 py-2.5 hidden lg:table-cell">
                     Activite
                   </th>
                   <th className="w-10" />
@@ -347,41 +348,41 @@ export default function ClientsPage() {
                     <tr
                       key={student.id}
                       className={cn(
-                        "border-b border-border/30 last:border-0 hover:bg-muted/30 transition-colors duration-200 group",
-                        isSelected && "bg-red-600/5",
+                        "border-b border-border/50 last:border-0 hover:bg-muted/20 transition-colors duration-150 group",
+                        isSelected && "bg-primary/[0.03]",
                       )}
                     >
-                      <td className="px-3 py-3.5">
+                      <td className="px-3 py-2.5">
                         <input
                           type="checkbox"
                           checked={isSelected}
                           onChange={() => toggleSelect(student.id)}
-                          className="w-4 h-4 rounded border-border text-red-600 focus:ring-red-600/20 cursor-pointer"
+                          className="w-3.5 h-3.5 rounded border-zinc-300 text-primary focus:ring-primary/20 cursor-pointer"
                         />
                       </td>
-                      <td className="px-5 py-3.5">
+                      <td className="px-4 py-2.5">
                         <button
                           onClick={() => setSelectedStudentId(student.id)}
-                          className="flex items-center gap-3 text-left"
+                          className="flex items-center gap-2.5 text-left"
                         >
-                          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-red-600/10 to-red-600/5 flex items-center justify-center text-xs text-red-600 font-medium shrink-0">
+                          <div className="w-8 h-8 rounded-full bg-zinc-100 flex items-center justify-center text-[11px] text-zinc-600 font-medium shrink-0">
                             {getInitials(student.full_name)}
                           </div>
                           <div>
-                            <p className="text-[13px] font-medium text-foreground hover:text-red-600 transition-colors">
+                            <p className="text-[13px] font-medium text-foreground hover:text-primary transition-colors">
                               {student.full_name}
                             </p>
-                            <p className="text-[11px] text-muted-foreground">
+                            <p className="text-[11px] text-muted-foreground/70">
                               {student.email}
                             </p>
                           </div>
                         </button>
                       </td>
-                      <td className="px-5 py-3.5 hidden md:table-cell">
+                      <td className="px-4 py-2.5 hidden md:table-cell">
                         {tag && (
                           <span
                             className={cn(
-                              "inline-flex items-center h-6 px-2.5 rounded-full text-[11px] font-medium",
+                              "inline-flex items-center h-5 px-2 rounded-md text-[10px] font-medium",
                               tag.color,
                             )}
                           >
@@ -389,56 +390,54 @@ export default function ClientsPage() {
                           </span>
                         )}
                       </td>
-                      <td className="px-5 py-3.5 hidden lg:table-cell">
-                        <div className="flex items-center gap-2 w-28">
-                          <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
+                      <td className="px-4 py-2.5 hidden lg:table-cell">
+                        <div className="flex items-center gap-2 w-24">
+                          <div className="flex-1 h-1 bg-zinc-100 rounded-full overflow-hidden">
                             <div
-                              className="h-full rounded-full bg-gradient-to-r from-red-600 to-red-400 transition-all duration-500"
+                              className="h-full rounded-full bg-primary transition-all duration-500"
                               style={{ width: `${score}%` }}
                             />
                           </div>
-                          <span className="text-[11px] text-muted-foreground font-mono tabular-nums w-8 text-right">
+                          <span className="text-[11px] text-muted-foreground font-mono tabular-nums w-7 text-right">
                             {score}%
                           </span>
                         </div>
                       </td>
-                      <td className="px-5 py-3.5 hidden md:table-cell">
+                      <td className="px-4 py-2.5 hidden md:table-cell">
                         <span className="text-[13px] text-foreground font-mono tabular-nums">
                           {formatCurrency(Number(details?.revenue ?? 0))}
                         </span>
                       </td>
-                      <td className="px-5 py-3.5 hidden lg:table-cell">
-                        <div className="flex items-center gap-2">
-                          <div className="flex items-center gap-1.5">
-                            <div
-                              className={cn(
-                                "w-2 h-2 rounded-full",
-                                score >= 70
-                                  ? "bg-success"
-                                  : score >= 40
-                                    ? "bg-warning"
-                                    : "bg-error",
-                              )}
-                            />
-                            <span className="text-[13px] text-foreground font-mono tabular-nums">
-                              {score}
-                            </span>
-                          </div>
+                      <td className="px-4 py-2.5 hidden lg:table-cell">
+                        <div className="flex items-center gap-1.5">
+                          <div
+                            className={cn(
+                              "w-1.5 h-1.5 rounded-full",
+                              score >= 70
+                                ? "bg-emerald-500"
+                                : score >= 40
+                                  ? "bg-amber-500"
+                                  : "bg-red-500",
+                            )}
+                          />
+                          <span className="text-[13px] text-foreground font-mono tabular-nums">
+                            {score}
+                          </span>
                         </div>
                       </td>
-                      <td className="px-5 py-3.5 hidden lg:table-cell">
-                        <span className="text-[11px] text-muted-foreground font-mono">
+                      <td className="px-4 py-2.5 hidden lg:table-cell">
+                        <span className="text-[11px] text-muted-foreground/70 font-mono">
                           {details?.last_engagement_at
                             ? formatDate(details.last_engagement_at, "relative")
                             : "-"}
                         </span>
                       </td>
-                      <td className="px-5 py-3.5">
+                      <td className="px-4 py-2.5">
                         <button
                           onClick={() => setSelectedStudentId(student.id)}
-                          className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-all duration-200 opacity-0 group-hover:opacity-100"
+                          className="w-7 h-7 rounded-md flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-150 opacity-0 group-hover:opacity-100"
                         >
-                          <ChevronRight className="w-4 h-4" />
+                          <ChevronRight className="w-3.5 h-3.5" />
                         </button>
                       </td>
                     </tr>

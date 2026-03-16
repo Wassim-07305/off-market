@@ -31,12 +31,12 @@ import {
 } from "lucide-react";
 
 const CHART_COLORS = [
-  "hsl(var(--primary))",
+  "#AF0000",
   "#10b981",
   "#f59e0b",
-  "#ef4444",
   "#8b5cf6",
   "#06b6d4",
+  "#3b82f6",
 ];
 
 export function FinancialDashboard() {
@@ -53,12 +53,12 @@ export function FinancialDashboard() {
       <div className="space-y-6">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[...Array(8)].map((_, i) => (
-            <div key={i} className="h-28 bg-muted animate-pulse rounded-xl" />
+            <div key={i} className="h-28 bg-muted/50 animate-pulse rounded-[14px]" />
           ))}
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="h-72 bg-muted animate-pulse rounded-xl" />
-          <div className="h-72 bg-muted animate-pulse rounded-xl" />
+          <div className="h-72 bg-muted/50 animate-pulse rounded-[14px]" />
+          <div className="h-72 bg-muted/50 animate-pulse rounded-[14px]" />
         </div>
       </div>
     );
@@ -151,13 +151,13 @@ export function FinancialDashboard() {
           return (
             <div
               key={kpi.label}
-              className="bg-surface border border-border rounded-xl p-5"
+              className="bg-white border border-border rounded-[14px] p-4"
             >
-              <div className="flex items-center gap-3 mb-3">
+              <div className="flex items-center gap-3 mb-2.5">
                 <div
-                  className={`w-10 h-10 rounded-lg ${kpi.bgColor} flex items-center justify-center`}
+                  className={`w-9 h-9 rounded-[10px] ${kpi.bgColor} flex items-center justify-center`}
                 >
-                  <Icon className={`w-5 h-5 ${kpi.color}`} />
+                  <Icon className={`w-4 h-4 ${kpi.color}`} />
                 </div>
                 {kpi.trend !== undefined && (
                   <span
@@ -174,7 +174,7 @@ export function FinancialDashboard() {
                   </span>
                 )}
               </div>
-              <p className="text-xl font-semibold text-foreground">
+              <p className="text-lg font-semibold text-foreground">
                 {kpi.value}
               </p>
               <p className="text-xs text-muted-foreground mt-1">{kpi.label}</p>
@@ -191,7 +191,7 @@ export function FinancialDashboard() {
       {/* Charts row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Revenue over time */}
-        <div className="bg-surface border border-border rounded-xl p-6">
+        <div className="bg-white border border-border rounded-[14px] p-5">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="text-sm font-semibold text-foreground">
@@ -292,7 +292,7 @@ export function FinancialDashboard() {
         </div>
 
         {/* Revenue by channel */}
-        <div className="bg-surface border border-border rounded-xl p-6">
+        <div className="bg-white border border-border rounded-[14px] p-5">
           <div className="mb-4">
             <h3 className="text-sm font-semibold text-foreground">
               Revenus par canal
@@ -365,7 +365,7 @@ export function FinancialDashboard() {
       </div>
 
       {/* Monthly bar chart */}
-      <div className="bg-surface border border-border rounded-xl p-6">
+      <div className="bg-white border border-border rounded-[14px] p-5">
         <div className="mb-4">
           <h3 className="text-sm font-semibold text-foreground">
             Flux de tresorerie mensuel
@@ -400,7 +400,7 @@ export function FinancialDashboard() {
                     fontSize: 12,
                   }}
                 />
-                <Bar dataKey="collected" fill="#10b981" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="collected" fill="#AF0000" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           ) : (

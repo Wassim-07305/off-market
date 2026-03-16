@@ -78,33 +78,30 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
     <aside
       className={cn(
         "fixed left-0 top-0 h-screen flex flex-col transition-all duration-300 z-40 hidden lg:flex",
-        "bg-[var(--sidebar-bg)]",
-        sidebarCollapsed ? "w-[72px]" : "w-[260px]",
+        "bg-[#18181B]",
+        sidebarCollapsed ? "w-[68px]" : "w-[248px]",
       )}
     >
       {/* Logo */}
       <div
         className={cn(
-          "h-16 flex items-center px-4 shrink-0",
-          sidebarCollapsed ? "justify-center" : "gap-3",
+          "h-14 flex items-center px-3 shrink-0",
+          sidebarCollapsed ? "justify-center" : "gap-2.5",
         )}
       >
         <Link
           href={`/${variant}/dashboard`}
-          className="flex items-center gap-3 group"
+          className="flex items-center gap-2.5 group"
         >
-          <div className="relative">
-            <img
-              src={branding?.logo_url || "/logo.png"}
-              alt={branding?.app_name || "Off Market"}
-              width={34}
-              height={34}
-              className="rounded-xl shrink-0 transition-transform duration-300 group-hover:scale-105"
-            />
-            <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-primary/10 blur-md" />
-          </div>
+          <img
+            src={branding?.logo_url || "/logo.png"}
+            alt={branding?.app_name || "Off Market"}
+            width={30}
+            height={30}
+            className="rounded-lg shrink-0 transition-transform duration-200 group-hover:scale-105"
+          />
           {!sidebarCollapsed && (
-            <span className="text-lg text-[var(--sidebar-text-active)] font-display font-bold tracking-tight">
+            <span className="text-[15px] text-white font-display font-bold tracking-tight">
               {branding?.app_name || "Off Market"}
             </span>
           )}
@@ -112,7 +109,7 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 py-3 px-3 space-y-0.5 overflow-y-auto">
+      <nav className="flex-1 py-2 px-2 space-y-px overflow-y-auto">
         {navigation.map((item) => {
           const isActive =
             pathname === item.href || pathname.startsWith(item.href + "/");
@@ -125,40 +122,40 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
           return (
             <div key={item.name}>
               {showSeparator && (
-                <div className="my-2 mx-3 h-px bg-white/[0.06]" />
+                <div className="my-2 mx-2 h-px bg-white/[0.06]" />
               )}
               <Link
                 href={item.href}
                 data-tour={tourMap[item.name]}
                 className={cn(
-                  "relative flex items-center gap-3 h-10 rounded-xl px-3 transition-all duration-200 group",
+                  "relative flex items-center gap-2.5 h-9 rounded-lg px-2.5 transition-colors duration-150 group",
                   isActive
-                    ? "bg-primary/[0.08] text-[var(--sidebar-text-active)]"
-                    : "text-[var(--sidebar-text)] hover:text-[var(--sidebar-text-active)] hover:bg-white/[0.04]",
+                    ? "bg-white/10 text-white"
+                    : "text-zinc-400 hover:text-white hover:bg-white/[0.06]",
                   sidebarCollapsed && "justify-center px-0",
                 )}
               >
-                {/* Active indicator bar with glow */}
+                {/* Active indicator bar */}
                 {isActive && (
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-full bg-primary shadow-[0_0_8px_rgba(196,30,58,0.4)]" />
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 rounded-r-full bg-[var(--primary,#AF0000)]" />
                 )}
                 <item.icon
                   className={cn(
-                    "w-[18px] h-[18px] shrink-0 transition-all duration-200",
+                    "w-4 h-4 shrink-0 transition-colors duration-150",
                     isActive
-                      ? "text-primary drop-shadow-[0_0_6px_rgba(196,30,58,0.3)]"
-                      : "group-hover:text-[var(--sidebar-text-active)]",
+                      ? "text-white"
+                      : "text-zinc-500 group-hover:text-white",
                   )}
                 />
                 {!sidebarCollapsed && (
-                  <span className="text-[13px] font-medium tracking-[-0.01em] truncate">
+                  <span className="text-[13px] font-medium truncate">
                     {item.name}
                   </span>
                 )}
                 {/* Tooltip when collapsed */}
                 {sidebarCollapsed && (
-                  <div className="absolute left-full ml-3 hidden lg:group-hover:block pointer-events-none z-50">
-                    <div className="bg-stone-800 rounded-lg px-2.5 py-1.5 text-xs font-medium text-white shadow-xl whitespace-nowrap">
+                  <div className="absolute left-full ml-2 hidden lg:group-hover:block pointer-events-none z-50">
+                    <div className="bg-zinc-800 rounded-md px-2 py-1 text-xs font-medium text-white shadow-lg whitespace-nowrap border border-zinc-700">
                       {item.name}
                     </div>
                   </div>
@@ -170,20 +167,20 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
       </nav>
 
       {/* Collapse button — desktop only */}
-      <div className="border-t border-white/[0.05] px-3 py-2 shrink-0 hidden lg:block">
+      <div className="border-t border-white/[0.06] px-2 py-1.5 shrink-0 hidden lg:block">
         <button
           onClick={toggleSidebar}
           className={cn(
-            "w-full h-9 rounded-xl flex items-center gap-3 transition-all duration-200 text-[var(--sidebar-text)] hover:text-[var(--sidebar-text-active)] hover:bg-white/[0.04]",
-            sidebarCollapsed ? "justify-center px-0" : "px-3",
+            "w-full h-8 rounded-lg flex items-center gap-2.5 transition-colors duration-150 text-zinc-400 hover:text-white hover:bg-white/[0.06]",
+            sidebarCollapsed ? "justify-center px-0" : "px-2.5",
           )}
           title={sidebarCollapsed ? "Ouvrir le menu" : "Reduire le menu"}
         >
           {sidebarCollapsed ? (
-            <PanelLeft className="w-[18px] h-[18px]" />
+            <PanelLeft className="w-4 h-4" />
           ) : (
             <>
-              <PanelLeftClose className="w-[18px] h-[18px]" />
+              <PanelLeftClose className="w-4 h-4" />
               <span className="text-[13px] font-medium">Reduire</span>
             </>
           )}
@@ -191,12 +188,12 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
       </div>
 
       {/* Profile section */}
-      <div className="border-t border-white/[0.05] p-3 shrink-0 space-y-1">
+      <div className="border-t border-white/[0.06] p-2 shrink-0 space-y-px">
         {/* Avatar + info */}
         <div
           className={cn(
-            "flex items-center gap-3 group",
-            sidebarCollapsed && "justify-center",
+            "flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg",
+            sidebarCollapsed && "justify-center px-0",
           )}
         >
           <div className="relative shrink-0">
@@ -204,32 +201,32 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
               <img
                 src={profile.avatar_url}
                 alt={profile.full_name ?? ""}
-                className="w-9 h-9 rounded-full object-cover ring-2 ring-primary/10"
+                className="w-8 h-8 rounded-full object-cover"
               />
             ) : (
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center text-xs text-primary font-semibold ring-2 ring-primary/10">
+              <div className="w-8 h-8 rounded-full bg-zinc-700 flex items-center justify-center text-[11px] text-zinc-300 font-semibold">
                 {loading ? "..." : initials || "U"}
               </div>
             )}
             {/* Online indicator */}
-            <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400 ring-2 ring-[var(--sidebar-bg)]" />
+            <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-[#18181B]" />
           </div>
           {!sidebarCollapsed && (
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-white truncate leading-tight">
+              <p className="text-[13px] font-medium text-white truncate leading-tight">
                 {loading
                   ? "Chargement..."
                   : (profile?.full_name ?? "Mon profil")}
               </p>
-              <p className="text-xs text-stone-500 capitalize truncate mt-0.5">
+              <p className="text-[11px] text-zinc-500 capitalize truncate">
                 {roleLabel}
               </p>
             </div>
           )}
           {/* Tooltip when collapsed */}
           {sidebarCollapsed && (
-            <div className="absolute left-full ml-3 hidden lg:group-hover:block pointer-events-none z-50">
-              <div className="bg-stone-800 rounded-lg px-2.5 py-1.5 text-xs font-medium text-white shadow-xl whitespace-nowrap">
+            <div className="absolute left-full ml-2 hidden lg:group-hover:block pointer-events-none z-50">
+              <div className="bg-zinc-800 rounded-md px-2 py-1 text-xs font-medium text-white shadow-lg whitespace-nowrap border border-zinc-700">
                 {profile?.full_name ?? "Mon profil"}
               </div>
             </div>
@@ -240,11 +237,11 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
         <Link
           href={settingsHref}
           className={cn(
-            "flex items-center gap-3 h-9 rounded-xl px-3 transition-all duration-200 text-[var(--sidebar-text)] hover:text-[var(--sidebar-text-active)] hover:bg-white/[0.04]",
+            "flex items-center gap-2.5 h-8 rounded-lg px-2.5 transition-colors duration-150 text-zinc-400 hover:text-white hover:bg-white/[0.06]",
             sidebarCollapsed && "justify-center px-0",
           )}
         >
-          <Settings className="w-[18px] h-[18px] shrink-0" />
+          <Settings className="w-4 h-4 shrink-0" />
           {!sidebarCollapsed && (
             <span className="text-[13px] font-medium">Paramètres</span>
           )}
@@ -254,11 +251,11 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
         <button
           onClick={signOut}
           className={cn(
-            "w-full flex items-center gap-3 h-9 rounded-xl px-3 transition-all duration-200 text-[var(--sidebar-text)] hover:text-red-400 hover:bg-red-500/10",
+            "w-full flex items-center gap-2.5 h-8 rounded-lg px-2.5 transition-colors duration-150 text-zinc-400 hover:text-red-400 hover:bg-red-500/10",
             sidebarCollapsed && "justify-center px-0",
           )}
         >
-          <LogOut className="w-[18px] h-[18px] shrink-0" />
+          <LogOut className="w-4 h-4 shrink-0" />
           {!sidebarCollapsed && (
             <span className="text-[13px] font-medium">Déconnexion</span>
           )}

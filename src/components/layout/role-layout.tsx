@@ -28,7 +28,7 @@ export function RoleLayout({ variant, children }: RoleLayoutProps) {
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loader2 className="w-6 h-6 text-muted-foreground animate-spin" />
+        <Loader2 className="w-5 h-5 text-muted-foreground animate-spin" />
       </div>
     );
   }
@@ -38,12 +38,14 @@ export function RoleLayout({ variant, children }: RoleLayoutProps) {
       <RoleSidebar variant={variant} />
       <div
         className={cn(
-          "transition-all duration-300",
-          sidebarCollapsed ? "lg:ml-[72px]" : "lg:ml-[260px]",
+          "transition-all duration-300 min-h-screen flex flex-col",
+          sidebarCollapsed ? "lg:ml-[68px]" : "lg:ml-[248px]",
         )}
       >
         <Header />
-        <main className="p-6 pb-24 lg:pb-6">{children}</main>
+        <main className="flex-1 p-5 pb-24 lg:p-6 lg:pb-6">
+          <div className="mx-auto max-w-[1400px]">{children}</div>
+        </main>
       </div>
       <RoleMobileNav variant={variant} />
       <CommandPalette />

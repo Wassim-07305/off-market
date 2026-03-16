@@ -19,6 +19,7 @@ import {
   CheckCircle,
   X,
 } from "lucide-react";
+import { useResolveAlert } from "@/hooks/use-coach-alerts";
 import { motion } from "framer-motion";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 import { cn } from "@/lib/utils";
@@ -36,11 +37,28 @@ export default function CoachDashboardPage() {
   const { profile } = useAuth();
   const { students, isLoading: studentsLoading } = useStudents({ limit: 200 });
   const {
-    alerts,
+    data: alertsRaw = [],
     isLoading: alertsLoading,
-    resolveAlert,
-  } = useCoachAlerts(false);
-  const { upcoming, isLoading: sessionsLoading } = useSessions();
+  } = useCoachAlerts();
+  const resolveAlert = useResolveAlert();
+
+  // Cast to coaching.ts CoachAlert shape (both types coexist)
+  const alerts = alertsRaw as unknown as Array<{
+    id: string;
+    alert_type: string;
+    severity: string;
+    title: string;
+    description: string | null;
+    client: { id: string; full_name: string; avatar_url: string | null } | null;
+  }>;
+  const { data: sessionsData, isLoading: sessionsLoading } = useSessions();
+  const upcoming = useMemo(() => {
+    if (!sessionsData) return [];
+    const now = new Date().toISOString();
+    return sessionsData.filter(
+      (s) => s.status === "scheduled" && s.scheduled_at > now,
+    );
+  }, [sessionsData]);
 
   const stats = useMemo(() => {
     const totalStudents = students.length;
@@ -69,14 +87,14 @@ export default function CoachDashboardPage() {
       variants={staggerContainer}
       initial="hidden"
       animate="visible"
-      className="space-y-8"
+      className="space-y-5"
     >
       {/* Header */}
       <motion.div variants={staggerItem}>
-        <h1 className="text-2xl font-display font-bold text-foreground tracking-tight">
+        <h1 className="text-lg font-semibold text-foreground">
           {getGreeting()}, {firstName}
         </h1>
-        <p className="text-sm text-muted-foreground mt-1">
+        <p className="text-sm text-muted-foreground mt-0.5">
           Voici un apercu de tes eleves et de ton activite
         </p>
       </motion.div>
@@ -84,17 +102,16 @@ export default function CoachDashboardPage() {
       {/* Stats row */}
       <motion.div
         variants={staggerItem}
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
       >
         {isLoading ? (
           Array.from({ length: 4 }).map((_, i) => (
             <div
               key={i}
-              className="bg-surface rounded-2xl p-6 animate-shimmer"
-              style={{ boxShadow: "var(--shadow-card)" }}
+              className="bg-white border border-zinc-200 rounded-[14px] p-5 animate-pulse"
             >
-              <div className="h-4 w-24 bg-muted rounded-lg mb-4" />
-              <div className="h-8 w-16 bg-muted rounded-lg" />
+              <div className="h-4 w-24 bg-zinc-100 rounded mb-4" />
+              <div className="h-7 w-16 bg-zinc-100 rounded" />
             </div>
           ))
         ) : (
@@ -108,7 +125,11 @@ export default function CoachDashboardPage() {
               title="A risque"
               value={stats.atRiskCount}
               icon={AlertTriangle}
-              className={stats.atRiskCount > 0 ? "ring-1 ring-red-500/20" : ""}
+              className={
+                stats.atRiskCount > 0
+                  ? "border-red-200 bg-red-50/30"
+                  : ""
+              }
             />
             <StatCard
               title="Sessions a venir"
@@ -127,7 +148,7 @@ export default function CoachDashboardPage() {
       {/* Alerts section */}
       {!alertsLoading && alerts.length > 0 && (
         <motion.div variants={staggerItem} className="space-y-2">
-          <h2 className="text-[13px] font-semibold text-foreground">
+          <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
             Alertes ({alerts.length})
           </h2>
           <div className="space-y-2 max-h-[240px] overflow-y-auto">
@@ -140,29 +161,28 @@ export default function CoachDashboardPage() {
               return (
                 <div
                   key={alert.id}
-                  className="flex items-start gap-3 p-3 bg-surface border border-border rounded-xl group"
-                  style={{ boxShadow: "var(--shadow-card)" }}
+                  className="flex items-start gap-3 p-3 bg-white border border-zinc-200 rounded-[14px] group transition-shadow duration-200 hover:shadow-md"
                 >
                   <span className="text-base shrink-0 mt-0.5">
-                    {typeConfig?.icon ?? "⚠️"}
+                    {typeConfig?.icon ?? "\u26a0\ufe0f"}
                   </span>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <p className="text-[13px] font-medium text-foreground truncate">
+                      <p className="text-sm font-medium text-foreground truncate">
                         {alert.title}
                       </p>
                       <span
                         className={cn(
                           "inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium shrink-0",
                           severityConfig?.color ??
-                            "bg-muted text-muted-foreground",
+                            "bg-zinc-100 text-muted-foreground",
                         )}
                       >
                         {severityConfig?.label ?? alert.severity}
                       </span>
                     </div>
                     {alert.description && (
-                      <p className="text-[12px] text-muted-foreground mt-0.5 truncate">
+                      <p className="text-xs text-muted-foreground mt-0.5 truncate">
                         {alert.description}
                       </p>
                     )}
@@ -175,17 +195,17 @@ export default function CoachDashboardPage() {
                   <div className="flex items-center gap-1 shrink-0">
                     <button
                       onClick={() => resolveAlert.mutate(alert.id)}
-                      className="w-7 h-7 rounded-lg hover:bg-success/10 flex items-center justify-center transition-colors opacity-0 group-hover:opacity-100"
+                      className="size-7 rounded-lg hover:bg-emerald-50 flex items-center justify-center transition-colors opacity-0 group-hover:opacity-100"
                       title="Resoudre"
                     >
-                      <CheckCircle className="w-3.5 h-3.5 text-success" />
+                      <CheckCircle className="size-3.5 text-emerald-600" />
                     </button>
                     <button
                       onClick={() => resolveAlert.mutate(alert.id)}
-                      className="w-7 h-7 rounded-lg hover:bg-muted flex items-center justify-center transition-colors opacity-0 group-hover:opacity-100"
+                      className="size-7 rounded-lg hover:bg-zinc-100 flex items-center justify-center transition-colors opacity-0 group-hover:opacity-100"
                       title="Ignorer"
                     >
-                      <X className="w-3.5 h-3.5 text-muted-foreground" />
+                      <X className="size-3.5 text-muted-foreground" />
                     </button>
                   </div>
                 </div>
@@ -198,7 +218,7 @@ export default function CoachDashboardPage() {
       {/* 2-column layout */}
       <motion.div
         variants={staggerItem}
-        className="grid grid-cols-1 lg:grid-cols-5 gap-6"
+        className="grid grid-cols-1 lg:grid-cols-5 gap-4"
       >
         {/* Left: Students overview (3 cols) */}
         <div className="lg:col-span-3">
@@ -206,7 +226,7 @@ export default function CoachDashboardPage() {
         </div>
 
         {/* Right: Activity feed + Metrics (2 cols) */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-4">
           <AiPeriodicReport />
           <RiskAnalysisPanel />
           <CoachActivityFeed />

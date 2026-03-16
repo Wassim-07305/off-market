@@ -96,7 +96,7 @@ function Tooltip({
           <div
             role="tooltip"
             className={cn(
-              "fixed z-[100] max-w-xs rounded-md bg-foreground px-2.5 py-1.5 text-xs text-background shadow-md",
+              "fixed z-[100] max-w-xs rounded-lg bg-zinc-900 px-2.5 py-1.5 text-xs text-white shadow-elevated",
               "animate-in fade-in-0 zoom-in-95",
               className,
             )}

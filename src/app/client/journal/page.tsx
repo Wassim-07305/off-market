@@ -239,10 +239,9 @@ export default function JournalPage() {
       {/* Stats */}
       <motion.div variants={staggerItem} className="grid grid-cols-3 gap-3">
         <div
-          className="bg-surface rounded-2xl p-4 text-center"
-          style={{ boxShadow: "var(--shadow-card)" }}
+          className="bg-white rounded-[14px] border border-border p-4 text-center"
         >
-          <FileText className="w-5 h-5 text-primary mx-auto mb-1" />
+          <FileText className="w-4 h-4 text-primary mx-auto mb-1.5" />
           <p className="text-lg font-display font-bold text-foreground">
             {totalEntries}
           </p>
@@ -251,10 +250,9 @@ export default function JournalPage() {
           </p>
         </div>
         <div
-          className="bg-surface rounded-2xl p-4 text-center"
-          style={{ boxShadow: "var(--shadow-card)" }}
+          className="bg-white rounded-[14px] border border-border p-4 text-center"
         >
-          <Flame className="w-5 h-5 text-orange-500 mx-auto mb-1" />
+          <Flame className="w-4 h-4 text-orange-500 mx-auto mb-1.5" />
           <p className="text-lg font-display font-bold text-foreground">
             {streak}
           </p>
@@ -263,10 +261,9 @@ export default function JournalPage() {
           </p>
         </div>
         <div
-          className="bg-surface rounded-2xl p-4 text-center"
-          style={{ boxShadow: "var(--shadow-card)" }}
+          className="bg-white rounded-[14px] border border-border p-4 text-center"
         >
-          <TrendingUp className="w-5 h-5 text-emerald-500 mx-auto mb-1" />
+          <TrendingUp className="w-4 h-4 text-emerald-500 mx-auto mb-1.5" />
           <p className="text-lg font-display font-bold text-foreground">
             {moodTrend !== null ? `${moodTrend}/5` : "\u2014"}
           </p>
@@ -293,8 +290,7 @@ export default function JournalPage() {
               <button
                 key={key}
                 onClick={() => startFromTemplate(key)}
-                className="flex items-center gap-2 h-9 px-3.5 rounded-xl bg-surface border border-border hover:border-primary/30 hover:bg-primary/5 transition-all text-xs font-medium text-foreground whitespace-nowrap shrink-0"
-                style={{ boxShadow: "var(--shadow-card)" }}
+                className="flex items-center gap-2 h-8 px-3.5 rounded-full bg-white border border-border hover:border-primary/30 hover:bg-primary/5 transition-all text-xs font-medium text-foreground whitespace-nowrap shrink-0"
               >
                 <span>{tpl.icon}</span>
                 {tpl.label}
@@ -477,16 +473,14 @@ export default function JournalPage() {
           {[...Array(3)].map((_, i) => (
             <div
               key={i}
-              className="h-28 bg-surface rounded-2xl animate-shimmer"
-              style={{ boxShadow: "var(--shadow-card)" }}
+              className="h-28 bg-muted/50 rounded-[14px] animate-shimmer"
             />
           ))}
         </div>
       ) : filtered.length === 0 ? (
         <motion.div
           variants={staggerItem}
-          className="bg-surface rounded-2xl p-12 text-center"
-          style={{ boxShadow: "var(--shadow-card)" }}
+          className="bg-white rounded-[14px] border border-border p-12 text-center"
         >
           <BookOpen className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
           <p className="text-sm text-muted-foreground">
@@ -550,12 +544,11 @@ function JournalEntryCard({
   return (
     <div
       className={cn(
-        "bg-surface rounded-2xl group transition-all",
+        "bg-white rounded-[14px] border border-border group transition-all",
         isExpanded
-          ? "ring-1 ring-primary/20"
-          : "hover:ring-1 hover:ring-border",
+          ? "border-primary/20"
+          : "hover:border-primary/10",
       )}
-      style={{ boxShadow: "var(--shadow-card)" }}
     >
       {/* Collapsed header */}
       <div className="p-5 cursor-pointer" onClick={onToggle}>
@@ -580,7 +573,7 @@ function JournalEntryCard({
           <div className="flex items-center gap-2 shrink-0 ml-3">
             {entry.mood && (
               <span
-                className="text-lg"
+                className="text-sm"
                 title={MOOD_CONFIG[entry.mood as Mood]?.label}
               >
                 {MOOD_CONFIG[entry.mood as Mood]?.emoji}
@@ -631,7 +624,7 @@ function JournalEntryCard({
             transition={{ duration: 0.2 }}
           >
             <div className="px-5 pb-5 border-t border-border/50 pt-4">
-              <div className="bg-muted/30 rounded-xl p-4 mb-4">
+              <div className="bg-muted/30 rounded-[10px] p-4 mb-4">
                 <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
                   {entry.content}
                 </p>
@@ -740,10 +733,7 @@ function JournalComposer({
   const wordCount = content.trim().split(/\s+/).filter(Boolean).length;
 
   return (
-    <div
-      className="bg-surface rounded-2xl p-5 space-y-4 ring-1 ring-primary/20"
-      style={{ boxShadow: "var(--shadow-card)" }}
-    >
+    <div className="bg-white rounded-[14px] border border-primary/20 p-5 space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <h3 className="text-sm font-semibold text-foreground">
@@ -774,7 +764,7 @@ function JournalComposer({
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         placeholder="Titre"
-        className="w-full h-10 px-4 bg-muted border border-border rounded-xl text-sm font-medium text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+        className="w-full h-10 px-4 bg-muted/50 border-0 rounded-[10px] text-sm font-medium text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
         autoFocus
       />
 
@@ -784,7 +774,7 @@ function JournalComposer({
           onChange={(e) => setContent(e.target.value)}
           placeholder="Ecris tes pensees..."
           rows={10}
-          className="w-full px-4 py-3 bg-muted border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none leading-relaxed"
+          className="w-full px-4 py-3 bg-muted/50 border-0 rounded-[10px] text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none leading-relaxed"
         />
         <div className="absolute bottom-2 right-3 text-[10px] text-muted-foreground/40">
           {wordCount} mots | {content.length} car.
@@ -819,7 +809,7 @@ function JournalComposer({
           value={tagsInput}
           onChange={(e) => setTagsInput(e.target.value)}
           placeholder="Tags (separes par des virgules)"
-          className="flex-1 h-9 px-3 bg-muted border border-border rounded-xl text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+          className="flex-1 h-9 px-3 bg-muted/50 border-0 rounded-[10px] text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
         />
       </div>
 

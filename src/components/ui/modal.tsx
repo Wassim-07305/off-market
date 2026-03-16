@@ -75,14 +75,14 @@ function Modal({
     >
       <div
         className={cn(
-          "relative w-full max-h-[90vh] overflow-y-auto rounded-2xl border border-border/40 bg-white shadow-2xl",
+          "relative w-full max-h-[90vh] overflow-y-auto rounded-xl border border-border bg-white shadow-elevated",
           "animate-in fade-in-0 zoom-in-95",
           modalSizes[size],
           className,
         )}
       >
         {(title || !hideCloseButton) && (
-          <div className="flex items-start justify-between px-4 pt-4 pb-0 sm:px-6 sm:pt-6">
+          <div className="flex items-start justify-between px-4 pt-4 pb-3 sm:px-6 sm:pt-5 sm:pb-4 border-b border-border">
             <div className="flex flex-col gap-1">
               {title && (
                 <h2
@@ -118,7 +118,7 @@ function Modal({
             )}
           </div>
         )}
-        <div className="px-4 py-3 sm:px-6 sm:py-4">{children}</div>
+        <div className="px-4 py-4 sm:px-6 sm:py-5">{children}</div>
       </div>
     </div>,
     document.body,

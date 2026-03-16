@@ -46,12 +46,11 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             ref={ref}
             id={inputId}
             className={cn(
-              "flex h-10 w-full rounded-lg border border-border bg-white px-3.5 py-2 text-sm text-foreground",
-              "shadow-sm",
-              "transition-all duration-200",
+              "flex h-9 w-full rounded-lg border border-transparent bg-muted/50 px-3.5 py-2 text-sm text-foreground",
+              "transition-all duration-150",
               "placeholder:text-muted-foreground/60",
-              "focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/10",
-              "hover:border-border/80",
+              "focus:outline-none focus:border-primary/40 focus:ring-1 focus:ring-primary/20 focus:bg-white",
+              "hover:bg-muted/70",
               "disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-muted/30",
               icon && "pl-10",
               iconRight && "pr-10",

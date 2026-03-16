@@ -26,41 +26,32 @@ export function StatCard({
   return (
     <div
       className={cn(
-        "bg-surface rounded-2xl p-6 transition-all duration-300 hover:translate-y-[-2px] group",
+        "bg-white border border-zinc-200 rounded-[14px] p-5 transition-shadow duration-200 hover:shadow-md",
         className,
       )}
-      style={{
-        boxShadow: "var(--shadow-card)",
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.boxShadow = "var(--shadow-card-hover)";
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.boxShadow = "var(--shadow-card)";
-      }}
     >
-      <div className="flex items-start justify-between mb-4">
-        <span className="text-[13px] text-muted-foreground font-medium">
+      <div className="flex items-center gap-3 mb-3">
+        <div className="size-8 rounded-lg bg-primary/5 flex items-center justify-center">
+          <Icon className="size-4 text-primary" />
+        </div>
+        <span className="text-sm text-muted-foreground font-medium">
           {title}
         </span>
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/5 to-primary/10 flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
-          <Icon className="w-[18px] h-[18px] text-primary" />
-        </div>
       </div>
-      <div className="text-3xl font-display font-bold text-foreground tracking-tight">
+      <div className="text-2xl font-semibold text-foreground tracking-tight">
         {value}
       </div>
       {change !== undefined && (
-        <div className="flex items-center gap-1.5 mt-2">
+        <div className="flex items-center gap-1.5 mt-1.5">
           {isPositive ? (
-            <TrendingUp className="w-3.5 h-3.5 text-success" />
+            <TrendingUp className="size-3.5 text-emerald-600" />
           ) : (
-            <TrendingDown className="w-3.5 h-3.5 text-error" />
+            <TrendingDown className="size-3.5 text-red-600" />
           )}
           <span
             className={cn(
-              "text-xs font-mono font-medium",
-              isPositive ? "text-success" : "text-error",
+              "text-xs font-medium tabular-nums",
+              isPositive ? "text-emerald-600" : "text-red-600",
             )}
           >
             {isPositive ? "+" : ""}

@@ -99,9 +99,9 @@ const Select = forwardRef<HTMLButtonElement, SelectProps>(
             disabled={disabled}
             onClick={() => setOpen((prev) => !prev)}
             className={cn(
-              "flex h-9 w-full items-center justify-between rounded-xl border border-border bg-white px-3 py-1.5 text-sm",
-              "transition-all duration-200",
-              "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1",
+              "flex h-9 w-full items-center justify-between rounded-lg border border-transparent bg-muted/50 px-3 py-1.5 text-sm",
+              "transition-all duration-150",
+              "focus:outline-none focus:ring-1 focus:ring-primary/20 focus:border-primary/40 focus:bg-white",
               "disabled:cursor-not-allowed disabled:opacity-50",
               "cursor-pointer",
               !selectedOption && "text-muted-foreground",
@@ -124,7 +124,7 @@ const Select = forwardRef<HTMLButtonElement, SelectProps>(
             <ul
               role="listbox"
               className={cn(
-                "absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-xl border border-border bg-white py-1 shadow-lg",
+                "absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-border bg-white py-1 shadow-elevated",
                 "animate-in fade-in-0 zoom-in-95",
               )}
             >

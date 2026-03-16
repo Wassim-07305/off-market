@@ -46,10 +46,7 @@ export default function CRMPage() {
         </div>
         <div className="flex items-center gap-2">
           {/* View toggle */}
-          <div
-            className="flex rounded-xl overflow-hidden"
-            style={{ boxShadow: "var(--shadow-xs)" }}
-          >
+          <div className="flex items-center bg-muted rounded-lg p-0.5">
             {(
               [
                 { key: "pipeline" as const, label: "Pipeline", icon: Kanban },
@@ -65,13 +62,13 @@ export default function CRMPage() {
                   key={v.key}
                   onClick={() => setView(v.key)}
                   className={cn(
-                    "h-9 px-3 flex items-center gap-1.5 text-xs font-medium transition-all",
+                    "h-7 px-2.5 rounded-md flex items-center gap-1.5 text-[11px] font-medium transition-all",
                     view === v.key
-                      ? "bg-foreground text-background"
-                      : "bg-surface text-muted-foreground hover:text-foreground",
+                      ? "bg-white text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground",
                   )}
                 >
-                  <Icon className="w-3.5 h-3.5" />
+                  <Icon className="w-3 h-3" />
                   {v.label}
                 </button>
               );

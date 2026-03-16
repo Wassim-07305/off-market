@@ -18,7 +18,7 @@ export default function DashboardPage() {
   return <StaffDashboard />;
 }
 
-// ─── Staff / Admin / Coach dashboard ────────────────────────
+// --- Staff / Admin / Coach dashboard ---
 
 function StaffDashboard() {
   return (
@@ -26,14 +26,14 @@ function StaffDashboard() {
       variants={staggerContainer}
       initial="hidden"
       animate="visible"
-      className="space-y-8"
+      className="space-y-5"
     >
       {/* Page title */}
       <motion.div variants={staggerItem}>
-        <h1 className="text-2xl font-display font-bold text-foreground tracking-tight">
+        <h1 className="text-lg font-semibold text-foreground">
           Dashboard
         </h1>
-        <p className="text-sm text-muted-foreground mt-1">
+        <p className="text-sm text-muted-foreground mt-0.5">
           Vue d&apos;ensemble de ton activite
         </p>
       </motion.div>

@@ -140,12 +140,12 @@ function IndividualLeaderboard() {
       <motion.div
         variants={fadeInUp}
         transition={defaultTransition}
-        className="bg-surface border border-primary/20 rounded-2xl p-5"
+        className="bg-white border border-primary/20 rounded-[14px] p-5"
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-              <TrendingUp className="w-6 h-6 text-primary" />
+            <div className="w-10 h-10 rounded-[10px] bg-primary/10 flex items-center justify-center">
+              <TrendingUp className="w-5 h-5 text-primary" />
             </div>
             <div>
               <p className="text-sm font-medium text-foreground">Ta position</p>
@@ -155,7 +155,7 @@ function IndividualLeaderboard() {
             </div>
           </div>
           <div className="text-right">
-            <p className="text-3xl font-semibold text-foreground font-serif">
+            <p className="text-2xl font-semibold text-foreground">
               #{summary.rank || "\u2014"}
             </p>
             <p className="text-xs text-muted-foreground">
@@ -168,16 +168,16 @@ function IndividualLeaderboard() {
       {isLoading ? (
         <div className="space-y-3">
           {[...Array(5)].map((_, i) => (
-            <div key={i} className="h-16 bg-muted animate-pulse rounded-xl" />
+            <div key={i} className="h-16 bg-muted/50 animate-pulse rounded-[14px]" />
           ))}
         </div>
       ) : entries.length === 0 ? (
         <motion.div
           variants={fadeInUp}
           transition={defaultTransition}
-          className="bg-surface border border-border rounded-xl p-12 text-center"
+          className="bg-white border border-border rounded-[14px] p-12 text-center"
         >
-          <Crown className="w-10 h-10 text-muted-foreground/40 mx-auto mb-3" />
+          <Crown className="w-8 h-8 text-muted-foreground/30 mx-auto mb-3" />
           <p className="text-sm text-muted-foreground">
             Le classement est vide pour le moment
           </p>
@@ -203,8 +203,8 @@ function IndividualLeaderboard() {
                 return (
                   <div
                     key={entry.profile_id}
-                    className={`bg-surface border border-border rounded-xl p-4 text-center ${
-                      entry.rank === 1 ? "ring-2 " + (podium?.ring ?? "") : ""
+                    className={`bg-white border border-border rounded-[14px] p-4 text-center ${
+                      entry.rank === 1 ? "border-amber-500/30" : ""
                     } ${isMe ? "border-primary/30" : ""}`}
                   >
                     <Icon
@@ -235,10 +235,10 @@ function IndividualLeaderboard() {
                     >
                       {isMe ? "Toi" : entry.full_name}
                     </p>
-                    <p className="text-lg font-semibold text-foreground font-serif mt-1">
+                    <p className="text-base font-semibold text-foreground mt-1">
                       {entry.total_xp}
                     </p>
-                    <p className="text-[10px] text-muted-foreground">XP</p>
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider">XP</p>
                     {entry.badge_count > 0 && (
                       <p className="text-[10px] text-muted-foreground mt-0.5">
                         {entry.badge_count} badges
@@ -262,7 +262,7 @@ function IndividualLeaderboard() {
             <motion.div
               variants={fadeInUp}
               transition={defaultTransition}
-              className="bg-surface border border-border rounded-xl divide-y divide-border"
+              className="bg-white border border-border rounded-[14px] divide-y divide-border/50"
             >
               {rest.map((entry) => {
                 const isMe = entry.profile_id === user?.id;
@@ -316,7 +316,7 @@ function IndividualLeaderboard() {
                           change={rankChanges.get(entry.profile_id)}
                         />
                       )}
-                      <span className="text-sm font-semibold text-foreground font-serif">
+                      <span className="text-sm font-medium text-foreground">
                         {entry.total_xp} XP
                       </span>
                     </div>
@@ -387,7 +387,7 @@ function CompetitionsTab() {
             onClick={() => setShowCreate(true)}
             className={cn(
               "inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all cursor-pointer",
-              "bg-[#DC2626] text-white hover:bg-[#DC2626]/90",
+              "bg-primary text-white hover:bg-primary-hover",
             )}
           >
             <Plus className="w-4 h-4" />
@@ -399,14 +399,14 @@ function CompetitionsTab() {
       {isLoading ? (
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-40 bg-muted animate-pulse rounded-2xl" />
+            <div key={i} className="h-40 bg-muted/50 animate-pulse rounded-[14px]" />
           ))}
         </div>
       ) : competitions.length === 0 ? (
         <motion.div
           variants={fadeInUp}
           transition={defaultTransition}
-          className="bg-surface border border-border rounded-2xl p-12 text-center"
+          className="bg-white border border-border rounded-[14px] p-12 text-center"
         >
           <Trophy className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
           <p className="text-base font-medium text-foreground mb-1">
@@ -500,7 +500,7 @@ function TeamsTab() {
         <motion.div
           variants={fadeInUp}
           transition={defaultTransition}
-          className="bg-surface border border-[#DC2626]/20 rounded-2xl p-5"
+          className="bg-white border border-primary/20 rounded-[14px] p-5"
         >
           <div className="flex items-center gap-3 mb-2">
             <span className="text-2xl">{myTeam.avatar_emoji ?? "🔥"}</span>
@@ -519,14 +519,14 @@ function TeamsTab() {
       {isLoading ? (
         <div className="grid gap-4 sm:grid-cols-2">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-48 bg-muted animate-pulse rounded-2xl" />
+            <div key={i} className="h-48 bg-muted/50 animate-pulse rounded-[14px]" />
           ))}
         </div>
       ) : teams.length === 0 ? (
         <motion.div
           variants={fadeInUp}
           transition={defaultTransition}
-          className="bg-surface border border-border rounded-2xl p-12 text-center"
+          className="bg-white border border-border rounded-[14px] p-12 text-center"
         >
           <Users className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
           <p className="text-base font-medium text-foreground mb-1">
@@ -561,7 +561,7 @@ export default function ClientLeaderboardPage() {
     >
       {/* Header */}
       <motion.div variants={fadeInUp} transition={defaultTransition}>
-        <h1 className="text-3xl font-semibold text-foreground">
+        <h1 className="text-2xl font-display font-bold text-foreground tracking-tight">
           Classement & Competitions
         </h1>
         <p className="text-sm text-muted-foreground mt-1">

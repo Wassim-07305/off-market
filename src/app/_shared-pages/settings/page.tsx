@@ -355,13 +355,10 @@ export default function SettingsPage() {
       </div>
 
       {/* Profile */}
-      <div
-        className="bg-surface rounded-2xl p-6 space-y-4"
-        style={{ boxShadow: "var(--shadow-card)" }}
-      >
+      <div className="bg-white rounded-[14px] border border-border p-6 space-y-4">
         <div className="flex items-center gap-2 mb-2">
           <User className="w-4 h-4 text-muted-foreground" />
-          <h2 className="text-sm font-semibold text-foreground">Profil</h2>
+          <h2 className="text-sm font-medium text-foreground">Profil</h2>
         </div>
 
         {/* Avatar with upload */}
@@ -421,7 +418,7 @@ export default function SettingsPage() {
             <input
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              className="w-full h-10 px-4 bg-muted border border-border rounded-[10px] text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+              className="w-full h-10 px-4 bg-muted/50 border-0 rounded-[10px] text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
             />
           </div>
           <div>
@@ -432,7 +429,7 @@ export default function SettingsPage() {
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="+33 6 00 00 00 00"
-              className="w-full h-10 px-4 bg-muted border border-border rounded-[10px] text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+              className="w-full h-10 px-4 bg-muted/50 border-0 rounded-[10px] text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
             />
           </div>
         </div>
@@ -446,7 +443,7 @@ export default function SettingsPage() {
             onChange={(e) => setBio(e.target.value)}
             rows={3}
             placeholder="Quelques mots sur toi..."
-            className="w-full px-4 py-3 bg-muted border border-border rounded-[10px] text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
+            className="w-full px-4 py-3 bg-muted/50 border-0 rounded-[10px] text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
           />
         </div>
 
@@ -462,12 +459,11 @@ export default function SettingsPage() {
 
       {/* Notifications */}
       <div
-        className="bg-surface rounded-2xl p-6 space-y-4"
-        style={{ boxShadow: "var(--shadow-card)" }}
+        className="bg-white rounded-[14px] border border-border p-6 space-y-4"
       >
         <div className="flex items-center gap-2 mb-2">
           <Bell className="w-4 h-4 text-muted-foreground" />
-          <h2 className="text-sm font-semibold text-foreground">
+          <h2 className="text-sm font-medium text-foreground">
             Notifications
           </h2>
         </div>
@@ -559,12 +555,11 @@ export default function SettingsPage() {
 
       {/* Leaderboard anonymity */}
       <div
-        className="bg-surface rounded-2xl p-6 space-y-4"
-        style={{ boxShadow: "var(--shadow-card)" }}
+        className="bg-white rounded-[14px] border border-border p-6 space-y-4"
       >
         <div className="flex items-center gap-2 mb-2">
           <Trophy className="w-4 h-4 text-muted-foreground" />
-          <h2 className="text-sm font-semibold text-foreground">Classement</h2>
+          <h2 className="text-sm font-medium text-foreground">Classement</h2>
         </div>
         <label className="flex items-center justify-between cursor-pointer">
           <div>
@@ -612,12 +607,11 @@ export default function SettingsPage() {
 
       {/* Intelligence artificielle */}
       <div
-        className="bg-surface rounded-2xl p-6 space-y-4"
-        style={{ boxShadow: "var(--shadow-card)" }}
+        className="bg-white rounded-[14px] border border-border p-6 space-y-4"
       >
         <div className="flex items-center gap-2 mb-2">
           <Bot className="w-4 h-4 text-muted-foreground" />
-          <h2 className="text-sm font-semibold text-foreground">
+          <h2 className="text-sm font-medium text-foreground">
             Intelligence artificielle
           </h2>
         </div>
@@ -664,12 +658,11 @@ export default function SettingsPage() {
 
       {/* Appearance */}
       <div
-        className="bg-surface rounded-2xl p-6 space-y-4"
-        style={{ boxShadow: "var(--shadow-card)" }}
+        className="bg-white rounded-[14px] border border-border p-6 space-y-4"
       >
         <div className="flex items-center gap-2 mb-2">
           <Palette className="w-4 h-4 text-muted-foreground" />
-          <h2 className="text-sm font-semibold text-foreground">Apparence</h2>
+          <h2 className="text-sm font-medium text-foreground">Apparence</h2>
         </div>
 
         <div className="flex gap-3">
@@ -701,12 +694,11 @@ export default function SettingsPage() {
 
       {/* Security */}
       <div
-        className="bg-surface rounded-2xl p-6 space-y-4"
-        style={{ boxShadow: "var(--shadow-card)" }}
+        className="bg-white rounded-[14px] border border-border p-6 space-y-4"
       >
         <div className="flex items-center gap-2 mb-2">
           <Lock className="w-4 h-4 text-muted-foreground" />
-          <h2 className="text-sm font-semibold text-foreground">Securite</h2>
+          <h2 className="text-sm font-medium text-foreground">Securite</h2>
         </div>
 
         <div className="space-y-3">
@@ -720,7 +712,7 @@ export default function SettingsPage() {
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full h-10 px-4 pr-10 bg-muted border border-border rounded-[10px] text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                className="w-full h-10 px-4 pr-10 bg-muted/50 border-0 rounded-[10px] text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
               />
               <button
                 type="button"
@@ -747,7 +739,7 @@ export default function SettingsPage() {
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   placeholder="Min. 8 caracteres"
-                  className="w-full h-10 px-4 pr-10 bg-muted border border-border rounded-[10px] text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  className="w-full h-10 px-4 pr-10 bg-muted/50 border-0 rounded-[10px] text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
                 />
                 <button
                   type="button"
@@ -771,7 +763,7 @@ export default function SettingsPage() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Confirmer le mot de passe"
-                className="w-full h-10 px-4 bg-muted border border-border rounded-[10px] text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                className="w-full h-10 px-4 bg-muted/50 border-0 rounded-[10px] text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
               />
             </div>
           </div>
@@ -801,12 +793,11 @@ export default function SettingsPage() {
 
       {/* 2FA */}
       <div
-        className="bg-surface rounded-2xl p-6 space-y-4"
-        style={{ boxShadow: "var(--shadow-card)" }}
+        className="bg-white rounded-[14px] border border-border p-6 space-y-4"
       >
         <div className="flex items-center gap-2 mb-2">
           <ShieldCheck className="w-4 h-4 text-muted-foreground" />
-          <h2 className="text-sm font-semibold text-foreground">
+          <h2 className="text-sm font-medium text-foreground">
             Authentification a deux facteurs (2FA)
           </h2>
         </div>
@@ -869,7 +860,7 @@ export default function SettingsPage() {
                     setTotpCode(e.target.value.replace(/\D/g, ""))
                   }
                   placeholder="000000"
-                  className="flex-1 h-10 px-4 bg-muted border border-border rounded-[10px] text-sm text-foreground font-mono tracking-widest text-center focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  className="flex-1 h-10 px-4 bg-muted/50 border-0 rounded-[10px] text-sm text-foreground font-mono tracking-widest text-center focus:outline-none focus:ring-2 focus:ring-primary/30"
                 />
                 <button
                   onClick={async () => {
@@ -923,12 +914,11 @@ export default function SettingsPage() {
 
       {/* Email preferences */}
       <div
-        className="bg-surface rounded-2xl p-6 space-y-4"
-        style={{ boxShadow: "var(--shadow-card)" }}
+        className="bg-white rounded-[14px] border border-border p-6 space-y-4"
       >
         <div className="flex items-center gap-2 mb-2">
           <Mail className="w-4 h-4 text-muted-foreground" />
-          <h2 className="text-sm font-semibold text-foreground">
+          <h2 className="text-sm font-medium text-foreground">
             Preferences email
           </h2>
         </div>
@@ -994,12 +984,11 @@ export default function SettingsPage() {
 
       {/* Google Agenda */}
       <div
-        className="bg-surface rounded-2xl p-6 space-y-4"
-        style={{ boxShadow: "var(--shadow-card)" }}
+        className="bg-white rounded-[14px] border border-border p-6 space-y-4"
       >
         <div className="flex items-center gap-2 mb-2">
           <Calendar className="w-4 h-4 text-muted-foreground" />
-          <h2 className="text-sm font-semibold text-foreground">
+          <h2 className="text-sm font-medium text-foreground">
             Google Agenda
           </h2>
         </div>
@@ -1049,8 +1038,7 @@ export default function SettingsPage() {
 
       {/* Danger zone */}
       <div
-        className="bg-surface rounded-2xl p-6 space-y-4 border-l-[3px] border-l-error"
-        style={{ boxShadow: "var(--shadow-card)" }}
+        className="bg-white rounded-[14px] border border-border border-l-[3px] border-l-error p-6 space-y-4"
       >
         <div className="flex items-center gap-2 mb-2">
           <Shield className="w-4 h-4 text-error" />
@@ -1084,13 +1072,13 @@ export default function SettingsPage() {
         {/* Delete confirmation modal */}
         {showDeleteConfirm && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-            <div className="bg-surface border border-border rounded-2xl p-6 max-w-sm w-full mx-4 space-y-4">
+            <div className="bg-white border border-border rounded-[14px] p-6 max-w-sm w-full mx-4 space-y-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-error/10 flex items-center justify-center">
                   <AlertTriangle className="w-5 h-5 text-error" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-foreground">
+                  <h3 className="text-sm font-medium text-foreground">
                     Supprimer le compte
                   </h3>
                   <p className="text-xs text-muted-foreground">

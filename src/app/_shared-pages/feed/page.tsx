@@ -125,8 +125,7 @@ export default function FeedPage() {
               {[...Array(3)].map((_, i) => (
                 <div
                   key={i}
-                  className="bg-surface rounded-2xl p-6"
-                  style={{ boxShadow: "var(--shadow-card)" }}
+                  className="bg-white rounded-[14px] border border-border p-6"
                 >
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-10 h-10 rounded-full bg-muted animate-shimmer" />
@@ -145,8 +144,7 @@ export default function FeedPage() {
           ) : posts.length === 0 ? (
             <motion.div
               variants={staggerItem}
-              className="bg-surface rounded-2xl p-12 text-center"
-              style={{ boxShadow: "var(--shadow-card)" }}
+              className="bg-white rounded-[14px] border border-border p-12 text-center"
             >
               <p className="text-sm text-muted-foreground">
                 Aucune publication pour le moment. Soyez le premier a poster !
@@ -223,10 +221,7 @@ function PostComposer({
   };
 
   return (
-    <div
-      className="bg-surface rounded-2xl p-4"
-      style={{ boxShadow: "var(--shadow-card)" }}
-    >
+    <div className="bg-white rounded-[14px] border border-border p-4">
       <textarea
         value={content}
         onChange={(e) => {
@@ -236,7 +231,7 @@ function PostComposer({
         onFocus={() => setExpanded(true)}
         placeholder="Partagez quelque chose avec la communaute..."
         rows={expanded ? 4 : 2}
-        className="w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none resize-none"
+        className="w-full bg-muted/50 rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none transition-shadow"
       />
 
       {expanded && (
@@ -264,7 +259,7 @@ function PostComposer({
           <button
             onClick={handleSubmit}
             disabled={!content.trim() || isSubmitting}
-            className="h-8 px-4 bg-primary text-white rounded-xl text-xs font-medium hover:bg-primary-hover transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-1"
+            className="h-8 px-4 bg-primary text-white rounded-[10px] text-xs font-medium hover:bg-primary-hover transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-1"
           >
             <Send className="w-3 h-3" />
             {isSubmitting ? "..." : "Publier"}
@@ -297,10 +292,7 @@ function PostCard({
   const typeConfig = POST_TYPE_CONFIG[post.post_type];
 
   return (
-    <div
-      className="bg-surface rounded-2xl"
-      style={{ boxShadow: "var(--shadow-card)" }}
-    >
+    <div className="bg-white rounded-[14px] border border-border">
       {/* Pinned indicator */}
       {post.is_pinned && (
         <div className="px-4 pt-3 flex items-center gap-1 text-xs text-amber-600">
@@ -320,7 +312,7 @@ function PostCard({
                 className="w-10 h-10 rounded-full object-cover"
               />
             ) : (
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center text-sm text-primary font-semibold">
+              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-sm text-primary font-medium">
                 {post.author?.full_name?.charAt(0) ?? "?"}
               </div>
             )}
@@ -365,10 +357,7 @@ function PostCard({
                     className="fixed inset-0 z-10"
                     onClick={() => setShowMenu(false)}
                   />
-                  <div
-                    className="absolute right-0 top-8 z-20 bg-surface rounded-xl py-1 min-w-[140px]"
-                    style={{ boxShadow: "var(--shadow-elevated)" }}
-                  >
+                  <div className="absolute right-0 top-8 z-20 bg-white rounded-[10px] border border-border py-1 min-w-[140px] shadow-sm">
                     {isStaff && (
                       <button
                         onClick={() => {
@@ -406,29 +395,29 @@ function PostCard({
         </p>
 
         {/* Actions */}
-        <div className="flex items-center gap-4 mt-4 pt-3 border-t border-border/30">
+        <div className="flex items-center gap-1 mt-4 pt-3 border-t border-border/50">
           <button
             onClick={onLike}
-            className={`flex items-center gap-1.5 text-sm transition-all ${
+            className={`flex items-center gap-1.5 h-8 px-2.5 rounded-lg text-xs font-medium transition-all ${
               post.is_liked
-                ? "text-red-500 scale-105"
-                : "text-muted-foreground hover:text-red-500"
+                ? "text-red-500 bg-red-500/5"
+                : "text-muted-foreground hover:text-red-500 hover:bg-red-500/5"
             }`}
           >
             <Heart
-              className={`w-4 h-4 transition-transform ${post.is_liked ? "fill-current scale-110" : ""}`}
+              className={`w-3.5 h-3.5 transition-transform ${post.is_liked ? "fill-current" : ""}`}
             />
             {post.likes_count > 0 && (
-              <span className="font-mono text-xs">{post.likes_count}</span>
+              <span className="text-xs">{post.likes_count}</span>
             )}
           </button>
           <button
             onClick={() => setShowComments(!showComments)}
-            className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            className="flex items-center gap-1.5 h-8 px-2.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all"
           >
-            <MessageCircle className="w-4 h-4" />
+            <MessageCircle className="w-3.5 h-3.5" />
             {post.comments_count > 0 && (
-              <span className="font-mono text-xs">{post.comments_count}</span>
+              <span className="text-xs">{post.comments_count}</span>
             )}
             {showComments ? (
               <ChevronUp className="w-3 h-3" />

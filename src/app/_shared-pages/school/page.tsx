@@ -148,18 +148,18 @@ export default function SchoolPage() {
       {/* Tabs + Search */}
       <motion.div
         variants={staggerItem}
-        className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+        className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
       >
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center bg-muted rounded-lg p-1">
           {tabs.map((t) => (
             <button
               key={t.value}
               onClick={() => setTab(t.value)}
               className={cn(
-                "h-8 px-3 rounded-full text-xs font-medium transition-all",
+                "h-7 px-3 rounded-md text-xs font-medium transition-all",
                 tab === t.value
-                  ? "bg-foreground text-background"
-                  : "bg-muted text-muted-foreground hover:text-foreground",
+                  ? "bg-white text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground",
               )}
             >
               {t.label}
@@ -168,12 +168,12 @@ export default function SchoolPage() {
         </div>
 
         <div className="relative w-full sm:w-64">
-          <Search className="pointer-events-none absolute left-3 top-1/2 w-4 h-4 -translate-y-1/2 text-muted-foreground" />
+          <Search className="pointer-events-none absolute left-3 top-1/2 w-4 h-4 -translate-y-1/2 text-muted-foreground/60" />
           <input
             placeholder="Rechercher une formation..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full h-9 pl-9 pr-3 rounded-xl bg-muted/50 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-shadow"
+            className="w-full h-9 pl-9 pr-3 rounded-lg bg-muted/50 text-sm text-foreground placeholder:text-muted-foreground/60 border-0 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-shadow"
           />
         </div>
       </motion.div>
@@ -181,20 +181,19 @@ export default function SchoolPage() {
       {/* Course grid */}
       <motion.div
         variants={staggerItem}
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
       >
         {isLoading ? (
           Array.from({ length: 6 }).map((_, i) => (
             <div
               key={i}
-              className="bg-surface rounded-2xl overflow-hidden"
-              style={{ boxShadow: "var(--shadow-card)" }}
+              className="bg-white border border-border rounded-xl overflow-hidden"
             >
               <div className="aspect-video bg-muted animate-shimmer" />
-              <div className="p-5 space-y-3">
-                <div className="h-4 w-2/3 bg-muted rounded-lg animate-shimmer" />
-                <div className="h-3 w-full bg-muted rounded-lg animate-shimmer" />
-                <div className="h-3 w-1/2 bg-muted rounded-lg animate-shimmer" />
+              <div className="p-4 space-y-3">
+                <div className="h-4 w-2/3 bg-muted rounded animate-shimmer" />
+                <div className="h-3 w-full bg-muted rounded animate-shimmer" />
+                <div className="h-3 w-1/2 bg-muted rounded animate-shimmer" />
               </div>
             </div>
           ))
@@ -213,31 +212,33 @@ export default function SchoolPage() {
             const card = (
               <div
                 className={cn(
-                  "h-full bg-surface rounded-2xl overflow-hidden transition-all duration-200",
+                  "h-full bg-white border border-border rounded-xl overflow-hidden transition-all duration-200",
                   isLocked
-                    ? "opacity-75"
-                    : "hover:scale-[1.02] hover:shadow-lg",
+                    ? "opacity-70"
+                    : "hover:border-zinc-300 hover:shadow-sm",
                 )}
-                style={{ boxShadow: "var(--shadow-card)" }}
               >
                 {/* Thumbnail */}
-                <div className="relative aspect-video overflow-hidden">
+                <div className="relative aspect-video overflow-hidden rounded-t-xl">
                   {course.cover_image_url ? (
-                    <div
-                      className="w-full h-full bg-cover bg-center transition-transform duration-300 group-hover:scale-105"
-                      style={{
-                        backgroundImage: `url(${course.cover_image_url})`,
-                      }}
-                    />
+                    <>
+                      <div
+                        className="w-full h-full bg-cover bg-center transition-transform duration-300 group-hover:scale-105"
+                        style={{
+                          backgroundImage: `url(${course.cover_image_url})`,
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                    </>
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary to-zinc-900">
-                      <BookOpen className="w-12 h-12 text-white/20" />
+                    <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-zinc-100 to-zinc-200">
+                      <BookOpen className="w-10 h-10 text-zinc-400" />
                     </div>
                   )}
 
                   {isComplete && (
-                    <div className="absolute right-3 top-3">
-                      <span className="inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1 rounded-full bg-success text-white">
+                    <div className="absolute right-2.5 top-2.5">
+                      <span className="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full bg-emerald-500/90 text-white backdrop-blur-sm">
                         <CheckCircle className="w-3 h-3" />
                         Termine
                       </span>
@@ -245,20 +246,20 @@ export default function SchoolPage() {
                   )}
 
                   {isLocked && (
-                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center backdrop-blur-[2px]">
-                      <div className="text-center text-white">
-                        <Lock className="w-8 h-8 mx-auto mb-1.5 opacity-90" />
-                        <p className="text-xs font-medium">Prerequis requis</p>
+                    <div className="absolute inset-0 bg-white/60 backdrop-blur-[3px] flex items-center justify-center">
+                      <div className="text-center">
+                        <Lock className="w-6 h-6 mx-auto mb-1 text-zinc-500" />
+                        <p className="text-[11px] font-medium text-zinc-600">Prerequis requis</p>
                       </div>
                     </div>
                   )}
                 </div>
 
                 {/* Content */}
-                <div className="p-5 flex flex-col flex-1">
+                <div className="p-4 flex flex-col flex-1">
                   <h3
                     className={cn(
-                      "text-base font-display font-semibold line-clamp-1 transition-colors",
+                      "text-sm font-semibold line-clamp-1 transition-colors",
                       isLocked
                         ? "text-muted-foreground"
                         : "text-foreground group-hover:text-primary",
@@ -268,24 +269,24 @@ export default function SchoolPage() {
                   </h3>
 
                   {course.description && (
-                    <p className="mt-1 text-sm text-muted-foreground line-clamp-2">
+                    <p className="mt-1 text-xs text-muted-foreground line-clamp-2 leading-relaxed">
                       {course.description}
                     </p>
                   )}
 
                   {/* Prerequisite info */}
                   {isLocked && unlock && (
-                    <div className="mt-2 p-2.5 rounded-lg bg-amber-500/10 border border-amber-500/20">
-                      <p className="text-[11px] text-amber-700 font-medium">
+                    <div className="mt-2 p-2 rounded-lg bg-amber-50 border border-amber-100">
+                      <p className="text-[10px] text-amber-700 font-medium">
                         Terminez d&apos;abord :
                       </p>
                       <ul className="mt-1 space-y-0.5">
                         {unlock.missingPrereqs.map((pid) => (
                           <li
                             key={pid}
-                            className="text-[11px] text-amber-600 flex items-center gap-1"
+                            className="text-[10px] text-amber-600 flex items-center gap-1"
                           >
-                            <Lock className="w-3 h-3 shrink-0" />
+                            <Lock className="w-2.5 h-2.5 shrink-0" />
                             {getCourseTitle(pid)}
                           </li>
                         ))}
@@ -294,13 +295,13 @@ export default function SchoolPage() {
                   )}
 
                   {/* Stats */}
-                  <div className="mt-3 flex items-center gap-1 text-xs text-muted-foreground">
+                  <div className="mt-2.5 flex items-center gap-1 text-[11px] text-muted-foreground">
                     <span>{course.stats.totalModules} modules</span>
-                    <span aria-hidden="true">&middot;</span>
+                    <span aria-hidden="true" className="text-border">&middot;</span>
                     <span>{course.stats.totalLessons} lecons</span>
                     {course.stats.totalDuration > 0 && (
                       <>
-                        <span aria-hidden="true">&middot;</span>
+                        <span aria-hidden="true" className="text-border">&middot;</span>
                         <span>
                           {Math.round(course.stats.totalDuration / 60)}h
                         </span>
@@ -310,17 +311,17 @@ export default function SchoolPage() {
 
                   {/* Progress */}
                   {!isLocked && (
-                    <div className="mt-auto pt-4">
-                      <div className="mb-1.5 flex items-center justify-between text-xs">
+                    <div className="mt-auto pt-3">
+                      <div className="mb-1 flex items-center justify-between text-[11px]">
                         <span className="text-muted-foreground">
                           {course.stats.completedLessons}/
                           {course.stats.totalLessons} lecons
                         </span>
-                        <span className="font-medium font-mono">
+                        <span className="font-medium font-mono text-foreground">
                           {course.stats.percent}%
                         </span>
                       </div>
-                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                      <div className="h-1 w-full overflow-hidden rounded-full bg-zinc-100">
                         <div
                           className="h-full rounded-full bg-primary transition-all duration-500"
                           style={{ width: `${course.stats.percent}%` }}

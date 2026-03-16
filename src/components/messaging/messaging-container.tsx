@@ -86,37 +86,36 @@ export default function MessagingContainer() {
   return (
     <div className="flex flex-col h-[calc(100vh-7rem)]">
       {/* ── Inbox mode toggle ── */}
-      <div className="flex items-center gap-1 px-1 py-1 mb-2 bg-muted/50 rounded-xl w-fit">
+      <div className="flex items-center bg-muted rounded-lg p-0.5 mb-2 w-fit">
         <button
           onClick={() => setInboxMode("internal")}
           className={cn(
-            "flex items-center gap-1.5 px-3.5 h-8 rounded-lg text-xs font-medium transition-all duration-150",
+            "flex items-center gap-1.5 px-3 h-7 rounded-md text-[11px] font-medium transition-all duration-150",
             inboxMode === "internal"
-              ? "bg-surface text-foreground shadow-sm"
+              ? "bg-white text-foreground shadow-sm"
               : "text-muted-foreground hover:text-foreground",
           )}
         >
-          <MessageSquare className="w-3.5 h-3.5" />
+          <MessageSquare className="w-3 h-3" />
           Off-Market
         </button>
         <button
           onClick={() => setInboxMode("external")}
           className={cn(
-            "flex items-center gap-1.5 px-3.5 h-8 rounded-lg text-xs font-medium transition-all duration-150",
+            "flex items-center gap-1.5 px-3 h-7 rounded-md text-[11px] font-medium transition-all duration-150",
             inboxMode === "external"
-              ? "bg-surface text-foreground shadow-sm"
+              ? "bg-white text-foreground shadow-sm"
               : "text-muted-foreground hover:text-foreground",
           )}
         >
-          <Globe className="w-3.5 h-3.5" />
+          <Globe className="w-3 h-3" />
           Boite unifiee
         </button>
       </div>
 
       {/* ── Content ── */}
       <div
-        className="flex flex-1 min-h-0 bg-surface rounded-2xl overflow-hidden border border-border/40"
-        style={{ boxShadow: "var(--shadow-card)" }}
+        className="flex flex-1 min-h-0 bg-white rounded-xl overflow-hidden border border-border"
       >
         {inboxMode === "external" ? (
           <UnifiedInbox />
@@ -125,8 +124,8 @@ export default function MessagingContainer() {
             {/* Sidebar */}
             <div
               className={`
-              w-[272px] border-r border-border/40 flex flex-col shrink-0 bg-muted/30
-              max-sm:absolute max-sm:inset-y-0 max-sm:left-0 max-sm:z-30 max-sm:w-[280px] max-sm:bg-surface max-sm:shadow-xl
+              w-[260px] border-r border-border flex flex-col shrink-0 bg-[#FAFAFA]
+              max-sm:absolute max-sm:inset-y-0 max-sm:left-0 max-sm:z-30 max-sm:w-[260px] max-sm:bg-white max-sm:shadow-sm
               ${mobileSidebarOpen ? "max-sm:translate-x-0" : "max-sm:-translate-x-full"}
               sm:relative sm:translate-x-0 transition-transform duration-200
             `}
@@ -162,7 +161,7 @@ export default function MessagingContainer() {
             {/* Backdrop for mobile sidebar */}
             {mobileSidebarOpen && (
               <div
-                className="sm:hidden fixed inset-0 z-20 bg-black/40"
+                className="sm:hidden fixed inset-0 z-20 bg-black/30"
                 onClick={() => setMobileSidebarOpen(false)}
               />
             )}
@@ -194,10 +193,10 @@ export default function MessagingContainer() {
               ) : (
                 <div className="flex-1 flex items-center justify-center">
                   <div className="text-center">
-                    <div className="w-14 h-14 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-4">
-                      <Hash className="w-7 h-7 text-muted-foreground/40" />
+                    <div className="w-12 h-12 rounded-xl bg-zinc-100 flex items-center justify-center mx-auto mb-3">
+                      <Hash className="w-5 h-5 text-zinc-400" />
                     </div>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-[13px] text-muted-foreground">
                       Selectionne un canal pour commencer
                     </p>
                   </div>
