@@ -21,10 +21,11 @@ export const metadata: Metadata = {
     process.env.NEXT_PUBLIC_APP_URL ?? "https://app.offmarket.fr",
   ),
   title: {
-    default: "Off Market",
+    default: "Off Market — Deviens le choix evident",
     template: "%s | Off Market",
   },
-  description: "Plateforme de coaching business tout-en-un",
+  description:
+    "Sors du marche sature. Formation, coaching prive et communaute pour atteindre 10K EUR/mois en freelance.",
   manifest: "/manifest.json",
   icons: {
     icon: [
@@ -34,15 +35,17 @@ export const metadata: Metadata = {
     apple: "/apple-touch-icon.png",
   },
   openGraph: {
-    title: "Off Market",
-    description: "Plateforme de coaching business tout-en-un",
+    title: "Off Market — Deviens le choix evident",
+    description:
+      "Sors du marche sature. Formation, coaching prive et communaute pour atteindre 10K EUR/mois en freelance.",
     siteName: "Off Market",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Off Market",
-    description: "Plateforme de coaching business tout-en-un",
+    title: "Off Market — Deviens le choix evident",
+    description:
+      "Sors du marche sature. Formation, coaching prive et communaute pour atteindre 10K EUR/mois en freelance.",
   },
   appleWebApp: {
     capable: true,
