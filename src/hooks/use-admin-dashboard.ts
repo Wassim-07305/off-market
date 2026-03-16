@@ -134,7 +134,7 @@ export function useAdminDashboard() {
         supabase.from("crm_contacts").select("stage, source, estimated_value"),
         // Formation completions
         supabase
-          .from("lesson_completions")
+          .from("lesson_progress")
           .select("id", { count: "exact", head: true }),
         // Total lessons
         supabase.from("lessons").select("id", { count: "exact", head: true }),

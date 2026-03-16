@@ -23,7 +23,7 @@ function useFunnelData() {
     enabled: !!user && isStaff,
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("contacts")
+        .from("crm_contacts")
         .select("pipeline_stage");
       if (error) throw error;
 

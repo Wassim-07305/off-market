@@ -78,9 +78,9 @@ function useCoachWeeklySummary() {
           .select("id", { count: "exact", head: true })
           .gte("created_at", weekStart),
         supabase
-          .from("lesson_completions")
+          .from("lesson_progress")
           .select("id", { count: "exact", head: true })
-          .gte("created_at", weekStart),
+          .gte("completed_at", weekStart),
         supabase
           .from("student_details")
           .select("id", { count: "exact", head: true })

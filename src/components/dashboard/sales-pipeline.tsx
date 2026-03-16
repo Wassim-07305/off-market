@@ -51,7 +51,7 @@ function useSalesPipeline() {
     enabled: !!user,
     queryFn: async (): Promise<PipelineDeal[]> => {
       const { data, error } = await supabase
-        .from("contacts")
+        .from("crm_contacts")
         .select("pipeline_stage, estimated_value");
       if (error) throw error;
 

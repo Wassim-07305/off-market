@@ -139,10 +139,10 @@ async function fetchPeriodKPIs(
         .gte("date", from.split("T")[0])
         .lte("date", to.split("T")[0]),
       supabase
-        .from("lesson_completions")
+        .from("lesson_progress")
         .select("id", { count: "exact", head: true })
-        .gte("created_at", from)
-        .lte("created_at", to),
+        .gte("completed_at", from)
+        .lte("completed_at", to),
       supabase
         .from("messages")
         .select("id", { count: "exact", head: true })

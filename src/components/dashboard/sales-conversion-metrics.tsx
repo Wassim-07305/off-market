@@ -44,10 +44,10 @@ function useSalesConversion() {
 
       const [contactsRes, clientsRes, invoicesRes] = await Promise.all([
         supabase
-          .from("contacts")
+          .from("crm_contacts")
           .select("id, pipeline_stage, created_at, estimated_value"),
         supabase
-          .from("contacts")
+          .from("crm_contacts")
           .select("id, created_at, estimated_value")
           .eq("pipeline_stage", "client"),
         supabase.from("invoices").select("total, paid_at").eq("status", "paid"),

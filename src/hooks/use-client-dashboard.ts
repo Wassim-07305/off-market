@@ -58,9 +58,9 @@ export function useClientDashboard() {
       ] = await Promise.all([
         // Lesson completions for this user
         supabase
-          .from("lesson_completions")
+          .from("lesson_progress")
           .select("id", { count: "exact", head: true })
-          .eq("profile_id", user!.id),
+          .eq("student_id", user!.id),
         // Enrolled courses (all published)
         supabase
           .from("courses")
