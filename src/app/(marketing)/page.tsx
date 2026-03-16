@@ -131,7 +131,7 @@ function AnimatedCounter({
 
 const ACCENT = "#AF0000"; // Off-Market red
 const ACCENT_LIGHT = "#DC2626"; // red-600
-const ACCENT_GLOW = "rgba(175, 0, 0, 0.18)";
+const ACCENT_GLOW = "rgba(175, 0, 0, 0.12)";
 
 const navLinks = [
   { label: "Fonctionnalites", href: "#features" },
@@ -290,12 +290,12 @@ const footerSections = [
 ];
 
 /* ------------------------------------------------------------------ */
-/*  Dashboard Mockup                                                   */
+/*  Dashboard Mockup (stays dark-themed)                               */
 /* ------------------------------------------------------------------ */
 
 function DashboardMockup() {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-white/[0.06] bg-gradient-to-b from-white/[0.03] to-transparent p-px">
+    <div className="relative overflow-hidden rounded-2xl border border-gray-200 bg-gradient-to-b from-gray-100 to-transparent p-px shadow-2xl">
       <div className="overflow-hidden rounded-[15px] bg-[#0F0E0C]">
         {/* Browser bar */}
         <div className="flex items-center gap-2 border-b border-white/[0.04] px-4 py-3">
@@ -426,14 +426,14 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#0C0A09] text-white antialiased selection:bg-red-700/20 selection:text-white">
+    <div className="min-h-screen bg-white text-gray-900 antialiased selection:bg-red-100 selection:text-red-900">
       {/* Dot grid */}
       <div
         className="pointer-events-none fixed inset-0 z-0 opacity-[0.025]"
         aria-hidden="true"
         style={{
           backgroundImage:
-            "radial-gradient(circle, #ffffff 1px, transparent 1px)",
+            "radial-gradient(circle, #000000 1px, transparent 1px)",
           backgroundSize: "24px 24px",
         }}
       />
@@ -444,7 +444,7 @@ export default function LandingPage() {
       <nav
         className={`fixed top-0 z-50 w-full transition-all duration-500 ${
           scrolled
-            ? "border-b border-white/[0.06] bg-[#0C0A09]/80 backdrop-blur-2xl backdrop-saturate-150"
+            ? "border-b border-gray-200 bg-white/80 backdrop-blur-2xl backdrop-saturate-150"
             : "bg-transparent"
         }`}
       >
@@ -457,9 +457,11 @@ export default function LandingPage() {
                 boxShadow: `0 0 16px ${ACCENT_GLOW}`,
               }}
             >
-              <Crown className="size-4 text-[#0C0A09]" />
+              <Crown className="size-4 text-white" />
             </div>
-            <span className="text-lg font-bold tracking-tight">Off-Market</span>
+            <span className="text-lg font-bold tracking-tight text-gray-900">
+              Off-Market
+            </span>
           </Link>
 
           {/* Desktop links */}
@@ -468,7 +470,7 @@ export default function LandingPage() {
               <a
                 key={link.label}
                 href={link.href}
-                className="rounded-lg px-3.5 py-2 text-[13px] font-medium text-white/50 transition-colors duration-200 hover:bg-white/[0.04] hover:text-white/90"
+                className="rounded-lg px-3.5 py-2 text-[13px] font-medium text-gray-500 transition-colors duration-200 hover:bg-gray-100 hover:text-gray-900"
               >
                 {link.label}
               </a>
@@ -479,7 +481,7 @@ export default function LandingPage() {
             <Link href="/login" className="hidden sm:inline-flex">
               <button
                 type="button"
-                className="h-9 rounded-lg px-4 text-[13px] font-medium text-white/60 transition-colors hover:bg-white/[0.04] hover:text-white"
+                className="h-9 rounded-lg px-4 text-[13px] font-medium text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900"
               >
                 Connexion
               </button>
@@ -487,7 +489,7 @@ export default function LandingPage() {
             <Link href="/signup" className="hidden sm:inline-flex">
               <button
                 type="button"
-                className="flex h-9 items-center gap-1.5 rounded-lg px-4 text-[13px] font-semibold text-[#0C0A09] transition-all duration-200 hover:shadow-[0_0_24px_rgba(245,158,11,0.25)]"
+                className="flex h-9 items-center gap-1.5 rounded-lg px-4 text-[13px] font-semibold text-white transition-all duration-200 hover:shadow-[0_0_24px_rgba(175,0,0,0.25)]"
                 style={{
                   background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_LIGHT})`,
                 }}
@@ -500,7 +502,7 @@ export default function LandingPage() {
             {/* Mobile toggle */}
             <button
               type="button"
-              className="inline-flex size-10 items-center justify-center rounded-lg text-white/60 transition-colors hover:bg-white/[0.04] hover:text-white md:hidden"
+              className="inline-flex size-10 items-center justify-center rounded-lg text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 md:hidden"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
               {mobileMenuOpen ? (
@@ -514,7 +516,7 @@ export default function LandingPage() {
 
         {/* Mobile menu */}
         <div
-          className={`overflow-hidden border-t border-white/[0.04] bg-[#0C0A09]/98 backdrop-blur-2xl transition-all duration-300 md:hidden ${
+          className={`overflow-hidden border-t border-gray-200 bg-white/98 backdrop-blur-2xl transition-all duration-300 md:hidden ${
             mobileMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
           }`}
         >
@@ -523,17 +525,17 @@ export default function LandingPage() {
               <a
                 key={link.label}
                 href={link.href}
-                className="block rounded-lg px-3 py-2.5 text-[15px] font-medium text-white/60 transition-colors hover:bg-white/[0.04] hover:text-white"
+                className="block rounded-lg px-3 py-2.5 text-[15px] font-medium text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {link.label}
               </a>
             ))}
-            <div className="flex flex-col gap-2 border-t border-white/[0.04] pt-3">
+            <div className="flex flex-col gap-2 border-t border-gray-200 pt-3">
               <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
                 <button
                   type="button"
-                  className="w-full rounded-lg py-2.5 text-center text-[15px] font-medium text-white/60 transition-colors hover:bg-white/[0.04] hover:text-white"
+                  className="w-full rounded-lg py-2.5 text-center text-[15px] font-medium text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900"
                 >
                   Connexion
                 </button>
@@ -541,7 +543,7 @@ export default function LandingPage() {
               <Link href="/signup" onClick={() => setMobileMenuOpen(false)}>
                 <button
                   type="button"
-                  className="flex w-full items-center justify-center gap-1.5 rounded-lg py-2.5 text-[15px] font-semibold text-[#0C0A09] transition-colors"
+                  className="flex w-full items-center justify-center gap-1.5 rounded-lg py-2.5 text-[15px] font-semibold text-white transition-colors"
                   style={{
                     background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_LIGHT})`,
                   }}
@@ -565,15 +567,15 @@ export default function LandingPage() {
             className="pointer-events-none absolute inset-0"
             aria-hidden="true"
           >
-            <div className="absolute left-1/2 top-0 h-[700px] w-[1000px] -translate-x-1/2 rounded-full bg-red-700/[0.04] blur-[160px]" />
-            <div className="absolute right-1/4 top-1/4 h-[300px] w-[300px] rounded-full bg-orange-500/[0.02] blur-[100px]" />
-            <div className="absolute left-1/4 top-1/3 h-[250px] w-[250px] rounded-full bg-red-600/[0.02] blur-[120px]" />
+            <div className="absolute left-1/2 top-0 h-[700px] w-[1000px] -translate-x-1/2 rounded-full bg-red-500/[0.06] blur-[160px]" />
+            <div className="absolute right-1/4 top-1/4 h-[300px] w-[300px] rounded-full bg-orange-500/[0.04] blur-[100px]" />
+            <div className="absolute left-1/4 top-1/3 h-[250px] w-[250px] rounded-full bg-red-600/[0.04] blur-[120px]" />
           </div>
 
           <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
             <div className="mx-auto max-w-3xl text-center">
               {/* Badge */}
-              <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.03] px-4 py-1.5 text-[13px] font-medium text-white/50 backdrop-blur-sm">
+              <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-4 py-1.5 text-[13px] font-medium text-gray-500 backdrop-blur-sm">
                 <span
                   className="flex size-1.5 rounded-full"
                   style={{
@@ -585,7 +587,7 @@ export default function LandingPage() {
               </div>
 
               {/* Headline */}
-              <h1 className="text-[2.75rem] font-bold leading-[1.08] tracking-tight sm:text-6xl lg:text-[4.25rem]">
+              <h1 className="text-[2.75rem] font-bold leading-[1.08] tracking-tight text-gray-900 sm:text-6xl lg:text-[4.25rem]">
                 L&apos;ecosysteme{" "}
                 <span className="relative inline-block">
                   <span
@@ -608,7 +610,7 @@ export default function LandingPage() {
               </h1>
 
               {/* Subheadline */}
-              <p className="mx-auto mt-6 max-w-xl text-[1.125rem] leading-relaxed text-white/45 sm:text-lg">
+              <p className="mx-auto mt-6 max-w-xl text-[1.125rem] leading-relaxed text-gray-400 sm:text-lg">
                 CRM, formation, messagerie, appels video, gamification et IA
                 centralises dans une seule plateforme. Fini la fragmentation
                 entre Slack, Skool et Google Docs.
@@ -619,7 +621,7 @@ export default function LandingPage() {
                 <Link href="/signup">
                   <button
                     type="button"
-                    className="group flex h-12 items-center gap-2 rounded-xl px-7 text-[15px] font-semibold text-[#0C0A09] transition-all duration-300 hover:shadow-[0_0_60px_rgba(245,158,11,0.25)] active:scale-[0.98]"
+                    className="group flex h-12 items-center gap-2 rounded-xl px-7 text-[15px] font-semibold text-white transition-all duration-300 hover:shadow-[0_0_60px_rgba(175,0,0,0.25)] active:scale-[0.98]"
                     style={{
                       background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_LIGHT})`,
                       boxShadow: `0 0 40px ${ACCENT_GLOW}, 0 1px 2px rgba(0,0,0,0.2)`,
@@ -632,7 +634,7 @@ export default function LandingPage() {
                 <a href="#features">
                   <button
                     type="button"
-                    className="h-12 rounded-xl border border-white/[0.08] bg-white/[0.03] px-7 text-[15px] font-medium text-white/70 transition-all duration-200 hover:border-white/[0.12] hover:bg-white/[0.06] hover:text-white"
+                    className="h-12 rounded-xl border border-gray-300 bg-gray-50 px-7 text-[15px] font-medium text-gray-600 transition-all duration-200 hover:border-gray-400 hover:bg-gray-100 hover:text-gray-900"
                   >
                     Decouvrir la plateforme
                   </button>
@@ -640,17 +642,17 @@ export default function LandingPage() {
               </div>
 
               {/* Trust pills */}
-              <div className="mt-8 flex flex-wrap items-center justify-center gap-5 text-[13px] text-white/50">
+              <div className="mt-8 flex flex-wrap items-center justify-center gap-5 text-[13px] text-gray-500">
                 <span className="flex items-center gap-1.5">
                   <Shield className="size-3.5" />
                   Acces sur invitation
                 </span>
-                <span className="h-3 w-px bg-white/10" aria-hidden="true" />
+                <span className="h-3 w-px bg-gray-300" aria-hidden="true" />
                 <span className="flex items-center gap-1.5">
                   <Clock className="size-3.5" />
                   Setup en 5 min
                 </span>
-                <span className="h-3 w-px bg-white/10" aria-hidden="true" />
+                <span className="h-3 w-px bg-gray-300" aria-hidden="true" />
                 <span className="flex items-center gap-1.5">
                   <Zap className="size-3.5" />
                   Donnees securisees RGPD
@@ -670,17 +672,17 @@ export default function LandingPage() {
         {/* ============================================================== */}
         <section
           ref={statsSection.ref}
-          className="relative border-y border-white/[0.04] py-16 sm:py-20"
+          className="relative border-y border-gray-200 py-16 sm:py-20"
         >
           <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-            <p className="mb-10 text-center text-[13px] font-medium uppercase tracking-[0.15em] text-white/30">
+            <p className="mb-10 text-center text-[13px] font-medium uppercase tracking-[0.15em] text-gray-400">
               Deja adopte par des professionnels ambitieux
             </p>
             <div className="grid grid-cols-1 gap-10 sm:grid-cols-3 sm:gap-8">
               {stats.map((stat, i) => (
                 <div key={stat.label} className="text-center">
                   <div
-                    className={`text-4xl font-bold tracking-tight text-white sm:text-5xl transition-all duration-700 ${
+                    className={`text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl transition-all duration-700 ${
                       statsSection.isInView
                         ? "opacity-100 translate-y-0"
                         : "opacity-0 translate-y-4"
@@ -694,7 +696,7 @@ export default function LandingPage() {
                     />
                   </div>
                   <div
-                    className={`mt-2 text-[13px] font-medium tracking-wide text-white/50 uppercase transition-all duration-700 ${
+                    className={`mt-2 text-[13px] font-medium tracking-wide text-gray-500 uppercase transition-all duration-700 ${
                       statsSection.isInView
                         ? "opacity-100 translate-y-0"
                         : "opacity-0 translate-y-4"
@@ -728,12 +730,12 @@ export default function LandingPage() {
               >
                 Fonctionnalites
               </p>
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-[2.75rem]">
+              <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl lg:text-[2.75rem]">
                 Tout ce dont vous avez besoin,
                 <br className="hidden sm:block" />
-                <span className="text-white/40">dans un seul endroit</span>
+                <span className="text-gray-400">dans un seul endroit</span>
               </h2>
-              <p className="mt-5 text-base leading-relaxed text-white/50 sm:text-lg">
+              <p className="mt-5 text-base leading-relaxed text-gray-500 sm:text-lg">
                 Une suite d&apos;outils premium concue pour les freelances,
                 coachs et consultants qui visent l&apos;excellence.
               </p>
@@ -743,7 +745,7 @@ export default function LandingPage() {
               {features.map((feature, i) => (
                 <article
                   key={feature.title}
-                  className={`group relative overflow-hidden rounded-2xl border border-white/[0.04] bg-white/[0.02] p-7 transition-all duration-500 hover:border-white/[0.08] hover:bg-white/[0.04] hover:scale-[1.02] sm:p-8 ${
+                  className={`group relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-7 transition-all duration-500 hover:border-gray-300 hover:bg-gray-50 hover:scale-[1.02] hover:shadow-lg sm:p-8 ${
                     featuresSection.isInView
                       ? "opacity-100 translate-y-0"
                       : "opacity-0 translate-y-8"
@@ -755,13 +757,13 @@ export default function LandingPage() {
                     aria-hidden="true"
                   />
                   <div className="relative">
-                    <div className="mb-5 flex size-10 items-center justify-center rounded-lg bg-white/[0.06] text-white/70 transition-colors duration-300 group-hover:bg-red-700/10 group-hover:text-red-400">
+                    <div className="mb-5 flex size-10 items-center justify-center rounded-lg bg-gray-100 text-gray-600 transition-colors duration-300 group-hover:bg-red-700/10 group-hover:text-red-600">
                       <feature.icon className="size-5" />
                     </div>
-                    <h3 className="text-[15px] font-semibold tracking-tight">
+                    <h3 className="text-[15px] font-semibold tracking-tight text-gray-900">
                       {feature.title}
                     </h3>
-                    <p className="mt-2.5 text-[14px] leading-relaxed text-white/50">
+                    <p className="mt-2.5 text-[14px] leading-relaxed text-gray-500">
                       {feature.desc}
                     </p>
                   </div>
@@ -777,7 +779,7 @@ export default function LandingPage() {
         <section
           id="how-it-works"
           ref={howSection.ref}
-          className="scroll-mt-20 border-y border-white/[0.04] bg-[#0A0908] py-24 sm:py-32 lg:py-40"
+          className="scroll-mt-20 border-y border-gray-200 bg-[#FAFAFA] py-24 sm:py-32 lg:py-40"
         >
           <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
             <FadeIn
@@ -790,10 +792,10 @@ export default function LandingPage() {
               >
                 Comment ca marche
               </p>
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-                Operationnel en <span className="text-white/40">3 etapes</span>
+              <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+                Operationnel en <span className="text-gray-400">3 etapes</span>
               </h2>
-              <p className="mt-5 text-base leading-relaxed text-white/50 sm:text-lg">
+              <p className="mt-5 text-base leading-relaxed text-gray-500 sm:text-lg">
                 De la configuration au scaling, tout est fluide et intuitif.
               </p>
             </FadeIn>
@@ -814,8 +816,8 @@ export default function LandingPage() {
                   delay={i * 120}
                   className="relative text-center"
                 >
-                  <div className="mx-auto mb-6 flex size-14 items-center justify-center rounded-2xl border border-white/[0.06] bg-white/[0.03]">
-                    <step.icon className="size-6 text-red-400/70" />
+                  <div className="mx-auto mb-6 flex size-14 items-center justify-center rounded-2xl border border-gray-200 bg-white shadow-sm">
+                    <step.icon className="size-6 text-red-500/70" />
                   </div>
                   <div
                     className="mb-3 text-[12px] font-bold tracking-[0.2em]"
@@ -823,10 +825,10 @@ export default function LandingPage() {
                   >
                     {step.number}
                   </div>
-                  <h3 className="text-lg font-semibold tracking-tight">
+                  <h3 className="text-lg font-semibold tracking-tight text-gray-900">
                     {step.title}
                   </h3>
-                  <p className="mx-auto mt-2.5 max-w-xs text-[14px] leading-relaxed text-white/50">
+                  <p className="mx-auto mt-2.5 max-w-xs text-[14px] leading-relaxed text-gray-500">
                     {step.desc}
                   </p>
                 </FadeIn>
@@ -854,11 +856,11 @@ export default function LandingPage() {
               >
                 Pourquoi Off-Market
               </p>
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+              <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
                 Plus qu&apos;un outil,{" "}
-                <span className="text-white/40">un avantage competitif</span>
+                <span className="text-gray-400">un avantage competitif</span>
               </h2>
-              <p className="mt-5 text-base leading-relaxed text-white/50 sm:text-lg">
+              <p className="mt-5 text-base leading-relaxed text-gray-500 sm:text-lg">
                 Vos eleves meritent mieux qu&apos;un patchwork de SaaS
                 generiques.
               </p>
@@ -868,29 +870,29 @@ export default function LandingPage() {
               {valueProps.map((vp, i) => (
                 <article
                   key={vp.title}
-                  className={`group relative overflow-hidden rounded-2xl border border-white/[0.04] bg-white/[0.02] p-7 transition-all duration-500 hover:border-white/[0.08] hover:bg-white/[0.04] sm:p-8 ${
+                  className={`group relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-7 transition-all duration-500 hover:border-gray-300 hover:bg-gray-50 hover:shadow-lg sm:p-8 ${
                     whySection.isInView
                       ? "opacity-100 translate-y-0"
                       : "opacity-0 translate-y-8"
                   }`}
                   style={{ transitionDelay: `${i * 100}ms` }}
                 >
-                  <div className="mb-5 flex size-10 items-center justify-center rounded-lg bg-red-700/10 text-red-400">
+                  <div className="mb-5 flex size-10 items-center justify-center rounded-lg bg-red-700/10 text-red-500">
                     <vp.icon className="size-5" />
                   </div>
-                  <h3 className="text-lg font-semibold tracking-tight">
+                  <h3 className="text-lg font-semibold tracking-tight text-gray-900">
                     {vp.title}
                   </h3>
-                  <p className="mt-2.5 text-[14px] leading-relaxed text-white/50">
+                  <p className="mt-2.5 text-[14px] leading-relaxed text-gray-500">
                     {vp.desc}
                   </p>
                   <ul className="mt-5 space-y-2.5">
                     {vp.items.map((item) => (
                       <li
                         key={item}
-                        className="flex items-start gap-2.5 text-[13px] text-white/55"
+                        className="flex items-start gap-2.5 text-[13px] text-gray-500"
                       >
-                        <Check className="mt-0.5 size-3.5 shrink-0 text-red-400/60" />
+                        <Check className="mt-0.5 size-3.5 shrink-0 text-red-500/60" />
                         {item}
                       </li>
                     ))}
@@ -907,7 +909,7 @@ export default function LandingPage() {
         <section
           id="testimonials"
           ref={testimonialsSection.ref}
-          className="scroll-mt-20 border-y border-white/[0.04] bg-[#0A0908] py-24 sm:py-32 lg:py-40"
+          className="scroll-mt-20 border-y border-gray-200 bg-[#FAFAFA] py-24 sm:py-32 lg:py-40"
         >
           <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
             <FadeIn
@@ -920,10 +922,10 @@ export default function LandingPage() {
               >
                 Temoignages
               </p>
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+              <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
                 Ils ont transforme leur activite
               </h2>
-              <p className="mt-5 text-base leading-relaxed text-white/50 sm:text-lg">
+              <p className="mt-5 text-base leading-relaxed text-gray-500 sm:text-lg">
                 Decouvrez les retours de professionnels qui utilisent Off-Market
                 au quotidien.
               </p>
@@ -933,7 +935,7 @@ export default function LandingPage() {
               {testimonials.map((t, i) => (
                 <article
                   key={t.name}
-                  className={`group relative overflow-hidden rounded-2xl border border-white/[0.04] bg-white/[0.02] p-7 transition-all duration-500 hover:border-white/[0.08] hover:bg-white/[0.04] sm:p-8 ${
+                  className={`group relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-7 transition-all duration-500 hover:border-gray-300 hover:bg-gray-50 hover:shadow-lg sm:p-8 ${
                     testimonialsSection.isInView
                       ? "opacity-100 translate-y-0"
                       : "opacity-0 translate-y-8"
@@ -941,7 +943,7 @@ export default function LandingPage() {
                   style={{ transitionDelay: `${i * 100}ms` }}
                 >
                   {/* Metric badge */}
-                  <div className="mb-5 inline-flex items-center gap-1.5 rounded-full border border-red-700/10 bg-red-700/[0.06] px-3 py-1 text-[12px] font-medium text-red-400/80">
+                  <div className="mb-5 inline-flex items-center gap-1.5 rounded-full border border-red-200 bg-red-50 px-3 py-1 text-[12px] font-medium text-red-600">
                     <TrendingUp className="size-3" />
                     {t.metric}
                   </div>
@@ -950,25 +952,25 @@ export default function LandingPage() {
                     {Array.from({ length: t.rating }).map((_, idx) => (
                       <Star
                         key={idx}
-                        className="size-3.5 fill-red-400/80 text-red-400/80"
+                        className="size-3.5 fill-amber-400 text-amber-400"
                       />
                     ))}
                   </div>
 
-                  <blockquote className="text-[14px] leading-relaxed text-white/55">
-                    <Quote className="mb-2 size-4 text-white/15" />
+                  <blockquote className="text-[14px] leading-relaxed text-gray-500">
+                    <Quote className="mb-2 size-4 text-gray-300" />
                     {t.text}
                   </blockquote>
 
-                  <div className="mt-6 flex items-center gap-3 border-t border-white/[0.04] pt-5">
-                    <div className="flex size-9 items-center justify-center rounded-full bg-white/[0.06] text-[13px] font-semibold text-white/60">
+                  <div className="mt-6 flex items-center gap-3 border-t border-gray-200 pt-5">
+                    <div className="flex size-9 items-center justify-center rounded-full bg-gray-100 text-[13px] font-semibold text-gray-500">
                       {t.name.charAt(0)}
                     </div>
                     <div>
-                      <div className="text-[13px] font-semibold text-white/80">
+                      <div className="text-[13px] font-semibold text-gray-800">
                         {t.name}
                       </div>
-                      <div className="text-[12px] text-white/50">{t.role}</div>
+                      <div className="text-[12px] text-gray-500">{t.role}</div>
                     </div>
                   </div>
                 </article>
@@ -990,7 +992,7 @@ export default function LandingPage() {
           >
             <div
               className="absolute left-1/2 bottom-0 h-[500px] w-[800px] -translate-x-1/2 rounded-full blur-[160px]"
-              style={{ backgroundColor: `${ACCENT}08` }}
+              style={{ backgroundColor: `${ACCENT}0C` }}
             />
           </div>
           <FadeIn
@@ -998,15 +1000,15 @@ export default function LandingPage() {
             className="relative mx-auto max-w-2xl px-4 text-center sm:px-6 lg:px-8"
           >
             <div className="mb-6 inline-flex items-center justify-center">
-              <Sparkles className="size-6 text-red-400/60" />
+              <Sparkles className="size-6 text-red-500/60" />
             </div>
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
+            <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl lg:text-5xl">
               Pret a offrir une experience
               <br />
-              <span className="text-white/40">exceptionnelle</span> a vos eleves
+              <span className="text-gray-400">exceptionnelle</span> a vos eleves
               ?
             </h2>
-            <p className="mx-auto mt-6 max-w-lg text-base leading-relaxed text-white/50 sm:text-lg">
+            <p className="mx-auto mt-6 max-w-lg text-base leading-relaxed text-gray-500 sm:text-lg">
               Rejoignez les professionnels qui ont fait le choix de
               l&apos;excellence. Demandez votre acces des maintenant.
             </p>
@@ -1014,7 +1016,7 @@ export default function LandingPage() {
               <Link href="/signup">
                 <button
                   type="button"
-                  className="group flex h-13 items-center gap-2 rounded-xl px-10 text-[15px] font-semibold text-[#0C0A09] transition-all duration-300 hover:shadow-[0_0_60px_rgba(245,158,11,0.25)] active:scale-[0.98]"
+                  className="group flex h-13 items-center gap-2 rounded-xl px-10 text-[15px] font-semibold text-white transition-all duration-300 hover:shadow-[0_0_60px_rgba(175,0,0,0.25)] active:scale-[0.98]"
                   style={{
                     background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_LIGHT})`,
                     boxShadow: `0 0 40px ${ACCENT_GLOW}`,
@@ -1024,7 +1026,7 @@ export default function LandingPage() {
                   <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-0.5" />
                 </button>
               </Link>
-              <span className="text-[13px] text-white/45">
+              <span className="text-[13px] text-gray-400">
                 Plateforme sur invitation uniquement
               </span>
             </div>
@@ -1035,7 +1037,7 @@ export default function LandingPage() {
       {/* ================================================================ */}
       {/*  8. FOOTER                                                        */}
       {/* ================================================================ */}
-      <footer className="border-t border-white/[0.04] bg-[#0A0908] py-16 sm:py-20">
+      <footer className="border-t border-gray-800 bg-gray-900 py-16 sm:py-20">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 gap-8 md:grid-cols-4 md:gap-12">
             {/* Brand */}
@@ -1047,9 +1049,11 @@ export default function LandingPage() {
                     background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_LIGHT})`,
                   }}
                 >
-                  <Crown className="size-3.5 text-[#0C0A09]" />
+                  <Crown className="size-3.5 text-white" />
                 </div>
-                <span className="text-[15px] font-bold">Off-Market</span>
+                <span className="text-[15px] font-bold text-white">
+                  Off-Market
+                </span>
               </Link>
               <p className="mt-4 max-w-[220px] text-[13px] leading-relaxed text-white/50">
                 La plateforme tout-en-un pour freelances, coachs et consultants
@@ -1078,7 +1082,7 @@ export default function LandingPage() {
             ))}
           </div>
 
-          <div className="mt-14 border-t border-white/[0.04] pt-8 text-center text-[12px] text-white/45">
+          <div className="mt-14 border-t border-white/[0.08] pt-8 text-center text-[12px] text-white/45">
             &copy; {new Date().getFullYear()} Off-Market. Tous droits reserves.
           </div>
         </div>
