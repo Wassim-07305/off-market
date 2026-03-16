@@ -63,10 +63,10 @@ export default function BillingOverviewPage() {
         className="flex items-start justify-between"
       >
         <div>
-          <h1 className="text-3xl font-semibold text-foreground">
+          <h1 className="text-3xl font-bold text-foreground tracking-tight">
             Facturation
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="text-sm text-muted-foreground/80 mt-1.5 leading-relaxed">
             Vue d&apos;ensemble des contrats, factures et paiements
           </p>
         </div>
@@ -167,54 +167,56 @@ export default function BillingOverviewPage() {
         transition={defaultTransition}
         className="grid grid-cols-2 lg:grid-cols-4 gap-4"
       >
-        <div className="bg-surface border border-border rounded-xl p-5">
+        <div className="bg-surface border border-border rounded-xl p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center ring-1 ring-emerald-500/20">
               <CreditCard className="w-5 h-5 text-emerald-500" />
             </div>
           </div>
-          <p className="text-2xl font-semibold text-foreground">
+          <p className="text-2xl font-bold text-foreground tracking-tight">
             {statsLoading ? "..." : formatEUR(stats?.totalRevenue ?? 0)}
           </p>
-          <p className="text-xs text-muted-foreground mt-1">
+          <p className="text-xs text-muted-foreground/80 mt-1">
             Revenus encaisses
           </p>
         </div>
 
-        <div className="bg-surface border border-border rounded-xl p-5">
+        <div className="bg-surface border border-border rounded-xl p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center ring-1 ring-amber-500/20">
               <Clock className="w-5 h-5 text-amber-500" />
             </div>
           </div>
-          <p className="text-2xl font-semibold text-foreground">
+          <p className="text-2xl font-bold text-foreground tracking-tight">
             {statsLoading ? "..." : formatEUR(stats?.pendingAmount ?? 0)}
           </p>
-          <p className="text-xs text-muted-foreground mt-1">En attente</p>
+          <p className="text-xs text-muted-foreground/80 mt-1">En attente</p>
         </div>
 
-        <div className="bg-surface border border-border rounded-xl p-5">
+        <div className="bg-surface border border-border rounded-xl p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-lg bg-red-500/10 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center ring-1 ring-red-500/20">
               <AlertTriangle className="w-5 h-5 text-red-500" />
             </div>
           </div>
-          <p className="text-2xl font-semibold text-foreground">
+          <p className="text-2xl font-bold text-foreground tracking-tight">
             {statsLoading ? "..." : formatEUR(stats?.overdueAmount ?? 0)}
           </p>
-          <p className="text-xs text-muted-foreground mt-1">En retard</p>
+          <p className="text-xs text-muted-foreground/80 mt-1">En retard</p>
         </div>
 
-        <div className="bg-surface border border-border rounded-xl p-5">
+        <div className="bg-surface border border-border rounded-xl p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center ring-1 ring-primary/20">
               <FileText className="w-5 h-5 text-primary" />
             </div>
           </div>
-          <p className="text-2xl font-semibold text-foreground">
+          <p className="text-2xl font-bold text-foreground tracking-tight">
             {statsLoading ? "..." : (stats?.contractsSigned ?? 0)}
           </p>
-          <p className="text-xs text-muted-foreground mt-1">Contrats signes</p>
+          <p className="text-xs text-muted-foreground/80 mt-1">
+            Contrats signes
+          </p>
         </div>
       </motion.div>
 
@@ -232,7 +234,7 @@ export default function BillingOverviewPage() {
           className="bg-surface border border-border rounded-xl p-6"
         >
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold text-foreground">
+            <h2 className="text-sm font-bold text-foreground tracking-tight">
               Derniers contrats
             </h2>
             <Link
@@ -288,7 +290,7 @@ export default function BillingOverviewPage() {
           className="bg-surface border border-border rounded-xl p-6"
         >
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold text-foreground">
+            <h2 className="text-sm font-bold text-foreground tracking-tight">
               Dernieres factures
             </h2>
             <Link

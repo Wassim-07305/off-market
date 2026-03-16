@@ -72,16 +72,16 @@ export const PIPELINE_STAGES: {
   {
     value: "qualifie",
     label: "Qualifie",
-    color: "text-zinc-700 dark:text-zinc-200",
-    bg: "bg-zinc-100 dark:bg-zinc-800/50 border-zinc-200 dark:border-zinc-700",
-    dotColor: "bg-zinc-500",
+    color: "text-blue-700 dark:text-blue-300",
+    bg: "bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-900/40",
+    dotColor: "bg-blue-500",
   },
   {
     value: "proposition",
     label: "Proposition",
-    color: "text-zinc-700 dark:text-zinc-200",
-    bg: "bg-zinc-100 dark:bg-zinc-800/50 border-zinc-200 dark:border-zinc-700",
-    dotColor: "bg-zinc-600",
+    color: "text-amber-700 dark:text-amber-300",
+    bg: "bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-900/40",
+    dotColor: "bg-amber-500",
   },
   {
     value: "closing",

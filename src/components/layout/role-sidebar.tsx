@@ -78,7 +78,7 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
     <aside
       className={cn(
         "fixed left-0 top-0 h-screen flex flex-col transition-all duration-300 z-40 hidden lg:flex",
-        "bg-[#18181B]",
+        "bg-gradient-to-b from-[#1a1a1f] to-[#111114] border-r border-white/[0.04]",
         sidebarCollapsed ? "w-[68px]" : "w-[248px]",
       )}
     >
@@ -122,29 +122,29 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
           return (
             <div key={item.name}>
               {showSeparator && (
-                <div className="my-2 mx-2 h-px bg-white/[0.06]" />
+                <div className="my-3 mx-2 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" />
               )}
               <Link
                 href={item.href}
                 data-tour={tourMap[item.name]}
                 className={cn(
-                  "relative flex items-center gap-2.5 h-9 rounded-lg px-2.5 transition-colors duration-150 group",
+                  "relative flex items-center gap-2.5 h-9 rounded-lg px-2.5 transition-all duration-200 group",
                   isActive
-                    ? "bg-white/10 text-white"
+                    ? "bg-[#AF0000]/15 text-white shadow-[inset_0_0_12px_rgba(175,0,0,0.08)]"
                     : "text-zinc-400 hover:text-white hover:bg-white/[0.06]",
                   sidebarCollapsed && "justify-center px-0",
                 )}
               >
                 {/* Active indicator bar */}
                 {isActive && (
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 rounded-r-full bg-[var(--primary,#AF0000)]" />
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-[#AF0000] shadow-[0_0_8px_rgba(175,0,0,0.4)]" />
                 )}
                 <item.icon
                   className={cn(
-                    "w-4 h-4 shrink-0 transition-colors duration-150",
+                    "w-[18px] h-[18px] shrink-0 transition-all duration-200",
                     isActive
-                      ? "text-white"
-                      : "text-zinc-500 group-hover:text-white",
+                      ? "text-[#DC2626]"
+                      : "text-zinc-500 group-hover:text-zinc-200",
                   )}
                 />
                 {!sidebarCollapsed && (
@@ -167,7 +167,7 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
       </nav>
 
       {/* Collapse button — desktop only */}
-      <div className="border-t border-white/[0.06] px-2 py-1.5 shrink-0 hidden lg:block">
+      <div className="border-t border-white/[0.04] px-2 py-1.5 shrink-0 hidden lg:block">
         <button
           onClick={toggleSidebar}
           className={cn(
@@ -188,7 +188,7 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
       </div>
 
       {/* Profile section */}
-      <div className="border-t border-white/[0.06] p-2 shrink-0 space-y-px">
+      <div className="border-t border-white/[0.06] p-2 shrink-0 space-y-px bg-white/[0.02]">
         {/* Avatar + info */}
         <div
           className={cn(
@@ -201,15 +201,15 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
               <img
                 src={profile.avatar_url}
                 alt={profile.full_name ?? ""}
-                className="w-8 h-8 rounded-full object-cover"
+                className="w-8 h-8 rounded-full object-cover ring-2 ring-white/10"
               />
             ) : (
-              <div className="w-8 h-8 rounded-full bg-zinc-700 flex items-center justify-center text-[11px] text-zinc-300 font-semibold">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-zinc-600 to-zinc-800 flex items-center justify-center text-[11px] text-zinc-200 font-semibold ring-2 ring-white/10">
                 {loading ? "..." : initials || "U"}
               </div>
             )}
             {/* Online indicator */}
-            <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-[#18181B]" />
+            <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-[#111114] shadow-[0_0_6px_rgba(52,211,153,0.4)]" />
           </div>
           {!sidebarCollapsed && (
             <div className="flex-1 min-w-0">

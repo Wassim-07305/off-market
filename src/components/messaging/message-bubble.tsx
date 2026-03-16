@@ -97,12 +97,13 @@ export function MessageBubble({
   return (
     <div
       className={cn(
-        "group relative flex gap-3 px-1.5 -mx-1.5 rounded-lg transition-colors duration-150",
-        isFirstInGroup ? "pt-2" : "pt-0.5",
-        showActions && "bg-muted/30",
-        isOptimistic && "opacity-50",
+        "group relative flex gap-3.5 px-2 -mx-2 rounded-xl transition-all duration-200",
+        isFirstInGroup ? "pt-3" : "pt-0.5",
+        showActions && "bg-muted/20",
+        isOptimistic && "opacity-40",
         message.is_urgent &&
-          "bg-red-50 dark:bg-red-950/20 border-l-3 border-l-red-500 pl-3",
+          "bg-red-50/80 dark:bg-red-950/20 border-l-[3px] border-l-red-500 pl-3.5",
+        isOwn && !message.is_urgent && "flex-row-reverse",
       )}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -110,7 +111,12 @@ export function MessageBubble({
       {/* Avatar or spacer */}
       <div className="w-9 shrink-0">
         {isFirstInGroup && (
-          <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
+          <div className={cn(
+            "w-9 h-9 rounded-full flex items-center justify-center overflow-hidden shadow-sm",
+            isOwn
+              ? "bg-gradient-to-br from-[#AF0000]/15 to-[#DC2626]/15"
+              : "bg-muted/80",
+          )}>
             {sender?.avatar_url ? (
               <img
                 src={sender.avatar_url}
@@ -118,7 +124,10 @@ export function MessageBubble({
                 className="w-9 h-9 rounded-full object-cover"
               />
             ) : (
-              <span className="text-xs font-semibold text-primary">
+              <span className={cn(
+                "text-xs font-bold",
+                isOwn ? "text-[#AF0000]" : "text-muted-foreground",
+              )}>
                 {sender ? getInitials(sender.full_name) : "?"}
               </span>
             )}
@@ -127,25 +136,31 @@ export function MessageBubble({
       </div>
 
       {/* Content */}
-      <div className="flex-1 min-w-0">
+      <div className={cn(
+        "flex-1 min-w-0",
+        isOwn && "flex flex-col items-end",
+      )}>
         {isFirstInGroup && (
-          <div className="flex items-baseline gap-2 mb-0.5">
+          <div className={cn(
+            "flex items-baseline gap-2 mb-1",
+            isOwn && "flex-row-reverse",
+          )}>
             <span
               className={cn(
-                "text-[13px] font-semibold",
+                "text-[13px] font-bold tracking-tight",
                 sender?.role === "admin" || sender?.role === "coach"
-                  ? "text-primary"
+                  ? "text-[#AF0000]"
                   : "text-foreground",
               )}
             >
               {sender?.full_name ?? "Inconnu"}
             </span>
-            <span className="text-[11px] text-muted-foreground">
+            <span className="text-[10px] text-muted-foreground/60 font-medium">
               {formatMessageTime(message.created_at)}
             </span>
             {message.is_urgent && (
-              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-red-500 text-white text-[9px] font-bold uppercase tracking-wider">
-                <AlertTriangle className="w-2.5 h-2.5" />
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-500 text-white text-[9px] font-bold uppercase tracking-wider shadow-sm shadow-red-500/20">
+                <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
                 Urgent
               </span>
             )}
@@ -153,7 +168,7 @@ export function MessageBubble({
               <Pin className="w-3 h-3 text-amber-500 fill-amber-500" />
             )}
             {message.is_edited && (
-              <span className="text-[10px] text-muted-foreground italic">
+              <span className="text-[10px] text-muted-foreground/50 italic">
                 (modifie)
               </span>
             )}
@@ -162,11 +177,11 @@ export function MessageBubble({
 
         {/* Reply preview */}
         {message.reply_to && message.reply_message && (
-          <div className="flex items-center gap-2 mb-1 pl-3 border-l-2 border-primary/30 rounded-r">
-            <span className="text-[11px] text-primary font-medium">
+          <div className="flex items-center gap-2 mb-1.5 pl-3 border-l-[3px] border-[#AF0000]/30 rounded-r-lg bg-[#AF0000]/[0.03] py-1 pr-3">
+            <span className="text-[11px] text-[#AF0000] font-semibold">
               {message.reply_message.sender?.full_name ?? "Inconnu"}
             </span>
-            <span className="text-[11px] text-muted-foreground truncate">
+            <span className="text-[11px] text-muted-foreground/70 truncate">
               {message.reply_message.content.slice(0, 80)}
             </span>
           </div>
@@ -174,12 +189,12 @@ export function MessageBubble({
 
         {/* Editing mode */}
         {editing ? (
-          <div className="space-y-1.5">
+          <div className="space-y-1.5 max-w-full">
             <textarea
               autoFocus
               value={editContent}
               onChange={(e) => setEditContent(e.target.value)}
-              className="w-full p-2 bg-muted border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary resize-none transition-shadow"
+              className="w-full p-2.5 bg-white border border-border/60 rounded-xl text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-[#AF0000]/15 focus:border-[#AF0000]/20 resize-none transition-all duration-200"
               rows={2}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
@@ -190,15 +205,22 @@ export function MessageBubble({
               }}
             />
             <div className="flex items-center gap-2 text-[11px]">
-              <span className="text-muted-foreground">Echap pour annuler</span>
-              <span className="text-muted-foreground">&middot;</span>
-              <span className="text-muted-foreground">
+              <span className="text-muted-foreground/60">Echap pour annuler</span>
+              <span className="text-muted-foreground/40">&middot;</span>
+              <span className="text-muted-foreground/60">
                 Entree pour sauvegarder
               </span>
             </div>
           </div>
         ) : (
-          <MessageContent message={message} />
+          <div className={cn(
+            "inline-block max-w-full",
+            isOwn && !message.is_urgent
+              ? "bg-gradient-to-br from-[#AF0000]/[0.06] to-[#DC2626]/[0.04] rounded-2xl rounded-tr-sm px-3.5 py-2"
+              : !message.is_urgent ? "bg-muted/30 rounded-2xl rounded-tl-sm px-3.5 py-2" : "",
+          )}>
+            <MessageContent message={message} />
+          </div>
         )}
 
         {/* AI response label */}
@@ -217,10 +239,12 @@ export function MessageBubble({
         {message.reply_count > 0 && onOpenThread && (
           <button
             onClick={onOpenThread}
-            className="flex items-center gap-1.5 mt-1 text-primary text-xs hover:underline"
+            className="flex items-center gap-1.5 mt-1.5 text-[#AF0000] text-xs font-medium hover:text-[#DC2626] transition-colors duration-200 group/thread"
           >
             <MessageSquare className="w-3 h-3" />
-            {message.reply_count} reponse{message.reply_count !== 1 ? "s" : ""}
+            <span className="group-hover/thread:underline">
+              {message.reply_count} reponse{message.reply_count !== 1 ? "s" : ""}
+            </span>
           </button>
         )}
       </div>
@@ -228,7 +252,8 @@ export function MessageBubble({
       {/* Actions toolbar — fade transition */}
       <div
         className={cn(
-          "absolute -top-3 right-2 flex items-center bg-surface border border-border/60 rounded-lg shadow-sm overflow-hidden z-10 transition-all duration-150",
+          "absolute -top-3.5 flex items-center bg-white border border-border/40 rounded-xl shadow-lg shadow-black/[0.06] overflow-hidden z-10 transition-all duration-200",
+          isOwn ? "left-2" : "right-2",
           showActions && !editing
             ? "opacity-100 translate-y-0 pointer-events-auto"
             : "opacity-0 translate-y-1 pointer-events-none",
@@ -236,14 +261,14 @@ export function MessageBubble({
       >
         <button
           onClick={() => setShowQuickReact(!showQuickReact)}
-          className="w-7 h-7 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+          className="w-7 h-7 flex items-center justify-center text-muted-foreground/70 hover:text-foreground hover:bg-muted/60 transition-all duration-200"
           title="Reagir"
         >
           <Smile className="w-3.5 h-3.5" />
         </button>
         <button
           onClick={onReply}
-          className="w-7 h-7 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+          className="w-7 h-7 flex items-center justify-center text-muted-foreground/70 hover:text-foreground hover:bg-muted/60 transition-all duration-200"
           title="Repondre"
         >
           <CornerUpLeft className="w-3.5 h-3.5" />
@@ -251,7 +276,7 @@ export function MessageBubble({
         {onOpenThread && (
           <button
             onClick={onOpenThread}
-            className="w-7 h-7 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            className="w-7 h-7 flex items-center justify-center text-muted-foreground/70 hover:text-foreground hover:bg-muted/60 transition-all duration-200"
             title="Ouvrir le fil"
           >
             <MessageSquare className="w-3.5 h-3.5" />
@@ -263,7 +288,7 @@ export function MessageBubble({
               setEditing(true);
               setEditContent(message.content);
             }}
-            className="w-7 h-7 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            className="w-7 h-7 flex items-center justify-center text-muted-foreground/70 hover:text-foreground hover:bg-muted/60 transition-all duration-200"
             title="Modifier"
           >
             <Pencil className="w-3.5 h-3.5" />
@@ -274,8 +299,8 @@ export function MessageBubble({
           className={cn(
             "w-7 h-7 flex items-center justify-center transition-colors",
             message.is_pinned
-              ? "text-amber-500 hover:bg-muted"
-              : "text-muted-foreground hover:text-foreground hover:bg-muted",
+              ? "text-amber-500 hover:bg-amber-50"
+              : "text-muted-foreground/70 hover:text-foreground hover:bg-muted/60",
           )}
           title={message.is_pinned ? "Desepingler" : "Epingler"}
         >
@@ -287,8 +312,8 @@ export function MessageBubble({
             className={cn(
               "w-7 h-7 flex items-center justify-center transition-colors",
               isBookmarked
-                ? "text-primary hover:bg-muted"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted",
+                ? "text-[#AF0000] hover:bg-[#AF0000]/5"
+                : "text-muted-foreground/70 hover:text-foreground hover:bg-muted/60",
             )}
             title={isBookmarked ? "Retirer le signet" : "Ajouter un signet"}
           >
@@ -300,7 +325,7 @@ export function MessageBubble({
         {isOwn && (
           <button
             onClick={onDelete}
-            className="w-7 h-7 flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+            className="w-7 h-7 flex items-center justify-center text-muted-foreground/70 hover:text-destructive hover:bg-destructive/10 transition-all duration-200"
             title="Supprimer"
           >
             <Trash2 className="w-3.5 h-3.5" />
@@ -311,7 +336,8 @@ export function MessageBubble({
       {/* Quick reactions popup — scale transition */}
       <div
         className={cn(
-          "absolute -top-10 right-2 flex items-center gap-0.5 bg-surface border border-border/60 rounded-lg shadow-md p-1 z-20 transition-all duration-150 origin-bottom-right",
+          "absolute -top-11 flex items-center gap-0.5 bg-white border border-border/30 rounded-2xl shadow-xl shadow-black/[0.08] p-1.5 z-20 transition-all duration-200 origin-bottom-right",
+          isOwn ? "left-2" : "right-2",
           showQuickReact
             ? "opacity-100 scale-100 pointer-events-auto"
             : "opacity-0 scale-90 pointer-events-none",
@@ -324,7 +350,7 @@ export function MessageBubble({
               onReact(message.id, emoji);
               setShowQuickReact(false);
             }}
-            className="w-7 h-7 rounded flex items-center justify-center hover:bg-muted transition-all duration-100 hover:scale-110 active:scale-95 text-sm"
+            className="w-8 h-8 rounded-xl flex items-center justify-center hover:bg-muted/60 transition-all duration-150 hover:scale-125 active:scale-95 text-base"
           >
             {emoji}
           </button>

@@ -108,9 +108,11 @@ export function ChannelSidebar({
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="h-14 border-b border-border/40 flex items-center px-4">
-        <MessageSquare className="w-5 h-5 text-primary mr-2.5" />
-        <h2 className="text-sm font-semibold text-foreground">Messagerie</h2>
+      <div className="h-14 border-b border-border/30 flex items-center px-4 bg-white/60 backdrop-blur-sm">
+        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#AF0000] to-[#DC2626] flex items-center justify-center mr-3 shadow-sm shadow-[#AF0000]/20">
+          <MessageSquare className="w-4 h-4 text-white" />
+        </div>
+        <h2 className="text-sm font-bold text-foreground tracking-tight">Messagerie</h2>
       </div>
 
       <div className="flex-1 overflow-y-auto py-2">
@@ -135,9 +137,9 @@ export function ChannelSidebar({
                   if (e.key === "Enter" || e.key === " ")
                     setChannelsOpen(!channelsOpen);
                 }}
-                className="w-full flex items-center justify-between px-4 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider hover:text-foreground transition-colors cursor-pointer"
+                className="w-full flex items-center justify-between px-4 py-2 text-[10px] font-bold text-[#AF0000]/70 uppercase tracking-[0.12em] hover:text-[#AF0000] transition-colors duration-200 cursor-pointer"
               >
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1.5">
                   {channelsOpen ? (
                     <ChevronDown className="w-3 h-3" />
                   ) : (
@@ -150,7 +152,7 @@ export function ChannelSidebar({
                     e.stopPropagation();
                     setShowCreateModal(true);
                   }}
-                  className="w-5 h-5 rounded flex items-center justify-center hover:bg-muted transition-colors"
+                  className="w-5 h-5 rounded-md flex items-center justify-center hover:bg-[#AF0000]/10 text-[#AF0000]/50 hover:text-[#AF0000] transition-all duration-200"
                 >
                   <Plus className="w-3.5 h-3.5" />
                 </button>
@@ -173,30 +175,39 @@ export function ChannelSidebar({
                         key={ch.id}
                         onClick={() => onSelectChannel(ch.id)}
                         className={cn(
-                          "w-full flex items-center gap-2.5 px-2.5 h-8 rounded-lg text-[13px] transition-all duration-150",
+                          "w-full flex items-center gap-2.5 px-2.5 h-9 rounded-xl text-[13px] transition-all duration-200",
                           isActive
-                            ? "bg-primary/10 text-primary font-medium shadow-sm"
-                            : "text-muted-foreground hover:text-foreground hover:bg-muted/60 active:scale-[0.98]",
-                          ch.isMuted && !isActive && "opacity-50",
+                            ? "bg-[#AF0000]/[0.08] text-[#AF0000] font-semibold shadow-sm shadow-[#AF0000]/5 ring-1 ring-[#AF0000]/10"
+                            : "text-muted-foreground hover:text-foreground hover:bg-black/[0.04] active:scale-[0.98]",
+                          ch.isMuted && !isActive && "opacity-40",
                         )}
                       >
-                        <Icon
-                          className={cn(
-                            "w-4 h-4 shrink-0 transition-opacity",
-                            isActive ? "opacity-100" : "opacity-50",
-                          )}
-                        />
+                        <div className={cn(
+                          "w-6 h-6 rounded-lg flex items-center justify-center shrink-0 transition-all duration-200",
+                          isActive
+                            ? "bg-[#AF0000]/15"
+                            : "bg-muted/60",
+                        )}>
+                          <Icon
+                            className={cn(
+                              "w-3.5 h-3.5 shrink-0 transition-colors duration-200",
+                              isActive ? "text-[#AF0000]" : "text-muted-foreground/70",
+                            )}
+                          />
+                        </div>
                         <span className="truncate flex-1 text-left">
                           {ch.name}
                         </span>
                         {ch.isMuted && (
-                          <BellOff className="w-3 h-3 text-muted-foreground/50 shrink-0" />
+                          <BellOff className="w-3 h-3 text-muted-foreground/40 shrink-0" />
                         )}
                         {ch.unreadCount > 0 && !ch.isMuted && (
                           <span
                             className={cn(
-                              "min-w-[18px] h-[18px] rounded-full text-white text-[10px] font-bold flex items-center justify-center px-1",
-                              hasUrgent ? "bg-red-500" : "bg-primary",
+                              "min-w-[18px] h-[18px] rounded-full text-white text-[10px] font-bold flex items-center justify-center px-1.5 shadow-sm",
+                              hasUrgent
+                                ? "bg-red-500 shadow-red-500/25 animate-pulse"
+                                : "bg-[#AF0000] shadow-[#AF0000]/20",
                             )}
                           >
                             {ch.unreadCount > 99 ? "99+" : ch.unreadCount}
@@ -214,7 +225,7 @@ export function ChannelSidebar({
               <div className="mt-2 mb-1">
                 <button
                   onClick={onToggleShowArchived}
-                  className="w-full flex items-center gap-1.5 px-4 py-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                  className="w-full flex items-center gap-1.5 px-4 py-2 text-[10px] text-muted-foreground/70 hover:text-foreground transition-all duration-200"
                 >
                   <Archive className="w-3 h-3" />
                   <span className="font-medium">
@@ -270,9 +281,9 @@ export function ChannelSidebar({
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") setDmsOpen(!dmsOpen);
                 }}
-                className="w-full flex items-center justify-between px-4 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider hover:text-foreground transition-colors cursor-pointer"
+                className="w-full flex items-center justify-between px-4 py-2 text-[10px] font-bold text-[#AF0000]/70 uppercase tracking-[0.12em] hover:text-[#AF0000] transition-colors duration-200 cursor-pointer"
               >
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1.5">
                   {dmsOpen ? (
                     <ChevronDown className="w-3 h-3" />
                   ) : (
@@ -285,7 +296,7 @@ export function ChannelSidebar({
                     e.stopPropagation();
                     setViewMode(viewMode === "list" ? "mosaic" : "list");
                   }}
-                  className="w-5 h-5 rounded flex items-center justify-center hover:bg-muted transition-colors"
+                  className="w-5 h-5 rounded-md flex items-center justify-center hover:bg-[#AF0000]/10 text-[#AF0000]/50 hover:text-[#AF0000] transition-all duration-200"
                   title={viewMode === "list" ? "Vue mosaïque" : "Vue liste"}
                 >
                   {viewMode === "list" ? (
@@ -299,21 +310,21 @@ export function ChannelSidebar({
               {dmsOpen && (
                 <>
                   {/* Barre de recherche DM */}
-                  <div className="px-3 mb-1.5">
+                  <div className="px-3 mb-2">
                     <div className="relative">
-                      <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+                      <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground/60" />
                       <input
                         value={dmSearch}
                         onChange={(e) => setDmSearch(e.target.value)}
                         placeholder="Rechercher..."
-                        className="w-full h-7 pl-7 pr-2.5 bg-surface border border-border/60 rounded-lg text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                        className="w-full h-8 pl-8 pr-3 bg-white border border-border/40 rounded-xl text-xs text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-[#AF0000]/15 focus:border-[#AF0000]/20 transition-all duration-200 shadow-sm shadow-black/[0.02]"
                       />
                     </div>
                   </div>
 
                   {viewMode === "mosaic" ? (
                     /* ── Mosaic view ── */
-                    <div className="px-2 grid grid-cols-3 gap-1.5">
+                    <div className="px-2 grid grid-cols-3 gap-2">
                       {filteredDmChannels.map((ch) => {
                         const isActive = ch.id === activeChannelId;
                         const partner = ch.dmPartner;
@@ -326,23 +337,32 @@ export function ChannelSidebar({
                             key={ch.id}
                             onClick={() => onSelectChannel(ch.id)}
                             className={cn(
-                              "flex flex-col items-center gap-1 p-2 rounded-xl text-[11px] transition-all duration-150",
+                              "flex flex-col items-center gap-1.5 p-2.5 rounded-2xl text-[11px] transition-all duration-200",
                               isActive
-                                ? "bg-primary/10 text-primary font-medium ring-1 ring-primary/20"
-                                : "text-muted-foreground hover:text-foreground hover:bg-muted/60 active:scale-[0.96]",
-                              ch.isMuted && !isActive && "opacity-50",
+                                ? "bg-[#AF0000]/[0.08] text-[#AF0000] font-semibold ring-1 ring-[#AF0000]/15 shadow-sm shadow-[#AF0000]/5"
+                                : "text-muted-foreground hover:text-foreground hover:bg-black/[0.04] active:scale-[0.96]",
+                              ch.isMuted && !isActive && "opacity-40",
                             )}
                           >
                             <div className="relative">
-                              <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
+                              <div className={cn(
+                                "w-10 h-10 rounded-full flex items-center justify-center overflow-hidden ring-2 transition-all duration-200",
+                                online
+                                  ? "ring-emerald-400/60"
+                                  : isActive ? "ring-[#AF0000]/20" : "ring-transparent",
+                                !partner?.avatar_url && (isActive ? "bg-[#AF0000]/10" : "bg-muted/80"),
+                              )}>
                                 {partner?.avatar_url ? (
                                   <img
                                     src={partner.avatar_url}
                                     alt=""
-                                    className="w-9 h-9 rounded-full object-cover"
+                                    className="w-10 h-10 rounded-full object-cover"
                                   />
                                 ) : (
-                                  <span className="text-xs font-medium text-primary">
+                                  <span className={cn(
+                                    "text-xs font-semibold",
+                                    isActive ? "text-[#AF0000]" : "text-muted-foreground",
+                                  )}>
                                     {partner
                                       ? getInitials(partner.full_name)
                                       : "?"}
@@ -350,20 +370,22 @@ export function ChannelSidebar({
                                 )}
                               </div>
                               {online && (
-                                <div className="absolute -bottom-px -right-px w-2.5 h-2.5 bg-emerald-500 border-[1.5px] border-surface rounded-full" />
+                                <div className="absolute -bottom-px -right-px w-3 h-3 bg-emerald-500 border-2 border-[#F5F5F5] rounded-full shadow-sm shadow-emerald-500/30" />
                               )}
                               {ch.unreadCount > 0 && !ch.isMuted && (
                                 <span
                                   className={cn(
-                                    "absolute -top-1 -right-1 min-w-[16px] h-[16px] rounded-full text-white text-[9px] font-bold flex items-center justify-center px-0.5",
-                                    hasUrgent ? "bg-red-500" : "bg-primary",
+                                    "absolute -top-1 -right-1 min-w-[16px] h-[16px] rounded-full text-white text-[9px] font-bold flex items-center justify-center px-0.5 shadow-sm",
+                                    hasUrgent
+                                      ? "bg-red-500 shadow-red-500/25 animate-pulse"
+                                      : "bg-[#AF0000] shadow-[#AF0000]/20",
                                   )}
                                 >
                                   {ch.unreadCount > 99 ? "99+" : ch.unreadCount}
                                 </span>
                               )}
                             </div>
-                            <span className="truncate w-full text-center leading-tight">
+                            <span className="truncate w-full text-center leading-tight font-medium">
                               {partner?.full_name?.split(" ")[0] ?? ch.name}
                             </span>
                           </button>
@@ -425,23 +447,32 @@ export function ChannelSidebar({
                             key={ch.id}
                             onClick={() => onSelectChannel(ch.id)}
                             className={cn(
-                              "w-full flex items-center gap-2.5 px-2.5 h-9 rounded-lg text-[13px] transition-all duration-150",
+                              "w-full flex items-center gap-2.5 px-2.5 h-10 rounded-xl text-[13px] transition-all duration-200",
                               isActive
-                                ? "bg-primary/10 text-primary font-medium shadow-sm"
-                                : "text-muted-foreground hover:text-foreground hover:bg-muted/60 active:scale-[0.98]",
-                              ch.isMuted && !isActive && "opacity-50",
+                                ? "bg-[#AF0000]/[0.08] text-[#AF0000] font-semibold shadow-sm shadow-[#AF0000]/5 ring-1 ring-[#AF0000]/10"
+                                : "text-muted-foreground hover:text-foreground hover:bg-black/[0.04] active:scale-[0.98]",
+                              ch.isMuted && !isActive && "opacity-40",
                             )}
                           >
                             <div className="relative shrink-0">
-                              <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
+                              <div className={cn(
+                                "w-7 h-7 rounded-full flex items-center justify-center overflow-hidden ring-2 transition-all duration-200",
+                                online
+                                  ? "ring-emerald-400/60"
+                                  : isActive ? "ring-[#AF0000]/20" : "ring-transparent",
+                                !partner?.avatar_url && (isActive ? "bg-[#AF0000]/10" : "bg-muted/80"),
+                              )}>
                                 {partner?.avatar_url ? (
                                   <img
                                     src={partner.avatar_url}
                                     alt=""
-                                    className="w-6 h-6 rounded-full object-cover"
+                                    className="w-7 h-7 rounded-full object-cover"
                                   />
                                 ) : (
-                                  <span className="text-[10px] font-medium text-primary">
+                                  <span className={cn(
+                                    "text-[10px] font-semibold",
+                                    isActive ? "text-[#AF0000]" : "text-muted-foreground",
+                                  )}>
                                     {partner
                                       ? getInitials(partner.full_name)
                                       : "?"}
@@ -449,20 +480,22 @@ export function ChannelSidebar({
                                 )}
                               </div>
                               {online && (
-                                <div className="absolute -bottom-px -right-px w-2.5 h-2.5 bg-emerald-500 border-[1.5px] border-surface rounded-full" />
+                                <div className="absolute -bottom-px -right-px w-2.5 h-2.5 bg-emerald-500 border-2 border-[#F5F5F5] rounded-full shadow-sm shadow-emerald-500/30" />
                               )}
                             </div>
                             <span className="truncate flex-1 text-left">
                               {partner?.full_name ?? ch.name}
                             </span>
                             {ch.isMuted && (
-                              <BellOff className="w-3 h-3 text-muted-foreground/50 shrink-0" />
+                              <BellOff className="w-3 h-3 text-muted-foreground/40 shrink-0" />
                             )}
                             {ch.unreadCount > 0 && !ch.isMuted && (
                               <span
                                 className={cn(
-                                  "min-w-[18px] h-[18px] rounded-full text-white text-[10px] font-bold flex items-center justify-center px-1",
-                                  hasUrgent ? "bg-red-500" : "bg-primary",
+                                  "min-w-[18px] h-[18px] rounded-full text-white text-[10px] font-bold flex items-center justify-center px-1.5 shadow-sm",
+                                  hasUrgent
+                                    ? "bg-red-500 shadow-red-500/25 animate-pulse"
+                                    : "bg-[#AF0000] shadow-[#AF0000]/20",
                                 )}
                               >
                                 {ch.unreadCount > 99 ? "99+" : ch.unreadCount}

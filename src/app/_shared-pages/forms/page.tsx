@@ -55,10 +55,10 @@ export default function FormsPage() {
         className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
       >
         <div>
-          <h1 className="text-3xl font-semibold text-foreground font-bold">
+          <h1 className="text-3xl font-bold text-foreground tracking-tight">
             Formulaires
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="text-sm text-muted-foreground/80 mt-1.5 leading-relaxed">
             {forms?.length ?? 0} formulaire
             {(forms?.length ?? 0) !== 1 ? "s" : ""}
           </p>
@@ -66,7 +66,7 @@ export default function FormsPage() {
         {isStaff && (
           <Link
             href={`${prefix}/forms/new`}
-            className="h-9 px-4 rounded-[10px] bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-all active:scale-[0.98] inline-flex items-center gap-2"
+            className="h-9 px-4 rounded-xl bg-gradient-to-r from-[#AF0000] to-[#DC2626] text-white text-sm font-semibold hover:from-[#8B0000] hover:to-[#B91C1C] transition-all active:scale-[0.98] shadow-sm shadow-red-500/20 inline-flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
             Nouveau formulaire
@@ -77,20 +77,23 @@ export default function FormsPage() {
       <motion.div
         variants={fadeInUp}
         transition={defaultTransition}
-        className="flex items-center gap-1.5"
+        className="flex items-center gap-0.5 border-b border-border"
       >
         {filters.map((f) => (
           <button
             key={f.value}
             onClick={() => setStatusFilter(f.value)}
             className={cn(
-              "h-8 px-3 rounded-full text-xs font-medium transition-colors",
+              "h-9 px-3.5 text-xs font-medium transition-all relative",
               statusFilter === f.value
-                ? "bg-foreground text-background"
-                : "bg-muted text-muted-foreground hover:text-foreground",
+                ? "text-foreground"
+                : "text-muted-foreground hover:text-foreground",
             )}
           >
             {f.label}
+            {statusFilter === f.value && (
+              <span className="absolute bottom-0 left-1 right-1 h-0.5 rounded-full bg-gradient-to-r from-[#AF0000] to-[#DC2626]" />
+            )}
           </button>
         ))}
       </motion.div>
@@ -119,49 +122,63 @@ export default function FormsPage() {
         ) : (
           forms.map((form) => {
             const responseCount = form.form_submissions?.[0]?.count ?? 0;
+            const statusConfig = {
+              active: {
+                label: "Actif",
+                className: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 ring-1 ring-emerald-500/20",
+                dotColor: "bg-emerald-500",
+              },
+              draft: {
+                label: "Brouillon",
+                className: "bg-muted text-muted-foreground ring-1 ring-border",
+                dotColor: "bg-zinc-400",
+              },
+              closed: {
+                label: "Ferme",
+                className: "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 ring-1 ring-zinc-200 dark:ring-zinc-700",
+                dotColor: "bg-zinc-400",
+              },
+              archived: {
+                label: "Archive",
+                className: "bg-zinc-100 dark:bg-zinc-800 text-zinc-500 ring-1 ring-zinc-200 dark:ring-zinc-700",
+                dotColor: "bg-zinc-300",
+              },
+            };
+            const sc = statusConfig[form.status as keyof typeof statusConfig] ?? statusConfig.draft;
             return (
               <div
                 key={form.id}
-                className="bg-surface border border-border rounded-xl p-5 hover:shadow-sm transition-all group"
+                className="bg-surface border border-border rounded-xl p-5 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 group relative overflow-hidden"
               >
                 <Link href={`${prefix}/forms/${form.id}`}>
                   <div className="flex items-start justify-between mb-3">
-                    <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
-                      <FileText className="w-4.5 h-4.5 text-primary" />
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#AF0000]/10 to-[#DC2626]/5 flex items-center justify-center ring-1 ring-[#AF0000]/10">
+                      <FileText className="w-5 h-5 text-[#AF0000]" />
                     </div>
                     <span
                       className={cn(
-                        "text-xs font-medium px-2.5 py-1 rounded-full",
-                        form.status === "active"
-                          ? "bg-success/10 text-success"
-                          : form.status === "draft"
-                            ? "bg-muted text-muted-foreground"
-                            : "bg-zinc-200 text-zinc-600",
+                        "text-[11px] font-medium px-2.5 py-1 rounded-full inline-flex items-center gap-1.5",
+                        sc.className,
                       )}
                     >
-                      {form.status === "active"
-                        ? "Actif"
-                        : form.status === "draft"
-                          ? "Brouillon"
-                          : form.status === "closed"
-                            ? "Ferme"
-                            : "Archive"}
+                      <span className={cn("w-1.5 h-1.5 rounded-full", sc.dotColor)} />
+                      {sc.label}
                     </span>
                   </div>
-                  <h3 className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">
+                  <h3 className="text-sm font-bold text-foreground group-hover:text-[#AF0000] transition-colors tracking-tight">
                     {form.title}
                   </h3>
                   {form.description && (
-                    <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                    <p className="text-xs text-muted-foreground/80 mt-1.5 line-clamp-2 leading-relaxed">
                       {form.description}
                     </p>
                   )}
-                  <div className="flex items-center gap-3 mt-3 text-xs text-muted-foreground">
-                    <span className="flex items-center gap-1">
+                  <div className="flex items-center gap-3 mt-3.5 text-xs text-muted-foreground">
+                    <span className="flex items-center gap-1.5 bg-muted/50 px-2 py-0.5 rounded-md">
                       <BarChart2 className="w-3.5 h-3.5" />
                       {responseCount} reponse{responseCount !== 1 ? "s" : ""}
                     </span>
-                    <span className="flex items-center gap-1">
+                    <span className="flex items-center gap-1.5">
                       <Calendar className="w-3.5 h-3.5" />
                       {formatDate(form.created_at)}
                     </span>
@@ -169,13 +186,13 @@ export default function FormsPage() {
                 </Link>
 
                 {/* Actions */}
-                <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-border/50">
+                <div className="flex items-center gap-1.5 mt-3.5 pt-3.5 border-t border-border/50">
                   <button
                     onClick={(e) => {
                       e.preventDefault();
                       copyLink(getPublicUrl(form.id));
                     }}
-                    className="h-7 px-2.5 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center gap-1.5"
+                    className="h-7 px-2.5 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-all flex items-center gap-1.5"
                   >
                     <Link2 className="w-3 h-3" />
                     Copier le lien
@@ -183,7 +200,7 @@ export default function FormsPage() {
                   <Link
                     href={`/f/${form.id}`}
                     target="_blank"
-                    className="h-7 px-2.5 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center gap-1.5"
+                    className="h-7 px-2.5 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-all flex items-center gap-1.5"
                   >
                     <ExternalLink className="w-3 h-3" />
                     Ouvrir

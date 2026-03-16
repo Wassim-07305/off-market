@@ -127,10 +127,10 @@ export default function SchoolPage() {
         className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
       >
         <div>
-          <h1 className="text-2xl font-display font-bold text-foreground tracking-tight">
+          <h1 className="text-3xl font-display font-bold text-foreground tracking-tight">
             Formation
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="text-sm text-muted-foreground/80 mt-1.5 leading-relaxed">
             Formez-vous et developpez vos competences
           </p>
         </div>
@@ -150,19 +150,22 @@ export default function SchoolPage() {
         variants={staggerItem}
         className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
       >
-        <div className="flex items-center bg-muted rounded-lg p-1">
+        <div className="flex items-center gap-0.5 border-b border-border">
           {tabs.map((t) => (
             <button
               key={t.value}
               onClick={() => setTab(t.value)}
               className={cn(
-                "h-7 px-3 rounded-md text-xs font-medium transition-all",
+                "h-9 px-3.5 text-xs font-medium transition-all relative",
                 tab === t.value
-                  ? "bg-white text-foreground shadow-sm"
+                  ? "text-foreground"
                   : "text-muted-foreground hover:text-foreground",
               )}
             >
               {t.label}
+              {tab === t.value && (
+                <span className="absolute bottom-0 left-1 right-1 h-0.5 rounded-full bg-gradient-to-r from-[#AF0000] to-[#DC2626]" />
+              )}
             </button>
           ))}
         </div>
@@ -181,7 +184,7 @@ export default function SchoolPage() {
       {/* Course grid */}
       <motion.div
         variants={staggerItem}
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
       >
         {isLoading ? (
           Array.from({ length: 6 }).map((_, i) => (
@@ -212,10 +215,10 @@ export default function SchoolPage() {
             const card = (
               <div
                 className={cn(
-                  "h-full bg-white border border-border rounded-xl overflow-hidden transition-all duration-200",
+                  "h-full bg-white dark:bg-surface border border-border rounded-xl overflow-hidden transition-all duration-200",
                   isLocked
                     ? "opacity-70"
-                    : "hover:border-zinc-300 hover:shadow-sm",
+                    : "hover:border-zinc-300 dark:hover:border-zinc-600 hover:shadow-lg hover:-translate-y-0.5",
                 )}
               >
                 {/* Thumbnail */}
@@ -223,22 +226,22 @@ export default function SchoolPage() {
                   {course.cover_image_url ? (
                     <>
                       <div
-                        className="w-full h-full bg-cover bg-center transition-transform duration-300 group-hover:scale-105"
+                        className="w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
                         style={{
                           backgroundImage: `url(${course.cover_image_url})`,
                         }}
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-black/5 to-transparent" />
                     </>
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-zinc-100 to-zinc-200">
-                      <BookOpen className="w-10 h-10 text-zinc-400" />
+                    <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#AF0000]/5 via-zinc-100 to-[#DC2626]/5 dark:from-[#AF0000]/10 dark:via-zinc-800 dark:to-[#DC2626]/10">
+                      <BookOpen className="w-12 h-12 text-[#AF0000]/30" />
                     </div>
                   )}
 
                   {isComplete && (
                     <div className="absolute right-2.5 top-2.5">
-                      <span className="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full bg-emerald-500/90 text-white backdrop-blur-sm">
+                      <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2.5 py-1 rounded-full bg-emerald-500 text-white shadow-sm shadow-emerald-500/30">
                         <CheckCircle className="w-3 h-3" />
                         Termine
                       </span>
@@ -246,13 +249,23 @@ export default function SchoolPage() {
                   )}
 
                   {isLocked && (
-                    <div className="absolute inset-0 bg-white/60 backdrop-blur-[3px] flex items-center justify-center">
+                    <div className="absolute inset-0 bg-white/70 dark:bg-black/50 backdrop-blur-[3px] flex items-center justify-center">
                       <div className="text-center">
                         <Lock className="w-6 h-6 mx-auto mb-1 text-zinc-500" />
-                        <p className="text-[11px] font-medium text-zinc-600">
+                        <p className="text-[11px] font-medium text-zinc-600 dark:text-zinc-400">
                           Prerequis requis
                         </p>
                       </div>
+                    </div>
+                  )}
+
+                  {/* Duration badge top-left */}
+                  {!isLocked && course.stats.totalDuration > 0 && (
+                    <div className="absolute left-2.5 top-2.5">
+                      <span className="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full bg-black/50 text-white backdrop-blur-sm">
+                        <Clock className="w-2.5 h-2.5" />
+                        {Math.round(course.stats.totalDuration / 60)}h
+                      </span>
                     </div>
                   )}
                 </div>
@@ -261,32 +274,32 @@ export default function SchoolPage() {
                 <div className="p-4 flex flex-col flex-1">
                   <h3
                     className={cn(
-                      "text-sm font-semibold line-clamp-1 transition-colors",
+                      "text-sm font-bold line-clamp-1 transition-colors tracking-tight",
                       isLocked
                         ? "text-muted-foreground"
-                        : "text-foreground group-hover:text-primary",
+                        : "text-foreground group-hover:text-[#AF0000]",
                     )}
                   >
                     {course.title}
                   </h3>
 
                   {course.description && (
-                    <p className="mt-1 text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+                    <p className="mt-1.5 text-xs text-muted-foreground/80 line-clamp-2 leading-relaxed">
                       {course.description}
                     </p>
                   )}
 
                   {/* Prerequisite info */}
                   {isLocked && unlock && (
-                    <div className="mt-2 p-2 rounded-lg bg-amber-50 border border-amber-100">
-                      <p className="text-[10px] text-amber-700 font-medium">
+                    <div className="mt-2 p-2 rounded-lg bg-amber-50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30">
+                      <p className="text-[10px] text-amber-700 dark:text-amber-400 font-medium">
                         Terminez d&apos;abord :
                       </p>
                       <ul className="mt-1 space-y-0.5">
                         {unlock.missingPrereqs.map((pid) => (
                           <li
                             key={pid}
-                            className="text-[10px] text-amber-600 flex items-center gap-1"
+                            className="text-[10px] text-amber-600 dark:text-amber-500 flex items-center gap-1"
                           >
                             <Lock className="w-2.5 h-2.5 shrink-0" />
                             {getCourseTitle(pid)}
@@ -297,39 +310,37 @@ export default function SchoolPage() {
                   )}
 
                   {/* Stats */}
-                  <div className="mt-2.5 flex items-center gap-1 text-[11px] text-muted-foreground">
-                    <span>{course.stats.totalModules} modules</span>
-                    <span aria-hidden="true" className="text-border">
-                      &middot;
+                  <div className="mt-3 flex items-center gap-3 text-[11px] text-muted-foreground">
+                    <span className="flex items-center gap-1">
+                      <Layers className="w-3 h-3" />
+                      {course.stats.totalModules} modules
                     </span>
-                    <span>{course.stats.totalLessons} lecons</span>
-                    {course.stats.totalDuration > 0 && (
-                      <>
-                        <span aria-hidden="true" className="text-border">
-                          &middot;
-                        </span>
-                        <span>
-                          {Math.round(course.stats.totalDuration / 60)}h
-                        </span>
-                      </>
-                    )}
+                    <span className="flex items-center gap-1">
+                      <BookOpen className="w-3 h-3" />
+                      {course.stats.totalLessons} lecons
+                    </span>
                   </div>
 
                   {/* Progress */}
                   {!isLocked && (
                     <div className="mt-auto pt-3">
-                      <div className="mb-1 flex items-center justify-between text-[11px]">
+                      <div className="mb-1.5 flex items-center justify-between text-[11px]">
                         <span className="text-muted-foreground">
                           {course.stats.completedLessons}/
                           {course.stats.totalLessons} lecons
                         </span>
-                        <span className="font-medium font-mono text-foreground">
+                        <span className="font-bold font-mono text-foreground">
                           {course.stats.percent}%
                         </span>
                       </div>
-                      <div className="h-1 w-full overflow-hidden rounded-full bg-zinc-100">
+                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800">
                         <div
-                          className="h-full rounded-full bg-primary transition-all duration-500"
+                          className={cn(
+                            "h-full rounded-full transition-all duration-500",
+                            course.stats.percent === 100
+                              ? "bg-emerald-500"
+                              : "bg-gradient-to-r from-[#AF0000] to-[#DC2626]",
+                          )}
                           style={{ width: `${course.stats.percent}%` }}
                         />
                       </div>

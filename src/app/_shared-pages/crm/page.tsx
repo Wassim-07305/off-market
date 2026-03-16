@@ -29,10 +29,10 @@ export default function CRMPage() {
         className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
       >
         <div>
-          <h1 className="text-2xl font-display font-bold text-foreground tracking-tight">
+          <h1 className="text-3xl font-display font-bold text-foreground tracking-tight">
             CRM
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="text-sm text-muted-foreground/80 mt-1.5 leading-relaxed">
             {view === "pipeline"
               ? "Pipeline commercial"
               : view === "coach"
@@ -45,8 +45,8 @@ export default function CRMPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          {/* View toggle */}
-          <div className="flex items-center bg-muted rounded-lg p-0.5">
+          {/* View toggle — accent underline on active */}
+          <div className="flex items-center gap-0.5 border-b border-border">
             {(
               [
                 { key: "pipeline" as const, label: "Pipeline", icon: Kanban },
@@ -62,14 +62,17 @@ export default function CRMPage() {
                   key={v.key}
                   onClick={() => setView(v.key)}
                   className={cn(
-                    "h-7 px-2.5 rounded-md flex items-center gap-1.5 text-[11px] font-medium transition-all",
+                    "h-9 px-3 flex items-center gap-1.5 text-xs font-medium transition-all relative",
                     view === v.key
-                      ? "bg-white text-foreground shadow-sm"
+                      ? "text-foreground"
                       : "text-muted-foreground hover:text-foreground",
                   )}
                 >
-                  <Icon className="w-3 h-3" />
+                  <Icon className="w-3.5 h-3.5" />
                   {v.label}
+                  {view === v.key && (
+                    <span className="absolute bottom-0 left-1 right-1 h-0.5 rounded-full bg-gradient-to-r from-[#AF0000] to-[#DC2626]" />
+                  )}
                 </button>
               );
             })}

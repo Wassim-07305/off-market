@@ -61,20 +61,24 @@ function ContactCard({
   onEnrich?: () => void;
 }) {
   const enrichmentStatus = contact.enrichment_status;
+  const isHighValue = contact.estimated_value >= 3000;
   return (
     <div
       className={cn(
-        "bg-surface border border-border rounded-xl p-3.5 group transition-all duration-200",
+        "bg-surface border border-border rounded-xl p-3.5 group transition-all duration-200 relative",
         isDragging
-          ? "shadow-xl opacity-90 rotate-1 scale-[1.02]"
-          : "hover:border-zinc-300 dark:hover:border-zinc-600 hover:shadow-sm",
+          ? "shadow-2xl opacity-90 rotate-1 scale-[1.03] ring-2 ring-[#AF0000]/20"
+          : "hover:border-zinc-300 dark:hover:border-zinc-600 hover:shadow-md hover:-translate-y-0.5",
+        isHighValue && "border-l-[3px] border-l-[#AF0000]",
       )}
     >
       <div className="flex items-start gap-2.5">
-        <GripVertical className="w-3.5 h-3.5 text-muted-foreground/30 mt-0.5 shrink-0 cursor-grab" />
+        <div className="flex flex-col items-center gap-0.5 mt-0.5 shrink-0 cursor-grab opacity-40 group-hover:opacity-100 transition-opacity">
+          <GripVertical className="w-4 h-4 text-muted-foreground" />
+        </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between">
-            <p className="text-[13px] font-medium text-foreground truncate">
+            <p className="text-[13px] font-semibold text-foreground truncate tracking-tight">
               {contact.full_name}
             </p>
             <div className="flex items-center gap-0.5">
@@ -88,7 +92,7 @@ function ContactCard({
                     "p-1 transition-colors",
                     enrichmentStatus === "enriched"
                       ? "text-emerald-500"
-                      : "text-transparent group-hover:text-muted-foreground hover:!text-red-500",
+                      : "text-transparent group-hover:text-muted-foreground hover:!text-[#AF0000]",
                   )}
                   title="Enrichir via Apify"
                 >
@@ -101,7 +105,7 @@ function ContactCard({
                     e.stopPropagation();
                     onDelete();
                   }}
-                  className="p-1 text-transparent group-hover:text-muted-foreground hover:!text-red-500 transition-colors"
+                  className="p-1 text-transparent group-hover:text-muted-foreground hover:!text-[#AF0000] transition-colors"
                 >
                   <Trash2 className="w-3 h-3" />
                 </button>
@@ -112,34 +116,41 @@ function ContactCard({
           {(contact.company || contact.email || contact.phone) && (
             <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 mt-1.5">
               {contact.company && (
-                <span className="text-[11px] text-muted-foreground flex items-center gap-1">
+                <span className="text-[11px] text-muted-foreground/80 flex items-center gap-1">
                   <Building2 className="w-3 h-3" />
                   {contact.company}
                 </span>
               )}
               {contact.email && (
-                <span className="text-[11px] text-muted-foreground flex items-center gap-1">
+                <span className="text-[11px] text-muted-foreground/80 flex items-center gap-1">
                   <Mail className="w-3 h-3" />
                   {contact.email.split("@")[0]}
                 </span>
               )}
               {contact.phone && (
-                <span className="text-[11px] text-muted-foreground flex items-center gap-1">
+                <span className="text-[11px] text-muted-foreground/80 flex items-center gap-1">
                   <Phone className="w-3 h-3" />
                 </span>
               )}
             </div>
           )}
 
-          <div className="flex items-center gap-2 mt-2">
+          <div className="flex items-center gap-2 mt-2.5">
             {contact.estimated_value > 0 && (
-              <span className="inline-flex items-center gap-0.5 text-[11px] font-medium text-foreground bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded-md font-mono tabular-nums">
+              <span className={cn(
+                "inline-flex items-center gap-0.5 text-[11px] font-semibold px-2 py-0.5 rounded-md font-mono tabular-nums",
+                isHighValue
+                  ? "bg-gradient-to-r from-[#AF0000] to-[#DC2626] text-white"
+                  : "text-foreground bg-zinc-100 dark:bg-zinc-800",
+              )}>
                 {formatCurrency(Number(contact.estimated_value))}
               </span>
             )}
             {contact.assigned_profile && (
-              <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
-                <User className="w-3 h-3" />
+              <span className="inline-flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                <span className="w-4 h-4 rounded-full bg-gradient-to-br from-[#AF0000] to-[#DC2626] flex items-center justify-center ring-2 ring-white dark:ring-zinc-900">
+                  <User className="w-2.5 h-2.5 text-white" />
+                </span>
                 {contact.assigned_profile.full_name.split(" ")[0]}
               </span>
             )}
@@ -216,21 +227,21 @@ function StageColumn({
   return (
     <div
       ref={setNodeRef}
-      className="flex flex-col min-w-[260px] w-[260px] shrink-0"
+      className="flex flex-col min-w-[270px] w-[270px] shrink-0"
     >
       {/* Column header */}
-      <div className="flex items-center justify-between px-1 mb-3">
-        <div className="flex items-center gap-2">
-          <div className={cn("w-2 h-2 rounded-full", stage.dotColor)} />
-          <span className="text-xs font-semibold text-foreground tracking-wide">
+      <div className="flex items-center justify-between px-2 mb-3 pb-3 border-b border-border">
+        <div className="flex items-center gap-2.5">
+          <div className={cn("w-2.5 h-2.5 rounded-full ring-2 ring-offset-1 ring-offset-surface", stage.dotColor, stage.dotColor.replace("bg-", "ring-").replace("500", "200").replace("400", "200").replace("300", "100").replace("600", "200"))} />
+          <span className="text-xs font-bold text-foreground uppercase tracking-wider">
             {stage.label}
           </span>
-          <span className="text-[11px] text-muted-foreground font-mono tabular-nums">
+          <span className="text-[10px] text-muted-foreground font-mono tabular-nums bg-muted px-1.5 py-0.5 rounded-md">
             {contacts.length}
           </span>
         </div>
         {total > 0 && (
-          <span className="text-[11px] text-muted-foreground font-mono tabular-nums">
+          <span className="text-[11px] font-semibold text-muted-foreground font-mono tabular-nums">
             {formatCurrency(total)}
           </span>
         )}
@@ -239,8 +250,8 @@ function StageColumn({
       {/* Cards */}
       <div
         className={cn(
-          "flex-1 space-y-2 min-h-[60vh] rounded-xl p-2 -m-2 transition-colors duration-200",
-          isOver && "bg-red-500/5 ring-1 ring-inset ring-red-500/20",
+          "flex-1 space-y-2.5 min-h-[60vh] rounded-xl p-2 -m-2 transition-all duration-200",
+          isOver && "bg-[#AF0000]/5 ring-1 ring-inset ring-[#AF0000]/20 shadow-inner",
         )}
       >
         {contacts.map((contact) => (
@@ -653,10 +664,10 @@ export function PipelineKanban() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <span className="text-sm text-muted-foreground">
-            {contacts.length} contact{contacts.length !== 1 ? "s" : ""}
+            <span className="font-semibold text-foreground">{contacts.length}</span> contact{contacts.length !== 1 ? "s" : ""}
           </span>
           {totalValue > 0 && (
-            <span className="text-sm font-medium text-foreground font-mono tabular-nums">
+            <span className="text-sm font-bold text-foreground font-mono tabular-nums bg-gradient-to-r from-[#AF0000] to-[#DC2626] bg-clip-text text-transparent">
               {formatCurrency(totalValue)}
             </span>
           )}
@@ -670,7 +681,7 @@ export function PipelineKanban() {
           <button
             onClick={() => bulkEnrich.mutate(contacts)}
             disabled={bulkEnrich.isPending}
-            className="h-9 px-4 rounded-xl border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors disabled:opacity-50 flex items-center gap-1.5"
+            className="h-9 px-4 rounded-xl border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted/80 hover:border-zinc-300 transition-all disabled:opacity-50 flex items-center gap-1.5"
           >
             {bulkEnrich.isPending ? (
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -681,14 +692,14 @@ export function PipelineKanban() {
           </button>
           <button
             onClick={() => setShowImport(true)}
-            className="h-9 px-4 rounded-xl border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center gap-1.5"
+            className="h-9 px-4 rounded-xl border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted/80 hover:border-zinc-300 transition-all flex items-center gap-1.5"
           >
             <Upload className="w-4 h-4" />
             Importer CSV
           </button>
           <button
             onClick={() => setShowAdd(true)}
-            className="h-9 px-4 rounded-xl bg-red-600 text-white text-sm font-medium hover:bg-red-700 transition-all active:scale-[0.98] flex items-center gap-1.5"
+            className="h-9 px-4 rounded-xl bg-gradient-to-r from-[#AF0000] to-[#DC2626] text-white text-sm font-semibold hover:from-[#8B0000] hover:to-[#B91C1C] transition-all active:scale-[0.98] shadow-sm shadow-red-500/20 flex items-center gap-1.5"
           >
             <Plus className="w-4 h-4" />
             Contact

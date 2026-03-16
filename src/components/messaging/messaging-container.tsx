@@ -86,35 +86,35 @@ export default function MessagingContainer() {
   return (
     <div className="flex flex-col h-[calc(100vh-7rem)]">
       {/* ── Inbox mode toggle ── */}
-      <div className="flex items-center bg-muted rounded-lg p-0.5 mb-2 w-fit">
+      <div className="flex items-center bg-muted/60 backdrop-blur-sm rounded-xl p-1 mb-3 w-fit border border-border/30">
         <button
           onClick={() => setInboxMode("internal")}
           className={cn(
-            "flex items-center gap-1.5 px-3 h-7 rounded-md text-[11px] font-medium transition-all duration-150",
+            "flex items-center gap-2 px-4 h-8 rounded-lg text-xs font-semibold transition-all duration-200",
             inboxMode === "internal"
-              ? "bg-white text-foreground shadow-sm"
-              : "text-muted-foreground hover:text-foreground",
+              ? "bg-white text-foreground shadow-md shadow-black/5 ring-1 ring-black/5"
+              : "text-muted-foreground hover:text-foreground hover:bg-white/50",
           )}
         >
-          <MessageSquare className="w-3 h-3" />
+          <MessageSquare className="w-3.5 h-3.5" />
           Off-Market
         </button>
         <button
           onClick={() => setInboxMode("external")}
           className={cn(
-            "flex items-center gap-1.5 px-3 h-7 rounded-md text-[11px] font-medium transition-all duration-150",
+            "flex items-center gap-2 px-4 h-8 rounded-lg text-xs font-semibold transition-all duration-200",
             inboxMode === "external"
-              ? "bg-white text-foreground shadow-sm"
-              : "text-muted-foreground hover:text-foreground",
+              ? "bg-white text-foreground shadow-md shadow-black/5 ring-1 ring-black/5"
+              : "text-muted-foreground hover:text-foreground hover:bg-white/50",
           )}
         >
-          <Globe className="w-3 h-3" />
+          <Globe className="w-3.5 h-3.5" />
           Boite unifiee
         </button>
       </div>
 
       {/* ── Content ── */}
-      <div className="flex flex-1 min-h-0 bg-white rounded-xl overflow-hidden border border-border">
+      <div className="flex flex-1 min-h-0 bg-white rounded-2xl overflow-hidden border border-border/50 shadow-lg shadow-black/[0.03]">
         {inboxMode === "external" ? (
           <UnifiedInbox />
         ) : (
@@ -122,10 +122,10 @@ export default function MessagingContainer() {
             {/* Sidebar */}
             <div
               className={`
-              w-[260px] border-r border-border flex flex-col shrink-0 bg-[#FAFAFA]
-              max-sm:absolute max-sm:inset-y-0 max-sm:left-0 max-sm:z-30 max-sm:w-[260px] max-sm:bg-white max-sm:shadow-sm
+              w-[272px] border-r border-border/30 flex flex-col shrink-0 bg-gradient-to-b from-[#FAFAFA] to-[#F5F5F5]
+              max-sm:absolute max-sm:inset-y-0 max-sm:left-0 max-sm:z-30 max-sm:w-[272px] max-sm:bg-white max-sm:shadow-xl max-sm:shadow-black/10
               ${mobileSidebarOpen ? "max-sm:translate-x-0" : "max-sm:-translate-x-full"}
-              sm:relative sm:translate-x-0 transition-transform duration-200
+              sm:relative sm:translate-x-0 transition-transform duration-300 ease-out
             `}
             >
               <ChannelSidebar
@@ -159,7 +159,7 @@ export default function MessagingContainer() {
             {/* Backdrop for mobile sidebar */}
             {mobileSidebarOpen && (
               <div
-                className="sm:hidden fixed inset-0 z-20 bg-black/30"
+                className="sm:hidden fixed inset-0 z-20 bg-black/40 backdrop-blur-sm"
                 onClick={() => setMobileSidebarOpen(false)}
               />
             )}
@@ -189,13 +189,16 @@ export default function MessagingContainer() {
                   stopTyping={stopTyping}
                 />
               ) : (
-                <div className="flex-1 flex items-center justify-center">
+                <div className="flex-1 flex items-center justify-center bg-gradient-to-br from-white via-white to-[#AF0000]/[0.02]">
                   <div className="text-center">
-                    <div className="w-12 h-12 rounded-xl bg-zinc-100 flex items-center justify-center mx-auto mb-3">
-                      <Hash className="w-5 h-5 text-zinc-400" />
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#AF0000]/10 to-[#DC2626]/10 flex items-center justify-center mx-auto mb-4 shadow-sm shadow-[#AF0000]/5">
+                      <Hash className="w-6 h-6 text-[#AF0000]/60" />
                     </div>
-                    <p className="text-[13px] text-muted-foreground">
+                    <p className="text-sm text-muted-foreground font-medium">
                       Selectionne un canal pour commencer
+                    </p>
+                    <p className="text-xs text-muted-foreground/60 mt-1">
+                      Tes conversations apparaitront ici
                     </p>
                   </div>
                 </div>

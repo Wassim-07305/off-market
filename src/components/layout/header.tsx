@@ -47,7 +47,7 @@ export function Header() {
   };
 
   return (
-    <header className="flex h-14 items-center justify-between border-b border-border bg-surface px-4 md:px-6">
+    <header className="flex h-14 items-center justify-between border-b border-border/60 bg-surface/80 backdrop-blur-md px-4 md:px-6 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
       {/* Left: Hamburger (mobile) */}
       <div className="flex items-center gap-2">
         <button
@@ -159,12 +159,12 @@ export function Header() {
         {/* Notification bell */}
         <button
           onClick={() => setNotificationPanelOpen(true)}
-          className="relative size-8 inline-flex items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          className="relative size-9 inline-flex items-center justify-center rounded-xl text-muted-foreground transition-all duration-200 hover:bg-muted hover:text-foreground hover:shadow-sm"
           title="Notifications"
         >
-          <Bell className="h-4 w-4" />
+          <Bell className="h-[18px] w-[18px]" />
           {unreadCount > 0 && !isDnd && (
-            <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-medium text-white">
+            <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#AF0000] px-1 text-[10px] font-semibold text-white shadow-[0_0_8px_rgba(175,0,0,0.3)] animate-pulse">
               {unreadCount > 99 ? "99+" : unreadCount}
             </span>
           )}
@@ -177,7 +177,7 @@ export function Header() {
         <DropdownMenu
           align="right"
           trigger={
-            <button className="flex items-center gap-2 rounded-lg p-1 transition-colors hover:bg-muted">
+            <button className="flex items-center gap-2 rounded-xl p-1 transition-all duration-200 hover:bg-muted hover:shadow-sm">
               <Avatar
                 src={profile?.avatar_url}
                 name={profile?.full_name ?? "Utilisateur"}
