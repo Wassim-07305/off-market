@@ -32,6 +32,16 @@ export interface Contract {
   expires_at: string | null;
   cancellation_reason: string | null;
   version: number;
+  auto_renew: boolean;
+  renewal_period_months: number;
+  renewal_notice_days: number;
+  renewed_from_id: string | null;
+  renewal_status: ContractRenewalStatus | null;
+  amount: number | null;
+  start_date: string | null;
+  end_date: string | null;
+  renewal_of: string | null;
+  renewed_to: string | null;
   created_by: string | null;
   created_at: string;
   updated_at: string;
@@ -44,7 +54,34 @@ export interface Contract {
   };
 }
 
-export type ContractStatus = "draft" | "sent" | "signed" | "cancelled";
+export type ContractStatus =
+  | "draft"
+  | "sent"
+  | "signed"
+  | "cancelled"
+  | "active"
+  | "renewed"
+  | "expired";
+
+export type ContractRenewalStatus =
+  | "pending_renewal"
+  | "renewed"
+  | "expired"
+  | "cancelled";
+
+export type RenewalLogAction =
+  | "reminder_sent"
+  | "auto_renewed"
+  | "cancelled"
+  | "expired";
+
+export interface ContractRenewalLog {
+  id: string;
+  contract_id: string;
+  action: RenewalLogAction;
+  details: Record<string, unknown>;
+  created_at: string;
+}
 
 export interface SignatureData {
   signed_at: string;

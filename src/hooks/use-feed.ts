@@ -9,17 +9,23 @@ import {
 } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
-import type { FeedPost, FeedComment, PostType } from "@/types/feed";
+import type {
+  FeedPost,
+  FeedComment,
+  PostType,
+  FeedSortMode,
+} from "@/types/feed";
 
 const PAGE_SIZE = 20;
+const MAX_THREAD_DEPTH = 3;
 
-export function useFeed(postType?: PostType) {
+export function useFeed(postType?: PostType, sortMode: FeedSortMode = "recent") {
   const supabase = useSupabase();
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
   const postsQuery = useQuery({
-    queryKey: ["feed-posts", postType],
+    queryKey: ["feed-posts", postType, sortMode],
     enabled: !!user,
     queryFn: async () => {
       let query = supabase
@@ -27,9 +33,23 @@ export function useFeed(postType?: PostType) {
         .select(
           "*, author:profiles!feed_posts_author_id_fkey(id, full_name, avatar_url, role)",
         )
-        .order("is_pinned", { ascending: false })
-        .order("created_at", { ascending: false })
-        .limit(PAGE_SIZE);
+        .order("is_pinned", { ascending: false });
+
+      // Apply sort order
+      switch (sortMode) {
+        case "trending":
+          query = query.order("trending_score", { ascending: false });
+          break;
+        case "most_liked":
+          query = query.order("likes_count", { ascending: false });
+          break;
+        case "recent":
+        default:
+          query = query.order("created_at", { ascending: false });
+          break;
+      }
+
+      query = query.limit(PAGE_SIZE);
 
       if (postType) query = query.eq("post_type", postType);
 
@@ -186,24 +206,34 @@ export function useComments(postId: string) {
         .order("created_at", { ascending: true });
       if (error) throw error;
 
-      // Build threaded structure
+      // Build deep threaded structure (up to MAX_THREAD_DEPTH levels)
       const comments = data as FeedComment[];
-      const topLevel: FeedComment[] = [];
+      const byId = new Map<string, FeedComment>();
       const childrenMap = new Map<string, FeedComment[]>();
+
+      comments.forEach((c) => {
+        c.replies = [];
+        byId.set(c.id, c);
+      });
 
       comments.forEach((c) => {
         if (c.parent_id) {
           const children = childrenMap.get(c.parent_id) ?? [];
           children.push(c);
           childrenMap.set(c.parent_id, children);
-        } else {
-          topLevel.push(c);
         }
       });
 
-      topLevel.forEach((c) => {
-        c.replies = childrenMap.get(c.id) ?? [];
-      });
+      // Recursive tree builder with depth limit
+      function attachReplies(comment: FeedComment, depth: number) {
+        if (depth >= MAX_THREAD_DEPTH) return;
+        const children = childrenMap.get(comment.id) ?? [];
+        comment.replies = children;
+        children.forEach((child) => attachReplies(child, depth + 1));
+      }
+
+      const topLevel = comments.filter((c) => !c.parent_id);
+      topLevel.forEach((c) => attachReplies(c, 0));
 
       return topLevel;
     },
@@ -288,6 +318,28 @@ export function useComments(postId: string) {
   };
 }
 
+/** Fetch replies for a specific comment (lazy loading for deep threads) */
+export function useCommentReplies(commentId: string, postId: string) {
+  const supabase = useSupabase();
+
+  return useQuery({
+    queryKey: ["feed-comment-replies", commentId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("feed_comments")
+        .select(
+          "*, author:profiles!feed_comments_author_id_fkey(id, full_name, avatar_url, role)",
+        )
+        .eq("parent_id", commentId)
+        .eq("post_id", postId)
+        .order("created_at", { ascending: true });
+      if (error) throw error;
+      return data as FeedComment[];
+    },
+    enabled: false, // Only fetch when explicitly requested
+  });
+}
+
 export function useTrendingPosts(limit = 5) {
   const supabase = useSupabase();
   const { user } = useAuth();
@@ -305,7 +357,7 @@ export function useTrendingPosts(limit = 5) {
           "*, author:profiles!feed_posts_author_id_fkey(id, full_name, avatar_url, role)",
         )
         .gte("created_at", sevenDaysAgo.toISOString())
-        .order("likes_count", { ascending: false })
+        .order("trending_score", { ascending: false })
         .limit(limit);
       if (error) throw error;
       return data as FeedPost[];

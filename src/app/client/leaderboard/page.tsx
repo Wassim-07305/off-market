@@ -29,12 +29,16 @@ import {
   Users,
   Plus,
   Flame,
+  EyeOff,
+  Eye,
+  RefreshCw,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CompetitionCard } from "@/components/gamification/competition-card";
 import { CompetitionLeaderboard } from "@/components/gamification/competition-leaderboard";
 import { TeamCard } from "@/components/gamification/team-card";
 import { CreateCompetitionModal } from "@/components/gamification/create-competition-modal";
+import { useLeaderboardPrivacy } from "@/hooks/use-leaderboard-privacy";
 import type { Competition } from "@/types/gamification";
 
 type MainTab = "classement" | "competitions" | "equipes";
@@ -106,35 +110,145 @@ function IndividualLeaderboard() {
   const { entries, isLoading, rankChanges } = useLeaderboard(period);
   const { summary } = useXp();
   const { user } = useAuth();
+  const {
+    isAnonymous,
+    alias,
+    toggleAnonymity,
+    regenerateAlias,
+  } = useLeaderboardPrivacy();
+  const [showAnonConfirm, setShowAnonConfirm] = useState(false);
 
   const top3 = entries.slice(0, 3);
   const rest = entries.slice(3);
 
-  const isAnonymousEntry = (name: string) => name === "Utilisateur anonyme";
+  const isAnonymousEntry = (entry: { is_anonymous?: boolean }) =>
+    entry.is_anonymous === true;
+
+  const handleToggleAnonymity = () => {
+    if (!isAnonymous) {
+      // Show confirmation before enabling
+      setShowAnonConfirm(true);
+    } else {
+      // Disable directly
+      toggleAnonymity.mutate();
+    }
+  };
 
   return (
     <div className="space-y-6">
-      {/* Period filter tabs */}
+      {/* Period filter tabs + anonymity toggle */}
       <motion.div
         variants={fadeInUp}
         transition={defaultTransition}
-        className="flex items-center gap-1 bg-muted p-1 rounded-xl w-fit"
+        className="flex items-center justify-between gap-3 flex-wrap"
       >
-        {PERIOD_TABS.map((tab) => (
-          <button
-            key={tab.value}
-            onClick={() => setPeriod(tab.value)}
-            className={cn(
-              "h-9 px-4 rounded-lg text-sm font-medium transition-all cursor-pointer",
-              period === tab.value
-                ? "bg-surface text-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground",
-            )}
-          >
-            {tab.label}
-          </button>
-        ))}
+        <div className="flex items-center gap-1 bg-muted p-1 rounded-xl w-fit">
+          {PERIOD_TABS.map((tab) => (
+            <button
+              key={tab.value}
+              onClick={() => setPeriod(tab.value)}
+              className={cn(
+                "h-9 px-4 rounded-lg text-sm font-medium transition-all cursor-pointer",
+                period === tab.value
+                  ? "bg-surface text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Anonymity toggle */}
+        <button
+          onClick={handleToggleAnonymity}
+          disabled={toggleAnonymity.isPending}
+          className={cn(
+            "h-9 px-4 rounded-xl text-xs font-medium transition-all inline-flex items-center gap-1.5 cursor-pointer",
+            isAnonymous
+              ? "bg-foreground text-background hover:bg-foreground/90"
+              : "bg-muted text-muted-foreground hover:text-foreground",
+          )}
+          title={
+            isAnonymous
+              ? "Ton nom est masque dans le classement"
+              : "Masque ton nom dans le classement"
+          }
+        >
+          {isAnonymous ? (
+            <EyeOff className="w-3.5 h-3.5" />
+          ) : (
+            <Eye className="w-3.5 h-3.5" />
+          )}
+          {isAnonymous ? "Mode anonyme actif" : "Mode anonyme"}
+        </button>
       </motion.div>
+
+      {/* Anonymity confirmation dialog */}
+      {showAnonConfirm && (
+        <motion.div
+          variants={fadeInUp}
+          transition={defaultTransition}
+          className="bg-white border border-border rounded-[14px] p-5 space-y-3"
+        >
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 rounded-[10px] bg-foreground/5 flex items-center justify-center shrink-0">
+              <EyeOff className="w-5 h-5 text-foreground" />
+            </div>
+            <div className="space-y-1">
+              <p className="text-sm font-semibold text-foreground">
+                Activer le mode anonyme ?
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Les autres participants verront un alias a la place de ton nom
+                dans le classement. Tu pourras toujours voir ta position reelle.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 justify-end">
+            <button
+              onClick={() => setShowAnonConfirm(false)}
+              className="h-9 px-4 rounded-xl text-xs font-medium bg-muted text-muted-foreground hover:text-foreground transition-all cursor-pointer"
+            >
+              Annuler
+            </button>
+            <button
+              onClick={() => {
+                toggleAnonymity.mutate();
+                setShowAnonConfirm(false);
+              }}
+              className="h-9 px-4 rounded-xl text-xs font-medium bg-[#DC2626] text-white hover:bg-[#DC2626]/90 transition-all cursor-pointer"
+            >
+              Activer le mode anonyme
+            </button>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Anonymous alias info */}
+      {isAnonymous && alias && (
+        <motion.div
+          variants={fadeInUp}
+          transition={defaultTransition}
+          className="bg-foreground/5 border border-border rounded-[14px] px-4 py-3 flex items-center justify-between"
+        >
+          <div className="flex items-center gap-2 min-w-0">
+            <EyeOff className="w-4 h-4 text-muted-foreground shrink-0" />
+            <p className="text-xs text-muted-foreground truncate">
+              Les autres voient : <span className="font-medium text-foreground">{alias}</span>
+            </p>
+          </div>
+          <button
+            onClick={() => regenerateAlias.mutate()}
+            disabled={regenerateAlias.isPending}
+            className="shrink-0 h-7 px-3 rounded-lg text-[10px] font-medium bg-muted text-muted-foreground hover:text-foreground transition-all cursor-pointer inline-flex items-center gap-1"
+            title="Generer un nouvel alias"
+          >
+            <RefreshCw className={cn("w-3 h-3", regenerateAlias.isPending && "animate-spin")} />
+            Nouvel alias
+          </button>
+        </motion.div>
+      )}
 
       {/* My position card */}
       <motion.div
@@ -201,7 +315,7 @@ function IndividualLeaderboard() {
                 );
                 const Icon = podium?.icon ?? Medal;
                 const isMe = entry.profile_id === user?.id;
-                const isAnonymous = isAnonymousEntry(entry.full_name);
+                const isAnonymous = isAnonymousEntry(entry);
 
                 return (
                   <div
@@ -226,18 +340,23 @@ function IndividualLeaderboard() {
                         (entry.full_name?.charAt(0)?.toUpperCase() ?? "?")
                       )}
                     </div>
-                    <p
-                      className={cn(
-                        "text-xs font-medium truncate",
-                        isMe
-                          ? "text-primary"
-                          : isAnonymous
-                            ? "text-muted-foreground italic"
-                            : "text-foreground",
+                    <div className="flex items-center justify-center gap-1">
+                      {isAnonymousEntry(entry) && (
+                        <EyeOff className="w-3 h-3 text-muted-foreground shrink-0" />
                       )}
-                    >
-                      {isMe ? "Toi" : entry.full_name}
-                    </p>
+                      <p
+                        className={cn(
+                          "text-xs font-medium truncate",
+                          isMe
+                            ? "text-primary"
+                            : isAnonymousEntry(entry)
+                              ? "text-muted-foreground italic"
+                              : "text-foreground",
+                        )}
+                      >
+                        {isMe ? "Toi" : entry.full_name}
+                      </p>
+                    </div>
                     <p className="text-base font-semibold text-foreground mt-1">
                       {entry.total_xp}
                     </p>
@@ -271,7 +390,7 @@ function IndividualLeaderboard() {
             >
               {rest.map((entry) => {
                 const isMe = entry.profile_id === user?.id;
-                const isAnonymous = isAnonymousEntry(entry.full_name);
+                const isAnonymous = isAnonymousEntry(entry);
 
                 return (
                   <div
@@ -297,18 +416,23 @@ function IndividualLeaderboard() {
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p
-                        className={cn(
-                          "text-sm font-medium truncate",
-                          isMe
-                            ? "text-primary"
-                            : isAnonymous
-                              ? "text-muted-foreground italic"
-                              : "text-foreground",
+                      <div className="flex items-center gap-1">
+                        {isAnonymous && (
+                          <EyeOff className="w-3 h-3 text-muted-foreground shrink-0" />
                         )}
-                      >
-                        {isMe ? "Toi" : entry.full_name}
-                      </p>
+                        <p
+                          className={cn(
+                            "text-sm font-medium truncate",
+                            isMe
+                              ? "text-primary"
+                              : isAnonymous
+                                ? "text-muted-foreground italic"
+                                : "text-foreground",
+                          )}
+                        >
+                          {isMe ? "Toi" : entry.full_name}
+                        </p>
+                      </div>
                       {entry.badge_count > 0 && (
                         <p className="text-xs text-muted-foreground">
                           {entry.badge_count} badges

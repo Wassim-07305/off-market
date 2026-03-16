@@ -54,14 +54,14 @@ export function useLeaderboard(period: LeaderboardPeriod = "all") {
           .limit(50);
         if (error) throw error;
 
-        // Fetch anonymity flags
+        // Fetch anonymity flags + aliases
         const profileIds = (data ?? []).map(
           (e: LeaderboardEntry) => e.profile_id,
         );
-        const anonymousSet = await fetchAnonymousProfiles(supabase, profileIds);
+        const anonymousMap = await fetchAnonymousProfiles(supabase, profileIds);
 
         return (data as LeaderboardEntry[]).map((entry) =>
-          applyAnonymity(entry, anonymousSet, user?.id),
+          applyAnonymity(entry, anonymousMap, user?.id),
         );
       }
 
@@ -95,13 +95,13 @@ export function useLeaderboard(period: LeaderboardPeriod = "all") {
 
       if (sorted.length === 0) return [];
 
-      // Fetch profiles (including anonymity) and badge counts
+      // Fetch profiles (including anonymity + alias) and badge counts
       const profileIds = sorted.map(([id]) => id);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const [profilesRes, badgesRes] = await Promise.all([
         (supabase as any)
           .from("profiles")
-          .select("id, full_name, avatar_url, leaderboard_anonymous")
+          .select("id, full_name, avatar_url, leaderboard_anonymous, anonymous_alias")
           .in("id", profileIds),
         (supabase as any)
           .from("user_badges")
@@ -116,6 +116,7 @@ export function useLeaderboard(period: LeaderboardPeriod = "all") {
             full_name: string;
             avatar_url: string | null;
             leaderboard_anonymous: boolean;
+            anonymous_alias: string | null;
           }[]
         ).map((p) => [p.id, p]),
       );
@@ -131,18 +132,19 @@ export function useLeaderboard(period: LeaderboardPeriod = "all") {
 
       return sorted.map(([profileId, totalXp], index) => {
         const profile = profileMap.get(profileId);
-        const isAnonymous =
+        const isAnon =
           profile?.leaderboard_anonymous === true && profileId !== user?.id;
 
         return {
           profile_id: profileId,
-          full_name: isAnonymous
-            ? "Utilisateur anonyme"
+          full_name: isAnon
+            ? (profile?.anonymous_alias || "Utilisateur anonyme")
             : (profile?.full_name ?? "Utilisateur"),
-          avatar_url: isAnonymous ? null : (profile?.avatar_url ?? null),
+          avatar_url: isAnon ? null : (profile?.avatar_url ?? null),
           total_xp: totalXp,
           badge_count: badgeCountMap.get(profileId) ?? 0,
           rank: index + 1,
+          is_anonymous: isAnon,
         } satisfies LeaderboardEntry;
       });
     },
@@ -234,27 +236,33 @@ export function useLeaderboard(period: LeaderboardPeriod = "all") {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function fetchAnonymousProfiles(supabase: any, profileIds: string[]) {
-  if (profileIds.length === 0) return new Set<string>();
+  if (profileIds.length === 0) return new Map<string, string | null>();
   const { data } = await supabase
     .from("profiles")
-    .select("id, leaderboard_anonymous")
+    .select("id, leaderboard_anonymous, anonymous_alias")
     .in("id", profileIds)
     .eq("leaderboard_anonymous", true);
-  return new Set<string>((data ?? []).map((p: { id: string }) => p.id));
+  const map = new Map<string, string | null>();
+  for (const p of (data ?? []) as { id: string; anonymous_alias: string | null }[]) {
+    map.set(p.id, p.anonymous_alias);
+  }
+  return map;
 }
 
 function applyAnonymity(
   entry: LeaderboardEntry,
-  anonymousSet: Set<string>,
+  anonymousMap: Map<string, string | null>,
   currentUserId: string | undefined,
 ): LeaderboardEntry {
   // Never hide current user's own entry
   if (entry.profile_id === currentUserId) return entry;
-  if (!anonymousSet.has(entry.profile_id)) return entry;
+  if (!anonymousMap.has(entry.profile_id)) return entry;
 
+  const alias = anonymousMap.get(entry.profile_id);
   return {
     ...entry,
-    full_name: "Utilisateur anonyme",
+    full_name: alias || "Utilisateur anonyme",
     avatar_url: null,
+    is_anonymous: true,
   };
 }

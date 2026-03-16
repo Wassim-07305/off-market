@@ -151,6 +151,7 @@ export interface LeaderboardEntry {
   total_xp: number;
   badge_count: number;
   rank: number;
+  is_anonymous?: boolean;
 }
 
 // ─── USER XP SUMMARY ─────────────────

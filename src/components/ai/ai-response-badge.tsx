@@ -1,6 +1,6 @@
 "use client";
 
-import { Bot } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface AiResponseBadgeProps {
@@ -8,23 +8,20 @@ interface AiResponseBadgeProps {
 }
 
 /**
- * Badge "Reponse IA" affiche sur les messages generes par l'IA (F46.1).
- * Distingue visuellement les reponses IA des messages humains.
+ * Badge "Genere par IA" affiche sous les messages generes par l'IA.
+ * Style subtil, petit texte gris avec icone Sparkles.
  */
 export function AiResponseBadge({ className }: AiResponseBadgeProps) {
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md",
-        "bg-gradient-to-r from-violet-500/10 to-purple-500/10",
-        "border border-violet-500/20",
-        "text-[10px] font-semibold text-violet-600 dark:text-violet-400",
-        "select-none",
+        "inline-flex items-center gap-1 mt-1",
+        "text-[10px] text-muted-foreground/70 select-none",
         className,
       )}
     >
-      <Bot className="w-2.5 h-2.5" />
-      Reponse IA
+      <Sparkles className="w-2.5 h-2.5" />
+      Genere par IA
     </span>
   );
 }

@@ -10,6 +10,7 @@ import {
 } from "@/lib/animations";
 import { useContract, useContracts } from "@/hooks/use-contracts";
 import { CancelContractModal } from "@/components/contracts/cancel-contract-modal";
+import { RenewalSettings } from "@/components/contracts/renewal-settings";
 import {
   ArrowLeft,
   FileText,
@@ -497,6 +498,12 @@ export default function ContractDetailPage() {
               )}
             </div>
           </div>
+
+          {/* Renewal Settings */}
+          <RenewalSettings
+            contractId={id}
+            contractStatus={contract.status}
+          />
 
           {/* Timeline */}
           <div className="bg-surface border border-border rounded-xl p-5">

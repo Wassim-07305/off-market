@@ -5,12 +5,16 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   staggerContainer,
   staggerItem,
-  fadeInUp,
-  defaultTransition,
 } from "@/lib/animations";
 import { useJournal } from "@/hooks/use-journal";
+import { useExportJournalPdf } from "@/hooks/use-journal-export";
 import { MOOD_CONFIG, JOURNAL_TEMPLATES } from "@/types/coaching";
-import type { Mood, JournalTemplate, JournalEntry } from "@/types/coaching";
+import type {
+  Mood,
+  JournalTemplate,
+  JournalEntry,
+  JournalAttachment,
+} from "@/types/coaching";
 import { cn } from "@/lib/utils";
 import {
   BookOpen,
@@ -20,19 +24,22 @@ import {
   Globe,
   Trash2,
   Search,
-  Download,
+  FileDown,
   Filter,
   TrendingUp,
   Flame,
   FileText,
   Loader2,
   Edit3,
-  Eye,
   ChevronDown,
   Tag,
   Sparkles,
   CalendarDays,
+  Calendar,
 } from "lucide-react";
+import { JournalPromptCard } from "@/components/journal/journal-prompt-card";
+import { JournalAttachments } from "@/components/journal/journal-attachments";
+import { ShareToggleInline } from "@/components/journal/share-toggle";
 
 type FilterMood = "all" | Mood;
 
@@ -124,17 +131,35 @@ function groupByMonth(
     });
 }
 
+function getDefaultDateRange(): { from: string; to: string } {
+  const to = new Date();
+  const from = new Date();
+  from.setDate(from.getDate() - 30);
+  return {
+    from: from.toISOString().split("T")[0],
+    to: to.toISOString().split("T")[0],
+  };
+}
+
 export default function JournalPage() {
   const { entries, isLoading, createEntry, updateEntry, deleteEntry } =
     useJournal();
+  const { exportPdf, isExporting } = useExportJournalPdf();
   const [showComposer, setShowComposer] = useState(false);
   const [selectedTemplate, setSelectedTemplate] =
     useState<JournalTemplate | null>(null);
+  const [promptData, setPromptData] = useState<{
+    text: string;
+    id: string;
+  } | null>(null);
   const [search, setSearch] = useState("");
   const [filterMood, setFilterMood] = useState<FilterMood>("all");
   const [showFilters, setShowFilters] = useState(false);
   const [expandedEntryId, setExpandedEntryId] = useState<string | null>(null);
   const [editingEntry, setEditingEntry] = useState<JournalEntry | null>(null);
+  const [showExportPanel, setShowExportPanel] = useState(false);
+  const [exportFrom, setExportFrom] = useState(getDefaultDateRange().from);
+  const [exportTo, setExportTo] = useState(getDefaultDateRange().to);
 
   const streak = useMemo(() => getStreak(entries), [entries]);
   const moodTrend = useMemo(() => getMoodTrend(entries), [entries]);
@@ -166,24 +191,20 @@ export default function JournalPage() {
 
   const grouped = useMemo(() => groupByMonth(filtered), [filtered]);
 
-  const handleExport = () => {
-    const text = entries
-      .map(
-        (e) =>
-          `# ${e.title}\n${formatDate(e.created_at)}${e.mood ? ` | ${MOOD_CONFIG[e.mood as Mood]?.emoji}` : ""}${e.tags.length > 0 ? ` | ${e.tags.map((t) => `#${t}`).join(" ")}` : ""}\n\n${e.content}\n\n---\n`,
-      )
-      .join("\n");
-    const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `journal-${new Date().toISOString().split("T")[0]}.txt`;
-    a.click();
-    URL.revokeObjectURL(url);
+  const handleExportPdf = () => {
+    exportPdf({ from: exportFrom, to: exportTo });
   };
 
   const startFromTemplate = (t: JournalTemplate) => {
     setSelectedTemplate(t);
+    setPromptData(null);
+    setShowComposer(true);
+  };
+
+  const startFromPrompt = (promptText: string, promptId: string) => {
+    setPromptData({ text: promptText, id: promptId });
+    setSelectedTemplate(null);
+    setEditingEntry(null);
     setShowComposer(true);
   };
 
@@ -215,20 +236,26 @@ export default function JournalPage() {
         <div className="flex items-center gap-2">
           {entries.length > 0 && (
             <button
-              onClick={handleExport}
+              onClick={() => setShowExportPanel(!showExportPanel)}
+              disabled={isExporting}
               className="h-9 px-3 rounded-xl border border-border text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all flex items-center gap-1.5"
             >
-              <Download className="w-3.5 h-3.5" />
-              Exporter
+              {isExporting ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <FileDown className="w-3.5 h-3.5" />
+              )}
+              Exporter PDF
             </button>
           )}
           <button
             onClick={() => {
               setSelectedTemplate(null);
+              setPromptData(null);
               setEditingEntry(null);
               setShowComposer(true);
             }}
-            className="h-9 px-4 bg-primary text-white rounded-xl text-sm font-medium hover:bg-primary-hover transition-all active:scale-[0.98] flex items-center gap-2"
+            className="h-9 px-4 bg-[#DC2626] text-white rounded-xl text-sm font-medium hover:bg-[#DC2626]/90 transition-all active:scale-[0.98] flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
             Ecrire
@@ -236,10 +263,83 @@ export default function JournalPage() {
         </div>
       </motion.div>
 
+      {/* PDF Export Panel */}
+      <AnimatePresence>
+        {showExportPanel && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+          >
+            <div className="bg-white rounded-[14px] border border-border p-5 space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <FileDown className="w-4 h-4 text-[#DC2626]" />
+                  <h3 className="text-sm font-semibold text-foreground">
+                    Exporter en PDF
+                  </h3>
+                </div>
+                <button
+                  onClick={() => setShowExportPanel(false)}
+                  className="h-7 w-7 rounded-lg hover:bg-muted flex items-center justify-center transition-colors"
+                >
+                  <X className="w-4 h-4 text-muted-foreground" />
+                </button>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="flex-1">
+                  <label className="text-xs text-muted-foreground mb-1 block">
+                    Du
+                  </label>
+                  <div className="relative">
+                    <Calendar className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+                    <input
+                      type="date"
+                      value={exportFrom}
+                      onChange={(e) => setExportFrom(e.target.value)}
+                      className="w-full h-9 pl-9 pr-3 rounded-xl bg-muted/50 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-[#DC2626]/20 transition-shadow"
+                    />
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <label className="text-xs text-muted-foreground mb-1 block">
+                    Au
+                  </label>
+                  <div className="relative">
+                    <Calendar className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+                    <input
+                      type="date"
+                      value={exportTo}
+                      onChange={(e) => setExportTo(e.target.value)}
+                      className="w-full h-9 pl-9 pr-3 rounded-xl bg-muted/50 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-[#DC2626]/20 transition-shadow"
+                    />
+                  </div>
+                </div>
+                <div className="pt-5">
+                  <button
+                    onClick={handleExportPdf}
+                    disabled={isExporting}
+                    className="h-9 px-4 bg-[#DC2626] text-white rounded-xl text-xs font-medium hover:bg-[#DC2626]/90 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-2"
+                  >
+                    {isExporting ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <FileDown className="w-3.5 h-3.5" />
+                    )}
+                    Telecharger
+                  </button>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Stats */}
       <motion.div variants={staggerItem} className="grid grid-cols-3 gap-3">
         <div className="bg-white rounded-[14px] border border-border p-4 text-center">
-          <FileText className="w-4 h-4 text-primary mx-auto mb-1.5" />
+          <FileText className="w-4 h-4 text-[#DC2626] mx-auto mb-1.5" />
           <p className="text-lg font-display font-bold text-foreground">
             {totalEntries}
           </p>
@@ -267,6 +367,13 @@ export default function JournalPage() {
         </div>
       </motion.div>
 
+      {/* Daily Prompt Card */}
+      {!showComposer && !editingEntry && (
+        <motion.div variants={staggerItem}>
+          <JournalPromptCard onUsePrompt={startFromPrompt} />
+        </motion.div>
+      )}
+
       {/* Writing prompts / Templates */}
       {!showComposer && !editingEntry && (
         <motion.div variants={staggerItem}>
@@ -284,7 +391,7 @@ export default function JournalPage() {
               <button
                 key={key}
                 onClick={() => startFromTemplate(key)}
-                className="flex items-center gap-2 h-8 px-3.5 rounded-full bg-white border border-border hover:border-primary/30 hover:bg-primary/5 transition-all text-xs font-medium text-foreground whitespace-nowrap shrink-0"
+                className="flex items-center gap-2 h-8 px-3.5 rounded-full bg-white border border-border hover:border-[#DC2626]/30 hover:bg-[#DC2626]/5 transition-all text-xs font-medium text-foreground whitespace-nowrap shrink-0"
               >
                 <span>{tpl.icon}</span>
                 {tpl.label}
@@ -304,17 +411,20 @@ export default function JournalPage() {
           >
             <JournalComposer
               template={selectedTemplate}
+              promptData={promptData}
               onSubmit={(data) => {
                 createEntry.mutate(data, {
                   onSuccess: () => {
                     setShowComposer(false);
                     setSelectedTemplate(null);
+                    setPromptData(null);
                   },
                 });
               }}
               onCancel={() => {
                 setShowComposer(false);
                 setSelectedTemplate(null);
+                setPromptData(null);
               }}
               isSubmitting={createEntry.isPending}
             />
@@ -338,6 +448,8 @@ export default function JournalPage() {
                 mood: editingEntry.mood ?? undefined,
                 tags: editingEntry.tags,
                 is_private: editingEntry.is_private,
+                shared_with_coach: editingEntry.shared_with_coach,
+                attachments: editingEntry.attachments,
               }}
               onSubmit={(data) => {
                 updateEntry.mutate(
@@ -367,7 +479,7 @@ export default function JournalPage() {
                 placeholder="Rechercher dans le journal..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full h-9 pl-9 pr-3 rounded-xl bg-muted/50 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-shadow"
+                className="w-full h-9 pl-9 pr-3 rounded-xl bg-muted/50 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#DC2626]/20 transition-shadow"
               />
             </div>
             <button
@@ -375,7 +487,7 @@ export default function JournalPage() {
               className={cn(
                 "h-9 px-3 rounded-xl border text-xs font-medium flex items-center gap-1.5 transition-all",
                 showFilters || filterMood !== "all"
-                  ? "border-primary bg-primary/5 text-primary"
+                  ? "border-[#DC2626] bg-[#DC2626]/5 text-[#DC2626]"
                   : "border-border text-muted-foreground hover:text-foreground",
               )}
             >
@@ -445,7 +557,7 @@ export default function JournalPage() {
                         className={cn(
                           "h-6 px-2 rounded-full text-[10px] font-medium transition-all flex items-center gap-1",
                           search === `#${tag}`
-                            ? "bg-primary/10 text-primary"
+                            ? "bg-[#DC2626]/10 text-[#DC2626]"
                             : "bg-muted text-muted-foreground hover:text-foreground",
                         )}
                       >
@@ -535,11 +647,14 @@ function JournalEntryCard({
   onEdit: () => void;
   onDelete: () => void;
 }) {
+  const attachments = (entry.attachments ?? []) as JournalAttachment[];
+  const hasAttachments = attachments.length > 0;
+
   return (
     <div
       className={cn(
         "bg-white rounded-[14px] border border-border group transition-all",
-        isExpanded ? "border-primary/20" : "hover:border-primary/10",
+        isExpanded ? "border-[#DC2626]/20" : "hover:border-[#DC2626]/10",
       )}
     >
       {/* Collapsed header */}
@@ -553,6 +668,12 @@ function JournalEntryCard({
               {entry.template && (
                 <span className="text-xs shrink-0">
                   {JOURNAL_TEMPLATES[entry.template as JournalTemplate]?.icon}
+                </span>
+              )}
+              {hasAttachments && (
+                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground shrink-0">
+                  {attachments.length} fichier
+                  {attachments.length > 1 ? "s" : ""}
                 </span>
               )}
             </div>
@@ -622,6 +743,17 @@ function JournalEntryCard({
                 </p>
               </div>
 
+              {/* Attachments display (read-only) */}
+              {hasAttachments && (
+                <div className="mb-4">
+                  <JournalAttachments
+                    attachments={attachments}
+                    onChange={() => {}}
+                    readOnly
+                  />
+                </div>
+              )}
+
               {/* Actions */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
@@ -642,7 +774,7 @@ function JournalEntryCard({
                         onDelete();
                       }
                     }}
-                    className="h-7 px-2.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-error hover:bg-error/10 transition-all flex items-center gap-1.5"
+                    className="h-7 px-2.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-red-600 hover:bg-red-50 transition-all flex items-center gap-1.5"
                   >
                     <Trash2 className="w-3 h-3" />
                     Supprimer
@@ -664,6 +796,7 @@ function JournalEntryCard({
 
 function JournalComposer({
   template,
+  promptData,
   initialData,
   onSubmit,
   onCancel,
@@ -671,12 +804,15 @@ function JournalComposer({
   isEditing = false,
 }: {
   template: JournalTemplate | null;
+  promptData?: { text: string; id: string } | null;
   initialData?: {
     title: string;
     content: string;
     mood?: Mood;
     tags?: string[];
     is_private?: boolean;
+    shared_with_coach?: boolean;
+    attachments?: JournalAttachment[];
   };
   onSubmit: (data: {
     title: string;
@@ -685,6 +821,9 @@ function JournalComposer({
     tags?: string[];
     is_private?: boolean;
     template?: string;
+    shared_with_coach?: boolean;
+    prompt_id?: string;
+    attachments?: JournalAttachment[];
   }) => void;
   onCancel: () => void;
   isSubmitting: boolean;
@@ -692,7 +831,7 @@ function JournalComposer({
 }) {
   const tpl = template ? JOURNAL_TEMPLATES[template] : null;
   const [title, setTitle] = useState(
-    initialData?.title ?? (tpl ? tpl.label : ""),
+    initialData?.title ?? (tpl ? tpl.label : promptData ? "Reflexion du jour" : ""),
   );
   const [content, setContent] = useState(
     initialData?.content ??
@@ -705,6 +844,12 @@ function JournalComposer({
     initialData?.tags?.join(", ") ?? "",
   );
   const [isPrivate, setIsPrivate] = useState(initialData?.is_private ?? true);
+  const [sharedWithCoach, setSharedWithCoach] = useState(
+    initialData?.shared_with_coach ?? false,
+  );
+  const [attachments, setAttachments] = useState<JournalAttachment[]>(
+    initialData?.attachments ?? [],
+  );
 
   const handleSubmit = () => {
     if (!title.trim() || !content.trim()) return;
@@ -719,13 +864,16 @@ function JournalComposer({
       tags: tags.length > 0 ? tags : undefined,
       is_private: isPrivate,
       template: template ?? undefined,
+      shared_with_coach: sharedWithCoach,
+      prompt_id: promptData?.id,
+      attachments: attachments.length > 0 ? attachments : undefined,
     });
   };
 
   const wordCount = content.trim().split(/\s+/).filter(Boolean).length;
 
   return (
-    <div className="bg-white rounded-[14px] border border-primary/20 p-5 space-y-4">
+    <div className="bg-white rounded-[14px] border border-[#DC2626]/20 p-5 space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <h3 className="text-sm font-semibold text-foreground">
@@ -734,6 +882,11 @@ function JournalComposer({
           {tpl && (
             <span className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
               {tpl.icon} {tpl.label}
+            </span>
+          )}
+          {promptData && !tpl && (
+            <span className="text-xs px-2 py-0.5 rounded-full bg-[#DC2626]/10 text-[#DC2626]">
+              Depuis un prompt
             </span>
           )}
         </div>
@@ -745,8 +898,18 @@ function JournalComposer({
         </button>
       </div>
 
-      {tpl && tpl.description && (
-        <p className="text-xs text-muted-foreground italic bg-primary/5 px-3 py-2 rounded-lg">
+      {/* Prompt text as inspiration */}
+      {promptData && (
+        <div className="bg-[#DC2626]/5 border border-[#DC2626]/10 rounded-[10px] px-4 py-3">
+          <p className="text-xs text-muted-foreground mb-1 font-medium">
+            Prompt :
+          </p>
+          <p className="text-sm text-foreground italic">{promptData.text}</p>
+        </div>
+      )}
+
+      {tpl && tpl.description && !promptData && (
+        <p className="text-xs text-muted-foreground italic bg-[#DC2626]/5 px-3 py-2 rounded-lg">
           {tpl.description}
         </p>
       )}
@@ -756,7 +919,7 @@ function JournalComposer({
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         placeholder="Titre"
-        className="w-full h-10 px-4 bg-muted/50 border-0 rounded-[10px] text-sm font-medium text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+        className="w-full h-10 px-4 bg-muted/50 border-0 rounded-[10px] text-sm font-medium text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#DC2626]/20"
         autoFocus
       />
 
@@ -764,14 +927,24 @@ function JournalComposer({
         <textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          placeholder="Ecris tes pensees..."
+          placeholder={
+            promptData
+              ? promptData.text
+              : "Ecris tes pensees..."
+          }
           rows={10}
-          className="w-full px-4 py-3 bg-muted/50 border-0 rounded-[10px] text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none leading-relaxed"
+          className="w-full px-4 py-3 bg-muted/50 border-0 rounded-[10px] text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#DC2626]/20 resize-none leading-relaxed"
         />
         <div className="absolute bottom-2 right-3 text-[10px] text-muted-foreground/40">
           {wordCount} mots | {content.length} car.
         </div>
       </div>
+
+      {/* Attachments */}
+      <JournalAttachments
+        attachments={attachments}
+        onChange={setAttachments}
+      />
 
       {/* Mood */}
       <div className="flex items-center gap-2">
@@ -801,26 +974,32 @@ function JournalComposer({
           value={tagsInput}
           onChange={(e) => setTagsInput(e.target.value)}
           placeholder="Tags (separes par des virgules)"
-          className="flex-1 h-9 px-3 bg-muted/50 border-0 rounded-[10px] text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+          className="flex-1 h-9 px-3 bg-muted/50 border-0 rounded-[10px] text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#DC2626]/20"
         />
       </div>
 
-      <div className="flex items-center justify-between">
-        <button
-          onClick={() => setIsPrivate(!isPrivate)}
-          className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
-        >
-          {isPrivate ? (
-            <Lock className="w-3.5 h-3.5" />
-          ) : (
-            <Globe className="w-3.5 h-3.5" />
-          )}
-          {isPrivate ? "Prive" : "Visible par le coach"}
-        </button>
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setIsPrivate(!isPrivate)}
+            className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+          >
+            {isPrivate ? (
+              <Lock className="w-3.5 h-3.5" />
+            ) : (
+              <Globe className="w-3.5 h-3.5" />
+            )}
+            {isPrivate ? "Prive" : "Visible par le coach"}
+          </button>
+          <ShareToggleInline
+            value={sharedWithCoach}
+            onChange={setSharedWithCoach}
+          />
+        </div>
         <button
           onClick={handleSubmit}
           disabled={!title.trim() || !content.trim() || isSubmitting}
-          className="h-9 px-4 bg-primary text-white rounded-xl text-xs font-medium hover:bg-primary-hover transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-2"
+          className="h-9 px-4 bg-[#DC2626] text-white rounded-xl text-xs font-medium hover:bg-[#DC2626]/90 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-2"
         >
           {isSubmitting ? (
             <Loader2 className="w-3.5 h-3.5 animate-spin" />

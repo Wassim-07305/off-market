@@ -1,3 +1,5 @@
+export type FeedSortMode = "recent" | "trending" | "most_liked";
+
 export interface FeedPost {
   id: string;
   author_id: string;
@@ -8,6 +10,7 @@ export interface FeedPost {
   is_pinned: boolean;
   likes_count: number;
   comments_count: number;
+  trending_score: number;
   created_at: string;
   updated_at: string;
   // Joined
@@ -87,6 +90,7 @@ export interface FeedComment {
   author_id: string;
   content: string;
   parent_id: string | null;
+  reply_count: number;
   created_at: string;
   updated_at: string;
   // Joined

@@ -43,7 +43,7 @@ export default function AIPage() {
   const supabase = useSupabase();
   const queryClient = useQueryClient();
   const {
-    hasConsented,
+    hasConsent,
     isLoading: consentLoading,
     accept: acceptConsent,
     isAccepting,
@@ -202,10 +202,10 @@ export default function AIPage() {
   };
 
   // Afficher la modal de consentement si pas encore accepte (F46.2)
-  if (!consentLoading && !hasConsented) {
+  if (!consentLoading && !hasConsent) {
     return (
       <AiConsentModal
-        onAccept={() => acceptConsent()}
+        onAccept={(scopes) => acceptConsent(scopes)}
         isAccepting={isAccepting}
       />
     );

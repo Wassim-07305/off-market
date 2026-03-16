@@ -47,6 +47,7 @@ import {
   HelpCircle,
   ExternalLink,
   X,
+  Headphones,
 } from "lucide-react";
 import { QuizBuilder } from "./quiz-builder";
 import type { QuizConfig } from "@/types/quiz";
@@ -114,7 +115,13 @@ function SortableLessonItem({
             : "bg-muted text-muted-foreground",
         )}
       >
-        <Play className="w-3 h-3" />
+        {lesson.content_type === "audio" ? (
+          <Headphones className="w-3 h-3" />
+        ) : lesson.content_type === "embed" ? (
+          <ExternalLink className="w-3 h-3" />
+        ) : (
+          <Play className="w-3 h-3" />
+        )}
       </div>
       <span
         className={cn(
@@ -331,6 +338,8 @@ function LessonEditorPanel({
       (lesson.content as Record<string, string>)?.url ??
       "",
   );
+  const [audioUrl, setAudioUrl] = useState(lesson.audio_url ?? "");
+  const [audioDuration, setAudioDuration] = useState(lesson.audio_duration ?? 0);
   const [contentHtml, setContentHtml] = useState(
     lesson.content_html ??
       (lesson.content as Record<string, string>)?.html ??
@@ -338,6 +347,8 @@ function LessonEditorPanel({
   );
   const [duration, setDuration] = useState(lesson.estimated_duration ?? 0);
   const [contentType, setContentType] = useState(lesson.content_type);
+  const [embedUrl, setEmbedUrl] = useState(lesson.embed_url ?? "");
+  const [embedType, setEmbedType] = useState(lesson.embed_type ?? "generic");
 
   useEffect(() => {
     setTitle(lesson.title);
@@ -348,6 +359,8 @@ function LessonEditorPanel({
         (lesson.content as Record<string, string>)?.url ??
         "",
     );
+    setAudioUrl(lesson.audio_url ?? "");
+    setAudioDuration(lesson.audio_duration ?? 0);
     setContentHtml(
       lesson.content_html ??
         (lesson.content as Record<string, string>)?.html ??
@@ -355,7 +368,27 @@ function LessonEditorPanel({
     );
     setDuration(lesson.estimated_duration ?? 0);
     setContentType(lesson.content_type);
+    setEmbedUrl(lesson.embed_url ?? "");
+    setEmbedType(lesson.embed_type ?? "generic");
   }, [lesson]);
+
+  // Auto-detect embed type when URL changes
+  const handleEmbedUrlChange = (url: string) => {
+    setEmbedUrl(url);
+    if (url) {
+      try {
+        const hostname = new URL(url).hostname.toLowerCase();
+        if (hostname.includes("figma.com")) setEmbedType("figma");
+        else if (hostname.includes("miro.com")) setEmbedType("miro");
+        else if (hostname.includes("docs.google.com") || hostname.includes("drive.google.com")) setEmbedType("google_docs");
+        else if (hostname.includes("canva.com")) setEmbedType("canva");
+        else if (hostname.includes("notion.so") || hostname.includes("notion.site")) setEmbedType("notion");
+        else setEmbedType("generic");
+      } catch {
+        setEmbedType("generic");
+      }
+    }
+  };
 
   const handleSave = () => {
     const updates: Partial<Lesson> = {
@@ -364,13 +397,41 @@ function LessonEditorPanel({
       content_type: contentType,
       estimated_duration: duration || null,
       video_url: videoUrl || null,
+      audio_url: audioUrl || null,
+      audio_duration: audioDuration || null,
       content_html: contentHtml || null,
+      embed_url: contentType === "embed" ? embedUrl || null : null,
+      embed_type: contentType === "embed" ? embedType : null,
       content: {
         ...(videoUrl ? { url: videoUrl, video_url: videoUrl } : {}),
+        ...(audioUrl ? { audio_url: audioUrl } : {}),
         ...(contentHtml ? { html: contentHtml } : {}),
+        ...(contentType === "embed" && embedUrl ? { embed_url: embedUrl, embed_type: embedType } : {}),
       },
     };
     onSave(updates);
+  };
+
+  // Auto-detect audio duration from metadata
+  const handleAudioUrlBlur = () => {
+    if (!audioUrl) return;
+    try {
+      const audio = new Audio(audioUrl);
+      audio.addEventListener("loadedmetadata", () => {
+        if (audio.duration && isFinite(audio.duration)) {
+          setAudioDuration(Math.round(audio.duration));
+          // Also set estimated_duration in minutes if not already set
+          if (!duration) {
+            setDuration(Math.ceil(audio.duration / 60));
+          }
+        }
+      });
+      audio.addEventListener("error", () => {
+        // Silently ignore - URL may be invalid or CORS blocked
+      });
+    } catch {
+      // Silently ignore
+    }
   };
 
   const inputClass =
@@ -446,8 +507,10 @@ function LessonEditorPanel({
             <div className="flex flex-wrap gap-1.5">
               {[
                 { value: "video", label: "Video", icon: Video },
+                { value: "audio", label: "Audio", icon: Headphones },
                 { value: "text", label: "Texte", icon: FileText },
                 { value: "quiz", label: "Quiz", icon: HelpCircle },
+                { value: "embed", label: "Embed", icon: ExternalLink },
               ].map((t) => (
                 <button
                   key={t.value}
@@ -537,6 +600,89 @@ function LessonEditorPanel({
           onUpload={(url) => setVideoUrl(url)}
         />
       </div>
+
+      {/* Card 2b: Audio/Podcast */}
+      {contentType === "audio" && (
+        <div
+          className="bg-surface rounded-2xl border border-border p-6 space-y-4"
+          style={{ boxShadow: "var(--shadow-card)" }}
+        >
+          <div className="flex items-center gap-2 mb-2">
+            <Headphones className="w-4 h-4 text-muted-foreground" />
+            <span className="text-base font-display font-semibold text-foreground">
+              Audio / Podcast
+            </span>
+          </div>
+
+          {audioUrl && (
+            <div className="rounded-xl border border-border bg-muted/30 p-3 space-y-2">
+              <p className="text-xs font-medium text-muted-foreground">
+                Audio actuel :
+              </p>
+              <p className="text-sm truncate">{audioUrl}</p>
+              {audioDuration > 0 && (
+                <p className="text-xs text-muted-foreground">
+                  Duree : {Math.floor(audioDuration / 60)}m {audioDuration % 60}s
+                </p>
+              )}
+              <button
+                onClick={() => {
+                  setAudioUrl("");
+                  setAudioDuration(0);
+                }}
+                className="h-7 px-2 rounded-lg text-xs text-error hover:bg-error/10 transition-colors flex items-center gap-1"
+              >
+                <X className="w-3 h-3" />
+                Retirer l&apos;audio
+              </button>
+            </div>
+          )}
+
+          <div>
+            <label className="block text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
+              URL de l&apos;audio (MP3, WAV, etc.)
+            </label>
+            <input
+              value={audioUrl}
+              onChange={(e) => setAudioUrl(e.target.value)}
+              onBlur={handleAudioUrlBlur}
+              placeholder="https://example.com/podcast-episode.mp3"
+              className={inputClass}
+            />
+          </div>
+
+          <div className="relative flex items-center">
+            <div className="flex-1 border-t border-border" />
+            <span className="px-3 text-xs text-muted-foreground">ou</span>
+            <div className="flex-1 border-t border-border" />
+          </div>
+
+          <FileUpload
+            bucket="course-assets"
+            path="audio"
+            accept="audio/*"
+            maxSizeMB={200}
+            label="Glissez un fichier audio ou cliquez pour uploader"
+            onUpload={(url) => {
+              setAudioUrl(url);
+              // Try to detect duration
+              try {
+                const audio = new Audio(url);
+                audio.addEventListener("loadedmetadata", () => {
+                  if (audio.duration && isFinite(audio.duration)) {
+                    setAudioDuration(Math.round(audio.duration));
+                    if (!duration) {
+                      setDuration(Math.ceil(audio.duration / 60));
+                    }
+                  }
+                });
+              } catch {
+                // Silently ignore
+              }
+            }}
+          />
+        </div>
+      )}
 
       {/* Card 3: Pieces jointes */}
       <div
@@ -648,6 +794,65 @@ function LessonEditorPanel({
             }}
             isSaving={isPending}
           />
+        </div>
+      )}
+
+      {/* Card 6: Embed externe */}
+      {contentType === "embed" && (
+        <div
+          className="bg-surface rounded-2xl border border-border p-6 space-y-4"
+          style={{ boxShadow: "var(--shadow-card)" }}
+        >
+          <div className="flex items-center gap-2 mb-2">
+            <ExternalLink className="w-4 h-4 text-muted-foreground" />
+            <span className="text-base font-display font-semibold text-foreground">
+              Embed externe
+            </span>
+          </div>
+
+          <div>
+            <label className="block text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
+              URL du contenu
+            </label>
+            <input
+              value={embedUrl}
+              onChange={(e) => handleEmbedUrlChange(e.target.value)}
+              placeholder="https://www.figma.com/... ou https://miro.com/..."
+              className={inputClass}
+            />
+            <p className="text-[10px] text-muted-foreground mt-1">
+              Supporte : Figma, Miro, Google Docs, Canva, Notion, ou tout URL embarquable
+            </p>
+          </div>
+
+          {embedUrl && (
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                {embedType === "figma" && "Figma"}
+                {embedType === "miro" && "Miro"}
+                {embedType === "google_docs" && "Google Docs"}
+                {embedType === "canva" && "Canva"}
+                {embedType === "notion" && "Notion"}
+                {embedType === "generic" && "Generique"}
+              </span>
+              <span className="text-xs text-muted-foreground">
+                Type detecte automatiquement
+              </span>
+            </div>
+          )}
+
+          {embedUrl && (
+            <div className="rounded-xl border border-border overflow-hidden bg-muted/30">
+              <div className="aspect-video relative">
+                <iframe
+                  src={embedUrl}
+                  title="Apercu embed"
+                  className="w-full h-full border-0"
+                  sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+                />
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

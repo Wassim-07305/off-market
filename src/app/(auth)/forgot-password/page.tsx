@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { useAuth } from "@/hooks/use-auth";
+import { useBrandingContext } from "@/components/providers/branding-provider";
+import { colorVariants } from "@/hooks/use-branding";
 import { toast } from "sonner";
 import { ArrowLeft, Loader2 } from "lucide-react";
 
@@ -12,6 +13,9 @@ export default function ForgotPasswordPage() {
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
   const { resetPassword } = useAuth();
+  const { branding } = useBrandingContext();
+  const primaryColor = branding?.primary_color ?? "#DC2626";
+  const brandVariants = colorVariants(primaryColor);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,20 +31,20 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="animate-fade-in">
-      <div className="text-center mb-8">
-        <Image
-          src="/logo.png"
-          alt="Off Market"
-          width={72}
-          height={72}
-          className="mx-auto mb-4 rounded-2xl"
-          priority
-        />
-        <h1 className="text-4xl text-white mb-2 font-bold">Off Market</h1>
-        <p className="text-zinc-400 text-sm">Reinitialise ton mot de passe</p>
+      <div className="text-center mb-8 hidden lg:block">
+        <h1 className="text-2xl text-white mb-2 font-display font-bold tracking-tight">
+          Mot de passe oublie
+        </h1>
+        <p className="text-white/40 text-sm">Reinitialise ton mot de passe</p>
       </div>
 
-      <div className="bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 rounded-2xl p-8">
+      <div
+        className="backdrop-blur-2xl bg-white/[0.04] border border-white/[0.08] rounded-2xl p-8"
+        style={{
+          boxShadow:
+            "0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05)",
+        }}
+      >
         {sent ? (
           <div className="text-center py-4">
             <div className="w-12 h-12 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -75,7 +79,7 @@ export default function ForgotPasswordPage() {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-zinc-300 mb-1.5"
+                className="block text-[11px] font-medium text-white/50 uppercase tracking-wider mb-1.5"
               >
                 Email
               </label>
@@ -86,14 +90,18 @@ export default function ForgotPasswordPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="ton@email.com"
                 required
-                className="w-full h-11 px-4 bg-zinc-800/50 border border-zinc-700 rounded-[10px] text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all text-sm"
+                className="w-full h-11 px-4 bg-white/[0.06] border border-white/[0.08] rounded-xl text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/40 transition-all text-sm backdrop-blur-sm"
               />
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full h-11 bg-primary hover:bg-primary-hover text-white font-medium rounded-[10px] transition-all duration-150 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
+              className="w-full h-11 text-white font-medium rounded-xl transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
+              style={{
+                backgroundColor: primaryColor,
+                boxShadow: brandVariants.glow + ", 0 4px 12px rgba(0, 0, 0, 0.3)",
+              }}
             >
               {loading && <Loader2 className="w-4 h-4 animate-spin" />}
               Envoyer le lien

@@ -17,13 +17,11 @@ import {
   Settings,
   Clock,
   Save,
-  Volume2,
-  VolumeX,
 } from "lucide-react";
-import { useNotificationSound } from "@/hooks/use-notification-sound";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
+import { SoundSettings } from "@/components/settings/sound-settings";
 
 // Types de notifications
 interface NotificationCategory {
@@ -115,7 +113,6 @@ export function NotificationPreferences() {
   const { data: preferences } = usePreferences();
   const updatePreferences = useUpdatePreferences();
   const push = usePushNotifications();
-  const { soundEnabled, setSoundEnabled, playSound } = useNotificationSound();
 
   const [matrix, setMatrix] = useState<NotifMatrix>(getDefaultMatrix);
   const [dndEnabled, setDndEnabled] = useState(false);
@@ -357,63 +354,8 @@ export function NotificationPreferences() {
         </div>
       )}
 
-      {/* Sons de notification */}
-      <div
-        className="bg-surface rounded-2xl p-6 space-y-4"
-        style={{ boxShadow: "var(--shadow-card)" }}
-      >
-        <div className="flex items-center gap-2 mb-2">
-          {soundEnabled ? (
-            <Volume2 className="w-4 h-4 text-muted-foreground" />
-          ) : (
-            <VolumeX className="w-4 h-4 text-muted-foreground" />
-          )}
-          <h2 className="text-sm font-semibold text-foreground">
-            Sons de notification
-          </h2>
-        </div>
-
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
-              <Volume2 className="w-4 h-4 text-primary" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-foreground">
-                Activer les sons
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Un son different pour les notifications normales et urgentes
-              </p>
-            </div>
-          </div>
-          <Switch
-            checked={soundEnabled}
-            onCheckedChange={(val) => setSoundEnabled(val)}
-          />
-        </div>
-
-        {soundEnabled && (
-          <div className="flex gap-2 pt-2">
-            <button
-              type="button"
-              onClick={() => playSound("normal")}
-              className="h-9 px-4 rounded-xl text-xs font-medium bg-muted text-muted-foreground hover:text-foreground transition-all cursor-pointer flex items-center gap-1.5"
-            >
-              <Volume2 className="w-3.5 h-3.5" />
-              Tester normal
-            </button>
-            <button
-              type="button"
-              onClick={() => playSound("urgent")}
-              className="h-9 px-4 rounded-xl text-xs font-medium bg-red-500/10 text-red-600 hover:bg-red-500/20 transition-all cursor-pointer flex items-center gap-1.5"
-            >
-              <BellRing className="w-3.5 h-3.5" />
-              Tester urgent
-            </button>
-          </div>
-        )}
-      </div>
+      {/* Sons de notification (6 types differencies) */}
+      <SoundSettings />
 
       {/* Plages horaires DND */}
       <div

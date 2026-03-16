@@ -46,6 +46,7 @@ import { use2FA } from "@/hooks/use-2fa";
 import { useAiConsent } from "@/hooks/use-ai-consent";
 import { BrandingSettings } from "@/components/settings/branding-settings";
 import { ApiSettings } from "@/components/settings/api-settings";
+import { RoleManager } from "@/components/settings/role-manager";
 
 const NOTIFICATION_TOGGLES = [
   {
@@ -622,18 +623,18 @@ export default function SettingsPage() {
           </div>
           <button
             role="switch"
-            aria-checked={aiConsent.hasConsented}
+            aria-checked={aiConsent.hasConsent}
             disabled={aiConsent.isAccepting || aiConsent.isRevoking}
             onClick={() => {
-              if (aiConsent.hasConsented) {
+              if (aiConsent.hasConsent) {
                 aiConsent.revoke();
               } else {
-                aiConsent.accept();
+                aiConsent.accept(["chat_analysis", "risk_scoring", "report_generation", "content_suggestions"]);
               }
             }}
             className={cn(
               "relative w-10 h-6 rounded-full transition-colors shrink-0",
-              aiConsent.hasConsented ? "bg-primary" : "bg-muted-foreground/30",
+              aiConsent.hasConsent ? "bg-primary" : "bg-muted-foreground/30",
               (aiConsent.isAccepting || aiConsent.isRevoking) &&
                 "opacity-50 cursor-not-allowed",
             )}
@@ -641,7 +642,7 @@ export default function SettingsPage() {
             <span
               className={cn(
                 "absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform shadow-sm",
-                aiConsent.hasConsented && "translate-x-4",
+                aiConsent.hasConsent && "translate-x-4",
               )}
             />
           </button>
@@ -675,6 +676,13 @@ export default function SettingsPage() {
           ))}
         </div>
       </div>
+
+      {/* Custom Roles (admin only) */}
+      {isAdmin && (
+        <div className="bg-white rounded-[14px] border border-border p-6">
+          <RoleManager />
+        </div>
+      )}
 
       {/* Branding (admin only) */}
       {isAdmin && <BrandingSettings />}

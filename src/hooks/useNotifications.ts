@@ -3,7 +3,10 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import type { Notification } from "@/types/database";
 import { useNotificationStore } from "@/stores/notification-store";
-import { playNotificationSound } from "@/lib/notification-sound";
+import {
+  playNotificationSound,
+  getSoundTypeForNotification,
+} from "@/lib/notification-sounds";
 import { toast } from "sonner";
 import { useDndMode } from "./use-dnd-mode";
 
@@ -72,9 +75,13 @@ export function useNotifications(userId: string | undefined) {
               description: notification.body ?? undefined,
             });
 
-            // Play notification sound if enabled
+            // Play differentiated notification sound
             if (prefsRef.current?.sound_enabled !== false) {
-              playNotificationSound();
+              const soundType = getSoundTypeForNotification(
+                notification.type,
+                notification.category,
+              );
+              playNotificationSound(soundType);
             }
           }
         },
@@ -94,9 +101,10 @@ export function useMarkAsRead() {
 
   return useMutation({
     mutationFn: async (id: string) => {
+      const now = new Date().toISOString();
       const { error } = await supabase
         .from("notifications")
-        .update({ is_read: true })
+        .update({ is_read: true, read_at: now, opened_at: now })
         .eq("id", id);
       if (error) throw error;
     },
@@ -111,11 +119,33 @@ export function useMarkAllAsRead() {
 
   return useMutation({
     mutationFn: async (userId: string) => {
+      const now = new Date().toISOString();
       const { error } = await supabase
         .from("notifications")
-        .update({ is_read: true })
+        .update({ is_read: true, read_at: now, opened_at: now })
         .eq("user_id", userId)
         .eq("is_read", false);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+    },
+  });
+}
+
+/**
+ * Track a click on a notification (for analytics).
+ */
+export function useTrackNotificationClick() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const now = new Date().toISOString();
+      const { error } = await supabase
+        .from("notifications")
+        .update({ clicked_at: now })
+        .eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {

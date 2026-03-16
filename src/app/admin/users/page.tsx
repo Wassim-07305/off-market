@@ -12,11 +12,13 @@ import {
   Loader2,
   ChevronDown,
   CheckSquare,
+  UserX,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getInitials, formatDate } from "@/lib/utils";
 import { useUserManagement } from "@/hooks/use-user-management";
 import { UserOffboardingModal } from "@/components/admin/user-offboarding-modal";
+import { OffboardingWizard } from "@/components/settings/offboarding-wizard";
 import { ROLE_OPTIONS } from "@/types/invitations";
 import type { Profile } from "@/types/database";
 import { motion } from "framer-motion";
@@ -33,6 +35,7 @@ export default function UsersPage() {
     (Profile & { is_archived?: boolean }) | null
   >(null);
   const [editingRoleId, setEditingRoleId] = useState<string | null>(null);
+  const [showOffboardingWizard, setShowOffboardingWizard] = useState(false);
 
   const { users, isLoading, changeUserRole, archiveUser, restoreUser } =
     useUserManagement();
@@ -138,6 +141,13 @@ export default function UsersPage() {
             </p>
           </div>
         </div>
+        <button
+          onClick={() => setShowOffboardingWizard(true)}
+          className="h-10 px-4 rounded-xl bg-[#DC2626] text-white text-sm font-medium hover:bg-[#DC2626]/90 transition-all active:scale-[0.98] flex items-center gap-2"
+        >
+          <UserX className="w-4 h-4" />
+          Offboarding
+        </button>
       </div>
 
       {/* Filters */}
@@ -439,11 +449,18 @@ export default function UsersPage() {
         </div>
       )}
 
-      {/* Offboarding modal */}
+      {/* Offboarding modal (quick, per-user) */}
       <UserOffboardingModal
         open={!!offboardingUser}
         onClose={() => setOffboardingUser(null)}
         user={offboardingUser}
+      />
+
+      {/* Offboarding wizard (full workflow with data transfer) */}
+      <OffboardingWizard
+        open={showOffboardingWizard}
+        onClose={() => setShowOffboardingWizard(false)}
+        users={users}
       />
     </motion.div>
   );

@@ -3,9 +3,10 @@
 import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import { useAuth } from "@/hooks/use-auth";
 import { useValidateInviteCode } from "@/hooks/use-invitations";
+import { useBrandingContext } from "@/components/providers/branding-provider";
+import { colorVariants } from "@/hooks/use-branding";
 import { ROLE_OPTIONS } from "@/types/invitations";
 import { toast } from "sonner";
 import { Loader2, Eye, EyeOff, AlertCircle, ShieldCheck } from "lucide-react";
@@ -30,6 +31,9 @@ function RegisterContent() {
   const code = searchParams.get("code");
   const { data: invite, isLoading: validating } = useValidateInviteCode(code);
   const { signUp } = useAuth();
+  const { branding } = useBrandingContext();
+  const primaryColor = branding?.primary_color ?? "#DC2626";
+  const brandVariants = colorVariants(primaryColor);
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -128,18 +132,9 @@ function RegisterContent() {
 
   return (
     <div className="animate-fade-in">
-      <div className="text-center mb-8">
-        <Image
-          src="/logo.png"
-          alt="Off Market"
-          width={72}
-          height={72}
-          className="mx-auto mb-4 rounded-2xl"
-          style={{ filter: "drop-shadow(0 0 20px rgba(196, 30, 58, 0.3))" }}
-          priority
-        />
-        <h1 className="text-4xl text-white mb-2 font-display font-bold tracking-tight">
-          Off Market
+      <div className="text-center mb-8 hidden lg:block">
+        <h1 className="text-2xl text-white mb-2 font-display font-bold tracking-tight">
+          Inscription
         </h1>
         <p className="text-white/40 text-sm">Finalisez votre inscription</p>
       </div>
@@ -214,10 +209,10 @@ function RegisterContent() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full h-11 bg-primary hover:bg-primary-hover text-white font-medium rounded-xl transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm mt-6"
+            className="w-full h-11 text-white font-medium rounded-xl transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm mt-6"
             style={{
-              boxShadow:
-                "0 0 20px rgba(196, 30, 58, 0.25), 0 4px 12px rgba(0, 0, 0, 0.3)",
+              backgroundColor: primaryColor,
+              boxShadow: brandVariants.glow + ", 0 4px 12px rgba(0, 0, 0, 0.3)",
             }}
           >
             {loading && <Loader2 className="w-4 h-4 animate-spin" />}

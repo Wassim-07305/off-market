@@ -4,7 +4,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 import { cn } from "@/lib/utils";
-import { DollarSign, Phone, Users, Activity, BarChart3 } from "lucide-react";
+import { DollarSign, Phone, Users, Activity, BarChart3, Bell } from "lucide-react";
 import { PeriodSelector } from "@/components/analytics/period-selector";
 import { FinancialTab } from "@/components/analytics/financial-tab";
 import { CallsTab } from "@/components/analytics/calls-tab";
@@ -13,6 +13,7 @@ import { EngagementTab } from "@/components/analytics/engagement-tab";
 import { AnalyticsActivityHeatmap } from "@/components/analytics/activity-heatmap";
 import { AnalyticsPeriodComparison } from "@/components/analytics/period-comparison";
 import { ClosingRateChart } from "@/components/analytics/closing-rate-chart";
+import { NotificationAnalytics } from "@/components/analytics/notification-analytics";
 import { ReportExportButton } from "@/components/analytics/report-export";
 import {
   periodToDateRange,
@@ -28,6 +29,7 @@ type AnalyticsTab =
   | "appels"
   | "pipeline"
   | "engagement"
+  | "notifications"
   | "avance";
 
 const TABS: { value: AnalyticsTab; label: string; icon: typeof DollarSign }[] =
@@ -36,6 +38,7 @@ const TABS: { value: AnalyticsTab; label: string; icon: typeof DollarSign }[] =
     { value: "appels", label: "Appels", icon: Phone },
     { value: "pipeline", label: "Pipeline", icon: Users },
     { value: "engagement", label: "Engagement", icon: Activity },
+    { value: "notifications", label: "Notifications", icon: Bell },
     { value: "avance", label: "Avance", icon: BarChart3 },
   ];
 
@@ -189,6 +192,16 @@ function useReportSections(
         },
       ];
     }
+    case "notifications": {
+      return [
+        {
+          title: "Notifications",
+          rows: [
+            { label: "Analytics notifications", value: "Voir ci-dessous" },
+          ],
+        },
+      ];
+    }
     case "avance": {
       return [
         {
@@ -274,6 +287,7 @@ export default function AnalyticsPage() {
         {activeTab === "appels" && <CallsTab range={range} />}
         {activeTab === "pipeline" && <PipelineTab />}
         {activeTab === "engagement" && <EngagementTab range={range} />}
+        {activeTab === "notifications" && <NotificationAnalytics />}
         {activeTab === "avance" && (
           <div className="space-y-6">
             <AnalyticsActivityHeatmap />

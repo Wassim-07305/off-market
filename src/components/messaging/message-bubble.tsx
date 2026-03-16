@@ -15,6 +15,7 @@ import {
   Bookmark,
   AlertTriangle,
 } from "lucide-react";
+import { AiResponseBadge } from "@/components/ai/ai-response-badge";
 import type { EnrichedMessage } from "@/types/messaging";
 
 interface MessageBubbleProps {
@@ -198,6 +199,11 @@ export function MessageBubble({
           </div>
         ) : (
           <MessageContent message={message} />
+        )}
+
+        {/* AI response label */}
+        {message.is_ai_generated && (
+          <AiResponseBadge />
         )}
 
         {/* Reactions */}

@@ -16,9 +16,11 @@ import type { Lesson, LessonAttachment } from "@/types/database";
 import type { QuizConfig } from "@/types/quiz";
 import DOMPurify from "dompurify";
 import { QuizPlayer } from "@/components/school/quiz-player";
+import { AudioPlayer } from "@/components/school/audio-player";
 import { AssignmentSubmission } from "@/components/school/assignment-submission";
 import { ExerciseReview } from "@/components/school/exercise-review";
 import { QuizExerciseStats } from "@/components/school/quiz-exercise-stats";
+import { EmbedViewer } from "@/components/school/embed-viewer";
 import { useAuth } from "@/hooks/use-auth";
 import {
   ArrowLeft,
@@ -200,11 +202,13 @@ export default function LessonPage({
 
   const content = lesson.content as Record<string, string>;
   const videoUrl = lesson.video_url ?? content?.video_url ?? content?.url;
+  const audioUrl = lesson.audio_url ?? content?.audio_url;
   const youtubeId = videoUrl ? getYouTubeId(videoUrl) : null;
   const vimeoId = videoUrl && !youtubeId ? getVimeoId(videoUrl) : null;
   const loomId =
     videoUrl && !youtubeId && !vimeoId ? getLoomId(videoUrl) : null;
   const isDirectVideo = videoUrl && !youtubeId && !vimeoId && !loomId;
+  const isAudioLesson = lesson.content_type === "audio" && audioUrl;
 
   const htmlContent = lesson.content_html ?? content?.html;
   const attachments = (lesson.attachments ?? []) as LessonAttachment[];
@@ -348,6 +352,26 @@ export default function LessonPage({
           </div>
         )}
 
+        {/* Audio/Podcast player */}
+        {isAudioLesson && (
+          <div className="mb-6">
+            <AudioPlayer
+              audioUrl={audioUrl}
+              title={lesson.title}
+              onComplete={() => {
+                if (!isCompleted && !autoCompleted) {
+                  setAutoCompleted(true);
+                  markComplete.mutate(lessonId, {
+                    onSuccess: () =>
+                      toast.success("Lecon completee automatiquement !"),
+                  });
+                }
+              }}
+              autoCompletePercent={90}
+            />
+          </div>
+        )}
+
         {/* HTML content */}
         {lesson.content_type === "text" && htmlContent && (
           <div
@@ -383,6 +407,17 @@ export default function LessonPage({
               toast.success("Exercice soumis ! Lecon marquee comme completee.");
             }}
           />
+        )}
+
+        {/* Embed externe */}
+        {lesson.content_type === "embed" && lesson.embed_url && (
+          <div className="mb-6">
+            <EmbedViewer
+              url={lesson.embed_url}
+              embedType={lesson.embed_type}
+              title={lesson.title}
+            />
+          </div>
         )}
 
         {/* Coach/Admin: Quiz & Exercise Stats */}

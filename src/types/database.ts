@@ -271,6 +271,10 @@ export interface Profile {
   onboarding_offer_id: string | null;
   onboarding_answers: Record<string, string> | null;
   onboarding_completed_at: string | null;
+  ai_consent_given_at: string | null;
+  ai_consent_scope: string[];
+  leaderboard_anonymous: boolean;
+  anonymous_alias: string | null;
   last_seen_at: string | null;
   created_at: string;
   updated_at: string;
@@ -396,6 +400,7 @@ export interface Message {
   is_urgent: boolean;
   reply_count: number;
   scheduled_at: string | null;
+  is_ai_generated: boolean;
   metadata: Record<string, unknown>;
   created_at: string;
   updated_at: string;
@@ -458,16 +463,22 @@ export interface LessonAttachment {
   type: string;
 }
 
+export type EmbedType = "figma" | "miro" | "google_docs" | "canva" | "notion" | "generic";
+
 export interface Lesson {
   id: string;
   module_id: string;
   title: string;
   description: string | null;
-  content_type: "video" | "text" | "pdf" | "quiz" | "assignment";
+  content_type: "video" | "text" | "pdf" | "quiz" | "assignment" | "audio" | "embed";
   content: Record<string, unknown>;
   video_url: string | null;
+  audio_url: string | null;
+  audio_duration: number | null;
   content_html: string | null;
   attachments: LessonAttachment[];
+  embed_url: string | null;
+  embed_type: EmbedType | null;
   sort_order: number;
   estimated_duration: number | null;
   is_preview: boolean;
@@ -496,6 +507,33 @@ export interface LessonComment {
   reply_to: string | null;
   created_at: string;
   author?: Profile;
+}
+
+export type FormTemplateCategory =
+  | "onboarding"
+  | "feedback"
+  | "evaluation"
+  | "intake"
+  | "survey";
+
+export interface FormTemplate {
+  id: string;
+  name: string;
+  description: string | null;
+  category: FormTemplateCategory;
+  thumbnail_emoji: string;
+  fields: Array<{
+    field_type: string;
+    label: string;
+    description: string;
+    placeholder: string;
+    is_required: boolean;
+    options: Array<{ label: string; value: string }>;
+    sort_order: number;
+  }>;
+  is_system: boolean;
+  created_by: string | null;
+  created_at: string;
 }
 
 export interface Form {
@@ -575,6 +613,8 @@ export type NotificationCategory =
   | "gamification"
   | "system";
 
+export type NotificationPriority = "critical" | "high" | "normal" | "low";
+
 export interface Notification {
   id: string;
   recipient_id: string;
@@ -587,7 +627,29 @@ export interface Notification {
   category: NotificationCategory;
   action_url: string | null;
   is_archived: boolean;
+  priority: NotificationPriority;
+  batched_at: string | null;
+  batch_id: string | null;
+  delivered_at: string | null;
+  opened_at: string | null;
+  clicked_at: string | null;
   created_at: string;
+}
+
+export type BatchFrequency = "instant" | "hourly" | "daily";
+export type PriorityThreshold = "all" | "high" | "critical";
+
+export interface NotificationPreferences {
+  id: string;
+  user_id: string;
+  quiet_hours_start: string;
+  quiet_hours_end: string;
+  batch_frequency: BatchFrequency;
+  priority_threshold: PriorityThreshold;
+  email_digest: boolean;
+  push_enabled: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Certificate {
@@ -620,6 +682,26 @@ export interface Resource {
   created_at: string;
   updated_at: string;
   uploader?: Profile;
+}
+
+export type AiReportType = "weekly_coaching" | "monthly_performance" | "client_risk";
+
+export type AiConsentScope =
+  | "chat_analysis"
+  | "risk_scoring"
+  | "report_generation"
+  | "content_suggestions";
+
+export interface AiReport {
+  id: string;
+  user_id: string;
+  type: AiReportType;
+  title: string;
+  content: string;
+  data: Record<string, unknown>;
+  generated_at: string;
+  read_at: string | null;
+  created_at: string;
 }
 
 export interface AIConversation {
@@ -773,6 +855,24 @@ export interface WorkbookSubmission {
   client?: Profile;
 }
 
+export type VideoResponseRelatedType = "call" | "coaching_session" | "question";
+
+export interface VideoResponse {
+  id: string;
+  sender_id: string;
+  recipient_id: string;
+  related_type: VideoResponseRelatedType;
+  related_id: string | null;
+  video_url: string;
+  thumbnail_url: string | null;
+  duration: number | null;
+  message: string | null;
+  viewed_at: string | null;
+  created_at: string;
+  sender?: Profile;
+  recipient?: Profile;
+}
+
 export type CallDocumentType =
   | "transcript_fusion"
   | "summary"
@@ -788,6 +888,53 @@ export interface CallDocument {
   generated_by: string;
   model: string | null;
   created_at: string;
+}
+
+// ---------------------------------------------------------------------------
+// Custom Roles
+// ---------------------------------------------------------------------------
+
+export interface CustomRole {
+  id: string;
+  name: string;
+  description: string | null;
+  permissions: string[]; // array of module slugs
+  color: string;
+  icon: string;
+  is_system: boolean;
+  is_active: boolean;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+  user_count?: number;
+}
+
+// ---------------------------------------------------------------------------
+// Offboarding
+// ---------------------------------------------------------------------------
+
+export type OffboardingStatus = "pending" | "in_progress" | "completed" | "cancelled";
+
+export interface OffboardingDataActions {
+  transfer_clients: boolean;
+  transfer_channels: boolean;
+  archive_messages: boolean;
+  export_data: boolean;
+}
+
+export interface OffboardingRequest {
+  id: string;
+  user_id: string;
+  status: OffboardingStatus;
+  transfer_to_id: string | null;
+  reason: string | null;
+  requested_by: string;
+  data_actions: OffboardingDataActions;
+  completed_at: string | null;
+  created_at: string;
+  user?: Profile;
+  transfer_to?: Profile;
+  requested_by_profile?: Profile;
 }
 
 // Supabase Database type map
@@ -907,6 +1054,11 @@ export interface Database {
         };
         Update: Partial<LessonComment>;
       };
+      form_templates: {
+        Row: FormTemplate;
+        Insert: Partial<FormTemplate> & { name: string; category: string };
+        Update: Partial<FormTemplate>;
+      };
       forms: {
         Row: Form;
         Insert: Partial<Form> & { title: string; created_by: string };
@@ -934,6 +1086,21 @@ export interface Database {
           title: string;
         };
         Update: Partial<Notification>;
+      };
+      notification_preferences: {
+        Row: NotificationPreferences;
+        Insert: Partial<NotificationPreferences> & { user_id: string };
+        Update: Partial<NotificationPreferences>;
+      };
+      ai_reports: {
+        Row: AiReport;
+        Insert: Partial<AiReport> & {
+          user_id: string;
+          type: string;
+          title: string;
+          content: string;
+        };
+        Update: Partial<AiReport>;
       };
       ai_conversations: {
         Row: AIConversation;

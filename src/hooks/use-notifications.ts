@@ -5,10 +5,8 @@ import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
 import { useEffect, useRef } from "react";
 import type { Notification, NotificationCategory } from "@/types/database";
-import {
-  useNotificationSound,
-  isUrgentNotification,
-} from "./use-notification-sound";
+import { useNotificationSound } from "./use-notification-sound";
+import { getSoundTypeForNotification } from "@/lib/notification-sounds";
 
 interface UseNotificationsOptions {
   category?: NotificationCategory;
@@ -19,9 +17,9 @@ export function useNotifications(options?: UseNotificationsOptions) {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const category = options?.category;
-  const { playSound } = useNotificationSound();
-  const playSoundRef = useRef(playSound);
-  playSoundRef.current = playSound;
+  const { playSoundForNotification } = useNotificationSound();
+  const playSoundRef = useRef(playSoundForNotification);
+  playSoundRef.current = playSoundForNotification;
 
   const notificationsQuery = useQuery({
     queryKey: ["notifications", { category }],
@@ -61,14 +59,10 @@ export function useNotifications(options?: UseNotificationsOptions) {
         (payload) => {
           queryClient.invalidateQueries({ queryKey: ["notifications"] });
 
-          // Jouer un son uniquement pour les nouvelles notifications (INSERT)
+          // Jouer un son differencie selon le type de notification
           if (payload.eventType === "INSERT") {
             const newNotif = payload.new as Notification;
-            const urgent = isUrgentNotification(
-              newNotif.type,
-              newNotif.category,
-            );
-            playSoundRef.current(urgent ? "urgent" : "normal");
+            playSoundRef.current(newNotif.type, newNotif.category);
           }
         },
       )

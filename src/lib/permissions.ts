@@ -86,3 +86,41 @@ export function getAccessibleModules(role: AppRole | null): Module[] {
     PERMISSIONS[module].includes(role),
   );
 }
+
+// ─── Custom role helpers (dynamic, DB-backed) ──────────────
+
+/**
+ * Check if a list of custom role permissions includes a given module.
+ * Falls back to the static PERMISSIONS matrix if no custom permissions provided.
+ */
+export function canAccessWithCustomRole(
+  role: AppRole | null,
+  module: Module,
+  customPermissions?: string[] | null,
+): boolean {
+  // If custom permissions are provided, use them
+  if (customPermissions && customPermissions.length > 0) {
+    return customPermissions.includes(module);
+  }
+  // Otherwise fall back to static matrix
+  return canAccess(role, module);
+}
+
+/**
+ * Get all accessible modules from custom permissions,
+ * falling back to the static matrix.
+ */
+export function getAccessibleModulesWithCustomRole(
+  role: AppRole | null,
+  customPermissions?: string[] | null,
+): Module[] {
+  if (customPermissions && customPermissions.length > 0) {
+    return customPermissions.filter((p) =>
+      (Object.keys(PERMISSIONS) as Module[]).includes(p as Module),
+    ) as Module[];
+  }
+  return getAccessibleModules(role);
+}
+
+/** All available modules (useful for role manager UI) */
+export const ALL_MODULE_SLUGS: Module[] = Object.keys(PERMISSIONS) as Module[];

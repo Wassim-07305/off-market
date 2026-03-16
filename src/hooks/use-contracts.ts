@@ -323,18 +323,20 @@ export function useContractRenewal() {
           start_date: newStartDate,
           end_date: endDate.toISOString().split("T")[0],
           renewal_of: contractId,
-        })
+        } as never)
         .select()
         .single();
       if (createError) throw createError;
 
+      const renewedContract = renewed as unknown as Contract;
+
       // Mark original as renewed
       await supabase
         .from("contracts")
-        .update({ status: "renewed" as ContractStatus, renewed_to: renewed.id })
+        .update({ status: "renewed" as ContractStatus, renewed_to: renewedContract.id } as never)
         .eq("id", contractId);
 
-      return renewed as Contract;
+      return renewedContract;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["contracts"] });

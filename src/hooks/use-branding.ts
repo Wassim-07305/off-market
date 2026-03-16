@@ -15,6 +15,9 @@ export interface BrandingSettings {
   accent_color_dark: string;
   font_family: string;
   border_radius: string;
+  tagline: string | null;
+  auth_background_url: string | null;
+  landing_enabled: boolean;
   updated_at: string;
   updated_by: string | null;
 }
@@ -29,6 +32,9 @@ const DEFAULTS: Omit<BrandingSettings, "id" | "updated_at" | "updated_by"> = {
   accent_color_dark: "#fb923c",
   font_family: "Inter",
   border_radius: "12",
+  tagline: null,
+  auth_background_url: null,
+  landing_enabled: false,
 };
 
 export function useBranding() {

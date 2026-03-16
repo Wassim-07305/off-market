@@ -10,10 +10,12 @@ export interface SavedSegment {
   name: string;
   description: string | null;
   filters: Record<string, unknown>;
+  color: string | null;
   created_by: string;
   is_shared: boolean;
   created_at: string;
   updated_at: string;
+  creator?: { full_name: string; avatar_url: string | null } | null;
 }
 
 export function useSavedSegments() {
@@ -24,13 +26,22 @@ export function useSavedSegments() {
     queryKey: ["saved-segments"],
     enabled: !!user,
     queryFn: async () => {
-      const { data, error } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data, error } = await (supabase as any)
         .from("saved_segments")
-        .select("*")
+        .select("*, creator:profiles!saved_segments_created_by_fkey(full_name, avatar_url)")
         .order("created_at", { ascending: false });
       if (error) {
-        console.warn("saved_segments query error:", error.message);
-        return [] as SavedSegment[];
+        // Fallback without join if FK not available
+        const { data: fallback, error: err2 } = await supabase
+          .from("saved_segments")
+          .select("*")
+          .order("created_at", { ascending: false });
+        if (err2) {
+          console.warn("saved_segments query error:", err2.message);
+          return [] as SavedSegment[];
+        }
+        return (fallback ?? []) as SavedSegment[];
       }
       return (data ?? []) as SavedSegment[];
     },
@@ -57,6 +68,7 @@ export function useCreateSegment() {
       description?: string;
       filters: Record<string, unknown>;
       is_shared?: boolean;
+      color?: string;
     }) => {
       if (!user) throw new Error("Non authentifie");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -127,4 +139,12 @@ export function useDeleteSegment() {
       toast.error("Erreur lors de la suppression");
     },
   });
+}
+
+export function useApplySegment(segmentId: string | null) {
+  const { segments } = useSavedSegments();
+  const segment = segmentId
+    ? segments.find((s) => s.id === segmentId) ?? null
+    : null;
+  return segment?.filters ?? null;
 }

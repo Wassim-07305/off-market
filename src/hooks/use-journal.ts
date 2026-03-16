@@ -5,7 +5,7 @@ import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
 import { useAwardXp } from "./use-auto-xp";
 import { toast } from "sonner";
-import type { JournalEntry, Mood } from "@/types/coaching";
+import type { JournalEntry, Mood, JournalAttachment } from "@/types/coaching";
 
 export function useJournal(options?: { sharedOnly?: boolean }) {
   const supabase = useSupabase();
@@ -45,6 +45,7 @@ export function useJournal(options?: { sharedOnly?: boolean }) {
       media_urls?: string[];
       shared_with_coach?: boolean;
       prompt_id?: string;
+      attachments?: JournalAttachment[];
     }) => {
       if (!user) throw new Error("Not authenticated");
       const { data, error } = await supabase

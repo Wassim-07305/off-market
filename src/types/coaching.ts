@@ -47,6 +47,13 @@ export const MOOD_CONFIG: Record<
 };
 
 // ─── JOURNAL ENTRIES ──────────────────
+export interface JournalAttachment {
+  url: string;
+  type: string;
+  name: string;
+  size: number;
+}
+
 export interface JournalEntry {
   id: string;
   author_id: string;
@@ -56,6 +63,10 @@ export interface JournalEntry {
   tags: string[];
   is_private: boolean;
   template: string | null;
+  media_urls?: string[];
+  shared_with_coach?: boolean;
+  prompt_id?: string | null;
+  attachments?: JournalAttachment[];
   created_at: string;
   updated_at: string;
 }

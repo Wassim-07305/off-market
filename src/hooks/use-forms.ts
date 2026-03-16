@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
 import { useAwardXp } from "./use-auto-xp";
+import { useFormSubmissionWebhook } from "./use-form-alerts";
 import { toast } from "sonner";
 import type { Form, FormField, FormSubmission } from "@/types/database";
 
@@ -78,6 +79,7 @@ export function useFormMutations() {
   const supabase = useSupabase();
   const queryClient = useQueryClient();
   const awardXp = useAwardXp();
+  const { checkSubmission } = useFormSubmissionWebhook();
 
   const createForm = useMutation({
     mutationFn: async (form: {
@@ -159,6 +161,12 @@ export function useFormMutations() {
       awardXp.mutate({
         action: "complete_workbook",
         metadata: { form_id: variables.formId },
+      });
+
+      // Check for critical NPS/rating scores and create alerts
+      checkSubmission({
+        formId: variables.formId,
+        answers: variables.answers as Record<string, unknown>,
       });
     },
     onError: () => {

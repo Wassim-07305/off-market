@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 import { useFeed } from "@/hooks/use-feed";
 import { useAuth } from "@/hooks/use-auth";
 import { POST_TYPE_CONFIG } from "@/types/feed";
-import type { FeedPost, PostType } from "@/types/feed";
+import type { FeedPost, PostType, FeedSortMode } from "@/types/feed";
 import {
   Heart,
   MessageCircle,
@@ -16,20 +16,32 @@ import {
   MoreHorizontal,
   ChevronDown,
   ChevronUp,
+  Clock,
+  TrendingUp,
+  ThumbsUp,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { ReportButton } from "@/components/feed/report-modal";
 import { CommentThread } from "@/components/feed/comment-thread";
 import { TrendingSidebar } from "@/components/feed/trending-sidebar";
 
-const TYPE_FILTERS: { label: string; value: PostType | "all" | "trending" }[] =
-  [
-    { label: "Tout", value: "all" },
-    { label: "Victoires", value: "victory" },
-    { label: "Questions", value: "question" },
-    { label: "Experiences", value: "experience" },
-    { label: "General", value: "general" },
-    { label: "🔥 Tendances", value: "trending" },
-  ];
+const TYPE_FILTERS: { label: string; value: PostType | "all" }[] = [
+  { label: "Tout", value: "all" },
+  { label: "Victoires", value: "victory" },
+  { label: "Questions", value: "question" },
+  { label: "Experiences", value: "experience" },
+  { label: "General", value: "general" },
+];
+
+const SORT_OPTIONS: {
+  label: string;
+  value: FeedSortMode;
+  icon: typeof Clock;
+}[] = [
+  { label: "Recents", value: "recent", icon: Clock },
+  { label: "Tendances", value: "trending", icon: TrendingUp },
+  { label: "Plus aimes", value: "most_liked", icon: ThumbsUp },
+];
 
 function timeAgo(date: string) {
   const seconds = Math.floor((Date.now() - new Date(date).getTime()) / 1000);
@@ -48,27 +60,30 @@ function timeAgo(date: string) {
 
 export default function FeedPage() {
   const { user, profile } = useAuth();
-  const [typeFilter, setTypeFilter] = useState<PostType | "all" | "trending">(
-    "all",
-  );
-  const feedPostType =
-    typeFilter === "all" || typeFilter === "trending" ? undefined : typeFilter;
+  const [typeFilter, setTypeFilter] = useState<PostType | "all">("all");
+  const [sortMode, setSortMode] = useState<FeedSortMode>("recent");
+  const feedPostType = typeFilter === "all" ? undefined : typeFilter;
   const { posts, isLoading, createPost, deletePost, togglePin, toggleLike } =
-    useFeed(feedPostType);
-  const isTrending = typeFilter === "trending";
+    useFeed(feedPostType, sortMode);
 
   const isStaff = profile?.role === "admin" || profile?.role === "coach";
+
+  // Scroll to a specific post when clicking from trending sidebar
+  const scrollToPost = useCallback((postId: string) => {
+    const el = document.getElementById(`post-${postId}`);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+      el.classList.add("ring-2", "ring-primary/30");
+      setTimeout(() => el.classList.remove("ring-2", "ring-primary/30"), 2000);
+    }
+  }, []);
 
   return (
     <motion.div
       variants={staggerContainer}
       initial="hidden"
       animate="visible"
-      className={
-        isTrending
-          ? "max-w-5xl mx-auto space-y-8"
-          : "max-w-2xl mx-auto space-y-8"
-      }
+      className="max-w-5xl mx-auto space-y-8"
     >
       {/* Header */}
       <motion.div variants={staggerItem}>
@@ -80,46 +95,68 @@ export default function FeedPage() {
         </p>
       </motion.div>
 
-      {/* Composer */}
-      <motion.div variants={staggerItem}>
-        <PostComposer
-          onSubmit={(content, postType) =>
-            createPost.mutate({ content, post_type: postType })
-          }
-          isSubmitting={createPost.isPending}
-        />
-      </motion.div>
+      {/* Main layout: Feed + Sidebar */}
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6">
+        {/* Feed column */}
+        <div className="space-y-6">
+          {/* Composer */}
+          <motion.div variants={staggerItem}>
+            <PostComposer
+              onSubmit={(content, postType) =>
+                createPost.mutate({ content, post_type: postType })
+              }
+              isSubmitting={createPost.isPending}
+            />
+          </motion.div>
 
-      {/* Filters */}
-      <motion.div
-        variants={staggerItem}
-        className="flex gap-1.5 overflow-x-auto pb-1"
-      >
-        {TYPE_FILTERS.map((f) => (
-          <button
-            key={f.value}
-            onClick={() => setTypeFilter(f.value)}
-            className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
-              typeFilter === f.value
-                ? "bg-primary text-white"
-                : "bg-muted text-muted-foreground hover:text-foreground"
-            }`}
+          {/* Filters + Sort */}
+          <motion.div
+            variants={staggerItem}
+            className="flex flex-col sm:flex-row sm:items-center gap-3"
           >
-            {f.value !== "all" &&
-              f.value !== "trending" &&
-              `${POST_TYPE_CONFIG[f.value].emoji} `}
-            {f.label}
-          </button>
-        ))}
-      </motion.div>
+            {/* Type filters */}
+            <div className="flex gap-1.5 overflow-x-auto pb-1 flex-1">
+              {TYPE_FILTERS.map((f) => (
+                <button
+                  key={f.value}
+                  onClick={() => setTypeFilter(f.value)}
+                  className={cn(
+                    "px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all",
+                    typeFilter === f.value
+                      ? "bg-[#DC2626] text-white"
+                      : "bg-muted text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  {f.value !== "all" && `${POST_TYPE_CONFIG[f.value].emoji} `}
+                  {f.label}
+                </button>
+              ))}
+            </div>
 
-      {/* Posts + optional trending sidebar */}
-      <div
-        className={
-          isTrending ? "grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6" : ""
-        }
-      >
-        <div>
+            {/* Sort controls */}
+            <div className="flex items-center gap-1 bg-muted/50 rounded-xl p-0.5 flex-shrink-0">
+              {SORT_OPTIONS.map((opt) => {
+                const Icon = opt.icon;
+                return (
+                  <button
+                    key={opt.value}
+                    onClick={() => setSortMode(opt.value)}
+                    className={cn(
+                      "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all",
+                      sortMode === opt.value
+                        ? "bg-white text-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground",
+                    )}
+                  >
+                    <Icon className="w-3 h-3" />
+                    {opt.label}
+                  </button>
+                );
+              })}
+            </div>
+          </motion.div>
+
+          {/* Posts list */}
           {isLoading ? (
             <div className="space-y-4">
               {[...Array(3)].map((_, i) => (
@@ -156,11 +193,13 @@ export default function FeedPage() {
                 {posts.map((post) => (
                   <motion.div
                     key={post.id}
+                    id={`post-${post.id}`}
                     layout
                     variants={staggerItem}
                     initial="hidden"
                     animate="visible"
                     exit="hidden"
+                    className="transition-all duration-300 rounded-[14px]"
                   >
                     <PostCard
                       post={post}
@@ -187,14 +226,12 @@ export default function FeedPage() {
           )}
         </div>
 
-        {/* Trending sidebar (visible only on Tendances tab) */}
-        {isTrending && (
-          <div className="hidden lg:block">
-            <div className="sticky top-6">
-              <TrendingSidebar />
-            </div>
+        {/* Trending sidebar (always visible on desktop) */}
+        <div className="hidden lg:block">
+          <div className="sticky top-6">
+            <TrendingSidebar onPostClick={scrollToPost} />
           </div>
-        )}
+        </div>
       </div>
     </motion.div>
   );
@@ -259,7 +296,7 @@ function PostComposer({
           <button
             onClick={handleSubmit}
             disabled={!content.trim() || isSubmitting}
-            className="h-8 px-4 bg-primary text-white rounded-[10px] text-xs font-medium hover:bg-primary-hover transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-1"
+            className="h-8 px-4 bg-[#DC2626] text-white rounded-[10px] text-xs font-medium hover:bg-[#B91C1C] transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-1"
           >
             <Send className="w-3 h-3" />
             {isSubmitting ? "..." : "Publier"}
@@ -376,7 +413,7 @@ function PostCard({
                           onDelete();
                           setShowMenu(false);
                         }}
-                        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-error hover:bg-muted transition-colors"
+                        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-500 hover:bg-muted transition-colors"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                         Supprimer

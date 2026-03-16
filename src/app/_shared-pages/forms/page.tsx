@@ -65,7 +65,7 @@ export default function FormsPage() {
         </div>
         {isStaff && (
           <Link
-            href={`${prefix}/forms/builder`}
+            href={`${prefix}/forms/new`}
             className="h-9 px-4 rounded-[10px] bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-all active:scale-[0.98] inline-flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
