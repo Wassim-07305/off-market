@@ -129,9 +129,9 @@ function AnimatedCounter({
 /*  Data                                                               */
 /* ------------------------------------------------------------------ */
 
-const ACCENT = "#F59E0B"; // amber-500
-const ACCENT_LIGHT = "#FBBF24"; // amber-400
-const ACCENT_GLOW = "rgba(245, 158, 11, 0.15)";
+const ACCENT = "#AF0000"; // Off-Market red
+const ACCENT_LIGHT = "#DC2626"; // red-600
+const ACCENT_GLOW = "rgba(175, 0, 0, 0.18)";
 
 const navLinks = [
   { label: "Fonctionnalites", href: "#features" },
@@ -151,7 +151,7 @@ const features = [
     icon: Users,
     title: "CRM & Pipeline",
     desc: "Fiches eleves, tags d'engagement, pipeline Kanban, alertes automatiques et suivi de progression en temps reel.",
-    gradient: "from-amber-500/20 to-amber-500/5",
+    gradient: "from-red-700/20 to-red-700/5",
   },
   {
     icon: GraduationCap,
@@ -312,12 +312,12 @@ function DashboardMockup() {
         <div className="grid grid-cols-12 gap-3 p-4">
           {/* Sidebar */}
           <div className="col-span-2 hidden space-y-2 lg:block">
-            <div className="h-3 w-16 rounded bg-amber-500/20" />
+            <div className="h-3 w-16 rounded bg-red-700/20" />
             <div className="mt-4 space-y-2">
               {[...Array(6)].map((_, i) => (
                 <div
                   key={i}
-                  className={`h-2.5 rounded ${i === 0 ? "w-full bg-amber-500/15" : "w-3/4 bg-white/[0.04]"}`}
+                  className={`h-2.5 rounded ${i === 0 ? "w-full bg-red-700/15" : "w-3/4 bg-white/[0.04]"}`}
                 />
               ))}
             </div>
@@ -340,7 +340,7 @@ function DashboardMockup() {
                     <div className="mt-1 flex items-center gap-1">
                       <div className="h-1 flex-1 rounded-full bg-white/[0.04]">
                         <div
-                          className="h-1 rounded-full bg-amber-500/40"
+                          className="h-1 rounded-full bg-red-700/40"
                           style={{ width: `${[85, 78, 65, 72][i]}%` }}
                         />
                       </div>
@@ -357,7 +357,7 @@ function DashboardMockup() {
                   Chiffre d&apos;affaires
                 </div>
                 <div className="flex gap-2">
-                  <div className="h-1.5 w-6 rounded bg-amber-500/30" />
+                  <div className="h-1.5 w-6 rounded bg-red-700/30" />
                   <div className="h-1.5 w-6 rounded bg-emerald-500/30" />
                 </div>
               </div>
@@ -366,7 +366,7 @@ function DashboardMockup() {
                   (h, i) => (
                     <div key={i} className="flex flex-1 flex-col gap-0.5">
                       <div
-                        className="rounded-t bg-amber-500/25 transition-all duration-500"
+                        className="rounded-t bg-red-700/25 transition-all duration-500"
                         style={{ height: `${h}%` }}
                       />
                     </div>
@@ -426,7 +426,7 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#0C0A09] text-white antialiased selection:bg-amber-500/20 selection:text-white">
+    <div className="min-h-screen bg-[#0C0A09] text-white antialiased selection:bg-red-700/20 selection:text-white">
       {/* Dot grid */}
       <div
         className="pointer-events-none fixed inset-0 z-0 opacity-[0.025]"
@@ -565,9 +565,9 @@ export default function LandingPage() {
             className="pointer-events-none absolute inset-0"
             aria-hidden="true"
           >
-            <div className="absolute left-1/2 top-0 h-[700px] w-[1000px] -translate-x-1/2 rounded-full bg-amber-500/[0.04] blur-[160px]" />
+            <div className="absolute left-1/2 top-0 h-[700px] w-[1000px] -translate-x-1/2 rounded-full bg-red-700/[0.04] blur-[160px]" />
             <div className="absolute right-1/4 top-1/4 h-[300px] w-[300px] rounded-full bg-orange-500/[0.02] blur-[100px]" />
-            <div className="absolute left-1/4 top-1/3 h-[250px] w-[250px] rounded-full bg-amber-400/[0.02] blur-[120px]" />
+            <div className="absolute left-1/4 top-1/3 h-[250px] w-[250px] rounded-full bg-red-600/[0.02] blur-[120px]" />
           </div>
 
           <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
@@ -755,7 +755,7 @@ export default function LandingPage() {
                     aria-hidden="true"
                   />
                   <div className="relative">
-                    <div className="mb-5 flex size-10 items-center justify-center rounded-lg bg-white/[0.06] text-white/70 transition-colors duration-300 group-hover:bg-amber-500/10 group-hover:text-amber-400">
+                    <div className="mb-5 flex size-10 items-center justify-center rounded-lg bg-white/[0.06] text-white/70 transition-colors duration-300 group-hover:bg-red-700/10 group-hover:text-red-400">
                       <feature.icon className="size-5" />
                     </div>
                     <h3 className="text-[15px] font-semibold tracking-tight">
@@ -815,7 +815,7 @@ export default function LandingPage() {
                   className="relative text-center"
                 >
                   <div className="mx-auto mb-6 flex size-14 items-center justify-center rounded-2xl border border-white/[0.06] bg-white/[0.03]">
-                    <step.icon className="size-6 text-amber-400/70" />
+                    <step.icon className="size-6 text-red-400/70" />
                   </div>
                   <div
                     className="mb-3 text-[12px] font-bold tracking-[0.2em]"
@@ -875,7 +875,7 @@ export default function LandingPage() {
                   }`}
                   style={{ transitionDelay: `${i * 100}ms` }}
                 >
-                  <div className="mb-5 flex size-10 items-center justify-center rounded-lg bg-amber-500/10 text-amber-400">
+                  <div className="mb-5 flex size-10 items-center justify-center rounded-lg bg-red-700/10 text-red-400">
                     <vp.icon className="size-5" />
                   </div>
                   <h3 className="text-lg font-semibold tracking-tight">
@@ -890,7 +890,7 @@ export default function LandingPage() {
                         key={item}
                         className="flex items-start gap-2.5 text-[13px] text-white/55"
                       >
-                        <Check className="mt-0.5 size-3.5 shrink-0 text-amber-400/60" />
+                        <Check className="mt-0.5 size-3.5 shrink-0 text-red-400/60" />
                         {item}
                       </li>
                     ))}
@@ -941,7 +941,7 @@ export default function LandingPage() {
                   style={{ transitionDelay: `${i * 100}ms` }}
                 >
                   {/* Metric badge */}
-                  <div className="mb-5 inline-flex items-center gap-1.5 rounded-full border border-amber-500/10 bg-amber-500/[0.06] px-3 py-1 text-[12px] font-medium text-amber-400/80">
+                  <div className="mb-5 inline-flex items-center gap-1.5 rounded-full border border-red-700/10 bg-red-700/[0.06] px-3 py-1 text-[12px] font-medium text-red-400/80">
                     <TrendingUp className="size-3" />
                     {t.metric}
                   </div>
@@ -950,7 +950,7 @@ export default function LandingPage() {
                     {Array.from({ length: t.rating }).map((_, idx) => (
                       <Star
                         key={idx}
-                        className="size-3.5 fill-amber-400/80 text-amber-400/80"
+                        className="size-3.5 fill-red-400/80 text-red-400/80"
                       />
                     ))}
                   </div>
@@ -998,7 +998,7 @@ export default function LandingPage() {
             className="relative mx-auto max-w-2xl px-4 text-center sm:px-6 lg:px-8"
           >
             <div className="mb-6 inline-flex items-center justify-center">
-              <Sparkles className="size-6 text-amber-400/60" />
+              <Sparkles className="size-6 text-red-400/60" />
             </div>
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
               Pret a offrir une experience
