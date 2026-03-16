@@ -138,6 +138,14 @@ function getDefaultDateRange(): { from: string; to: string } {
   };
 }
 
+const MOOD_BORDER_COLORS: Record<number, string> = {
+  1: "border-l-red-400",
+  2: "border-l-orange-400",
+  3: "border-l-amber-400",
+  4: "border-l-emerald-400",
+  5: "border-l-green-500",
+};
+
 export default function JournalPage() {
   const { entries, isLoading, createEntry, updateEntry, deleteEntry } =
     useJournal();
@@ -223,7 +231,7 @@ export default function JournalPage() {
         className="flex items-center justify-between"
       >
         <div>
-          <h1 className="text-2xl font-display font-bold text-foreground tracking-tight">
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-[#AF0000] via-[#DC2626] to-[#AF0000] bg-clip-text text-transparent tracking-tight">
             Journal
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
@@ -252,7 +260,7 @@ export default function JournalPage() {
               setEditingEntry(null);
               setShowComposer(true);
             }}
-            className="h-9 px-4 bg-[#DC2626] text-white rounded-xl text-sm font-medium hover:bg-[#DC2626]/90 transition-all active:scale-[0.98] flex items-center gap-2"
+            className="h-9 px-4 bg-gradient-to-r from-[#AF0000] to-[#DC2626] text-white rounded-xl text-sm font-medium hover:opacity-90 transition-all active:scale-[0.98] shadow-sm shadow-[#AF0000]/20 flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
             Ecrire
@@ -268,10 +276,12 @@ export default function JournalPage() {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
           >
-            <div className="bg-white rounded-[14px] border border-border p-5 space-y-4">
+            <div className="bg-white rounded-2xl border border-border p-5 space-y-4 shadow-sm">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <FileDown className="w-4 h-4 text-[#DC2626]" />
+                  <div className="size-7 rounded-lg bg-gradient-to-br from-[#AF0000] to-[#DC2626] flex items-center justify-center">
+                    <FileDown className="w-3.5 h-3.5 text-white" />
+                  </div>
                   <h3 className="text-sm font-semibold text-foreground">
                     Exporter en PDF
                   </h3>
@@ -295,7 +305,7 @@ export default function JournalPage() {
                       type="date"
                       value={exportFrom}
                       onChange={(e) => setExportFrom(e.target.value)}
-                      className="w-full h-9 pl-9 pr-3 rounded-xl bg-muted/50 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-[#DC2626]/20 transition-shadow"
+                      className="w-full h-9 pl-9 pr-3 rounded-xl bg-muted/50 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20 transition-shadow"
                     />
                   </div>
                 </div>
@@ -309,7 +319,7 @@ export default function JournalPage() {
                       type="date"
                       value={exportTo}
                       onChange={(e) => setExportTo(e.target.value)}
-                      className="w-full h-9 pl-9 pr-3 rounded-xl bg-muted/50 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-[#DC2626]/20 transition-shadow"
+                      className="w-full h-9 pl-9 pr-3 rounded-xl bg-muted/50 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20 transition-shadow"
                     />
                   </div>
                 </div>
@@ -317,7 +327,7 @@ export default function JournalPage() {
                   <button
                     onClick={handleExportPdf}
                     disabled={isExporting}
-                    className="h-9 px-4 bg-[#DC2626] text-white rounded-xl text-xs font-medium hover:bg-[#DC2626]/90 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-2"
+                    className="h-9 px-4 bg-gradient-to-r from-[#AF0000] to-[#DC2626] text-white rounded-xl text-xs font-medium hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-50 shadow-sm shadow-[#AF0000]/20 flex items-center gap-2"
                   >
                     {isExporting ? (
                       <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -335,27 +345,32 @@ export default function JournalPage() {
 
       {/* Stats */}
       <motion.div variants={staggerItem} className="grid grid-cols-3 gap-3">
-        <div className="bg-white rounded-[14px] border border-border p-4 text-center">
-          <FileText className="w-4 h-4 text-[#DC2626] mx-auto mb-1.5" />
-          <p className="text-lg font-display font-bold text-foreground">
-            {totalEntries}
-          </p>
+        <div className="relative overflow-hidden bg-gradient-to-br from-red-50/60 to-white rounded-2xl border border-red-200/30 p-4 text-center transition-all hover:shadow-md hover:shadow-[#AF0000]/5">
+          <div className="absolute top-0 right-0 w-12 h-12 bg-gradient-to-bl from-red-100/30 to-transparent rounded-bl-full" />
+          <div className="size-8 rounded-xl bg-gradient-to-br from-[#AF0000] to-[#DC2626] flex items-center justify-center mx-auto mb-2 shadow-sm shadow-[#AF0000]/20">
+            <FileText className="w-3.5 h-3.5 text-white" />
+          </div>
+          <p className="text-lg font-bold text-foreground">{totalEntries}</p>
           <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
             Entrees
           </p>
         </div>
-        <div className="bg-white rounded-[14px] border border-border p-4 text-center">
-          <Flame className="w-4 h-4 text-orange-500 mx-auto mb-1.5" />
-          <p className="text-lg font-display font-bold text-foreground">
-            {streak}
-          </p>
+        <div className="relative overflow-hidden bg-gradient-to-br from-orange-50/60 to-white rounded-2xl border border-orange-200/30 p-4 text-center transition-all hover:shadow-md hover:shadow-orange-500/5">
+          <div className="absolute top-0 right-0 w-12 h-12 bg-gradient-to-bl from-orange-100/30 to-transparent rounded-bl-full" />
+          <div className="size-8 rounded-xl bg-gradient-to-br from-orange-400 to-orange-500 flex items-center justify-center mx-auto mb-2 shadow-sm shadow-orange-500/20">
+            <Flame className="w-3.5 h-3.5 text-white" />
+          </div>
+          <p className="text-lg font-bold text-foreground">{streak}</p>
           <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
             Jours de suite
           </p>
         </div>
-        <div className="bg-white rounded-[14px] border border-border p-4 text-center">
-          <TrendingUp className="w-4 h-4 text-emerald-500 mx-auto mb-1.5" />
-          <p className="text-lg font-display font-bold text-foreground">
+        <div className="relative overflow-hidden bg-gradient-to-br from-emerald-50/60 to-white rounded-2xl border border-emerald-200/30 p-4 text-center transition-all hover:shadow-md hover:shadow-emerald-500/5">
+          <div className="absolute top-0 right-0 w-12 h-12 bg-gradient-to-bl from-emerald-100/30 to-transparent rounded-bl-full" />
+          <div className="size-8 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center mx-auto mb-2 shadow-sm shadow-emerald-500/20">
+            <TrendingUp className="w-3.5 h-3.5 text-white" />
+          </div>
+          <p className="text-lg font-bold text-foreground">
             {moodTrend !== null ? `${moodTrend}/5` : "\u2014"}
           </p>
           <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
@@ -375,7 +390,7 @@ export default function JournalPage() {
       {!showComposer && !editingEntry && (
         <motion.div variants={staggerItem}>
           <p className="text-xs font-medium text-muted-foreground mb-2 flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5" />
+            <Sparkles className="w-3.5 h-3.5 text-[#AF0000]" />
             Demarrer avec un template
           </p>
           <div className="flex gap-2 overflow-x-auto pb-1">
@@ -388,7 +403,7 @@ export default function JournalPage() {
               <button
                 key={key}
                 onClick={() => startFromTemplate(key)}
-                className="flex items-center gap-2 h-8 px-3.5 rounded-full bg-white border border-border hover:border-[#DC2626]/30 hover:bg-[#DC2626]/5 transition-all text-xs font-medium text-foreground whitespace-nowrap shrink-0"
+                className="flex items-center gap-2 h-8 px-3.5 rounded-full bg-white border border-border hover:border-[#AF0000]/30 hover:bg-[#AF0000]/5 transition-all text-xs font-medium text-foreground whitespace-nowrap shrink-0"
               >
                 <span>{tpl.icon}</span>
                 {tpl.label}
@@ -476,7 +491,7 @@ export default function JournalPage() {
                 placeholder="Rechercher dans le journal..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full h-9 pl-9 pr-3 rounded-xl bg-muted/50 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#DC2626]/20 transition-shadow"
+                className="w-full h-9 pl-9 pr-3 rounded-xl bg-muted/50 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20 transition-shadow"
               />
             </div>
             <button
@@ -484,7 +499,7 @@ export default function JournalPage() {
               className={cn(
                 "h-9 px-3 rounded-xl border text-xs font-medium flex items-center gap-1.5 transition-all",
                 showFilters || filterMood !== "all"
-                  ? "border-[#DC2626] bg-[#DC2626]/5 text-[#DC2626]"
+                  ? "border-[#AF0000] bg-[#AF0000]/5 text-[#AF0000]"
                   : "border-border text-muted-foreground hover:text-foreground",
               )}
             >
@@ -524,13 +539,13 @@ export default function JournalPage() {
                         setFilterMood(filterMood === m ? "all" : m)
                       }
                       className={cn(
-                        "h-7 w-7 rounded-full flex items-center justify-center transition-all",
+                        "h-8 w-8 rounded-full flex items-center justify-center transition-all",
                         filterMood === m
-                          ? "bg-foreground text-background scale-110"
-                          : "bg-muted hover:scale-105",
+                          ? "bg-foreground text-background scale-110 shadow-md"
+                          : "bg-muted hover:scale-110",
                       )}
                     >
-                      <span className="text-sm">{MOOD_CONFIG[m].emoji}</span>
+                      <span className="text-base">{MOOD_CONFIG[m].emoji}</span>
                     </button>
                   ))}
                 </div>
@@ -554,7 +569,7 @@ export default function JournalPage() {
                         className={cn(
                           "h-6 px-2 rounded-full text-[10px] font-medium transition-all flex items-center gap-1",
                           search === `#${tag}`
-                            ? "bg-[#DC2626]/10 text-[#DC2626]"
+                            ? "bg-[#AF0000]/10 text-[#AF0000]"
                             : "bg-muted text-muted-foreground hover:text-foreground",
                         )}
                       >
@@ -576,14 +591,14 @@ export default function JournalPage() {
           {[...Array(3)].map((_, i) => (
             <div
               key={i}
-              className="h-28 bg-muted/50 rounded-[14px] animate-shimmer"
+              className="h-28 bg-muted/50 rounded-2xl animate-shimmer"
             />
           ))}
         </div>
       ) : filtered.length === 0 ? (
         <motion.div
           variants={staggerItem}
-          className="bg-white rounded-[14px] border border-border p-12 text-center"
+          className="bg-white rounded-2xl border border-border p-12 text-center"
         >
           <BookOpen className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
           <p className="text-sm text-muted-foreground">
@@ -597,7 +612,7 @@ export default function JournalPage() {
           {grouped.map((group) => (
             <div key={group.month}>
               <div className="flex items-center gap-2 mb-3">
-                <CalendarDays className="w-3.5 h-3.5 text-muted-foreground" />
+                <CalendarDays className="w-3.5 h-3.5 text-[#AF0000]" />
                 <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   {group.month}
                 </h3>
@@ -646,12 +661,19 @@ function JournalEntryCard({
 }) {
   const attachments = (entry.attachments ?? []) as JournalAttachment[];
   const hasAttachments = attachments.length > 0;
+  const moodBorder =
+    entry.mood && MOOD_BORDER_COLORS[entry.mood as number]
+      ? MOOD_BORDER_COLORS[entry.mood as number]
+      : "border-l-transparent";
 
   return (
     <div
       className={cn(
-        "bg-white rounded-[14px] border border-border group transition-all",
-        isExpanded ? "border-[#DC2626]/20" : "hover:border-[#DC2626]/10",
+        "bg-white rounded-2xl border border-border border-l-[3px] group transition-all duration-200",
+        moodBorder,
+        isExpanded
+          ? "border-[#AF0000]/20 shadow-md shadow-[#AF0000]/5"
+          : "hover:shadow-md hover:shadow-zinc-200/60 hover:-translate-y-0.5",
       )}
     >
       {/* Collapsed header */}
@@ -683,7 +705,7 @@ function JournalEntryCard({
           <div className="flex items-center gap-2 shrink-0 ml-3">
             {entry.mood && (
               <span
-                className="text-sm"
+                className="text-base bg-muted/50 rounded-full w-7 h-7 flex items-center justify-center"
                 title={MOOD_CONFIG[entry.mood as Mood]?.label}
               >
                 {MOOD_CONFIG[entry.mood as Mood]?.emoji}
@@ -715,7 +737,7 @@ function JournalEntryCard({
             {entry.tags.map((tag) => (
               <span
                 key={tag}
-                className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-muted text-muted-foreground"
+                className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#AF0000]/5 text-[#AF0000]"
               >
                 #{tag}
               </span>
@@ -734,7 +756,7 @@ function JournalEntryCard({
             transition={{ duration: 0.2 }}
           >
             <div className="px-5 pb-5 border-t border-border/50 pt-4">
-              <div className="bg-muted/30 rounded-[10px] p-4 mb-4">
+              <div className="bg-muted/30 rounded-xl p-4 mb-4">
                 <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
                   {entry.content}
                 </p>
@@ -759,7 +781,7 @@ function JournalEntryCard({
                       e.stopPropagation();
                       onEdit();
                     }}
-                    className="h-7 px-2.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all flex items-center gap-1.5"
+                    className="h-7 px-2.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-[#AF0000] hover:bg-[#AF0000]/5 transition-all flex items-center gap-1.5"
                   >
                     <Edit3 className="w-3 h-3" />
                     Modifier
@@ -871,9 +893,12 @@ function JournalComposer({
   const wordCount = content.trim().split(/\s+/).filter(Boolean).length;
 
   return (
-    <div className="bg-white rounded-[14px] border border-[#DC2626]/20 p-5 space-y-4">
+    <div className="bg-white rounded-2xl border border-[#AF0000]/20 p-5 space-y-4 shadow-sm shadow-[#AF0000]/5">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
+          <div className="size-7 rounded-lg bg-gradient-to-br from-[#AF0000] to-[#DC2626] flex items-center justify-center">
+            <BookOpen className="w-3.5 h-3.5 text-white" />
+          </div>
           <h3 className="text-sm font-semibold text-foreground">
             {isEditing ? "Modifier l'entree" : "Nouvelle entree"}
           </h3>
@@ -883,7 +908,7 @@ function JournalComposer({
             </span>
           )}
           {promptData && !tpl && (
-            <span className="text-xs px-2 py-0.5 rounded-full bg-[#DC2626]/10 text-[#DC2626]">
+            <span className="text-xs px-2 py-0.5 rounded-full bg-[#AF0000]/10 text-[#AF0000]">
               Depuis un prompt
             </span>
           )}
@@ -898,7 +923,7 @@ function JournalComposer({
 
       {/* Prompt text as inspiration */}
       {promptData && (
-        <div className="bg-[#DC2626]/5 border border-[#DC2626]/10 rounded-[10px] px-4 py-3">
+        <div className="bg-gradient-to-r from-[#AF0000]/5 to-[#DC2626]/5 border border-[#AF0000]/10 rounded-xl px-4 py-3">
           <p className="text-xs text-muted-foreground mb-1 font-medium">
             Prompt :
           </p>
@@ -907,7 +932,7 @@ function JournalComposer({
       )}
 
       {tpl && tpl.description && !promptData && (
-        <p className="text-xs text-muted-foreground italic bg-[#DC2626]/5 px-3 py-2 rounded-lg">
+        <p className="text-xs text-muted-foreground italic bg-[#AF0000]/5 px-3 py-2 rounded-lg">
           {tpl.description}
         </p>
       )}
@@ -917,7 +942,7 @@ function JournalComposer({
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         placeholder="Titre"
-        className="w-full h-10 px-4 bg-muted/50 border-0 rounded-[10px] text-sm font-medium text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#DC2626]/20"
+        className="w-full h-10 px-4 bg-muted/50 border-0 rounded-xl text-sm font-medium text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20"
         autoFocus
       />
 
@@ -927,7 +952,7 @@ function JournalComposer({
           onChange={(e) => setContent(e.target.value)}
           placeholder={promptData ? promptData.text : "Ecris tes pensees..."}
           rows={10}
-          className="w-full px-4 py-3 bg-muted/50 border-0 rounded-[10px] text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#DC2626]/20 resize-none leading-relaxed"
+          className="w-full px-4 py-3 bg-muted/50 border-0 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20 resize-none leading-relaxed"
         />
         <div className="absolute bottom-2 right-3 text-[10px] text-muted-foreground/40">
           {wordCount} mots | {content.length} car.
@@ -938,16 +963,16 @@ function JournalComposer({
       <JournalAttachments attachments={attachments} onChange={setAttachments} />
 
       {/* Mood */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-3">
         <span className="text-xs text-muted-foreground">Humeur :</span>
         {([1, 2, 3, 4, 5] as Mood[]).map((m) => (
           <button
             key={m}
             onClick={() => setMood(mood === m ? null : m)}
             className={cn(
-              "text-xl transition-all",
+              "text-2xl transition-all duration-200",
               mood === m
-                ? "scale-125"
+                ? "scale-125 drop-shadow-sm"
                 : "opacity-40 hover:opacity-80 hover:scale-110",
             )}
             title={MOOD_CONFIG[m].label}
@@ -965,7 +990,7 @@ function JournalComposer({
           value={tagsInput}
           onChange={(e) => setTagsInput(e.target.value)}
           placeholder="Tags (separes par des virgules)"
-          className="flex-1 h-9 px-3 bg-muted/50 border-0 rounded-[10px] text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#DC2626]/20"
+          className="flex-1 h-9 px-3 bg-muted/50 border-0 rounded-xl text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20"
         />
       </div>
 
@@ -990,7 +1015,7 @@ function JournalComposer({
         <button
           onClick={handleSubmit}
           disabled={!title.trim() || !content.trim() || isSubmitting}
-          className="h-9 px-4 bg-[#DC2626] text-white rounded-xl text-xs font-medium hover:bg-[#DC2626]/90 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-2"
+          className="h-9 px-4 bg-gradient-to-r from-[#AF0000] to-[#DC2626] text-white rounded-xl text-xs font-medium hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-50 shadow-sm shadow-[#AF0000]/20 flex items-center gap-2"
         >
           {isSubmitting ? (
             <Loader2 className="w-3.5 h-3.5 animate-spin" />

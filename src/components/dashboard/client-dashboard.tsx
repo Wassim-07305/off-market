@@ -54,14 +54,14 @@ export function ClientDashboard() {
       variants={staggerContainer}
       initial="hidden"
       animate="visible"
-      className="space-y-5"
+      className="space-y-6"
     >
       {/* Page title with greeting */}
       <motion.div variants={staggerItem}>
-        <h1 className="text-lg font-semibold text-foreground">
+        <h1 className="text-2xl font-bold bg-gradient-to-r from-[#AF0000] via-[#DC2626] to-[#AF0000] bg-clip-text text-transparent tracking-tight">
           {getGreeting()} {firstName} !
         </h1>
-        <p className="text-sm text-muted-foreground mt-0.5">
+        <p className="text-sm text-muted-foreground mt-1">
           Voici ton espace personnel — ta progression, tes prochaines etapes et
           ton activite.
         </p>
@@ -157,7 +157,7 @@ function TopStatsSection({ prefix }: { prefix: string }) {
         {Array.from({ length: 4 }).map((_, i) => (
           <div
             key={i}
-            className="bg-white border border-zinc-200 rounded-[14px] p-5 animate-pulse"
+            className="bg-white border border-zinc-200 rounded-2xl p-5 animate-pulse"
           >
             <div className="h-4 w-24 bg-zinc-100 rounded mb-4" />
             <div className="h-7 w-16 bg-zinc-100 rounded" />
@@ -170,17 +170,18 @@ function TopStatsSection({ prefix }: { prefix: string }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {/* Streak card */}
-      <div className="bg-white border border-zinc-200 rounded-[14px] p-5 transition-shadow duration-200 hover:shadow-md">
+      <div className="relative overflow-hidden bg-gradient-to-br from-orange-50 to-white border border-orange-200/50 rounded-2xl p-5 transition-all duration-200 hover:shadow-lg hover:shadow-orange-500/5 hover:-translate-y-0.5">
+        <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-orange-100/40 to-transparent rounded-bl-full" />
         <div className="flex items-center gap-3 mb-3">
-          <div className="size-8 rounded-lg bg-orange-50 flex items-center justify-center">
-            <Flame className="size-4 text-orange-500" />
+          <div className="size-9 rounded-xl bg-gradient-to-br from-orange-400 to-orange-500 flex items-center justify-center shadow-sm shadow-orange-500/20">
+            <Flame className="size-4 text-white" />
           </div>
           <span className="text-sm text-muted-foreground font-medium">
             Streak
           </span>
         </div>
         <div className="flex items-baseline gap-2">
-          <span className="text-2xl font-semibold text-foreground tabular-nums">
+          <span className="text-2xl font-bold text-foreground tabular-nums">
             {currentStreak}
           </span>
           <span className="text-sm text-muted-foreground">
@@ -198,17 +199,18 @@ function TopStatsSection({ prefix }: { prefix: string }) {
       </div>
 
       {/* XP / Level card */}
-      <div className="bg-white border border-zinc-200 rounded-[14px] p-5 transition-shadow duration-200 hover:shadow-md">
+      <div className="relative overflow-hidden bg-gradient-to-br from-red-50/50 to-white border border-red-200/30 rounded-2xl p-5 transition-all duration-200 hover:shadow-lg hover:shadow-[#AF0000]/5 hover:-translate-y-0.5">
+        <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-red-100/30 to-transparent rounded-bl-full" />
         <div className="flex items-center gap-3 mb-3">
-          <div className="size-8 rounded-lg bg-primary/5 flex items-center justify-center">
-            <Star className="size-4 text-primary" />
+          <div className="size-9 rounded-xl bg-gradient-to-br from-[#AF0000] to-[#DC2626] flex items-center justify-center shadow-sm shadow-[#AF0000]/20">
+            <Star className="size-4 text-white" />
           </div>
           <span className="text-sm text-muted-foreground font-medium">
             Niveau
           </span>
         </div>
         <div className="flex items-baseline gap-2 mb-2">
-          <span className="text-2xl font-semibold text-foreground tabular-nums">
+          <span className="text-2xl font-bold text-foreground tabular-nums">
             {summary.level.level}
           </span>
           <span className="text-sm text-muted-foreground">
@@ -216,29 +218,30 @@ function TopStatsSection({ prefix }: { prefix: string }) {
           </span>
         </div>
         {/* XP progress bar */}
-        <div className="h-1.5 bg-zinc-100 rounded-full overflow-hidden">
+        <div className="h-2 bg-red-100/60 rounded-full overflow-hidden">
           <div
-            className="h-full bg-primary rounded-full transition-all duration-700"
+            className="h-full bg-gradient-to-r from-[#AF0000] to-[#DC2626] rounded-full transition-all duration-700"
             style={{ width: `${summary.progressToNext}%` }}
           />
         </div>
-        <p className="text-[10px] text-muted-foreground mt-1">
+        <p className="text-[10px] text-muted-foreground mt-1.5">
           {summary.totalXp} XP · {summary.progressToNext}% vers niveau{" "}
           {summary.nextLevel ? summary.nextLevel.level : "max"}
         </p>
       </div>
 
       {/* Formations completed */}
-      <div className="bg-white border border-zinc-200 rounded-[14px] p-5 transition-shadow duration-200 hover:shadow-md">
+      <div className="relative overflow-hidden bg-gradient-to-br from-emerald-50 to-white border border-emerald-200/50 rounded-2xl p-5 transition-all duration-200 hover:shadow-lg hover:shadow-emerald-500/5 hover:-translate-y-0.5">
+        <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-emerald-100/40 to-transparent rounded-bl-full" />
         <div className="flex items-center gap-3 mb-3">
-          <div className="size-8 rounded-lg bg-emerald-50 flex items-center justify-center">
-            <GraduationCap className="size-4 text-emerald-600" />
+          <div className="size-9 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center shadow-sm shadow-emerald-500/20">
+            <GraduationCap className="size-4 text-white" />
           </div>
           <span className="text-sm text-muted-foreground font-medium">
             Formations terminees
           </span>
         </div>
-        <div className="text-2xl font-semibold text-foreground tracking-tight">
+        <div className="text-2xl font-bold text-foreground tracking-tight">
           {completedFormations}
         </div>
         <p className="text-xs text-muted-foreground mt-1">
@@ -248,16 +251,17 @@ function TopStatsSection({ prefix }: { prefix: string }) {
       </div>
 
       {/* Goals achieved */}
-      <div className="bg-white border border-zinc-200 rounded-[14px] p-5 transition-shadow duration-200 hover:shadow-md">
+      <div className="relative overflow-hidden bg-gradient-to-br from-amber-50 to-white border border-amber-200/50 rounded-2xl p-5 transition-all duration-200 hover:shadow-lg hover:shadow-amber-500/5 hover:-translate-y-0.5">
+        <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-amber-100/40 to-transparent rounded-bl-full" />
         <div className="flex items-center gap-3 mb-3">
-          <div className="size-8 rounded-lg bg-amber-50 flex items-center justify-center">
-            <Target className="size-4 text-amber-500" />
+          <div className="size-9 rounded-xl bg-gradient-to-br from-amber-400 to-amber-500 flex items-center justify-center shadow-sm shadow-amber-500/20">
+            <Target className="size-4 text-white" />
           </div>
           <span className="text-sm text-muted-foreground font-medium">
             Objectifs atteints
           </span>
         </div>
-        <div className="text-2xl font-semibold text-foreground tracking-tight">
+        <div className="text-2xl font-bold text-foreground tracking-tight">
           {achievedGoals}
         </div>
         <p className="text-xs text-muted-foreground mt-1">
@@ -307,6 +311,7 @@ function NextActionsSection({ prefix }: { prefix: string }) {
     const items: {
       id: string;
       icon: typeof Clock;
+      iconBg: string;
       iconColor: string;
       title: string;
       description: string;
@@ -317,7 +322,8 @@ function NextActionsSection({ prefix }: { prefix: string }) {
       items.push({
         id: "ritual",
         icon: Clock,
-        iconColor: "text-amber-500",
+        iconBg: "bg-gradient-to-br from-amber-400 to-amber-500",
+        iconColor: "text-white",
         title: incompleteRitual.title,
         description: `Rituel ${incompleteRitual.frequency} a completer`,
         href: `${prefix}/rituals`,
@@ -328,7 +334,8 @@ function NextActionsSection({ prefix }: { prefix: string }) {
       items.push({
         id: "lesson",
         icon: BookOpen,
-        iconColor: "text-primary",
+        iconBg: "bg-gradient-to-br from-[#AF0000] to-[#DC2626]",
+        iconColor: "text-white",
         title: nextLesson.lesson.title,
         description: `Suite de : ${nextLesson.course.title}`,
         href: `${prefix}/school`,
@@ -339,7 +346,8 @@ function NextActionsSection({ prefix }: { prefix: string }) {
     items.push({
       id: "journal",
       icon: PenLine,
-      iconColor: "text-zinc-700",
+      iconBg: "bg-gradient-to-br from-zinc-600 to-zinc-700",
+      iconColor: "text-white",
       title: "Ecrire dans ton journal",
       description: "Partage tes reflexions du jour",
       href: `${prefix}/journal`,
@@ -351,12 +359,14 @@ function NextActionsSection({ prefix }: { prefix: string }) {
   if (actions.length === 0) return null;
 
   return (
-    <div className="bg-white border border-zinc-200 rounded-[14px] overflow-hidden">
+    <div className="bg-white border border-zinc-200 rounded-2xl overflow-hidden shadow-sm">
       {/* Header */}
-      <div className="px-5 py-4 border-b border-zinc-200">
+      <div className="px-5 py-4 border-b border-zinc-100 bg-gradient-to-r from-zinc-50/80 to-transparent">
         <div className="flex items-center gap-2">
-          <Sparkles className="size-4 text-primary" />
-          <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+          <div className="size-7 rounded-lg bg-gradient-to-br from-[#AF0000] to-[#DC2626] flex items-center justify-center">
+            <Sparkles className="size-3.5 text-white" />
+          </div>
+          <h3 className="text-sm font-semibold text-foreground">
             Prochaines etapes
           </h3>
         </div>
@@ -370,9 +380,14 @@ function NextActionsSection({ prefix }: { prefix: string }) {
             <Link
               key={action.id}
               href={action.href}
-              className="flex items-center gap-4 px-5 py-4 hover:bg-zinc-50 transition-colors group"
+              className="flex items-center gap-4 px-5 py-4 hover:bg-zinc-50/80 transition-all group"
             >
-              <div className="size-9 rounded-lg bg-zinc-50 flex items-center justify-center shrink-0">
+              <div
+                className={cn(
+                  "size-9 rounded-xl flex items-center justify-center shrink-0 shadow-sm",
+                  action.iconBg,
+                )}
+              >
                 <Icon className={cn("size-4", action.iconColor)} />
               </div>
               <div className="flex-1 min-w-0">
@@ -383,7 +398,7 @@ function NextActionsSection({ prefix }: { prefix: string }) {
                   {action.description}
                 </p>
               </div>
-              <ChevronRight className="size-4 text-muted-foreground shrink-0 group-hover:text-foreground transition-colors" />
+              <ChevronRight className="size-4 text-muted-foreground/50 shrink-0 group-hover:text-[#AF0000] group-hover:translate-x-0.5 transition-all" />
             </Link>
           );
         })}
@@ -438,15 +453,17 @@ function CourseProgressSection({ prefix }: { prefix: string }) {
   }, [courses, lessonProgress]);
 
   return (
-    <div className="bg-white border border-zinc-200 rounded-[14px] p-5">
+    <div className="bg-white border border-zinc-200 rounded-2xl p-5 transition-all duration-200 hover:shadow-md">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-          <GraduationCap className="size-4 text-primary" />
+        <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+          <div className="size-7 rounded-lg bg-gradient-to-br from-[#AF0000] to-[#DC2626] flex items-center justify-center">
+            <GraduationCap className="size-3.5 text-white" />
+          </div>
           Formations en cours
         </h3>
         <Link
           href={`${prefix}/school`}
-          className="text-xs text-primary hover:text-primary/80 transition-colors font-medium"
+          className="text-xs text-[#AF0000] hover:text-[#DC2626] transition-colors font-medium"
         >
           Voir tout
         </Link>
@@ -474,13 +491,13 @@ function CourseProgressSection({ prefix }: { prefix: string }) {
                     {completedLessons}/{totalLessons}
                   </span>
                 </div>
-                <div className="h-1.5 bg-zinc-100 rounded-full overflow-hidden">
+                <div className="h-2 bg-zinc-100 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-primary rounded-full transition-all duration-700"
+                    className="h-full bg-gradient-to-r from-[#AF0000] to-[#DC2626] rounded-full transition-all duration-700"
                     style={{ width: `${percent}%` }}
                   />
                 </div>
-                <p className="text-[10px] text-muted-foreground mt-0.5">
+                <p className="text-[10px] text-muted-foreground mt-1">
                   {percent}% complete
                 </p>
               </div>
@@ -504,15 +521,17 @@ function GoalProgressSection({ prefix }: { prefix: string }) {
   const { activeGoals, isLoading } = useCoachingGoals();
 
   return (
-    <div className="bg-white border border-zinc-200 rounded-[14px] p-5">
+    <div className="bg-white border border-zinc-200 rounded-2xl p-5 transition-all duration-200 hover:shadow-md">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-          <Target className="size-4 text-amber-500" />
+        <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+          <div className="size-7 rounded-lg bg-gradient-to-br from-amber-400 to-amber-500 flex items-center justify-center">
+            <Target className="size-3.5 text-white" />
+          </div>
           Objectifs actifs
         </h3>
         <Link
           href={`${prefix}/goals`}
-          className="text-xs text-primary hover:text-primary/80 transition-colors font-medium"
+          className="text-xs text-[#AF0000] hover:text-[#DC2626] transition-colors font-medium"
         >
           Voir tout
         </Link>
@@ -538,7 +557,10 @@ function GoalProgressSection({ prefix }: { prefix: string }) {
                 : 0;
 
             return (
-              <div key={goal.id} className="p-3 rounded-xl bg-zinc-50">
+              <div
+                key={goal.id}
+                className="p-3 rounded-xl bg-zinc-50/80 border border-zinc-100"
+              >
                 <div className="flex items-center justify-between mb-1.5">
                   <p className="text-sm font-medium text-foreground truncate max-w-[200px]">
                     {goal.title}
@@ -551,9 +573,9 @@ function GoalProgressSection({ prefix }: { prefix: string }) {
                   ) : null}
                 </div>
                 {goal.target_value ? (
-                  <div className="h-1.5 bg-zinc-200 rounded-full overflow-hidden">
+                  <div className="h-2 bg-zinc-200 rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-amber-500 rounded-full transition-all duration-700"
+                      className="h-full bg-gradient-to-r from-amber-400 to-amber-500 rounded-full transition-all duration-700"
                       style={{ width: `${progress}%` }}
                     />
                   </div>
@@ -584,15 +606,17 @@ function RecentJournalSection({ prefix }: { prefix: string }) {
   const recentEntries = entries.slice(0, 3);
 
   return (
-    <div className="bg-white border border-zinc-200 rounded-[14px] p-5">
+    <div className="bg-white border border-zinc-200 rounded-2xl p-5 transition-all duration-200 hover:shadow-md">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-          <PenLine className="size-4 text-zinc-700" />
+        <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+          <div className="size-7 rounded-lg bg-gradient-to-br from-zinc-600 to-zinc-700 flex items-center justify-center">
+            <PenLine className="size-3.5 text-white" />
+          </div>
           Journal recent
         </h3>
         <Link
           href={`${prefix}/journal`}
-          className="text-xs text-primary hover:text-primary/80 transition-colors font-medium"
+          className="text-xs text-[#AF0000] hover:text-[#DC2626] transition-colors font-medium"
         >
           Voir tout
         </Link>
@@ -612,7 +636,10 @@ function RecentJournalSection({ prefix }: { prefix: string }) {
               { day: "numeric", month: "short" },
             );
             return (
-              <div key={entry.id} className="p-3 rounded-xl bg-zinc-50">
+              <div
+                key={entry.id}
+                className="p-3 rounded-xl bg-zinc-50/80 border border-zinc-100 hover:border-zinc-200 transition-colors"
+              >
                 <div className="flex items-center justify-between mb-1">
                   <p className="text-sm font-medium text-foreground truncate max-w-[200px]">
                     {entry.title}
@@ -626,7 +653,7 @@ function RecentJournalSection({ prefix }: { prefix: string }) {
                     {entry.tags.slice(0, 3).map((tag) => (
                       <span
                         key={tag}
-                        className="text-[9px] px-1.5 py-0.5 rounded-full bg-zinc-200/60 text-muted-foreground"
+                        className="text-[9px] px-1.5 py-0.5 rounded-full bg-[#AF0000]/5 text-[#AF0000] font-medium"
                       >
                         {tag}
                       </span>
@@ -644,7 +671,7 @@ function RecentJournalSection({ prefix }: { prefix: string }) {
           </p>
           <Link
             href={`${prefix}/journal`}
-            className="text-xs text-primary font-medium hover:text-primary/80 transition-colors"
+            className="text-xs text-[#AF0000] font-medium hover:text-[#DC2626] transition-colors"
           >
             Ecrire une premiere entree
           </Link>
@@ -665,13 +692,15 @@ function BadgesSection() {
   const recentBadges = badges.slice(0, 5);
 
   return (
-    <div className="bg-white border border-zinc-200 rounded-[14px] p-5">
+    <div className="bg-white border border-zinc-200 rounded-2xl p-5 transition-all duration-200 hover:shadow-md">
       <div className="flex items-center gap-2 mb-4">
-        <Trophy className="size-4 text-amber-500" />
-        <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+        <div className="size-7 rounded-lg bg-gradient-to-br from-amber-400 to-amber-500 flex items-center justify-center">
+          <Trophy className="size-3.5 text-white" />
+        </div>
+        <h3 className="text-sm font-semibold text-foreground">
           Badges obtenus
         </h3>
-        <span className="ml-auto text-xs text-muted-foreground tabular-nums">
+        <span className="ml-auto text-xs text-muted-foreground tabular-nums bg-zinc-100 px-2 py-0.5 rounded-full">
           {badges.length} badge{badges.length !== 1 ? "s" : ""}
         </span>
       </div>
@@ -690,13 +719,13 @@ function BadgesSection() {
           {recentBadges.map((userBadge) => (
             <div
               key={userBadge.id}
-              className="flex flex-col items-center gap-1.5 p-2 rounded-xl bg-zinc-50 border border-zinc-200"
+              className="flex flex-col items-center gap-1.5 p-2.5 rounded-xl bg-gradient-to-b from-amber-50/80 to-white border border-amber-200/40 hover:border-amber-300/60 hover:shadow-sm transition-all"
               title={userBadge.badge?.description ?? userBadge.badge?.name}
             >
-              <div className="size-10 rounded-lg bg-amber-50 flex items-center justify-center text-lg">
+              <div className="size-11 rounded-xl bg-gradient-to-br from-amber-100 to-amber-50 flex items-center justify-center text-lg shadow-inner">
                 {userBadge.badge?.icon ?? "\ud83c\udfc5"}
               </div>
-              <span className="text-[9px] font-medium text-foreground text-center max-w-[60px] truncate">
+              <span className="text-[9px] font-semibold text-foreground text-center max-w-[60px] truncate">
                 {userBadge.badge?.name ?? "Badge"}
               </span>
             </div>
@@ -711,9 +740,9 @@ function BadgesSection() {
       {/* Upsell offer card */}
       {offers && offers.length > 0 && (
         <div className="mt-4 pt-4 border-t border-zinc-200">
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-zinc-50 border border-zinc-200">
-            <div className="size-8 rounded-lg bg-primary/5 flex items-center justify-center shrink-0">
-              <Gift className="size-4 text-primary" />
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-[#AF0000]/5 to-transparent border border-[#AF0000]/10 hover:border-[#AF0000]/20 transition-colors">
+            <div className="size-9 rounded-xl bg-gradient-to-br from-[#AF0000] to-[#DC2626] flex items-center justify-center shrink-0 shadow-sm shadow-[#AF0000]/20">
+              <Gift className="size-4 text-white" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-xs font-medium text-foreground">
@@ -724,7 +753,7 @@ function BadgesSection() {
                   "Decouvre notre offre exclusive"}
               </p>
             </div>
-            <ChevronRight className="size-4 text-muted-foreground shrink-0" />
+            <ChevronRight className="size-4 text-[#AF0000]/50 shrink-0" />
           </div>
         </div>
       )}
@@ -741,15 +770,17 @@ function CommunitySection({ prefix }: { prefix: string }) {
   const recentAnnouncements = (announcements ?? []).slice(0, 3);
 
   return (
-    <div className="bg-white border border-zinc-200 rounded-[14px] p-5">
+    <div className="bg-white border border-zinc-200 rounded-2xl p-5 transition-all duration-200 hover:shadow-md">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-          <Megaphone className="size-4 text-primary" />
+        <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+          <div className="size-7 rounded-lg bg-gradient-to-br from-[#AF0000] to-[#DC2626] flex items-center justify-center">
+            <Megaphone className="size-3.5 text-white" />
+          </div>
           Actualites
         </h3>
         <Link
           href={`${prefix}/community`}
-          className="text-xs text-primary hover:text-primary/80 transition-colors font-medium"
+          className="text-xs text-[#AF0000] hover:text-[#DC2626] transition-colors font-medium"
         >
           Voir tout
         </Link>
@@ -771,17 +802,17 @@ function CommunitySection({ prefix }: { prefix: string }) {
             return (
               <div
                 key={ann.id}
-                className="p-3 rounded-xl bg-zinc-50 flex items-start gap-3"
+                className="p-3 rounded-xl bg-zinc-50/80 border border-zinc-100 flex items-start gap-3 hover:border-zinc-200 transition-colors"
               >
                 <div
                   className={cn(
                     "size-8 rounded-lg flex items-center justify-center shrink-0",
                     ann.type === "info"
-                      ? "bg-blue-50"
+                      ? "bg-gradient-to-br from-blue-100 to-blue-50"
                       : ann.type === "success"
-                        ? "bg-emerald-50"
+                        ? "bg-gradient-to-br from-emerald-100 to-emerald-50"
                         : ann.type === "warning"
-                          ? "bg-amber-50"
+                          ? "bg-gradient-to-br from-amber-100 to-amber-50"
                           : "bg-zinc-100",
                   )}
                 >

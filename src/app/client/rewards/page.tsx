@@ -26,7 +26,9 @@ export default function ClientRewardsPage() {
     >
       {/* Header */}
       <motion.div variants={fadeInUp} transition={defaultTransition}>
-        <h1 className="text-3xl font-semibold text-foreground">Recompenses</h1>
+        <h1 className="text-3xl font-bold text-foreground tracking-tight">
+          Recompenses
+        </h1>
         <p className="text-sm text-muted-foreground mt-1">
           Echange tes XP contre des recompenses exclusives
         </p>
@@ -43,7 +45,7 @@ export default function ClientRewardsPage() {
           className={cn(
             "h-9 px-4 rounded-lg text-sm font-medium transition-all flex items-center gap-2",
             tab === "catalog"
-              ? "bg-surface text-foreground shadow-sm"
+              ? "bg-gradient-to-r from-[#AF0000] to-[#DC2626] text-white shadow-sm"
               : "text-muted-foreground hover:text-foreground",
           )}
         >
@@ -55,7 +57,7 @@ export default function ClientRewardsPage() {
           className={cn(
             "h-9 px-4 rounded-lg text-sm font-medium transition-all flex items-center gap-2",
             tab === "history"
-              ? "bg-surface text-foreground shadow-sm"
+              ? "bg-gradient-to-r from-[#AF0000] to-[#DC2626] text-white shadow-sm"
               : "text-muted-foreground hover:text-foreground",
           )}
         >

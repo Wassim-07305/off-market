@@ -112,7 +112,9 @@ export function ChannelSidebar({
         <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#AF0000] to-[#DC2626] flex items-center justify-center mr-3 shadow-sm shadow-[#AF0000]/20">
           <MessageSquare className="w-4 h-4 text-white" />
         </div>
-        <h2 className="text-sm font-bold text-foreground tracking-tight">Messagerie</h2>
+        <h2 className="text-sm font-bold text-foreground tracking-tight">
+          Messagerie
+        </h2>
       </div>
 
       <div className="flex-1 overflow-y-auto py-2">
@@ -182,16 +184,18 @@ export function ChannelSidebar({
                           ch.isMuted && !isActive && "opacity-40",
                         )}
                       >
-                        <div className={cn(
-                          "w-6 h-6 rounded-lg flex items-center justify-center shrink-0 transition-all duration-200",
-                          isActive
-                            ? "bg-[#AF0000]/15"
-                            : "bg-muted/60",
-                        )}>
+                        <div
+                          className={cn(
+                            "w-6 h-6 rounded-lg flex items-center justify-center shrink-0 transition-all duration-200",
+                            isActive ? "bg-[#AF0000]/15" : "bg-muted/60",
+                          )}
+                        >
                           <Icon
                             className={cn(
                               "w-3.5 h-3.5 shrink-0 transition-colors duration-200",
-                              isActive ? "text-[#AF0000]" : "text-muted-foreground/70",
+                              isActive
+                                ? "text-[#AF0000]"
+                                : "text-muted-foreground/70",
                             )}
                           />
                         </div>
@@ -345,13 +349,20 @@ export function ChannelSidebar({
                             )}
                           >
                             <div className="relative">
-                              <div className={cn(
-                                "w-10 h-10 rounded-full flex items-center justify-center overflow-hidden ring-2 transition-all duration-200",
-                                online
-                                  ? "ring-emerald-400/60"
-                                  : isActive ? "ring-[#AF0000]/20" : "ring-transparent",
-                                !partner?.avatar_url && (isActive ? "bg-[#AF0000]/10" : "bg-muted/80"),
-                              )}>
+                              <div
+                                className={cn(
+                                  "w-10 h-10 rounded-full flex items-center justify-center overflow-hidden ring-2 transition-all duration-200",
+                                  online
+                                    ? "ring-emerald-400/60"
+                                    : isActive
+                                      ? "ring-[#AF0000]/20"
+                                      : "ring-transparent",
+                                  !partner?.avatar_url &&
+                                    (isActive
+                                      ? "bg-[#AF0000]/10"
+                                      : "bg-muted/80"),
+                                )}
+                              >
                                 {partner?.avatar_url ? (
                                   <img
                                     src={partner.avatar_url}
@@ -359,10 +370,14 @@ export function ChannelSidebar({
                                     className="w-10 h-10 rounded-full object-cover"
                                   />
                                 ) : (
-                                  <span className={cn(
-                                    "text-xs font-semibold",
-                                    isActive ? "text-[#AF0000]" : "text-muted-foreground",
-                                  )}>
+                                  <span
+                                    className={cn(
+                                      "text-xs font-semibold",
+                                      isActive
+                                        ? "text-[#AF0000]"
+                                        : "text-muted-foreground",
+                                    )}
+                                  >
                                     {partner
                                       ? getInitials(partner.full_name)
                                       : "?"}
@@ -455,13 +470,20 @@ export function ChannelSidebar({
                             )}
                           >
                             <div className="relative shrink-0">
-                              <div className={cn(
-                                "w-7 h-7 rounded-full flex items-center justify-center overflow-hidden ring-2 transition-all duration-200",
-                                online
-                                  ? "ring-emerald-400/60"
-                                  : isActive ? "ring-[#AF0000]/20" : "ring-transparent",
-                                !partner?.avatar_url && (isActive ? "bg-[#AF0000]/10" : "bg-muted/80"),
-                              )}>
+                              <div
+                                className={cn(
+                                  "w-7 h-7 rounded-full flex items-center justify-center overflow-hidden ring-2 transition-all duration-200",
+                                  online
+                                    ? "ring-emerald-400/60"
+                                    : isActive
+                                      ? "ring-[#AF0000]/20"
+                                      : "ring-transparent",
+                                  !partner?.avatar_url &&
+                                    (isActive
+                                      ? "bg-[#AF0000]/10"
+                                      : "bg-muted/80"),
+                                )}
+                              >
                                 {partner?.avatar_url ? (
                                   <img
                                     src={partner.avatar_url}
@@ -469,10 +491,14 @@ export function ChannelSidebar({
                                     className="w-7 h-7 rounded-full object-cover"
                                   />
                                 ) : (
-                                  <span className={cn(
-                                    "text-[10px] font-semibold",
-                                    isActive ? "text-[#AF0000]" : "text-muted-foreground",
-                                  )}>
+                                  <span
+                                    className={cn(
+                                      "text-[10px] font-semibold",
+                                      isActive
+                                        ? "text-[#AF0000]"
+                                        : "text-muted-foreground",
+                                    )}
+                                  >
                                     {partner
                                       ? getInitials(partner.full_name)
                                       : "?"}

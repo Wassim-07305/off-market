@@ -19,14 +19,20 @@ export default function AdminBadgesPage() {
     >
       {/* Header */}
       <motion.div variants={fadeInUp} transition={defaultTransition}>
-        <h1 className="text-3xl font-semibold text-foreground flex items-center gap-3">
-          <Award className="w-7 h-7" />
-          Gestion des badges
-        </h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Cree et gere les badges, definis les conditions de deblocage et
-          consulte qui les a obtenus
-        </p>
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500/20 to-amber-600/10 flex items-center justify-center">
+            <Award className="w-5 h-5 text-amber-600" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold text-foreground tracking-tight">
+              Gestion des badges
+            </h1>
+            <p className="text-sm text-muted-foreground mt-0.5">
+              Cree et gere les badges, definis les conditions de deblocage et
+              consulte qui les a obtenus
+            </p>
+          </div>
+        </div>
       </motion.div>
 
       <AdminBadges />

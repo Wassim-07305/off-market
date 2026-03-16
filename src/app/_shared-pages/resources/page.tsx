@@ -49,6 +49,14 @@ const VISIBILITY_OPTIONS = [
   { value: "clients", label: "Clients", icon: Users },
 ] as const;
 
+const FILE_TYPE_COLORS: Record<string, { bg: string; color: string }> = {
+  image: { bg: "bg-purple-500/10", color: "text-purple-600" },
+  video: { bg: "bg-blue-500/10", color: "text-blue-600" },
+  spreadsheet: { bg: "bg-emerald-500/10", color: "text-emerald-600" },
+  document: { bg: "bg-[#AF0000]/10", color: "text-[#AF0000]" },
+  default: { bg: "bg-gray-500/10", color: "text-gray-600" },
+};
+
 function getFileIcon(type: string) {
   if (type.startsWith("image/")) return FileImage;
   if (type.startsWith("video/")) return FileVideo;
@@ -65,6 +73,24 @@ function getFileIcon(type: string) {
   )
     return FileText;
   return File;
+}
+
+function getFileTypeColor(type: string) {
+  if (type.startsWith("image/")) return FILE_TYPE_COLORS.image;
+  if (type.startsWith("video/")) return FILE_TYPE_COLORS.video;
+  if (
+    type.includes("spreadsheet") ||
+    type.includes("csv") ||
+    type.includes("excel")
+  )
+    return FILE_TYPE_COLORS.spreadsheet;
+  if (
+    type.includes("pdf") ||
+    type.includes("document") ||
+    type.includes("text")
+  )
+    return FILE_TYPE_COLORS.document;
+  return FILE_TYPE_COLORS.default;
 }
 
 function formatFileSize(bytes: number) {
@@ -156,7 +182,7 @@ export default function ResourcesPage() {
         className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
       >
         <div>
-          <h1 className="text-2xl font-display font-bold text-foreground tracking-tight">
+          <h1 className="text-3xl font-display font-bold text-foreground tracking-tight">
             Ressources
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
@@ -166,7 +192,7 @@ export default function ResourcesPage() {
         {isStaff && (
           <button
             onClick={() => setShowUpload(!showUpload)}
-            className="h-9 px-4 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-all active:scale-[0.98] flex items-center gap-2"
+            className="h-9 px-4 rounded-xl bg-gradient-to-r from-[#AF0000] to-[#DC2626] text-white text-sm font-medium hover:shadow-lg hover:shadow-[#AF0000]/25 transition-all active:scale-[0.98] flex items-center gap-2"
           >
             <Upload className="w-4 h-4" />
             Ajouter une ressource
@@ -178,11 +204,11 @@ export default function ResourcesPage() {
       {showUpload && (
         <motion.div
           variants={staggerItem}
-          className="bg-surface rounded-2xl p-6 space-y-4"
+          className="bg-surface rounded-2xl p-6 space-y-4 border border-border"
           style={{ boxShadow: "var(--shadow-card)" }}
         >
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-foreground">
+            <h2 className="text-lg font-semibold text-foreground">
               Nouvelle ressource
             </h2>
             <button
@@ -199,13 +225,13 @@ export default function ResourcesPage() {
             className={cn(
               "border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-colors",
               uploadFile
-                ? "border-primary/30 bg-primary/5"
-                : "border-border hover:border-primary/30 hover:bg-muted/30",
+                ? "border-[#AF0000]/30 bg-[#AF0000]/5"
+                : "border-border hover:border-[#AF0000]/30 hover:bg-muted/30",
             )}
           >
             {uploadFile ? (
               <div className="flex items-center justify-center gap-3">
-                <FileText className="w-5 h-5 text-primary" />
+                <FileText className="w-5 h-5 text-[#AF0000]" />
                 <div className="text-left">
                   <p className="text-sm font-medium text-foreground">
                     {uploadFile.name}
@@ -262,7 +288,7 @@ export default function ResourcesPage() {
                 value={uploadTitle}
                 onChange={(e) => setUploadTitle(e.target.value)}
                 placeholder="Nom de la ressource"
-                className="w-full h-9 px-3 bg-muted border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+                className="w-full h-9 px-3 bg-muted border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20"
               />
             </div>
             <div>
@@ -272,7 +298,7 @@ export default function ResourcesPage() {
               <select
                 value={uploadCategory}
                 onChange={(e) => setUploadCategory(e.target.value)}
-                className="w-full h-9 px-3 bg-muted border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+                className="w-full h-9 px-3 bg-muted border border-border rounded-xl text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20"
               >
                 {CATEGORIES.filter((c) => c.value !== "all").map((c) => (
                   <option key={c.value} value={c.value}>
@@ -291,7 +317,7 @@ export default function ResourcesPage() {
               value={uploadDesc}
               onChange={(e) => setUploadDesc(e.target.value)}
               placeholder="Breve description..."
-              className="w-full h-9 px-3 bg-muted border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+              className="w-full h-9 px-3 bg-muted border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20"
             />
           </div>
 
@@ -307,9 +333,9 @@ export default function ResourcesPage() {
                     setUploadVisibility(v.value as typeof uploadVisibility)
                   }
                   className={cn(
-                    "h-8 px-3 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5",
+                    "h-8 px-3 rounded-xl text-xs font-medium transition-all flex items-center gap-1.5",
                     uploadVisibility === v.value
-                      ? "bg-foreground text-background"
+                      ? "bg-gradient-to-r from-[#AF0000] to-[#DC2626] text-white"
                       : "bg-muted text-muted-foreground hover:text-foreground",
                   )}
                 >
@@ -325,7 +351,7 @@ export default function ResourcesPage() {
             disabled={
               uploadResource.isPending || !uploadFile || !uploadTitle.trim()
             }
-            className="h-9 px-4 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-hover transition-colors disabled:opacity-50 flex items-center gap-2"
+            className="h-9 px-4 bg-gradient-to-r from-[#AF0000] to-[#DC2626] text-white rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-[#AF0000]/25 transition-all disabled:opacity-50 flex items-center gap-2"
           >
             {uploadResource.isPending ? (
               <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -348,13 +374,16 @@ export default function ResourcesPage() {
               key={c.value}
               onClick={() => setCategory(c.value)}
               className={cn(
-                "h-8 px-3 rounded-full text-xs font-medium transition-all whitespace-nowrap",
+                "h-8 px-3 rounded-full text-xs font-medium transition-all whitespace-nowrap relative",
                 category === c.value
-                  ? "bg-foreground text-background"
-                  : "bg-muted text-muted-foreground hover:text-foreground",
+                  ? "text-[#AF0000] bg-[#AF0000]/5 font-semibold"
+                  : "bg-transparent text-muted-foreground hover:text-foreground",
               )}
             >
               {c.label}
+              {category === c.value && (
+                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4/5 h-0.5 bg-[#AF0000] rounded-full" />
+              )}
             </button>
           ))}
         </div>
@@ -365,7 +394,7 @@ export default function ResourcesPage() {
             placeholder="Rechercher..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full h-9 pl-9 pr-3 rounded-xl bg-muted/50 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-shadow"
+            className="w-full h-9 pl-9 pr-3 rounded-xl bg-muted/50 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20 transition-shadow"
           />
         </div>
       </motion.div>
@@ -381,10 +410,7 @@ export default function ResourcesPage() {
             />
           ))
         ) : filtered.length === 0 ? (
-          <div
-            className="bg-surface rounded-2xl p-12 text-center"
-            style={{ boxShadow: "var(--shadow-card)" }}
-          >
+          <div className="bg-gradient-to-br from-muted/30 to-muted/10 rounded-2xl p-12 text-center border border-dashed border-border">
             <FolderOpen className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
             <p className="text-sm text-muted-foreground">
               {search.trim() ? "Aucun resultat" : "Aucune ressource disponible"}
@@ -393,6 +419,7 @@ export default function ResourcesPage() {
         ) : (
           filtered.map((resource) => {
             const IconComponent = getFileIcon(resource.file_type);
+            const fileColors = getFileTypeColor(resource.file_type);
             const date = new Date(resource.created_at).toLocaleDateString(
               "fr-FR",
               {
@@ -405,13 +432,20 @@ export default function ResourcesPage() {
             return (
               <div
                 key={resource.id}
-                className="bg-surface rounded-2xl p-4 hover:bg-muted/20 transition-colors group"
+                className="bg-surface rounded-2xl p-4 hover:shadow-md hover:-translate-y-px transition-all duration-200 group border border-transparent hover:border-border"
                 style={{ boxShadow: "var(--shadow-card)" }}
               >
                 <div className="flex items-center gap-4">
-                  {/* Icon */}
-                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                    <IconComponent className="w-5 h-5 text-primary" />
+                  {/* Icon with colored background */}
+                  <div
+                    className={cn(
+                      "w-11 h-11 rounded-xl flex items-center justify-center shrink-0",
+                      fileColors.bg,
+                    )}
+                  >
+                    <IconComponent
+                      className={cn("w-5 h-5", fileColors.color)}
+                    />
                   </div>
 
                   {/* Info */}
@@ -459,7 +493,7 @@ export default function ResourcesPage() {
                   <div className="flex items-center gap-1.5 shrink-0">
                     <button
                       onClick={() => handleDownload(resource)}
-                      className="h-8 px-3 rounded-lg text-xs font-medium text-primary border border-primary/20 hover:bg-primary/5 transition-colors flex items-center gap-1.5"
+                      className="h-8 px-3 rounded-xl text-xs font-medium text-[#AF0000] border border-[#AF0000]/20 hover:bg-[#AF0000]/5 hover:border-[#AF0000]/40 transition-colors flex items-center gap-1.5"
                     >
                       <Download className="w-3.5 h-3.5" />
                       Telecharger

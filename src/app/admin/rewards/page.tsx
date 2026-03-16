@@ -19,14 +19,20 @@ export default function AdminRewardsPage() {
     >
       {/* Header */}
       <motion.div variants={fadeInUp} transition={defaultTransition}>
-        <h1 className="text-3xl font-semibold text-foreground flex items-center gap-3">
-          <Gift className="w-7 h-7" />
-          Gestion des recompenses
-        </h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Cree et gere le catalogue de recompenses, traite les echanges en
-          attente
-        </p>
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#AF0000]/20 to-[#DC2626]/10 flex items-center justify-center">
+            <Gift className="w-5 h-5 text-[#AF0000]" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold text-foreground tracking-tight">
+              Gestion des recompenses
+            </h1>
+            <p className="text-sm text-muted-foreground mt-0.5">
+              Cree et gere le catalogue de recompenses, traite les echanges en
+              attente
+            </p>
+          </div>
+        </div>
       </motion.div>
 
       <AdminRewards />

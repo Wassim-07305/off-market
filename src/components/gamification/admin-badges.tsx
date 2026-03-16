@@ -42,6 +42,22 @@ const RARITY_OPTIONS: { value: BadgeRarity; label: string }[] = [
   { value: "legendary", label: "Legendaire" },
 ];
 
+const RARITY_BORDER_COLORS: Record<BadgeRarity, string> = {
+  common: "border-gray-300 dark:border-gray-600",
+  uncommon: "border-emerald-400 dark:border-emerald-500",
+  rare: "border-blue-400 dark:border-blue-500",
+  epic: "border-purple-400 dark:border-purple-500",
+  legendary: "border-amber-400 dark:border-amber-500",
+};
+
+const RARITY_BG_TINTS: Record<BadgeRarity, string> = {
+  common: "bg-gray-50 dark:bg-gray-500/5",
+  uncommon: "bg-emerald-50/50 dark:bg-emerald-500/5",
+  rare: "bg-blue-50/50 dark:bg-blue-500/5",
+  epic: "bg-purple-50/50 dark:bg-purple-500/5",
+  legendary: "bg-amber-50/50 dark:bg-amber-500/5",
+};
+
 interface BadgeFormData {
   name: string;
   description: string;
@@ -56,7 +72,7 @@ interface BadgeFormData {
 const EMPTY_FORM: BadgeFormData = {
   name: "",
   description: "",
-  icon: "🏆",
+  icon: "\u{1F3C6}",
   category: "engagement",
   rarity: "common",
   xp_reward: 50,
@@ -81,36 +97,36 @@ const CONDITION_ACTIONS = [
 ];
 
 const EMOJI_PRESETS = [
-  "🏆",
-  "🥇",
-  "🥈",
-  "🥉",
-  "⭐",
-  "🌟",
-  "💎",
-  "🔥",
-  "⚡",
-  "🚀",
-  "🎯",
-  "💪",
-  "🧠",
-  "📚",
-  "💰",
-  "🤝",
-  "🎓",
-  "👑",
-  "🦁",
-  "🐉",
-  "🌈",
-  "💫",
-  "🎖️",
-  "🏅",
-  "✨",
-  "🔮",
-  "🎪",
-  "🎨",
-  "🎸",
-  "🦄",
+  "\u{1F3C6}",
+  "\u{1F947}",
+  "\u{1F948}",
+  "\u{1F949}",
+  "\u2B50",
+  "\u{1F31F}",
+  "\u{1F48E}",
+  "\u{1F525}",
+  "\u26A1",
+  "\u{1F680}",
+  "\u{1F3AF}",
+  "\u{1F4AA}",
+  "\u{1F9E0}",
+  "\u{1F4DA}",
+  "\u{1F4B0}",
+  "\u{1F91D}",
+  "\u{1F393}",
+  "\u{1F451}",
+  "\u{1F981}",
+  "\u{1F409}",
+  "\u{1F308}",
+  "\u{1F4AB}",
+  "\u{1F396}\uFE0F",
+  "\u{1F3C5}",
+  "\u2728",
+  "\u{1F52E}",
+  "\u{1F3AA}",
+  "\u{1F3A8}",
+  "\u{1F3B8}",
+  "\u{1F984}",
 ];
 
 export function AdminBadges() {
@@ -145,7 +161,7 @@ export function AdminBadges() {
     setForm({
       name: badge.name,
       description: badge.description ?? "",
-      icon: badge.icon ?? "🏆",
+      icon: badge.icon ?? "\u{1F3C6}",
       category: badge.category,
       rarity: badge.rarity,
       xp_reward: badge.xp_reward,
@@ -186,14 +202,14 @@ export function AdminBadges() {
     <div className="space-y-6">
       {/* Badge list */}
       <motion.div variants={fadeInUp} transition={defaultTransition}>
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-semibold text-foreground flex items-center gap-2">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
             <Award className="w-4 h-4 text-amber-500" />
             Badges ({badges.length})
           </h2>
           <button
             onClick={openCreate}
-            className="h-8 px-3 rounded-lg bg-primary text-white text-xs font-medium hover:bg-primary/90 transition-colors flex items-center gap-1.5"
+            className="h-9 px-4 rounded-xl bg-gradient-to-r from-[#AF0000] to-[#DC2626] text-white text-xs font-medium hover:shadow-lg hover:shadow-[#AF0000]/25 transition-all flex items-center gap-1.5"
           >
             <Plus className="w-3.5 h-3.5" />
             Nouveau badge
@@ -201,13 +217,13 @@ export function AdminBadges() {
         </div>
 
         {/* Category filter */}
-        <div className="flex items-center gap-1.5 mb-3 overflow-x-auto pb-1">
+        <div className="flex items-center gap-1.5 mb-4 overflow-x-auto pb-1">
           <button
             onClick={() => setFilterCategory("all")}
             className={cn(
               "h-7 px-2.5 rounded-full text-[11px] font-medium whitespace-nowrap transition-all",
               filterCategory === "all"
-                ? "bg-foreground text-background"
+                ? "bg-gradient-to-r from-[#AF0000] to-[#DC2626] text-white"
                 : "bg-muted text-muted-foreground hover:text-foreground",
             )}
           >
@@ -220,7 +236,7 @@ export function AdminBadges() {
               className={cn(
                 "h-7 px-2.5 rounded-full text-[11px] font-medium whitespace-nowrap transition-all",
                 filterCategory === cat.value
-                  ? "bg-foreground text-background"
+                  ? "bg-gradient-to-r from-[#AF0000] to-[#DC2626] text-white"
                   : "bg-muted text-muted-foreground hover:text-foreground",
               )}
             >
@@ -230,13 +246,16 @@ export function AdminBadges() {
         </div>
 
         {isLoading ? (
-          <div className="space-y-2">
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className="h-16 bg-muted animate-pulse rounded-xl" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {[...Array(6)].map((_, i) => (
+              <div
+                key={i}
+                className="h-32 bg-muted animate-pulse rounded-2xl"
+              />
             ))}
           </div>
         ) : filteredBadges.length === 0 ? (
-          <div className="bg-surface border border-border rounded-xl p-8 text-center">
+          <div className="bg-gradient-to-br from-muted/30 to-muted/10 border border-dashed border-border rounded-2xl p-8 text-center">
             <Award className="w-8 h-8 text-muted-foreground/40 mx-auto mb-2" />
             <p className="text-sm text-muted-foreground">
               {filterCategory === "all"
@@ -245,7 +264,7 @@ export function AdminBadges() {
             </p>
           </div>
         ) : (
-          <div className="bg-surface border border-border rounded-xl divide-y divide-border">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {filteredBadges.map((badge) => {
               const rarityConfig = RARITY_CONFIG[badge.rarity];
               const categoryConfig = CATEGORY_CONFIG[badge.category];
@@ -253,55 +272,63 @@ export function AdminBadges() {
                 action?: string;
                 count?: number;
               };
+              const borderColor = RARITY_BORDER_COLORS[badge.rarity];
+              const bgTint = RARITY_BG_TINTS[badge.rarity];
 
               return (
                 <div
                   key={badge.id}
                   className={cn(
-                    "flex items-center gap-3 px-4 py-3",
+                    "rounded-2xl border-2 p-4 transition-all hover:shadow-md hover:-translate-y-px duration-200",
+                    borderColor,
+                    bgTint,
                     !badge.is_active && "opacity-50",
                   )}
                 >
-                  {/* Icon */}
-                  <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center text-lg shrink-0">
-                    {badge.icon ?? "🏆"}
-                  </div>
+                  <div className="flex items-start gap-3">
+                    {/* Large Icon */}
+                    <div className="w-12 h-12 rounded-xl bg-white dark:bg-white/10 flex items-center justify-center text-2xl shrink-0 shadow-sm">
+                      {badge.icon ?? "\u{1F3C6}"}
+                    </div>
 
-                  {/* Info */}
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-foreground truncate">
-                      {badge.name}
-                    </p>
-                    <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                      <span
-                        className={cn(
-                          "text-[10px] font-medium px-1.5 py-0.5 rounded-full",
-                          rarityConfig.color,
-                          rarityConfig.bg,
-                        )}
-                      >
-                        {rarityConfig.label}
-                      </span>
-                      <span className="text-[10px] text-muted-foreground">
-                        {categoryConfig.emoji} {categoryConfig.label}
-                      </span>
-                      <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
-                        <Zap className="w-2.5 h-2.5" />
-                        {badge.xp_reward} XP
-                      </span>
-                      {condition.action && (
-                        <span className="text-[10px] text-muted-foreground">
-                          {CONDITION_ACTIONS.find(
-                            (a) => a.value === condition.action,
-                          )?.label ?? String(condition.action)}{" "}
-                          &ge; {String(condition.count ?? 1)}
+                    {/* Info */}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-foreground truncate">
+                        {badge.name}
+                      </p>
+                      <div className="flex items-center gap-2 mt-1 flex-wrap">
+                        <span
+                          className={cn(
+                            "text-[10px] font-medium px-1.5 py-0.5 rounded-full",
+                            rarityConfig.color,
+                            rarityConfig.bg,
+                          )}
+                        >
+                          {rarityConfig.label}
                         </span>
-                      )}
+                        <span className="text-[10px] text-muted-foreground">
+                          {categoryConfig.emoji} {categoryConfig.label}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 mt-1.5">
+                        <span className="text-xs font-medium text-[#AF0000] flex items-center gap-0.5 bg-[#AF0000]/10 px-1.5 py-0.5 rounded-full">
+                          <Zap className="w-2.5 h-2.5" />
+                          {badge.xp_reward} XP
+                        </span>
+                        {condition.action && (
+                          <span className="text-[10px] text-muted-foreground">
+                            {CONDITION_ACTIONS.find(
+                              (a) => a.value === condition.action,
+                            )?.label ?? String(condition.action)}{" "}
+                            &ge; {String(condition.count ?? 1)}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
 
                   {/* Actions */}
-                  <div className="flex items-center gap-1 shrink-0">
+                  <div className="flex items-center gap-1 mt-3 pt-3 border-t border-border/30 justify-end">
                     <button
                       onClick={() =>
                         setViewEarnersId(
@@ -309,9 +336,9 @@ export function AdminBadges() {
                         )
                       }
                       className={cn(
-                        "p-2 rounded-lg hover:bg-muted transition-colors",
+                        "p-2 rounded-lg hover:bg-white/50 dark:hover:bg-white/10 transition-colors",
                         viewEarnersId === badge.id
-                          ? "text-primary bg-primary/10"
+                          ? "text-[#AF0000] bg-[#AF0000]/10"
                           : "text-muted-foreground hover:text-foreground",
                       )}
                       title="Voir qui a obtenu ce badge"
@@ -320,7 +347,7 @@ export function AdminBadges() {
                     </button>
                     <button
                       onClick={() => openEdit(badge)}
-                      className="p-2 rounded-lg hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+                      className="p-2 rounded-lg hover:bg-white/50 dark:hover:bg-white/10 transition-colors text-muted-foreground hover:text-foreground"
                       title="Modifier"
                     >
                       <Pencil className="w-3.5 h-3.5" />
@@ -332,7 +359,7 @@ export function AdminBadges() {
                           is_active: !badge.is_active,
                         })
                       }
-                      className="p-2 rounded-lg hover:bg-muted transition-colors"
+                      className="p-2 rounded-lg hover:bg-white/50 dark:hover:bg-white/10 transition-colors"
                       title={badge.is_active ? "Desactiver" : "Activer"}
                     >
                       {badge.is_active ? (
@@ -367,11 +394,11 @@ export function AdminBadges() {
           onClick={() => setShowForm(false)}
         >
           <div
-            className="bg-surface border border-border rounded-2xl p-6 max-w-md w-full mx-4 space-y-4 max-h-[90vh] overflow-y-auto"
+            className="bg-surface border border-border rounded-2xl p-6 max-w-md w-full mx-4 space-y-4 max-h-[90vh] overflow-y-auto shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between">
-              <h3 className="text-base font-semibold text-foreground">
+              <h3 className="text-lg font-semibold text-foreground">
                 {editingId ? "Modifier le badge" : "Nouveau badge"}
               </h3>
               <button
@@ -392,7 +419,7 @@ export function AdminBadges() {
                   <button
                     type="button"
                     onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                    className="w-full h-10 px-4 bg-muted border border-border rounded-[10px] text-sm text-left flex items-center gap-2"
+                    className="w-full h-10 px-4 bg-muted border border-border rounded-xl text-sm text-left flex items-center gap-2 focus:ring-2 focus:ring-[#AF0000]/20 focus:outline-none"
                   >
                     <span className="text-lg">{form.icon}</span>
                     <span className="text-muted-foreground flex-1">
@@ -414,7 +441,7 @@ export function AdminBadges() {
                             className={cn(
                               "w-8 h-8 rounded-lg flex items-center justify-center text-lg hover:bg-muted transition-colors",
                               form.icon === emoji &&
-                                "bg-primary/10 ring-1 ring-primary/30",
+                                "bg-[#AF0000]/10 ring-1 ring-[#AF0000]/30",
                             )}
                           >
                             {emoji}
@@ -448,7 +475,7 @@ export function AdminBadges() {
                     setForm((f) => ({ ...f, name: e.target.value }))
                   }
                   placeholder="Ex: Premier pas"
-                  className="w-full h-10 px-4 bg-muted border border-border rounded-[10px] text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  className="w-full h-10 px-4 bg-muted border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20"
                 />
               </div>
 
@@ -464,7 +491,7 @@ export function AdminBadges() {
                   }
                   rows={2}
                   placeholder="Description du badge..."
-                  className="w-full px-4 py-2.5 bg-muted border border-border rounded-[10px] text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
+                  className="w-full px-4 py-2.5 bg-muted border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20 resize-none"
                 />
               </div>
 
@@ -482,7 +509,7 @@ export function AdminBadges() {
                         category: e.target.value as BadgeCategory,
                       }))
                     }
-                    className="w-full h-10 px-3 bg-muted border border-border rounded-[10px] text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    className="w-full h-10 px-3 bg-muted border border-border rounded-xl text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20"
                   >
                     {CATEGORY_OPTIONS.map((opt) => (
                       <option key={opt.value} value={opt.value}>
@@ -504,7 +531,7 @@ export function AdminBadges() {
                         rarity: e.target.value as BadgeRarity,
                       }))
                     }
-                    className="w-full h-10 px-3 bg-muted border border-border rounded-[10px] text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    className="w-full h-10 px-3 bg-muted border border-border rounded-xl text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20"
                   >
                     {RARITY_OPTIONS.map((opt) => (
                       <option key={opt.value} value={opt.value}>
@@ -530,7 +557,7 @@ export function AdminBadges() {
                       xp_reward: parseInt(e.target.value) || 0,
                     }))
                   }
-                  className="w-full h-10 px-4 bg-muted border border-border rounded-[10px] text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  className="w-full h-10 px-4 bg-muted border border-border rounded-xl text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20"
                 />
               </div>
 
@@ -548,7 +575,7 @@ export function AdminBadges() {
                         condition_action: e.target.value,
                       }))
                     }
-                    className="h-9 px-3 bg-surface border border-border rounded-lg text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    className="h-9 px-3 bg-surface border border-border rounded-lg text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20"
                   >
                     <option value="">Aucune (manuel)</option>
                     {CONDITION_ACTIONS.map((action) => (
@@ -569,7 +596,7 @@ export function AdminBadges() {
                         }))
                       }
                       placeholder="Seuil"
-                      className="h-9 px-3 bg-surface border border-border rounded-lg text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                      className="h-9 px-3 bg-surface border border-border rounded-lg text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20"
                     />
                   )}
                 </div>
@@ -588,7 +615,7 @@ export function AdminBadges() {
             <div className="flex gap-3 justify-end pt-2">
               <button
                 onClick={() => setShowForm(false)}
-                className="h-9 px-4 rounded-[10px] border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                className="h-9 px-4 rounded-xl border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
               >
                 Annuler
               </button>
@@ -600,7 +627,7 @@ export function AdminBadges() {
                   createBadge.isPending ||
                   updateBadge.isPending
                 }
-                className="h-9 px-4 rounded-[10px] bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-2"
+                className="h-9 px-4 rounded-xl bg-gradient-to-r from-[#AF0000] to-[#DC2626] text-white text-sm font-medium hover:shadow-lg hover:shadow-[#AF0000]/25 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-2"
               >
                 {(createBadge.isPending || updateBadge.isPending) && (
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -615,7 +642,7 @@ export function AdminBadges() {
   );
 }
 
-// ─── Badge earners sub-panel ────────────────────────────
+// Badge earners sub-panel
 function BadgeEarnersPanel({
   badgeId,
   badgeName,
@@ -633,6 +660,7 @@ function BadgeEarnersPanel({
       initial="hidden"
       animate="visible"
       transition={defaultTransition}
+      className="bg-gradient-to-br from-blue-500/5 to-blue-500/[0.02] rounded-2xl p-5 border border-blue-500/10"
     >
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-sm font-semibold text-foreground flex items-center gap-2">
@@ -661,7 +689,7 @@ function BadgeEarnersPanel({
           {earners.map((earner) => (
             <div
               key={earner.id}
-              className="flex items-center gap-3 px-4 py-2.5"
+              className="flex items-center gap-3 px-4 py-2.5 hover:bg-muted/30 transition-colors"
             >
               <div className="w-7 h-7 rounded-full bg-muted flex items-center justify-center text-[10px] font-medium text-foreground shrink-0">
                 {earner.profile?.avatar_url ? (

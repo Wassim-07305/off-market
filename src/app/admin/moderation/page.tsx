@@ -43,11 +43,11 @@ export default function ModerationPage() {
       {/* Header */}
       <motion.div variants={staggerItem}>
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500/20 to-amber-600/10 flex items-center justify-center">
             <Shield className="w-5 h-5 text-amber-600" />
           </div>
           <div>
-            <h1 className="text-2xl font-display font-bold text-foreground tracking-tight">
+            <h1 className="text-3xl font-display font-bold text-foreground tracking-tight">
               Moderation
             </h1>
             <p className="text-sm text-muted-foreground mt-0.5">
@@ -67,9 +67,9 @@ export default function ModerationPage() {
             key={tab.value}
             onClick={() => setStatusFilter(tab.value)}
             className={cn(
-              "px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all",
+              "px-4 py-2 rounded-xl text-xs font-medium whitespace-nowrap transition-all",
               statusFilter === tab.value
-                ? "bg-primary text-white"
+                ? "bg-gradient-to-r from-[#AF0000] to-[#DC2626] text-white shadow-sm"
                 : "bg-muted text-muted-foreground hover:text-foreground",
             )}
           >
@@ -99,11 +99,15 @@ export default function ModerationPage() {
       ) : reports.length === 0 ? (
         <motion.div
           variants={staggerItem}
-          className="bg-surface rounded-2xl p-12 text-center"
-          style={{ boxShadow: "var(--shadow-card)" }}
+          className="bg-gradient-to-br from-emerald-500/5 to-emerald-500/[0.02] rounded-2xl p-12 text-center border border-emerald-500/10"
         >
-          <Check className="w-10 h-10 text-emerald-500 mx-auto mb-3" />
-          <p className="text-sm text-muted-foreground">
+          <div className="w-14 h-14 rounded-full bg-emerald-500/10 flex items-center justify-center mx-auto mb-4">
+            <Check className="w-7 h-7 text-emerald-500" />
+          </div>
+          <p className="text-sm font-medium text-foreground mb-1">
+            Tout est en ordre
+          </p>
+          <p className="text-xs text-muted-foreground">
             Aucun signalement{" "}
             {statusFilter !== "all" ? "dans cette categorie" : ""}
           </p>
@@ -170,22 +174,22 @@ function ReportCard({
 
   return (
     <div
-      className="bg-surface rounded-2xl p-5"
+      className="bg-surface rounded-2xl p-5 border border-border hover:shadow-md transition-shadow duration-200"
       style={{ boxShadow: "var(--shadow-card)" }}
     >
       <div className="flex items-start justify-between gap-4 mb-3">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-amber-500/10 flex items-center justify-center">
+          <div className="w-9 h-9 rounded-full bg-amber-500/10 flex items-center justify-center">
             <AlertTriangle className="w-4 h-4 text-amber-600" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <p className="text-sm font-medium text-foreground">
+              <p className="text-sm font-semibold text-foreground">
                 {reasonLabel}
               </p>
               <span
                 className={cn(
-                  "text-[10px] font-medium px-1.5 py-0.5 rounded-full",
+                  "text-[10px] font-medium px-2 py-0.5 rounded-full border",
                   statusConfig.color,
                 )}
               >
@@ -207,8 +211,8 @@ function ReportCard({
       </div>
 
       {/* Content preview */}
-      <div className="bg-muted/50 rounded-xl p-3 mb-3">
-        <p className="text-xs text-muted-foreground mb-1">
+      <div className="bg-muted/50 rounded-xl p-3.5 mb-3 border border-border/50">
+        <p className="text-xs text-muted-foreground mb-1 font-medium">
           {contentType} signale :
         </p>
         <p className="text-sm text-foreground line-clamp-3">{contentPreview}</p>
@@ -231,24 +235,24 @@ function ReportCard({
 
       {/* Actions */}
       {isPending && (
-        <div className="flex items-center gap-2 pt-2 border-t border-border/30">
+        <div className="flex items-center gap-2 pt-3 border-t border-border/30">
           <button
             onClick={() => onReview("dismissed")}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:bg-muted transition-colors"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium text-muted-foreground hover:bg-muted transition-colors"
           >
             <X className="w-3.5 h-3.5" />
             Rejeter
           </button>
           <button
             onClick={() => onReview("actioned", "warning")}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-amber-600 hover:bg-amber-50 transition-colors"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium text-amber-600 bg-amber-500/5 hover:bg-amber-500/10 transition-colors"
           >
             <Clock className="w-3.5 h-3.5" />
             Avertissement
           </button>
           <button
             onClick={onDeleteContent}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-error hover:bg-red-50 transition-colors"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium text-white bg-gradient-to-r from-[#AF0000] to-[#DC2626] hover:shadow-md hover:shadow-[#AF0000]/20 transition-all"
           >
             <Trash2 className="w-3.5 h-3.5" />
             Supprimer le contenu

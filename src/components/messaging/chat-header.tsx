@@ -50,11 +50,13 @@ export function ChatHeader({
           {isDM && partner ? (
             <>
               <div className="relative shrink-0">
-                <div className={cn(
-                  "w-9 h-9 rounded-full flex items-center justify-center overflow-hidden ring-2 transition-all duration-200",
-                  partnerOnline ? "ring-emerald-400/60" : "ring-transparent",
-                  !partner.avatar_url && "bg-[#AF0000]/10",
-                )}>
+                <div
+                  className={cn(
+                    "w-9 h-9 rounded-full flex items-center justify-center overflow-hidden ring-2 transition-all duration-200",
+                    partnerOnline ? "ring-emerald-400/60" : "ring-transparent",
+                    !partner.avatar_url && "bg-[#AF0000]/10",
+                  )}
+                >
                   {partner.avatar_url ? (
                     <img
                       src={partner.avatar_url}

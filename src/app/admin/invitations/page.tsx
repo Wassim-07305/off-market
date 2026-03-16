@@ -24,17 +24,17 @@ const STATUS_LABELS: Record<
 > = {
   pending: {
     label: "En attente",
-    color: "text-amber-500 bg-amber-500/10",
+    color: "text-amber-600 bg-amber-500/10 border border-amber-500/20",
     icon: Clock,
   },
   accepted: {
     label: "Acceptee",
-    color: "text-emerald-500 bg-emerald-500/10",
+    color: "text-emerald-600 bg-emerald-500/10 border border-emerald-500/20",
     icon: CheckCircle,
   },
   expired: {
     label: "Expiree",
-    color: "text-red-500 bg-red-500/10",
+    color: "text-gray-500 bg-gray-500/10 border border-gray-500/20",
     icon: XCircle,
   },
 };
@@ -75,14 +75,16 @@ export default function InvitationsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Invitations</h1>
+          <h1 className="text-3xl font-bold text-foreground tracking-tight">
+            Invitations
+          </h1>
           <p className="text-sm text-muted-foreground mt-1">
             Gerez les invitations pour ajouter des utilisateurs
           </p>
         </div>
         <button
           onClick={() => setShowModal(true)}
-          className="h-10 px-4 rounded-[10px] bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-all active:scale-[0.98] flex items-center gap-2"
+          className="h-10 px-5 rounded-xl bg-gradient-to-r from-[#AF0000] to-[#DC2626] text-white text-sm font-medium hover:shadow-lg hover:shadow-[#AF0000]/25 transition-all active:scale-[0.98] flex items-center gap-2"
         >
           <Plus className="w-4 h-4" />
           Nouvelle invitation
@@ -97,9 +99,9 @@ export default function InvitationsPage() {
               key={s}
               onClick={() => setFilter(s)}
               className={cn(
-                "h-8 px-3 rounded-lg text-xs font-medium transition-colors",
+                "h-8 px-3 rounded-xl text-xs font-medium transition-all",
                 filter === s
-                  ? "bg-primary text-white"
+                  ? "bg-gradient-to-r from-[#AF0000] to-[#DC2626] text-white shadow-sm"
                   : "bg-muted text-muted-foreground hover:text-foreground",
               )}
             >
@@ -115,37 +117,37 @@ export default function InvitationsPage() {
           Chargement...
         </div>
       ) : filtered.length === 0 ? (
-        <div className="text-center py-16 border border-dashed border-border rounded-2xl">
+        <div className="text-center py-16 border border-dashed border-border rounded-2xl bg-gradient-to-br from-muted/30 to-muted/10">
           <Mail className="w-10 h-10 text-muted-foreground/40 mx-auto mb-3" />
           <p className="text-sm text-muted-foreground">Aucune invitation</p>
           <button
             onClick={() => setShowModal(true)}
-            className="mt-3 text-sm text-primary hover:text-primary-hover font-medium transition-colors"
+            className="mt-3 text-sm text-[#AF0000] hover:text-[#DC2626] font-medium transition-colors"
           >
             Creer une invitation
           </button>
         </div>
       ) : (
-        <div className="border border-border rounded-xl overflow-hidden">
+        <div className="border border-border rounded-2xl overflow-hidden shadow-sm">
           <table className="w-full">
             <thead>
               <tr className="border-b border-border bg-muted/50">
-                <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3">
+                <th className="text-left text-xs font-semibold text-muted-foreground px-4 py-3.5 uppercase tracking-wider">
                   Nom
                 </th>
-                <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3">
+                <th className="text-left text-xs font-semibold text-muted-foreground px-4 py-3.5 uppercase tracking-wider">
                   Email
                 </th>
-                <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3">
+                <th className="text-left text-xs font-semibold text-muted-foreground px-4 py-3.5 uppercase tracking-wider">
                   Role
                 </th>
-                <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3">
+                <th className="text-left text-xs font-semibold text-muted-foreground px-4 py-3.5 uppercase tracking-wider">
                   Statut
                 </th>
-                <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3">
+                <th className="text-left text-xs font-semibold text-muted-foreground px-4 py-3.5 uppercase tracking-wider">
                   Date
                 </th>
-                <th className="text-right text-xs font-medium text-muted-foreground px-4 py-3">
+                <th className="text-right text-xs font-semibold text-muted-foreground px-4 py-3.5 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -157,24 +159,24 @@ export default function InvitationsPage() {
                 return (
                   <tr
                     key={invite.id}
-                    className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors"
+                    className="border-b border-border last:border-0 hover:bg-[#AF0000]/[0.02] transition-colors"
                   >
-                    <td className="px-4 py-3 text-sm font-medium text-foreground">
+                    <td className="px-4 py-3.5 text-sm font-medium text-foreground">
                       {invite.full_name}
                     </td>
-                    <td className="px-4 py-3 text-sm text-muted-foreground">
+                    <td className="px-4 py-3.5 text-sm text-muted-foreground">
                       {invite.email}
                     </td>
-                    <td className="px-4 py-3">
-                      <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-muted text-foreground">
+                    <td className="px-4 py-3.5">
+                      <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-muted text-foreground">
                         {ROLE_OPTIONS.find((r) => r.value === invite.role)
                           ?.label ?? invite.role}
                       </span>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3.5">
                       <span
                         className={cn(
-                          "inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full",
+                          "inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full",
                           statusInfo?.color,
                         )}
                       >
@@ -182,21 +184,21 @@ export default function InvitationsPage() {
                         {statusInfo?.label}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-xs text-muted-foreground">
+                    <td className="px-4 py-3.5 text-xs text-muted-foreground">
                       {new Date(invite.created_at).toLocaleDateString("fr-FR", {
                         day: "numeric",
                         month: "short",
                         year: "numeric",
                       })}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3.5">
                       <div className="flex items-center justify-end gap-1">
                         {invite.status === "pending" && (
                           <button
                             onClick={() =>
                               handleCopyLink(invite.invite_code, invite.id)
                             }
-                            className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                            className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-[#AF0000] hover:bg-[#AF0000]/5 transition-colors"
                             title="Copier le lien"
                           >
                             {copiedId === invite.id ? (

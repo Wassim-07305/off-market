@@ -64,10 +64,7 @@ export function AiPeriodicReport() {
             {/* Glow on hover */}
             <span className="absolute inset-0 rounded-xl opacity-0 group-hover/regen:opacity-100 transition-opacity duration-500 bg-[#AF0000]/5 blur-sm" />
             <RefreshCw
-              className={cn(
-                "w-3 h-3 relative",
-                isFetching && "animate-spin",
-              )}
+              className={cn("w-3 h-3 relative", isFetching && "animate-spin")}
             />
             <span className="relative">Regenerer</span>
           </button>

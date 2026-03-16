@@ -347,7 +347,7 @@ export default function SettingsPage() {
       className="max-w-2xl mx-auto space-y-8"
     >
       <div>
-        <h1 className="text-2xl font-display font-bold text-foreground tracking-tight">
+        <h1 className="text-2xl font-bold bg-gradient-to-r from-[#AF0000] via-[#DC2626] to-[#AF0000] bg-clip-text text-transparent tracking-tight">
           Reglages
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
@@ -356,10 +356,12 @@ export default function SettingsPage() {
       </div>
 
       {/* Profile */}
-      <div className="bg-white rounded-[14px] border border-border p-6 space-y-4">
+      <div className="bg-white rounded-2xl border border-border p-6 space-y-4 transition-all duration-200 hover:shadow-md hover:shadow-zinc-200/50">
         <div className="flex items-center gap-2 mb-2">
-          <User className="w-4 h-4 text-muted-foreground" />
-          <h2 className="text-sm font-medium text-foreground">Profil</h2>
+          <div className="size-7 rounded-lg bg-gradient-to-br from-[#AF0000] to-[#DC2626] flex items-center justify-center">
+            <User className="w-3.5 h-3.5 text-white" />
+          </div>
+          <h2 className="text-sm font-semibold text-foreground">Profil</h2>
         </div>
 
         {/* Avatar with upload */}
@@ -369,10 +371,10 @@ export default function SettingsPage() {
               <img
                 src={avatarUrl}
                 alt={fullName}
-                className="w-16 h-16 rounded-full object-cover"
+                className="w-16 h-16 rounded-full object-cover ring-2 ring-[#AF0000]/10 ring-offset-2"
               />
             ) : (
-              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-xl text-primary font-semibold">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#AF0000] to-[#DC2626] flex items-center justify-center text-xl text-white font-semibold ring-2 ring-[#AF0000]/10 ring-offset-2">
                 {initials}
               </div>
             )}
@@ -404,7 +406,7 @@ export default function SettingsPage() {
             </p>
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="text-xs text-primary hover:text-primary-hover transition-colors mt-1"
+              className="text-xs text-[#AF0000] hover:text-[#DC2626] transition-colors mt-1 font-medium"
             >
               Changer la photo
             </button>
@@ -419,7 +421,7 @@ export default function SettingsPage() {
             <input
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              className="w-full h-10 px-4 bg-muted/50 border-0 rounded-[10px] text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+              className="w-full h-10 px-4 bg-muted/50 border-0 rounded-xl text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20"
             />
           </div>
           <div>
@@ -430,7 +432,7 @@ export default function SettingsPage() {
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="+33 6 00 00 00 00"
-              className="w-full h-10 px-4 bg-muted/50 border-0 rounded-[10px] text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+              className="w-full h-10 px-4 bg-muted/50 border-0 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20"
             />
           </div>
         </div>
@@ -444,14 +446,14 @@ export default function SettingsPage() {
             onChange={(e) => setBio(e.target.value)}
             rows={3}
             placeholder="Quelques mots sur toi..."
-            className="w-full px-4 py-3 bg-muted/50 border-0 rounded-[10px] text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
+            className="w-full px-4 py-3 bg-muted/50 border-0 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20 resize-none"
           />
         </div>
 
         <button
           onClick={handleSave}
           disabled={saving}
-          className="h-10 px-4 rounded-[10px] bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-2"
+          className="h-10 px-4 rounded-xl bg-gradient-to-r from-[#AF0000] to-[#DC2626] text-white text-sm font-medium hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-50 shadow-sm shadow-[#AF0000]/20 flex items-center gap-2"
         >
           <Save className="w-4 h-4" />
           {saving ? "Sauvegarde..." : "Sauvegarder"}
@@ -459,10 +461,14 @@ export default function SettingsPage() {
       </div>
 
       {/* Notifications */}
-      <div className="bg-white rounded-[14px] border border-border p-6 space-y-4">
+      <div className="bg-white rounded-2xl border border-border p-6 space-y-4 transition-all duration-200 hover:shadow-md hover:shadow-zinc-200/50">
         <div className="flex items-center gap-2 mb-2">
-          <Bell className="w-4 h-4 text-muted-foreground" />
-          <h2 className="text-sm font-medium text-foreground">Notifications</h2>
+          <div className="size-7 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+            <Bell className="w-3.5 h-3.5 text-white" />
+          </div>
+          <h2 className="text-sm font-semibold text-foreground">
+            Notifications
+          </h2>
         </div>
         <p className="text-xs text-muted-foreground">
           Choisis les notifications que tu souhaites recevoir.
@@ -492,7 +498,7 @@ export default function SettingsPage() {
                   onClick={() => handleToggleNotification(item.key, !checked)}
                   className={cn(
                     "relative w-10 h-6 rounded-full transition-colors shrink-0",
-                    checked ? "bg-primary" : "bg-muted-foreground/30",
+                    checked ? "bg-[#AF0000]" : "bg-muted-foreground/30",
                   )}
                 >
                   <span
@@ -512,8 +518,8 @@ export default function SettingsPage() {
           <div className="border-t border-border pt-4">
             <label className="flex items-center justify-between cursor-pointer">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
-                  <BellRing className="w-4 h-4 text-primary" />
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#AF0000]/10 to-[#DC2626]/10 flex items-center justify-center">
+                  <BellRing className="w-4 h-4 text-[#AF0000]" />
                 </div>
                 <div>
                   <p className="text-sm font-medium text-foreground">
@@ -533,7 +539,7 @@ export default function SettingsPage() {
                 disabled={push.isLoading || push.permission === "denied"}
                 className={cn(
                   "relative w-10 h-6 rounded-full transition-colors shrink-0",
-                  push.isSubscribed ? "bg-primary" : "bg-muted-foreground/30",
+                  push.isSubscribed ? "bg-[#AF0000]" : "bg-muted-foreground/30",
                   (push.isLoading || push.permission === "denied") &&
                     "opacity-50 cursor-not-allowed",
                 )}
@@ -551,10 +557,12 @@ export default function SettingsPage() {
       </div>
 
       {/* Leaderboard anonymity */}
-      <div className="bg-white rounded-[14px] border border-border p-6 space-y-4">
+      <div className="bg-white rounded-2xl border border-border p-6 space-y-4 transition-all duration-200 hover:shadow-md hover:shadow-zinc-200/50">
         <div className="flex items-center gap-2 mb-2">
-          <Trophy className="w-4 h-4 text-muted-foreground" />
-          <h2 className="text-sm font-medium text-foreground">Classement</h2>
+          <div className="size-7 rounded-lg bg-gradient-to-br from-amber-400 to-amber-500 flex items-center justify-center">
+            <Trophy className="w-3.5 h-3.5 text-white" />
+          </div>
+          <h2 className="text-sm font-semibold text-foreground">Classement</h2>
         </div>
         <label className="flex items-center justify-between cursor-pointer">
           <div>
@@ -587,7 +595,7 @@ export default function SettingsPage() {
             }}
             className={cn(
               "relative w-10 h-6 rounded-full transition-colors shrink-0",
-              leaderboardAnonymous ? "bg-primary" : "bg-muted-foreground/30",
+              leaderboardAnonymous ? "bg-[#AF0000]" : "bg-muted-foreground/30",
             )}
           >
             <span
@@ -601,24 +609,27 @@ export default function SettingsPage() {
       </div>
 
       {/* Intelligence artificielle */}
-      <div className="bg-white rounded-[14px] border border-border p-6 space-y-4">
+      <div className="bg-white rounded-2xl border border-border p-6 space-y-4 transition-all duration-200 hover:shadow-md hover:shadow-zinc-200/50">
         <div className="flex items-center gap-2 mb-2">
-          <Bot className="w-4 h-4 text-muted-foreground" />
-          <h2 className="text-sm font-medium text-foreground">
+          <div className="size-7 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center">
+            <Bot className="w-3.5 h-3.5 text-white" />
+          </div>
+          <h2 className="text-sm font-semibold text-foreground">
             Intelligence artificielle
           </h2>
         </div>
         <p className="text-xs text-muted-foreground">
-          Off Market utilise l'IA (Claude) pour ameliorer ton coaching. Tes
+          Off Market utilise l&apos;IA (Claude) pour ameliorer ton coaching. Tes
           donnees ne sont jamais partagees avec des tiers.
         </p>
         <label className="flex items-center justify-between cursor-pointer">
           <div>
             <p className="text-sm font-medium text-foreground">
-              Autoriser l'utilisation de l'IA
+              Autoriser l&apos;utilisation de l&apos;IA
             </p>
             <p className="text-xs text-muted-foreground">
-              Active l'assistant IA, les suggestions et l'analyse automatique
+              Active l&apos;assistant IA, les suggestions et l&apos;analyse
+              automatique
             </p>
           </div>
           <button
@@ -639,7 +650,7 @@ export default function SettingsPage() {
             }}
             className={cn(
               "relative w-10 h-6 rounded-full transition-colors shrink-0",
-              aiConsent.hasConsent ? "bg-primary" : "bg-muted-foreground/30",
+              aiConsent.hasConsent ? "bg-[#AF0000]" : "bg-muted-foreground/30",
               (aiConsent.isAccepting || aiConsent.isRevoking) &&
                 "opacity-50 cursor-not-allowed",
             )}
@@ -655,10 +666,12 @@ export default function SettingsPage() {
       </div>
 
       {/* Appearance */}
-      <div className="bg-white rounded-[14px] border border-border p-6 space-y-4">
+      <div className="bg-white rounded-2xl border border-border p-6 space-y-4 transition-all duration-200 hover:shadow-md hover:shadow-zinc-200/50">
         <div className="flex items-center gap-2 mb-2">
-          <Palette className="w-4 h-4 text-muted-foreground" />
-          <h2 className="text-sm font-medium text-foreground">Apparence</h2>
+          <div className="size-7 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center">
+            <Palette className="w-3.5 h-3.5 text-white" />
+          </div>
+          <h2 className="text-sm font-semibold text-foreground">Apparence</h2>
         </div>
 
         <div className="flex gap-3">
@@ -667,10 +680,10 @@ export default function SettingsPage() {
               key={t.value}
               onClick={() => setTheme(t.value)}
               className={cn(
-                "flex-1 h-20 rounded-xl border-2 flex flex-col items-center justify-center gap-1.5 transition-all",
+                "flex-1 h-20 rounded-2xl border-2 flex flex-col items-center justify-center gap-1.5 transition-all",
                 theme === t.value
-                  ? "border-primary bg-primary/5"
-                  : "border-border hover:border-border/80",
+                  ? "border-[#AF0000] bg-[#AF0000]/5 shadow-sm shadow-[#AF0000]/10"
+                  : "border-border hover:border-[#AF0000]/30 hover:bg-muted/30",
               )}
             >
               <t.icon className="w-5 h-5 text-foreground" />
@@ -684,7 +697,7 @@ export default function SettingsPage() {
 
       {/* Custom Roles (admin only) */}
       {isAdmin && (
-        <div className="bg-white rounded-[14px] border border-border p-6">
+        <div className="bg-white rounded-2xl border border-border p-6">
           <RoleManager />
         </div>
       )}
@@ -696,10 +709,12 @@ export default function SettingsPage() {
       {isAdmin && <ApiSettings />}
 
       {/* Security */}
-      <div className="bg-white rounded-[14px] border border-border p-6 space-y-4">
+      <div className="bg-white rounded-2xl border border-border p-6 space-y-4 transition-all duration-200 hover:shadow-md hover:shadow-zinc-200/50">
         <div className="flex items-center gap-2 mb-2">
-          <Lock className="w-4 h-4 text-muted-foreground" />
-          <h2 className="text-sm font-medium text-foreground">Securite</h2>
+          <div className="size-7 rounded-lg bg-gradient-to-br from-zinc-600 to-zinc-700 flex items-center justify-center">
+            <Lock className="w-3.5 h-3.5 text-white" />
+          </div>
+          <h2 className="text-sm font-semibold text-foreground">Securite</h2>
         </div>
 
         <div className="space-y-3">
@@ -713,7 +728,7 @@ export default function SettingsPage() {
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full h-10 px-4 pr-10 bg-muted/50 border-0 rounded-[10px] text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                className="w-full h-10 px-4 pr-10 bg-muted/50 border-0 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20"
               />
               <button
                 type="button"
@@ -740,7 +755,7 @@ export default function SettingsPage() {
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   placeholder="Min. 8 caracteres"
-                  className="w-full h-10 px-4 pr-10 bg-muted/50 border-0 rounded-[10px] text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  className="w-full h-10 px-4 pr-10 bg-muted/50 border-0 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20"
                 />
                 <button
                   type="button"
@@ -764,7 +779,7 @@ export default function SettingsPage() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Confirmer le mot de passe"
-                className="w-full h-10 px-4 bg-muted/50 border-0 rounded-[10px] text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                className="w-full h-10 px-4 bg-muted/50 border-0 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20"
               />
             </div>
           </div>
@@ -780,7 +795,7 @@ export default function SettingsPage() {
           <button
             onClick={handleChangePassword}
             disabled={changingPassword || !newPassword || !confirmPassword}
-            className="h-9 px-4 rounded-[10px] bg-foreground text-background text-sm font-medium hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-2"
+            className="h-9 px-4 rounded-xl bg-foreground text-background text-sm font-medium hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-2"
           >
             {changingPassword ? (
               <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -793,10 +808,12 @@ export default function SettingsPage() {
       </div>
 
       {/* 2FA */}
-      <div className="bg-white rounded-[14px] border border-border p-6 space-y-4">
+      <div className="bg-white rounded-2xl border border-border p-6 space-y-4 transition-all duration-200 hover:shadow-md hover:shadow-zinc-200/50">
         <div className="flex items-center gap-2 mb-2">
-          <ShieldCheck className="w-4 h-4 text-muted-foreground" />
-          <h2 className="text-sm font-medium text-foreground">
+          <div className="size-7 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center">
+            <ShieldCheck className="w-3.5 h-3.5 text-white" />
+          </div>
+          <h2 className="text-sm font-semibold text-foreground">
             Authentification a deux facteurs (2FA)
           </h2>
         </div>
@@ -810,13 +827,14 @@ export default function SettingsPage() {
                   2FA active
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  Ton compte est protege par une application d'authentification.
+                  Ton compte est protege par une application
+                  d&apos;authentification.
                 </p>
               </div>
             </div>
             <button
               onClick={twoFA.disable}
-              className="h-9 px-4 rounded-[10px] border border-error/30 text-sm text-error hover:bg-error/5 transition-colors flex items-center gap-2"
+              className="h-9 px-4 rounded-xl border border-error/30 text-sm text-error hover:bg-error/5 transition-colors flex items-center gap-2"
             >
               <Lock className="w-3.5 h-3.5" />
               Desactiver le 2FA
@@ -825,8 +843,8 @@ export default function SettingsPage() {
         ) : twoFA.qrCode ? (
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              Scanne ce QR code avec ton application d'authentification (Google
-              Authenticator, Authy, etc.) :
+              Scanne ce QR code avec ton application d&apos;authentification
+              (Google Authenticator, Authy, etc.) :
             </p>
             <div className="flex justify-center">
               <img
@@ -859,7 +877,7 @@ export default function SettingsPage() {
                     setTotpCode(e.target.value.replace(/\D/g, ""))
                   }
                   placeholder="000000"
-                  className="flex-1 h-10 px-4 bg-muted/50 border-0 rounded-[10px] text-sm text-foreground font-mono tracking-widest text-center focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  className="flex-1 h-10 px-4 bg-muted/50 border-0 rounded-xl text-sm text-foreground font-mono tracking-widest text-center focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20"
                 />
                 <button
                   onClick={async () => {
@@ -870,7 +888,7 @@ export default function SettingsPage() {
                     if (ok) setTotpCode("");
                   }}
                   disabled={totpCode.length !== 6 || verifying2FA}
-                  className="h-10 px-4 rounded-[10px] bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-2"
+                  className="h-10 px-4 rounded-xl bg-gradient-to-r from-[#AF0000] to-[#DC2626] text-white text-sm font-medium hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-50 shadow-sm shadow-[#AF0000]/20 flex items-center gap-2"
                 >
                   {verifying2FA && (
                     <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -893,12 +911,12 @@ export default function SettingsPage() {
           <div className="space-y-3">
             <p className="text-sm text-muted-foreground">
               Ajoute une couche de securite supplementaire avec une application
-              d'authentification.
+              d&apos;authentification.
             </p>
             <button
               onClick={twoFA.startEnroll}
               disabled={twoFA.enrolling}
-              className="h-9 px-4 rounded-[10px] bg-foreground text-background text-sm font-medium hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-2"
+              className="h-9 px-4 rounded-xl bg-foreground text-background text-sm font-medium hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-2"
             >
               {twoFA.enrolling ? (
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -912,10 +930,12 @@ export default function SettingsPage() {
       </div>
 
       {/* Email preferences */}
-      <div className="bg-white rounded-[14px] border border-border p-6 space-y-4">
+      <div className="bg-white rounded-2xl border border-border p-6 space-y-4 transition-all duration-200 hover:shadow-md hover:shadow-zinc-200/50">
         <div className="flex items-center gap-2 mb-2">
-          <Mail className="w-4 h-4 text-muted-foreground" />
-          <h2 className="text-sm font-medium text-foreground">
+          <div className="size-7 rounded-lg bg-gradient-to-br from-cyan-500 to-cyan-600 flex items-center justify-center">
+            <Mail className="w-3.5 h-3.5 text-white" />
+          </div>
+          <h2 className="text-sm font-semibold text-foreground">
             Preferences email
           </h2>
         </div>
@@ -935,7 +955,7 @@ export default function SettingsPage() {
                 className={cn(
                   "h-9 px-4 rounded-xl text-xs font-medium transition-all",
                   preferences?.email_digest === opt.value
-                    ? "bg-foreground text-background"
+                    ? "bg-gradient-to-r from-[#AF0000] to-[#DC2626] text-white shadow-sm shadow-[#AF0000]/20"
                     : "bg-muted text-muted-foreground hover:text-foreground",
                 )}
               >
@@ -964,7 +984,7 @@ export default function SettingsPage() {
               className={cn(
                 "relative w-10 h-6 rounded-full transition-colors shrink-0",
                 (preferences?.email_marketing ?? true)
-                  ? "bg-primary"
+                  ? "bg-[#AF0000]"
                   : "bg-muted-foreground/30",
               )}
             >
@@ -980,10 +1000,14 @@ export default function SettingsPage() {
       </div>
 
       {/* Google Agenda */}
-      <div className="bg-white rounded-[14px] border border-border p-6 space-y-4">
+      <div className="bg-white rounded-2xl border border-border p-6 space-y-4 transition-all duration-200 hover:shadow-md hover:shadow-zinc-200/50">
         <div className="flex items-center gap-2 mb-2">
-          <Calendar className="w-4 h-4 text-muted-foreground" />
-          <h2 className="text-sm font-medium text-foreground">Google Agenda</h2>
+          <div className="size-7 rounded-lg bg-gradient-to-br from-sky-500 to-sky-600 flex items-center justify-center">
+            <Calendar className="w-3.5 h-3.5 text-white" />
+          </div>
+          <h2 className="text-sm font-semibold text-foreground">
+            Google Agenda
+          </h2>
         </div>
 
         {googleStatus.data?.connected ? (
@@ -1002,7 +1026,7 @@ export default function SettingsPage() {
             <button
               onClick={() => disconnectGoogle.mutate()}
               disabled={disconnectGoogle.isPending}
-              className="h-9 px-4 rounded-[10px] border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center gap-2"
+              className="h-9 px-4 rounded-xl border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center gap-2"
             >
               {disconnectGoogle.isPending ? (
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -1020,7 +1044,7 @@ export default function SettingsPage() {
             </p>
             <a
               href="/api/google-calendar/connect"
-              className="h-9 px-4 rounded-[10px] bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-all active:scale-[0.98] flex items-center gap-2 shrink-0"
+              className="h-9 px-4 rounded-xl bg-gradient-to-r from-[#AF0000] to-[#DC2626] text-white text-sm font-medium hover:opacity-90 transition-all active:scale-[0.98] shadow-sm shadow-[#AF0000]/20 flex items-center gap-2 shrink-0"
             >
               <ExternalLink className="w-3.5 h-3.5" />
               Connecter
@@ -1030,7 +1054,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Danger zone */}
-      <div className="bg-white rounded-[14px] border border-border border-l-[3px] border-l-error p-6 space-y-4">
+      <div className="bg-white rounded-2xl border border-border border-l-[3px] border-l-error p-6 space-y-4">
         <div className="flex items-center gap-2 mb-2">
           <Shield className="w-4 h-4 text-error" />
           <h2 className="text-sm font-semibold text-error">Zone dangereuse</h2>
@@ -1042,7 +1066,7 @@ export default function SettingsPage() {
           <button
             onClick={handleExportData}
             disabled={exporting}
-            className="h-9 px-4 rounded-[10px] border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center gap-2"
+            className="h-9 px-4 rounded-xl border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center gap-2"
           >
             {exporting ? (
               <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -1053,7 +1077,7 @@ export default function SettingsPage() {
           </button>
           <button
             onClick={() => setShowDeleteConfirm(true)}
-            className="h-9 px-4 rounded-[10px] border border-error/30 text-sm text-error hover:bg-error/5 transition-colors flex items-center gap-2"
+            className="h-9 px-4 rounded-xl border border-error/30 text-sm text-error hover:bg-error/5 transition-colors flex items-center gap-2"
           >
             <Trash2 className="w-3.5 h-3.5" />
             Supprimer mon compte
@@ -1063,7 +1087,7 @@ export default function SettingsPage() {
         {/* Delete confirmation modal */}
         {showDeleteConfirm && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-            <div className="bg-white border border-border rounded-[14px] p-6 max-w-sm w-full mx-4 space-y-4">
+            <div className="bg-white border border-border rounded-2xl p-6 max-w-sm w-full mx-4 space-y-4 shadow-xl">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-error/10 flex items-center justify-center">
                   <AlertTriangle className="w-5 h-5 text-error" />
@@ -1083,14 +1107,14 @@ export default function SettingsPage() {
               <div className="flex gap-3 justify-end">
                 <button
                   onClick={() => setShowDeleteConfirm(false)}
-                  className="h-9 px-4 rounded-[10px] border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                  className="h-9 px-4 rounded-xl border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                 >
                   Annuler
                 </button>
                 <button
                   onClick={handleDeleteAccount}
                   disabled={deleting}
-                  className="h-9 px-4 rounded-[10px] bg-error text-white text-sm font-medium hover:bg-error/90 transition-colors flex items-center gap-2"
+                  className="h-9 px-4 rounded-xl bg-error text-white text-sm font-medium hover:bg-error/90 transition-colors flex items-center gap-2"
                 >
                   {deleting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                   {deleting ? "Suppression..." : "Confirmer"}

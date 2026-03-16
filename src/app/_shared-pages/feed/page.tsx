@@ -83,8 +83,11 @@ export default function FeedPage() {
     const el = document.getElementById(`post-${postId}`);
     if (el) {
       el.scrollIntoView({ behavior: "smooth", block: "center" });
-      el.classList.add("ring-2", "ring-primary/30");
-      setTimeout(() => el.classList.remove("ring-2", "ring-primary/30"), 2000);
+      el.classList.add("ring-2", "ring-[#AF0000]/30");
+      setTimeout(
+        () => el.classList.remove("ring-2", "ring-[#AF0000]/30"),
+        2000,
+      );
     }
   }, []);
 
@@ -97,7 +100,7 @@ export default function FeedPage() {
     >
       {/* Header */}
       <motion.div variants={staggerItem}>
-        <h1 className="text-2xl font-display font-bold text-foreground tracking-tight">
+        <h1 className="text-2xl font-bold bg-gradient-to-r from-[#AF0000] via-[#DC2626] to-[#AF0000] bg-clip-text text-transparent tracking-tight">
           Feed
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
@@ -133,7 +136,7 @@ export default function FeedPage() {
                   className={cn(
                     "px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all",
                     typeFilter === f.value
-                      ? "bg-[#DC2626] text-white"
+                      ? "bg-gradient-to-r from-[#AF0000] to-[#DC2626] text-white shadow-sm shadow-[#AF0000]/20"
                       : "bg-muted text-muted-foreground hover:text-foreground",
                   )}
                 >
@@ -172,7 +175,7 @@ export default function FeedPage() {
               {[...Array(3)].map((_, i) => (
                 <div
                   key={i}
-                  className="bg-white rounded-[14px] border border-border p-6"
+                  className="bg-white rounded-2xl border border-border p-6"
                 >
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-10 h-10 rounded-full bg-muted animate-shimmer" />
@@ -191,7 +194,7 @@ export default function FeedPage() {
           ) : posts.length === 0 ? (
             <motion.div
               variants={staggerItem}
-              className="bg-white rounded-[14px] border border-border p-12 text-center"
+              className="bg-white rounded-2xl border border-border p-12 text-center"
             >
               <p className="text-sm text-muted-foreground">
                 Aucune publication pour le moment. Soyez le premier a poster !
@@ -209,7 +212,7 @@ export default function FeedPage() {
                     initial="hidden"
                     animate="visible"
                     exit="hidden"
-                    className="transition-all duration-300 rounded-[14px]"
+                    className="transition-all duration-300 rounded-2xl"
                   >
                     <PostCard
                       post={post}
@@ -288,7 +291,7 @@ function PostComposer({
   };
 
   return (
-    <div className="bg-white rounded-[14px] border border-border p-4">
+    <div className="bg-white rounded-2xl border border-border p-4 shadow-sm transition-all duration-200 hover:shadow-md">
       <textarea
         value={content}
         onChange={(e) => {
@@ -298,7 +301,7 @@ function PostComposer({
         onFocus={() => setExpanded(true)}
         placeholder="Partagez quelque chose avec la communaute..."
         rows={expanded ? 4 : 2}
-        className="w-full bg-muted/50 rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none transition-shadow"
+        className="w-full bg-muted/50 rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20 resize-none transition-shadow"
       />
 
       {expanded && (
@@ -326,7 +329,7 @@ function PostComposer({
           <button
             onClick={handleSubmit}
             disabled={!content.trim() || isSubmitting}
-            className="h-8 px-4 bg-[#DC2626] text-white rounded-[10px] text-xs font-medium hover:bg-[#B91C1C] transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-1"
+            className="h-8 px-4 bg-gradient-to-r from-[#AF0000] to-[#DC2626] text-white rounded-xl text-xs font-medium hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-50 shadow-sm shadow-[#AF0000]/20 flex items-center gap-1"
           >
             <Send className="w-3 h-3" />
             {isSubmitting ? "..." : "Publier"}
@@ -357,12 +360,20 @@ function PostCard({
   const [showMenu, setShowMenu] = useState(false);
   const isAuthor = currentUserId === post.author_id;
   const typeConfig = POST_TYPE_CONFIG[post.post_type];
+  const isVictory = post.post_type === "victory";
 
   return (
-    <div className="bg-white rounded-[14px] border border-border">
+    <div
+      className={cn(
+        "bg-white rounded-2xl border transition-all duration-200 hover:shadow-md hover:-translate-y-0.5",
+        isVictory
+          ? "border-amber-200/60 bg-gradient-to-br from-amber-50/30 to-white shadow-sm shadow-amber-100/30"
+          : "border-border",
+      )}
+    >
       {/* Pinned indicator */}
       {post.is_pinned && (
-        <div className="px-4 pt-3 flex items-center gap-1 text-xs text-amber-600">
+        <div className="px-4 pt-3 flex items-center gap-1 text-xs text-amber-600 font-medium">
           <Pin className="w-3 h-3" />
           Epingle
         </div>
@@ -376,10 +387,10 @@ function PostCard({
               <img
                 src={post.author.avatar_url}
                 alt=""
-                className="w-10 h-10 rounded-full object-cover"
+                className="w-10 h-10 rounded-full object-cover ring-2 ring-[#AF0000]/10 ring-offset-1"
               />
             ) : (
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-sm text-primary font-medium">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#AF0000] to-[#DC2626] flex items-center justify-center text-sm text-white font-medium ring-2 ring-[#AF0000]/10 ring-offset-1">
                 {post.author?.full_name?.charAt(0) ?? "?"}
               </div>
             )}
@@ -391,7 +402,7 @@ function PostCard({
                 {post.author?.role &&
                   (post.author.role === "admin" ||
                     post.author.role === "coach") && (
-                    <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-primary/10 text-primary">
+                    <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-gradient-to-r from-[#AF0000]/10 to-[#DC2626]/10 text-[#AF0000]">
                       {post.author.role === "admin" ? "Admin" : "Coach"}
                     </span>
                   )}
@@ -424,7 +435,7 @@ function PostCard({
                     className="fixed inset-0 z-10"
                     onClick={() => setShowMenu(false)}
                   />
-                  <div className="absolute right-0 top-8 z-20 bg-white rounded-[10px] border border-border py-1 min-w-[140px] shadow-sm">
+                  <div className="absolute right-0 top-8 z-20 bg-white rounded-xl border border-border py-1 min-w-[140px] shadow-lg">
                     {isStaff && (
                       <button
                         onClick={() => {
@@ -465,14 +476,18 @@ function PostCard({
         <div className="flex items-center gap-1 mt-4 pt-3 border-t border-border/50">
           <button
             onClick={onLike}
-            className={`flex items-center gap-1.5 h-8 px-2.5 rounded-lg text-xs font-medium transition-all ${
+            className={cn(
+              "flex items-center gap-1.5 h-8 px-2.5 rounded-lg text-xs font-medium transition-all",
               post.is_liked
-                ? "text-red-500 bg-red-500/5"
-                : "text-muted-foreground hover:text-red-500 hover:bg-red-500/5"
-            }`}
+                ? "text-[#AF0000] bg-[#AF0000]/5"
+                : "text-muted-foreground hover:text-[#AF0000] hover:bg-[#AF0000]/5",
+            )}
           >
             <Heart
-              className={`w-3.5 h-3.5 transition-transform ${post.is_liked ? "fill-current" : ""}`}
+              className={cn(
+                "w-3.5 h-3.5 transition-transform",
+                post.is_liked ? "fill-current scale-110" : "",
+              )}
             />
             {post.likes_count > 0 && (
               <span className="text-xs">{post.likes_count}</span>

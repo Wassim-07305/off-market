@@ -23,17 +23,17 @@ import {
 // ─── Helpers ─────────────────────────────
 const MONTHS_FR = [
   "Janvier",
-  "Février",
+  "Fevrier",
   "Mars",
   "Avril",
   "Mai",
   "Juin",
   "Juillet",
-  "Août",
+  "Aout",
   "Septembre",
   "Octobre",
   "Novembre",
-  "Décembre",
+  "Decembre",
 ];
 
 const DAYS_FR = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
@@ -244,20 +244,19 @@ export default function CalendarPage() {
         className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
       >
         <div>
-          <h1 className="text-2xl font-display font-bold text-foreground tracking-tight">
-            Calendrier
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+            <span className="bg-gradient-to-r from-foreground via-foreground/90 to-foreground/70 bg-clip-text text-transparent">
+              Calendrier
+            </span>
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            {events.length} événement{events.length !== 1 ? "s" : ""} sur la
-            période
+          <p className="text-sm text-muted-foreground/70 mt-1">
+            {events.length} evenement{events.length !== 1 ? "s" : ""} sur la
+            periode
           </p>
         </div>
         <div className="flex items-center gap-2">
           {/* View toggle */}
-          <div
-            className="flex rounded-xl overflow-hidden"
-            style={{ boxShadow: "var(--shadow-xs)" }}
-          >
+          <div className="flex rounded-xl overflow-hidden border border-zinc-200/80 dark:border-border/50">
             {(
               [
                 { key: "month", label: "Mois", icon: LayoutGrid },
@@ -272,10 +271,12 @@ export default function CalendarPage() {
                   setSelectedDay(null);
                 }}
                 className={cn(
-                  "h-9 px-3 flex items-center gap-1.5 text-xs font-medium transition-all",
+                  "h-9 px-3 flex items-center gap-1.5 text-xs font-medium transition-all duration-200",
+                  v.key !== "month" &&
+                    "border-l border-zinc-200/80 dark:border-border/50",
                   view === v.key
-                    ? "bg-foreground text-background"
-                    : "bg-surface text-muted-foreground hover:text-foreground",
+                    ? "bg-[#AF0000] text-white"
+                    : "bg-white dark:bg-surface text-muted-foreground hover:text-foreground hover:bg-zinc-50 dark:hover:bg-muted",
                 )}
               >
                 <v.icon className="w-3.5 h-3.5" />
@@ -288,10 +289,10 @@ export default function CalendarPage() {
           {canCreate && (
             <button
               onClick={() => handleCreateClick()}
-              className="h-9 px-4 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-all active:scale-[0.98] flex items-center gap-2"
+              className="h-9 px-4 rounded-xl bg-gradient-to-r from-[#AF0000] to-[#DC2626] text-white text-sm font-semibold hover:shadow-lg hover:shadow-[#AF0000]/20 transition-all duration-300 active:scale-[0.98] flex items-center gap-2"
             >
               <Plus className="w-4 h-4" />
-              <span className="hidden sm:inline">Événement</span>
+              <span className="hidden sm:inline">Evenement</span>
             </button>
           )}
         </div>
@@ -301,24 +302,23 @@ export default function CalendarPage() {
       <motion.div variants={staggerItem} className="flex items-center gap-3">
         <button
           onClick={() => navigate(-1)}
-          className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+          className="w-8 h-8 rounded-xl flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-zinc-100 dark:hover:bg-muted border border-zinc-200/80 dark:border-border/50 bg-white dark:bg-surface transition-all duration-200"
         >
           <ChevronLeft className="w-4 h-4" />
         </button>
         <button
           onClick={goToToday}
-          className="h-8 px-3 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-          style={{ boxShadow: "var(--shadow-xs)" }}
+          className="h-8 px-3 rounded-xl text-xs font-semibold text-[#AF0000] hover:bg-[#AF0000]/5 border border-[#AF0000]/20 transition-all duration-200"
         >
           Aujourd&apos;hui
         </button>
         <button
           onClick={() => navigate(1)}
-          className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+          className="w-8 h-8 rounded-xl flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-zinc-100 dark:hover:bg-muted border border-zinc-200/80 dark:border-border/50 bg-white dark:bg-surface transition-all duration-200"
         >
           <ChevronRight className="w-4 h-4" />
         </button>
-        <span className="text-sm font-medium text-foreground font-mono">
+        <span className="text-sm font-semibold text-foreground font-mono tracking-tight">
           {headerTitle}
         </span>
       </motion.div>
@@ -326,12 +326,12 @@ export default function CalendarPage() {
       {/* ═══ Legend ═══ */}
       <motion.div variants={staggerItem} className="flex items-center gap-4">
         {(["session", "call", "event"] as const).map((type) => (
-          <div key={type} className="flex items-center gap-1.5">
+          <div key={type} className="flex items-center gap-2">
             <div
-              className="w-2.5 h-2.5 rounded-full"
+              className="w-3 h-3 rounded-full ring-2 ring-white dark:ring-zinc-900 shadow-sm"
               style={{ backgroundColor: EVENT_COLORS[type] }}
             />
-            <span className="text-xs text-muted-foreground">
+            <span className="text-xs font-medium text-muted-foreground/80">
               {EVENT_TYPE_LABELS[type]}
             </span>
           </div>
@@ -342,14 +342,17 @@ export default function CalendarPage() {
       <motion.div variants={staggerItem}>
         {isLoading ? (
           <div
-            className="bg-surface rounded-2xl p-8"
-            style={{ boxShadow: "var(--shadow-card)" }}
+            className="bg-white dark:bg-surface border border-zinc-200/80 dark:border-border/50 rounded-2xl p-8"
+            style={{
+              boxShadow:
+                "0 1px 3px rgb(0 0 0 / 0.04), 0 8px 20px rgb(0 0 0 / 0.02)",
+            }}
           >
             <div className="grid grid-cols-7 gap-1">
               {Array.from({ length: 35 }).map((_, i) => (
                 <div
                   key={i}
-                  className="h-20 bg-muted rounded-lg animate-shimmer"
+                  className="h-20 bg-zinc-50 dark:bg-muted rounded-xl animate-shimmer"
                 />
               ))}
             </div>
@@ -366,7 +369,7 @@ export default function CalendarPage() {
             onCreateClick={canCreate ? handleCreateClick : undefined}
           />
         ) : view === "week" ? (
-          <WeekView
+          <WeekViewCalendar
             days={weekDays}
             today={today}
             selectedDay={selectedDay}
@@ -391,11 +394,14 @@ export default function CalendarPage() {
       {selectedDay && view !== "day" && (
         <motion.div
           variants={staggerItem}
-          className="bg-surface rounded-2xl p-4"
-          style={{ boxShadow: "var(--shadow-card)" }}
+          className="bg-white dark:bg-surface border border-zinc-200/80 dark:border-border/50 rounded-2xl p-5"
+          style={{
+            boxShadow:
+              "0 1px 3px rgb(0 0 0 / 0.04), 0 8px 20px rgb(0 0 0 / 0.02)",
+          }}
         >
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-semibold text-foreground">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-bold text-foreground">
               {selectedDay.toLocaleDateString("fr-FR", {
                 weekday: "long",
                 day: "numeric",
@@ -405,15 +411,15 @@ export default function CalendarPage() {
             {canCreate && (
               <button
                 onClick={() => handleCreateClick(selectedDay)}
-                className="text-xs text-primary hover:underline"
+                className="text-xs font-semibold text-[#AF0000] hover:text-[#DC2626] transition-colors"
               >
                 + Ajouter
               </button>
             )}
           </div>
           {selectedDayEvents.length === 0 ? (
-            <p className="text-xs text-muted-foreground py-4 text-center">
-              Aucun événement ce jour
+            <p className="text-xs text-muted-foreground/60 py-4 text-center">
+              Aucun evenement ce jour
             </p>
           ) : (
             <div className="space-y-2">
@@ -421,23 +427,24 @@ export default function CalendarPage() {
                 <button
                   key={e.id}
                   onClick={() => handleEventClick(e)}
-                  className="w-full flex items-center gap-3 p-2 rounded-xl hover:bg-muted/50 transition-colors text-left"
+                  className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-zinc-50 dark:hover:bg-muted/50 transition-all duration-200 text-left group"
                 >
                   <div
-                    className="w-1 h-8 rounded-full shrink-0"
+                    className="w-1 h-10 rounded-full shrink-0"
                     style={{ backgroundColor: e.color }}
                   />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-foreground truncate">
+                    <p className="text-sm font-semibold text-foreground truncate group-hover:text-[#AF0000] transition-colors">
                       {e.title}
                     </p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-muted-foreground/70 mt-0.5">
                       {formatTime(e.start)}
                       {e.end && ` — ${formatTime(e.end)}`}
                       {" · "}
                       {EVENT_TYPE_LABELS[e.type]}
                     </p>
                   </div>
+                  <ChevronRight className="w-4 h-4 text-muted-foreground/30 opacity-0 group-hover:opacity-100 transition-all duration-200" />
                 </button>
               ))}
             </div>
@@ -489,15 +496,17 @@ function MonthView({
 }) {
   return (
     <div
-      className="bg-surface rounded-2xl overflow-hidden"
-      style={{ boxShadow: "var(--shadow-card)" }}
+      className="bg-white dark:bg-surface border border-zinc-200/80 dark:border-border/50 rounded-2xl overflow-hidden"
+      style={{
+        boxShadow: "0 1px 3px rgb(0 0 0 / 0.04), 0 8px 20px rgb(0 0 0 / 0.02)",
+      }}
     >
       {/* Day headers */}
-      <div className="grid grid-cols-7 border-b border-border/30">
+      <div className="grid grid-cols-7 border-b border-zinc-100 dark:border-border/30 bg-zinc-50/50 dark:bg-muted/30">
         {DAYS_FR.map((d) => (
           <div
             key={d}
-            className="px-2 py-2 text-xs font-medium text-muted-foreground text-center"
+            className="px-2 py-2.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 text-center"
           >
             {d}
           </div>
@@ -519,22 +528,23 @@ function MonthView({
               onClick={() => onDayClick(day)}
               onDoubleClick={() => onCreateClick?.(day)}
               className={cn(
-                "relative min-h-[80px] sm:min-h-[100px] p-1.5 border-b border-r border-border/20 text-left transition-colors group",
-                !isCurrentMonth && "bg-muted/30",
-                isSelected && "bg-primary/5 ring-1 ring-primary/20",
-                "hover:bg-muted/40",
+                "relative min-h-[80px] sm:min-h-[100px] p-1.5 border-b border-r border-zinc-100/80 dark:border-border/15 text-left transition-all duration-200 group",
+                !isCurrentMonth && "bg-zinc-50/50 dark:bg-muted/20",
+                isSelected && "bg-[#AF0000]/5 ring-1 ring-[#AF0000]/20",
+                isToday && !isSelected && "bg-[#AF0000]/[0.02]",
+                "hover:bg-zinc-50 dark:hover:bg-muted/30",
               )}
             >
               {/* Day number */}
               <div className="flex items-center justify-between">
                 <span
                   className={cn(
-                    "text-xs font-medium w-6 h-6 flex items-center justify-center rounded-full",
+                    "text-xs font-semibold w-6 h-6 flex items-center justify-center rounded-full transition-all duration-200",
                     isToday
-                      ? "bg-primary text-white"
+                      ? "bg-gradient-to-br from-[#AF0000] to-[#DC2626] text-white shadow-sm shadow-[#AF0000]/30"
                       : isCurrentMonth
                         ? "text-foreground"
-                        : "text-muted-foreground/50",
+                        : "text-muted-foreground/40",
                   )}
                 >
                   {day.getDate()}
@@ -555,7 +565,7 @@ function MonthView({
                       ev.stopPropagation();
                       onEventClick(e);
                     }}
-                    className="flex items-center gap-1 px-1 py-0.5 rounded text-[10px] leading-tight truncate cursor-pointer hover:opacity-80 transition-opacity"
+                    className="flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] leading-tight truncate cursor-pointer hover:opacity-80 transition-all duration-150"
                     style={{
                       backgroundColor: `${e.color}15`,
                       color: e.color,
@@ -565,11 +575,11 @@ function MonthView({
                       className="w-1 h-1 rounded-full shrink-0"
                       style={{ backgroundColor: e.color }}
                     />
-                    <span className="truncate">{e.title}</span>
+                    <span className="truncate font-medium">{e.title}</span>
                   </div>
                 ))}
                 {dayEvents.length > 3 && (
-                  <span className="text-[10px] text-muted-foreground pl-1">
+                  <span className="text-[10px] text-muted-foreground/60 font-medium pl-1">
                     +{dayEvents.length - 3} de plus
                   </span>
                 )}
@@ -583,7 +593,7 @@ function MonthView({
 }
 
 // ─── Week View ───────────────────────────
-function WeekView({
+function WeekViewCalendar({
   days,
   today,
   selectedDay,
@@ -610,10 +620,12 @@ function WeekView({
 
   return (
     <div
-      className="bg-surface rounded-2xl overflow-hidden"
-      style={{ boxShadow: "var(--shadow-card)" }}
+      className="bg-white dark:bg-surface border border-zinc-200/80 dark:border-border/50 rounded-2xl overflow-hidden"
+      style={{
+        boxShadow: "0 1px 3px rgb(0 0 0 / 0.04), 0 8px 20px rgb(0 0 0 / 0.02)",
+      }}
     >
-      <div className="grid grid-cols-7 divide-x divide-border/20">
+      <div className="grid grid-cols-7 divide-x divide-zinc-100 dark:divide-border/20">
         {days.map((day, i) => {
           const key = toDateKey(day);
           const dayEvents = eventsByDate[key] ?? [];
@@ -625,23 +637,23 @@ function WeekView({
               key={i}
               className={cn(
                 "min-h-[300px] flex flex-col",
-                isSelected && "bg-primary/5",
+                isSelected && "bg-[#AF0000]/5",
               )}
             >
               {/* Header */}
               <button
                 onClick={() => onDayClick(day)}
-                className={cn(
-                  "flex flex-col items-center py-3 border-b border-border/20 hover:bg-muted/30 transition-colors",
-                )}
+                className="flex flex-col items-center py-3 border-b border-zinc-100 dark:border-border/20 hover:bg-zinc-50/60 dark:hover:bg-muted/30 transition-all duration-200"
               >
-                <span className="text-[10px] text-muted-foreground uppercase">
+                <span className="text-[10px] text-muted-foreground/60 uppercase font-bold tracking-wider">
                   {DAYS_FR[i]}
                 </span>
                 <span
                   className={cn(
-                    "mt-0.5 w-7 h-7 flex items-center justify-center rounded-full text-sm font-semibold",
-                    isToday ? "bg-primary text-white" : "text-foreground",
+                    "mt-0.5 w-7 h-7 flex items-center justify-center rounded-full text-sm font-bold transition-all duration-200",
+                    isToday
+                      ? "bg-gradient-to-br from-[#AF0000] to-[#DC2626] text-white shadow-sm shadow-[#AF0000]/30"
+                      : "text-foreground",
                   )}
                 >
                   {day.getDate()}
@@ -649,19 +661,20 @@ function WeekView({
               </button>
 
               {/* Events list */}
-              <div className="flex-1 p-1 space-y-1 overflow-y-auto">
+              <div className="flex-1 p-1.5 space-y-1.5 overflow-y-auto">
                 {dayEvents.map((e) => (
                   <button
                     key={e.id}
                     onClick={() => onEventClick(e)}
-                    className="w-full p-1.5 rounded-lg text-left text-[11px] leading-tight transition-opacity hover:opacity-80"
+                    className="w-full p-2 rounded-lg text-left text-[11px] leading-tight transition-all duration-200 hover:shadow-sm hover:-translate-y-px"
                     style={{
-                      backgroundColor: `${e.color}15`,
+                      backgroundColor: `${e.color}12`,
+                      borderLeft: `3px solid ${e.color}`,
                       color: e.color,
                     }}
                   >
-                    <div className="font-medium truncate">{e.title}</div>
-                    <div className="opacity-70 mt-0.5">
+                    <div className="font-semibold truncate">{e.title}</div>
+                    <div className="opacity-60 mt-0.5 font-medium">
                       {formatTime(e.start)}
                     </div>
                   </button>
@@ -669,7 +682,7 @@ function WeekView({
                 {dayEvents.length === 0 && onCreateClick && (
                   <button
                     onClick={() => onCreateClick(day)}
-                    className="w-full py-8 flex items-center justify-center text-muted-foreground/30 hover:text-muted-foreground/60 transition-colors"
+                    className="w-full py-8 flex items-center justify-center text-muted-foreground/20 hover:text-[#AF0000]/40 transition-colors duration-200"
                   >
                     <Plus className="w-4 h-4" />
                   </button>
@@ -714,41 +727,69 @@ function DayView({
     });
   };
 
+  const isCurrentHour = (hour: number) => {
+    const now = new Date();
+    return isSameDay(day, now) && now.getHours() === hour;
+  };
+
   return (
     <div
-      className="bg-surface rounded-2xl overflow-hidden"
-      style={{ boxShadow: "var(--shadow-card)" }}
+      className="bg-white dark:bg-surface border border-zinc-200/80 dark:border-border/50 rounded-2xl overflow-hidden"
+      style={{
+        boxShadow: "0 1px 3px rgb(0 0 0 / 0.04), 0 8px 20px rgb(0 0 0 / 0.02)",
+      }}
     >
       {/* Hours grid */}
-      <div className="divide-y divide-border/20">
+      <div className="divide-y divide-zinc-100/80 dark:divide-border/15">
         {HOURS.map((hour) => {
           const hourEvents = eventsByHour[hour] ?? [];
+          const isCurrent = isCurrentHour(hour);
           return (
-            <div key={hour} className="flex min-h-[60px]">
+            <div
+              key={hour}
+              className={cn(
+                "flex min-h-[60px]",
+                isCurrent && "bg-[#AF0000]/[0.02]",
+              )}
+            >
               {/* Time label */}
-              <div className="w-16 shrink-0 flex items-start justify-end pr-3 pt-1">
-                <span className="text-xs text-muted-foreground font-mono">
+              <div className="w-16 shrink-0 flex items-start justify-end pr-3 pt-1.5">
+                <span
+                  className={cn(
+                    "text-xs font-mono font-medium",
+                    isCurrent
+                      ? "text-[#AF0000] font-bold"
+                      : "text-muted-foreground/50",
+                  )}
+                >
                   {String(hour).padStart(2, "0")}:00
                 </span>
               </div>
 
               {/* Event area */}
-              <div className="flex-1 border-l border-border/20 p-1 space-y-1">
+              <div
+                className={cn(
+                  "flex-1 border-l p-1.5 space-y-1.5",
+                  isCurrent
+                    ? "border-[#AF0000]/30"
+                    : "border-zinc-100 dark:border-border/20",
+                )}
+              >
                 {hourEvents.map((e) => (
                   <button
                     key={e.id}
                     onClick={() => onEventClick(e)}
-                    className="w-full flex items-center gap-2 p-2 rounded-xl text-left transition-opacity hover:opacity-80"
+                    className="w-full flex items-center gap-2 p-2.5 rounded-xl text-left transition-all duration-200 hover:shadow-sm hover:-translate-y-px group"
                     style={{
-                      backgroundColor: `${e.color}12`,
+                      backgroundColor: `${e.color}10`,
                       borderLeft: `3px solid ${e.color}`,
                     }}
                   >
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground truncate">
+                      <p className="text-sm font-semibold text-foreground truncate group-hover:text-[#AF0000] transition-colors">
                         {e.title}
                       </p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-xs text-muted-foreground/60 mt-0.5">
                         {formatTime(e.start)}
                         {e.end && ` — ${formatTime(e.end)}`}
                         {" · "}
@@ -765,17 +806,23 @@ function DayView({
 
       {/* Empty state / create */}
       {events.length === 0 && (
-        <div className="p-8 text-center border-t border-border/20">
-          <CalendarIcon className="w-10 h-10 text-muted-foreground/20 mx-auto mb-3" />
-          <p className="text-sm text-muted-foreground mb-3">
-            Aucun événement ce jour
+        <div className="p-10 text-center border-t border-zinc-100 dark:border-border/20">
+          <div className="w-14 h-14 rounded-2xl bg-zinc-100 dark:bg-muted flex items-center justify-center mx-auto mb-4">
+            <CalendarIcon className="w-6 h-6 text-muted-foreground/40" />
+          </div>
+          <p className="text-sm font-medium text-muted-foreground mb-1">
+            Aucun evenement ce jour
+          </p>
+          <p className="text-xs text-muted-foreground/60 mb-4">
+            Double-cliquez sur un creneau pour en creer un
           </p>
           {onCreateClick && (
             <button
               onClick={onCreateClick}
-              className="text-sm text-primary hover:underline"
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#AF0000] hover:text-[#DC2626] transition-colors"
             >
-              + Créer un événement
+              <Plus className="w-4 h-4" />
+              Creer un evenement
             </button>
           )}
         </div>

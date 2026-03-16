@@ -120,23 +120,23 @@ export function AdminRewards() {
       {/* Pending redemptions */}
       <motion.div variants={fadeInUp} transition={defaultTransition}>
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-semibold text-foreground flex items-center gap-2">
+          <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
             <Clock className="w-4 h-4 text-amber-500" />
             Echanges en attente ({pendingRedemptions.length})
           </h2>
         </div>
 
         {redemptionsLoading ? (
-          <div className="h-16 bg-muted animate-pulse rounded-xl" />
+          <div className="h-16 bg-muted animate-pulse rounded-2xl" />
         ) : pendingRedemptions.length === 0 ? (
-          <div className="bg-surface border border-border rounded-xl p-6 text-center">
+          <div className="bg-gradient-to-br from-emerald-500/5 to-emerald-500/[0.02] border border-emerald-500/10 rounded-2xl p-6 text-center">
             <CheckCircle className="w-6 h-6 text-emerald-500/40 mx-auto mb-2" />
             <p className="text-xs text-muted-foreground">
               Aucun echange en attente
             </p>
           </div>
         ) : (
-          <div className="bg-surface border border-border rounded-xl divide-y divide-border">
+          <div className="bg-surface border border-border rounded-2xl divide-y divide-border">
             {pendingRedemptions.map((redemption) => {
               const profile = redemption.profile;
               const reward = redemption.reward;
@@ -146,7 +146,7 @@ export function AdminRewards() {
               return (
                 <div
                   key={redemption.id}
-                  className="flex items-center gap-3 px-4 py-3"
+                  className="flex items-center gap-3 px-4 py-3.5 hover:bg-muted/20 transition-colors"
                 >
                   {/* User avatar */}
                   <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs font-medium text-foreground shrink-0">
@@ -168,7 +168,7 @@ export function AdminRewards() {
                     </p>
                     <p className="text-xs text-muted-foreground truncate">
                       {reward?.title ?? "Recompense"} •{" "}
-                      <span className="font-medium">
+                      <span className="font-medium text-[#AF0000]">
                         {redemption.xp_spent} XP
                       </span>
                     </p>
@@ -190,7 +190,7 @@ export function AdminRewards() {
                     <button
                       onClick={() => fulfillRedemption.mutate(redemption.id)}
                       disabled={fulfillRedemption.isPending}
-                      className="h-8 px-3 rounded-lg bg-emerald-500/10 text-emerald-600 text-xs font-medium hover:bg-emerald-500/20 transition-colors flex items-center gap-1.5"
+                      className="h-8 px-3 rounded-xl bg-emerald-500/10 text-emerald-600 text-xs font-medium hover:bg-emerald-500/20 transition-colors flex items-center gap-1.5"
                       title="Marquer comme rempli"
                     >
                       <CheckCircle className="w-3.5 h-3.5" />
@@ -199,7 +199,7 @@ export function AdminRewards() {
                     <button
                       onClick={() => cancelRedemption.mutate(redemption.id)}
                       disabled={cancelRedemption.isPending}
-                      className="h-8 px-2 rounded-lg text-muted-foreground hover:bg-muted hover:text-error transition-colors"
+                      className="h-8 px-2 rounded-xl text-muted-foreground hover:bg-muted hover:text-error transition-colors"
                       title="Annuler"
                     >
                       <XCircle className="w-4 h-4" />
@@ -215,13 +215,13 @@ export function AdminRewards() {
       {/* Rewards management */}
       <motion.div variants={fadeInUp} transition={defaultTransition}>
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-semibold text-foreground flex items-center gap-2">
-            <Coins className="w-4 h-4 text-amber-500" />
+          <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
+            <Coins className="w-4 h-4 text-[#AF0000]" />
             Catalogue des recompenses ({rewards.length})
           </h2>
           <button
             onClick={openCreate}
-            className="h-8 px-3 rounded-lg bg-primary text-white text-xs font-medium hover:bg-primary/90 transition-colors flex items-center gap-1.5"
+            className="h-9 px-4 rounded-xl bg-gradient-to-r from-[#AF0000] to-[#DC2626] text-white text-xs font-medium hover:shadow-lg hover:shadow-[#AF0000]/25 transition-all flex items-center gap-1.5"
           >
             <Plus className="w-3.5 h-3.5" />
             Ajouter
@@ -231,31 +231,34 @@ export function AdminRewards() {
         {isLoading ? (
           <div className="space-y-2">
             {[...Array(3)].map((_, i) => (
-              <div key={i} className="h-16 bg-muted animate-pulse rounded-xl" />
+              <div
+                key={i}
+                className="h-16 bg-muted animate-pulse rounded-2xl"
+              />
             ))}
           </div>
         ) : rewards.length === 0 ? (
-          <div className="bg-surface border border-border rounded-xl p-8 text-center">
+          <div className="bg-gradient-to-br from-muted/30 to-muted/10 border border-dashed border-border rounded-2xl p-8 text-center">
             <Coins className="w-8 h-8 text-muted-foreground/40 mx-auto mb-2" />
             <p className="text-sm text-muted-foreground">
               Aucune recompense creee
             </p>
           </div>
         ) : (
-          <div className="bg-surface border border-border rounded-xl divide-y divide-border">
+          <div className="bg-surface border border-border rounded-2xl divide-y divide-border">
             {rewards.map((reward) => {
               const typeConfig = REWARD_TYPE_CONFIG[reward.type];
               return (
                 <div
                   key={reward.id}
                   className={cn(
-                    "flex items-center gap-3 px-4 py-3",
+                    "flex items-center gap-3 px-4 py-3.5 hover:bg-muted/20 transition-colors",
                     !reward.is_active && "opacity-50",
                   )}
                 >
                   <div
                     className={cn(
-                      "w-9 h-9 rounded-xl flex items-center justify-center shrink-0",
+                      "w-10 h-10 rounded-xl flex items-center justify-center shrink-0",
                       typeConfig.bg,
                     )}
                   >
@@ -276,11 +279,20 @@ export function AdminRewards() {
                       >
                         {typeConfig.label}
                       </span>
-                      <span className="text-xs text-muted-foreground">
+                      <span className="text-xs font-medium text-[#AF0000] bg-[#AF0000]/10 px-1.5 py-0.5 rounded-full">
                         {reward.cost_xp} XP
                       </span>
                       {reward.stock !== null && (
-                        <span className="text-xs text-muted-foreground">
+                        <span
+                          className={cn(
+                            "text-xs font-medium px-1.5 py-0.5 rounded-full",
+                            reward.stock <= 0
+                              ? "text-red-600 bg-red-500/10"
+                              : reward.stock <= 3
+                                ? "text-amber-600 bg-amber-500/10"
+                                : "text-muted-foreground bg-muted",
+                          )}
+                        >
                           Stock: {reward.stock}
                         </span>
                       )}
@@ -322,18 +334,18 @@ export function AdminRewards() {
 
       {/* All redemptions history */}
       <motion.div variants={fadeInUp} transition={defaultTransition}>
-        <h2 className="text-sm font-semibold text-foreground flex items-center gap-2 mb-3">
+        <h2 className="text-lg font-semibold text-foreground flex items-center gap-2 mb-3">
           <Users className="w-4 h-4" />
           Historique des echanges ({redemptions.length})
         </h2>
         {redemptions.length === 0 ? (
-          <div className="bg-surface border border-border rounded-xl p-6 text-center">
+          <div className="bg-surface border border-border rounded-2xl p-6 text-center">
             <p className="text-xs text-muted-foreground">
               Aucun echange pour le moment
             </p>
           </div>
         ) : (
-          <div className="bg-surface border border-border rounded-xl divide-y divide-border max-h-96 overflow-y-auto">
+          <div className="bg-surface border border-border rounded-2xl divide-y divide-border max-h-96 overflow-y-auto">
             {redemptions.map((redemption) => {
               const profile = redemption.profile;
               const reward = redemption.reward;
@@ -343,7 +355,7 @@ export function AdminRewards() {
               return (
                 <div
                   key={redemption.id}
-                  className="flex items-center gap-3 px-4 py-2.5"
+                  className="flex items-center gap-3 px-4 py-2.5 hover:bg-muted/20 transition-colors"
                 >
                   <div className="w-7 h-7 rounded-full bg-muted flex items-center justify-center text-[10px] font-medium text-foreground shrink-0">
                     {profile?.full_name?.charAt(0)?.toUpperCase() ?? "?"}
@@ -387,11 +399,11 @@ export function AdminRewards() {
           onClick={() => setShowForm(false)}
         >
           <div
-            className="bg-surface border border-border rounded-2xl p-6 max-w-md w-full mx-4 space-y-4"
+            className="bg-surface border border-border rounded-2xl p-6 max-w-md w-full mx-4 space-y-4 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between">
-              <h3 className="text-base font-semibold text-foreground">
+              <h3 className="text-lg font-semibold text-foreground">
                 {editingId ? "Modifier la recompense" : "Nouvelle recompense"}
               </h3>
               <button
@@ -413,7 +425,7 @@ export function AdminRewards() {
                     setForm((f) => ({ ...f, title: e.target.value }))
                   }
                   placeholder="Ex: Session bonus coaching"
-                  className="w-full h-10 px-4 bg-muted border border-border rounded-[10px] text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  className="w-full h-10 px-4 bg-muted border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20"
                 />
               </div>
 
@@ -428,7 +440,7 @@ export function AdminRewards() {
                   }
                   rows={2}
                   placeholder="Description de la recompense..."
-                  className="w-full px-4 py-2.5 bg-muted border border-border rounded-[10px] text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
+                  className="w-full px-4 py-2.5 bg-muted border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20 resize-none"
                 />
               </div>
 
@@ -447,7 +459,7 @@ export function AdminRewards() {
                         cost_xp: parseInt(e.target.value) || 0,
                       }))
                     }
-                    className="w-full h-10 px-4 bg-muted border border-border rounded-[10px] text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    className="w-full h-10 px-4 bg-muted border border-border rounded-xl text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20"
                   />
                 </div>
 
@@ -463,7 +475,7 @@ export function AdminRewards() {
                         type: e.target.value as RewardType,
                       }))
                     }
-                    className="w-full h-10 px-3 bg-muted border border-border rounded-[10px] text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    className="w-full h-10 px-3 bg-muted border border-border rounded-xl text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20"
                   >
                     {TYPE_OPTIONS.map((opt) => (
                       <option key={opt.value} value={opt.value}>
@@ -489,7 +501,7 @@ export function AdminRewards() {
                     }}
                     className={cn(
                       "relative w-10 h-6 rounded-full transition-colors shrink-0",
-                      hasStock ? "bg-primary" : "bg-muted-foreground/30",
+                      hasStock ? "bg-[#AF0000]" : "bg-muted-foreground/30",
                     )}
                   >
                     <span
@@ -514,7 +526,7 @@ export function AdminRewards() {
                         stock: parseInt(e.target.value) || 1,
                       }))
                     }
-                    className="w-full h-10 px-4 mt-2 bg-muted border border-border rounded-[10px] text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    className="w-full h-10 px-4 mt-2 bg-muted border border-border rounded-xl text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20"
                     placeholder="Nombre d'unites"
                   />
                 )}
@@ -524,7 +536,7 @@ export function AdminRewards() {
             <div className="flex gap-3 justify-end pt-2">
               <button
                 onClick={() => setShowForm(false)}
-                className="h-9 px-4 rounded-[10px] border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                className="h-9 px-4 rounded-xl border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
               >
                 Annuler
               </button>
@@ -536,7 +548,7 @@ export function AdminRewards() {
                   createReward.isPending ||
                   updateReward.isPending
                 }
-                className="h-9 px-4 rounded-[10px] bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-2"
+                className="h-9 px-4 rounded-xl bg-gradient-to-r from-[#AF0000] to-[#DC2626] text-white text-sm font-medium hover:shadow-lg hover:shadow-[#AF0000]/25 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-2"
               >
                 {(createReward.isPending || updateReward.isPending) && (
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />

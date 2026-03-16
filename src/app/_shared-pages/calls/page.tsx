@@ -30,6 +30,43 @@ import {
   BarChart3,
 } from "lucide-react";
 
+/* ─── Status badge config ─── */
+const STATUS_BADGE: Record<
+  string,
+  { label: string; bg: string; text: string; dot: string }
+> = {
+  planifie: {
+    label: "Planifie",
+    bg: "bg-blue-50 dark:bg-blue-500/10",
+    text: "text-blue-700 dark:text-blue-400",
+    dot: "bg-blue-500",
+  },
+  realise: {
+    label: "Realise",
+    bg: "bg-emerald-50 dark:bg-emerald-500/10",
+    text: "text-emerald-700 dark:text-emerald-400",
+    dot: "bg-emerald-500",
+  },
+  no_show: {
+    label: "No-show",
+    bg: "bg-red-50 dark:bg-red-500/10",
+    text: "text-red-700 dark:text-red-400",
+    dot: "bg-red-500",
+  },
+  annule: {
+    label: "Annule",
+    bg: "bg-zinc-100 dark:bg-zinc-500/10",
+    text: "text-zinc-600 dark:text-zinc-400",
+    dot: "bg-zinc-400",
+  },
+  reporte: {
+    label: "Reporte",
+    bg: "bg-orange-50 dark:bg-orange-500/10",
+    text: "text-orange-700 dark:text-orange-400",
+    dot: "bg-orange-500",
+  },
+};
+
 export default function CallsPage() {
   const [view, setView] = useState<"week" | "list" | "metrics">("week");
   const [weekStart, setWeekStart] = useState(() => {
@@ -136,10 +173,12 @@ export default function CallsPage() {
         className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
       >
         <div>
-          <h1 className="text-2xl font-display font-bold text-foreground tracking-tight">
-            Appels
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+            <span className="bg-gradient-to-r from-foreground via-foreground/90 to-foreground/70 bg-clip-text text-transparent">
+              Appels
+            </span>
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="text-sm text-muted-foreground/70 mt-1">
             {calls.length} appel{calls.length !== 1 ? "s" : ""} cette semaine
           </p>
         </div>
@@ -149,29 +188,25 @@ export default function CallsPage() {
             <button
               onClick={() => setShowGoogle((prev) => !prev)}
               className={cn(
-                "h-9 px-3 rounded-xl text-xs font-medium flex items-center gap-1.5 transition-all",
+                "h-9 px-3 rounded-xl text-xs font-medium flex items-center gap-1.5 transition-all duration-200",
                 showGoogle
-                  ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-                  : "bg-surface text-muted-foreground hover:text-foreground",
+                  ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-200/60"
+                  : "bg-white dark:bg-surface border border-zinc-200/80 text-muted-foreground hover:text-foreground",
               )}
-              style={{ boxShadow: "var(--shadow-xs)" }}
             >
               <Calendar className="w-3.5 h-3.5" />
               Google
             </button>
           )}
           {/* View toggle */}
-          <div
-            className="flex rounded-xl overflow-hidden"
-            style={{ boxShadow: "var(--shadow-xs)" }}
-          >
+          <div className="flex rounded-xl overflow-hidden border border-zinc-200/80 dark:border-border/50">
             <button
               onClick={() => setView("week")}
               className={cn(
-                "h-9 px-3 flex items-center gap-1.5 text-xs font-medium transition-all",
+                "h-9 px-3 flex items-center gap-1.5 text-xs font-medium transition-all duration-200",
                 view === "week"
-                  ? "bg-foreground text-background"
-                  : "bg-surface text-muted-foreground hover:text-foreground",
+                  ? "bg-[#AF0000] text-white"
+                  : "bg-white dark:bg-surface text-muted-foreground hover:text-foreground hover:bg-zinc-50 dark:hover:bg-muted",
               )}
             >
               <Calendar className="w-3.5 h-3.5" />
@@ -180,10 +215,10 @@ export default function CallsPage() {
             <button
               onClick={() => setView("list")}
               className={cn(
-                "h-9 px-3 flex items-center gap-1.5 text-xs font-medium transition-all",
+                "h-9 px-3 flex items-center gap-1.5 text-xs font-medium transition-all duration-200 border-x border-zinc-200/80 dark:border-border/50",
                 view === "list"
-                  ? "bg-foreground text-background"
-                  : "bg-surface text-muted-foreground hover:text-foreground",
+                  ? "bg-[#AF0000] text-white"
+                  : "bg-white dark:bg-surface text-muted-foreground hover:text-foreground hover:bg-zinc-50 dark:hover:bg-muted",
               )}
             >
               <List className="w-3.5 h-3.5" />
@@ -192,10 +227,10 @@ export default function CallsPage() {
             <button
               onClick={() => setView("metrics")}
               className={cn(
-                "h-9 px-3 flex items-center gap-1.5 text-xs font-medium transition-all",
+                "h-9 px-3 flex items-center gap-1.5 text-xs font-medium transition-all duration-200",
                 view === "metrics"
-                  ? "bg-foreground text-background"
-                  : "bg-surface text-muted-foreground hover:text-foreground",
+                  ? "bg-[#AF0000] text-white"
+                  : "bg-white dark:bg-surface text-muted-foreground hover:text-foreground hover:bg-zinc-50 dark:hover:bg-muted",
               )}
             >
               <BarChart3 className="w-3.5 h-3.5" />
@@ -204,7 +239,7 @@ export default function CallsPage() {
           </div>
           <button
             onClick={handleNewCall}
-            className="h-9 px-4 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-all active:scale-[0.98] flex items-center gap-2"
+            className="h-9 px-4 rounded-xl bg-gradient-to-r from-[#AF0000] to-[#DC2626] text-white text-sm font-semibold hover:shadow-lg hover:shadow-[#AF0000]/20 transition-all duration-300 active:scale-[0.98] flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
             Nouvel appel
@@ -216,24 +251,23 @@ export default function CallsPage() {
       <motion.div variants={staggerItem} className="flex items-center gap-3">
         <button
           onClick={() => navigateWeek(-1)}
-          className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+          className="w-8 h-8 rounded-xl flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-zinc-100 dark:hover:bg-muted border border-zinc-200/80 dark:border-border/50 bg-white dark:bg-surface transition-all duration-200"
         >
           <ChevronLeft className="w-4 h-4" />
         </button>
         <button
           onClick={goToToday}
-          className="h-8 px-3 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-          style={{ boxShadow: "var(--shadow-xs)" }}
+          className="h-8 px-3 rounded-xl text-xs font-semibold text-[#AF0000] hover:bg-[#AF0000]/5 border border-[#AF0000]/20 transition-all duration-200"
         >
           Aujourd&apos;hui
         </button>
         <button
           onClick={() => navigateWeek(1)}
-          className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+          className="w-8 h-8 rounded-xl flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-zinc-100 dark:hover:bg-muted border border-zinc-200/80 dark:border-border/50 bg-white dark:bg-surface transition-all duration-200"
         >
           <ChevronRight className="w-4 h-4" />
         </button>
-        <span className="text-sm font-medium text-foreground font-mono">
+        <span className="text-sm font-semibold text-foreground font-mono tracking-tight">
           {formatWeekRange()}
         </span>
       </motion.div>
@@ -253,69 +287,90 @@ export default function CallsPage() {
           />
         ) : (
           <div
-            className="bg-surface rounded-2xl divide-y divide-border/30"
-            style={{ boxShadow: "var(--shadow-card)" }}
+            className="bg-white dark:bg-surface border border-zinc-200/80 dark:border-border/50 rounded-2xl divide-y divide-zinc-100 dark:divide-border/30 overflow-hidden"
+            style={{
+              boxShadow:
+                "0 1px 3px rgb(0 0 0 / 0.04), 0 8px 20px rgb(0 0 0 / 0.02)",
+            }}
           >
             {isLoading ? (
               <div className="p-4 space-y-3">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <div
                     key={i}
-                    className="h-12 bg-muted rounded-lg animate-shimmer"
+                    className="h-14 bg-zinc-50 dark:bg-muted rounded-xl animate-shimmer"
                   />
                 ))}
               </div>
             ) : calls.length === 0 ? (
               <div className="p-12 text-center">
-                <Phone className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
-                <p className="text-sm text-muted-foreground">
+                <div className="w-14 h-14 rounded-2xl bg-zinc-100 dark:bg-muted flex items-center justify-center mx-auto mb-4">
+                  <Phone className="w-6 h-6 text-muted-foreground/40" />
+                </div>
+                <p className="text-sm font-medium text-muted-foreground">
                   Aucun appel cette semaine
+                </p>
+                <p className="text-xs text-muted-foreground/60 mt-1">
+                  Cliquez sur &quot;Nouvel appel&quot; pour en planifier un
                 </p>
               </div>
             ) : (
-              calls.map((call) => (
-                <button
-                  key={call.id}
-                  onClick={() => handleCallClick(call)}
-                  className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted/50 transition-colors text-left group"
-                >
-                  <div
-                    className={cn(
-                      "w-2.5 h-2.5 rounded-full shrink-0",
-                      CALL_STATUS_COLORS[call.status],
-                    )}
-                  />
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <p className="text-sm font-medium text-foreground truncate">
-                        {call.title}
-                      </p>
-                      <CallTypeBadge type={call.call_type} />
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      <span className="font-mono">{call.date}</span> a{" "}
-                      <span className="font-mono">{call.time.slice(0, 5)}</span>{" "}
-                      ·{" "}
-                      <span className="font-mono">
-                        {call.duration_minutes} min
-                      </span>
-                      {call.client && ` · ${call.client.full_name}`}
-                    </p>
-                  </div>
-                  {isJoinable(call) ? (
-                    <Link
-                      href={`${prefix}/calls/${call.id}`}
-                      onClick={(e) => e.stopPropagation()}
-                      className="h-7 px-3 rounded-lg bg-green-600 text-white text-xs font-medium hover:bg-green-700 transition-all flex items-center gap-1.5 shrink-0"
+              calls.map((call) => {
+                const badge =
+                  STATUS_BADGE[call.status] ?? STATUS_BADGE.planifie;
+                return (
+                  <button
+                    key={call.id}
+                    onClick={() => handleCallClick(call)}
+                    className="w-full flex items-center gap-3 px-5 py-3.5 hover:bg-zinc-50/80 dark:hover:bg-muted/50 transition-all duration-200 text-left group"
+                  >
+                    {/* Status badge */}
+                    <span
+                      className={cn(
+                        "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold shrink-0",
+                        badge.bg,
+                        badge.text,
+                      )}
                     >
-                      <Video className="w-3 h-3" />
-                      Rejoindre
-                    </Link>
-                  ) : (
-                    <ChevronRight className="w-4 h-4 text-muted-foreground/40 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  )}
-                </button>
-              ))
+                      <span
+                        className={cn("w-1.5 h-1.5 rounded-full", badge.dot)}
+                      />
+                      {badge.label}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-semibold text-foreground truncate">
+                          {call.title}
+                        </p>
+                        <CallTypeBadge type={call.call_type} />
+                      </div>
+                      <p className="text-xs text-muted-foreground/70 mt-0.5">
+                        <span className="font-mono">{call.date}</span> a{" "}
+                        <span className="font-mono">
+                          {call.time.slice(0, 5)}
+                        </span>{" "}
+                        ·{" "}
+                        <span className="font-mono">
+                          {call.duration_minutes} min
+                        </span>
+                        {call.client && ` · ${call.client.full_name}`}
+                      </p>
+                    </div>
+                    {isJoinable(call) ? (
+                      <Link
+                        href={`${prefix}/calls/${call.id}`}
+                        onClick={(e) => e.stopPropagation()}
+                        className="h-8 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-xs font-semibold hover:shadow-lg hover:shadow-emerald-500/20 transition-all duration-300 flex items-center gap-1.5 shrink-0"
+                      >
+                        <Video className="w-3.5 h-3.5" />
+                        Rejoindre
+                      </Link>
+                    ) : (
+                      <ChevronRight className="w-4 h-4 text-muted-foreground/30 opacity-0 group-hover:opacity-100 transition-all duration-200 group-hover:translate-x-0.5" />
+                    )}
+                  </button>
+                );
+              })
             )}
           </div>
         )}

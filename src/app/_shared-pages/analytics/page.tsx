@@ -39,15 +39,56 @@ type AnalyticsTab =
   | "notifications"
   | "avance";
 
-const TABS: { value: AnalyticsTab; label: string; icon: typeof DollarSign }[] =
-  [
-    { value: "finances", label: "Finances", icon: DollarSign },
-    { value: "appels", label: "Appels", icon: Phone },
-    { value: "pipeline", label: "Pipeline", icon: Users },
-    { value: "engagement", label: "Engagement", icon: Activity },
-    { value: "notifications", label: "Notifications", icon: Bell },
-    { value: "avance", label: "Avance", icon: BarChart3 },
-  ];
+const TABS: {
+  value: AnalyticsTab;
+  label: string;
+  icon: typeof DollarSign;
+  color: string;
+  accentBg: string;
+}[] = [
+  {
+    value: "finances",
+    label: "Finances",
+    icon: DollarSign,
+    color: "text-[#AF0000]",
+    accentBg: "bg-[#AF0000]/10",
+  },
+  {
+    value: "appels",
+    label: "Appels",
+    icon: Phone,
+    color: "text-blue-600",
+    accentBg: "bg-blue-500/10",
+  },
+  {
+    value: "pipeline",
+    label: "Pipeline",
+    icon: Users,
+    color: "text-emerald-600",
+    accentBg: "bg-emerald-500/10",
+  },
+  {
+    value: "engagement",
+    label: "Engagement",
+    icon: Activity,
+    color: "text-violet-600",
+    accentBg: "bg-violet-500/10",
+  },
+  {
+    value: "notifications",
+    label: "Notifications",
+    icon: Bell,
+    color: "text-amber-600",
+    accentBg: "bg-amber-500/10",
+  },
+  {
+    value: "avance",
+    label: "Avance",
+    icon: BarChart3,
+    color: "text-zinc-600",
+    accentBg: "bg-zinc-500/10",
+  },
+];
 
 const PERIOD_LABELS: Record<PeriodPreset, string> = {
   "7d": "7 derniers jours",
@@ -245,10 +286,12 @@ export default function AnalyticsPage() {
         className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
       >
         <div>
-          <h1 className="text-2xl font-display font-bold text-foreground tracking-tight">
-            Analytics
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+            <span className="bg-gradient-to-r from-foreground via-foreground/90 to-foreground/70 bg-clip-text text-transparent">
+              Analytics
+            </span>
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="text-sm text-muted-foreground/70 mt-1">
             Performance et metriques detaillees
           </p>
         </div>
@@ -266,21 +309,34 @@ export default function AnalyticsPage() {
 
       {/* Tabs */}
       <motion.div variants={staggerItem}>
-        <div className="flex items-center gap-1 border-b border-border/50 overflow-x-auto">
+        <div className="flex items-center gap-1 border-b border-zinc-200/80 dark:border-border/50 overflow-x-auto">
           {TABS.map((tab) => {
             const Icon = tab.icon;
+            const isActive = activeTab === tab.value;
             return (
               <button
                 key={tab.value}
                 onClick={() => setActiveTab(tab.value)}
                 className={cn(
                   "flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-all duration-200 border-b-2 -mb-px whitespace-nowrap",
-                  activeTab === tab.value
-                    ? "border-primary text-foreground"
-                    : "border-transparent text-muted-foreground hover:text-foreground",
+                  isActive
+                    ? "border-[#AF0000] text-foreground"
+                    : "border-transparent text-muted-foreground/60 hover:text-foreground hover:border-zinc-300 dark:hover:border-zinc-600",
                 )}
               >
-                <Icon className="w-4 h-4" />
+                <div
+                  className={cn(
+                    "w-6 h-6 rounded-lg flex items-center justify-center transition-all duration-200",
+                    isActive ? tab.accentBg : "bg-transparent",
+                  )}
+                >
+                  <Icon
+                    className={cn(
+                      "w-3.5 h-3.5 transition-colors duration-200",
+                      isActive ? tab.color : "text-muted-foreground/60",
+                    )}
+                  />
+                </div>
                 {tab.label}
               </button>
             );

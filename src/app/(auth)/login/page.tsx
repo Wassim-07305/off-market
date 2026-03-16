@@ -150,15 +150,15 @@ export default function LoginPage() {
   };
 
   const inputClass =
-    "w-full h-11 px-4 bg-white/[0.06] border border-white/[0.08] rounded-xl text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/40 transition-all text-sm backdrop-blur-sm";
+    "w-full h-11 px-4 bg-white/[0.06] border border-white/[0.08] rounded-xl text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-[#AF0000]/40 focus:border-[#AF0000]/40 transition-all text-sm backdrop-blur-sm";
 
   // 2FA verification screen
   if (needs2FA) {
     return (
       <div className="animate-fade-in">
         <div className="text-center mb-8">
-          <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
-            <ShieldCheck className="w-8 h-8 text-primary" />
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#AF0000]/20 to-[#DC2626]/10 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-[#AF0000]/10">
+            <ShieldCheck className="w-8 h-8 text-[#DC2626]" />
           </div>
           <h1 className="text-2xl text-white mb-2 font-display font-bold tracking-tight">
             Verification 2FA
@@ -173,7 +173,7 @@ export default function LoginPage() {
           className="backdrop-blur-2xl bg-white/[0.04] border border-white/[0.08] rounded-2xl p-8"
           style={{
             boxShadow:
-              "0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05)",
+              "0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 0 80px rgba(175, 0, 0, 0.05)",
           }}
         >
           <div
@@ -193,7 +193,7 @@ export default function LoginPage() {
                 onChange={(e) => handleTotpChange(i, e.target.value)}
                 onKeyDown={(e) => handleTotpKeyDown(i, e)}
                 disabled={verifying2FA}
-                className="w-12 h-14 text-center text-xl font-mono font-bold bg-white/[0.06] border border-white/[0.08] rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/40 transition-all disabled:opacity-50"
+                className="w-12 h-14 text-center text-xl font-mono font-bold bg-white/[0.06] border border-white/[0.08] rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-[#AF0000]/40 focus:border-[#AF0000]/40 transition-all disabled:opacity-50"
               />
             ))}
           </div>
@@ -212,7 +212,7 @@ export default function LoginPage() {
               setMfaFactorId(null);
               supabase.auth.signOut();
             }}
-            className="w-full text-center text-white/30 hover:text-white/60 text-sm transition-colors"
+            className="w-full text-center text-white/30 hover:text-[#DC2626] text-sm transition-colors"
           >
             Annuler et revenir au login
           </button>
@@ -234,7 +234,7 @@ export default function LoginPage() {
         className="backdrop-blur-2xl bg-white/[0.04] border border-white/[0.08] rounded-2xl p-8"
         style={{
           boxShadow:
-            "0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05)",
+            "0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 0 80px rgba(175, 0, 0, 0.05)",
         }}
       >
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -267,7 +267,7 @@ export default function LoginPage() {
               </label>
               <Link
                 href="/forgot-password"
-                className="text-[11px] text-white/30 hover:text-primary transition-colors"
+                className="text-[11px] text-white/30 hover:text-[#DC2626] transition-colors"
               >
                 Oublie ?
               </Link>
@@ -301,9 +301,8 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full h-11 text-white font-medium rounded-xl transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm mt-6"
+            className="w-full h-11 text-white font-medium rounded-xl transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm mt-6 bg-gradient-to-r from-[#AF0000] to-[#DC2626] hover:shadow-xl hover:shadow-[#AF0000]/30"
             style={{
-              backgroundColor: primaryColor,
               boxShadow: brandVariants.glow + ", 0 4px 12px rgba(0, 0, 0, 0.3)",
             }}
           >
@@ -317,7 +316,7 @@ export default function LoginPage() {
         Pas encore de compte ?{" "}
         <Link
           href="/signup"
-          className="text-primary hover:text-primary-hover transition-colors font-medium"
+          className="text-[#DC2626] hover:text-[#AF0000] transition-colors font-medium"
         >
           S&apos;inscrire
         </Link>

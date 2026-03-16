@@ -111,12 +111,14 @@ export function MessageBubble({
       {/* Avatar or spacer */}
       <div className="w-9 shrink-0">
         {isFirstInGroup && (
-          <div className={cn(
-            "w-9 h-9 rounded-full flex items-center justify-center overflow-hidden shadow-sm",
-            isOwn
-              ? "bg-gradient-to-br from-[#AF0000]/15 to-[#DC2626]/15"
-              : "bg-muted/80",
-          )}>
+          <div
+            className={cn(
+              "w-9 h-9 rounded-full flex items-center justify-center overflow-hidden shadow-sm",
+              isOwn
+                ? "bg-gradient-to-br from-[#AF0000]/15 to-[#DC2626]/15"
+                : "bg-muted/80",
+            )}
+          >
             {sender?.avatar_url ? (
               <img
                 src={sender.avatar_url}
@@ -124,10 +126,12 @@ export function MessageBubble({
                 className="w-9 h-9 rounded-full object-cover"
               />
             ) : (
-              <span className={cn(
-                "text-xs font-bold",
-                isOwn ? "text-[#AF0000]" : "text-muted-foreground",
-              )}>
+              <span
+                className={cn(
+                  "text-xs font-bold",
+                  isOwn ? "text-[#AF0000]" : "text-muted-foreground",
+                )}
+              >
                 {sender ? getInitials(sender.full_name) : "?"}
               </span>
             )}
@@ -136,15 +140,14 @@ export function MessageBubble({
       </div>
 
       {/* Content */}
-      <div className={cn(
-        "flex-1 min-w-0",
-        isOwn && "flex flex-col items-end",
-      )}>
+      <div className={cn("flex-1 min-w-0", isOwn && "flex flex-col items-end")}>
         {isFirstInGroup && (
-          <div className={cn(
-            "flex items-baseline gap-2 mb-1",
-            isOwn && "flex-row-reverse",
-          )}>
+          <div
+            className={cn(
+              "flex items-baseline gap-2 mb-1",
+              isOwn && "flex-row-reverse",
+            )}
+          >
             <span
               className={cn(
                 "text-[13px] font-bold tracking-tight",
@@ -205,7 +208,9 @@ export function MessageBubble({
               }}
             />
             <div className="flex items-center gap-2 text-[11px]">
-              <span className="text-muted-foreground/60">Echap pour annuler</span>
+              <span className="text-muted-foreground/60">
+                Echap pour annuler
+              </span>
               <span className="text-muted-foreground/40">&middot;</span>
               <span className="text-muted-foreground/60">
                 Entree pour sauvegarder
@@ -213,12 +218,16 @@ export function MessageBubble({
             </div>
           </div>
         ) : (
-          <div className={cn(
-            "inline-block max-w-full",
-            isOwn && !message.is_urgent
-              ? "bg-gradient-to-br from-[#AF0000]/[0.06] to-[#DC2626]/[0.04] rounded-2xl rounded-tr-sm px-3.5 py-2"
-              : !message.is_urgent ? "bg-muted/30 rounded-2xl rounded-tl-sm px-3.5 py-2" : "",
-          )}>
+          <div
+            className={cn(
+              "inline-block max-w-full",
+              isOwn && !message.is_urgent
+                ? "bg-gradient-to-br from-[#AF0000]/[0.06] to-[#DC2626]/[0.04] rounded-2xl rounded-tr-sm px-3.5 py-2"
+                : !message.is_urgent
+                  ? "bg-muted/30 rounded-2xl rounded-tl-sm px-3.5 py-2"
+                  : "",
+            )}
+          >
             <MessageContent message={message} />
           </div>
         )}
@@ -243,7 +252,8 @@ export function MessageBubble({
           >
             <MessageSquare className="w-3 h-3" />
             <span className="group-hover/thread:underline">
-              {message.reply_count} reponse{message.reply_count !== 1 ? "s" : ""}
+              {message.reply_count} reponse
+              {message.reply_count !== 1 ? "s" : ""}
             </span>
           </button>
         )}

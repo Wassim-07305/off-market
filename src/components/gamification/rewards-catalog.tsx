@@ -35,6 +35,13 @@ const TYPE_FILTERS: { value: RewardType | "all"; label: string }[] = [
   { value: "custom", label: "Special" },
 ];
 
+const TYPE_GRADIENT_TINTS: Record<RewardType, string> = {
+  session_bonus: "from-blue-500/5 to-blue-500/[0.02]",
+  resource_unlock: "from-emerald-500/5 to-emerald-500/[0.02]",
+  badge_exclusive: "from-purple-500/5 to-purple-500/[0.02]",
+  custom: "from-amber-500/5 to-amber-500/[0.02]",
+};
+
 export function RewardsCatalog() {
   const { rewards, isLoading } = useRewards();
   const { balance, isLoading: balanceLoading } = useXpBalance();
@@ -70,12 +77,12 @@ export function RewardsCatalog() {
       <motion.div
         variants={fadeInUp}
         transition={defaultTransition}
-        className="bg-surface border border-primary/20 rounded-2xl p-5"
+        className="bg-gradient-to-r from-[#AF0000]/10 via-[#DC2626]/5 to-transparent border border-[#AF0000]/20 rounded-2xl p-5"
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-              <Coins className="w-6 h-6 text-primary" />
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#AF0000]/20 to-[#DC2626]/10 flex items-center justify-center">
+              <Coins className="w-6 h-6 text-[#AF0000]" />
             </div>
             <div>
               <p className="text-sm font-medium text-foreground">
@@ -91,7 +98,7 @@ export function RewardsCatalog() {
               <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
             ) : (
               <>
-                <p className="text-3xl font-semibold text-foreground font-serif">
+                <p className="text-3xl font-bold text-foreground font-serif">
                   {balance}
                 </p>
                 <p className="text-xs text-muted-foreground">XP</p>
@@ -109,9 +116,9 @@ export function RewardsCatalog() {
             key={f.value}
             onClick={() => setTypeFilter(f.value)}
             className={cn(
-              "h-8 px-3 rounded-lg text-xs font-medium transition-all shrink-0",
+              "h-8 px-3 rounded-xl text-xs font-medium transition-all shrink-0",
               typeFilter === f.value
-                ? "bg-foreground text-background"
+                ? "bg-gradient-to-r from-[#AF0000] to-[#DC2626] text-white shadow-sm"
                 : "bg-muted text-muted-foreground hover:text-foreground",
             )}
           >
@@ -124,11 +131,11 @@ export function RewardsCatalog() {
       {isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="h-48 bg-muted animate-pulse rounded-xl" />
+            <div key={i} className="h-48 bg-muted animate-pulse rounded-2xl" />
           ))}
         </div>
       ) : filtered.length === 0 ? (
-        <div className="bg-surface border border-border rounded-xl p-12 text-center">
+        <div className="bg-gradient-to-br from-muted/30 to-muted/10 border border-dashed border-border rounded-2xl p-12 text-center">
           <Gift className="w-10 h-10 text-muted-foreground/40 mx-auto mb-3" />
           <p className="text-sm text-muted-foreground">
             Aucune recompense disponible pour le moment
@@ -142,26 +149,30 @@ export function RewardsCatalog() {
             const stock = getStockRemaining(reward);
             const canAfford = balance >= reward.cost_xp;
             const outOfStock = stock !== null && stock <= 0;
+            const gradientTint = TYPE_GRADIENT_TINTS[reward.type];
 
             return (
               <motion.div
                 key={reward.id}
                 variants={fadeInUp}
                 transition={defaultTransition}
-                className="bg-surface border border-border rounded-xl p-4 flex flex-col"
+                className={cn(
+                  "bg-gradient-to-br border border-border rounded-2xl p-4 flex flex-col hover:shadow-md hover:-translate-y-px transition-all duration-200",
+                  gradientTint,
+                )}
               >
                 {/* Header */}
                 <div className="flex items-start gap-3 mb-3">
                   <div
                     className={cn(
-                      "w-10 h-10 rounded-xl flex items-center justify-center shrink-0",
+                      "w-11 h-11 rounded-xl flex items-center justify-center shrink-0",
                       typeConfig.bg,
                     )}
                   >
                     <Icon className={cn("w-5 h-5", typeConfig.color)} />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-medium text-foreground truncate">
+                    <h3 className="text-sm font-semibold text-foreground truncate">
                       {reward.title}
                     </h3>
                     <span
@@ -186,13 +197,15 @@ export function RewardsCatalog() {
                 {/* Stock */}
                 {stock !== null && (
                   <div className="flex items-center gap-1.5 mb-3">
-                    <Package className="w-3 h-3 text-muted-foreground" />
+                    <Package className="w-3 h-3" />
                     <span
                       className={cn(
-                        "text-xs",
+                        "text-xs font-medium px-2 py-0.5 rounded-full",
                         outOfStock
-                          ? "text-error font-medium"
-                          : "text-muted-foreground",
+                          ? "text-red-600 bg-red-500/10"
+                          : stock <= 3
+                            ? "text-amber-600 bg-amber-500/10"
+                            : "text-muted-foreground bg-muted",
                       )}
                     >
                       {outOfStock
@@ -203,10 +216,10 @@ export function RewardsCatalog() {
                 )}
 
                 {/* Footer: price + button */}
-                <div className="flex items-center justify-between mt-auto pt-3 border-t border-border">
-                  <div className="flex items-center gap-1.5">
-                    <Coins className="w-4 h-4 text-amber-500" />
-                    <span className="text-sm font-semibold text-foreground font-serif">
+                <div className="flex items-center justify-between mt-auto pt-3 border-t border-border/50">
+                  <div className="flex items-center gap-1.5 bg-[#AF0000]/10 px-2.5 py-1 rounded-full">
+                    <Coins className="w-4 h-4 text-[#AF0000]" />
+                    <span className="text-sm font-bold text-[#AF0000] font-serif">
                       {reward.cost_xp} XP
                     </span>
                   </div>
@@ -216,9 +229,9 @@ export function RewardsCatalog() {
                       !canAfford || outOfStock || redeemReward.isPending
                     }
                     className={cn(
-                      "h-8 px-3 rounded-lg text-xs font-medium transition-all",
+                      "h-8 px-4 rounded-xl text-xs font-medium transition-all",
                       canAfford && !outOfStock
-                        ? "bg-primary text-white hover:bg-primary/90 active:scale-[0.98]"
+                        ? "bg-gradient-to-r from-[#AF0000] to-[#DC2626] text-white hover:shadow-lg hover:shadow-[#AF0000]/25 active:scale-[0.98]"
                         : "bg-muted text-muted-foreground cursor-not-allowed",
                     )}
                   >
@@ -242,7 +255,7 @@ export function RewardsCatalog() {
           onClick={() => setConfirmReward(null)}
         >
           <div
-            className="bg-surface border border-border rounded-2xl p-6 max-w-sm w-full mx-4 space-y-4"
+            className="bg-surface border border-border rounded-2xl p-6 max-w-sm w-full mx-4 space-y-4 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center gap-3">
@@ -264,8 +277,8 @@ export function RewardsCatalog() {
                 {confirmReward.title}
               </p>
               <div className="flex items-center gap-1.5 mt-1">
-                <Coins className="w-3.5 h-3.5 text-amber-500" />
-                <span className="text-sm text-foreground font-serif font-medium">
+                <Coins className="w-3.5 h-3.5 text-[#AF0000]" />
+                <span className="text-sm text-[#AF0000] font-serif font-bold">
                   {confirmReward.cost_xp} XP
                 </span>
               </div>
@@ -281,14 +294,14 @@ export function RewardsCatalog() {
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setConfirmReward(null)}
-                className="h-9 px-4 rounded-[10px] border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                className="h-9 px-4 rounded-xl border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
               >
                 Annuler
               </button>
               <button
                 onClick={handleConfirmRedeem}
                 disabled={redeemReward.isPending}
-                className="h-9 px-4 rounded-[10px] bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-2"
+                className="h-9 px-4 rounded-xl bg-gradient-to-r from-[#AF0000] to-[#DC2626] text-white text-sm font-medium hover:shadow-lg hover:shadow-[#AF0000]/25 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-2"
               >
                 {redeemReward.isPending && (
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />

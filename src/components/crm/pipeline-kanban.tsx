@@ -137,12 +137,14 @@ function ContactCard({
 
           <div className="flex items-center gap-2 mt-2.5">
             {contact.estimated_value > 0 && (
-              <span className={cn(
-                "inline-flex items-center gap-0.5 text-[11px] font-semibold px-2 py-0.5 rounded-md font-mono tabular-nums",
-                isHighValue
-                  ? "bg-gradient-to-r from-[#AF0000] to-[#DC2626] text-white"
-                  : "text-foreground bg-zinc-100 dark:bg-zinc-800",
-              )}>
+              <span
+                className={cn(
+                  "inline-flex items-center gap-0.5 text-[11px] font-semibold px-2 py-0.5 rounded-md font-mono tabular-nums",
+                  isHighValue
+                    ? "bg-gradient-to-r from-[#AF0000] to-[#DC2626] text-white"
+                    : "text-foreground bg-zinc-100 dark:bg-zinc-800",
+                )}
+              >
                 {formatCurrency(Number(contact.estimated_value))}
               </span>
             )}
@@ -232,7 +234,18 @@ function StageColumn({
       {/* Column header */}
       <div className="flex items-center justify-between px-2 mb-3 pb-3 border-b border-border">
         <div className="flex items-center gap-2.5">
-          <div className={cn("w-2.5 h-2.5 rounded-full ring-2 ring-offset-1 ring-offset-surface", stage.dotColor, stage.dotColor.replace("bg-", "ring-").replace("500", "200").replace("400", "200").replace("300", "100").replace("600", "200"))} />
+          <div
+            className={cn(
+              "w-2.5 h-2.5 rounded-full ring-2 ring-offset-1 ring-offset-surface",
+              stage.dotColor,
+              stage.dotColor
+                .replace("bg-", "ring-")
+                .replace("500", "200")
+                .replace("400", "200")
+                .replace("300", "100")
+                .replace("600", "200"),
+            )}
+          />
           <span className="text-xs font-bold text-foreground uppercase tracking-wider">
             {stage.label}
           </span>
@@ -251,7 +264,8 @@ function StageColumn({
       <div
         className={cn(
           "flex-1 space-y-2.5 min-h-[60vh] rounded-xl p-2 -m-2 transition-all duration-200",
-          isOver && "bg-[#AF0000]/5 ring-1 ring-inset ring-[#AF0000]/20 shadow-inner",
+          isOver &&
+            "bg-[#AF0000]/5 ring-1 ring-inset ring-[#AF0000]/20 shadow-inner",
         )}
       >
         {contacts.map((contact) => (
@@ -664,7 +678,10 @@ export function PipelineKanban() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <span className="text-sm text-muted-foreground">
-            <span className="font-semibold text-foreground">{contacts.length}</span> contact{contacts.length !== 1 ? "s" : ""}
+            <span className="font-semibold text-foreground">
+              {contacts.length}
+            </span>{" "}
+            contact{contacts.length !== 1 ? "s" : ""}
           </span>
           {totalValue > 0 && (
             <span className="text-sm font-bold text-foreground font-mono tabular-nums bg-gradient-to-r from-[#AF0000] to-[#DC2626] bg-clip-text text-transparent">
