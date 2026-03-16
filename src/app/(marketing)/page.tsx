@@ -141,7 +141,7 @@ const navLinks = [
 ];
 
 const stats = [
-  { value: 35, suffix: "+", label: "Coachs actifs" },
+  { value: 35, suffix: "+", label: "Professionnels actifs" },
   { value: 500, suffix: "+", label: "Eleves accompagnes" },
   { value: 97, suffix: "%", label: "De satisfaction" },
 ];
@@ -581,7 +581,7 @@ export default function LandingPage() {
                     boxShadow: `0 0 8px ${ACCENT_GLOW}`,
                   }}
                 />
-                Plateforme premium pour coachs &amp; consultants
+                Plateforme tout-en-un pour freelances, coachs &amp; consultants
               </div>
 
               {/* Headline */}
@@ -604,14 +604,14 @@ export default function LandingPage() {
                     aria-hidden="true"
                   />
                 </span>{" "}
-                pour scaler votre business de coaching
+                pour atteindre les 10 000&euro; par mois
               </h1>
 
               {/* Subheadline */}
               <p className="mx-auto mt-6 max-w-xl text-[1.125rem] leading-relaxed text-white/45 sm:text-lg">
-                Formation, CRM, messagerie, appels video, gamification et IA
-                reunis en un seul endroit. Remplacez 10 outils par une
-                plateforme premium.
+                CRM, formation, messagerie, appels video, gamification et IA
+                centralises dans une seule plateforme. Fini la fragmentation
+                entre Slack, Skool et Google Docs.
               </p>
 
               {/* CTAs */}
@@ -674,7 +674,7 @@ export default function LandingPage() {
         >
           <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
             <p className="mb-10 text-center text-[13px] font-medium uppercase tracking-[0.15em] text-white/30">
-              Deja adopte par des coachs ambitieux
+              Deja adopte par des professionnels ambitieux
             </p>
             <div className="grid grid-cols-1 gap-10 sm:grid-cols-3 sm:gap-8">
               {stats.map((stat, i) => (
@@ -729,13 +729,13 @@ export default function LandingPage() {
                 Fonctionnalites
               </p>
               <h2 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-[2.75rem]">
-                Tout ce dont un coach a besoin,
+                Tout ce dont vous avez besoin,
                 <br className="hidden sm:block" />
                 <span className="text-white/40">dans un seul endroit</span>
               </h2>
               <p className="mt-5 text-base leading-relaxed text-white/50 sm:text-lg">
-                Une suite d&apos;outils premium concue pour les coachs et
-                consultants qui veulent offrir une experience exceptionnelle.
+                Une suite d&apos;outils premium concue pour les freelances,
+                coachs et consultants qui visent l&apos;excellence.
               </p>
             </FadeIn>
 
@@ -924,8 +924,8 @@ export default function LandingPage() {
                 Ils ont transforme leur activite
               </h2>
               <p className="mt-5 text-base leading-relaxed text-white/50 sm:text-lg">
-                Decouvrez les retours de coachs qui utilisent Off-Market au
-                quotidien.
+                Decouvrez les retours de professionnels qui utilisent Off-Market
+                au quotidien.
               </p>
             </FadeIn>
 
@@ -1007,8 +1007,8 @@ export default function LandingPage() {
               ?
             </h2>
             <p className="mx-auto mt-6 max-w-lg text-base leading-relaxed text-white/50 sm:text-lg">
-              Rejoignez les coachs qui ont fait le choix de l&apos;excellence.
-              Demandez votre acces des maintenant.
+              Rejoignez les professionnels qui ont fait le choix de
+              l&apos;excellence. Demandez votre acces des maintenant.
             </p>
             <div className="mt-10 flex flex-col items-center gap-4">
               <Link href="/signup">
@@ -1052,8 +1052,8 @@ export default function LandingPage() {
                 <span className="text-[15px] font-bold">Off-Market</span>
               </Link>
               <p className="mt-4 max-w-[220px] text-[13px] leading-relaxed text-white/50">
-                La plateforme premium pour coachs et consultants qui veulent
-                scaler leur business.
+                La plateforme tout-en-un pour freelances, coachs et consultants
+                qui visent les 10K&euro;/mois.
               </p>
             </div>
 
