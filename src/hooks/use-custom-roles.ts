@@ -63,7 +63,9 @@ export function useRolePermissions(roleId: string | null) {
         .single();
       if (error) throw error;
       const perms = (data as unknown as { permissions: string[] }).permissions;
-      return Array.isArray(perms) ? perms : JSON.parse(perms as unknown as string);
+      return Array.isArray(perms)
+        ? perms
+        : JSON.parse(perms as unknown as string);
     },
     enabled: !!roleId,
   });
@@ -78,7 +80,15 @@ export function useCreateRole() {
 
   return useMutation({
     mutationFn: async (
-      role: Omit<CustomRole, "id" | "created_at" | "updated_at" | "is_system" | "created_by" | "user_count">,
+      role: Omit<
+        CustomRole,
+        | "id"
+        | "created_at"
+        | "updated_at"
+        | "is_system"
+        | "created_by"
+        | "user_count"
+      >,
     ) => {
       const { data, error } = await supabase
         .from("custom_roles")

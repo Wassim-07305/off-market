@@ -41,7 +41,10 @@ import {
 import { EnrichmentPanel } from "@/components/crm/enrichment-panel";
 import { CsvImportModal } from "@/components/crm/csv-import-modal";
 import { RelanceEnrollmentBadge } from "@/components/crm/relance-enrollment-badge";
-import { SegmentManager, type SegmentFilters } from "@/components/crm/segment-manager";
+import {
+  SegmentManager,
+  type SegmentFilters,
+} from "@/components/crm/segment-manager";
 import { useBulkEnrich } from "@/hooks/use-enrichment";
 
 // ─── Contact Card ────────────────────────────────────────────
@@ -539,8 +542,13 @@ function AddContactForm({
 // ─── Main Kanban Board ───────────────────────────────────────
 
 export function PipelineKanban() {
-  const { contacts: allContacts, isLoading, createContact, moveContact, deleteContact } =
-    usePipelineContacts();
+  const {
+    contacts: allContacts,
+    isLoading,
+    createContact,
+    moveContact,
+    deleteContact,
+  } = usePipelineContacts();
   const bulkEnrich = useBulkEnrich();
   const [showAdd, setShowAdd] = useState(false);
   const [showImport, setShowImport] = useState(false);
@@ -566,10 +574,14 @@ export function PipelineKanban() {
           c.company?.toLowerCase().includes(q);
         if (!match) return false;
       }
-      if (segmentFilters.stage && c.stage !== segmentFilters.stage) return false;
-      if (segmentFilters.source && c.source !== segmentFilters.source) return false;
-      if (segmentFilters.coachId && c.assigned_to !== segmentFilters.coachId) return false;
-      if (segmentFilters.tag && !c.tags?.includes(segmentFilters.tag)) return false;
+      if (segmentFilters.stage && c.stage !== segmentFilters.stage)
+        return false;
+      if (segmentFilters.source && c.source !== segmentFilters.source)
+        return false;
+      if (segmentFilters.coachId && c.assigned_to !== segmentFilters.coachId)
+        return false;
+      if (segmentFilters.tag && !c.tags?.includes(segmentFilters.tag))
+        return false;
       return true;
     });
   }, [allContacts, segmentFilters, hasActiveFilters]);

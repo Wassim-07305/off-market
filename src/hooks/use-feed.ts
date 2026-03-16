@@ -19,15 +19,19 @@ import type {
 const PAGE_SIZE = 20;
 const MAX_THREAD_DEPTH = 3;
 
-export function useFeed(postType?: PostType, sortMode: FeedSortMode = "recent") {
+export function useFeed(
+  postType?: PostType,
+  sortMode: FeedSortMode = "recent",
+) {
   const supabase = useSupabase();
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
-  const postsQuery = useQuery({
+  const postsQuery = useInfiniteQuery({
     queryKey: ["feed-posts", postType, sortMode],
     enabled: !!user,
-    queryFn: async () => {
+    initialPageParam: null as string | null,
+    queryFn: async ({ pageParam }) => {
       let query = supabase
         .from("feed_posts")
         .select(
@@ -47,6 +51,11 @@ export function useFeed(postType?: PostType, sortMode: FeedSortMode = "recent") 
         default:
           query = query.order("created_at", { ascending: false });
           break;
+      }
+
+      // Cursor-based pagination: fetch posts older than the cursor
+      if (pageParam) {
+        query = query.lt("created_at", pageParam);
       }
 
       query = query.limit(PAGE_SIZE);
@@ -75,6 +84,10 @@ export function useFeed(postType?: PostType, sortMode: FeedSortMode = "recent") 
       }
 
       return data as FeedPost[];
+    },
+    getNextPageParam: (lastPage) => {
+      if (lastPage.length < PAGE_SIZE) return undefined;
+      return lastPage[lastPage.length - 1]?.created_at ?? undefined;
     },
   });
 
@@ -179,9 +192,12 @@ export function useFeed(postType?: PostType, sortMode: FeedSortMode = "recent") 
   });
 
   return {
-    posts: postsQuery.data ?? [],
+    posts: postsQuery.data?.pages.flat() ?? [],
     isLoading: postsQuery.isLoading,
     error: postsQuery.error,
+    hasNextPage: postsQuery.hasNextPage,
+    isFetchingNextPage: postsQuery.isFetchingNextPage,
+    fetchNextPage: postsQuery.fetchNextPage,
     createPost,
     deletePost,
     togglePin,
@@ -336,8 +352,16 @@ export function useCommentReplies(commentId: string, postId: string) {
       if (error) throw error;
       return data as FeedComment[];
     },
-    enabled: false, // Only fetch when explicitly requested
+    enabled: !!commentId && !!postId,
   });
+}
+
+/** Calcule un score de tendance en temps reel (meme formule que le trigger DB) */
+function computeTrendingScore(post: FeedPost): number {
+  const ageHours =
+    (Date.now() - new Date(post.created_at).getTime()) / 3_600_000;
+  const recencyFactor = 100 * Math.exp(-0.1 * ageHours);
+  return post.likes_count * 2 + post.comments_count * 3 + recencyFactor;
 }
 
 export function useTrendingPosts(limit = 5) {
@@ -351,16 +375,25 @@ export function useTrendingPosts(limit = 5) {
     queryKey: ["feed-trending", limit],
     enabled: !!user,
     queryFn: async () => {
+      // Recupere un pool plus large pour trier cote client avec la formule de recence actuelle
+      const fetchLimit = Math.max(limit * 4, 20);
       const { data, error } = await supabase
         .from("feed_posts")
         .select(
           "*, author:profiles!feed_posts_author_id_fkey(id, full_name, avatar_url, role)",
         )
         .gte("created_at", sevenDaysAgo.toISOString())
-        .order("trending_score", { ascending: false })
-        .limit(limit);
+        .order("created_at", { ascending: false })
+        .limit(fetchLimit);
       if (error) throw error;
-      return data as FeedPost[];
+
+      // Tri cote client avec le score de tendance calcule en temps reel
+      const posts = (data as FeedPost[])
+        .map((p) => ({ ...p, trending_score: computeTrendingScore(p) }))
+        .sort((a, b) => b.trending_score - a.trending_score)
+        .slice(0, limit);
+
+      return posts;
     },
   });
 

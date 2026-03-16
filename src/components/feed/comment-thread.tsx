@@ -5,7 +5,13 @@ import { useComments } from "@/hooks/use-feed";
 import { useAuth } from "@/hooks/use-auth";
 import { ReportButton } from "@/components/feed/report-modal";
 import type { FeedComment } from "@/types/feed";
-import { Send, X, ChevronDown, ChevronRight, CornerDownRight } from "lucide-react";
+import {
+  Send,
+  X,
+  ChevronDown,
+  ChevronRight,
+  CornerDownRight,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const MAX_VISIBLE_DEPTH = 3;
@@ -106,12 +112,18 @@ function ThreadedComment({
 }) {
   const [repliesExpanded, setRepliesExpanded] = useState(depth < 1);
   const isAuthor = currentUserId === comment.author_id;
-  const hasReplies = (comment.replies && comment.replies.length > 0) || (comment.reply_count > 0);
+  const hasReplies =
+    (comment.replies && comment.replies.length > 0) || comment.reply_count > 0;
   const replyCount = comment.replies?.length || comment.reply_count || 0;
   const canReply = depth < MAX_VISIBLE_DEPTH - 1;
 
   return (
-    <div className={cn("group", depth > 0 && "ml-8 border-l-2 border-border/30 pl-3")}>
+    <div
+      className={cn(
+        "group",
+        depth > 0 && "ml-8 border-l-2 border-border/30 pl-3",
+      )}
+    >
       {/* Comment bubble */}
       <div className="flex items-start gap-2">
         {comment.author?.avatar_url ? (

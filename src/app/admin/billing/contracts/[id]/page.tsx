@@ -500,10 +500,7 @@ export default function ContractDetailPage() {
           </div>
 
           {/* Renewal Settings */}
-          <RenewalSettings
-            contractId={id}
-            contractStatus={contract.status}
-          />
+          <RenewalSettings contractId={id} contractStatus={contract.status} />
 
           {/* Timeline */}
           <div className="bg-surface border border-border rounded-xl p-5">

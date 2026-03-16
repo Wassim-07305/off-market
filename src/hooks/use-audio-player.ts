@@ -48,11 +48,7 @@ export function useAudioPlayer(options: UseAudioPlayerOptions = {}) {
         setCurrentTime(audio.currentTime);
 
         // Auto-complete at threshold
-        if (
-          !autoCompleted &&
-          audio.duration > 0 &&
-          onComplete
-        ) {
+        if (!autoCompleted && audio.duration > 0 && onComplete) {
           const percent = (audio.currentTime / audio.duration) * 100;
           if (percent >= autoCompletePercent) {
             setAutoCompleted(true);
@@ -134,15 +130,18 @@ export function useAudioPlayer(options: UseAudioPlayerOptions = {}) {
     setSpeed(newSpeed);
   }, []);
 
-  const changeVolume = useCallback((newVolume: number) => {
-    if (!audioRef.current) return;
-    audioRef.current.volume = newVolume;
-    setVolume(newVolume);
-    if (newVolume > 0 && muted) {
-      audioRef.current.muted = false;
-      setMuted(false);
-    }
-  }, [muted]);
+  const changeVolume = useCallback(
+    (newVolume: number) => {
+      if (!audioRef.current) return;
+      audioRef.current.volume = newVolume;
+      setVolume(newVolume);
+      if (newVolume > 0 && muted) {
+        audioRef.current.muted = false;
+        setMuted(false);
+      }
+    },
+    [muted],
+  );
 
   const toggleMute = useCallback(() => {
     if (!audioRef.current) return;
@@ -150,8 +149,7 @@ export function useAudioPlayer(options: UseAudioPlayerOptions = {}) {
     setMuted(audioRef.current.muted);
   }, []);
 
-  const progressPercent =
-    duration > 0 ? (currentTime / duration) * 100 : 0;
+  const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return {
     audioRef,

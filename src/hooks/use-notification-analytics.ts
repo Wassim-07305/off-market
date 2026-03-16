@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
+import { useAuth } from "./use-auth";
 import type { DateRange } from "@/types/analytics";
 
 interface NotificationAnalyticsData {
@@ -56,9 +57,11 @@ const TYPE_LABELS: Record<string, string> = {
  */
 export function useNotificationAnalytics(range?: DateRange) {
   const supabase = useSupabase();
+  const { user } = useAuth();
 
   return useQuery({
     queryKey: ["notification-analytics", range?.from, range?.to],
+    enabled: !!user,
     queryFn: async (): Promise<NotificationAnalyticsData> => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let query = (supabase as any)
@@ -92,17 +95,17 @@ export function useNotificationAnalytics(range?: DateRange) {
 
       const avgOpenTimeMinutes =
         openTimes.length > 0
-          ? Math.round(
-              openTimes.reduce((a, b) => a + b, 0) / openTimes.length,
-            )
+          ? Math.round(openTimes.reduce((a, b) => a + b, 0) / openTimes.length)
           : 0;
 
       return {
         totalSent,
         totalOpened,
         totalClicked,
-        openRate: totalSent > 0 ? Math.round((totalOpened / totalSent) * 100) : 0,
-        clickRate: totalSent > 0 ? Math.round((totalClicked / totalSent) * 100) : 0,
+        openRate:
+          totalSent > 0 ? Math.round((totalOpened / totalSent) * 100) : 0,
+        clickRate:
+          totalSent > 0 ? Math.round((totalClicked / totalSent) * 100) : 0,
         avgOpenTimeMinutes,
       };
     },
@@ -114,9 +117,11 @@ export function useNotificationAnalytics(range?: DateRange) {
  */
 export function useNotificationsByType(range?: DateRange) {
   const supabase = useSupabase();
+  const { user } = useAuth();
 
   return useQuery({
     queryKey: ["notification-by-type", range?.from, range?.to],
+    enabled: !!user,
     queryFn: async (): Promise<NotificationTypeBreakdown[]> => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let query = (supabase as any)
@@ -167,9 +172,11 @@ export function useNotificationsByType(range?: DateRange) {
  */
 export function useNotificationTrends(range?: DateRange) {
   const supabase = useSupabase();
+  const { user } = useAuth();
 
   return useQuery({
     queryKey: ["notification-trends", range?.from, range?.to],
+    enabled: !!user,
     queryFn: async (): Promise<NotificationTrend[]> => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let query = (supabase as any)

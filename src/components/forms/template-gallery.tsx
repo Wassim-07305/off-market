@@ -18,7 +18,11 @@ import {
   X,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { fadeInUp, staggerContainer, defaultTransition } from "@/lib/animations";
+import {
+  fadeInUp,
+  staggerContainer,
+  defaultTransition,
+} from "@/lib/animations";
 
 interface TemplateGalleryProps {
   onSelectTemplate: (formId: string) => void;
@@ -350,8 +354,7 @@ function TemplatePreviewModal({
         {/* Fields list */}
         <div className="flex-1 overflow-y-auto p-6 space-y-2">
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-            {inputFields.length} champ{inputFields.length > 1 ? "s" : ""}{" "}
-            inclus
+            {inputFields.length} champ{inputFields.length > 1 ? "s" : ""} inclus
           </p>
           {template.fields.map((field, idx) => {
             const isLayout = ["heading", "paragraph", "divider"].includes(
@@ -359,9 +362,7 @@ function TemplatePreviewModal({
             );
 
             if (field.field_type === "divider") {
-              return (
-                <hr key={idx} className="border-border/50 my-2" />
-              );
+              return <hr key={idx} className="border-border/50 my-2" />;
             }
 
             if (field.field_type === "heading") {

@@ -100,7 +100,8 @@ export default function ForgotPasswordPage() {
               className="w-full h-11 text-white font-medium rounded-xl transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
               style={{
                 backgroundColor: primaryColor,
-                boxShadow: brandVariants.glow + ", 0 4px 12px rgba(0, 0, 0, 0.3)",
+                boxShadow:
+                  brandVariants.glow + ", 0 4px 12px rgba(0, 0, 0, 0.3)",
               }}
             >
               {loading && <Loader2 className="w-4 h-4 animate-spin" />}

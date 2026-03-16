@@ -11,7 +11,11 @@ interface AiConsentModalProps {
   isAccepting: boolean;
 }
 
-const SCOPE_OPTIONS: { value: AiConsentScope; label: string; description: string }[] = [
+const SCOPE_OPTIONS: {
+  value: AiConsentScope;
+  label: string;
+  description: string;
+}[] = [
   {
     value: "chat_analysis",
     label: "Analyse des conversations",
@@ -38,7 +42,11 @@ const SCOPE_OPTIONS: { value: AiConsentScope; label: string; description: string
  * Modal de consentement IA avec selection granulaire des scopes.
  * Affichee avant la premiere utilisation de l'assistant IA.
  */
-export function AiConsentModal({ onAccept, onDismiss, isAccepting }: AiConsentModalProps) {
+export function AiConsentModal({
+  onAccept,
+  onDismiss,
+  isAccepting,
+}: AiConsentModalProps) {
   const [selectedScopes, setSelectedScopes] = useState<AiConsentScope[]>(
     SCOPE_OPTIONS.map((o) => o.value),
   );
@@ -77,7 +85,8 @@ export function AiConsentModal({ onAccept, onDismiss, isAccepting }: AiConsentMo
         {/* Description */}
         <p className="text-sm text-foreground leading-relaxed">
           Off Market utilise l'intelligence artificielle pour ameliorer ton
-          accompagnement. Choisis les fonctionnalites IA que tu souhaites activer :
+          accompagnement. Choisis les fonctionnalites IA que tu souhaites
+          activer :
         </p>
 
         {/* Scope checkboxes */}
@@ -118,8 +127,7 @@ export function AiConsentModal({ onAccept, onDismiss, isAccepting }: AiConsentMo
             <strong className="text-foreground">
               jamais partagees avec des tiers
             </strong>
-            . Tu peux retirer ton consentement a tout moment dans les Reglages.
-            {" "}
+            . Tu peux retirer ton consentement a tout moment dans les Reglages.{" "}
             <a
               href="/legal/privacy"
               className="inline-flex items-center gap-0.5 text-primary hover:underline"

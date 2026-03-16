@@ -101,7 +101,9 @@ export function useLeaderboard(period: LeaderboardPeriod = "all") {
       const [profilesRes, badgesRes] = await Promise.all([
         (supabase as any)
           .from("profiles")
-          .select("id, full_name, avatar_url, leaderboard_anonymous, anonymous_alias")
+          .select(
+            "id, full_name, avatar_url, leaderboard_anonymous, anonymous_alias",
+          )
           .in("id", profileIds),
         (supabase as any)
           .from("user_badges")
@@ -138,7 +140,7 @@ export function useLeaderboard(period: LeaderboardPeriod = "all") {
         return {
           profile_id: profileId,
           full_name: isAnon
-            ? (profile?.anonymous_alias || "Utilisateur anonyme")
+            ? profile?.anonymous_alias || "Utilisateur anonyme"
             : (profile?.full_name ?? "Utilisateur"),
           avatar_url: isAnon ? null : (profile?.avatar_url ?? null),
           total_xp: totalXp,
@@ -243,7 +245,10 @@ async function fetchAnonymousProfiles(supabase: any, profileIds: string[]) {
     .in("id", profileIds)
     .eq("leaderboard_anonymous", true);
   const map = new Map<string, string | null>();
-  for (const p of (data ?? []) as { id: string; anonymous_alias: string | null }[]) {
+  for (const p of (data ?? []) as {
+    id: string;
+    anonymous_alias: string | null;
+  }[]) {
     map.set(p.id, p.anonymous_alias);
   }
   return map;

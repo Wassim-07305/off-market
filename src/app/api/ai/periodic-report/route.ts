@@ -113,7 +113,11 @@ export async function POST(request: NextRequest) {
 
     for (const userProfile of users) {
       try {
-        let result: { report: string; title: string; data: Record<string, unknown> };
+        let result: {
+          report: string;
+          title: string;
+          data: Record<string, unknown>;
+        };
 
         switch (reportType) {
           case "monthly_performance":
@@ -139,7 +143,11 @@ export async function POST(request: NextRequest) {
         results.push({ userId: userProfile.id, success: true });
       } catch (err) {
         const errorMsg = err instanceof Error ? err.message : "Erreur inconnue";
-        results.push({ userId: userProfile.id, success: false, error: errorMsg });
+        results.push({
+          userId: userProfile.id,
+          success: false,
+          error: errorMsg,
+        });
       }
     }
 
@@ -154,7 +162,10 @@ export async function POST(request: NextRequest) {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function generateWeeklyReport(supabase: any, profile: { id?: string; full_name: string; role: string }) {
+async function generateWeeklyReport(
+  supabase: any,
+  profile: { id?: string; full_name: string; role: string },
+) {
   const now = new Date();
   const sevenDaysAgo = new Date(now.getTime() - 7 * 86400000).toISOString();
 
@@ -221,7 +232,11 @@ async function generateWeeklyReport(supabase: any, profile: { id?: string; full_
       .join(", ")}\n`;
     context += `Themes abordes : ${
       [
-        ...new Set(journalEntries.flatMap((e: Record<string, unknown>) => (e.tags as string[]) ?? [])),
+        ...new Set(
+          journalEntries.flatMap(
+            (e: Record<string, unknown>) => (e.tags as string[]) ?? [],
+          ),
+        ),
       ].join(", ") || "aucun"
     }\n`;
   }
@@ -230,11 +245,16 @@ async function generateWeeklyReport(supabase: any, profile: { id?: string; full_
   context += `\n### Check-ins (${checkins.length})\n`;
   if (checkins.length > 0) {
     const avgEnergy =
-      checkins.reduce((s: number, c: Record<string, unknown>) => s + (Number(c.energy) || 0), 0) /
-      checkins.length;
+      checkins.reduce(
+        (s: number, c: Record<string, unknown>) => s + (Number(c.energy) || 0),
+        0,
+      ) / checkins.length;
     const avgProgress =
-      checkins.reduce((s: number, c: Record<string, unknown>) => s + (Number(c.goals_progress) || 0), 0) /
-      checkins.length;
+      checkins.reduce(
+        (s: number, c: Record<string, unknown>) =>
+          s + (Number(c.goals_progress) || 0),
+        0,
+      ) / checkins.length;
     context += `Energie moyenne : ${avgEnergy.toFixed(1)}/10\n`;
     context += `Progression objectifs moyenne : ${avgProgress.toFixed(0)}%\n`;
 
@@ -258,7 +278,9 @@ async function generateWeeklyReport(supabase: any, profile: { id?: string; full_
 
   context += `\n### Sessions coaching (${sessions.length})\n`;
   if (sessions.length > 0) {
-    const completed = sessions.filter((s: Record<string, unknown>) => s.status === "completed").length;
+    const completed = sessions.filter(
+      (s: Record<string, unknown>) => s.status === "completed",
+    ).length;
     context += `Completees : ${completed}/${sessions.length}\n`;
   }
 
@@ -277,13 +299,15 @@ async function generateWeeklyReport(supabase: any, profile: { id?: string; full_
   const activeStudents = students.filter((s: Record<string, unknown>) => {
     if (!s.last_active_at) return false;
     return (
-      new Date(s.last_active_at as string).getTime() > now.getTime() - 7 * 86400000
+      new Date(s.last_active_at as string).getTime() >
+      now.getTime() - 7 * 86400000
     );
   });
   const inactiveStudents = students.filter((s: Record<string, unknown>) => {
     if (!s.last_active_at) return true;
     return (
-      new Date(s.last_active_at as string).getTime() <= now.getTime() - 7 * 86400000
+      new Date(s.last_active_at as string).getTime() <=
+      now.getTime() - 7 * 86400000
     );
   });
 
@@ -339,7 +363,10 @@ async function generateWeeklyReport(supabase: any, profile: { id?: string; full_
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function generatePerformanceReport(supabase: any, profile: { id?: string; full_name: string; role: string }) {
+async function generatePerformanceReport(
+  supabase: any,
+  profile: { id?: string; full_name: string; role: string },
+) {
   const now = new Date();
   const thirtyDaysAgo = new Date(now.getTime() - 30 * 86400000).toISOString();
 
@@ -373,10 +400,16 @@ async function generatePerformanceReport(supabase: any, profile: { id?: string; 
 
   const totalRevenue = revenue
     .filter((r: Record<string, unknown>) => r.type === "revenue")
-    .reduce((s: number, r: Record<string, unknown>) => s + (Number(r.amount) || 0), 0);
+    .reduce(
+      (s: number, r: Record<string, unknown>) => s + (Number(r.amount) || 0),
+      0,
+    );
 
-  const closedLeads = leads.filter((l: Record<string, unknown>) => l.status === "close").length;
-  const conversionRate = leads.length > 0 ? ((closedLeads / leads.length) * 100).toFixed(1) : "0";
+  const closedLeads = leads.filter(
+    (l: Record<string, unknown>) => l.status === "close",
+  ).length;
+  const conversionRate =
+    leads.length > 0 ? ((closedLeads / leads.length) * 100).toFixed(1) : "0";
 
   let context = `## Performance des 30 derniers jours\n\n`;
   context += `Revenus totaux : ${totalRevenue} EUR\n`;
@@ -410,13 +443,18 @@ async function generatePerformanceReport(supabase: any, profile: { id?: string; 
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function generateRiskReport(supabase: any, profile: { id?: string; full_name: string; role: string }) {
+async function generateRiskReport(
+  supabase: any,
+  profile: { id?: string; full_name: string; role: string },
+) {
   const now = new Date();
   const fourteenDaysAgo = new Date(now.getTime() - 14 * 86400000).toISOString();
 
   const { data: students } = await supabase
     .from("student_details")
-    .select("profile_id, tag, flag, engagement_score, health_score, last_engagement_at, profiles!student_details_profile_id_fkey(full_name)")
+    .select(
+      "profile_id, tag, flag, engagement_score, health_score, last_engagement_at, profiles!student_details_profile_id_fkey(full_name)",
+    )
     .in("tag", ["at_risk", "churned"])
     .order("health_score", { ascending: true })
     .limit(30);

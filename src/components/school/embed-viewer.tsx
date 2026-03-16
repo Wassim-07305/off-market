@@ -28,7 +28,10 @@ export function detectEmbedType(url: string): EmbedType {
 
     if (hostname.includes("figma.com")) return "figma";
     if (hostname.includes("miro.com")) return "miro";
-    if (hostname.includes("docs.google.com") || hostname.includes("drive.google.com"))
+    if (
+      hostname.includes("docs.google.com") ||
+      hostname.includes("drive.google.com")
+    )
       return "google_docs";
     if (hostname.includes("canva.com")) return "canva";
     if (hostname.includes("notion.so") || hostname.includes("notion.site"))
@@ -62,7 +65,12 @@ function getEmbedUrl(url: string, type: EmbedType): string {
     }
     case "google_docs": {
       // Google Docs/Sheets/Slides — append /preview or /pub
-      if (url.includes("/pub") || url.includes("/preview") || url.includes("/embed")) return url;
+      if (
+        url.includes("/pub") ||
+        url.includes("/preview") ||
+        url.includes("/embed")
+      )
+        return url;
       if (url.includes("/edit")) return url.replace("/edit", "/preview");
       return url + (url.includes("?") ? "&" : "?") + "embedded=true";
     }
@@ -97,7 +105,12 @@ const EMBED_LABELS: Record<EmbedType, string> = {
 // Component
 // ---------------------------------------------------------------------------
 
-export function EmbedViewer({ url, embedType, title, className }: EmbedViewerProps) {
+export function EmbedViewer({
+  url,
+  embedType,
+  title,
+  className,
+}: EmbedViewerProps) {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
@@ -136,8 +149,8 @@ export function EmbedViewer({ url, embedType, title, className }: EmbedViewerPro
           Impossible de charger le contenu
         </h3>
         <p className="text-xs text-muted-foreground mb-4 max-w-sm">
-          Le contenu {label} n&apos;a pas pu etre charge. Il est possible que le lien soit
-          invalide ou que le contenu ne soit pas public.
+          Le contenu {label} n&apos;a pas pu etre charge. Il est possible que le
+          lien soit invalide ou que le contenu ne soit pas public.
         </p>
         <a
           href={url}
@@ -199,12 +212,19 @@ export function EmbedViewer({ url, embedType, title, className }: EmbedViewerPro
       </div>
 
       {/* Iframe container */}
-      <div className={cn("relative", isFullscreen ? "h-[calc(100vh-45px)]" : "aspect-video")}>
+      <div
+        className={cn(
+          "relative",
+          isFullscreen ? "h-[calc(100vh-45px)]" : "aspect-video",
+        )}
+      >
         {isLoading && (
           <div className="absolute inset-0 flex items-center justify-center bg-muted/50">
             <div className="flex flex-col items-center gap-2">
               <Loader2 className="w-6 h-6 text-primary animate-spin" />
-              <span className="text-xs text-muted-foreground">Chargement du contenu {label}...</span>
+              <span className="text-xs text-muted-foreground">
+                Chargement du contenu {label}...
+              </span>
             </div>
           </div>
         )}

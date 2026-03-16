@@ -56,9 +56,7 @@ function TrendingCard({
           </div>
           <div className="flex items-center gap-1 text-muted-foreground">
             <MessageCircle className="w-3 h-3" />
-            <span className="text-[11px] font-mono">
-              {post.comments_count}
-            </span>
+            <span className="text-[11px] font-mono">{post.comments_count}</span>
           </div>
         </div>
       </div>

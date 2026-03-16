@@ -2,10 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  staggerContainer,
-  staggerItem,
-} from "@/lib/animations";
+import { staggerContainer, staggerItem } from "@/lib/animations";
 import { useJournal } from "@/hooks/use-journal";
 import { useExportJournalPdf } from "@/hooks/use-journal-export";
 import { MOOD_CONFIG, JOURNAL_TEMPLATES } from "@/types/coaching";
@@ -831,7 +828,8 @@ function JournalComposer({
 }) {
   const tpl = template ? JOURNAL_TEMPLATES[template] : null;
   const [title, setTitle] = useState(
-    initialData?.title ?? (tpl ? tpl.label : promptData ? "Reflexion du jour" : ""),
+    initialData?.title ??
+      (tpl ? tpl.label : promptData ? "Reflexion du jour" : ""),
   );
   const [content, setContent] = useState(
     initialData?.content ??
@@ -927,11 +925,7 @@ function JournalComposer({
         <textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          placeholder={
-            promptData
-              ? promptData.text
-              : "Ecris tes pensees..."
-          }
+          placeholder={promptData ? promptData.text : "Ecris tes pensees..."}
           rows={10}
           className="w-full px-4 py-3 bg-muted/50 border-0 rounded-[10px] text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#DC2626]/20 resize-none leading-relaxed"
         />
@@ -941,10 +935,7 @@ function JournalComposer({
       </div>
 
       {/* Attachments */}
-      <JournalAttachments
-        attachments={attachments}
-        onChange={setAttachments}
-      />
+      <JournalAttachments attachments={attachments} onChange={setAttachments} />
 
       {/* Mood */}
       <div className="flex items-center gap-2">

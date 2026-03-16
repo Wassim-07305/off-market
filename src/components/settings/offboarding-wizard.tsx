@@ -18,7 +18,10 @@ import {
 } from "lucide-react";
 import { cn, getInitials } from "@/lib/utils";
 import { useCoaches } from "@/hooks/use-user-management";
-import { useCreateOffboarding, useProcessOffboarding } from "@/hooks/use-offboarding";
+import {
+  useCreateOffboarding,
+  useProcessOffboarding,
+} from "@/hooks/use-offboarding";
 import type { Profile, OffboardingDataActions } from "@/types/database";
 
 interface OffboardingWizardProps {
@@ -34,7 +37,11 @@ const STEPS = [
   { title: "Confirmation", description: "Verifier et confirmer" },
 ];
 
-export function OffboardingWizard({ open, onClose, users }: OffboardingWizardProps) {
+export function OffboardingWizard({
+  open,
+  onClose,
+  users,
+}: OffboardingWizardProps) {
   const [step, setStep] = useState(0);
   const [selectedUserId, setSelectedUserId] = useState("");
   const [reason, setReason] = useState("");
@@ -280,8 +287,8 @@ export function OffboardingWizard({ open, onClose, users }: OffboardingWizardPro
                   Transferer les donnees a
                 </label>
                 <p className="text-xs text-muted-foreground mb-3">
-                  Selectionne un utilisateur qui reprendra les clients et canaux.
-                  Optionnel si aucune donnee a transferer.
+                  Selectionne un utilisateur qui reprendra les clients et
+                  canaux. Optionnel si aucune donnee a transferer.
                 </p>
                 <select
                   value={transferToId}

@@ -463,14 +463,27 @@ export interface LessonAttachment {
   type: string;
 }
 
-export type EmbedType = "figma" | "miro" | "google_docs" | "canva" | "notion" | "generic";
+export type EmbedType =
+  | "figma"
+  | "miro"
+  | "google_docs"
+  | "canva"
+  | "notion"
+  | "generic";
 
 export interface Lesson {
   id: string;
   module_id: string;
   title: string;
   description: string | null;
-  content_type: "video" | "text" | "pdf" | "quiz" | "assignment" | "audio" | "embed";
+  content_type:
+    | "video"
+    | "text"
+    | "pdf"
+    | "quiz"
+    | "assignment"
+    | "audio"
+    | "embed";
   content: Record<string, unknown>;
   video_url: string | null;
   audio_url: string | null;
@@ -684,7 +697,10 @@ export interface Resource {
   uploader?: Profile;
 }
 
-export type AiReportType = "weekly_coaching" | "monthly_performance" | "client_risk";
+export type AiReportType =
+  | "weekly_coaching"
+  | "monthly_performance"
+  | "client_risk";
 
 export type AiConsentScope =
   | "chat_analysis"
@@ -913,7 +929,11 @@ export interface CustomRole {
 // Offboarding
 // ---------------------------------------------------------------------------
 
-export type OffboardingStatus = "pending" | "in_progress" | "completed" | "cancelled";
+export type OffboardingStatus =
+  | "pending"
+  | "in_progress"
+  | "completed"
+  | "cancelled";
 
 export interface OffboardingDataActions {
   transfer_clients: boolean;

@@ -1,7 +1,13 @@
 "use client";
 
 import { useState, useRef, useCallback } from "react";
-import { Paperclip, X, Loader2, FileText, Image as ImageIcon } from "lucide-react";
+import {
+  Paperclip,
+  X,
+  Loader2,
+  FileText,
+  Image as ImageIcon,
+} from "lucide-react";
 import { useSupabase } from "@/hooks/use-supabase";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
@@ -18,7 +24,8 @@ const ACCEPTED_IMAGE_TYPES = [
 ];
 const ACCEPTED_DOC_TYPES = ["application/pdf"];
 const ALL_ACCEPTED = [...ACCEPTED_IMAGE_TYPES, ...ACCEPTED_DOC_TYPES];
-const ACCEPT_STRING = "image/jpeg,image/png,image/gif,image/webp,application/pdf";
+const ACCEPT_STRING =
+  "image/jpeg,image/png,image/gif,image/webp,application/pdf";
 
 function formatFileSize(bytes: number): string {
   if (bytes < 1024) return `${bytes} o`;
@@ -229,8 +236,8 @@ export function JournalAttachments({
                 : "Glisser-deposer ou cliquer pour ajouter"}
             </p>
             <p className="text-[10px] text-muted-foreground/60">
-              Images (JPG, PNG, GIF) et PDF — max {formatFileSize(MAX_FILE_SIZE)}{" "}
-              par fichier
+              Images (JPG, PNG, GIF) et PDF — max{" "}
+              {formatFileSize(MAX_FILE_SIZE)} par fichier
             </p>
           </div>
         </div>

@@ -4,7 +4,14 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 import { cn } from "@/lib/utils";
-import { DollarSign, Phone, Users, Activity, BarChart3, Bell } from "lucide-react";
+import {
+  DollarSign,
+  Phone,
+  Users,
+  Activity,
+  BarChart3,
+  Bell,
+} from "lucide-react";
 import { PeriodSelector } from "@/components/analytics/period-selector";
 import { FinancialTab } from "@/components/analytics/financial-tab";
 import { CallsTab } from "@/components/analytics/calls-tab";

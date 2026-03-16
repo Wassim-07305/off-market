@@ -333,7 +333,10 @@ export function useContractRenewal() {
       // Mark original as renewed
       await supabase
         .from("contracts")
-        .update({ status: "renewed" as ContractStatus, renewed_to: renewedContract.id } as never)
+        .update({
+          status: "renewed" as ContractStatus,
+          renewed_to: renewedContract.id,
+        } as never)
         .eq("id", contractId);
 
       return renewedContract;

@@ -110,12 +110,8 @@ function IndividualLeaderboard() {
   const { entries, isLoading, rankChanges } = useLeaderboard(period);
   const { summary } = useXp();
   const { user } = useAuth();
-  const {
-    isAnonymous,
-    alias,
-    toggleAnonymity,
-    regenerateAlias,
-  } = useLeaderboardPrivacy();
+  const { isAnonymous, alias, toggleAnonymity, regenerateAlias } =
+    useLeaderboardPrivacy();
   const [showAnonConfirm, setShowAnonConfirm] = useState(false);
 
   const top3 = entries.slice(0, 3);
@@ -235,7 +231,8 @@ function IndividualLeaderboard() {
           <div className="flex items-center gap-2 min-w-0">
             <EyeOff className="w-4 h-4 text-muted-foreground shrink-0" />
             <p className="text-xs text-muted-foreground truncate">
-              Les autres voient : <span className="font-medium text-foreground">{alias}</span>
+              Les autres voient :{" "}
+              <span className="font-medium text-foreground">{alias}</span>
             </p>
           </div>
           <button
@@ -244,7 +241,12 @@ function IndividualLeaderboard() {
             className="shrink-0 h-7 px-3 rounded-lg text-[10px] font-medium bg-muted text-muted-foreground hover:text-foreground transition-all cursor-pointer inline-flex items-center gap-1"
             title="Generer un nouvel alias"
           >
-            <RefreshCw className={cn("w-3 h-3", regenerateAlias.isPending && "animate-spin")} />
+            <RefreshCw
+              className={cn(
+                "w-3 h-3",
+                regenerateAlias.isPending && "animate-spin",
+              )}
+            />
             Nouvel alias
           </button>
         </motion.div>

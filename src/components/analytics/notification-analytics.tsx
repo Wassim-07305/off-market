@@ -2,13 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import {
-  Send,
-  Eye,
-  MousePointerClick,
-  Clock,
-  Loader2,
-} from "lucide-react";
+import { Send, Eye, MousePointerClick, Clock, Loader2 } from "lucide-react";
 import {
   PieChart,
   Pie,
@@ -144,17 +138,11 @@ export function NotificationAnalytics() {
                   strokeWidth={0}
                 >
                   {byType.map((_, i) => (
-                    <Cell
-                      key={i}
-                      fill={PIE_COLORS[i % PIE_COLORS.length]}
-                    />
+                    <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
                   ))}
                 </Pie>
                 <Tooltip
-                  formatter={(value, name) => [
-                    `${value} notifications`,
-                    name,
-                  ]}
+                  formatter={(value, name) => [`${value} notifications`, name]}
                   contentStyle={{
                     borderRadius: "12px",
                     border: "1px solid #e4e4e7",

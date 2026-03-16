@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import ReactMarkdown from "react-markdown";
 import {
   FileText,
   TrendingUp,
@@ -113,17 +114,9 @@ function ReportItem({ report }: { report: AiReport }) {
 
       {expanded && (
         <div className="px-4 pb-4 border-t border-border">
-          <div
-            className="prose prose-sm max-w-none text-foreground pt-3 [&_h2]:text-sm [&_h2]:font-semibold [&_h2]:mt-3 [&_h2]:mb-1.5 [&_h3]:text-sm [&_h3]:font-medium [&_h3]:mt-2 [&_h3]:mb-1 [&_ul]:mt-1 [&_ul]:mb-2 [&_li]:text-sm [&_p]:text-sm [&_p]:leading-relaxed"
-            dangerouslySetInnerHTML={{
-              __html: report.content
-                .replace(/\n/g, "<br />")
-                .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-                .replace(/^## (.*?)(<br \/>)/gm, "<h2>$1</h2>")
-                .replace(/^### (.*?)(<br \/>)/gm, "<h3>$1</h3>")
-                .replace(/^- (.*?)(<br \/>)/gm, "<li>$1</li>"),
-            }}
-          />
+          <div className="prose prose-sm max-w-none text-foreground pt-3 [&_h2]:text-sm [&_h2]:font-semibold [&_h2]:mt-3 [&_h2]:mb-1.5 [&_h3]:text-sm [&_h3]:font-medium [&_h3]:mt-2 [&_h3]:mb-1 [&_ul]:mt-1 [&_ul]:mb-2 [&_li]:text-sm [&_p]:text-sm [&_p]:leading-relaxed">
+            <ReactMarkdown>{report.content}</ReactMarkdown>
+          </div>
         </div>
       )}
     </div>

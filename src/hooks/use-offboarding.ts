@@ -4,7 +4,10 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
 import { toast } from "sonner";
-import type { OffboardingRequest, OffboardingDataActions } from "@/types/database";
+import type {
+  OffboardingRequest,
+  OffboardingDataActions,
+} from "@/types/database";
 
 // ─── List offboarding requests ─────────────────────────────
 
@@ -119,7 +122,9 @@ export function useProcessOffboarding() {
       toast.success("Offboarding traite avec succes");
     },
     onError: (error: Error) => {
-      toast.error(error.message || "Erreur lors du traitement de l'offboarding");
+      toast.error(
+        error.message || "Erreur lors du traitement de l'offboarding",
+      );
     },
   });
 }

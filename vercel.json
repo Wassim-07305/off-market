@@ -13,12 +13,24 @@
       "schedule": "0 8 * * *"
     },
     {
-      "path": "/api/ai/periodic-report",
-      "schedule": "0 7 * * 1"
+      "path": "/api/cron/ai-reports",
+      "schedule": "0 8 * * 1"
     },
     {
       "path": "/api/notifications/batch",
       "schedule": "0 * * * *"
+    },
+    {
+      "path": "/api/competitions/update-scores",
+      "schedule": "0 */2 * * *"
+    },
+    {
+      "path": "/api/coaching/check-alerts",
+      "schedule": "0 9 * * *"
+    },
+    {
+      "path": "/api/cron/scheduled-messages",
+      "schedule": "*/5 * * * *"
     }
   ]
 }

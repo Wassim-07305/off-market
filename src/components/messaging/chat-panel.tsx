@@ -1,13 +1,16 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useSupabase } from "@/hooks/use-supabase";
 import { useMessagingStore } from "@/stores/messaging-store";
+import { useBookmarks } from "@/hooks/use-bookmarks";
 import { ChatHeader } from "./chat-header";
 import { MessageList } from "./message-list";
 import { ChatInput } from "./chat-input";
 import { TypingIndicator } from "./typing-indicator";
 import { ThreadPanel } from "./thread-panel";
+import { PinnedMessagesBar } from "./pinned-messages-bar";
+import { BookmarksPanel } from "./bookmarks-panel";
 import { toast } from "sonner";
 import type { ChannelWithMeta, EnrichedMessage } from "@/types/messaging";
 import type { UseMutationResult } from "@tanstack/react-query";
@@ -82,11 +85,18 @@ export function ChatPanel({
     setShowSearchPanel,
     searchQuery,
     setSearchQuery,
-    toggleBookmark,
-    isBookmarked,
+    showBookmarksPanel,
+    setShowBookmarksPanel,
   } = useMessagingStore();
+  const { isBookmarked, toggleBookmark, bookmarkedMessages } = useBookmarks();
   const [threadMessage, setThreadMessage] = useState<EnrichedMessage | null>(
     null,
+  );
+
+  // Compute pinned messages from the current channel's messages
+  const pinnedMessages = useMemo(
+    () => messages.filter((m) => m.is_pinned),
+    [messages],
   );
 
   const handleSend = useCallback(
@@ -221,6 +231,18 @@ export function ChatPanel({
     [supabase, user, channel, sendMessage, addAttachment],
   );
 
+  const handleGifSend = useCallback(
+    async (gifUrl: string) => {
+      await sendMessage.mutateAsync({
+        content: gifUrl,
+        contentType: "image",
+        replyTo: replyToMessage?.id,
+      });
+      setReplyTo(null);
+    },
+    [sendMessage, replyToMessage, setReplyTo],
+  );
+
   // Filter messages by search
   const displayedMessages = searchQuery
     ? messages.filter((m) =>
@@ -244,6 +266,18 @@ export function ChatPanel({
           onSearchChange={setSearchQuery}
           searchResultCount={searchQuery ? displayedMessages.length : undefined}
           isOnline={isOnline}
+          showBookmarks={showBookmarksPanel}
+          onToggleBookmarks={() => setShowBookmarksPanel(!showBookmarksPanel)}
+        />
+
+        <PinnedMessagesBar
+          pinnedMessages={pinnedMessages}
+          onJumpToMessage={(id) => {
+            document
+              .getElementById(`msg-${id}`)
+              ?.scrollIntoView({ behavior: "smooth", block: "center" });
+          }}
+          onUnpin={(id) => togglePin.mutate({ id, pinned: true })}
         />
 
         <MessageList
@@ -265,7 +299,7 @@ export function ChatPanel({
           onPin={(id, pinned) => togglePin.mutate({ id, pinned })}
           onOpenThread={(msg) => setThreadMessage(msg)}
           searchQuery={searchQuery}
-          onBookmark={toggleBookmark}
+          onBookmark={(messageId) => toggleBookmark.mutate(messageId)}
           isBookmarked={isBookmarked}
         />
 
@@ -276,6 +310,7 @@ export function ChatPanel({
           onSend={handleSend}
           onFileUpload={handleFileUpload}
           onVoiceSend={handleVoiceSend}
+          onGifSend={handleGifSend}
           replyTo={replyToMessage}
           onCancelReply={() => setReplyTo(null)}
           isSending={sendMessage.isPending}
@@ -302,6 +337,19 @@ export function ChatPanel({
           }
         />
       )}
+
+      {/* Bookmarks panel */}
+      <BookmarksPanel
+        bookmarks={bookmarkedMessages}
+        open={showBookmarksPanel}
+        onClose={() => setShowBookmarksPanel(false)}
+        onJumpToMessage={(id) => {
+          document
+            .getElementById(`msg-${id}`)
+            ?.scrollIntoView({ behavior: "smooth", block: "center" });
+        }}
+        onRemoveBookmark={(messageId) => toggleBookmark.mutate(messageId)}
+      />
     </div>
   );
 }

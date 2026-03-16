@@ -339,7 +339,9 @@ function LessonEditorPanel({
       "",
   );
   const [audioUrl, setAudioUrl] = useState(lesson.audio_url ?? "");
-  const [audioDuration, setAudioDuration] = useState(lesson.audio_duration ?? 0);
+  const [audioDuration, setAudioDuration] = useState(
+    lesson.audio_duration ?? 0,
+  );
   const [contentHtml, setContentHtml] = useState(
     lesson.content_html ??
       (lesson.content as Record<string, string>)?.html ??
@@ -380,9 +382,17 @@ function LessonEditorPanel({
         const hostname = new URL(url).hostname.toLowerCase();
         if (hostname.includes("figma.com")) setEmbedType("figma");
         else if (hostname.includes("miro.com")) setEmbedType("miro");
-        else if (hostname.includes("docs.google.com") || hostname.includes("drive.google.com")) setEmbedType("google_docs");
+        else if (
+          hostname.includes("docs.google.com") ||
+          hostname.includes("drive.google.com")
+        )
+          setEmbedType("google_docs");
         else if (hostname.includes("canva.com")) setEmbedType("canva");
-        else if (hostname.includes("notion.so") || hostname.includes("notion.site")) setEmbedType("notion");
+        else if (
+          hostname.includes("notion.so") ||
+          hostname.includes("notion.site")
+        )
+          setEmbedType("notion");
         else setEmbedType("generic");
       } catch {
         setEmbedType("generic");
@@ -406,7 +416,9 @@ function LessonEditorPanel({
         ...(videoUrl ? { url: videoUrl, video_url: videoUrl } : {}),
         ...(audioUrl ? { audio_url: audioUrl } : {}),
         ...(contentHtml ? { html: contentHtml } : {}),
-        ...(contentType === "embed" && embedUrl ? { embed_url: embedUrl, embed_type: embedType } : {}),
+        ...(contentType === "embed" && embedUrl
+          ? { embed_url: embedUrl, embed_type: embedType }
+          : {}),
       },
     };
     onSave(updates);
@@ -622,7 +634,8 @@ function LessonEditorPanel({
               <p className="text-sm truncate">{audioUrl}</p>
               {audioDuration > 0 && (
                 <p className="text-xs text-muted-foreground">
-                  Duree : {Math.floor(audioDuration / 60)}m {audioDuration % 60}s
+                  Duree : {Math.floor(audioDuration / 60)}m {audioDuration % 60}
+                  s
                 </p>
               )}
               <button
@@ -821,7 +834,8 @@ function LessonEditorPanel({
               className={inputClass}
             />
             <p className="text-[10px] text-muted-foreground mt-1">
-              Supporte : Figma, Miro, Google Docs, Canva, Notion, ou tout URL embarquable
+              Supporte : Figma, Miro, Google Docs, Canva, Notion, ou tout URL
+              embarquable
             </p>
           </div>
 

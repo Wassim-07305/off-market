@@ -15,10 +15,7 @@ import {
   useNotificationPreferences,
   useUpdateNotificationPreferences,
 } from "@/hooks/use-notification-preferences";
-import type {
-  BatchFrequency,
-  PriorityThreshold,
-} from "@/types/database";
+import type { BatchFrequency, PriorityThreshold } from "@/types/database";
 
 const BATCH_OPTIONS: { value: BatchFrequency; label: string; desc: string }[] =
   [

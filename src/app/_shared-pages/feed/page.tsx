@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 import { useFeed } from "@/hooks/use-feed";
@@ -19,6 +19,7 @@ import {
   Clock,
   TrendingUp,
   ThumbsUp,
+  Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ReportButton } from "@/components/feed/report-modal";
@@ -63,8 +64,17 @@ export default function FeedPage() {
   const [typeFilter, setTypeFilter] = useState<PostType | "all">("all");
   const [sortMode, setSortMode] = useState<FeedSortMode>("recent");
   const feedPostType = typeFilter === "all" ? undefined : typeFilter;
-  const { posts, isLoading, createPost, deletePost, togglePin, toggleLike } =
-    useFeed(feedPostType, sortMode);
+  const {
+    posts,
+    isLoading,
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+    createPost,
+    deletePost,
+    togglePin,
+    toggleLike,
+  } = useFeed(feedPostType, sortMode);
 
   const isStaff = profile?.role === "admin" || profile?.role === "coach";
 
@@ -222,6 +232,26 @@ export default function FeedPage() {
                   </motion.div>
                 ))}
               </AnimatePresence>
+
+              {/* Bouton de pagination */}
+              {hasNextPage && (
+                <div className="flex justify-center pt-2">
+                  <button
+                    onClick={() => fetchNextPage()}
+                    disabled={isFetchingNextPage}
+                    className="h-9 px-5 bg-muted hover:bg-muted/80 text-sm font-medium text-foreground rounded-xl transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-2"
+                  >
+                    {isFetchingNextPage ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        Chargement...
+                      </>
+                    ) : (
+                      "Charger plus"
+                    )}
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>

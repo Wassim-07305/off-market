@@ -114,8 +114,7 @@ export async function POST(request: Request) {
     if (contractsToRenew?.length) {
       for (const contract of contractsToRenew) {
         const periodMonths = contract.renewal_period_months ?? 12;
-        const newStartDate =
-          contract.end_date ?? today;
+        const newStartDate = contract.end_date ?? today;
         const newEndDate = new Date(newStartDate);
         newEndDate.setMonth(newEndDate.getMonth() + periodMonths);
 

@@ -136,9 +136,7 @@ export function BrandedAuthLayout({ children }: BrandedAuthLayoutProps) {
         <h1 className="text-2xl text-white font-display font-bold tracking-tight">
           {appName}
         </h1>
-        {tagline && (
-          <p className="text-white/40 text-sm mt-1">{tagline}</p>
-        )}
+        {tagline && <p className="text-white/40 text-sm mt-1">{tagline}</p>}
       </div>
 
       {/* Right panel — form content */}

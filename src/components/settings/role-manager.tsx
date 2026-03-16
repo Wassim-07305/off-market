@@ -137,12 +137,14 @@ function RoleFormModal({ open, onClose, editRole }: RoleFormModalProps) {
   };
 
   const toggleCategory = (category: string) => {
-    const categorySlugs = ALL_MODULES.filter((m) => m.category === category).map(
-      (m) => m.slug,
-    );
+    const categorySlugs = ALL_MODULES.filter(
+      (m) => m.category === category,
+    ).map((m) => m.slug);
     const allSelected = categorySlugs.every((s) => permissions.includes(s));
     if (allSelected) {
-      setPermissions((prev) => prev.filter((p) => !categorySlugs.includes(p as Module)));
+      setPermissions((prev) =>
+        prev.filter((p) => !categorySlugs.includes(p as Module)),
+      );
     } else {
       setPermissions((prev) => [
         ...prev,
@@ -444,7 +446,8 @@ export function RoleManager() {
               Gestion des roles
             </h2>
             <p className="text-sm text-muted-foreground">
-              Cree et gere les roles personnalises avec des permissions granulaires
+              Cree et gere les roles personnalises avec des permissions
+              granulaires
             </p>
           </div>
         </div>

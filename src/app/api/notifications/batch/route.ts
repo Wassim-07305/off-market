@@ -111,8 +111,7 @@ export async function POST(request: Request) {
         };
 
         const summaryParts = Object.entries(byCategory).map(
-          ([cat, count]) =>
-            `${count} ${categoryLabels[cat] || cat}`,
+          ([cat, count]) => `${count} ${categoryLabels[cat] || cat}`,
         );
 
         const digestTitle = `Vous avez ${notifications.length} nouvelles notifications`;

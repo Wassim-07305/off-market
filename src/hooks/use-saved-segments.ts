@@ -29,7 +29,9 @@ export function useSavedSegments() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data, error } = await (supabase as any)
         .from("saved_segments")
-        .select("*, creator:profiles!saved_segments_created_by_fkey(full_name, avatar_url)")
+        .select(
+          "*, creator:profiles!saved_segments_created_by_fkey(full_name, avatar_url)",
+        )
         .order("created_at", { ascending: false });
       if (error) {
         // Fallback without join if FK not available
@@ -144,7 +146,7 @@ export function useDeleteSegment() {
 export function useApplySegment(segmentId: string | null) {
   const { segments } = useSavedSegments();
   const segment = segmentId
-    ? segments.find((s) => s.id === segmentId) ?? null
+    ? (segments.find((s) => s.id === segmentId) ?? null)
     : null;
   return segment?.filters ?? null;
 }

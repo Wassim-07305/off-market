@@ -25,10 +25,7 @@ export async function POST(request: Request) {
   const { requestId } = await request.json();
 
   if (!requestId) {
-    return NextResponse.json(
-      { error: "requestId requis" },
-      { status: 400 },
-    );
+    return NextResponse.json({ error: "requestId requis" }, { status: 400 });
   }
 
   // Fetch the offboarding request
@@ -39,10 +36,7 @@ export async function POST(request: Request) {
     .single();
 
   if (fetchError || !offboardReq) {
-    return NextResponse.json(
-      { error: "Demande introuvable" },
-      { status: 404 },
-    );
+    return NextResponse.json({ error: "Demande introuvable" }, { status: 404 });
   }
 
   const req = offboardReq as {

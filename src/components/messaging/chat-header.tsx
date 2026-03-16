@@ -1,7 +1,7 @@
 "use client";
 
 import { getInitials, cn } from "@/lib/utils";
-import { Hash, Lock, Search, Settings, X, Menu } from "lucide-react";
+import { Hash, Lock, Search, Settings, X, Menu, Bookmark } from "lucide-react";
 import type { ChannelWithMeta } from "@/types/messaging";
 
 interface ChatHeaderProps {
@@ -14,6 +14,8 @@ interface ChatHeaderProps {
   onSearchChange: (query: string) => void;
   searchResultCount?: number;
   isOnline?: (userId: string) => boolean;
+  showBookmarks?: boolean;
+  onToggleBookmarks?: () => void;
 }
 
 export function ChatHeader({
@@ -26,6 +28,8 @@ export function ChatHeader({
   onSearchChange,
   searchResultCount,
   isOnline,
+  showBookmarks,
+  onToggleBookmarks,
 }: ChatHeaderProps) {
   const isDM = channel.type === "dm";
   const partner = channel.dmPartner;
@@ -109,6 +113,20 @@ export function ChatHeader({
           >
             <Search className="w-4 h-4" />
           </button>
+          {onToggleBookmarks && (
+            <button
+              onClick={onToggleBookmarks}
+              className={cn(
+                "w-8 h-8 rounded-lg flex items-center justify-center transition-colors",
+                showBookmarks
+                  ? "text-primary bg-primary/10"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted",
+              )}
+              title="Favoris"
+            >
+              <Bookmark className="w-4 h-4" />
+            </button>
+          )}
           <button
             onClick={onOpenMembers}
             className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"

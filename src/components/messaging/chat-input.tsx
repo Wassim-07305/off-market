@@ -4,6 +4,7 @@ import { useState, useRef, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { useChannelMembers } from "@/hooks/use-channels";
 import { EmojiPicker } from "./emoji-picker";
+import { GifPicker } from "./gif-picker";
 import { VoiceRecorder } from "./voice-recorder";
 import { MentionAutocomplete } from "./mention-autocomplete";
 import { TemplatePicker } from "./template-picker";
@@ -24,6 +25,7 @@ import {
   Clock,
   AlertTriangle,
   Zap,
+  Image as ImageIcon,
 } from "lucide-react";
 
 interface ChatInputProps {
@@ -35,6 +37,7 @@ interface ChatInputProps {
   ) => Promise<void>;
   onFileUpload: (file: File) => Promise<void>;
   onVoiceSend: (blob: Blob, duration: number) => Promise<void>;
+  onGifSend?: (gifUrl: string) => Promise<void>;
   replyTo: { id: string; content: string; senderName: string } | null;
   onCancelReply: () => void;
   isSending: boolean;
@@ -48,6 +51,7 @@ export function ChatInput({
   onSend,
   onFileUpload,
   onVoiceSend,
+  onGifSend,
   replyTo,
   onCancelReply,
   isSending,
@@ -57,6 +61,7 @@ export function ChatInput({
 }: ChatInputProps) {
   const [message, setMessage] = useState("");
   const [showEmoji, setShowEmoji] = useState(false);
+  const [showGif, setShowGif] = useState(false);
   const [showSchedule, setShowSchedule] = useState(false);
   const [scheduledAt, setScheduledAt] = useState("");
   const [isUrgent, setIsUrgent] = useState(false);
@@ -375,6 +380,36 @@ export function ChatInput({
                     textareaRef.current?.focus();
                   }}
                   onClose={() => setShowEmoji(false)}
+                />
+              )}
+
+              <button
+                onClick={() => {
+                  setShowGif(!showGif);
+                  setShowEmoji(false);
+                }}
+                className={cn(
+                  "w-7 h-7 rounded-lg flex items-center justify-center transition-colors",
+                  showGif
+                    ? "text-primary bg-primary/10"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+                title="GIF"
+              >
+                <ImageIcon className="w-4 h-4" />
+              </button>
+              {showGif && (
+                <GifPicker
+                  onSelect={(gifUrl) => {
+                    if (onGifSend) {
+                      onGifSend(gifUrl);
+                    } else {
+                      setMessage((prev) => prev + gifUrl);
+                      textareaRef.current?.focus();
+                    }
+                    setShowGif(false);
+                  }}
+                  onClose={() => setShowGif(false)}
                 />
               )}
 

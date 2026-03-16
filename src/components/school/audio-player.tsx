@@ -103,18 +103,15 @@ function WaveformProgress({
     [onSeek, duration],
   );
 
-  const handleMouseMove = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
-      if (!barRef.current) return;
-      const rect = barRef.current.getBoundingClientRect();
-      const percent = Math.max(
-        0,
-        Math.min(100, ((e.clientX - rect.left) / rect.width) * 100),
-      );
-      setHoverPercent(percent);
-    },
-    [],
-  );
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!barRef.current) return;
+    const rect = barRef.current.getBoundingClientRect();
+    const percent = Math.max(
+      0,
+      Math.min(100, ((e.clientX - rect.left) / rect.width) * 100),
+    );
+    setHoverPercent(percent);
+  }, []);
 
   return (
     <div
@@ -288,9 +285,7 @@ export function AudioPlayer({
           </div>
           {title && (
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-white truncate">
-                {title}
-              </p>
+              <p className="text-sm font-medium text-white truncate">{title}</p>
               <p className="text-[11px] text-white/50">
                 {loading
                   ? "Chargement..."

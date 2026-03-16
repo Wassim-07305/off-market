@@ -12,7 +12,10 @@ interface VideoResponsePlayerProps {
   onReply?: () => void;
 }
 
-export function VideoResponsePlayer({ video, onReply }: VideoResponsePlayerProps) {
+export function VideoResponsePlayer({
+  video,
+  onReply,
+}: VideoResponsePlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const markViewed = useMarkVideoViewed();
   const hasBeenViewed = !!video.viewed_at;
@@ -38,7 +41,9 @@ export function VideoResponsePlayer({ video, onReply }: VideoResponsePlayerProps
     <div
       className={cn(
         "bg-surface rounded-2xl border overflow-hidden transition-all",
-        hasBeenViewed ? "border-border" : "border-primary/30 ring-1 ring-primary/10",
+        hasBeenViewed
+          ? "border-border"
+          : "border-primary/30 ring-1 ring-primary/10",
       )}
       style={{ boxShadow: "var(--shadow-card)" }}
     >
@@ -63,7 +68,9 @@ export function VideoResponsePlayer({ video, onReply }: VideoResponsePlayerProps
           )}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-foreground truncate">{senderName}</p>
+          <p className="text-sm font-semibold text-foreground truncate">
+            {senderName}
+          </p>
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <span>{formatRelativeDate(video.created_at)}</span>
             {duration && (
@@ -108,7 +115,9 @@ export function VideoResponsePlayer({ video, onReply }: VideoResponsePlayerProps
         {video.message && (
           <div className="flex items-start gap-2">
             <MessageSquare className="w-3.5 h-3.5 text-muted-foreground mt-0.5 shrink-0" />
-            <p className="text-sm text-foreground leading-relaxed">{video.message}</p>
+            <p className="text-sm text-foreground leading-relaxed">
+              {video.message}
+            </p>
           </div>
         )}
 

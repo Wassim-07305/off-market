@@ -3,15 +3,7 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { useSendVideoResponse } from "@/hooks/use-video-responses";
 import type { VideoResponseRelatedType } from "@/types/database";
-import {
-  Video,
-  Square,
-  Send,
-  X,
-  RotateCcw,
-  Loader2,
-  Mic,
-} from "lucide-react";
+import { Video, Square, Send, X, RotateCcw, Loader2, Mic } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -32,7 +24,9 @@ export function VideoResponseRecorder({
   onClose,
   onSent,
 }: VideoResponseRecorderProps) {
-  const [state, setState] = useState<"idle" | "recording" | "preview" | "sending">("idle");
+  const [state, setState] = useState<
+    "idle" | "recording" | "preview" | "sending"
+  >("idle");
   const [elapsed, setElapsed] = useState(0);
   const [message, setMessage] = useState("");
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -61,7 +55,11 @@ export function VideoResponseRecorder({
   const startRecording = useCallback(async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } },
+        video: {
+          facingMode: "user",
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+        },
         audio: true,
       });
 
@@ -72,7 +70,9 @@ export function VideoResponseRecorder({
         videoRef.current.play();
       }
 
-      const mimeType = MediaRecorder.isTypeSupported("video/webm;codecs=vp9,opus")
+      const mimeType = MediaRecorder.isTypeSupported(
+        "video/webm;codecs=vp9,opus",
+      )
         ? "video/webm;codecs=vp9,opus"
         : "video/webm";
 
@@ -169,7 +169,15 @@ export function VideoResponseRecorder({
       clearInterval(progressInterval);
       setState("preview");
     }
-  }, [recipientId, relatedType, relatedId, message, sendVideo, onSent, onClose]);
+  }, [
+    recipientId,
+    relatedType,
+    relatedId,
+    message,
+    sendVideo,
+    onSent,
+    onClose,
+  ]);
 
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60);
@@ -178,12 +186,17 @@ export function VideoResponseRecorder({
   };
 
   return (
-    <div className="bg-surface rounded-2xl border border-border overflow-hidden" style={{ boxShadow: "var(--shadow-elevated)" }}>
+    <div
+      className="bg-surface rounded-2xl border border-border overflow-hidden"
+      style={{ boxShadow: "var(--shadow-elevated)" }}
+    >
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-border">
         <div className="flex items-center gap-2">
           <Video className="w-4 h-4 text-primary" />
-          <span className="text-sm font-semibold text-foreground">Reponse video</span>
+          <span className="text-sm font-semibold text-foreground">
+            Reponse video
+          </span>
         </div>
         <button
           onClick={onClose}
@@ -224,7 +237,9 @@ export function VideoResponseRecorder({
             <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center mb-3">
               <Video className="w-7 h-7 text-white/70" />
             </div>
-            <p className="text-white/60 text-sm">Clique pour lancer la camera</p>
+            <p className="text-white/60 text-sm">
+              Clique pour lancer la camera
+            </p>
           </div>
         )}
 
@@ -261,7 +276,9 @@ export function VideoResponseRecorder({
         {state === "sending" && (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/70">
             <Loader2 className="w-8 h-8 text-white animate-spin mb-3" />
-            <p className="text-white text-sm font-medium mb-2">Envoi en cours...</p>
+            <p className="text-white text-sm font-medium mb-2">
+              Envoi en cours...
+            </p>
             <div className="w-48 h-1.5 bg-white/20 rounded-full overflow-hidden">
               <div
                 className="h-full rounded-full transition-all duration-300"
@@ -271,7 +288,9 @@ export function VideoResponseRecorder({
                 }}
               />
             </div>
-            <span className="text-white/60 text-xs mt-1">{uploadProgress}%</span>
+            <span className="text-white/60 text-xs mt-1">
+              {uploadProgress}%
+            </span>
           </div>
         )}
       </div>

@@ -547,7 +547,9 @@ function SegmentRow({
 }) {
   const filterCount = Object.values(segment.filters).filter(Boolean).length;
   const creatorName = segment.creator?.full_name ?? null;
-  const creatorInitial = creatorName ? creatorName.charAt(0).toUpperCase() : null;
+  const creatorInitial = creatorName
+    ? creatorName.charAt(0).toUpperCase()
+    : null;
 
   return (
     <div
@@ -577,9 +579,7 @@ function SegmentRow({
             <p
               className={cn(
                 "text-sm truncate",
-                isActive
-                  ? "text-red-600 font-medium"
-                  : "text-foreground",
+                isActive ? "text-red-600 font-medium" : "text-foreground",
               )}
             >
               {segment.name}

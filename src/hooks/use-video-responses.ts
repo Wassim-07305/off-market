@@ -21,7 +21,9 @@ export function useVideoResponses(
     queryFn: async () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let query = (supabase.from("video_responses") as any)
-        .select("*, sender:profiles!video_responses_sender_id_fkey(*), recipient:profiles!video_responses_recipient_id_fkey(*)")
+        .select(
+          "*, sender:profiles!video_responses_sender_id_fkey(*), recipient:profiles!video_responses_recipient_id_fkey(*)",
+        )
         .order("created_at", { ascending: false });
 
       if (relatedType) {
@@ -80,8 +82,11 @@ export function useSendVideoResponse() {
         .getPublicUrl(fileName);
 
       // Create DB record
-      const { data, error } = await (supabase
-        .from("video_responses") as unknown as ReturnType<typeof supabase.from>)
+      const { data, error } = await (
+        supabase.from("video_responses") as unknown as ReturnType<
+          typeof supabase.from
+        >
+      )
         .insert({
           sender_id: user.id,
           recipient_id: recipientId,
@@ -98,7 +103,11 @@ export function useSendVideoResponse() {
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
-        queryKey: ["video-responses", variables.relatedType, variables.relatedId],
+        queryKey: [
+          "video-responses",
+          variables.relatedType,
+          variables.relatedId,
+        ],
       });
       queryClient.invalidateQueries({ queryKey: ["video-responses-unviewed"] });
       toast.success("Reponse video envoyee");
@@ -119,8 +128,11 @@ export function useMarkVideoViewed() {
 
   return useMutation({
     mutationFn: async (videoId: string) => {
-      const { error } = await (supabase
-        .from("video_responses") as unknown as ReturnType<typeof supabase.from>)
+      const { error } = await (
+        supabase.from("video_responses") as unknown as ReturnType<
+          typeof supabase.from
+        >
+      )
         .update({ viewed_at: new Date().toISOString() } as never)
         .eq("id", videoId);
 
@@ -176,7 +188,11 @@ async function startRecording(): Promise<{
   chunks: Blob[];
 }> {
   const stream = await navigator.mediaDevices.getUserMedia({
-    video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } },
+    video: {
+      facingMode: "user",
+      width: { ideal: 1280 },
+      height: { ideal: 720 },
+    },
     audio: true,
   });
 

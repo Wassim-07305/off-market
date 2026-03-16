@@ -202,9 +202,7 @@ export function MessageBubble({
         )}
 
         {/* AI response label */}
-        {message.is_ai_generated && (
-          <AiResponseBadge />
-        )}
+        {message.is_ai_generated && <AiResponseBadge />}
 
         {/* Reactions */}
         {message.reactions && message.reactions.length > 0 && (

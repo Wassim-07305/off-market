@@ -81,7 +81,9 @@ export function useToggleAutoRenew() {
         queryKey: ["contract-renewal-status", variables.contractId],
       });
       queryClient.invalidateQueries({ queryKey: ["contracts"] });
-      queryClient.invalidateQueries({ queryKey: ["contract", variables.contractId] });
+      queryClient.invalidateQueries({
+        queryKey: ["contract", variables.contractId],
+      });
       toast.success(
         variables.autoRenew
           ? "Renouvellement automatique active"
@@ -226,7 +228,9 @@ export function useManualRenew() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["contracts"] });
-      queryClient.invalidateQueries({ queryKey: ["contracts-upcoming-renewals"] });
+      queryClient.invalidateQueries({
+        queryKey: ["contracts-upcoming-renewals"],
+      });
       queryClient.invalidateQueries({ queryKey: ["contracts-expiring"] });
       toast.success("Contrat renouvele avec succes");
     },

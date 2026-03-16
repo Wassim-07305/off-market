@@ -629,7 +629,12 @@ export default function SettingsPage() {
               if (aiConsent.hasConsent) {
                 aiConsent.revoke();
               } else {
-                aiConsent.accept(["chat_analysis", "risk_scoring", "report_generation", "content_suggestions"]);
+                aiConsent.accept([
+                  "chat_analysis",
+                  "risk_scoring",
+                  "report_generation",
+                  "content_suggestions",
+                ]);
               }
             }}
             className={cn(

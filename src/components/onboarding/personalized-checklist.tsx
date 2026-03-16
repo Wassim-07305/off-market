@@ -4,6 +4,7 @@ import { useState, useMemo, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/use-auth";
+import { useSupabase } from "@/hooks/use-supabase";
 import { useUserOffer } from "@/hooks/use-onboarding-offers";
 import { useRoutePrefix } from "@/hooks/use-route-prefix";
 import { cn } from "@/lib/utils";
@@ -68,18 +69,43 @@ function persistCompleted(userId: string, keys: Set<string>) {
 // ─── Component ───────────────────────────────────────────────
 export function PersonalizedChecklist() {
   const { user, profile } = useAuth();
+  const supabase = useSupabase();
   const { data: offer, isLoading } = useUserOffer();
   const prefix = useRoutePrefix();
 
   const [completed, setCompleted] = useState<Set<string>>(new Set());
   const [animatingKey, setAnimatingKey] = useState<string | null>(null);
+  const [dbLoaded, setDbLoaded] = useState(false);
 
-  // Hydrate from localStorage
+  // Hydrate from DB first, fallback to localStorage
   useEffect(() => {
-    if (user?.id) {
-      setCompleted(getPersistedCompleted(user.id));
+    if (!user?.id) return;
+
+    async function loadFromDB() {
+      try {
+        const { data, error } = await supabase
+          .from("onboarding_progress")
+          .select("step")
+          .eq("user_id", user!.id);
+
+        if (!error && data && data.length > 0) {
+          const dbKeys = new Set(data.map((row) => row.step as string));
+          setCompleted(dbKeys);
+          // Sync localStorage cache
+          persistCompleted(user!.id, dbKeys);
+        } else {
+          // Fallback: load from localStorage
+          setCompleted(getPersistedCompleted(user!.id));
+        }
+      } catch {
+        // Fallback: load from localStorage
+        setCompleted(getPersistedCompleted(user!.id));
+      }
+      setDbLoaded(true);
     }
-  }, [user?.id]);
+
+    loadFromDB();
+  }, [user?.id, supabase]);
 
   const actions: OnboardingAction[] = useMemo(() => {
     return offer?.recommended_actions ?? [];
@@ -104,11 +130,31 @@ export function PersonalizedChecklist() {
 
       setCompleted((prev) => {
         const next = new Set(prev);
-        if (next.has(key)) {
+        const wasCompleted = next.has(key);
+
+        if (wasCompleted) {
           next.delete(key);
+          // Supprimer de la DB
+          supabase
+            .from("onboarding_progress")
+            .delete()
+            .eq("user_id", user.id)
+            .eq("step", key)
+            .then(() => {});
         } else {
           next.add(key);
+          // Inserer dans la DB
+          supabase
+            .from("onboarding_progress")
+            .insert({
+              user_id: user.id,
+              step: key,
+              completed_at: new Date().toISOString(),
+            })
+            .then(() => {});
         }
+
+        // Sync localStorage cache
         persistCompleted(user.id, next);
         return next;
       });
@@ -116,7 +162,7 @@ export function PersonalizedChecklist() {
       // Clear animation after delay
       setTimeout(() => setAnimatingKey(null), 600);
     },
-    [user?.id],
+    [user?.id, supabase],
   );
 
   const allComplete = completed.size === actions.length && actions.length > 0;

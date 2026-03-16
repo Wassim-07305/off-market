@@ -83,6 +83,13 @@ const ENERGY_LABELS: Record<number, string> = {
 
 // ─── Types ──────────────────────────────────────────────
 
+interface JournalAttachmentRow {
+  url: string;
+  type: string;
+  name: string;
+  size: number;
+}
+
 interface JournalEntryRow {
   id: string;
   title: string;
@@ -91,6 +98,7 @@ interface JournalEntryRow {
   tags: string[];
   template: string | null;
   is_private: boolean;
+  attachments: JournalAttachmentRow[] | null;
   created_at: string;
 }
 
@@ -149,6 +157,18 @@ function generateJournalPDF(
     const contentWrapped = wrapText(escapePDF(entry.content), 85);
     contentLines.push(...contentWrapped);
     contentLines.push("");
+
+    // Attachments
+    if (entry.attachments && entry.attachments.length > 0) {
+      contentLines.push(`Pieces jointes (${entry.attachments.length}) :`);
+      for (const att of entry.attachments) {
+        const name = escapePDF(att.name || "fichier");
+        const url = escapePDF(att.url || "");
+        contentLines.push(`  - ${name} (${att.type || "fichier"}) : ${url}`);
+      }
+      contentLines.push("");
+    }
+
     contentLines.push("");
   }
 
@@ -461,7 +481,9 @@ export async function GET(req: NextRequest) {
     // Build query
     let query = supabase
       .from("journal_entries")
-      .select("id, title, content, mood, tags, template, is_private, created_at")
+      .select(
+        "id, title, content, mood, tags, template, is_private, attachments, created_at",
+      )
       .eq("author_id", userId)
       .order("created_at", { ascending: true });
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useAuth } from "@/hooks/use-auth";
@@ -56,6 +57,7 @@ const STEP_LABELS = [
 // ─── Main page ───────────────────────────────────────────────────
 export default function OnboardingPage() {
   const { user, profile } = useAuth();
+  const router = useRouter();
   const { completeOnboarding } = useOnboarding();
   const { currentStepIndex } = useOnboardingProgress();
   const completeStep = useCompleteStep();
@@ -64,6 +66,13 @@ export default function OnboardingPage() {
 
   const role = profile?.role ?? "client";
   const firstName = profile?.full_name?.split(" ")[0] ?? "";
+
+  // Redirect if already onboarded
+  useEffect(() => {
+    if (profile?.onboarding_completed) {
+      router.push(getDefaultRouteForRole(role));
+    }
+  }, [profile?.onboarding_completed, role, router]);
 
   // Determine current wizard step — start from the first incomplete step
   const [step, setStep] = useState(0);
