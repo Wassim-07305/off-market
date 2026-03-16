@@ -141,46 +141,46 @@ const navLinks = [
 ];
 
 const stats = [
-  { value: 35, suffix: "+", label: "Freelances accompagnes" },
-  { value: 10, suffix: "K", label: "Objectif CA mensuel" },
-  { value: 97, suffix: "%", label: "De satisfaction" },
+  { value: 35, suffix: "+", label: "Freelances sortis du lot" },
+  { value: 10, suffix: "K", label: "CA mensuel vise" },
+  { value: 97, suffix: "%", label: "Taux de satisfaction" },
 ];
 
 const features = [
   {
     icon: GraduationCap,
-    title: "Formation complete",
-    desc: "Modules structures etape par etape : marche, offre, communication, acquisition, conversion. Avance a ton rythme.",
+    title: "La methode, pas le blabla",
+    desc: "5 modules actionables : marche, offre, com, acquisition, conversion. Pas de theorie creuse — chaque lecon a un livrable concret.",
     gradient: "from-red-700/20 to-red-700/5",
   },
   {
     icon: Video,
-    title: "Appels coaching",
-    desc: "Appels video integres avec ton coach, transcription automatique et documents generes apres chaque session.",
+    title: "Ton coach, pas un chatbot",
+    desc: "Appels video prives avec ton coach. Transcription auto, compte-rendu IA, plan d'action genere apres chaque session.",
     gradient: "from-emerald-500/20 to-emerald-500/5",
   },
   {
     icon: MessageCircle,
-    title: "Messagerie directe",
-    desc: "Echange avec ton coach et la communaute en temps reel. Canaux dedies, systeme urgent et reponses rapides.",
+    title: "Un message, une reponse",
+    desc: "Messagerie directe avec ton coach. Systeme de priorite pour les urgences. Fini les messages qui se perdent dans Slack.",
     gradient: "from-blue-500/20 to-blue-500/5",
   },
   {
     icon: Users,
-    title: "Communaute",
-    desc: "Rejoins des freelances qui partagent tes objectifs. Wins, entraide, challenges et lives exclusifs chaque semaine.",
+    title: "Un cercle, pas un reseau",
+    desc: "35 freelances selectionnes qui avancent comme toi. Wins partages, challenges hebdo, lives exclusifs. On se tire vers le haut.",
     gradient: "from-violet-500/20 to-violet-500/5",
   },
   {
     icon: Trophy,
-    title: "Gamification",
-    desc: "XP, badges, leaderboard et challenges pour rester motive. Celebre tes victoires et progresse avec les autres.",
+    title: "Le jeu, pas la contrainte",
+    desc: "XP, badges, classement et defis entre membres. Tu progresses sans t'en rendre compte — et tu celebres chaque etape.",
     gradient: "from-rose-500/20 to-rose-500/5",
   },
   {
     icon: BarChart3,
-    title: "Suivi de progression",
-    desc: "Dashboard personnel avec tes KPIs, ta roadmap et tes objectifs. Sache toujours ou tu en es et ce qu'il te reste a faire.",
+    title: "Tes chiffres, en un clin d'oeil",
+    desc: "Dashboard personnel : CA, progression, roadmap, objectifs. Tu sais exactement ou tu en es et ce qu'il reste a faire.",
     gradient: "from-cyan-500/20 to-cyan-500/5",
   },
 ];
@@ -189,52 +189,52 @@ const steps = [
   {
     icon: UserPlus,
     number: "01",
-    title: "Rejoins le programme",
-    desc: "Cree ton compte, decouvre la plateforme avec un onboarding guide et fais connaissance avec ton coach.",
+    title: "Candidature & onboarding",
+    desc: "On valide que le programme est fait pour toi. Si c'est le cas, ton espace est pret en 5 min — coach assigne, formation ouverte, messagerie activee.",
   },
   {
     icon: Compass,
     number: "02",
-    title: "Suis ta formation",
-    desc: "Avance dans les modules a ton rythme, complete les workbooks et echange avec ton coach a chaque etape.",
+    title: "Formation + coaching",
+    desc: "Tu avances module par module. Ton coach te challenge, corrige ton offre, et t'empeche de tourner en rond. Chaque semaine, tu progresses.",
   },
   {
     icon: Rocket,
     number: "03",
-    title: "Atteins tes objectifs",
-    desc: "Applique ce que tu apprends, suis ta progression et depasse les 10K EUR/mois avec un accompagnement sur mesure.",
+    title: "Resultats & scaling",
+    desc: "Tu signes tes premiers clients premium. Tu depasses les 10K. Et tu continues a scaler avec une communaute qui ne te lache pas.",
   },
 ];
 
 const valueProps = [
   {
     icon: Target,
-    title: "Tout au meme endroit",
-    desc: "Formation, coaching, messagerie, appels, communaute — tout est reuni dans ton espace Off-Market. Plus besoin de jongler entre 10 outils.",
+    title: "Fini le patchwork d'outils",
+    desc: "Slack, Skool, Google Docs, YouSign, Fathom, WhatsApp... Tu remplaces tout ca par un seul espace. Tes clients voient du premium, pas du bricolage.",
     items: [
-      "Acces a tout depuis un seul endroit",
-      "Experience fluide et intuitive",
+      "Formation + coaching + messagerie en un seul endroit",
+      "Contrats generes et signes en 2 clics",
       "Impression pro des la premiere seconde",
     ],
   },
   {
     icon: LineChart,
-    title: "Un suivi personnalise",
-    desc: "Ton coach suit ta progression en temps reel. Il sait exactement ou tu en es, ce qui te bloque et comment t'aider a avancer.",
+    title: "Ton coach voit tout (meme quand tu decroches)",
+    desc: "Progression, engagement, resultats — ton coach a un dashboard en temps reel. Il sait exactement quand intervenir, sans que tu aies a demander.",
     items: [
-      "Roadmap personnalisee par l'IA",
-      "Alertes automatiques si tu decroches",
-      "Check-ins reguliers avec ton coach",
+      "Roadmap personnalisee generee par l'IA",
+      "Alertes automatiques si tu stagnes",
+      "Suivi de CA et objectifs en live",
     ],
   },
   {
     icon: Flame,
-    title: "Une communaute qui pousse",
-    desc: "Tu n'es pas seul. Echange avec des freelances qui vivent la meme chose, partage tes wins et reste motive au quotidien.",
+    title: "35 freelances qui te tirent vers le haut",
+    desc: "C'est pas un groupe Facebook avec 10 000 inconnus. C'est un cercle serre de gens qui vivent la meme chose que toi. On celebre, on challenge, on avance.",
     items: [
-      "Challenges hebdomadaires",
-      "Leaderboard et badges",
-      "Lives et replays exclusifs",
+      "Defis hebdo pour garder le momentum",
+      "Classement et badges pour la motivation",
+      "Lives exclusifs et replays illimites",
     ],
   },
 ];
@@ -242,24 +242,24 @@ const valueProps = [
 const testimonials = [
   {
     name: "Marie L.",
-    role: "Freelance copywriting",
-    text: "En 3 mois d'accompagnement, j'ai structure mon offre, trouve mes premiers clients recurrents et depasse les 6K EUR/mois. La plateforme est incroyablement bien faite.",
+    role: "Copywriter freelance",
+    text: "Avant Off-Market, je galérais à 2K. En 3 mois, j'ai restructuré mon offre, trouvé mes premiers clients récurrents et je suis passée à 6K. Le suivi personnalisé change tout.",
     rating: 5,
-    metric: "6K EUR/mois en 3 mois",
+    metric: "De 2K a 6K en 3 mois",
   },
   {
     name: "Julien R.",
     role: "Consultant SEO",
-    text: "Ce qui m'a le plus aide c'est la communaute et les challenges. On se tire tous vers le haut. Mon coach m'a aide a clarifier mon positionnement et ca a tout change.",
+    text: "Mon coach m'a fait comprendre que je me vendais comme une commodité. On a repositionné mon offre en 2 sessions. Résultat : mes tarifs ont doublé et je ne cours plus après les clients.",
     rating: 5,
-    metric: "Offre repositionnee",
+    metric: "Tarifs x2 en 6 semaines",
   },
   {
     name: "Sophie D.",
-    role: "Freelance graphiste",
-    text: "J'avais du mal a me vendre. Grace aux modules sur l'offre et au suivi personnalise, j'ai compris comment me positionner. Aujourd'hui je refuse des missions.",
+    role: "Designer freelance",
+    text: "J'avais peur d'augmenter mes prix. La communauté m'a poussée, le coaching m'a structurée. Aujourd'hui je refuse des missions parce que mon agenda est plein.",
     rating: 5,
-    metric: "Plus de clients que de dispo",
+    metric: "Agenda complet en 2 mois",
   },
 ];
 
@@ -581,12 +581,13 @@ export default function LandingPage() {
                     boxShadow: `0 0 8px ${ACCENT_GLOW}`,
                   }}
                 />
-                L&apos;accompagnement business par Alexia Laneau
+                Accompagnement premium — places limitees
               </div>
 
               {/* Headline */}
               <h1 className="text-[2.5rem] font-bold leading-[1.1] tracking-tight text-gray-900 sm:text-[3.5rem] lg:text-[4rem]">
-                Atteins{" "}
+                Sors du marche visible. <br className="hidden sm:block" />
+                Deviens{" "}
                 <span className="relative inline-block whitespace-nowrap">
                   <span
                     className="bg-clip-text text-transparent"
@@ -594,7 +595,7 @@ export default function LandingPage() {
                       backgroundImage: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_LIGHT}, ${ACCENT})`,
                     }}
                   >
-                    10K&euro;/mois
+                    le choix evident.
                   </span>
                   <span
                     className="absolute -bottom-1 left-0 h-px w-full"
@@ -603,15 +604,14 @@ export default function LandingPage() {
                     }}
                     aria-hidden="true"
                   />
-                </span>{" "}
-                en freelance
+                </span>
               </h1>
 
               {/* Subheadline */}
               <p className="mx-auto mt-6 max-w-xl text-[1.125rem] leading-relaxed text-gray-400 sm:text-lg">
-                Formation, coaching personnalise, communaute et outils business
-                reunis dans un seul espace. L&apos;accompagnement complet pour
-                structurer et scaler ton activite.
+                L&apos;accompagnement qui t&apos;extrait du marche sature pour
+                atteindre 10K&euro;/mois. Formation, coaching prive, communaute
+                et outils business — dans un seul espace.
               </p>
 
               {/* CTAs */}
@@ -625,16 +625,16 @@ export default function LandingPage() {
                       boxShadow: `0 0 40px ${ACCENT_GLOW}, 0 1px 2px rgba(0,0,0,0.2)`,
                     }}
                   >
-                    Rejoindre le programme
+                    Postuler maintenant
                     <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-0.5" />
                   </button>
                 </Link>
-                <a href="#features">
+                <a href="#how-it-works">
                   <button
                     type="button"
                     className="h-12 rounded-xl border border-gray-300 bg-gray-50 px-7 text-[15px] font-medium text-gray-600 transition-all duration-200 hover:border-gray-400 hover:bg-gray-100 hover:text-gray-900"
                   >
-                    Decouvrir l&apos;accompagnement
+                    Comment ca marche
                   </button>
                 </a>
               </div>
@@ -643,17 +643,17 @@ export default function LandingPage() {
               <div className="mt-8 flex flex-wrap items-center justify-center gap-5 text-[13px] text-gray-500">
                 <span className="flex items-center gap-1.5">
                   <Shield className="size-3.5" />
-                  Accompagnement premium
+                  Sur candidature uniquement
                 </span>
                 <span className="h-3 w-px bg-gray-300" aria-hidden="true" />
                 <span className="flex items-center gap-1.5">
                   <Clock className="size-3.5" />
-                  Setup en 5 min
+                  Operationnel en 5 min
                 </span>
                 <span className="h-3 w-px bg-gray-300" aria-hidden="true" />
                 <span className="flex items-center gap-1.5">
                   <Zap className="size-3.5" />
-                  Donnees securisees RGPD
+                  Tout-en-un, zero outil externe
                 </span>
               </div>
             </div>
@@ -674,7 +674,7 @@ export default function LandingPage() {
         >
           <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
             <p className="mb-10 text-center text-[13px] font-medium uppercase tracking-[0.15em] text-gray-400">
-              Ils ont rejoint l&apos;accompagnement Off-Market
+              Ils ont quitte le marche sature
             </p>
             <div className="grid grid-cols-1 gap-10 sm:grid-cols-3 sm:gap-8">
               {stats.map((stat, i) => (
@@ -726,16 +726,16 @@ export default function LandingPage() {
                 className="mb-4 text-[13px] font-semibold uppercase tracking-[0.15em]"
                 style={{ color: `${ACCENT}B3` }}
               >
-                Fonctionnalites
+                Ce qui est inclus
               </p>
               <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl lg:text-[2.75rem]">
-                Tout ce dont tu as besoin,
+                Tout ce que Slack, Skool et Google Docs
                 <br className="hidden sm:block" />
-                <span className="text-gray-400">dans un seul endroit</span>
+                <span className="text-gray-400">ne feront jamais ensemble</span>
               </h2>
               <p className="mt-5 text-base leading-relaxed text-gray-500 sm:text-lg">
-                L&apos;accompagnement Off-Market reunit tout ce qu&apos;il te
-                faut pour passer de 0 a 10K&euro;/mois en freelance.
+                Un seul espace. Ton coach, ta formation, ta communaute, tes
+                contrats, tes stats. Zero outil externe, zero friction.
               </p>
             </FadeIn>
 
@@ -788,13 +788,14 @@ export default function LandingPage() {
                 className="mb-4 text-[13px] font-semibold uppercase tracking-[0.15em]"
                 style={{ color: `${ACCENT}B3` }}
               >
-                Comment ca marche
+                Le parcours
               </p>
               <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-                Operationnel en <span className="text-gray-400">3 etapes</span>
+                De zero a <span className="text-gray-400">10K en 3 phases</span>
               </h2>
               <p className="mt-5 text-base leading-relaxed text-gray-500 sm:text-lg">
-                De la configuration au scaling, tout est fluide et intuitif.
+                Pas de promesse magique. Un processus structure, un coach dedie,
+                et des resultats mesurables.
               </p>
             </FadeIn>
 
@@ -852,15 +853,15 @@ export default function LandingPage() {
                 className="mb-4 text-[13px] font-semibold uppercase tracking-[0.15em]"
                 style={{ color: `${ACCENT}B3` }}
               >
-                Pourquoi Off-Market
+                La difference Off-Market
               </p>
               <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-                Plus qu&apos;un outil,{" "}
-                <span className="text-gray-400">un avantage competitif</span>
+                Pourquoi ceux qui rejoignent{" "}
+                <span className="text-gray-400">ne repartent jamais</span>
               </h2>
               <p className="mt-5 text-base leading-relaxed text-gray-500 sm:text-lg">
-                Vos eleves meritent mieux qu&apos;un patchwork de SaaS
-                generiques.
+                Ce n&apos;est pas un cours en ligne de plus. C&apos;est un
+                ecosysteme complet qui te prend par la main.
               </p>
             </FadeIn>
 
@@ -921,11 +922,11 @@ export default function LandingPage() {
                 Temoignages
               </p>
               <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-                Ils ont transforme leur activite
+                Ils etaient a ta place il y a 3 mois
               </h2>
               <p className="mt-5 text-base leading-relaxed text-gray-500 sm:text-lg">
-                Decouvre les retours de freelances qui ont rejoint
-                l&apos;accompagnement Off-Market.
+                Des freelances comme toi qui ont decide de sortir du lot. Voila
+                ce qui a change pour eux.
               </p>
             </FadeIn>
 
@@ -1001,13 +1002,13 @@ export default function LandingPage() {
               <Sparkles className="size-6 text-red-500/60" />
             </div>
             <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl lg:text-5xl">
-              Pret a passer au
+              Arrete de te battre sur
               <br />
-              <span className="text-gray-400">niveau superieur</span> ?
+              <span className="text-gray-400">un marche sature.</span>
             </h2>
             <p className="mx-auto mt-6 max-w-lg text-base leading-relaxed text-gray-500 sm:text-lg">
-              Rejoins l&apos;accompagnement Off-Market et commence a construire
-              ton activite rentable des aujourd&apos;hui.
+              Rejoins les freelances qui ont choisi de jouer dans une autre
+              categorie. La prochaine session demarre bientot.
             </p>
             <div className="mt-10 flex flex-col items-center gap-4">
               <Link href="/signup">
@@ -1019,12 +1020,12 @@ export default function LandingPage() {
                     boxShadow: `0 0 40px ${ACCENT_GLOW}`,
                   }}
                 >
-                  Rejoindre le programme
+                  Postuler maintenant
                   <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-0.5" />
                 </button>
               </Link>
               <span className="text-[13px] text-gray-400">
-                Places limitees — sur candidature uniquement
+                35 places max par session — candidature obligatoire
               </span>
             </div>
           </FadeIn>
@@ -1052,8 +1053,8 @@ export default function LandingPage() {
                 </span>
               </Link>
               <p className="mt-4 max-w-[220px] text-[13px] leading-relaxed text-white/50">
-                L&apos;accompagnement business par Alexia Laneau pour les
-                freelances qui visent les 10K&euro;/mois.
+                Le programme qui sort les freelances du marche sature.
+                Formation, coaching et communaute — par Alexia Laneau.
               </p>
             </div>
 
