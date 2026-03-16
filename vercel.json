@@ -2,15 +2,15 @@
   "crons": [
     {
       "path": "/api/relance/process",
-      "schedule": "*/15 * * * *"
+      "schedule": "0 9 * * *"
     },
     {
       "path": "/api/sms/process",
-      "schedule": "*/5 * * * *"
+      "schedule": "0 8 * * *"
     },
     {
       "path": "/api/contracts/renew",
-      "schedule": "0 8 * * *"
+      "schedule": "0 7 * * *"
     },
     {
       "path": "/api/cron/ai-reports",
@@ -18,19 +18,19 @@
     },
     {
       "path": "/api/notifications/batch",
-      "schedule": "0 * * * *"
+      "schedule": "0 20 * * *"
     },
     {
       "path": "/api/competitions/update-scores",
-      "schedule": "0 */2 * * *"
+      "schedule": "0 12 * * *"
     },
     {
       "path": "/api/coaching/check-alerts",
-      "schedule": "0 9 * * *"
+      "schedule": "0 10 * * *"
     },
     {
       "path": "/api/cron/scheduled-messages",
-      "schedule": "*/5 * * * *"
+      "schedule": "0 6 * * *"
     }
   ]
 }
