@@ -93,9 +93,30 @@ export function useContracts(options: UseContractsOptions = {}) {
         .update({ status: "sent", sent_at: new Date().toISOString() })
         .eq("id", id);
       if (error) throw error;
+      return id;
     },
-    onSuccess: () => {
+    onSuccess: async (_data, id) => {
       queryClient.invalidateQueries({ queryKey: ["contracts"] });
+      // Envoyer l'email au client
+      try {
+        const res = await fetch(`/api/contracts/${id}/send-email`, {
+          method: "POST",
+        });
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({}));
+          console.error("Erreur envoi email contrat:", body);
+          toast.error(
+            "Contrat marque comme envoye, mais l'email n'a pas pu etre envoye",
+          );
+          return;
+        }
+        toast.success("Contrat envoye par email");
+      } catch (err) {
+        console.error("Erreur envoi email contrat:", err);
+        toast.error(
+          "Contrat marque comme envoye, mais l'email n'a pas pu etre envoye",
+        );
+      }
     },
     onError: () => {
       toast.error("Erreur lors de l'envoi du contrat");

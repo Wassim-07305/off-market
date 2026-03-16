@@ -13,6 +13,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { useUIStore } from "@/stores/ui-store";
+import { useNotificationStore } from "@/stores/notification-store";
 import { useDndMode } from "@/hooks/use-dnd-mode";
 import { Avatar } from "@/components/ui/avatar";
 import {
@@ -26,6 +27,7 @@ import { cn } from "@/lib/utils";
 export function Header() {
   const { user, profile, signOut } = useAuth();
   const { setMobileMenuOpen, setNotificationPanelOpen } = useUIStore();
+  const { unreadCount } = useNotificationStore();
   const { isDnd, toggleDnd, setDndUntil, dndUntil } = useDndMode();
   const [showDndMenu, setShowDndMenu] = useState(false);
   const router = useRouter();
@@ -161,6 +163,11 @@ export function Header() {
           title="Notifications"
         >
           <Bell className="h-4 w-4" />
+          {unreadCount > 0 && !isDnd && (
+            <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-medium text-white">
+              {unreadCount > 99 ? "99+" : unreadCount}
+            </span>
+          )}
           {isDnd && (
             <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-amber-500/60 rounded-full" />
           )}

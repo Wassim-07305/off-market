@@ -100,6 +100,43 @@ export async function POST(
       );
     }
 
+    // Notifier tous les admins de la signature
+    try {
+      const { data: contract } = await supabase
+        .from("contracts")
+        .select(
+          "title, client_id, client:profiles!contracts_client_id_fkey(full_name)",
+        )
+        .eq("id", id)
+        .single();
+
+      const { data: admins } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("role", "admin");
+
+      if (admins && admins.length > 0) {
+        const client = contract?.client as unknown as {
+          full_name: string;
+        } | null;
+        const clientName = client?.full_name ?? "Un client";
+        const contractTitle = contract?.title ?? "Contrat";
+
+        const notifications = admins.map((admin: { id: string }) => ({
+          user_id: admin.id,
+          type: "contract_signed",
+          title: "Contrat signe",
+          body: `${clientName} a signe le contrat "${contractTitle}"`,
+          data: { contract_id: id, client_id: contract?.client_id },
+        }));
+
+        await supabase.from("notifications").insert(notifications);
+      }
+    } catch (notifError) {
+      // Ne pas bloquer la reponse si la notification echoue
+      console.error("Notification error after contract sign:", notifError);
+    }
+
     return NextResponse.json({ success: true, signed_at: now });
   } catch (error) {
     console.error("Contract sign error:", error);

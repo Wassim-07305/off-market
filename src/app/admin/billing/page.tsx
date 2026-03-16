@@ -31,6 +31,7 @@ import {
 import { ExportDropdown } from "@/components/shared/export-dropdown";
 import { exportToCSV, exportToPDF } from "@/lib/export";
 import { CashFlowChart } from "@/components/dashboard/cash-flow-chart";
+import { CommissionTable } from "@/components/billing/commission-table";
 
 function formatEUR(amount: number) {
   return new Intl.NumberFormat("fr-FR", {
@@ -341,6 +342,11 @@ export default function BillingOverviewPage() {
           )}
         </motion.div>
       </div>
+
+      {/* Commissions */}
+      <motion.div variants={fadeInUp} transition={defaultTransition}>
+        <CommissionTable />
+      </motion.div>
 
       {/* Payment reminders section */}
       {(pendingReminders.length > 0 || upcomingReminders.length > 0) && (
