@@ -585,16 +585,16 @@ export default function LandingPage() {
               </div>
 
               {/* Headline */}
-              <h1 className="text-[2.75rem] font-bold leading-[1.08] tracking-tight text-gray-900 sm:text-6xl lg:text-[4.25rem]">
-                L&apos;ecosysteme{" "}
-                <span className="relative inline-block">
+              <h1 className="text-[2.5rem] font-bold leading-[1.1] tracking-tight text-gray-900 sm:text-[3.5rem] lg:text-[4rem]">
+                Depassez les{" "}
+                <span className="relative inline-block whitespace-nowrap">
                   <span
                     className="bg-clip-text text-transparent"
                     style={{
                       backgroundImage: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_LIGHT}, ${ACCENT})`,
                     }}
                   >
-                    complet
+                    10K&euro;/mois
                   </span>
                   <span
                     className="absolute -bottom-1 left-0 h-px w-full"
@@ -603,8 +603,8 @@ export default function LandingPage() {
                     }}
                     aria-hidden="true"
                   />
-                </span>{" "}
-                pour atteindre les 10 000&euro; par mois
+                </span>
+                <br className="hidden sm:block" /> avec une seule plateforme
               </h1>
 
               {/* Subheadline */}
