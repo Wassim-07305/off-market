@@ -1,1 +1,24 @@
-{}
+{
+  "crons": [
+    {
+      "path": "/api/relance/process",
+      "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/sms/process",
+      "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/contracts/renew",
+      "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/ai/periodic-report",
+      "schedule": "0 7 * * 1"
+    },
+    {
+      "path": "/api/notifications/batch",
+      "schedule": "0 * * * *"
+    }
+  ]
+}
