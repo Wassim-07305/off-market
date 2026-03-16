@@ -299,16 +299,8 @@ export default function AdminDashboardPage() {
                       x2="0"
                       y2="1"
                     >
-                      <stop
-                        offset="0%"
-                        stopColor="#AF0000"
-                        stopOpacity={0.1}
-                      />
-                      <stop
-                        offset="100%"
-                        stopColor="#AF0000"
-                        stopOpacity={0}
-                      />
+                      <stop offset="0%" stopColor="#AF0000" stopOpacity={0.1} />
+                      <stop offset="100%" stopColor="#AF0000" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <XAxis

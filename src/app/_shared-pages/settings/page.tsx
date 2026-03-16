@@ -458,14 +458,10 @@ export default function SettingsPage() {
       </div>
 
       {/* Notifications */}
-      <div
-        className="bg-white rounded-[14px] border border-border p-6 space-y-4"
-      >
+      <div className="bg-white rounded-[14px] border border-border p-6 space-y-4">
         <div className="flex items-center gap-2 mb-2">
           <Bell className="w-4 h-4 text-muted-foreground" />
-          <h2 className="text-sm font-medium text-foreground">
-            Notifications
-          </h2>
+          <h2 className="text-sm font-medium text-foreground">Notifications</h2>
         </div>
         <p className="text-xs text-muted-foreground">
           Choisis les notifications que tu souhaites recevoir.
@@ -554,9 +550,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Leaderboard anonymity */}
-      <div
-        className="bg-white rounded-[14px] border border-border p-6 space-y-4"
-      >
+      <div className="bg-white rounded-[14px] border border-border p-6 space-y-4">
         <div className="flex items-center gap-2 mb-2">
           <Trophy className="w-4 h-4 text-muted-foreground" />
           <h2 className="text-sm font-medium text-foreground">Classement</h2>
@@ -606,9 +600,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Intelligence artificielle */}
-      <div
-        className="bg-white rounded-[14px] border border-border p-6 space-y-4"
-      >
+      <div className="bg-white rounded-[14px] border border-border p-6 space-y-4">
         <div className="flex items-center gap-2 mb-2">
           <Bot className="w-4 h-4 text-muted-foreground" />
           <h2 className="text-sm font-medium text-foreground">
@@ -657,9 +649,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Appearance */}
-      <div
-        className="bg-white rounded-[14px] border border-border p-6 space-y-4"
-      >
+      <div className="bg-white rounded-[14px] border border-border p-6 space-y-4">
         <div className="flex items-center gap-2 mb-2">
           <Palette className="w-4 h-4 text-muted-foreground" />
           <h2 className="text-sm font-medium text-foreground">Apparence</h2>
@@ -693,9 +683,7 @@ export default function SettingsPage() {
       {isAdmin && <ApiSettings />}
 
       {/* Security */}
-      <div
-        className="bg-white rounded-[14px] border border-border p-6 space-y-4"
-      >
+      <div className="bg-white rounded-[14px] border border-border p-6 space-y-4">
         <div className="flex items-center gap-2 mb-2">
           <Lock className="w-4 h-4 text-muted-foreground" />
           <h2 className="text-sm font-medium text-foreground">Securite</h2>
@@ -792,9 +780,7 @@ export default function SettingsPage() {
       </div>
 
       {/* 2FA */}
-      <div
-        className="bg-white rounded-[14px] border border-border p-6 space-y-4"
-      >
+      <div className="bg-white rounded-[14px] border border-border p-6 space-y-4">
         <div className="flex items-center gap-2 mb-2">
           <ShieldCheck className="w-4 h-4 text-muted-foreground" />
           <h2 className="text-sm font-medium text-foreground">
@@ -913,9 +899,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Email preferences */}
-      <div
-        className="bg-white rounded-[14px] border border-border p-6 space-y-4"
-      >
+      <div className="bg-white rounded-[14px] border border-border p-6 space-y-4">
         <div className="flex items-center gap-2 mb-2">
           <Mail className="w-4 h-4 text-muted-foreground" />
           <h2 className="text-sm font-medium text-foreground">
@@ -983,14 +967,10 @@ export default function SettingsPage() {
       </div>
 
       {/* Google Agenda */}
-      <div
-        className="bg-white rounded-[14px] border border-border p-6 space-y-4"
-      >
+      <div className="bg-white rounded-[14px] border border-border p-6 space-y-4">
         <div className="flex items-center gap-2 mb-2">
           <Calendar className="w-4 h-4 text-muted-foreground" />
-          <h2 className="text-sm font-medium text-foreground">
-            Google Agenda
-          </h2>
+          <h2 className="text-sm font-medium text-foreground">Google Agenda</h2>
         </div>
 
         {googleStatus.data?.connected ? (
@@ -1037,9 +1017,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Danger zone */}
-      <div
-        className="bg-white rounded-[14px] border border-border border-l-[3px] border-l-error p-6 space-y-4"
-      >
+      <div className="bg-white rounded-[14px] border border-border border-l-[3px] border-l-error p-6 space-y-4">
         <div className="flex items-center gap-2 mb-2">
           <Shield className="w-4 h-4 text-error" />
           <h2 className="text-sm font-semibold text-error">Zone dangereuse</h2>

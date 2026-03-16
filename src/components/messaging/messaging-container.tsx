@@ -114,9 +114,7 @@ export default function MessagingContainer() {
       </div>
 
       {/* ── Content ── */}
-      <div
-        className="flex flex-1 min-h-0 bg-white rounded-xl overflow-hidden border border-border"
-      >
+      <div className="flex flex-1 min-h-0 bg-white rounded-xl overflow-hidden border border-border">
         {inboxMode === "external" ? (
           <UnifiedInbox />
         ) : (

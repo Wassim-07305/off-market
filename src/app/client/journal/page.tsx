@@ -238,9 +238,7 @@ export default function JournalPage() {
 
       {/* Stats */}
       <motion.div variants={staggerItem} className="grid grid-cols-3 gap-3">
-        <div
-          className="bg-white rounded-[14px] border border-border p-4 text-center"
-        >
+        <div className="bg-white rounded-[14px] border border-border p-4 text-center">
           <FileText className="w-4 h-4 text-primary mx-auto mb-1.5" />
           <p className="text-lg font-display font-bold text-foreground">
             {totalEntries}
@@ -249,9 +247,7 @@ export default function JournalPage() {
             Entrees
           </p>
         </div>
-        <div
-          className="bg-white rounded-[14px] border border-border p-4 text-center"
-        >
+        <div className="bg-white rounded-[14px] border border-border p-4 text-center">
           <Flame className="w-4 h-4 text-orange-500 mx-auto mb-1.5" />
           <p className="text-lg font-display font-bold text-foreground">
             {streak}
@@ -260,9 +256,7 @@ export default function JournalPage() {
             Jours de suite
           </p>
         </div>
-        <div
-          className="bg-white rounded-[14px] border border-border p-4 text-center"
-        >
+        <div className="bg-white rounded-[14px] border border-border p-4 text-center">
           <TrendingUp className="w-4 h-4 text-emerald-500 mx-auto mb-1.5" />
           <p className="text-lg font-display font-bold text-foreground">
             {moodTrend !== null ? `${moodTrend}/5` : "\u2014"}
@@ -545,9 +539,7 @@ function JournalEntryCard({
     <div
       className={cn(
         "bg-white rounded-[14px] border border-border group transition-all",
-        isExpanded
-          ? "border-primary/20"
-          : "hover:border-primary/10",
+        isExpanded ? "border-primary/20" : "hover:border-primary/10",
       )}
     >
       {/* Collapsed header */}

@@ -53,7 +53,10 @@ export function FinancialDashboard() {
       <div className="space-y-6">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[...Array(8)].map((_, i) => (
-            <div key={i} className="h-28 bg-muted/50 animate-pulse rounded-[14px]" />
+            <div
+              key={i}
+              className="h-28 bg-muted/50 animate-pulse rounded-[14px]"
+            />
           ))}
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

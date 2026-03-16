@@ -249,7 +249,9 @@ export default function SchoolPage() {
                     <div className="absolute inset-0 bg-white/60 backdrop-blur-[3px] flex items-center justify-center">
                       <div className="text-center">
                         <Lock className="w-6 h-6 mx-auto mb-1 text-zinc-500" />
-                        <p className="text-[11px] font-medium text-zinc-600">Prerequis requis</p>
+                        <p className="text-[11px] font-medium text-zinc-600">
+                          Prerequis requis
+                        </p>
                       </div>
                     </div>
                   )}
@@ -297,11 +299,15 @@ export default function SchoolPage() {
                   {/* Stats */}
                   <div className="mt-2.5 flex items-center gap-1 text-[11px] text-muted-foreground">
                     <span>{course.stats.totalModules} modules</span>
-                    <span aria-hidden="true" className="text-border">&middot;</span>
+                    <span aria-hidden="true" className="text-border">
+                      &middot;
+                    </span>
                     <span>{course.stats.totalLessons} lecons</span>
                     {course.stats.totalDuration > 0 && (
                       <>
-                        <span aria-hidden="true" className="text-border">&middot;</span>
+                        <span aria-hidden="true" className="text-border">
+                          &middot;
+                        </span>
                         <span>
                           {Math.round(course.stats.totalDuration / 60)}h
                         </span>

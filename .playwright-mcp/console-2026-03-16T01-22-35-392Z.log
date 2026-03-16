@@ -1,0 +1,38 @@
+[    1230ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://srhpdgqqiuzdrlqaitdk.supabase.co/rest/v1/notifications?select=*&recipient_id=eq.56737149-f44b-4745-b4f3-e030c53468bf&is_archived=eq.false&order=created_at.desc&limit=100:0
+[    1233ms] [ERROR] In HTML, %s cannot be a descendant of <%s>.
+This will cause a hydration error.%s <button> button 
+
+  ...
+    <ErrorBoundary errorComponent={undefined} errorStyles={undefined} errorScripts={undefined}>
+      <LoadingBoundary name="ai/" loading={null}>
+        <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+          <RedirectBoundary>
+            <RedirectErrorBoundary router={{...}}>
+              <InnerLayoutRouter url="/admin/ai" tree={[...]} params={{}} cacheNode={{rsc:<Fragment>, ...}} ...>
+                <SegmentViewNode type="page" pagePath="admin/ai/p...">
+                  <SegmentTrieNode>
+                  <ClientPageRoot Component={function AIPage} serverProvidedParams={{...}}>
+                    <AIPage params={Promise} searchParams={Promise}>
+                      <div className="flex h-[ca..." style={{...}}>
+                        <div className="w-64 borde...">
+                          <div>
+                          <div className="flex-1 ove...">
+>                           <button
+>                             onClick={function onClick}
+>                             className="w-full text-left px-3 py-2.5 rounded-lg text-sm transition-colors flex items-..."
+>                           >
+                              <MessageSquare>
+                              <span>
+>                             <button
+>                               onClick={function onClick}
+>                               className="opacity-0 group-hover:opacity-100 w-6 h-6 rounded-md flex items-center just..."
+>                               title="Supprimer"
+>                             >
+                            ...
+                        ...
+                ...
+              ...
+ @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_f3530cac._.js:3127
+[    2344ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://srhpdgqqiuzdrlqaitdk.supabase.co/rest/v1/notifications?select=*&recipient_id=eq.56737149-f44b-4745-b4f3-e030c53468bf&is_archived=eq.false&order=created_at.desc&limit=100:0
+[    4433ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://srhpdgqqiuzdrlqaitdk.supabase.co/rest/v1/notifications?select=*&recipient_id=eq.56737149-f44b-4745-b4f3-e030c53468bf&is_archived=eq.false&order=created_at.desc&limit=100:0
+[    8569ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://srhpdgqqiuzdrlqaitdk.supabase.co/rest/v1/notifications?select=*&recipient_id=eq.56737149-f44b-4745-b4f3-e030c53468bf&is_archived=eq.false&order=created_at.desc&limit=100:0

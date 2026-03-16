@@ -36,10 +36,7 @@ function getGreeting(): string {
 export default function CoachDashboardPage() {
   const { profile } = useAuth();
   const { students, isLoading: studentsLoading } = useStudents({ limit: 200 });
-  const {
-    data: alertsRaw = [],
-    isLoading: alertsLoading,
-  } = useCoachAlerts();
+  const { data: alertsRaw = [], isLoading: alertsLoading } = useCoachAlerts();
   const resolveAlert = useResolveAlert();
 
   // Cast to coaching.ts CoachAlert shape (both types coexist)
@@ -126,9 +123,7 @@ export default function CoachDashboardPage() {
               value={stats.atRiskCount}
               icon={AlertTriangle}
               className={
-                stats.atRiskCount > 0
-                  ? "border-red-200 bg-red-50/30"
-                  : ""
+                stats.atRiskCount > 0 ? "border-red-200 bg-red-50/30" : ""
               }
             />
             <StatCard

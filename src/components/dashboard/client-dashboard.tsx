@@ -521,10 +521,7 @@ function GoalProgressSection({ prefix }: { prefix: string }) {
       {isLoading ? (
         <div className="space-y-3">
           {Array.from({ length: 2 }).map((_, i) => (
-            <div
-              key={i}
-              className="h-12 bg-zinc-50 rounded-xl animate-pulse"
-            />
+            <div key={i} className="h-12 bg-zinc-50 rounded-xl animate-pulse" />
           ))}
         </div>
       ) : activeGoals.length > 0 ? (
@@ -604,10 +601,7 @@ function RecentJournalSection({ prefix }: { prefix: string }) {
       {isLoading ? (
         <div className="space-y-3">
           {Array.from({ length: 2 }).map((_, i) => (
-            <div
-              key={i}
-              className="h-12 bg-zinc-50 rounded-xl animate-pulse"
-            />
+            <div key={i} className="h-12 bg-zinc-50 rounded-xl animate-pulse" />
           ))}
         </div>
       ) : recentEntries.length > 0 ? (
@@ -764,10 +758,7 @@ function CommunitySection({ prefix }: { prefix: string }) {
       {isLoading ? (
         <div className="space-y-3">
           {Array.from({ length: 2 }).map((_, i) => (
-            <div
-              key={i}
-              className="h-12 bg-zinc-50 rounded-xl animate-pulse"
-            />
+            <div key={i} className="h-12 bg-zinc-50 rounded-xl animate-pulse" />
           ))}
         </div>
       ) : recentAnnouncements.length > 0 ? (

@@ -168,7 +168,10 @@ function IndividualLeaderboard() {
       {isLoading ? (
         <div className="space-y-3">
           {[...Array(5)].map((_, i) => (
-            <div key={i} className="h-16 bg-muted/50 animate-pulse rounded-[14px]" />
+            <div
+              key={i}
+              className="h-16 bg-muted/50 animate-pulse rounded-[14px]"
+            />
           ))}
         </div>
       ) : entries.length === 0 ? (
@@ -238,7 +241,9 @@ function IndividualLeaderboard() {
                     <p className="text-base font-semibold text-foreground mt-1">
                       {entry.total_xp}
                     </p>
-                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider">XP</p>
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                      XP
+                    </p>
                     {entry.badge_count > 0 && (
                       <p className="text-[10px] text-muted-foreground mt-0.5">
                         {entry.badge_count} badges
@@ -399,7 +404,10 @@ function CompetitionsTab() {
       {isLoading ? (
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-40 bg-muted/50 animate-pulse rounded-[14px]" />
+            <div
+              key={i}
+              className="h-40 bg-muted/50 animate-pulse rounded-[14px]"
+            />
           ))}
         </div>
       ) : competitions.length === 0 ? (
@@ -519,7 +527,10 @@ function TeamsTab() {
       {isLoading ? (
         <div className="grid gap-4 sm:grid-cols-2">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-48 bg-muted/50 animate-pulse rounded-[14px]" />
+            <div
+              key={i}
+              className="h-48 bg-muted/50 animate-pulse rounded-[14px]"
+            />
           ))}
         </div>
       ) : teams.length === 0 ? (
