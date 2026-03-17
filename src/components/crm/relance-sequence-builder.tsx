@@ -191,7 +191,7 @@ function StepEditorModal({
                   onClick={() => insertVariable(v.key)}
                   className={cn(
                     "inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs",
-                    "bg-white border border-border",
+                    "bg-surface border border-border",
                     "hover:border-primary/40 hover:bg-primary/5",
                     "transition-colors cursor-pointer",
                   )}
@@ -487,7 +487,7 @@ export function RelanceSequenceBuilder({
       </div>
 
       {/* Metadata form */}
-      <div className="rounded-2xl border border-border bg-white p-4 sm:p-6 shadow-sm">
+      <div className="rounded-2xl border border-border bg-surface p-4 sm:p-6 shadow-sm">
         <div className="grid gap-4 sm:grid-cols-2">
           <Input
             label="Nom de la sequence"
@@ -531,7 +531,7 @@ export function RelanceSequenceBuilder({
       </div>
 
       {/* Steps timeline */}
-      <div className="rounded-2xl border border-border bg-white p-4 sm:p-6 shadow-sm">
+      <div className="rounded-2xl border border-border bg-surface p-4 sm:p-6 shadow-sm">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-sm font-semibold text-foreground">
             Etapes de la sequence
@@ -577,7 +577,7 @@ export function RelanceSequenceBuilder({
                       }}
                       className={cn(
                         "flex h-6 w-6 items-center justify-center rounded-full",
-                        "border border-dashed border-border bg-white",
+                        "border border-dashed border-border bg-surface",
                         "text-muted-foreground hover:text-primary hover:border-primary/40",
                         "transition-all cursor-pointer opacity-0 hover:opacity-100",
                         "focus:opacity-100",
@@ -595,7 +595,7 @@ export function RelanceSequenceBuilder({
                     "transition-all duration-200",
                     "hover:shadow-sm hover:border-primary/20",
                     step.is_active
-                      ? "border-border bg-white"
+                      ? "border-border bg-surface"
                       : "border-border/50 bg-muted/30 opacity-60",
                   )}
                 >

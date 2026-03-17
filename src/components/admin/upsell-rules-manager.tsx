@@ -283,7 +283,7 @@ export function UpsellRulesManager() {
             <label className="text-sm font-medium">Type de declencheur</label>
             <select
               {...form.register("trigger_type")}
-              className="w-full mt-1 rounded-xl border border-border px-3 py-2 text-sm bg-white"
+              className="w-full mt-1 rounded-xl border border-border px-3 py-2 text-sm bg-surface"
             >
               {(
                 Object.entries(UPSELL_TRIGGER_TYPE_CONFIG) as [
@@ -353,7 +353,7 @@ export function UpsellRulesManager() {
             </label>
             <textarea
               {...form.register("offer_description")}
-              className="w-full rounded-xl border border-border px-3 py-2 text-sm min-h-[80px] bg-white"
+              className="w-full rounded-xl border border-border px-3 py-2 text-sm min-h-[80px] bg-surface"
               placeholder="Decrivez l'offre proposee au client..."
             />
           </div>

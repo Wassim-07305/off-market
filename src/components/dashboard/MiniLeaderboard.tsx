@@ -55,7 +55,7 @@ export function MiniLeaderboard() {
   });
 
   return (
-    <div className="rounded-2xl border border-border/40 bg-white p-5">
+    <div className="rounded-2xl border border-border/40 bg-surface p-5">
       <h3 className="font-semibold text-foreground flex items-center gap-2 mb-4">
         <Trophy className="h-4 w-4 text-yellow-500" />
         Top Messages

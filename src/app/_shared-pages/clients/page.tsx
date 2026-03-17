@@ -192,7 +192,7 @@ export default function ClientsPage() {
               Changer le tag
             </button>
             {bulkAction === "tag" && (
-              <div className="absolute top-full mt-1 right-0 bg-white border border-border rounded-lg shadow-sm z-50 py-0.5 w-36">
+              <div className="absolute top-full mt-1 right-0 bg-surface border border-border rounded-lg shadow-sm z-50 py-0.5 w-36">
                 {STUDENT_TAGS.map((tag) => (
                   <button
                     key={tag.value}
@@ -252,7 +252,7 @@ export default function ClientsPage() {
               className={cn(
                 "h-7 px-2.5 rounded-md text-[11px] font-medium whitespace-nowrap transition-all duration-200",
                 activeTag === "all"
-                  ? "bg-white text-foreground shadow-sm"
+                  ? "bg-surface text-foreground shadow-sm"
                   : "text-muted-foreground hover:text-foreground",
               )}
             >
@@ -265,7 +265,7 @@ export default function ClientsPage() {
                 className={cn(
                   "h-7 px-2.5 rounded-md text-[11px] font-medium whitespace-nowrap transition-all duration-200",
                   activeTag === tag.value
-                    ? "bg-white text-foreground shadow-sm"
+                    ? "bg-surface text-foreground shadow-sm"
                     : "text-muted-foreground hover:text-foreground",
                 )}
               >
@@ -279,7 +279,7 @@ export default function ClientsPage() {
       {/* Table */}
       <motion.div
         variants={staggerItem}
-        className="bg-white border border-border rounded-xl overflow-hidden"
+        className="bg-surface border border-border rounded-xl overflow-hidden"
       >
         {isLoading ? (
           <div className="p-6 space-y-4">

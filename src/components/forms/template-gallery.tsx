@@ -143,7 +143,7 @@ export function TemplateGallery({
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Rechercher un template..."
-          className="w-full h-10 pl-10 pr-4 bg-white border border-border/50 rounded-xl text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all placeholder:text-muted-foreground/40"
+          className="w-full h-10 pl-10 pr-4 bg-surface border border-border/50 rounded-xl text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all placeholder:text-muted-foreground/40"
         />
         {search && (
           <button
@@ -186,7 +186,7 @@ export function TemplateGallery({
         {/* Create from scratch card */}
         <button
           onClick={onCreateBlank}
-          className="group bg-white border-2 border-dashed border-border/50 hover:border-primary/30 rounded-2xl p-6 text-left transition-all hover:shadow-md"
+          className="group bg-surface border-2 border-dashed border-border/50 hover:border-primary/30 rounded-2xl p-6 text-left transition-all hover:shadow-md"
         >
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
             <Plus className="w-6 h-6 text-primary" />
@@ -204,7 +204,7 @@ export function TemplateGallery({
           Array.from({ length: 5 }).map((_, i) => (
             <div
               key={i}
-              className="bg-white border border-border/50 rounded-2xl p-6 animate-pulse space-y-3"
+              className="bg-surface border border-border/50 rounded-2xl p-6 animate-pulse space-y-3"
             >
               <div className="w-12 h-12 bg-muted rounded-2xl" />
               <div className="h-4 w-2/3 bg-muted rounded" />
@@ -218,7 +218,7 @@ export function TemplateGallery({
           filtered.map((template) => (
             <div
               key={template.id}
-              className="group bg-white border border-border/50 rounded-2xl p-6 hover:shadow-md hover:border-primary/20 transition-all cursor-pointer"
+              className="group bg-surface border border-border/50 rounded-2xl p-6 hover:shadow-md hover:border-primary/20 transition-all cursor-pointer"
               onClick={() => setPreviewTemplate(template)}
             >
               <div className="flex items-start justify-between mb-4">
@@ -312,7 +312,7 @@ function TemplatePreviewModal({
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
         transition={{ duration: 0.2 }}
-        className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[80vh] overflow-hidden flex flex-col"
+        className="bg-surface rounded-2xl shadow-2xl max-w-lg w-full max-h-[80vh] overflow-hidden flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -388,7 +388,7 @@ function TemplatePreviewModal({
                 key={idx}
                 className="flex items-center gap-3 p-3 bg-muted/30 rounded-xl"
               >
-                <div className="w-7 h-7 rounded-lg bg-white border border-border/50 flex items-center justify-center shrink-0">
+                <div className="w-7 h-7 rounded-lg bg-surface border border-border/50 flex items-center justify-center shrink-0">
                   <span className="text-[10px] font-bold text-muted-foreground">
                     {idx + 1}
                   </span>

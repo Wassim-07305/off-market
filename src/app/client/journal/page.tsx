@@ -276,7 +276,7 @@ export default function JournalPage() {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
           >
-            <div className="bg-white rounded-2xl border border-border p-5 space-y-4 shadow-sm">
+            <div className="bg-surface rounded-2xl border border-border p-5 space-y-4 shadow-sm">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className="size-7 rounded-lg bg-gradient-to-br from-[#AF0000] to-[#DC2626] flex items-center justify-center">
@@ -403,7 +403,7 @@ export default function JournalPage() {
               <button
                 key={key}
                 onClick={() => startFromTemplate(key)}
-                className="flex items-center gap-2 h-8 px-3.5 rounded-full bg-white border border-border hover:border-[#AF0000]/30 hover:bg-[#AF0000]/5 transition-all text-xs font-medium text-foreground whitespace-nowrap shrink-0"
+                className="flex items-center gap-2 h-8 px-3.5 rounded-full bg-surface border border-border hover:border-[#AF0000]/30 hover:bg-[#AF0000]/5 transition-all text-xs font-medium text-foreground whitespace-nowrap shrink-0"
               >
                 <span>{tpl.icon}</span>
                 {tpl.label}
@@ -598,7 +598,7 @@ export default function JournalPage() {
       ) : filtered.length === 0 ? (
         <motion.div
           variants={staggerItem}
-          className="bg-white rounded-2xl border border-border p-12 text-center"
+          className="bg-surface rounded-2xl border border-border p-12 text-center"
         >
           <BookOpen className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
           <p className="text-sm text-muted-foreground">
@@ -669,7 +669,7 @@ function JournalEntryCard({
   return (
     <div
       className={cn(
-        "bg-white rounded-2xl border border-border border-l-[3px] group transition-all duration-200",
+        "bg-surface rounded-2xl border border-border border-l-[3px] group transition-all duration-200",
         moodBorder,
         isExpanded
           ? "border-[#AF0000]/20 shadow-md shadow-[#AF0000]/5"
@@ -893,7 +893,7 @@ function JournalComposer({
   const wordCount = content.trim().split(/\s+/).filter(Boolean).length;
 
   return (
-    <div className="bg-white rounded-2xl border border-[#AF0000]/20 p-5 space-y-4 shadow-sm shadow-[#AF0000]/5">
+    <div className="bg-surface rounded-2xl border border-[#AF0000]/20 p-5 space-y-4 shadow-sm shadow-[#AF0000]/5">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="size-7 rounded-lg bg-gradient-to-br from-[#AF0000] to-[#DC2626] flex items-center justify-center">

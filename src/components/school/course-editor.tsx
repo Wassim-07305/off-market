@@ -1207,7 +1207,7 @@ export function CourseEditor({ course, routePrefix }: CourseEditorProps) {
       )}
 
       {/* Desktop sidebar */}
-      <div className="hidden lg:flex w-80 bg-surface border-r border-border shrink-0">
+      <div className="hidden lg:flex w-80 min-w-0 bg-surface border-r border-border shrink-0 overflow-hidden">
         {sidebarContent}
       </div>
 

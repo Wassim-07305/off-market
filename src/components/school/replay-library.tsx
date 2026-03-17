@@ -71,7 +71,7 @@ function VideoModal({
           </h3>
           <button
             onClick={onClose}
-            className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors shrink-0"
+            className="p-2 rounded-xl bg-surface/10 hover:bg-surface/20 text-white transition-colors shrink-0"
           >
             <X className="w-5 h-5" />
           </button>
@@ -210,7 +210,7 @@ export function ReplayLibrary() {
 
                   {/* Play overlay */}
                   <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/30 transition-all">
-                    <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center opacity-0 group-hover:opacity-100 scale-75 group-hover:scale-100 transition-all shadow-lg">
+                    <div className="w-12 h-12 rounded-full bg-surface/90 flex items-center justify-center opacity-0 group-hover:opacity-100 scale-75 group-hover:scale-100 transition-all shadow-lg">
                       <Play className="w-5 h-5 text-foreground ml-0.5" />
                     </div>
                   </div>

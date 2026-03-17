@@ -129,7 +129,7 @@ export function CreateCompetitionModal({
             {...register("title")}
             placeholder="Ex : Sprint du mois de mars"
             className={cn(
-              "w-full rounded-xl border border-border bg-white px-3 py-2.5 text-sm",
+              "w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm",
               "placeholder:text-muted-foreground",
               "focus:outline-none focus:ring-2 focus:ring-[#DC2626]/20 focus:border-[#DC2626]",
               errors.title && "border-red-500",
@@ -150,7 +150,7 @@ export function CreateCompetitionModal({
             rows={2}
             placeholder="Decrivez l'objectif de la competition..."
             className={cn(
-              "w-full rounded-xl border border-border bg-white px-3 py-2.5 text-sm resize-none",
+              "w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm resize-none",
               "placeholder:text-muted-foreground",
               "focus:outline-none focus:ring-2 focus:ring-[#DC2626]/20 focus:border-[#DC2626]",
             )}
@@ -226,7 +226,7 @@ export function CreateCompetitionModal({
               type="datetime-local"
               {...register("start_date")}
               className={cn(
-                "w-full rounded-xl border border-border bg-white px-3 py-2.5 text-sm",
+                "w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm",
                 "focus:outline-none focus:ring-2 focus:ring-[#DC2626]/20 focus:border-[#DC2626]",
                 errors.start_date && "border-red-500",
               )}
@@ -246,7 +246,7 @@ export function CreateCompetitionModal({
               type="datetime-local"
               {...register("end_date")}
               className={cn(
-                "w-full rounded-xl border border-border bg-white px-3 py-2.5 text-sm",
+                "w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm",
                 "focus:outline-none focus:ring-2 focus:ring-[#DC2626]/20 focus:border-[#DC2626]",
                 errors.end_date && "border-red-500",
               )}
@@ -269,7 +269,7 @@ export function CreateCompetitionModal({
             {...register("prize_description")}
             placeholder="Ex : Session coaching offerte pour l'equipe gagnante"
             className={cn(
-              "w-full rounded-xl border border-border bg-white px-3 py-2.5 text-sm",
+              "w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm",
               "placeholder:text-muted-foreground",
               "focus:outline-none focus:ring-2 focus:ring-[#DC2626]/20 focus:border-[#DC2626]",
             )}

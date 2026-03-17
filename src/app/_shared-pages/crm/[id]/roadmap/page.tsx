@@ -137,7 +137,7 @@ export default function ClientRoadmapPage({
               </button>
 
               {flagMenuOpen && (
-                <div className="absolute top-full mt-1 right-0 bg-white border border-border rounded-xl shadow-lg z-50 w-72 overflow-hidden">
+                <div className="absolute top-full mt-1 right-0 bg-surface border border-border rounded-xl shadow-lg z-50 w-72 overflow-hidden">
                   {!selectedFlag ? (
                     <div className="py-1">
                       {(

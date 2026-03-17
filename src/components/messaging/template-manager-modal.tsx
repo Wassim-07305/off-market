@@ -382,7 +382,7 @@ export function TemplateManagerModal({
                     <button
                       key={v.key}
                       onClick={() => insertVariable(v.key)}
-                      className="group flex items-center gap-1 px-2 py-1 bg-white dark:bg-gray-800 border border-border/30 rounded-md hover:border-primary/40 hover:bg-primary/5 transition-colors"
+                      className="group flex items-center gap-1 px-2 py-1 bg-surface dark:bg-gray-800 border border-border/30 rounded-md hover:border-primary/40 hover:bg-primary/5 transition-colors"
                       title={v.desc}
                     >
                       <code className="text-[11px] font-mono text-primary">
@@ -466,7 +466,7 @@ export function TemplateManagerModal({
             >
               <span
                 className={cn(
-                  "absolute top-0.5 w-4.5 h-4.5 rounded-full bg-white shadow-sm transition-transform",
+                  "absolute top-0.5 w-4.5 h-4.5 rounded-full bg-surface shadow-sm transition-transform",
                   formShared ? "translate-x-5" : "translate-x-0.5",
                 )}
               />

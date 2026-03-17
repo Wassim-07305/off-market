@@ -163,7 +163,7 @@ export function MessageBubble({
             </span>
             {message.is_urgent && (
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-500 text-white text-[9px] font-bold uppercase tracking-wider shadow-sm shadow-red-500/20">
-                <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                <span className="w-1.5 h-1.5 rounded-full bg-surface animate-pulse" />
                 Urgent
               </span>
             )}
@@ -197,7 +197,7 @@ export function MessageBubble({
               autoFocus
               value={editContent}
               onChange={(e) => setEditContent(e.target.value)}
-              className="w-full p-2.5 bg-white border border-border/60 rounded-xl text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-[#AF0000]/15 focus:border-[#AF0000]/20 resize-none transition-all duration-200"
+              className="w-full p-2.5 bg-surface border border-border/60 rounded-xl text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-[#AF0000]/15 focus:border-[#AF0000]/20 resize-none transition-all duration-200"
               rows={2}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
@@ -262,7 +262,7 @@ export function MessageBubble({
       {/* Actions toolbar — fade transition */}
       <div
         className={cn(
-          "absolute -top-3.5 flex items-center bg-white border border-border/40 rounded-xl shadow-lg shadow-black/[0.06] overflow-hidden z-10 transition-all duration-200",
+          "absolute -top-3.5 flex items-center bg-surface border border-border/40 rounded-xl shadow-lg shadow-black/[0.06] overflow-hidden z-10 transition-all duration-200",
           isOwn ? "left-2" : "right-2",
           showActions && !editing
             ? "opacity-100 translate-y-0 pointer-events-auto"
@@ -346,7 +346,7 @@ export function MessageBubble({
       {/* Quick reactions popup — scale transition */}
       <div
         className={cn(
-          "absolute -top-11 flex items-center gap-0.5 bg-white border border-border/30 rounded-2xl shadow-xl shadow-black/[0.08] p-1.5 z-20 transition-all duration-200 origin-bottom-right",
+          "absolute -top-11 flex items-center gap-0.5 bg-surface border border-border/30 rounded-2xl shadow-xl shadow-black/[0.08] p-1.5 z-20 transition-all duration-200 origin-bottom-right",
           isOwn ? "left-2" : "right-2",
           showQuickReact
             ? "opacity-100 scale-100 pointer-events-auto"

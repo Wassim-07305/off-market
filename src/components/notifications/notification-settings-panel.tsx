@@ -305,7 +305,7 @@ export function NotificationSettingsPanel({
           >
             <span
               className={cn(
-                "pointer-events-none inline-block size-5 transform rounded-full bg-white shadow-sm transition-transform duration-200",
+                "pointer-events-none inline-block size-5 transform rounded-full bg-surface shadow-sm transition-transform duration-200",
                 emailDigest ? "translate-x-5.5" : "translate-x-0.5",
               )}
               style={{ marginTop: "2px" }}
@@ -343,7 +343,7 @@ export function NotificationSettingsPanel({
           >
             <span
               className={cn(
-                "pointer-events-none inline-block size-5 transform rounded-full bg-white shadow-sm transition-transform duration-200",
+                "pointer-events-none inline-block size-5 transform rounded-full bg-surface shadow-sm transition-transform duration-200",
                 pushEnabled ? "translate-x-5.5" : "translate-x-0.5",
               )}
               style={{ marginTop: "2px" }}

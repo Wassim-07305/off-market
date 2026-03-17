@@ -52,7 +52,7 @@ export function ScrollToTop({
           onClick={scrollToTop}
           className={cn(
             "fixed bottom-6 right-6 z-40 flex h-11 w-11 items-center justify-center rounded-full",
-            "bg-white shadow-lg border border-border/40 text-muted-foreground",
+            "bg-surface shadow-lg border border-border/40 text-muted-foreground",
             "transition-colors hover:bg-muted hover:text-foreground",
             "dark:bg-slate-800 dark:border-slate-700 dark:hover:bg-slate-700",
             className,

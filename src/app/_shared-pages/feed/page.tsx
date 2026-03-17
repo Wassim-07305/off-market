@@ -157,7 +157,7 @@ export default function FeedPage() {
                     className={cn(
                       "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all",
                       sortMode === opt.value
-                        ? "bg-white text-foreground shadow-sm"
+                        ? "bg-surface text-foreground shadow-sm"
                         : "text-muted-foreground hover:text-foreground",
                     )}
                   >
@@ -175,7 +175,7 @@ export default function FeedPage() {
               {[...Array(3)].map((_, i) => (
                 <div
                   key={i}
-                  className="bg-white rounded-2xl border border-border p-6"
+                  className="bg-surface rounded-2xl border border-border p-6"
                 >
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-10 h-10 rounded-full bg-muted animate-shimmer" />
@@ -194,7 +194,7 @@ export default function FeedPage() {
           ) : posts.length === 0 ? (
             <motion.div
               variants={staggerItem}
-              className="bg-white rounded-2xl border border-border p-12 text-center"
+              className="bg-surface rounded-2xl border border-border p-12 text-center"
             >
               <p className="text-sm text-muted-foreground">
                 Aucune publication pour le moment. Soyez le premier a poster !
@@ -291,7 +291,7 @@ function PostComposer({
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-border p-4 shadow-sm transition-all duration-200 hover:shadow-md">
+    <div className="bg-surface rounded-2xl border border-border p-4 shadow-sm transition-all duration-200 hover:shadow-md">
       <textarea
         value={content}
         onChange={(e) => {
@@ -365,7 +365,7 @@ function PostCard({
   return (
     <div
       className={cn(
-        "bg-white rounded-2xl border transition-all duration-200 hover:shadow-md hover:-translate-y-0.5",
+        "bg-surface rounded-2xl border transition-all duration-200 hover:shadow-md hover:-translate-y-0.5",
         isVictory
           ? "border-amber-200/60 bg-gradient-to-br from-amber-50/30 to-white shadow-sm shadow-amber-100/30"
           : "border-border",
@@ -435,7 +435,7 @@ function PostCard({
                     className="fixed inset-0 z-10"
                     onClick={() => setShowMenu(false)}
                   />
-                  <div className="absolute right-0 top-8 z-20 bg-white rounded-xl border border-border py-1 min-w-[140px] shadow-lg">
+                  <div className="absolute right-0 top-8 z-20 bg-surface rounded-xl border border-border py-1 min-w-[140px] shadow-lg">
                     {isStaff && (
                       <button
                         onClick={() => {

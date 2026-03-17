@@ -202,7 +202,7 @@ export function RoadmapGenerator({
                 {preview.milestones.map((milestone, index) => (
                   <div
                     key={index}
-                    className="p-3 rounded-lg border border-border bg-white"
+                    className="p-3 rounded-lg border border-border bg-surface"
                   >
                     <div className="flex items-start gap-2">
                       <span className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-bold text-primary shrink-0 mt-0.5">

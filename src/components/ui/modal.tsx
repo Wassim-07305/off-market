@@ -75,7 +75,7 @@ function Modal({
     >
       <div
         className={cn(
-          "relative w-full max-h-[90vh] overflow-y-auto rounded-xl border border-border bg-white shadow-elevated",
+          "relative w-full max-h-[90vh] overflow-y-auto rounded-xl border border-border bg-surface shadow-elevated",
           "animate-in fade-in-0 zoom-in-95",
           modalSizes[size],
           className,

@@ -77,7 +77,7 @@ export default function ModerationPage() {
             {tab.value === "pending" &&
               reports.length > 0 &&
               statusFilter !== "pending" && (
-                <span className="ml-1.5 px-1.5 py-0.5 rounded-full bg-white/20 text-[10px]">
+                <span className="ml-1.5 px-1.5 py-0.5 rounded-full bg-surface/20 text-[10px]">
                   {reports.length}
                 </span>
               )}

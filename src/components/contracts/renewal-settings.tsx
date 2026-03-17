@@ -192,7 +192,7 @@ export function RenewalSettings({
         >
           <span
             className={cn(
-              "absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform duration-200",
+              "absolute top-0.5 left-0.5 w-5 h-5 bg-surface rounded-full shadow-sm transition-transform duration-200",
               autoRenew && "translate-x-5",
             )}
           />

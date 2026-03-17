@@ -47,9 +47,9 @@ export function StudentDetailDrawer({
         if (e.target === overlayRef.current) onClose();
       }}
     >
-      <div className="w-full max-w-md animate-in slide-in-from-right bg-white shadow-2xl overflow-y-auto">
+      <div className="w-full max-w-md animate-in slide-in-from-right bg-surface shadow-2xl overflow-y-auto">
         {/* Header */}
-        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-white px-5 py-4">
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-surface px-5 py-4">
           <h2 className="text-lg font-semibold text-foreground">
             Détail élève
           </h2>

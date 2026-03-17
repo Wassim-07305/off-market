@@ -315,7 +315,7 @@ export default function ContractDetailPage() {
               </h2>
               <div className="flex items-start gap-6">
                 {contract.signature_image && (
-                  <div className="bg-white border border-border rounded-lg p-3">
+                  <div className="bg-surface border border-border rounded-lg p-3">
                     <img
                       src={contract.signature_image}
                       alt="Signature"

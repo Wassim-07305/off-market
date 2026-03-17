@@ -88,7 +88,7 @@ function DataTable<TData>({
             value={currentSearchValue}
             onChange={(e) => handleSearchChange(e.target.value)}
             className={cn(
-              "h-9 max-w-sm rounded-xl border border-border bg-white px-3 text-sm",
+              "h-9 max-w-sm rounded-xl border border-border bg-surface px-3 text-sm",
               "transition-all duration-200",
               "placeholder:text-muted-foreground",
               "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1",

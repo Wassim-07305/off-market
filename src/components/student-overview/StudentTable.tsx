@@ -8,7 +8,7 @@ interface StudentTableProps {
 
 export function StudentTable({ students, onSelect }: StudentTableProps) {
   return (
-    <div className="overflow-x-auto rounded-xl border border-border bg-white">
+    <div className="overflow-x-auto rounded-xl border border-border bg-surface">
       <table className="w-full text-left">
         <thead>
           <tr className="border-b border-border bg-muted/30">

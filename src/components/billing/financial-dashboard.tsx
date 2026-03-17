@@ -154,7 +154,7 @@ export function FinancialDashboard() {
           return (
             <div
               key={kpi.label}
-              className="bg-white border border-border rounded-[14px] p-4"
+              className="bg-surface border border-border rounded-[14px] p-4"
             >
               <div className="flex items-center gap-3 mb-2.5">
                 <div
@@ -194,7 +194,7 @@ export function FinancialDashboard() {
       {/* Charts row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Revenue over time */}
-        <div className="bg-white border border-border rounded-[14px] p-5">
+        <div className="bg-surface border border-border rounded-[14px] p-5">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="text-sm font-semibold text-foreground">
@@ -295,7 +295,7 @@ export function FinancialDashboard() {
         </div>
 
         {/* Revenue by channel */}
-        <div className="bg-white border border-border rounded-[14px] p-5">
+        <div className="bg-surface border border-border rounded-[14px] p-5">
           <div className="mb-4">
             <h3 className="text-sm font-semibold text-foreground">
               Revenus par canal
@@ -368,7 +368,7 @@ export function FinancialDashboard() {
       </div>
 
       {/* Monthly bar chart */}
-      <div className="bg-white border border-border rounded-[14px] p-5">
+      <div className="bg-surface border border-border rounded-[14px] p-5">
         <div className="mb-4">
           <h3 className="text-sm font-semibold text-foreground">
             Flux de tresorerie mensuel

@@ -222,7 +222,7 @@ export function FaqDashboard() {
               {alerts.map((alert) => (
                 <div
                   key={alert.id}
-                  className="flex items-center justify-between rounded-lg bg-white p-3 shadow-sm"
+                  className="flex items-center justify-between rounded-lg bg-surface p-3 shadow-sm"
                 >
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-foreground truncate">

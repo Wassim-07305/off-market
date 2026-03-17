@@ -88,7 +88,7 @@ function SpeedSelector({
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="h-7 px-2 rounded-md text-[11px] font-bold text-white/80 hover:text-white bg-white/10 hover:bg-white/20 transition-colors tabular-nums"
+        className="h-7 px-2 rounded-md text-[11px] font-bold text-white/80 hover:text-white bg-surface/10 hover:bg-surface/20 transition-colors tabular-nums"
       >
         {speed}x
       </button>
@@ -318,7 +318,8 @@ function DirectVideoPlayer({
     >
       <video
         ref={videoRef}
-        src={src}
+        src={src.includes("#") ? src : `${src}#t=0.1`}
+        preload="metadata"
         className="w-full h-full"
         onClick={togglePlay}
         onTimeUpdate={handleTimeUpdate}
@@ -336,7 +337,7 @@ function DirectVideoPlayer({
         <div className="absolute inset-0 flex items-center justify-center bg-black/20">
           <button
             onClick={togglePlay}
-            className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center hover:bg-white/30 transition-colors"
+            className="w-16 h-16 rounded-full bg-surface/20 backdrop-blur-md flex items-center justify-center hover:bg-surface/30 transition-colors"
           >
             <Play className="w-7 h-7 text-white ml-1" />
           </button>
@@ -352,7 +353,7 @@ function DirectVideoPlayer({
       >
         {/* Progress bar */}
         <div
-          className="w-full h-1.5 rounded-full bg-white/20 mb-3 cursor-pointer group/progress"
+          className="w-full h-1.5 rounded-full bg-surface/20 mb-3 cursor-pointer group/progress"
           onClick={handleSeek}
         >
           <div

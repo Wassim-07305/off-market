@@ -60,7 +60,7 @@ export function Drawer({
           {/* Panel */}
           <motion.div
             className={cn(
-              "fixed inset-y-0 z-50 flex w-full flex-col bg-white shadow-2xl",
+              "fixed inset-y-0 z-50 flex w-full flex-col bg-surface shadow-2xl",
               width,
               isRight ? "right-0" : "left-0",
             )}

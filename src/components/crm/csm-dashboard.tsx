@@ -146,7 +146,7 @@ export function CsmDashboard({ onFilterByCoach }: CsmDashboardProps) {
                   setSelectedClient({ id: client.id, name: client.full_name });
                   setAssignModalOpen(true);
                 }}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-amber-200 text-sm hover:border-primary/40 transition-colors"
+                className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface border border-amber-200 text-sm hover:border-primary/40 transition-colors"
               >
                 <div className="w-5 h-5 rounded-full bg-amber-100 flex items-center justify-center text-[9px] text-amber-700 font-medium">
                   {getInitials(client.full_name)}

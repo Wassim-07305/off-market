@@ -240,7 +240,7 @@ export default function AdminCsmPage() {
 
           {/* Bulk assign bar */}
           {selectedUnassigned.size > 0 && (
-            <div className="flex items-center gap-3 mb-4 p-3 rounded-xl bg-white dark:bg-surface border border-amber-200 dark:border-border">
+            <div className="flex items-center gap-3 mb-4 p-3 rounded-xl bg-surface dark:bg-surface border border-amber-200 dark:border-border">
               <span className="text-xs font-medium text-foreground">
                 {selectedUnassigned.size} selectionne
                 {selectedUnassigned.size > 1 ? "s" : ""}
@@ -281,7 +281,7 @@ export default function AdminCsmPage() {
                   "flex items-center gap-2 px-3 py-1.5 rounded-full border text-sm transition-all duration-200",
                   selectedUnassigned.has(client.id)
                     ? "bg-primary/10 border-primary/40 ring-1 ring-primary/20"
-                    : "bg-white dark:bg-surface border-amber-200 dark:border-border hover:border-primary/40",
+                    : "bg-surface dark:bg-surface border-amber-200 dark:border-border hover:border-primary/40",
                 )}
               >
                 <div className="w-5 h-5 rounded-full bg-amber-100 flex items-center justify-center text-[9px] text-amber-700 font-medium">

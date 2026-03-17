@@ -85,7 +85,7 @@ export function RelanceSequencesView() {
             return (
               <div
                 key={stat.label}
-                className="rounded-xl border border-border bg-white p-4 shadow-sm"
+                className="rounded-xl border border-border bg-surface p-4 shadow-sm"
               >
                 <div className="flex items-center gap-2 mb-1">
                   <Icon className={cn("h-4 w-4", stat.color)} />
@@ -161,7 +161,7 @@ export function RelanceSequencesView() {
                 "transition-all cursor-pointer",
                 "hover:shadow-sm hover:border-primary/20",
                 seq.is_active
-                  ? "border-border bg-white"
+                  ? "border-border bg-surface"
                   : "border-border/50 bg-muted/30 opacity-70",
               )}
             >

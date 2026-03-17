@@ -48,7 +48,7 @@ export function UpsellOfferBanner() {
       {/* Dismiss button */}
       <button
         onClick={handleDismiss}
-        className="absolute top-3 right-3 p-1.5 rounded-lg hover:bg-white/50 transition-colors text-muted-foreground hover:text-foreground"
+        className="absolute top-3 right-3 p-1.5 rounded-lg hover:bg-surface/50 transition-colors text-muted-foreground hover:text-foreground"
       >
         <X className="h-4 w-4" />
       </button>

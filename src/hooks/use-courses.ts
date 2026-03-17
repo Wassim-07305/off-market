@@ -23,6 +23,8 @@ export function useCourses(status?: string) {
   return useQuery({
     queryKey: ["courses", status],
     enabled: !!user,
+    staleTime: 2 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
     queryFn: async () => {
       let query = supabase
         .from("courses")

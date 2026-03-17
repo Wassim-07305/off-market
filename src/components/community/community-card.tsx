@@ -42,7 +42,7 @@ export function CommunityCard({
         />
         <span className="text-2xl select-none">{community.icon || "💬"}</span>
         {community.is_private && (
-          <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-white/80 flex items-center justify-center">
+          <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-surface/80 flex items-center justify-center">
             <Lock className="w-3 h-3 text-muted-foreground" />
           </div>
         )}

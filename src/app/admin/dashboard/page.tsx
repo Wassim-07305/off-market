@@ -83,7 +83,7 @@ function MiniKPI({
   accentBg?: string;
 }) {
   return (
-    <div className="group relative overflow-hidden bg-white border border-zinc-200/80 rounded-2xl p-4 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
+    <div className="group relative overflow-hidden bg-surface border border-zinc-200/80 rounded-2xl p-4 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
       <div className="flex items-center gap-3">
         <div
           className={cn(
@@ -121,7 +121,7 @@ function CashCard({
   accentBg?: string;
 }) {
   return (
-    <div className="group relative overflow-hidden bg-white border border-zinc-200/80 rounded-2xl p-4 flex items-center gap-3 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
+    <div className="group relative overflow-hidden bg-surface border border-zinc-200/80 rounded-2xl p-4 flex items-center gap-3 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
       <div
         className={cn(
           "size-9 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110",
@@ -145,7 +145,7 @@ function CashCard({
 /* ─── Skeleton ─── */
 function MiniStatSkeleton() {
   return (
-    <div className="bg-white border border-zinc-200/80 rounded-2xl p-4 animate-pulse">
+    <div className="bg-surface border border-zinc-200/80 rounded-2xl p-4 animate-pulse">
       <div className="h-4 w-20 bg-zinc-100 rounded-lg mb-2" />
       <div className="h-6 w-16 bg-zinc-100 rounded-lg" />
     </div>
@@ -187,7 +187,7 @@ function ChartCard({
   return (
     <div
       className={cn(
-        "bg-white border border-zinc-200/80 rounded-2xl p-6 transition-shadow duration-300 hover:shadow-md",
+        "bg-surface border border-zinc-200/80 rounded-2xl p-6 transition-shadow duration-300 hover:shadow-md",
         className,
       )}
     >
@@ -306,7 +306,7 @@ export default function AdminDashboardPage() {
           Array.from({ length: 4 }).map((_, i) => (
             <div
               key={i}
-              className="bg-white border border-zinc-200/80 rounded-2xl p-5 animate-pulse"
+              className="bg-surface border border-zinc-200/80 rounded-2xl p-5 animate-pulse"
             >
               <div className="h-3 w-24 bg-zinc-100 rounded-lg mb-5" />
               <div className="h-8 w-20 bg-zinc-100 rounded-lg" />

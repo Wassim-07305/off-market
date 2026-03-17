@@ -48,7 +48,7 @@ export function RecordingControls({ callId, stream }: RecordingControlsProps) {
         title="Enregistrer l'appel"
         className={cn(
           "w-11 h-11 rounded-full flex items-center justify-center transition-all active:scale-90",
-          "bg-white/10 text-white hover:bg-white/20",
+          "bg-surface/10 text-white hover:bg-surface/20",
           "disabled:opacity-30 disabled:pointer-events-none",
         )}
       >
@@ -90,7 +90,7 @@ export function RecordingControls({ callId, stream }: RecordingControlsProps) {
   // Recording stopped, blob available: show save/download/reset actions
   return (
     <div className="flex items-center gap-2">
-      <div className="flex items-center gap-1.5 bg-white/10 backdrop-blur-sm rounded-full px-3 py-1.5">
+      <div className="flex items-center gap-1.5 bg-surface/10 backdrop-blur-sm rounded-full px-3 py-1.5">
         <span className="text-[11px] font-medium text-zinc-300 whitespace-nowrap">
           Enregistrement pret
         </span>
@@ -123,7 +123,7 @@ export function RecordingControls({ callId, stream }: RecordingControlsProps) {
         title="Telecharger l'enregistrement"
         className={cn(
           "w-10 h-10 rounded-full flex items-center justify-center transition-all active:scale-90",
-          "bg-white/10 text-white hover:bg-white/20",
+          "bg-surface/10 text-white hover:bg-surface/20",
         )}
       >
         <Download className="w-4 h-4" />
@@ -135,7 +135,7 @@ export function RecordingControls({ callId, stream }: RecordingControlsProps) {
         title="Supprimer l'enregistrement"
         className={cn(
           "w-10 h-10 rounded-full flex items-center justify-center transition-all active:scale-90",
-          "bg-white/10 text-zinc-400 hover:bg-white/20 hover:text-white",
+          "bg-surface/10 text-zinc-400 hover:bg-surface/20 hover:text-white",
         )}
       >
         <RotateCcw className="w-4 h-4" />

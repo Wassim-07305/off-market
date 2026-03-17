@@ -488,7 +488,7 @@ export default function CourseViewPage({
             className="absolute inset-0 bg-black/50"
             onClick={() => setMobileSidebarOpen(false)}
           />
-          <div className="absolute inset-y-0 left-0 w-[280px] bg-white border-r border-border shadow-sm flex flex-col animate-in slide-in-from-left duration-200">
+          <div className="absolute inset-y-0 left-0 w-[280px] bg-surface border-r border-border shadow-sm flex flex-col animate-in slide-in-from-left duration-200">
             <div className="flex items-center justify-end p-3 border-b border-border">
               <button
                 onClick={() => setMobileSidebarOpen(false)}
@@ -503,7 +503,7 @@ export default function CourseViewPage({
       )}
 
       {/* Desktop sidebar */}
-      <aside className="hidden md:flex w-[280px] shrink-0 border-r border-border bg-white flex-col overflow-hidden">
+      <aside className="hidden md:flex w-[280px] shrink-0 border-r border-border bg-surface flex-col overflow-hidden">
         {renderSidebar()}
       </aside>
 
@@ -551,7 +551,7 @@ export default function CourseViewPage({
                           href={att.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-2.5 rounded-lg border border-border bg-white px-3.5 py-2.5 hover:border-zinc-300 transition-colors group"
+                          className="flex items-center gap-2.5 rounded-lg border border-border bg-surface px-3.5 py-2.5 hover:border-zinc-300 transition-colors group"
                         >
                           <Icon className="h-4 w-4 text-muted-foreground shrink-0" />
                           <span className="flex-1 text-[13px] font-medium truncate text-foreground">

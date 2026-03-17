@@ -105,7 +105,7 @@ function EnrollmentDetail({ contactId, onClose }: EnrollmentDetailProps) {
         return (
           <div
             key={enrollment.id}
-            className="rounded-lg border border-border p-2.5 bg-white"
+            className="rounded-lg border border-border p-2.5 bg-surface"
           >
             {/* Sequence name + status */}
             <div className="flex items-center justify-between gap-2 mb-1.5">
@@ -263,7 +263,7 @@ export function RelanceEnrollmentBadge({
               onClick={() => setShowDetail(false)}
             />
             {/* Popover */}
-            <div className="absolute top-full right-0 mt-1 z-50 w-64 rounded-xl border border-border bg-white p-3 shadow-lg">
+            <div className="absolute top-full right-0 mt-1 z-50 w-64 rounded-xl border border-border bg-surface p-3 shadow-lg">
               <div className="flex items-center justify-between mb-2">
                 <p className="text-xs font-semibold text-foreground">
                   Sequences de relance
@@ -339,7 +339,7 @@ export function RelanceEnrollmentBadge({
             className="fixed inset-0 z-40"
             onClick={() => setShowDetail(false)}
           />
-          <div className="absolute top-full left-0 right-0 mt-1 z-50 rounded-xl border border-border bg-white p-3 shadow-lg">
+          <div className="absolute top-full left-0 right-0 mt-1 z-50 rounded-xl border border-border bg-surface p-3 shadow-lg">
             <div className="flex items-center justify-between mb-2">
               <p className="text-xs font-semibold text-foreground">
                 Sequences de relance
@@ -473,7 +473,7 @@ function EnrollContactModal({
                   "transition-all",
                   isEnrolled
                     ? "border-border/50 bg-muted/30 opacity-60 cursor-not-allowed"
-                    : "border-border bg-white hover:border-primary/30 hover:shadow-sm cursor-pointer",
+                    : "border-border bg-surface hover:border-primary/30 hover:shadow-sm cursor-pointer",
                 )}
               >
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 shrink-0">

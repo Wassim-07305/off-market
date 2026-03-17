@@ -190,7 +190,7 @@ export default function SchoolPage() {
           Array.from({ length: 6 }).map((_, i) => (
             <div
               key={i}
-              className="bg-white border border-border rounded-xl overflow-hidden"
+              className="bg-surface border border-border rounded-xl overflow-hidden"
             >
               <div className="aspect-video bg-muted animate-shimmer" />
               <div className="p-4 space-y-3">
@@ -215,7 +215,7 @@ export default function SchoolPage() {
             const card = (
               <div
                 className={cn(
-                  "h-full bg-white dark:bg-surface border border-border rounded-xl overflow-hidden transition-all duration-200",
+                  "h-full bg-surface dark:bg-surface border border-border rounded-xl overflow-hidden transition-all duration-200",
                   isLocked
                     ? "opacity-70"
                     : "hover:border-zinc-300 dark:hover:border-zinc-600 hover:shadow-lg hover:-translate-y-0.5",
@@ -249,7 +249,7 @@ export default function SchoolPage() {
                   )}
 
                   {isLocked && (
-                    <div className="absolute inset-0 bg-white/70 dark:bg-black/50 backdrop-blur-[3px] flex items-center justify-center">
+                    <div className="absolute inset-0 bg-surface/70 dark:bg-black/50 backdrop-blur-[3px] flex items-center justify-center">
                       <div className="text-center">
                         <Lock className="w-6 h-6 mx-auto mb-1 text-zinc-500" />
                         <p className="text-[11px] font-medium text-zinc-600 dark:text-zinc-400">

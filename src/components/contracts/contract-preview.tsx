@@ -94,7 +94,7 @@ export function ContractPreview({ title, content }: ContractPreviewProps) {
       <CardContent>
         <div
           ref={contentRef}
-          className="prose prose-sm max-w-none border border-border/50 rounded-xl p-6 bg-white min-h-[400px]"
+          className="prose prose-sm max-w-none border border-border/50 rounded-xl p-6 bg-surface min-h-[400px]"
           dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content) }}
         />
       </CardContent>

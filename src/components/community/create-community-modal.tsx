@@ -193,7 +193,7 @@ export function CreateCommunityModal({
           <textarea
             placeholder="Decrivez le theme et l'objectif de ce groupe..."
             rows={3}
-            className="w-full px-3.5 py-2 rounded-lg border border-border bg-white text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/10 transition-all resize-none"
+            className="w-full px-3.5 py-2 rounded-lg border border-border bg-surface text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/10 transition-all resize-none"
             {...register("description")}
           />
           {errors.description && (
@@ -289,7 +289,7 @@ export function CreateCommunityModal({
           >
             <span
               className={cn(
-                "pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-lg ring-0 transition-transform",
+                "pointer-events-none inline-block h-5 w-5 rounded-full bg-surface shadow-lg ring-0 transition-transform",
                 isPrivate ? "translate-x-5" : "translate-x-0",
               )}
             />
@@ -305,7 +305,7 @@ export function CreateCommunityModal({
             type="number"
             min={2}
             placeholder="Illimite"
-            className="w-full h-10 px-3.5 rounded-lg border border-border bg-white text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/10 transition-all"
+            className="w-full h-10 px-3.5 rounded-lg border border-border bg-surface text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/10 transition-all"
             onChange={(e) => {
               const val = e.target.value ? parseInt(e.target.value) : null;
               setValue("max_members", val);

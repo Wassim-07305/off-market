@@ -274,7 +274,7 @@ export function NotificationPreferences() {
                           >
                             <span
                               className={cn(
-                                "absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform shadow-sm",
+                                "absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-surface transition-transform shadow-sm",
                                 matrix[cat.key]?.[ch.key] &&
                                   globalEnabled &&
                                   "translate-x-4",
@@ -301,7 +301,7 @@ export function NotificationPreferences() {
                         >
                           <span
                             className={cn(
-                              "absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform shadow-sm",
+                              "absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-surface transition-transform shadow-sm",
                               globalEnabled && "translate-x-4",
                             )}
                           />

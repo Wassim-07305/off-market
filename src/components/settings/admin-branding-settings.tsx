@@ -183,7 +183,7 @@ export function AdminBrandingSettings() {
               <img
                 src={settings.logo_url}
                 alt="Logo"
-                className="w-20 h-20 rounded-xl object-contain border border-border bg-white p-2"
+                className="w-20 h-20 rounded-xl object-contain border border-border bg-surface p-2"
               />
               <button
                 onClick={handleRemoveLogo}

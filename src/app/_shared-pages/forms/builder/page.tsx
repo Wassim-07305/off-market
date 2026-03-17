@@ -262,7 +262,7 @@ export default function FormBuilderPage() {
       <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr_300px] gap-4 min-h-[calc(100vh-12rem)]">
         {/* Left: Field type palette */}
         <div className="hidden lg:block">
-          <div className="bg-white border border-border/50 rounded-2xl p-4 sticky top-24 shadow-sm">
+          <div className="bg-surface border border-border/50 rounded-2xl p-4 sticky top-24 shadow-sm">
             <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-4 px-1">
               Champs
             </h3>
@@ -308,7 +308,7 @@ export default function FormBuilderPage() {
         {/* Center: Form canvas */}
         <div className="space-y-3">
           {/* Form title & description */}
-          <div className="bg-white border border-border/50 rounded-2xl p-6 space-y-3 shadow-sm">
+          <div className="bg-surface border border-border/50 rounded-2xl p-6 space-y-3 shadow-sm">
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
@@ -417,7 +417,7 @@ export default function FormBuilderPage() {
               inputFields={inputFields}
             />
           ) : (
-            <div className="bg-white border border-border/50 rounded-2xl p-6 text-center sticky top-24 shadow-sm">
+            <div className="bg-surface border border-border/50 rounded-2xl p-6 text-center sticky top-24 shadow-sm">
               <div className="w-10 h-10 rounded-xl bg-muted/50 flex items-center justify-center mx-auto mb-3">
                 <Settings2 className="w-5 h-5 text-muted-foreground/30" />
               </div>
@@ -480,7 +480,7 @@ function SortableFieldCard({
       style={style}
       onClick={onSelect}
       className={cn(
-        "group/card relative bg-white border rounded-2xl p-4 pl-5 cursor-pointer transition-all shadow-sm",
+        "group/card relative bg-surface border rounded-2xl p-4 pl-5 cursor-pointer transition-all shadow-sm",
         isDragging && "opacity-50 shadow-lg scale-[1.02]",
         isSelected
           ? "border-primary ring-2 ring-primary/15"
@@ -739,7 +739,7 @@ function FieldConfigPanel({
   };
 
   return (
-    <div className="bg-white border border-border/50 rounded-2xl p-5 space-y-5 sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto shadow-sm">
+    <div className="bg-surface border border-border/50 rounded-2xl p-5 space-y-5 sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto shadow-sm">
       {/* Header with type icon */}
       <div className="flex items-center gap-2.5">
         <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center">
@@ -822,7 +822,7 @@ function FieldConfigPanel({
               className="sr-only peer"
             />
             <div className="w-9 h-5 bg-muted rounded-full peer-checked:bg-primary transition-colors" />
-            <div className="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow-sm transition-transform peer-checked:translate-x-4" />
+            <div className="absolute top-0.5 left-0.5 w-4 h-4 bg-surface rounded-full shadow-sm transition-transform peer-checked:translate-x-4" />
           </div>
           <span className="text-sm text-foreground">Requis</span>
         </label>

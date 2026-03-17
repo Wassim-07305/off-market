@@ -123,7 +123,7 @@ export function FaqAutoSuggest({
         </button>
       </div>
 
-      <div className="mt-2 rounded-lg bg-white/70 p-2.5">
+      <div className="mt-2 rounded-lg bg-surface/70 p-2.5">
         <p className="text-xs font-medium text-foreground">
           Q : {match.question}
         </p>

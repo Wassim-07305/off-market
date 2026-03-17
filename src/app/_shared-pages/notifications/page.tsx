@@ -287,7 +287,7 @@ export default function NotificationsPage() {
                   className={cn(
                     "ml-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-semibold",
                     activeCategory === cat.value
-                      ? "bg-white/20 text-white"
+                      ? "bg-surface/20 text-white"
                       : "bg-primary/10 text-primary",
                   )}
                 >

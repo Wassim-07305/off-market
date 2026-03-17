@@ -37,7 +37,7 @@ export function ChatHeader({
   const partnerOnline = partner ? (isOnline?.(partner.id) ?? false) : false;
 
   return (
-    <div className="shrink-0 border-b border-[#AF0000]/[0.06] bg-white/80 backdrop-blur-sm">
+    <div className="shrink-0 border-b border-[#AF0000]/[0.06] bg-surface/80 backdrop-blur-sm">
       <div className="h-[60px] flex items-center justify-between px-5">
         <div className="flex items-center gap-3.5 min-w-0">
           <button

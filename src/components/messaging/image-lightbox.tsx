@@ -47,21 +47,21 @@ export function ImageLightbox({ src, alt, onClose }: ImageLightboxProps) {
       >
         <button
           onClick={() => setZoom((z) => Math.min(z + 0.25, 3))}
-          className="w-9 h-9 rounded-lg bg-white/10 backdrop-blur-sm text-white/80 hover:text-white hover:bg-white/20 flex items-center justify-center transition-colors"
+          className="w-9 h-9 rounded-lg bg-surface/10 backdrop-blur-sm text-white/80 hover:text-white hover:bg-surface/20 flex items-center justify-center transition-colors"
           title="Zoom +"
         >
           <ZoomIn className="w-4 h-4" />
         </button>
         <button
           onClick={() => setZoom((z) => Math.max(z - 0.25, 0.5))}
-          className="w-9 h-9 rounded-lg bg-white/10 backdrop-blur-sm text-white/80 hover:text-white hover:bg-white/20 flex items-center justify-center transition-colors"
+          className="w-9 h-9 rounded-lg bg-surface/10 backdrop-blur-sm text-white/80 hover:text-white hover:bg-surface/20 flex items-center justify-center transition-colors"
           title="Zoom -"
         >
           <ZoomOut className="w-4 h-4" />
         </button>
         <button
           onClick={() => setRotation((r) => r + 90)}
-          className="w-9 h-9 rounded-lg bg-white/10 backdrop-blur-sm text-white/80 hover:text-white hover:bg-white/20 flex items-center justify-center transition-colors"
+          className="w-9 h-9 rounded-lg bg-surface/10 backdrop-blur-sm text-white/80 hover:text-white hover:bg-surface/20 flex items-center justify-center transition-colors"
           title="Rotation"
         >
           <RotateCw className="w-4 h-4" />
@@ -70,14 +70,14 @@ export function ImageLightbox({ src, alt, onClose }: ImageLightboxProps) {
           href={src}
           download
           onClick={(e) => e.stopPropagation()}
-          className="w-9 h-9 rounded-lg bg-white/10 backdrop-blur-sm text-white/80 hover:text-white hover:bg-white/20 flex items-center justify-center transition-colors"
+          className="w-9 h-9 rounded-lg bg-surface/10 backdrop-blur-sm text-white/80 hover:text-white hover:bg-surface/20 flex items-center justify-center transition-colors"
           title="Telecharger"
         >
           <Download className="w-4 h-4" />
         </a>
         <button
           onClick={onClose}
-          className="w-9 h-9 rounded-lg bg-white/10 backdrop-blur-sm text-white/80 hover:text-white hover:bg-white/20 flex items-center justify-center transition-colors ml-1"
+          className="w-9 h-9 rounded-lg bg-surface/10 backdrop-blur-sm text-white/80 hover:text-white hover:bg-surface/20 flex items-center justify-center transition-colors ml-1"
           title="Fermer (Echap)"
         >
           <X className="w-4.5 h-4.5" />
@@ -86,7 +86,7 @@ export function ImageLightbox({ src, alt, onClose }: ImageLightboxProps) {
 
       {/* Zoom indicator */}
       {zoom !== 1 && (
-        <div className="absolute top-4 left-4 px-2.5 py-1 rounded-lg bg-white/10 backdrop-blur-sm text-white/70 text-xs font-mono z-10">
+        <div className="absolute top-4 left-4 px-2.5 py-1 rounded-lg bg-surface/10 backdrop-blur-sm text-white/70 text-xs font-mono z-10">
           {Math.round(zoom * 100)}%
         </div>
       )}

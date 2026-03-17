@@ -157,7 +157,7 @@ export function CreateChannelModal({
                 "flex-1 flex items-center justify-center gap-2 h-10 rounded-xl border text-sm font-medium transition-all duration-200 cursor-pointer",
                 type === "public"
                   ? "border-primary bg-primary/5 text-primary shadow-sm"
-                  : "border-border bg-white text-muted-foreground hover:bg-muted/50 hover:text-foreground",
+                  : "border-border bg-surface text-muted-foreground hover:bg-muted/50 hover:text-foreground",
               )}
             >
               <Hash className="w-4 h-4" />
@@ -170,7 +170,7 @@ export function CreateChannelModal({
                 "flex-1 flex items-center justify-center gap-2 h-10 rounded-xl border text-sm font-medium transition-all duration-200 cursor-pointer",
                 type === "private"
                   ? "border-primary bg-primary/5 text-primary shadow-sm"
-                  : "border-border bg-white text-muted-foreground hover:bg-muted/50 hover:text-foreground",
+                  : "border-border bg-surface text-muted-foreground hover:bg-muted/50 hover:text-foreground",
               )}
             >
               <Lock className="w-4 h-4" />
@@ -204,7 +204,7 @@ export function CreateChannelModal({
               onChange={(e) => setMemberSearch(e.target.value)}
               placeholder="Rechercher un membre..."
               className={cn(
-                "flex h-10 w-full rounded-lg border border-border bg-white pl-10 pr-3.5 py-2 text-sm text-foreground",
+                "flex h-10 w-full rounded-lg border border-border bg-surface pl-10 pr-3.5 py-2 text-sm text-foreground",
                 "shadow-sm transition-all duration-200",
                 "placeholder:text-muted-foreground/60",
                 "focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/10",

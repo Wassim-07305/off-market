@@ -140,7 +140,7 @@ export function RoadmapViewer({
       </div>
 
       {/* Progress bar */}
-      <div className="bg-white border border-border rounded-xl p-4 space-y-3 print:border-zinc-300">
+      <div className="bg-surface border border-border rounded-xl p-4 space-y-3 print:border-zinc-300">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1.5">
@@ -192,7 +192,7 @@ export function RoadmapViewer({
             {/* Timeline dot */}
             <div
               className={cn(
-                "absolute left-[1.125rem] top-4 w-3 h-3 rounded-full border-2 bg-white z-10",
+                "absolute left-[1.125rem] top-4 w-3 h-3 rounded-full border-2 bg-surface z-10",
                 milestone.status === "completed"
                   ? "border-emerald-500 bg-emerald-500"
                   : milestone.status === "in_progress"

@@ -93,7 +93,7 @@ export function ConnectionStatus() {
         isRemoteConnected &&
         networkQuality !== "unknown" && (
           <div
-            className={`flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-white/5 ${qualityInfo.color}`}
+            className={`flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-surface/5 ${qualityInfo.color}`}
             title={`Qualite reseau : ${qualityInfo.label}`}
           >
             <qualityInfo.Icon className="w-3 h-3" />

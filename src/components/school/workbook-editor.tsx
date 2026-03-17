@@ -226,7 +226,7 @@ export function WorkbookEditor({
           {fields.length > 0 && (
             <button
               onClick={() => setShowPreview(true)}
-              className="inline-flex items-center gap-1.5 h-9 px-4 border border-border bg-white text-foreground rounded-xl text-sm font-medium hover:bg-muted/50 transition-colors"
+              className="inline-flex items-center gap-1.5 h-9 px-4 border border-border bg-surface text-foreground rounded-xl text-sm font-medium hover:bg-muted/50 transition-colors"
             >
               <Eye className="w-4 h-4" />
               Apercu

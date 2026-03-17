@@ -115,7 +115,7 @@ export function ChallengeSubmission({
             <label className="text-sm font-medium">Type de metrique</label>
             <select
               {...form.register("metric_type")}
-              className="w-full mt-1 rounded-xl border border-border px-3 py-2 text-sm bg-white"
+              className="w-full mt-1 rounded-xl border border-border px-3 py-2 text-sm bg-surface"
             >
               <option value="">Selectionnez...</option>
               {METRIC_TYPES.map((m) => (

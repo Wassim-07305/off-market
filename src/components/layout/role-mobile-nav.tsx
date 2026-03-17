@@ -98,7 +98,7 @@ export function RoleMobileNav({ variant }: RoleMobileNavProps) {
                         "relative flex items-center gap-3 h-10 rounded-xl px-3 transition-all duration-200",
                         isActive
                           ? "bg-primary/[0.08] text-[var(--sidebar-text-active)]"
-                          : "text-[var(--sidebar-text)] hover:text-[var(--sidebar-text-active)] hover:bg-white/[0.04]",
+                          : "text-[var(--sidebar-text)] hover:text-[var(--sidebar-text-active)] hover:bg-surface/[0.04]",
                       )}
                     >
                       {isActive && (

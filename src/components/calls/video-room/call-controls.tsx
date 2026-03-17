@@ -154,7 +154,7 @@ function ControlButton({
           ? "bg-red-600/20 text-red-400 hover:bg-red-600/30"
           : active && highlightWhenActive
             ? "bg-primary/20 text-primary hover:bg-primary/30"
-            : "bg-white/10 text-white hover:bg-white/20",
+            : "bg-surface/10 text-white hover:bg-surface/20",
       )}
     >
       <Icon className="w-5 h-5" />

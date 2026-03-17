@@ -222,7 +222,7 @@ export function GoalProgressCard({
   return (
     <div
       className={cn(
-        "group relative rounded-2xl border bg-white p-5 transition-all duration-200",
+        "group relative rounded-2xl border bg-surface p-5 transition-all duration-200",
         "hover:shadow-lg hover:shadow-black/[0.04] hover:border-border/80",
         goal.status === "completed" && "border-emerald-200 bg-emerald-50/30",
         goal.status === "paused" && "opacity-75",
@@ -270,7 +270,7 @@ export function GoalProgressCard({
                 type="number"
                 value={editValue}
                 onChange={(e) => setEditValue(Number(e.target.value))}
-                className="w-24 h-8 rounded-lg border border-border bg-white px-3 text-sm font-medium tabular-nums focus:outline-none focus:ring-2 focus:ring-ring"
+                className="w-24 h-8 rounded-lg border border-border bg-surface px-3 text-sm font-medium tabular-nums focus:outline-none focus:ring-2 focus:ring-ring"
                 min={0}
                 max={targetValue * 2}
                 autoFocus

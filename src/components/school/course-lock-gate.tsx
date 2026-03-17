@@ -44,7 +44,7 @@ export function CourseLockGate({ courseId, children }: CourseLockGateProps) {
           {prerequisites.map((prereq) => (
             <div
               key={prereq.courseId}
-              className="rounded-xl border border-border bg-white p-4"
+              className="rounded-xl border border-border bg-surface p-4"
             >
               <div className="mb-2 flex items-center justify-between">
                 <span className="text-sm font-medium">{prereq.course}</span>

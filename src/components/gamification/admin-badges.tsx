@@ -287,7 +287,7 @@ export function AdminBadges() {
                 >
                   <div className="flex items-start gap-3">
                     {/* Large Icon */}
-                    <div className="w-12 h-12 rounded-xl bg-white dark:bg-white/10 flex items-center justify-center text-2xl shrink-0 shadow-sm">
+                    <div className="w-12 h-12 rounded-xl bg-surface dark:bg-surface/10 flex items-center justify-center text-2xl shrink-0 shadow-sm">
                       {badge.icon ?? "\u{1F3C6}"}
                     </div>
 
@@ -336,7 +336,7 @@ export function AdminBadges() {
                         )
                       }
                       className={cn(
-                        "p-2 rounded-lg hover:bg-white/50 dark:hover:bg-white/10 transition-colors",
+                        "p-2 rounded-lg hover:bg-surface/50 dark:hover:bg-surface/10 transition-colors",
                         viewEarnersId === badge.id
                           ? "text-[#AF0000] bg-[#AF0000]/10"
                           : "text-muted-foreground hover:text-foreground",
@@ -347,7 +347,7 @@ export function AdminBadges() {
                     </button>
                     <button
                       onClick={() => openEdit(badge)}
-                      className="p-2 rounded-lg hover:bg-white/50 dark:hover:bg-white/10 transition-colors text-muted-foreground hover:text-foreground"
+                      className="p-2 rounded-lg hover:bg-surface/50 dark:hover:bg-surface/10 transition-colors text-muted-foreground hover:text-foreground"
                       title="Modifier"
                     >
                       <Pencil className="w-3.5 h-3.5" />
@@ -359,7 +359,7 @@ export function AdminBadges() {
                           is_active: !badge.is_active,
                         })
                       }
-                      className="p-2 rounded-lg hover:bg-white/50 dark:hover:bg-white/10 transition-colors"
+                      className="p-2 rounded-lg hover:bg-surface/50 dark:hover:bg-surface/10 transition-colors"
                       title={badge.is_active ? "Desactiver" : "Activer"}
                     >
                       {badge.is_active ? (

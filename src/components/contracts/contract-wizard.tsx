@@ -424,7 +424,7 @@ export function ContractWizard({
               </div>
 
               {/* Contract preview card (A4-like) */}
-              <div className="bg-white border border-border rounded-xl p-8 shadow-sm max-h-96 overflow-y-auto">
+              <div className="bg-surface border border-border rounded-xl p-8 shadow-sm max-h-96 overflow-y-auto">
                 <div className="border-b-2 border-gray-900 pb-4 mb-6">
                   <h1 className="text-xl font-bold text-gray-900">{title}</h1>
                   <p className="text-sm text-gray-500 mt-1">

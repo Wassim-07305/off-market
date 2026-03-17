@@ -185,7 +185,7 @@ function IndividualLeaderboard() {
         <motion.div
           variants={fadeInUp}
           transition={defaultTransition}
-          className="bg-white border border-border rounded-[14px] p-5 space-y-3"
+          className="bg-surface border border-border rounded-[14px] p-5 space-y-3"
         >
           <div className="flex items-start gap-3">
             <div className="w-10 h-10 rounded-[10px] bg-foreground/5 flex items-center justify-center shrink-0">
@@ -256,7 +256,7 @@ function IndividualLeaderboard() {
       <motion.div
         variants={fadeInUp}
         transition={defaultTransition}
-        className="bg-white border border-primary/20 rounded-[14px] p-5"
+        className="bg-surface border border-primary/20 rounded-[14px] p-5"
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -294,7 +294,7 @@ function IndividualLeaderboard() {
         <motion.div
           variants={fadeInUp}
           transition={defaultTransition}
-          className="bg-white border border-border rounded-[14px] p-12 text-center"
+          className="bg-surface border border-border rounded-[14px] p-12 text-center"
         >
           <Crown className="w-8 h-8 text-muted-foreground/30 mx-auto mb-3" />
           <p className="text-sm text-muted-foreground">
@@ -322,7 +322,7 @@ function IndividualLeaderboard() {
                 return (
                   <div
                     key={entry.profile_id}
-                    className={`bg-white border border-border rounded-[14px] p-4 text-center ${
+                    className={`bg-surface border border-border rounded-[14px] p-4 text-center ${
                       entry.rank === 1 ? "border-amber-500/30" : ""
                     } ${isMe ? "border-primary/30" : ""}`}
                   >
@@ -388,7 +388,7 @@ function IndividualLeaderboard() {
             <motion.div
               variants={fadeInUp}
               transition={defaultTransition}
-              className="bg-white border border-border rounded-[14px] divide-y divide-border/50"
+              className="bg-surface border border-border rounded-[14px] divide-y divide-border/50"
             >
               {rest.map((entry) => {
                 const isMe = entry.profile_id === user?.id;
@@ -540,7 +540,7 @@ function CompetitionsTab() {
         <motion.div
           variants={fadeInUp}
           transition={defaultTransition}
-          className="bg-white border border-border rounded-[14px] p-12 text-center"
+          className="bg-surface border border-border rounded-[14px] p-12 text-center"
         >
           <Trophy className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
           <p className="text-base font-medium text-foreground mb-1">
@@ -634,7 +634,7 @@ function TeamsTab() {
         <motion.div
           variants={fadeInUp}
           transition={defaultTransition}
-          className="bg-white border border-primary/20 rounded-[14px] p-5"
+          className="bg-surface border border-primary/20 rounded-[14px] p-5"
         >
           <div className="flex items-center gap-3 mb-2">
             <span className="text-2xl">{myTeam.avatar_emoji ?? "🔥"}</span>
@@ -663,7 +663,7 @@ function TeamsTab() {
         <motion.div
           variants={fadeInUp}
           transition={defaultTransition}
-          className="bg-white border border-border rounded-[14px] p-12 text-center"
+          className="bg-surface border border-border rounded-[14px] p-12 text-center"
         >
           <Users className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
           <p className="text-base font-medium text-foreground mb-1">

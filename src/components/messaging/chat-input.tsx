@@ -265,7 +265,7 @@ export function ChatInput({
             "rounded-2xl transition-all duration-200 relative cursor-text shadow-sm",
             isUrgent
               ? "bg-red-50 dark:bg-red-950/20 ring-1 ring-red-300 dark:ring-red-800 shadow-red-500/10"
-              : "bg-white ring-1 ring-border/40 shadow-black/[0.03] hover:ring-border/60 focus-within:ring-[#AF0000]/20 focus-within:shadow-[#AF0000]/5",
+              : "bg-surface ring-1 ring-border/40 shadow-black/[0.03] hover:ring-border/60 focus-within:ring-[#AF0000]/20 focus-within:shadow-[#AF0000]/5",
           )}
           onClick={(e) => {
             const target = e.target as HTMLElement;

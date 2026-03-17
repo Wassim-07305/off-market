@@ -158,7 +158,7 @@ export function CreateEventModal({
             {...register("title")}
             placeholder="Ex: Réunion d'équipe"
             className={cn(
-              "w-full h-10 px-3 rounded-xl border bg-white text-sm transition-colors",
+              "w-full h-10 px-3 rounded-xl border bg-surface text-sm transition-colors",
               "focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary",
               errors.title ? "border-red-300" : "border-border",
             )}
@@ -177,7 +177,7 @@ export function CreateEventModal({
             {...register("description")}
             rows={2}
             placeholder="Détails de l'événement..."
-            className="w-full px-3 py-2 rounded-xl border border-border bg-white text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"
+            className="w-full px-3 py-2 rounded-xl border border-border bg-surface text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"
           />
         </div>
 
@@ -191,7 +191,7 @@ export function CreateEventModal({
               type="date"
               {...register("start_date")}
               className={cn(
-                "w-full h-10 px-3 rounded-xl border bg-white text-sm transition-colors",
+                "w-full h-10 px-3 rounded-xl border bg-surface text-sm transition-colors",
                 "focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary",
                 errors.start_date ? "border-red-300" : "border-border",
               )}
@@ -205,7 +205,7 @@ export function CreateEventModal({
               type="time"
               {...register("start_time")}
               className={cn(
-                "w-full h-10 px-3 rounded-xl border bg-white text-sm transition-colors",
+                "w-full h-10 px-3 rounded-xl border bg-surface text-sm transition-colors",
                 "focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary",
                 errors.start_time ? "border-red-300" : "border-border",
               )}
@@ -222,7 +222,7 @@ export function CreateEventModal({
             <input
               type="date"
               {...register("end_date")}
-              className="w-full h-10 px-3 rounded-xl border border-border bg-white text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              className="w-full h-10 px-3 rounded-xl border border-border bg-surface text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
             />
           </div>
           <div>
@@ -233,7 +233,7 @@ export function CreateEventModal({
               type="time"
               {...register("end_time")}
               className={cn(
-                "w-full h-10 px-3 rounded-xl border bg-white text-sm transition-colors",
+                "w-full h-10 px-3 rounded-xl border bg-surface text-sm transition-colors",
                 "focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary",
                 errors.end_time ? "border-red-300" : "border-border",
               )}
@@ -275,7 +275,7 @@ export function CreateEventModal({
           <label className="block text-sm font-medium text-foreground mb-2">
             Participants
           </label>
-          <div className="max-h-32 overflow-y-auto rounded-xl border border-border bg-white p-2 space-y-1">
+          <div className="max-h-32 overflow-y-auto rounded-xl border border-border bg-surface p-2 space-y-1">
             {profiles.length === 0 ? (
               <p className="text-xs text-muted-foreground p-2">Chargement...</p>
             ) : (

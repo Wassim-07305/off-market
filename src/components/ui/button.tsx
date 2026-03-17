@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 const buttonVariants = {
   primary: "bg-primary text-white hover:bg-primary-hover shadow-xs",
   secondary:
-    "border border-border bg-white text-foreground hover:bg-muted/50 shadow-xs",
+    "border border-border bg-surface text-foreground hover:bg-muted/50 shadow-xs",
   ghost: "text-foreground hover:bg-muted/40",
   destructive: "bg-destructive text-white hover:bg-destructive/90 shadow-xs",
   outline:

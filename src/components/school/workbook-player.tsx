@@ -234,7 +234,7 @@ export function WorkbookPlayer({
           <button
             onClick={() => handleSave("draft")}
             disabled={submitWorkbook.isPending}
-            className="inline-flex items-center gap-2 h-10 px-5 border border-border bg-white text-foreground rounded-xl text-sm font-medium hover:bg-muted/50 transition-colors disabled:opacity-50"
+            className="inline-flex items-center gap-2 h-10 px-5 border border-border bg-surface text-foreground rounded-xl text-sm font-medium hover:bg-muted/50 transition-colors disabled:opacity-50"
           >
             {submitWorkbook.isPending ? (
               <Loader2 className="w-4 h-4 animate-spin" />

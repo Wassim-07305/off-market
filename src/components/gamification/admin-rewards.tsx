@@ -506,7 +506,7 @@ export function AdminRewards() {
                   >
                     <span
                       className={cn(
-                        "absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform shadow-sm",
+                        "absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-surface transition-transform shadow-sm",
                         hasStock && "translate-x-4",
                       )}
                     />

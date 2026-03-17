@@ -119,7 +119,7 @@ export function NotificationAnalytics() {
         className="grid grid-cols-1 lg:grid-cols-2 gap-6"
       >
         {/* Pie chart — by type */}
-        <div className="bg-white border border-zinc-200 rounded-[14px] p-5">
+        <div className="bg-surface border border-zinc-200 rounded-[14px] p-5">
           <h3 className="text-sm font-semibold text-foreground mb-4">
             Repartition par type
           </h3>
@@ -164,7 +164,7 @@ export function NotificationAnalytics() {
         </div>
 
         {/* Line chart — trends */}
-        <div className="bg-white border border-zinc-200 rounded-[14px] p-5">
+        <div className="bg-surface border border-zinc-200 rounded-[14px] p-5">
           <h3 className="text-sm font-semibold text-foreground mb-4">
             Tendances quotidiennes
           </h3>
@@ -234,7 +234,7 @@ export function NotificationAnalytics() {
 
       {/* Table — top notification types */}
       <motion.div variants={staggerItem}>
-        <div className="bg-white border border-zinc-200 rounded-[14px] p-5">
+        <div className="bg-surface border border-zinc-200 rounded-[14px] p-5">
           <h3 className="text-sm font-semibold text-foreground mb-4">
             Performance par type
           </h3>

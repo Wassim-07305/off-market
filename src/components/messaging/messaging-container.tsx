@@ -92,8 +92,8 @@ export default function MessagingContainer() {
           className={cn(
             "flex items-center gap-2 px-4 h-8 rounded-lg text-xs font-semibold transition-all duration-200",
             inboxMode === "internal"
-              ? "bg-white text-foreground shadow-md shadow-black/5 ring-1 ring-black/5"
-              : "text-muted-foreground hover:text-foreground hover:bg-white/50",
+              ? "bg-surface text-foreground shadow-md shadow-black/5 ring-1 ring-black/5"
+              : "text-muted-foreground hover:text-foreground hover:bg-surface/50",
           )}
         >
           <MessageSquare className="w-3.5 h-3.5" />
@@ -104,8 +104,8 @@ export default function MessagingContainer() {
           className={cn(
             "flex items-center gap-2 px-4 h-8 rounded-lg text-xs font-semibold transition-all duration-200",
             inboxMode === "external"
-              ? "bg-white text-foreground shadow-md shadow-black/5 ring-1 ring-black/5"
-              : "text-muted-foreground hover:text-foreground hover:bg-white/50",
+              ? "bg-surface text-foreground shadow-md shadow-black/5 ring-1 ring-black/5"
+              : "text-muted-foreground hover:text-foreground hover:bg-surface/50",
           )}
         >
           <Globe className="w-3.5 h-3.5" />
@@ -114,7 +114,7 @@ export default function MessagingContainer() {
       </div>
 
       {/* ── Content ── */}
-      <div className="flex flex-1 min-h-0 bg-white rounded-2xl overflow-hidden border border-border/50 shadow-lg shadow-black/[0.03]">
+      <div className="flex flex-1 min-h-0 bg-surface rounded-2xl overflow-hidden border border-border/50 shadow-lg shadow-black/[0.03]">
         {inboxMode === "external" ? (
           <UnifiedInbox />
         ) : (
@@ -123,7 +123,7 @@ export default function MessagingContainer() {
             <div
               className={`
               w-[272px] border-r border-border/30 flex flex-col shrink-0 bg-gradient-to-b from-[#FAFAFA] to-[#F5F5F5]
-              max-sm:absolute max-sm:inset-y-0 max-sm:left-0 max-sm:z-30 max-sm:w-[272px] max-sm:bg-white max-sm:shadow-xl max-sm:shadow-black/10
+              max-sm:absolute max-sm:inset-y-0 max-sm:left-0 max-sm:z-30 max-sm:w-[272px] max-sm:bg-surface max-sm:shadow-xl max-sm:shadow-black/10
               ${mobileSidebarOpen ? "max-sm:translate-x-0" : "max-sm:-translate-x-full"}
               sm:relative sm:translate-x-0 transition-transform duration-300 ease-out
             `}

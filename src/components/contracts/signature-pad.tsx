@@ -102,7 +102,7 @@ export function SignaturePad({
       <div className="relative">
         <canvas
           ref={canvasRef}
-          className="w-full h-48 bg-white border-2 border-dashed border-border rounded-xl cursor-crosshair touch-none"
+          className="w-full h-48 bg-surface border-2 border-dashed border-border rounded-xl cursor-crosshair touch-none"
           onMouseDown={startDrawing}
           onMouseMove={draw}
           onMouseUp={stopDrawing}

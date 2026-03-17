@@ -32,7 +32,7 @@ function SpeedSelector({
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="h-7 px-2.5 rounded-lg text-[11px] font-bold text-white/80 hover:text-white bg-white/10 hover:bg-white/20 transition-colors tabular-nums"
+        className="h-7 px-2.5 rounded-lg text-[11px] font-bold text-white/80 hover:text-white bg-surface/10 hover:bg-surface/20 transition-colors tabular-nums"
       >
         {speed}x
       </button>
@@ -134,7 +134,7 @@ function WaveformProgress({
                 ? "bg-[#DC2626]"
                 : isHovered
                   ? "bg-[#DC2626]/40"
-                  : "bg-white/20",
+                  : "bg-surface/20",
             )}
             style={{ height: `${h * 100}%`, minHeight: "3px" }}
           />
@@ -193,7 +193,7 @@ function VolumeSlider({
             step={0.05}
             value={muted ? 0 : volume}
             onChange={(e) => onVolumeChange(parseFloat(e.target.value))}
-            className="w-20 h-1 appearance-none bg-white/20 rounded-full cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#DC2626]"
+            className="w-20 h-1 appearance-none bg-surface/20 rounded-full cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#DC2626]"
             style={{
               writingMode: "horizontal-tb",
             }}

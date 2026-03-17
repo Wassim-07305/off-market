@@ -228,7 +228,7 @@ export function AlertsPanel() {
                   <button
                     onClick={() => markRead.mutate(alert.id)}
                     disabled={markRead.isPending}
-                    className="h-7 px-2.5 rounded-lg bg-white/80 border border-border/50 text-xs text-muted-foreground hover:text-foreground hover:bg-white transition-colors flex items-center gap-1.5"
+                    className="h-7 px-2.5 rounded-lg bg-surface/80 border border-border/50 text-xs text-muted-foreground hover:text-foreground hover:bg-surface transition-colors flex items-center gap-1.5"
                   >
                     <Eye className="w-3 h-3" />
                     Marquer lu
@@ -236,7 +236,7 @@ export function AlertsPanel() {
                   <button
                     onClick={() => resolveAlert.mutate(alert.id)}
                     disabled={resolveAlert.isPending}
-                    className="h-7 px-2.5 rounded-lg bg-white/80 border border-border/50 text-xs text-green-700 hover:bg-green-50 transition-colors flex items-center gap-1.5"
+                    className="h-7 px-2.5 rounded-lg bg-surface/80 border border-border/50 text-xs text-green-700 hover:bg-green-50 transition-colors flex items-center gap-1.5"
                   >
                     <CheckCircle2 className="w-3 h-3" />
                     Resoudre

@@ -334,7 +334,7 @@ export function EnrichmentPanel({
                   enrichMutation.isPending ||
                   linkedinLimit.isLimited
                 }
-                className="h-9 px-4 rounded-xl bg-black dark:bg-white dark:text-black text-white text-sm font-medium hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
+                className="h-9 px-4 rounded-xl bg-black dark:bg-surface dark:text-black text-white text-sm font-medium hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
               >
                 {enrichMutation.isPending ? (
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />

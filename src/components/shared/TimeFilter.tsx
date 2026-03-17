@@ -45,7 +45,7 @@ export function TimeFilter({ value, onChange, className }: TimeFilterProps) {
           className={cn(
             "px-3 py-1.5 text-xs font-medium rounded-lg transition-all duration-200",
             value === period
-              ? "bg-white text-foreground shadow-sm"
+              ? "bg-surface text-foreground shadow-sm"
               : "text-muted-foreground hover:text-foreground",
           )}
         >

@@ -356,7 +356,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Profile */}
-      <div className="bg-white rounded-2xl border border-border p-6 space-y-4 transition-all duration-200 hover:shadow-md hover:shadow-zinc-200/50">
+      <div className="bg-surface rounded-2xl border border-border p-6 space-y-4 transition-all duration-200 hover:shadow-md hover:shadow-zinc-200/50">
         <div className="flex items-center gap-2 mb-2">
           <div className="size-7 rounded-lg bg-gradient-to-br from-[#AF0000] to-[#DC2626] flex items-center justify-center">
             <User className="w-3.5 h-3.5 text-white" />
@@ -461,7 +461,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Notifications */}
-      <div className="bg-white rounded-2xl border border-border p-6 space-y-4 transition-all duration-200 hover:shadow-md hover:shadow-zinc-200/50">
+      <div className="bg-surface rounded-2xl border border-border p-6 space-y-4 transition-all duration-200 hover:shadow-md hover:shadow-zinc-200/50">
         <div className="flex items-center gap-2 mb-2">
           <div className="size-7 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
             <Bell className="w-3.5 h-3.5 text-white" />
@@ -503,7 +503,7 @@ export default function SettingsPage() {
                 >
                   <span
                     className={cn(
-                      "absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform shadow-sm",
+                      "absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-surface transition-transform shadow-sm",
                       checked && "translate-x-4",
                     )}
                   />
@@ -546,7 +546,7 @@ export default function SettingsPage() {
               >
                 <span
                   className={cn(
-                    "absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform shadow-sm",
+                    "absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-surface transition-transform shadow-sm",
                     push.isSubscribed && "translate-x-4",
                   )}
                 />
@@ -557,7 +557,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Leaderboard anonymity */}
-      <div className="bg-white rounded-2xl border border-border p-6 space-y-4 transition-all duration-200 hover:shadow-md hover:shadow-zinc-200/50">
+      <div className="bg-surface rounded-2xl border border-border p-6 space-y-4 transition-all duration-200 hover:shadow-md hover:shadow-zinc-200/50">
         <div className="flex items-center gap-2 mb-2">
           <div className="size-7 rounded-lg bg-gradient-to-br from-amber-400 to-amber-500 flex items-center justify-center">
             <Trophy className="w-3.5 h-3.5 text-white" />
@@ -600,7 +600,7 @@ export default function SettingsPage() {
           >
             <span
               className={cn(
-                "absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform shadow-sm",
+                "absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-surface transition-transform shadow-sm",
                 leaderboardAnonymous && "translate-x-4",
               )}
             />
@@ -609,7 +609,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Intelligence artificielle */}
-      <div className="bg-white rounded-2xl border border-border p-6 space-y-4 transition-all duration-200 hover:shadow-md hover:shadow-zinc-200/50">
+      <div className="bg-surface rounded-2xl border border-border p-6 space-y-4 transition-all duration-200 hover:shadow-md hover:shadow-zinc-200/50">
         <div className="flex items-center gap-2 mb-2">
           <div className="size-7 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center">
             <Bot className="w-3.5 h-3.5 text-white" />
@@ -657,7 +657,7 @@ export default function SettingsPage() {
           >
             <span
               className={cn(
-                "absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform shadow-sm",
+                "absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-surface transition-transform shadow-sm",
                 aiConsent.hasConsent && "translate-x-4",
               )}
             />
@@ -666,7 +666,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Appearance */}
-      <div className="bg-white rounded-2xl border border-border p-6 space-y-4 transition-all duration-200 hover:shadow-md hover:shadow-zinc-200/50">
+      <div className="bg-surface rounded-2xl border border-border p-6 space-y-4 transition-all duration-200 hover:shadow-md hover:shadow-zinc-200/50">
         <div className="flex items-center gap-2 mb-2">
           <div className="size-7 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center">
             <Palette className="w-3.5 h-3.5 text-white" />
@@ -697,7 +697,7 @@ export default function SettingsPage() {
 
       {/* Custom Roles (admin only) */}
       {isAdmin && (
-        <div className="bg-white rounded-2xl border border-border p-6">
+        <div className="bg-surface rounded-2xl border border-border p-6">
           <RoleManager />
         </div>
       )}
@@ -709,7 +709,7 @@ export default function SettingsPage() {
       {isAdmin && <ApiSettings />}
 
       {/* Security */}
-      <div className="bg-white rounded-2xl border border-border p-6 space-y-4 transition-all duration-200 hover:shadow-md hover:shadow-zinc-200/50">
+      <div className="bg-surface rounded-2xl border border-border p-6 space-y-4 transition-all duration-200 hover:shadow-md hover:shadow-zinc-200/50">
         <div className="flex items-center gap-2 mb-2">
           <div className="size-7 rounded-lg bg-gradient-to-br from-zinc-600 to-zinc-700 flex items-center justify-center">
             <Lock className="w-3.5 h-3.5 text-white" />
@@ -808,7 +808,7 @@ export default function SettingsPage() {
       </div>
 
       {/* 2FA */}
-      <div className="bg-white rounded-2xl border border-border p-6 space-y-4 transition-all duration-200 hover:shadow-md hover:shadow-zinc-200/50">
+      <div className="bg-surface rounded-2xl border border-border p-6 space-y-4 transition-all duration-200 hover:shadow-md hover:shadow-zinc-200/50">
         <div className="flex items-center gap-2 mb-2">
           <div className="size-7 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center">
             <ShieldCheck className="w-3.5 h-3.5 text-white" />
@@ -930,7 +930,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Email preferences */}
-      <div className="bg-white rounded-2xl border border-border p-6 space-y-4 transition-all duration-200 hover:shadow-md hover:shadow-zinc-200/50">
+      <div className="bg-surface rounded-2xl border border-border p-6 space-y-4 transition-all duration-200 hover:shadow-md hover:shadow-zinc-200/50">
         <div className="flex items-center gap-2 mb-2">
           <div className="size-7 rounded-lg bg-gradient-to-br from-cyan-500 to-cyan-600 flex items-center justify-center">
             <Mail className="w-3.5 h-3.5 text-white" />
@@ -990,7 +990,7 @@ export default function SettingsPage() {
             >
               <span
                 className={cn(
-                  "absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform shadow-sm",
+                  "absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-surface transition-transform shadow-sm",
                   (preferences?.email_marketing ?? true) && "translate-x-4",
                 )}
               />
@@ -1000,7 +1000,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Google Agenda */}
-      <div className="bg-white rounded-2xl border border-border p-6 space-y-4 transition-all duration-200 hover:shadow-md hover:shadow-zinc-200/50">
+      <div className="bg-surface rounded-2xl border border-border p-6 space-y-4 transition-all duration-200 hover:shadow-md hover:shadow-zinc-200/50">
         <div className="flex items-center gap-2 mb-2">
           <div className="size-7 rounded-lg bg-gradient-to-br from-sky-500 to-sky-600 flex items-center justify-center">
             <Calendar className="w-3.5 h-3.5 text-white" />
@@ -1054,7 +1054,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Danger zone */}
-      <div className="bg-white rounded-2xl border border-border border-l-[3px] border-l-error p-6 space-y-4">
+      <div className="bg-surface rounded-2xl border border-border border-l-[3px] border-l-error p-6 space-y-4">
         <div className="flex items-center gap-2 mb-2">
           <Shield className="w-4 h-4 text-error" />
           <h2 className="text-sm font-semibold text-error">Zone dangereuse</h2>
@@ -1087,7 +1087,7 @@ export default function SettingsPage() {
         {/* Delete confirmation modal */}
         {showDeleteConfirm && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-            <div className="bg-white border border-border rounded-2xl p-6 max-w-sm w-full mx-4 space-y-4 shadow-xl">
+            <div className="bg-surface border border-border rounded-2xl p-6 max-w-sm w-full mx-4 space-y-4 shadow-xl">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-error/10 flex items-center justify-center">
                   <AlertTriangle className="w-5 h-5 text-error" />

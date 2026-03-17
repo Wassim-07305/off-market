@@ -105,7 +105,7 @@ export default function CoachDashboardPage() {
           Array.from({ length: 4 }).map((_, i) => (
             <div
               key={i}
-              className="bg-white border border-zinc-200 rounded-[14px] p-5 animate-pulse"
+              className="bg-surface border border-zinc-200 rounded-[14px] p-5 animate-pulse"
             >
               <div className="h-4 w-24 bg-zinc-100 rounded mb-4" />
               <div className="h-7 w-16 bg-zinc-100 rounded" />
@@ -156,7 +156,7 @@ export default function CoachDashboardPage() {
               return (
                 <div
                   key={alert.id}
-                  className="flex items-start gap-3 p-3 bg-white border border-zinc-200 rounded-[14px] group transition-shadow duration-200 hover:shadow-md"
+                  className="flex items-start gap-3 p-3 bg-surface border border-zinc-200 rounded-[14px] group transition-shadow duration-200 hover:shadow-md"
                 >
                   <span className="text-base shrink-0 mt-0.5">
                     {typeConfig?.icon ?? "\u26a0\ufe0f"}

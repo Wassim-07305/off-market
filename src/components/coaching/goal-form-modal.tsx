@@ -54,7 +54,7 @@ interface GoalFormModalProps {
 }
 
 const inputClass = cn(
-  "w-full h-10 rounded-xl border border-border bg-white px-3 text-sm",
+  "w-full h-10 rounded-xl border border-border bg-surface px-3 text-sm",
   "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1",
   "placeholder:text-muted-foreground/60",
   "transition-all duration-200",

@@ -108,7 +108,7 @@ export function ChannelSidebar({
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="h-14 border-b border-border/30 flex items-center px-4 bg-white/60 backdrop-blur-sm">
+      <div className="h-14 border-b border-border/30 flex items-center px-4 bg-surface/60 backdrop-blur-sm">
         <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#AF0000] to-[#DC2626] flex items-center justify-center mr-3 shadow-sm shadow-[#AF0000]/20">
           <MessageSquare className="w-4 h-4 text-white" />
         </div>
@@ -321,7 +321,7 @@ export function ChannelSidebar({
                         value={dmSearch}
                         onChange={(e) => setDmSearch(e.target.value)}
                         placeholder="Rechercher..."
-                        className="w-full h-8 pl-8 pr-3 bg-white border border-border/40 rounded-xl text-xs text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-[#AF0000]/15 focus:border-[#AF0000]/20 transition-all duration-200 shadow-sm shadow-black/[0.02]"
+                        className="w-full h-8 pl-8 pr-3 bg-surface border border-border/40 rounded-xl text-xs text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-[#AF0000]/15 focus:border-[#AF0000]/20 transition-all duration-200 shadow-sm shadow-black/[0.02]"
                       />
                     </div>
                   </div>

@@ -146,7 +146,7 @@ export function BusinessInfoForm({
             <label className="text-sm font-medium">Forme juridique</label>
             <select
               {...form.register("legal_form")}
-              className="w-full mt-1 rounded-xl border border-border px-3 py-2 text-sm bg-white"
+              className="w-full mt-1 rounded-xl border border-border px-3 py-2 text-sm bg-surface"
             >
               <option value="">Selectionnez...</option>
               {LEGAL_FORMS.map((f) => (

@@ -234,7 +234,7 @@ export function VideoResponseRecorder({
         {/* Idle state overlay */}
         {state === "idle" && !streamRef.current && (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80">
-            <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center mb-3">
+            <div className="w-16 h-16 rounded-full bg-surface/10 flex items-center justify-center mb-3">
               <Video className="w-7 h-7 text-white/70" />
             </div>
             <p className="text-white/60 text-sm">
@@ -261,7 +261,7 @@ export function VideoResponseRecorder({
               {[1, 2, 3, 4].map((i) => (
                 <div
                   key={i}
-                  className="w-0.5 bg-white/60 rounded-full animate-pulse"
+                  className="w-0.5 bg-surface/60 rounded-full animate-pulse"
                   style={{
                     height: `${6 + Math.random() * 8}px`,
                     animationDelay: `${i * 150}ms`,
@@ -279,7 +279,7 @@ export function VideoResponseRecorder({
             <p className="text-white text-sm font-medium mb-2">
               Envoi en cours...
             </p>
-            <div className="w-48 h-1.5 bg-white/20 rounded-full overflow-hidden">
+            <div className="w-48 h-1.5 bg-surface/20 rounded-full overflow-hidden">
               <div
                 className="h-full rounded-full transition-all duration-300"
                 style={{

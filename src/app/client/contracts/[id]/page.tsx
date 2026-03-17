@@ -192,7 +192,7 @@ export default function ClientContractDetailPage() {
                 Signe le {formatDate(contract.signed_at)}
               </p>
               {contract.signature_image && (
-                <div className="mt-3 bg-white border border-border rounded-lg p-3 inline-block">
+                <div className="mt-3 bg-surface border border-border rounded-lg p-3 inline-block">
                   <img
                     src={contract.signature_image}
                     alt="Ma signature"
