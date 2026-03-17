@@ -373,7 +373,7 @@ export default function OnboardingPage() {
             alt="Off Market"
             width={24}
             height={24}
-            className="rounded-lg"
+            className="rounded-sm"
           />
           <span className="text-sm font-medium text-white/60">Off Market</span>
         </div>
