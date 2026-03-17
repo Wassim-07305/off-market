@@ -1,0 +1,3 @@
+[     626ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://srhpdgqqiuzdrlqaitdk.supabase.co/rest/v1/faq_question_logs?select=faq_entry_id&created_at=gte.2026-03-09T23%3A59%3A13.221Z:0
+[    1820ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://srhpdgqqiuzdrlqaitdk.supabase.co/rest/v1/faq_question_logs?select=faq_entry_id&created_at=gte.2026-03-09T23%3A59%3A14.424Z:0
+[    3972ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://srhpdgqqiuzdrlqaitdk.supabase.co/rest/v1/faq_question_logs?select=faq_entry_id&created_at=gte.2026-03-09T23%3A59%3A16.619Z:0

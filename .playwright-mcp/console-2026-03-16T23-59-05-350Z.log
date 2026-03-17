@@ -1,0 +1,2 @@
+[     519ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://srhpdgqqiuzdrlqaitdk.supabase.co/rest/v1/audit_logs?select=*%2Cuser%3Aprofiles%21audit_logs_user_id_fkey%28id%2Cfull_name%2Cemail%2Cavatar_url%29&order=created_at.desc&limit=200:0
+[     520ms] [WARNING] Audit logs query error: Could not find a relationship between 'audit_logs' and 'profiles' in the schema cache @ https://off-market-amber.vercel.app/_next/static/chunks/22abc4e00d167e79.js:3

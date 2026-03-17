@@ -7,10 +7,16 @@ import {
   fadeInUp,
   defaultTransition,
 } from "@/lib/animations";
-import { useSessions } from "@/hooks/use-sessions";
+import {
+  useSessions,
+  useCreateSession,
+  useCompleteSession,
+  useUpdateSession,
+} from "@/hooks/use-sessions";
 import { useStudents } from "@/hooks/use-students";
 import { useAuth } from "@/hooks/use-auth";
-import type { Session, SessionType } from "@/types/coaching";
+import type { SessionType } from "@/types/coaching";
+import type { SessionWithRelations as Session } from "@/hooks/use-sessions";
 import {
   Video,
   Calendar,
@@ -55,10 +61,13 @@ const SESSION_TYPE_CONFIG: Record<
 };
 
 export default function CoachSessionsPage() {
-  const { sessions, isLoading, createSession, completeSession, updateSession } =
-    useSessions();
+  const { data: sessionsData, isLoading } = useSessions();
+  const createSession = useCreateSession();
+  const completeSession = useCompleteSession();
+  const updateSession = useUpdateSession();
   const [showCreateModal, setShowCreateModal] = useState(false);
 
+  const sessions = sessionsData ?? [];
   const upcoming = sessions.filter((s) => s.status === "scheduled");
   const past = sessions.filter((s) => s.status !== "scheduled");
 

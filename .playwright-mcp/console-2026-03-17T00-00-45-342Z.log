@@ -1,0 +1,3 @@
+[     433ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://srhpdgqqiuzdrlqaitdk.supabase.co/rest/v1/course_prerequisites?select=course_id%2Cprerequisite_course_id:0
+[    1502ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://srhpdgqqiuzdrlqaitdk.supabase.co/rest/v1/course_prerequisites?select=course_id%2Cprerequisite_course_id:0
+[    3584ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://srhpdgqqiuzdrlqaitdk.supabase.co/rest/v1/course_prerequisites?select=course_id%2Cprerequisite_course_id:0

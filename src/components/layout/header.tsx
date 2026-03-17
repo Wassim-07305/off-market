@@ -9,6 +9,7 @@ import {
   Moon,
   MoonStar,
   ChevronDown,
+  Search,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
@@ -26,7 +27,8 @@ import { cn } from "@/lib/utils";
 
 export function Header() {
   const { user, profile, signOut } = useAuth();
-  const { setMobileMenuOpen, setNotificationPanelOpen } = useUIStore();
+  const { setMobileMenuOpen, setNotificationPanelOpen, setCommandPaletteOpen } =
+    useUIStore();
   const { unreadCount } = useNotificationStore();
   const { isDnd, toggleDnd, setDndUntil, dndUntil } = useDndMode();
   const [showDndMenu, setShowDndMenu] = useState(false);
@@ -57,6 +59,20 @@ export function Header() {
           aria-label="Menu"
         >
           <Menu className="h-4 w-4" />
+        </button>
+      </div>
+
+      {/* Center: Search bar — visible on md+ screens */}
+      <div className="hidden md:flex flex-1 justify-center px-4">
+        <button
+          onClick={() => setCommandPaletteOpen(true)}
+          className="flex items-center gap-2 h-9 w-full max-w-md rounded-xl border border-border/60 bg-muted/50 px-3 text-sm text-muted-foreground hover:bg-muted hover:border-border transition-colors"
+        >
+          <Search className="size-4 shrink-0" />
+          <span>Rechercher...</span>
+          <kbd className="ml-auto text-[10px] font-medium text-muted-foreground/60 bg-background rounded px-1.5 py-0.5 border border-border/40">
+            ⌘K
+          </kbd>
         </button>
       </div>
 

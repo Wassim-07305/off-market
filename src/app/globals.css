@@ -38,7 +38,7 @@
    Light Mode — clean, crisp, modern
    ═══════════════════════════════════════════ */
 :root {
-  --background: #fafafa;
+  --background: #fdfcfb;
   --foreground: #18181b;
   --primary: #af0000;
   --primary-hover: #8b0000;
@@ -75,9 +75,9 @@
   --accent-glow: rgba(175, 0, 0, 0.12);
   --gradient-page: linear-gradient(
     135deg,
-    #fafafa 0%,
+    #fdfcfb 0%,
     #f4f4f5 50%,
-    #fafafa 100%
+    #fdfcfb 100%
   );
   --gradient-accent: linear-gradient(135deg, #af0000, #dc2626);
   --gradient-card-border: linear-gradient(

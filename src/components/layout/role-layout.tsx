@@ -1,5 +1,8 @@
 "use client";
 
+import { Suspense } from "react";
+import { usePathname } from "next/navigation";
+import { AnimatePresence, motion } from "framer-motion";
 import { RoleSidebar } from "@/components/layout/role-sidebar";
 import { Header } from "@/components/layout/header";
 import { RoleMobileNav } from "@/components/layout/role-mobile-nav";
@@ -18,10 +21,31 @@ interface RoleLayoutProps {
   children: React.ReactNode;
 }
 
+function PageSkeleton() {
+  return (
+    <div className="animate-pulse space-y-6 p-5 md:p-8">
+      <div className="space-y-2">
+        <div className="h-8 w-48 rounded-lg bg-muted" />
+        <div className="h-4 w-72 rounded bg-muted/60" />
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        {[...Array(4)].map((_, i) => (
+          <div
+            key={i}
+            className="h-28 rounded-2xl border border-border/40 bg-surface"
+          />
+        ))}
+      </div>
+      <div className="h-64 rounded-2xl border border-border/40 bg-surface" />
+    </div>
+  );
+}
+
 export function RoleLayout({ variant, children }: RoleLayoutProps) {
   const { sidebarCollapsed } = useUIStore();
   const { loading } = useAuth();
   const tour = useGuidedTour(variant);
+  const pathname = usePathname();
 
   // Gate: don't render page content until auth is ready
   // This prevents hooks from firing queries before the Supabase client has a valid session
@@ -44,7 +68,19 @@ export function RoleLayout({ variant, children }: RoleLayoutProps) {
       >
         <Header />
         <main className="flex-1 p-5 pb-24 lg:p-6 lg:pb-6">
-          <div className="mx-auto max-w-[1400px]">{children}</div>
+          <div className="mx-auto max-w-[1400px]">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={pathname}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+              >
+                <Suspense fallback={<PageSkeleton />}>{children}</Suspense>
+              </motion.div>
+            </AnimatePresence>
+          </div>
         </main>
       </div>
       <RoleMobileNav variant={variant} />

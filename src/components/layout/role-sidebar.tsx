@@ -78,7 +78,7 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
     <aside
       className={cn(
         "fixed left-0 top-0 h-screen flex flex-col transition-all duration-300 z-40 hidden lg:flex",
-        "bg-gradient-to-b from-[#1a1a1f] to-[#111114] border-r border-white/[0.04]",
+        "bg-gradient-to-b from-[#0C0E10] to-[#1A1D24] border-r border-white/[0.04]",
         sidebarCollapsed ? "w-[68px]" : "w-[248px]",
       )}
     >
@@ -209,7 +209,7 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
               </div>
             )}
             {/* Online indicator */}
-            <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-[#111114] shadow-[0_0_6px_rgba(52,211,153,0.4)]" />
+            <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-[#1A1D24] shadow-[0_0_6px_rgba(52,211,153,0.4)]" />
           </div>
           {!sidebarCollapsed && (
             <div className="flex-1 min-w-0">

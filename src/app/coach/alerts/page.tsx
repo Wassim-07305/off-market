@@ -7,7 +7,11 @@ import {
   fadeInUp,
   defaultTransition,
 } from "@/lib/animations";
-import { useCoachAlerts } from "@/hooks/use-coach-alerts";
+import {
+  useCoachAlerts,
+  useAllAlerts,
+  useResolveAlert,
+} from "@/hooks/use-coach-alerts";
 import { ALERT_SEVERITY_CONFIG, ALERT_TYPE_CONFIG } from "@/types/coaching";
 import type { AlertSeverity, AlertType } from "@/types/coaching";
 import { Bell, CheckCircle, Filter } from "lucide-react";
@@ -25,9 +29,13 @@ function timeAgo(date: string) {
 
 export default function CoachAlertsPage() {
   const [showResolved, setShowResolved] = useState(false);
-  const { alerts, isLoading, resolveAlert } = useCoachAlerts(
-    showResolved ? undefined : false,
-  );
+  const unresolvedQuery = useCoachAlerts();
+  const allAlertsQuery = useAllAlerts();
+  const resolveAlert = useResolveAlert();
+
+  const activeQuery = showResolved ? allAlertsQuery : unresolvedQuery;
+  const { data: alertsData, isLoading } = activeQuery;
+  const alerts = alertsData ?? [];
 
   const bySeverity = {
     critical: alerts.filter((a) => a.severity === "critical" && !a.is_resolved),
@@ -36,7 +44,6 @@ export default function CoachAlertsPage() {
     low: alerts.filter((a) => a.severity === "low" && !a.is_resolved),
   };
 
-  const resolved = alerts.filter((a) => a.is_resolved);
   const unresolved = alerts.filter((a) => !a.is_resolved);
 
   return (

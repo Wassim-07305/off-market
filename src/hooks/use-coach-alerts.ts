@@ -14,7 +14,9 @@ export type AlertType =
   | "inactive_14d"
   | "low_mood"
   | "flag_change"
-  | "session_missed";
+  | "session_missed"
+  | "goal_at_risk"
+  | "payment_overdue";
 
 export type AlertSeverity = "low" | "medium" | "high" | "critical";
 
@@ -24,8 +26,9 @@ export interface CoachAlert {
   client_id: string;
   alert_type: AlertType;
   severity: AlertSeverity;
-  message: string;
-  is_read: boolean;
+  title: string;
+  description: string | null;
+  is_resolved: boolean;
   resolved_at: string | null;
   created_at: string;
 }
@@ -54,8 +57,7 @@ export function useCoachAlerts() {
           "*, client:profiles!coach_alerts_client_id_fkey(id, full_name, avatar_url)",
         )
         .eq("coach_id", user?.id)
-        .eq("is_read", false)
-        .is("resolved_at", null)
+        .eq("is_resolved", false)
         .order("created_at", { ascending: false });
       if (error) throw error;
       return (data ?? []) as CoachAlertWithClient[];
@@ -66,13 +68,14 @@ export function useCoachAlerts() {
 }
 
 // ── useAllAlerts ───────────────────────────────────────────────────────────
+// Returns ALL alerts (including resolved) for the current coach
 
 export function useAllAlerts() {
   const supabase = useSupabase();
   const { user } = useAuth();
 
   return useQuery({
-    queryKey: ["all-alerts"],
+    queryKey: ["all-alerts", user?.id],
     queryFn: async () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data, error } = await (supabase as any)
@@ -80,6 +83,7 @@ export function useAllAlerts() {
         .select(
           "*, client:profiles!coach_alerts_client_id_fkey(id, full_name, avatar_url)",
         )
+        .eq("coach_id", user?.id)
         .order("created_at", { ascending: false });
       if (error) throw error;
       return (data ?? []) as CoachAlertWithClient[];
@@ -99,7 +103,7 @@ export function useMarkAlertRead() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { error } = await (supabase as any)
         .from("coach_alerts")
-        .update({ is_read: true })
+        .update({ is_resolved: true, resolved_at: new Date().toISOString() })
         .eq("id", id);
       if (error) throw error;
     },
@@ -125,8 +129,8 @@ export function useResolveAlert() {
       const { error } = await (supabase as any)
         .from("coach_alerts")
         .update({
+          is_resolved: true,
           resolved_at: new Date().toISOString(),
-          is_read: true,
         })
         .eq("id", id);
       if (error) throw error;
@@ -158,7 +162,8 @@ export function useGenerateAlerts() {
         client_id: string;
         alert_type: AlertType;
         severity: AlertSeverity;
-        message: string;
+        title: string;
+        description: string | null;
       }> = [];
 
       // Fetch all clients assigned to this coach (or all if admin)
@@ -191,7 +196,8 @@ export function useGenerateAlerts() {
               client_id: client.id,
               alert_type: "inactive_14d",
               severity: "high",
-              message: `${client.full_name} ne s'est pas connecte(e) depuis ${daysSince} jours`,
+              title: `${client.full_name} ne s'est pas connecte(e) depuis ${daysSince} jours`,
+              description: null,
             });
           } else if (daysSince >= 7) {
             alerts.push({
@@ -199,7 +205,8 @@ export function useGenerateAlerts() {
               client_id: client.id,
               alert_type: "inactive_7d",
               severity: "medium",
-              message: `${client.full_name} ne s'est pas connecte(e) depuis ${daysSince} jours`,
+              title: `${client.full_name} ne s'est pas connecte(e) depuis ${daysSince} jours`,
+              description: null,
             });
           }
         }
@@ -225,7 +232,8 @@ export function useGenerateAlerts() {
               client_id: client.id,
               alert_type: "no_checkin",
               severity: "medium",
-              message: `${client.full_name} n'a pas fait de check-in depuis ${daysSinceCheckin} jours`,
+              title: `${client.full_name} n'a pas fait de check-in depuis ${daysSinceCheckin} jours`,
+              description: null,
             });
           }
         }
@@ -250,7 +258,8 @@ export function useGenerateAlerts() {
               client_id: client.id,
               alert_type: "low_mood",
               severity: "high",
-              message: `${client.full_name} a un moral bas sur ses 3 derniers check-ins`,
+              title: `${client.full_name} a un moral bas sur ses 3 derniers check-ins`,
+              description: null,
             });
           }
         }
@@ -274,7 +283,8 @@ export function useGenerateAlerts() {
             client_id: client.id,
             alert_type: "session_missed",
             severity: "critical",
-            message: `${client.full_name} a manque une session cette semaine`,
+            title: `${client.full_name} a manque une session cette semaine`,
+            description: null,
           });
         }
       }
@@ -286,7 +296,7 @@ export function useGenerateAlerts() {
           .from("coach_alerts")
           .select("client_id, alert_type")
           .eq("coach_id", user.id)
-          .is("resolved_at", null);
+          .eq("is_resolved", false);
 
         const existingSet = new Set(
           (existing ?? []).map(

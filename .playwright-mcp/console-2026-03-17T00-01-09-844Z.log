@@ -1,0 +1,22 @@
+[     492ms] [ERROR] TypeError: Cannot read properties of undefined (reading 'filter')
+    at d (https://off-market-amber.vercel.app/_next/static/chunks/4c767627d6cf81e6.js:1:4592)
+    at av (https://off-market-amber.vercel.app/_next/static/chunks/4af27f77bd5de33b.js:1:63258)
+    at oY (https://off-market-amber.vercel.app/_next/static/chunks/4af27f77bd5de33b.js:1:83531)
+    at io (https://off-market-amber.vercel.app/_next/static/chunks/4af27f77bd5de33b.js:1:94963)
+    at sc (https://off-market-amber.vercel.app/_next/static/chunks/4af27f77bd5de33b.js:1:137984)
+    at https://off-market-amber.vercel.app/_next/static/chunks/4af27f77bd5de33b.js:1:137829
+    at ss (https://off-market-amber.vercel.app/_next/static/chunks/4af27f77bd5de33b.js:1:137837)
+    at u9 (https://off-market-amber.vercel.app/_next/static/chunks/4af27f77bd5de33b.js:1:133762)
+    at sV (https://off-market-amber.vercel.app/_next/static/chunks/4af27f77bd5de33b.js:1:159357)
+    at MessagePort.O (https://off-market-amber.vercel.app/_next/static/chunks/4af27f77bd5de33b.js:1:8316) @ https://off-market-amber.vercel.app/_next/static/chunks/4af27f77bd5de33b.js:0
+[     496ms] [ERROR] [Off-Market][Coach] Erreur: TypeError: Cannot read properties of undefined (reading 'filter')
+    at d (https://off-market-amber.vercel.app/_next/static/chunks/4c767627d6cf81e6.js:1:4592)
+    at av (https://off-market-amber.vercel.app/_next/static/chunks/4af27f77bd5de33b.js:1:63258)
+    at oY (https://off-market-amber.vercel.app/_next/static/chunks/4af27f77bd5de33b.js:1:83531)
+    at io (https://off-market-amber.vercel.app/_next/static/chunks/4af27f77bd5de33b.js:1:94963)
+    at sc (https://off-market-amber.vercel.app/_next/static/chunks/4af27f77bd5de33b.js:1:137984)
+    at https://off-market-amber.vercel.app/_next/static/chunks/4af27f77bd5de33b.js:1:137829
+    at ss (https://off-market-amber.vercel.app/_next/static/chunks/4af27f77bd5de33b.js:1:137837)
+    at u9 (https://off-market-amber.vercel.app/_next/static/chunks/4af27f77bd5de33b.js:1:133762)
+    at sV (https://off-market-amber.vercel.app/_next/static/chunks/4af27f77bd5de33b.js:1:159357)
+    at MessagePort.O (https://off-market-amber.vercel.app/_next/static/chunks/4af27f77bd5de33b.js:1:8316) @ https://off-market-amber.vercel.app/_next/static/chunks/8ee9ac79e59de145.js:0
