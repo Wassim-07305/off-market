@@ -34,7 +34,7 @@ const MODULE_LABELS: Record<string, { label: string; icon: typeof Check }> = {
   analytics: { label: "Analytics & KPIs", icon: BarChart3 },
   gamification: { label: "Gamification & XP", icon: Trophy },
   community: { label: "Communauté", icon: Users },
-  ai_assistant: { label: "Assistant IA", icon: Bot },
+  ai_assistant: { label: "AlexIA", icon: Bot },
   contracts: { label: "Contrats & signatures", icon: FileSignature },
 };
 

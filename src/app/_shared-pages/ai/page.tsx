@@ -17,7 +17,13 @@ import {
   Trash2,
   PanelLeftClose,
   PanelLeftOpen,
+  BookOpen,
+  Settings,
+  Brain,
 } from "lucide-react";
+import { AlexiaKnowledgePanel } from "@/components/ai/alexia-knowledge-panel";
+import { AlexiaConfigPanel } from "@/components/ai/alexia-config-panel";
+import { AlexiaMemoryPanel } from "@/components/ai/alexia-memory-panel";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
 import { useAiConsent } from "@/hooks/use-ai-consent";
@@ -38,8 +44,11 @@ interface ChatMessage {
   content: string;
 }
 
+type AITab = "chat" | "knowledge" | "config" | "memory";
+
 export default function AIPage() {
-  const { user } = useAuth();
+  const { user, isStaff } = useAuth();
+  const [activeTab, setActiveTab] = useState<AITab>("chat");
   const supabase = useSupabase();
   const queryClient = useQueryClient();
   const {
@@ -127,21 +136,14 @@ export default function AIPage() {
       queryClient.invalidateQueries({ queryKey: ["ai-conversations"] });
     }
 
-    // Save user message
-    await supabase.from("ai_messages").insert({
-      conversation_id: activeConvId,
-      role: "user",
-      content: message,
-    });
-
-    // Call the Claude API route
+    // AlexIA endpoint saves messages server-side
     setIsStreaming(true);
     try {
       const allMessages = [...messages, userMsg];
-      const res = await fetch("/api/ai/chat", {
+      const res = await fetch("/api/ai/alexia/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: allMessages }),
+        body: JSON.stringify({ message, conversation_id: activeConvId }),
       });
       const data = await res.json();
       const response = data.response ?? "Erreur de reponse";
@@ -150,13 +152,6 @@ export default function AIPage() {
         ...prev,
         { role: "assistant", content: response },
       ]);
-
-      // Save assistant response
-      await supabase.from("ai_messages").insert({
-        conversation_id: activeConvId,
-        role: "assistant",
-        content: response,
-      });
 
       // Update conversation timestamp
       await supabase
@@ -211,9 +206,54 @@ export default function AIPage() {
     );
   }
 
+  const tabs: { id: AITab; label: string; icon: typeof Bot; staffOnly?: boolean }[] = [
+    { id: "chat", label: "Chat", icon: MessageSquare },
+    { id: "knowledge", label: "Connaissances", icon: BookOpen, staffOnly: true },
+    { id: "config", label: "Configuration", icon: Settings, staffOnly: true },
+    { id: "memory", label: "Memoire clients", icon: Brain, staffOnly: true },
+  ];
+
   return (
+    <div className="space-y-4">
+      {/* Tabs (staff only sees all, clients see only chat) */}
+      {isStaff && (
+        <div className="flex items-center gap-1 bg-muted/50 rounded-xl p-1 w-fit">
+          {tabs
+            .filter((t) => !t.staffOnly || isStaff)
+            .map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={cn(
+                  "h-9 px-4 rounded-lg text-sm font-medium transition-all flex items-center gap-2",
+                  activeTab === tab.id
+                    ? "bg-surface text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                <tab.icon className="w-4 h-4" />
+                <span className="hidden sm:inline">{tab.label}</span>
+              </button>
+            ))}
+        </div>
+      )}
+
+      {/* Tab content */}
+      {activeTab === "knowledge" && isStaff ? (
+        <div className="bg-surface border border-border rounded-2xl p-6" style={{ minHeight: "calc(100vh - 12rem)" }}>
+          <AlexiaKnowledgePanel />
+        </div>
+      ) : activeTab === "config" && isStaff ? (
+        <div className="bg-surface border border-border rounded-2xl p-6" style={{ minHeight: "calc(100vh - 12rem)" }}>
+          <AlexiaConfigPanel />
+        </div>
+      ) : activeTab === "memory" && isStaff ? (
+        <div className="bg-surface border border-border rounded-2xl p-6" style={{ minHeight: "calc(100vh - 12rem)" }}>
+          <AlexiaMemoryPanel />
+        </div>
+      ) : (
     <div
-      className="flex h-[calc(100vh-7rem)] bg-surface dark:bg-surface border border-border dark:border-border/50 rounded-2xl overflow-hidden relative"
+      className="flex h-[calc(100vh-10rem)] bg-surface dark:bg-surface border border-border dark:border-border/50 rounded-2xl overflow-hidden relative"
       style={{
         boxShadow: "0 1px 3px rgb(0 0 0 / 0.04), 0 8px 20px rgb(0 0 0 / 0.02)",
       }}
@@ -302,7 +342,7 @@ export default function AIPage() {
               </div>
               <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight mb-2">
                 <span className="bg-gradient-to-r from-foreground via-foreground/90 to-foreground/70 bg-clip-text text-transparent">
-                  Assistant IA
+                  AlexIA
                 </span>
               </h1>
               <p className="text-sm text-muted-foreground/70 mb-8">
@@ -408,6 +448,8 @@ export default function AIPage() {
           </form>
         </div>
       </div>
+    </div>
+      )}
     </div>
   );
 }

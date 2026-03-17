@@ -52,7 +52,7 @@ const pageDefinitions = [
     icon: FileText,
     section: "Navigation",
   },
-  { name: "Assistant IA", path: "/ai", icon: Bot, section: "Navigation" },
+  { name: "AlexIA", path: "/ai", icon: Bot, section: "Navigation" },
   {
     name: "Analytics",
     path: "/analytics",

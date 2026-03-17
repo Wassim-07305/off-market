@@ -10,7 +10,7 @@ import {
   QueryClientProvider,
 } from "@tanstack/react-query";
 import { evaluateConditionalLogic } from "@/lib/conditional-logic";
-import { toast } from "sonner";
+import { toast, Toaster } from "sonner";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -61,12 +61,15 @@ function PublicFormContent({ formId }: { formId: string }) {
   const submitForm = useMutation({
     mutationFn: async (answers: Record<string, unknown>) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { error } = await (supabase.from("form_submissions") as any).insert({
-        form_id: formId,
-        respondent_id: null,
-        answers,
-      });
-      if (error) throw error;
+      const { data, error } = await (supabase.from("form_submissions") as any)
+        .insert({
+          form_id: formId,
+          respondent_id: null,
+          answers,
+        })
+        .select();
+      console.log("[FormSubmit] result:", { data, error });
+      if (error) throw new Error(error.message || "Erreur Supabase");
     },
   });
 
@@ -144,8 +147,10 @@ function PublicFormContent({ formId }: { formId: string }) {
     try {
       await submitForm.mutateAsync(answers);
       setSubmitted(true);
-    } catch {
-      toast.error("Erreur lors de l'envoi");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error("[FormSubmit] Error:", msg);
+      toast.error(`Erreur lors de l'envoi: ${msg}`);
     }
   };
 
@@ -175,33 +180,18 @@ function PublicFormContent({ formId }: { formId: string }) {
   const wrapperClass = cn(
     "min-h-screen transition-colors duration-500",
     dark
-      ? "bg-gradient-to-br from-slate-950 via-red-950/30 to-slate-900"
+      ? "bg-gradient-to-br from-slate-950 via-red-950 to-slate-900"
       : "bg-gradient-to-br from-white via-rose-50/30 to-slate-50",
   );
   const textPrimary = dark ? "text-white" : "text-slate-900";
   const textSecondary = dark ? "text-white/50" : "text-slate-500";
   const textMuted = dark ? "text-white/30" : "text-slate-400";
 
-  // Theme toggle button
-  const themeToggle = (
-    <button
-      onClick={toggle}
-      className={cn(
-        "fixed top-5 right-5 z-50 w-10 h-10 rounded-xl flex items-center justify-center transition-all",
-        dark
-          ? "bg-white/10 hover:bg-white/20 text-white/60 hover:text-white"
-          : "bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-700",
-      )}
-      title={dark ? "Mode clair" : "Mode sombre"}
-    >
-      {dark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-    </button>
-  );
+  // Theme toggle is now inline in the header (no fixed overlay)
 
   if (isLoading) {
     return (
       <div className={cn(wrapperClass, "flex items-center justify-center")}>
-        {themeToggle}
         <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -210,7 +200,6 @@ function PublicFormContent({ formId }: { formId: string }) {
   if (!form) {
     return (
       <div className={cn(wrapperClass, "flex items-center justify-center")}>
-        {themeToggle}
         <div className="text-center">
           <p className={cn("text-xl font-semibold mb-2", textPrimary)}>
             Formulaire non trouve
@@ -226,7 +215,6 @@ function PublicFormContent({ formId }: { formId: string }) {
   if (form.status === "closed") {
     return (
       <div className={cn(wrapperClass, "flex items-center justify-center")}>
-        {themeToggle}
         <div className="text-center">
           <p className={cn("text-xl font-semibold mb-2", textPrimary)}>
             Formulaire ferme
@@ -242,7 +230,6 @@ function PublicFormContent({ formId }: { formId: string }) {
   if (submitted) {
     return (
       <div className={cn(wrapperClass, "flex items-center justify-center")}>
-        {themeToggle}
         {/* Decorative blobs */}
         <div className="fixed inset-0 pointer-events-none overflow-hidden">
           <div
@@ -292,7 +279,6 @@ function PublicFormContent({ formId }: { formId: string }) {
   if (questionFields.length === 0) {
     return (
       <div className={cn(wrapperClass, "flex items-center justify-center")}>
-        {themeToggle}
         <p className={textSecondary}>Ce formulaire n&apos;a pas de champs</p>
       </div>
     );
@@ -300,8 +286,6 @@ function PublicFormContent({ formId }: { formId: string }) {
 
   return (
     <div className={cn(wrapperClass, "flex flex-col relative overflow-hidden")}>
-      {themeToggle}
-
       {/* Decorative animated background blobs */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div
@@ -371,9 +355,27 @@ function PublicFormContent({ formId }: { formId: string }) {
             )}
           </div>
         </div>
-        <span className={cn("text-xs font-mono", textMuted)}>
-          {currentIndex + 1} / {questionFields.length}
-        </span>
+        <div className="flex items-center gap-3">
+          <span className={cn("text-xs font-mono", textMuted)}>
+            {currentIndex + 1} / {questionFields.length}
+          </span>
+          <button
+            onClick={toggle}
+            className={cn(
+              "w-8 h-8 rounded-lg flex items-center justify-center transition-all",
+              dark
+                ? "bg-white/10 hover:bg-white/20 text-white/50 hover:text-white"
+                : "bg-slate-100 hover:bg-slate-200 text-slate-400 hover:text-slate-600",
+            )}
+            title={dark ? "Mode clair" : "Mode sombre"}
+          >
+            {dark ? (
+              <Sun className="w-3.5 h-3.5" />
+            ) : (
+              <Moon className="w-3.5 h-3.5" />
+            )}
+          </button>
+        </div>
       </div>
 
       {/* Question area */}
@@ -1015,6 +1017,7 @@ export default function PublicFormPage({
   return (
     <QueryClientProvider client={queryClient}>
       <PublicFormContent formId={formId} />
+      <Toaster position="bottom-center" richColors />
     </QueryClientProvider>
   );
 }

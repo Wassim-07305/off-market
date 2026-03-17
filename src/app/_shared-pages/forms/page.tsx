@@ -31,7 +31,6 @@ export default function FormsPage() {
   const filters = [
     { value: "all", label: "Tous" },
     { value: "active", label: "Actifs" },
-    { value: "draft", label: "Brouillons" },
     { value: "closed", label: "Fermes" },
   ];
 
@@ -129,27 +128,16 @@ export default function FormsPage() {
                   "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 ring-1 ring-emerald-500/20",
                 dotColor: "bg-emerald-500",
               },
-              draft: {
-                label: "Brouillon",
-                className: "bg-muted text-muted-foreground ring-1 ring-border",
-                dotColor: "bg-zinc-400",
-              },
               closed: {
                 label: "Ferme",
                 className:
                   "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 ring-1 ring-zinc-200 dark:ring-zinc-700",
                 dotColor: "bg-zinc-400",
               },
-              archived: {
-                label: "Archive",
-                className:
-                  "bg-zinc-100 dark:bg-zinc-800 text-zinc-500 ring-1 ring-zinc-200 dark:ring-zinc-700",
-                dotColor: "bg-zinc-300",
-              },
             };
             const sc =
               statusConfig[form.status as keyof typeof statusConfig] ??
-              statusConfig.draft;
+              statusConfig.closed;
             return (
               <div
                 key={form.id}

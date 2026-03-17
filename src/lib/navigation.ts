@@ -58,7 +58,7 @@ export const adminNavigation: NavItem[] = [
   { name: "Feed", href: "/admin/feed", icon: Rss },
   { name: "Appels", href: "/admin/calls", icon: Phone },
   { name: "Disponibilites", href: "/admin/settings/availability", icon: Clock },
-  { name: "Assistant IA", href: "/admin/ai", icon: Bot },
+  { name: "AlexIA", href: "/admin/ai", icon: Bot },
   { name: "Invitations", href: "/admin/invitations", icon: Send },
   { name: "Ressources", href: "/admin/resources", icon: FolderOpen },
   { name: "Recompenses", href: "/admin/rewards", icon: Gift },
@@ -70,6 +70,7 @@ export const adminNavigation: NavItem[] = [
   { name: "Audit", href: "/admin/audit", icon: ClipboardCheck },
   { name: "FAQ / Base IA", href: "/admin/faq", icon: BookOpen },
   { name: "Upsell", href: "/admin/upsell", icon: TrendingUp },
+  { name: "Booking", href: "/admin/booking", icon: CalendarCheck },
 ];
 
 /** Coach / CSM */

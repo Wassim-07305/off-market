@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect, useCallback } from "react";
+import { use, useEffect, useCallback, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useRoutePrefix } from "@/hooks/use-route-prefix";
@@ -14,6 +14,7 @@ import { FORM_FIELD_TYPES } from "@/lib/constants";
 import { CONDITIONAL_OPERATORS } from "@/lib/conditional-logic";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
 import type { ConditionalLogic, ConditionalRule } from "@/types/database";
 import {
   DndContext,
@@ -62,6 +63,8 @@ import {
   ListChecks,
   Sparkles,
   LayoutGrid,
+  ArrowRight,
+  Check,
 } from "lucide-react";
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -312,24 +315,20 @@ export default function EditFormPage({
               className={cn(
                 "absolute left-3 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full",
                 status === "active" && "bg-emerald-500",
-                status === "draft" && "bg-zinc-400",
                 status === "closed" && "bg-amber-500",
-                status === "archived" && "bg-red-400",
               )}
             />
             <select
               value={status}
               onChange={(e) =>
                 setStatus(
-                  e.target.value as "draft" | "active" | "closed" | "archived",
+                  e.target.value as "active" | "closed",
                 )
               }
               className="h-9 pl-7 pr-3 rounded-xl border border-border/50 text-sm text-foreground bg-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all appearance-none cursor-pointer"
             >
-              <option value="draft">Brouillon</option>
               <option value="active">Actif</option>
               <option value="closed">Ferme</option>
-              <option value="archived">Archive</option>
             </select>
           </div>
           <button
@@ -1123,11 +1122,10 @@ function ConditionalLogicEditor({
   );
 }
 
-/* ─── Form Preview ─── */
+/* ─── Form Preview (Typeform-style, one question at a time) ─── */
 
 function FormPreview({
   title,
-  description,
   fields,
   onExit,
 }: {
@@ -1136,72 +1134,147 @@ function FormPreview({
   fields: BuilderField[];
   onExit: () => void;
 }) {
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <button
-          onClick={onExit}
-          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
+  const questionFields = fields.filter(
+    (f) => !["heading", "paragraph", "divider"].includes(f.field_type),
+  );
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [direction, setDirection] = useState(1);
+  const current = questionFields[currentIndex];
+  const isFirst = currentIndex === 0;
+  const isLast = currentIndex === questionFields.length - 1;
+  const progress =
+    questionFields.length > 0
+      ? ((currentIndex + 1) / questionFields.length) * 100
+      : 0;
+
+  // Find which heading this question belongs to
+  const currentHeading = useMemo(() => {
+    if (!current) return null;
+    const headings = fields.filter((f) => f.field_type === "heading");
+    let heading: BuilderField | null = null;
+    for (const h of headings) {
+      if (h.sort_order < current.sort_order) heading = h;
+    }
+    return heading;
+  }, [current, fields]);
+
+  if (questionFields.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[70vh] gap-4">
+        <p className="text-muted-foreground">Aucun champ a afficher</p>
+        <button onClick={onExit} className="text-sm text-primary hover:underline">
           Retour a l&apos;editeur
         </button>
-        <span className="text-xs font-medium text-primary bg-primary/5 px-3 py-1.5 rounded-full">
-          Mode apercu
-        </span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 bg-gradient-to-br from-slate-950 via-red-950 to-slate-900 flex flex-col">
+      {/* Decorative blobs */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-[500px] h-[500px] rounded-full blur-3xl bg-primary/15" />
+        <div className="absolute top-1/2 -left-40 w-[400px] h-[400px] rounded-full blur-3xl bg-rose-500/10" />
       </div>
 
-      <div className="max-w-2xl mx-auto space-y-6">
-        <div className="bg-surface border border-border rounded-xl p-8">
-          <h1 className="text-2xl font-bold text-foreground mb-2">
-            {title || "Sans titre"}
-          </h1>
-          {description && (
-            <p className="text-sm text-muted-foreground">{description}</p>
-          )}
-        </div>
+      {/* Progress bar */}
+      <div className="fixed top-0 left-0 right-0 z-50 h-1 bg-white/5">
+        <motion.div
+          className="h-full bg-gradient-to-r from-primary to-red-400"
+          animate={{ width: `${progress}%` }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
+        />
+      </div>
 
-        {fields.map((field) => {
-          if (field.field_type === "heading") {
-            return (
-              <h2
-                key={field.id}
-                className="text-lg font-semibold text-foreground pt-4"
-              >
-                {field.label}
-              </h2>
-            );
-          }
-          if (field.field_type === "paragraph") {
-            return (
-              <p key={field.id} className="text-sm text-muted-foreground">
-                {field.label}
+      {/* Header */}
+      <div className="relative z-10 px-6 pt-6 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={onExit}
+            className="w-9 h-9 rounded-xl bg-white/10 hover:bg-white/20 text-white/50 hover:text-white flex items-center justify-center transition-all"
+          >
+            <X className="w-4 h-4" />
+          </button>
+          <div>
+            <h3 className="text-sm font-medium text-white/50">{title || "Sans titre"}</h3>
+            {currentHeading && (
+              <p className="text-[10px] font-semibold uppercase tracking-wider mt-0.5 text-primary/70">
+                {currentHeading.label}
               </p>
-            );
-          }
-          if (field.field_type === "divider") {
-            return <hr key={field.id} className="border-border" />;
-          }
-          return (
-            <div
-              key={field.id}
-              className="bg-surface border border-border rounded-xl p-5"
+            )}
+          </div>
+        </div>
+        <div className="flex items-center gap-3">
+          <span className="text-xs font-mono text-white/30">
+            {currentIndex + 1} / {questionFields.length}
+          </span>
+          <span className="text-[10px] font-medium text-primary bg-primary/10 px-2.5 py-1 rounded-full">
+            Apercu
+          </span>
+        </div>
+      </div>
+
+      {/* Question area */}
+      <div className="relative z-10 flex-1 flex items-center justify-center px-6 py-12">
+        <div className="w-full max-w-xl">
+          <AnimatePresence mode="wait" custom={direction}>
+            <motion.div
+              key={current.id}
+              custom={direction}
+              initial={{ opacity: 0, y: direction > 0 ? 40 : -40 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: direction > 0 ? -40 : 40 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
             >
-              <label className="block text-sm font-medium text-foreground mb-1">
-                {field.label || "Sans titre"}
-                {field.is_required && (
-                  <span className="text-primary ml-1">*</span>
+              <div className="mb-8">
+                <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white leading-tight">
+                  {current.label || "Sans titre"}
+                  {current.is_required && <span className="text-primary ml-1">*</span>}
+                </h2>
+                {current.description && (
+                  <p className="text-base text-white/40 mt-3">{current.description}</p>
                 )}
-              </label>
-              {field.description && (
-                <p className="text-xs text-muted-foreground mb-3">
-                  {field.description}
-                </p>
-              )}
-              <FieldMiniPreview field={field} />
-            </div>
-          );
-        })}
+              </div>
+
+              {/* Preview of the field (non-interactive) */}
+              <div className="opacity-60 pointer-events-none">
+                <FieldMiniPreview field={current} />
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      </div>
+
+      {/* Navigation */}
+      <div className="relative z-10 px-6 pb-6">
+        <div className="flex items-center justify-center gap-4 max-w-xl mx-auto">
+          <button
+            onClick={() => { if (!isFirst) { setDirection(-1); setCurrentIndex((i) => i - 1); } }}
+            disabled={isFirst}
+            className={cn(
+              "h-11 px-5 rounded-xl text-sm font-medium transition-all flex items-center gap-2",
+              isFirst ? "opacity-0 pointer-events-none" : "bg-white/10 text-white hover:bg-white/20",
+            )}
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Precedent
+          </button>
+          <button
+            onClick={() => {
+              if (isLast) { onExit(); return; }
+              setDirection(1);
+              setCurrentIndex((i) => i + 1);
+            }}
+            className="group flex items-center gap-3 rounded-2xl bg-gradient-to-r from-primary to-red-500 px-8 py-4 text-base font-semibold text-white shadow-xl shadow-red-500/25 transition-all duration-200 hover:scale-105 hover:shadow-2xl hover:shadow-red-500/40"
+          >
+            {isLast ? "Fermer l'apercu" : "Suivant"}
+            {isLast ? (
+              <Check className="w-5 h-5" />
+            ) : (
+              <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+            )}
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -19,7 +19,7 @@ const ROUTE_LABELS: Record<string, string> = {
   content: "Contenu",
   feed: "Feed",
   calls: "Appels",
-  ai: "Assistant IA",
+  ai: "AlexIA",
   invitations: "Invitations",
   resources: "Ressources",
   rewards: "Récompenses",

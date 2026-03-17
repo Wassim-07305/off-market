@@ -100,6 +100,58 @@ export default function FormResponsesPage({
     });
   };
 
+  const handleExportMarkdown = () => {
+    const subs = submissions ?? [];
+    let md = `# ${form.title} — Reponses\n\n`;
+    md += `> ${subs.length} reponse(s) — Exporte le ${new Date().toLocaleDateString("fr-FR")}\n\n---\n\n`;
+
+    for (let i = 0; i < subs.length; i++) {
+      const sub = subs[i];
+      const answers = sub.answers as Record<string, unknown>;
+      const name = sub.respondent?.full_name ?? "Anonyme";
+      const date = new Date(sub.submitted_at).toLocaleDateString("fr-FR", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+
+      md += `## Reponse ${i + 1} — ${name}\n\n`;
+      md += `*Soumis le ${date}*\n\n`;
+
+      for (const f of questionFields) {
+        const raw = answers[f.id];
+        if (raw === undefined || raw === "") continue;
+        // Resolve option labels for select fields
+        let displayValue = String(raw);
+        if (["single_select", "dropdown"].includes(f.field_type) && f.options) {
+          const opt = f.options.find((o) => o.value === raw);
+          if (opt) displayValue = `**${raw}** — ${opt.label}`;
+        }
+        if (f.field_type === "multi_select" && f.options) {
+          const vals = String(raw).split(",");
+          displayValue = vals
+            .map((v) => {
+              const opt = f.options?.find((o) => o.value === v);
+              return opt ? `- **${v}** — ${opt.label}` : `- ${v}`;
+            })
+            .join("\n");
+        }
+        md += `### ${f.label}\n\n${displayValue}\n\n`;
+      }
+      md += "---\n\n";
+    }
+
+    const blob = new Blob([md], { type: "text/markdown;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${form.title} - Reponses.md`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -123,6 +175,11 @@ export default function FormResponsesPage({
                   label: "Exporter PDF",
                   icon: FileText,
                   onClick: handleExportPDF,
+                },
+                {
+                  label: "Exporter Markdown",
+                  icon: FileText,
+                  onClick: handleExportMarkdown,
                 },
               ]}
             />
@@ -157,18 +214,10 @@ export default function FormResponsesPage({
                   "text-xs font-medium px-2.5 py-1 rounded-full",
                   form.status === "active"
                     ? "bg-success/10 text-success"
-                    : form.status === "draft"
-                      ? "bg-muted text-muted-foreground"
-                      : "bg-zinc-200 text-zinc-600",
+                    : "bg-zinc-200 text-zinc-600",
                 )}
               >
-                {form.status === "active"
-                  ? "Actif"
-                  : form.status === "draft"
-                    ? "Brouillon"
-                    : form.status === "closed"
-                      ? "Ferme"
-                      : "Archive"}
+                {form.status === "active" ? "Actif" : "Ferme"}
               </span>
             </div>
             {form.description && (
