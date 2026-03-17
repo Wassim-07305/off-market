@@ -97,7 +97,9 @@ function LiveFormModal({
       const now = new Date();
       const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
       setDate(todayStr);
-      setTime("10:00");
+      const nextHour = new Date(Date.now() + 3600_000);
+      nextHour.setMinutes(0);
+      setTime(`${String(nextHour.getHours()).padStart(2, "0")}:00`);
       setDuration(60);
       setDescription("");
     }
@@ -261,7 +263,12 @@ function LiveFormModal({
             </button>
             <button
               type="submit"
-              disabled={saving}
+              disabled={
+                saving ||
+                (date && time
+                  ? new Date(`${date}T${time}`) < new Date()
+                  : false)
+              }
               className="h-10 px-5 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-2"
             >
               {saving && <Loader2 className="w-4 h-4 animate-spin" />}
@@ -319,7 +326,9 @@ function SimpleCallFormModal({
       const now = new Date();
       const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
       setDate(todayStr);
-      setTime("09:00");
+      const nextHour = new Date(Date.now() + 3600_000);
+      nextHour.setMinutes(0);
+      setTime(`${String(nextHour.getHours()).padStart(2, "0")}:00`);
       setDuration(30);
     }
   }, [editCall, open]);
@@ -500,7 +509,12 @@ function SimpleCallFormModal({
             </button>
             <button
               type="submit"
-              disabled={saving}
+              disabled={
+                saving ||
+                (!editCall && date && time
+                  ? new Date(`${date}T${time}`) < new Date()
+                  : false)
+              }
               className="h-10 px-5 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-2"
             >
               {saving && <Loader2 className="w-4 h-4 animate-spin" />}
