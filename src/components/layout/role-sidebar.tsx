@@ -98,7 +98,7 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
             alt={branding?.app_name || "Off Market"}
             width={36}
             height={36}
-            className="rounded-xl shrink-0 transition-transform duration-200 group-hover:scale-105"
+            className="shrink-0 transition-transform duration-200 group-hover:scale-105"
           />
           {!sidebarCollapsed && (
             <span className="text-[15px] text-white font-bold tracking-tight">
