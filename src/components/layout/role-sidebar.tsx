@@ -94,7 +94,7 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
           className="flex items-center gap-3 group"
         >
           <img
-            src="/logo-sidebar.png"
+            src="/logo.png"
             alt={branding?.app_name || "Off Market"}
             width={36}
             height={36}
