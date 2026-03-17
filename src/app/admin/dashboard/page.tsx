@@ -83,12 +83,12 @@ function MiniKPI({
   accentBg?: string;
 }) {
   return (
-    <div className="group relative overflow-hidden bg-surface border border-zinc-200/80 rounded-2xl p-4 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
+    <div className="group relative overflow-hidden bg-surface border border-border rounded-2xl p-4 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
       <div className="flex items-center gap-3">
         <div
           className={cn(
             "size-9 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110",
-            accentBg ?? "bg-zinc-100",
+            accentBg ?? "bg-muted",
           )}
         >
           <Icon className={cn("size-[16px]", color)} />
@@ -121,11 +121,11 @@ function CashCard({
   accentBg?: string;
 }) {
   return (
-    <div className="group relative overflow-hidden bg-surface border border-zinc-200/80 rounded-2xl p-4 flex items-center gap-3 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
+    <div className="group relative overflow-hidden bg-surface border border-border rounded-2xl p-4 flex items-center gap-3 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
       <div
         className={cn(
           "size-9 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110",
-          accentBg ?? "bg-zinc-100",
+          accentBg ?? "bg-muted",
         )}
       >
         <Icon className={cn("size-[16px]", color)} />
@@ -145,9 +145,9 @@ function CashCard({
 /* ─── Skeleton ─── */
 function MiniStatSkeleton() {
   return (
-    <div className="bg-surface border border-zinc-200/80 rounded-2xl p-4 animate-pulse">
-      <div className="h-4 w-20 bg-zinc-100 rounded-lg mb-2" />
-      <div className="h-6 w-16 bg-zinc-100 rounded-lg" />
+    <div className="bg-surface border border-border rounded-2xl p-4 animate-pulse">
+      <div className="h-4 w-20 bg-muted rounded-lg mb-2" />
+      <div className="h-6 w-16 bg-muted rounded-lg" />
     </div>
   );
 }
@@ -187,7 +187,7 @@ function ChartCard({
   return (
     <div
       className={cn(
-        "bg-surface border border-zinc-200/80 rounded-2xl p-6 transition-shadow duration-300 hover:shadow-md",
+        "bg-surface border border-border rounded-2xl p-6 transition-shadow duration-300 hover:shadow-md",
         className,
       )}
     >
@@ -306,10 +306,10 @@ export default function AdminDashboardPage() {
           Array.from({ length: 4 }).map((_, i) => (
             <div
               key={i}
-              className="bg-surface border border-zinc-200/80 rounded-2xl p-5 animate-pulse"
+              className="bg-surface border border-border rounded-2xl p-5 animate-pulse"
             >
-              <div className="h-3 w-24 bg-zinc-100 rounded-lg mb-5" />
-              <div className="h-8 w-20 bg-zinc-100 rounded-lg" />
+              <div className="h-3 w-24 bg-muted rounded-lg mb-5" />
+              <div className="h-8 w-20 bg-muted rounded-lg" />
             </div>
           ))
         ) : (
@@ -320,7 +320,6 @@ export default function AdminDashboardPage() {
               change={revenueQuery.data?.revenueChange ?? 0}
               changeLabel="vs mois dernier"
               icon={DollarSign}
-              gradient="bg-gradient-to-br from-rose-50/80 via-surface to-surface"
               iconBg="bg-[#AF0000]/10"
               iconColor="text-[#AF0000]"
             />
@@ -328,7 +327,6 @@ export default function AdminDashboardPage() {
               title="Eleves actifs"
               value={studentsQuery.data?.totalStudents ?? 0}
               icon={Users}
-              gradient="bg-gradient-to-br from-blue-50/80 via-surface to-surface"
               iconBg="bg-blue-500/10"
               iconColor="text-blue-600"
             />
@@ -336,7 +334,6 @@ export default function AdminDashboardPage() {
               title="Nouveaux ce mois"
               value={studentsQuery.data?.newStudentsThisMonth ?? 0}
               icon={UserPlus}
-              gradient="bg-gradient-to-br from-emerald-50/80 via-surface to-surface"
               iconBg="bg-emerald-500/10"
               iconColor="text-emerald-600"
             />
@@ -344,7 +341,6 @@ export default function AdminDashboardPage() {
               title="LTV moyen"
               value={formatCurrency(studentsQuery.data?.averageLtv ?? 0)}
               icon={Receipt}
-              gradient="bg-gradient-to-br from-violet-50/80 via-surface to-surface"
               iconBg="bg-violet-500/10"
               iconColor="text-violet-600"
             />
@@ -382,7 +378,7 @@ export default function AdminDashboardPage() {
               accentBg={
                 (studentsQuery.data?.churnRate ?? 0) > 10
                   ? "bg-red-500/10"
-                  : "bg-zinc-100"
+                  : "bg-muted"
               }
             />
             <MiniKPI
@@ -713,7 +709,7 @@ export default function AdminDashboardPage() {
                       i === 0
                         ? "text-amber-700 bg-amber-100"
                         : i === 1
-                          ? "text-zinc-500 bg-zinc-100"
+                          ? "text-zinc-500 bg-muted"
                           : i === 2
                             ? "text-orange-600 bg-orange-50"
                             : "text-muted-foreground",

@@ -1140,7 +1140,7 @@ export function CourseEditor({ course, routePrefix }: CourseEditorProps) {
   );
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] -mx-4 -mt-4 lg:-mx-8 lg:-mt-8">
+    <div className="flex h-[calc(100vh-8rem)] -mx-4 -mt-4 lg:-mx-8 lg:-mt-8">
       {/* Mobile sidebar toggle */}
       <button
         onClick={() => setSidebarOpen(true)}

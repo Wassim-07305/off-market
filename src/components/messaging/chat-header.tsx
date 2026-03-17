@@ -1,7 +1,19 @@
 "use client";
 
 import { getInitials, cn } from "@/lib/utils";
-import { Hash, Lock, Search, Settings, X, Menu, Bookmark } from "lucide-react";
+import {
+  Hash,
+  Lock,
+  Search,
+  Settings,
+  X,
+  Menu,
+  Bookmark,
+  Pin,
+  BellOff,
+  Bell,
+  Archive,
+} from "lucide-react";
 import type { ChannelWithMeta } from "@/types/messaging";
 
 interface ChatHeaderProps {
@@ -16,6 +28,9 @@ interface ChatHeaderProps {
   isOnline?: (userId: string) => boolean;
   showBookmarks?: boolean;
   onToggleBookmarks?: () => void;
+  onPin?: () => void;
+  onMute?: () => void;
+  onArchive?: () => void;
 }
 
 export function ChatHeader({
@@ -30,6 +45,9 @@ export function ChatHeader({
   isOnline,
   showBookmarks,
   onToggleBookmarks,
+  onPin,
+  onMute,
+  onArchive,
 }: ChatHeaderProps) {
   const isDM = channel.type === "dm";
   const partner = channel.dmPartner;
@@ -109,6 +127,7 @@ export function ChatHeader({
         </div>
 
         <div className="flex items-center gap-1 shrink-0">
+          {/* Rechercher */}
           <button
             onClick={onToggleSearch}
             className={cn(
@@ -117,9 +136,12 @@ export function ChatHeader({
                 ? "text-[#AF0000] bg-[#AF0000]/10"
                 : "text-muted-foreground hover:text-foreground hover:bg-muted/80",
             )}
+            title="Rechercher"
           >
             <Search className="w-4 h-4" />
           </button>
+
+          {/* Favoris */}
           {onToggleBookmarks && (
             <button
               onClick={onToggleBookmarks}
@@ -134,9 +156,59 @@ export function ChatHeader({
               <Bookmark className="w-4 h-4" />
             </button>
           )}
+
+          {/* Epingler */}
+          <button
+            onClick={onPin}
+            className={cn(
+              "w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-200",
+              channel.isPinned
+                ? "text-[#AF0000] bg-[#AF0000]/10"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted/80",
+            )}
+            title={channel.isPinned ? "Desepingler" : "Epingler"}
+          >
+            <Pin className="w-4 h-4" />
+          </button>
+
+          {/* Sourdine */}
+          <button
+            onClick={onMute}
+            className={cn(
+              "w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-200",
+              channel.isMuted
+                ? "text-amber-500 bg-amber-500/10"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted/80",
+            )}
+            title={
+              channel.isMuted
+                ? "Reactiver les notifications"
+                : "Mettre en sourdine"
+            }
+          >
+            {channel.isMuted ? (
+              <BellOff className="w-4 h-4" />
+            ) : (
+              <Bell className="w-4 h-4" />
+            )}
+          </button>
+
+          {/* Archiver (canaux seulement) */}
+          {!isDM && (
+            <button
+              onClick={onArchive}
+              className="w-8 h-8 rounded-xl flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-all duration-200"
+              title={channel.is_archived ? "Desarchiver" : "Archiver"}
+            >
+              <Archive className="w-4 h-4" />
+            </button>
+          )}
+
+          {/* Parametres / Membres */}
           <button
             onClick={onOpenMembers}
             className="w-8 h-8 rounded-xl flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-all duration-200"
+            title="Parametres"
           >
             <Settings className="w-4 h-4" />
           </button>

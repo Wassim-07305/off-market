@@ -76,8 +76,8 @@ export function MessageList({
 
   if (isLoading) {
     return (
-      <div className="flex-1 overflow-y-auto p-4 space-y-5">
-        {Array.from({ length: 5 }).map((_, i) => (
+      <div className="flex-1 overflow-hidden p-4 space-y-5">
+        {Array.from({ length: 3 }).map((_, i) => (
           <div key={i} className="flex items-start gap-3">
             <div className="w-9 h-9 rounded-full bg-muted shrink-0 animate-shimmer" />
             <div className="space-y-2 flex-1">

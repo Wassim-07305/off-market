@@ -23,7 +23,6 @@ export function StatCard({
   changeLabel,
   icon: Icon,
   className,
-  gradient,
   iconBg,
   iconColor,
 }: StatCardProps) {
@@ -32,13 +31,12 @@ export function StatCard({
   return (
     <div
       className={cn(
-        "group relative overflow-hidden rounded-2xl border border-zinc-200/80 p-5 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5",
-        gradient ?? "bg-surface",
+        "group relative overflow-hidden rounded-2xl border border-border p-5 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 bg-surface",
         className,
       )}
     >
       {/* Subtle shimmer on hover */}
-      <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-white/60 via-transparent to-transparent" />
+      <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-foreground/5 via-transparent to-transparent" />
 
       <div className="relative flex items-start justify-between mb-3">
         <span className="text-[11px] uppercase tracking-wider text-muted-foreground/80 font-semibold">
@@ -64,8 +62,8 @@ export function StatCard({
             className={cn(
               "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold tabular-nums",
               isPositive
-                ? "bg-emerald-50 text-emerald-700"
-                : "bg-red-50 text-red-700",
+                ? "bg-emerald-500/10 text-emerald-500"
+                : "bg-red-500/10 text-red-500",
             )}
           >
             {isPositive ? (

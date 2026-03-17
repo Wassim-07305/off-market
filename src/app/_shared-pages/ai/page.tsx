@@ -213,18 +213,18 @@ export default function AIPage() {
 
   return (
     <div
-      className="flex h-[calc(100vh-7rem)] bg-surface dark:bg-surface border border-zinc-200/80 dark:border-border/50 rounded-2xl overflow-hidden relative"
+      className="flex h-[calc(100vh-7rem)] bg-surface dark:bg-surface border border-border dark:border-border/50 rounded-2xl overflow-hidden relative"
       style={{
         boxShadow: "0 1px 3px rgb(0 0 0 / 0.04), 0 8px 20px rgb(0 0 0 / 0.02)",
       }}
     >
       {/* Sidebar */}
       {showSidebar && (
-        <div className="w-64 border-r border-zinc-200/80 dark:border-border/50 flex flex-col shrink-0 bg-zinc-50/50 dark:bg-muted/20">
-          <div className="p-3 border-b border-zinc-200/80 dark:border-border/50 flex items-center gap-2">
+        <div className="w-64 border-r border-border dark:border-border/50 flex flex-col shrink-0 bg-zinc-50/50 dark:bg-muted/20">
+          <div className="p-3 border-b border-border dark:border-border/50 flex items-center gap-2">
             <button
               onClick={startNewConversation}
-              className="flex-1 h-9 rounded-xl border border-zinc-200/80 dark:border-border text-sm text-muted-foreground hover:text-foreground hover:bg-surface dark:hover:bg-muted transition-all duration-200 flex items-center justify-center gap-2 font-medium"
+              className="flex-1 h-9 rounded-xl border border-border dark:border-border text-sm text-muted-foreground hover:text-foreground hover:bg-surface dark:hover:bg-muted transition-all duration-200 flex items-center justify-center gap-2 font-medium"
             >
               <Plus className="w-4 h-4" />
               Nouvelle conversation
@@ -278,7 +278,7 @@ export default function AIPage() {
           <div className="absolute top-2 left-2 z-10">
             <button
               onClick={() => setShowSidebar(true)}
-              className="w-9 h-9 rounded-xl bg-surface dark:bg-surface border border-zinc-200/80 dark:border-border/50 text-muted-foreground hover:text-foreground hover:bg-zinc-50 dark:hover:bg-muted transition-all duration-200 flex items-center justify-center shadow-sm"
+              className="w-9 h-9 rounded-xl bg-surface dark:bg-surface border border-border dark:border-border/50 text-muted-foreground hover:text-foreground hover:bg-zinc-50 dark:hover:bg-muted transition-all duration-200 flex items-center justify-center shadow-sm"
               title="Afficher le panneau"
             >
               <PanelLeftOpen className="w-4 h-4" />
@@ -315,7 +315,7 @@ export default function AIPage() {
                     key={s}
                     onClick={() => handleSend(s)}
                     disabled={isStreaming}
-                    className="text-left p-3.5 rounded-xl text-sm text-foreground bg-surface dark:bg-surface border border-zinc-200/80 dark:border-border/50 hover:border-[#AF0000]/20 hover:bg-[#AF0000]/[0.02] hover:shadow-sm transition-all duration-200 disabled:opacity-50 group"
+                    className="text-left p-3.5 rounded-xl text-sm text-foreground bg-surface dark:bg-surface border border-border dark:border-border/50 hover:border-[#AF0000]/20 hover:bg-[#AF0000]/[0.02] hover:shadow-sm transition-all duration-200 disabled:opacity-50 group"
                   >
                     <span className="group-hover:text-[#AF0000] transition-colors">
                       {s}
@@ -382,7 +382,7 @@ export default function AIPage() {
         )}
 
         {/* Input */}
-        <div className="border-t border-zinc-200/80 dark:border-border/50 p-4 bg-zinc-50/30 dark:bg-muted/10">
+        <div className="border-t border-border dark:border-border/50 p-4 bg-zinc-50/30 dark:bg-muted/10">
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -396,7 +396,7 @@ export default function AIPage() {
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ecris ton message..."
               disabled={isStreaming}
-              className="flex-1 h-11 px-4 bg-surface dark:bg-surface border border-zinc-200/80 dark:border-border/50 rounded-xl text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20 focus:border-[#AF0000]/30 disabled:opacity-60 transition-all duration-200"
+              className="flex-1 h-11 px-4 bg-surface dark:bg-surface border border-border dark:border-border/50 rounded-xl text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20 focus:border-[#AF0000]/30 disabled:opacity-60 transition-all duration-200"
             />
             <button
               type="submit"

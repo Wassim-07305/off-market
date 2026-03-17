@@ -41,7 +41,7 @@ const STATUS_CONFIG: Record<
   abandoned: {
     label: "Abandonne",
     color: "text-zinc-500",
-    bgColor: "bg-zinc-50 border-zinc-200",
+    bgColor: "bg-zinc-50 border-border",
     icon: X,
   },
 };

@@ -40,6 +40,7 @@ export interface ChannelWithMeta extends Channel {
   unreadCount: number;
   urgentUnreadCount: number;
   isMuted: boolean;
+  isPinned: boolean;
   myLastRead: string | null;
   lastMessage?: {
     content: string;

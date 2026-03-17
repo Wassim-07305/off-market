@@ -64,10 +64,11 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           ref={setRefs}
           id={textareaId}
           className={cn(
-            "flex min-h-[80px] w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground",
+            "flex min-h-[80px] w-full rounded-lg border border-transparent bg-muted/50 px-3.5 py-2 text-sm text-foreground",
             "transition-all duration-200",
-            "placeholder:text-muted-foreground",
-            "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1",
+            "placeholder:text-muted-foreground/60",
+            "focus:outline-none focus:border-primary/40 focus:ring-1 focus:ring-primary/20 focus:bg-surface",
+            "hover:bg-muted/70",
             "disabled:cursor-not-allowed disabled:opacity-50",
             autoGrow && "resize-none overflow-hidden",
             error && "border-destructive focus:ring-destructive",

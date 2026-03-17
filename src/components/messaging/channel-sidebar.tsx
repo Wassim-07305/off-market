@@ -17,6 +17,7 @@ import {
   Archive,
   LayoutGrid,
   List,
+  Pin,
 } from "lucide-react";
 import type { ChannelWithMeta } from "@/types/messaging";
 import { CreateChannelModal } from "./create-channel-modal";
@@ -92,9 +93,12 @@ export function ChannelSidebar({
 
   // Filtre de recherche pour les DMs
   const filteredDmChannels = useMemo(() => {
-    if (!dmSearch.trim()) return dmChannels;
+    const sorted = [...dmChannels].sort(
+      (a, b) => Number(b.isPinned) - Number(a.isPinned),
+    );
+    if (!dmSearch.trim()) return sorted;
     const q = dmSearch.toLowerCase();
-    return dmChannels.filter((ch) =>
+    return sorted.filter((ch) =>
       ch.dmPartner?.full_name?.toLowerCase().includes(q),
     );
   }, [dmChannels, dmSearch]);
@@ -168,58 +172,63 @@ export function ChannelSidebar({
 
               {channelsOpen && (
                 <div className="px-2 space-y-0.5">
-                  {publicChannels.map((ch) => {
-                    const isActive = ch.id === activeChannelId;
-                    const Icon = ch.type === "private" ? Lock : Hash;
-                    const hasUrgent = ch.urgentUnreadCount > 0;
-                    return (
-                      <button
-                        key={ch.id}
-                        onClick={() => onSelectChannel(ch.id)}
-                        className={cn(
-                          "w-full flex items-center gap-2.5 px-2.5 h-9 rounded-xl text-[13px] transition-all duration-200",
-                          isActive
-                            ? "bg-[#AF0000]/[0.08] text-[#AF0000] font-semibold shadow-sm shadow-[#AF0000]/5 ring-1 ring-[#AF0000]/10"
-                            : "text-muted-foreground hover:text-foreground hover:bg-black/[0.04] active:scale-[0.98]",
-                          ch.isMuted && !isActive && "opacity-40",
-                        )}
-                      >
-                        <div
+                  {[...publicChannels]
+                    .sort((a, b) => Number(b.isPinned) - Number(a.isPinned))
+                    .map((ch) => {
+                      const isActive = ch.id === activeChannelId;
+                      const Icon = ch.type === "private" ? Lock : Hash;
+                      const hasUrgent = ch.urgentUnreadCount > 0;
+                      return (
+                        <button
+                          key={ch.id}
+                          onClick={() => onSelectChannel(ch.id)}
                           className={cn(
-                            "w-6 h-6 rounded-lg flex items-center justify-center shrink-0 transition-all duration-200",
-                            isActive ? "bg-[#AF0000]/15" : "bg-muted/60",
+                            "w-full flex items-center gap-2.5 px-2.5 h-9 rounded-xl text-[13px] transition-all duration-200",
+                            isActive
+                              ? "bg-[#AF0000]/[0.08] text-[#AF0000] font-semibold shadow-sm shadow-[#AF0000]/5 ring-1 ring-[#AF0000]/10"
+                              : "text-muted-foreground hover:text-foreground hover:bg-black/[0.04] active:scale-[0.98]",
+                            ch.isMuted && !isActive && "opacity-40",
                           )}
                         >
-                          <Icon
+                          <div
                             className={cn(
-                              "w-3.5 h-3.5 shrink-0 transition-colors duration-200",
-                              isActive
-                                ? "text-[#AF0000]"
-                                : "text-muted-foreground/70",
-                            )}
-                          />
-                        </div>
-                        <span className="truncate flex-1 text-left">
-                          {ch.name}
-                        </span>
-                        {ch.isMuted && (
-                          <BellOff className="w-3 h-3 text-muted-foreground/40 shrink-0" />
-                        )}
-                        {ch.unreadCount > 0 && !ch.isMuted && (
-                          <span
-                            className={cn(
-                              "min-w-[18px] h-[18px] rounded-full text-white text-[10px] font-bold flex items-center justify-center px-1.5 shadow-sm",
-                              hasUrgent
-                                ? "bg-red-500 shadow-red-500/25 animate-pulse"
-                                : "bg-[#AF0000] shadow-[#AF0000]/20",
+                              "w-6 h-6 rounded-lg flex items-center justify-center shrink-0 transition-all duration-200",
+                              isActive ? "bg-[#AF0000]/15" : "bg-muted/60",
                             )}
                           >
-                            {ch.unreadCount > 99 ? "99+" : ch.unreadCount}
+                            <Icon
+                              className={cn(
+                                "w-3.5 h-3.5 shrink-0 transition-colors duration-200",
+                                isActive
+                                  ? "text-[#AF0000]"
+                                  : "text-muted-foreground/70",
+                              )}
+                            />
+                          </div>
+                          <span className="truncate flex-1 text-left">
+                            {ch.name}
                           </span>
-                        )}
-                      </button>
-                    );
-                  })}
+                          {ch.isPinned && (
+                            <Pin className="w-3 h-3 text-muted-foreground/50 shrink-0 rotate-45" />
+                          )}
+                          {ch.isMuted && (
+                            <BellOff className="w-3 h-3 text-muted-foreground/40 shrink-0" />
+                          )}
+                          {ch.unreadCount > 0 && !ch.isMuted && (
+                            <span
+                              className={cn(
+                                "min-w-[18px] h-[18px] rounded-full text-white text-[10px] font-bold flex items-center justify-center px-1.5 shadow-sm",
+                                hasUrgent
+                                  ? "bg-red-500 shadow-red-500/25 animate-pulse"
+                                  : "bg-[#AF0000] shadow-[#AF0000]/20",
+                              )}
+                            >
+                              {ch.unreadCount > 99 ? "99+" : ch.unreadCount}
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
                 </div>
               )}
             </div>

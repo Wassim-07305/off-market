@@ -30,14 +30,13 @@ export function useStudents(options: UseStudentsOptions = {}) {
   const studentsQuery = useQuery({
     queryKey: ["students", search, tag, limit],
     enabled: !!user,
-    staleTime: 2 * 60 * 1000, // 2 min — evite de refetch a chaque navigation
-    gcTime: 10 * 60 * 1000, // 10 min — garde en cache
+    staleTime: 2 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    retry: 1,
     queryFn: async () => {
       let query = supabase
         .from("profiles")
-        .select(
-          "*, student_details(*, assigned_coach_profile:profiles!student_details_assigned_coach_fkey(full_name))",
-        )
+        .select("*, student_details!student_details_profile_id_fkey(*)")
         .eq("role", "client")
         .order("created_at", { ascending: false })
         .limit(limit);
@@ -234,9 +233,7 @@ export function useStudent(id: string) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("profiles")
-        .select(
-          "*, student_details(*, assigned_coach_profile:profiles!student_details_assigned_coach_fkey(full_name))",
-        )
+        .select("*, student_details!student_details_profile_id_fkey(*)")
         .eq("id", id)
         .single();
       if (error) throw error;

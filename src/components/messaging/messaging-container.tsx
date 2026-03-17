@@ -31,6 +31,7 @@ export default function MessagingContainer() {
     unmuteChannel,
     archiveChannel,
     unarchiveChannel,
+    pinChannel,
     showArchived,
     setShowArchived,
   } = useChannels();
@@ -184,6 +185,25 @@ export default function MessagingContainer() {
                   onOpenMembers={() => setShowMembersPanel(true)}
                   onOpenMobileSidebar={() => setMobileSidebarOpen(true)}
                   isOnline={isOnline}
+                  onPin={() =>
+                    selectedChannel &&
+                    pinChannel.mutate({
+                      channelId: selectedChannel.id,
+                      pinned: !selectedChannel.isPinned,
+                    })
+                  }
+                  onMute={() =>
+                    selectedChannel &&
+                    (selectedChannel.isMuted
+                      ? unmuteChannel.mutate(selectedChannel.id)
+                      : muteChannel.mutate(selectedChannel.id))
+                  }
+                  onArchive={() =>
+                    selectedChannel &&
+                    (selectedChannel.is_archived
+                      ? unarchiveChannel.mutate(selectedChannel.id)
+                      : archiveChannel.mutate(selectedChannel.id))
+                  }
                   typingUsers={typingUsers}
                   broadcastTyping={broadcastTyping}
                   stopTyping={stopTyping}
@@ -216,6 +236,9 @@ export default function MessagingContainer() {
                 onUnmute={() => unmuteChannel.mutate(selectedChannel.id)}
                 onArchive={() => archiveChannel.mutate(selectedChannel.id)}
                 onUnarchive={() => unarchiveChannel.mutate(selectedChannel.id)}
+                onPin={(channelId, pinned) =>
+                  pinChannel.mutate({ channelId, pinned })
+                }
                 userRole={user?.user_metadata?.role}
               />
             )}

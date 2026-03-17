@@ -25,7 +25,7 @@ export function Header() {
   const router = useRouter();
 
   return (
-    <header className="flex h-16 items-center justify-between border-b border-border/40 bg-card/80 px-4 backdrop-blur-sm md:px-6">
+    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border/40 bg-background/80 px-4 backdrop-blur-sm md:px-6">
       {/* Left: Hamburger (mobile) + Breadcrumb */}
       <div className="flex items-center gap-2">
         <button

@@ -3,6 +3,9 @@
 import { useState } from "react";
 import { useChannelMembers } from "@/hooks/use-channels";
 import { useAuth } from "@/hooks/use-auth";
+import { useSupabase } from "@/hooks/use-supabase";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { getInitials, cn } from "@/lib/utils";
 import {
   X,
@@ -17,7 +20,12 @@ import {
   Bell,
   Archive,
   ArchiveRestore,
+  UserPlus,
+  Search,
+  Loader2,
+  Pin,
 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import type { ChannelWithMeta } from "@/types/messaging";
 
 interface ChannelSettingsModalProps {
@@ -29,6 +37,7 @@ interface ChannelSettingsModalProps {
   onUnmute?: () => void;
   onArchive?: () => void;
   onUnarchive?: () => void;
+  onPin?: (channelId: string, pinned: boolean) => void;
   userRole?: string;
 }
 
@@ -55,19 +64,136 @@ export function ChannelSettingsModal({
   onUnmute,
   onArchive,
   onUnarchive,
+  onPin,
   userRole,
 }: ChannelSettingsModalProps) {
   const { user } = useAuth();
+  const supabase = useSupabase();
+  const queryClient = useQueryClient();
   const { data: members, isLoading } = useChannelMembers(
     open ? channel.id : null,
   );
   const [tab, setTab] = useState<"info" | "members">("info");
+  const [editName, setEditName] = useState(channel.name);
+  const [editDescription, setEditDescription] = useState(
+    channel.description ?? "",
+  );
+  const [editType, setEditType] = useState<"public" | "private">(
+    channel.type === "private" ? "private" : "public",
+  );
+  const [isSaving, setIsSaving] = useState(false);
+  const [memberSearch, setMemberSearch] = useState("");
+  const [addingMember, setAddingMember] = useState<string | null>(null);
 
-  if (!open) return null;
+  // Sync state when channel changes
+  const [prevChannelId, setPrevChannelId] = useState(channel.id);
+  if (channel.id !== prevChannelId) {
+    setPrevChannelId(channel.id);
+    setEditName(channel.name);
+    setEditDescription(channel.description ?? "");
+    setEditType(channel.type === "private" ? "private" : "public");
+  }
+
+  const isStaffUser = userRole === "admin" || userRole === "coach";
+  const isCreator = channel.created_by === user?.id;
+  const canEdit = isStaffUser || isCreator;
+
+  const handleSaveInfo = async () => {
+    if (!editName.trim() || isSaving) return;
+    setIsSaving(true);
+    try {
+      const { error } = await supabase
+        .from("channels")
+        .update({
+          name: editName.trim(),
+          description: editDescription.trim() || null,
+          type: editType,
+        })
+        .eq("id", channel.id);
+      if (error) throw error;
+      queryClient.invalidateQueries({ queryKey: ["channels"] });
+      toast.success("Canal mis a jour");
+    } catch {
+      toast.error("Erreur lors de la mise a jour");
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const isDM = channel.type === "dm";
   const ChannelIcon = channel.type === "private" ? Lock : Hash;
-  const isStaff = userRole === "admin" || userRole === "coach";
+
+  // Profiles for adding members
+  const memberIds = new Set(
+    (members ?? [])
+      .map((m) => {
+        const p = m.profile as unknown as { id: string };
+        return p?.id;
+      })
+      .filter(Boolean),
+  );
+
+  const { data: allProfiles } = useQuery({
+    queryKey: ["all-profiles-channel-settings"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("id, full_name, avatar_url, role")
+        .order("full_name");
+      return (data ?? []) as Array<{
+        id: string;
+        full_name: string;
+        avatar_url: string | null;
+        role: string;
+      }>;
+    },
+    enabled: !!open && canEdit && !isDM,
+  });
+
+  const availableProfiles = (allProfiles ?? []).filter(
+    (p) =>
+      !memberIds.has(p.id) &&
+      p.full_name.toLowerCase().includes(memberSearch.toLowerCase()),
+  );
+
+  const handleRemoveMember = async (profileId: string) => {
+    try {
+      const { error } = await supabase
+        .from("channel_members")
+        .delete()
+        .eq("channel_id", channel.id)
+        .eq("profile_id", profileId);
+      if (error) throw error;
+      queryClient.invalidateQueries({
+        queryKey: ["channel-members", channel.id],
+      });
+      queryClient.invalidateQueries({ queryKey: ["channels"] });
+      toast.success("Membre retire");
+    } catch {
+      toast.error("Erreur lors du retrait");
+    }
+  };
+
+  const handleAddMember = async (profileId: string) => {
+    setAddingMember(profileId);
+    try {
+      const { error } = await supabase
+        .from("channel_members")
+        .insert({ channel_id: channel.id, profile_id: profileId });
+      if (error) throw error;
+      queryClient.invalidateQueries({
+        queryKey: ["channel-members", channel.id],
+      });
+      queryClient.invalidateQueries({ queryKey: ["channels"] });
+      toast.success("Membre ajoute");
+    } catch {
+      toast.error("Erreur lors de l'ajout");
+    } finally {
+      setAddingMember(null);
+    }
+  };
+
+  if (!open) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center animate-in fade-in duration-150">
@@ -156,21 +282,94 @@ export function ChannelSettingsModal({
         <div className="max-h-80 overflow-y-auto">
           {tab === "info" && !isDM && (
             <div className="p-5 space-y-4">
-              <div>
-                <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
-                  Nom du canal
-                </label>
-                <p className="mt-1 text-sm text-foreground">{channel.name}</p>
-              </div>
-              {channel.description && (
-                <div>
-                  <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
-                    Description
-                  </label>
-                  <p className="mt-1 text-sm text-foreground">
-                    {channel.description}
-                  </p>
-                </div>
+              {canEdit ? (
+                <>
+                  <div>
+                    <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5 block">
+                      Nom du canal
+                    </label>
+                    <input
+                      value={editName}
+                      onChange={(e) => setEditName(e.target.value)}
+                      className="flex h-9 w-full rounded-lg border border-transparent bg-muted/50 px-3.5 py-2 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/40 focus:ring-1 focus:ring-primary/20 focus:bg-surface hover:bg-muted/70 transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5 block">
+                      Description
+                    </label>
+                    <textarea
+                      value={editDescription}
+                      onChange={(e) => setEditDescription(e.target.value)}
+                      rows={2}
+                      placeholder="Description du canal (optionnel)"
+                      className="flex min-h-[60px] w-full rounded-lg border border-transparent bg-muted/50 px-3.5 py-2 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/40 focus:ring-1 focus:ring-primary/20 focus:bg-surface hover:bg-muted/70 transition-all resize-none"
+                    />
+                  </div>
+                  {/* Type toggle */}
+                  <div>
+                    <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5 block">
+                      Type
+                    </label>
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setEditType("public")}
+                        className={cn(
+                          "flex-1 flex items-center justify-center gap-2 h-9 rounded-lg border text-xs font-medium transition-all",
+                          editType === "public"
+                            ? "border-primary bg-primary/5 text-primary"
+                            : "border-border bg-surface text-muted-foreground hover:bg-muted/50",
+                        )}
+                      >
+                        <Hash className="w-3.5 h-3.5" />
+                        Public
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setEditType("private")}
+                        className={cn(
+                          "flex-1 flex items-center justify-center gap-2 h-9 rounded-lg border text-xs font-medium transition-all",
+                          editType === "private"
+                            ? "border-primary bg-primary/5 text-primary"
+                            : "border-border bg-surface text-muted-foreground hover:bg-muted/50",
+                        )}
+                      >
+                        <Lock className="w-3.5 h-3.5" />
+                        Prive
+                      </button>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={handleSaveInfo}
+                    disabled={isSaving || !editName.trim()}
+                    className="w-full h-9 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-all active:scale-[0.98] disabled:opacity-50"
+                  >
+                    {isSaving ? "Enregistrement..." : "Enregistrer"}
+                  </button>
+                </>
+              ) : (
+                <>
+                  <div>
+                    <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                      Nom du canal
+                    </label>
+                    <p className="mt-1 text-sm text-foreground">
+                      {channel.name}
+                    </p>
+                  </div>
+                  {channel.description && (
+                    <div>
+                      <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                        Description
+                      </label>
+                      <p className="mt-1 text-sm text-foreground">
+                        {channel.description}
+                      </p>
+                    </div>
+                  )}
+                </>
               )}
               <div>
                 <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
@@ -195,101 +394,70 @@ export function ChannelSettingsModal({
                   })}
                 </p>
               </div>
-
-              {/* Actions */}
-              <div className="pt-2 border-t border-border/40 space-y-2">
-                <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
-                  Actions
-                </label>
-
-                {/* Mute toggle */}
-                {channel.isMuted ? (
-                  <button
-                    onClick={() => {
-                      onUnmute?.();
-                      onClose();
-                    }}
-                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-foreground hover:bg-muted transition-colors"
-                  >
-                    <Bell className="w-4 h-4 text-muted-foreground" />
-                    Reactiver les notifications
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => {
-                      onMute?.();
-                      onClose();
-                    }}
-                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-foreground hover:bg-muted transition-colors"
-                  >
-                    <BellOff className="w-4 h-4 text-muted-foreground" />
-                    Mettre en sourdine
-                  </button>
-                )}
-
-                {/* Archive toggle — staff only */}
-                {isStaff && (
-                  <>
-                    {channel.is_archived ? (
-                      <button
-                        onClick={() => {
-                          onUnarchive?.();
-                          onClose();
-                        }}
-                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-foreground hover:bg-muted transition-colors"
-                      >
-                        <ArchiveRestore className="w-4 h-4 text-muted-foreground" />
-                        Desarchiver le canal
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => {
-                          onArchive?.();
-                          onClose();
-                        }}
-                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/20 transition-colors"
-                      >
-                        <Archive className="w-4 h-4" />
-                        Archiver le canal
-                      </button>
-                    )}
-                  </>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* DM-specific actions (mute) */}
-          {isDM && (
-            <div className="px-5 py-3 border-b border-border/40">
-              {channel.isMuted ? (
-                <button
-                  onClick={() => {
-                    onUnmute?.();
-                    onClose();
-                  }}
-                  className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-foreground hover:bg-muted transition-colors"
-                >
-                  <Bell className="w-4 h-4 text-muted-foreground" />
-                  Reactiver les notifications
-                </button>
-              ) : (
-                <button
-                  onClick={() => {
-                    onMute?.();
-                    onClose();
-                  }}
-                  className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-foreground hover:bg-muted transition-colors"
-                >
-                  <BellOff className="w-4 h-4 text-muted-foreground" />
-                  Mettre en sourdine
-                </button>
-              )}
             </div>
           )}
 
           {(tab === "members" || isDM) && (
             <div className="py-2">
+              {/* Ajouter un membre — en haut */}
+              {canEdit && !isDM && (
+                <div className="px-4 pb-3 mb-2 border-b border-border/40">
+                  <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                    <UserPlus className="w-3 h-3" />
+                    Ajouter un membre
+                  </label>
+                  <div className="relative mb-2">
+                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+                    <input
+                      value={memberSearch}
+                      onChange={(e) => setMemberSearch(e.target.value)}
+                      placeholder="Rechercher..."
+                      className="flex h-8 w-full rounded-lg border border-transparent bg-muted/50 pl-8 pr-3 py-1.5 text-xs text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/40 focus:ring-1 focus:ring-primary/20 transition-all"
+                    />
+                  </div>
+                  {availableProfiles.length > 0 ? (
+                    <div className="max-h-32 overflow-y-auto space-y-0.5">
+                      {availableProfiles.map((p) => (
+                        <button
+                          key={p.id}
+                          onClick={() => handleAddMember(p.id)}
+                          disabled={addingMember === p.id}
+                          className="w-full flex items-center gap-2.5 px-2 py-1.5 rounded-lg text-left hover:bg-muted/40 transition-colors disabled:opacity-50"
+                        >
+                          <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                            {p.avatar_url ? (
+                              <img
+                                src={p.avatar_url}
+                                alt=""
+                                className="w-6 h-6 rounded-full object-cover"
+                              />
+                            ) : (
+                              <span className="text-[9px] font-semibold text-primary">
+                                {getInitials(p.full_name)}
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-xs font-medium text-foreground truncate flex-1">
+                            {p.full_name}
+                          </span>
+                          {addingMember === p.id ? (
+                            <Loader2 className="w-3 h-3 animate-spin text-muted-foreground" />
+                          ) : (
+                            <UserPlus className="w-3 h-3 text-muted-foreground" />
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-xs text-muted-foreground text-center py-2">
+                      {memberSearch
+                        ? "Aucun resultat"
+                        : "Tous les membres sont deja dans ce canal"}
+                    </p>
+                  )}
+                </div>
+              )}
+
               {isLoading ? (
                 <div className="space-y-2 px-4 py-2">
                   {Array.from({ length: 3 }).map((_, i) => (
@@ -321,7 +489,7 @@ export function ChannelSettingsModal({
                   return (
                     <div
                       key={m.id ?? profile.id}
-                      className="flex items-center gap-3 px-5 py-2 hover:bg-muted/30 transition-colors"
+                      className="group/member relative flex items-center gap-3 px-5 py-2 hover:bg-muted/30 transition-colors"
                     >
                       <div className="relative shrink-0">
                         <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
@@ -367,6 +535,15 @@ export function ChannelSettingsModal({
                         <span className="text-[10px] text-muted-foreground">
                           Hors ligne
                         </span>
+                      )}
+                      {canEdit && profile.id !== user?.id && (
+                        <button
+                          onClick={() => handleRemoveMember(profile.id)}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded-md flex items-center justify-center text-muted-foreground/40 hover:text-red-500 hover:bg-red-500/10 transition-all opacity-0 group-hover/member:opacity-100"
+                          title="Retirer du canal"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
                       )}
                     </div>
                   );

@@ -16,12 +16,15 @@ export function useChannels() {
 
   const channelsQuery = useQuery({
     queryKey: ["channels", showArchived],
+    staleTime: 60 * 1000,
+    gcTime: 5 * 60 * 1000,
+    retry: 1,
     queryFn: async () => {
       let query = supabase
         .from("channels")
         .select(
           `*,
-          channel_members!inner(profile_id, last_read_at, notifications_muted)`,
+          channel_members!inner(profile_id, last_read_at, notifications_muted, is_pinned)`,
         )
         .eq("channel_members.profile_id", user?.id ?? "");
 
@@ -40,6 +43,7 @@ export function useChannels() {
           profile_id: string;
           last_read_at: string;
           notifications_muted: boolean;
+          is_pinned: boolean;
         }>;
       })[];
     },
@@ -141,6 +145,7 @@ export function useChannels() {
       unreadCount: unreadQuery.data?.[ch.id]?.total ?? 0,
       urgentUnreadCount: unreadQuery.data?.[ch.id]?.urgent ?? 0,
       isMuted: ch.channel_members[0]?.notifications_muted ?? false,
+      isPinned: ch.channel_members[0]?.is_pinned ?? false,
       myLastRead: ch.channel_members[0]?.last_read_at ?? null,
       dmPartner: dmPartnersQuery.data?.[ch.id] ?? null,
     }));
@@ -381,6 +386,26 @@ export function useChannels() {
     },
   });
 
+  const pinChannel = useMutation({
+    mutationFn: async ({
+      channelId,
+      pinned,
+    }: {
+      channelId: string;
+      pinned: boolean;
+    }) => {
+      const { error } = await supabase
+        .from("channel_members")
+        .update({ is_pinned: pinned })
+        .eq("channel_id", channelId)
+        .eq("profile_id", user?.id ?? "");
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["channels"] });
+    },
+  });
+
   return {
     channels,
     publicChannels: activePublicChannels,
@@ -393,6 +418,7 @@ export function useChannels() {
     unmuteChannel,
     archiveChannel,
     unarchiveChannel,
+    pinChannel,
     showArchived,
     setShowArchived,
   };

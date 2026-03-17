@@ -152,7 +152,7 @@ function TopStatsSection({ prefix }: { prefix: string }) {
 
   // Mini skeleton shared by loading cards
   const CardSkeleton = () => (
-    <div className="bg-surface border border-zinc-200 rounded-2xl p-5 animate-pulse">
+    <div className="bg-surface border border-border rounded-2xl p-5 animate-pulse">
       <div className="h-4 w-24 bg-zinc-100 rounded mb-4" />
       <div className="h-7 w-16 bg-zinc-100 rounded" />
     </div>
@@ -358,7 +358,7 @@ function NextActionsSection({ prefix }: { prefix: string }) {
   if (actions.length === 0) return null;
 
   return (
-    <div className="bg-surface border border-zinc-200 rounded-2xl overflow-hidden shadow-sm">
+    <div className="bg-surface border border-border rounded-2xl overflow-hidden shadow-sm">
       {/* Header */}
       <div className="px-5 py-4 border-b border-zinc-100 bg-gradient-to-r from-zinc-50/80 to-transparent">
         <div className="flex items-center gap-2">
@@ -452,7 +452,7 @@ function CourseProgressSection({ prefix }: { prefix: string }) {
   }, [courses, lessonProgress]);
 
   return (
-    <div className="bg-surface border border-zinc-200 rounded-2xl p-5 transition-all duration-200 hover:shadow-md">
+    <div className="bg-surface border border-border rounded-2xl p-5 transition-all duration-200 hover:shadow-md">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
           <div className="size-7 rounded-lg bg-gradient-to-br from-[#AF0000] to-[#DC2626] flex items-center justify-center">
@@ -520,7 +520,7 @@ function GoalProgressSection({ prefix }: { prefix: string }) {
   const { activeGoals, isLoading } = useCoachingGoals();
 
   return (
-    <div className="bg-surface border border-zinc-200 rounded-2xl p-5 transition-all duration-200 hover:shadow-md">
+    <div className="bg-surface border border-border rounded-2xl p-5 transition-all duration-200 hover:shadow-md">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
           <div className="size-7 rounded-lg bg-gradient-to-br from-amber-400 to-amber-500 flex items-center justify-center">
@@ -605,7 +605,7 @@ function RecentJournalSection({ prefix }: { prefix: string }) {
   const recentEntries = entries.slice(0, 3);
 
   return (
-    <div className="bg-surface border border-zinc-200 rounded-2xl p-5 transition-all duration-200 hover:shadow-md">
+    <div className="bg-surface border border-border rounded-2xl p-5 transition-all duration-200 hover:shadow-md">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
           <div className="size-7 rounded-lg bg-gradient-to-br from-zinc-600 to-zinc-700 flex items-center justify-center">
@@ -637,7 +637,7 @@ function RecentJournalSection({ prefix }: { prefix: string }) {
             return (
               <div
                 key={entry.id}
-                className="p-3 rounded-xl bg-zinc-50/80 border border-zinc-100 hover:border-zinc-200 transition-colors"
+                className="p-3 rounded-xl bg-zinc-50/80 border border-zinc-100 hover:border-border transition-colors"
               >
                 <div className="flex items-center justify-between mb-1">
                   <p className="text-sm font-medium text-foreground truncate max-w-[200px]">
@@ -691,7 +691,7 @@ function BadgesSection() {
   const recentBadges = badges.slice(0, 5);
 
   return (
-    <div className="bg-surface border border-zinc-200 rounded-2xl p-5 transition-all duration-200 hover:shadow-md">
+    <div className="bg-surface border border-border rounded-2xl p-5 transition-all duration-200 hover:shadow-md">
       <div className="flex items-center gap-2 mb-4">
         <div className="size-7 rounded-lg bg-gradient-to-br from-amber-400 to-amber-500 flex items-center justify-center">
           <Trophy className="size-3.5 text-white" />
@@ -738,7 +738,7 @@ function BadgesSection() {
 
       {/* Upsell offer card */}
       {offers && offers.length > 0 && (
-        <div className="mt-4 pt-4 border-t border-zinc-200">
+        <div className="mt-4 pt-4 border-t border-border">
           <div className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-[#AF0000]/5 to-transparent border border-[#AF0000]/10 hover:border-[#AF0000]/20 transition-colors">
             <div className="size-9 rounded-xl bg-gradient-to-br from-[#AF0000] to-[#DC2626] flex items-center justify-center shrink-0 shadow-sm shadow-[#AF0000]/20">
               <Gift className="size-4 text-white" />
@@ -769,7 +769,7 @@ function CommunitySection({ prefix }: { prefix: string }) {
   const recentAnnouncements = (announcements ?? []).slice(0, 3);
 
   return (
-    <div className="bg-surface border border-zinc-200 rounded-2xl p-5 transition-all duration-200 hover:shadow-md">
+    <div className="bg-surface border border-border rounded-2xl p-5 transition-all duration-200 hover:shadow-md">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
           <div className="size-7 rounded-lg bg-gradient-to-br from-[#AF0000] to-[#DC2626] flex items-center justify-center">
@@ -801,7 +801,7 @@ function CommunitySection({ prefix }: { prefix: string }) {
             return (
               <div
                 key={ann.id}
-                className="p-3 rounded-xl bg-zinc-50/80 border border-zinc-100 flex items-start gap-3 hover:border-zinc-200 transition-colors"
+                className="p-3 rounded-xl bg-zinc-50/80 border border-zinc-100 flex items-start gap-3 hover:border-border transition-colors"
               >
                 <div
                   className={cn(

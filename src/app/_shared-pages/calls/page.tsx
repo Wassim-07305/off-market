@@ -191,7 +191,7 @@ export default function CallsPage() {
                 "h-9 px-3 rounded-xl text-xs font-medium flex items-center gap-1.5 transition-all duration-200",
                 showGoogle
                   ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-200/60"
-                  : "bg-surface dark:bg-surface border border-zinc-200/80 text-muted-foreground hover:text-foreground",
+                  : "bg-surface dark:bg-surface border border-border text-muted-foreground hover:text-foreground",
               )}
             >
               <Calendar className="w-3.5 h-3.5" />
@@ -199,7 +199,7 @@ export default function CallsPage() {
             </button>
           )}
           {/* View toggle */}
-          <div className="flex rounded-xl overflow-hidden border border-zinc-200/80 dark:border-border/50">
+          <div className="flex rounded-xl overflow-hidden border border-border dark:border-border/50">
             <button
               onClick={() => setView("week")}
               className={cn(
@@ -215,7 +215,7 @@ export default function CallsPage() {
             <button
               onClick={() => setView("list")}
               className={cn(
-                "h-9 px-3 flex items-center gap-1.5 text-xs font-medium transition-all duration-200 border-x border-zinc-200/80 dark:border-border/50",
+                "h-9 px-3 flex items-center gap-1.5 text-xs font-medium transition-all duration-200 border-x border-border dark:border-border/50",
                 view === "list"
                   ? "bg-[#AF0000] text-white"
                   : "bg-surface dark:bg-surface text-muted-foreground hover:text-foreground hover:bg-zinc-50 dark:hover:bg-muted",
@@ -251,7 +251,7 @@ export default function CallsPage() {
       <motion.div variants={staggerItem} className="flex items-center gap-3">
         <button
           onClick={() => navigateWeek(-1)}
-          className="w-8 h-8 rounded-xl flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-zinc-100 dark:hover:bg-muted border border-zinc-200/80 dark:border-border/50 bg-surface dark:bg-surface transition-all duration-200"
+          className="w-8 h-8 rounded-xl flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-zinc-100 dark:hover:bg-muted border border-border dark:border-border/50 bg-surface dark:bg-surface transition-all duration-200"
         >
           <ChevronLeft className="w-4 h-4" />
         </button>
@@ -263,7 +263,7 @@ export default function CallsPage() {
         </button>
         <button
           onClick={() => navigateWeek(1)}
-          className="w-8 h-8 rounded-xl flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-zinc-100 dark:hover:bg-muted border border-zinc-200/80 dark:border-border/50 bg-surface dark:bg-surface transition-all duration-200"
+          className="w-8 h-8 rounded-xl flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-zinc-100 dark:hover:bg-muted border border-border dark:border-border/50 bg-surface dark:bg-surface transition-all duration-200"
         >
           <ChevronRight className="w-4 h-4" />
         </button>
@@ -287,7 +287,7 @@ export default function CallsPage() {
           />
         ) : (
           <div
-            className="bg-surface dark:bg-surface border border-zinc-200/80 dark:border-border/50 rounded-2xl divide-y divide-zinc-100 dark:divide-border/30 overflow-hidden"
+            className="bg-surface dark:bg-surface border border-border dark:border-border/50 rounded-2xl divide-y divide-zinc-100 dark:divide-border/30 overflow-hidden"
             style={{
               boxShadow:
                 "0 1px 3px rgb(0 0 0 / 0.04), 0 8px 20px rgb(0 0 0 / 0.02)",

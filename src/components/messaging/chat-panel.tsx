@@ -54,6 +54,9 @@ interface ChatPanelProps {
   onOpenMembers: () => void;
   onOpenMobileSidebar: () => void;
   isOnline?: (userId: string) => boolean;
+  onPin?: () => void;
+  onMute?: () => void;
+  onArchive?: () => void;
   typingUsers: Array<{ userId: string; fullName: string }>;
   broadcastTyping: (fullName: string) => Promise<void>;
   stopTyping: (fullName: string) => Promise<void>;
@@ -73,6 +76,9 @@ export function ChatPanel({
   onOpenMembers,
   onOpenMobileSidebar,
   isOnline,
+  onPin,
+  onMute,
+  onArchive,
   typingUsers,
   broadcastTyping,
   stopTyping,
@@ -268,6 +274,9 @@ export function ChatPanel({
           isOnline={isOnline}
           showBookmarks={showBookmarksPanel}
           onToggleBookmarks={() => setShowBookmarksPanel(!showBookmarksPanel)}
+          onPin={onPin}
+          onMute={onMute}
+          onArchive={onArchive}
         />
 
         <PinnedMessagesBar

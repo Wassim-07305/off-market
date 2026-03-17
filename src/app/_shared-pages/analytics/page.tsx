@@ -309,7 +309,7 @@ export default function AnalyticsPage() {
 
       {/* Tabs */}
       <motion.div variants={staggerItem}>
-        <div className="flex items-center gap-1 border-b border-zinc-200/80 dark:border-border/50 overflow-x-auto">
+        <div className="flex items-center gap-1 border-b border-border dark:border-border/50 overflow-x-auto">
           {TABS.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.value;

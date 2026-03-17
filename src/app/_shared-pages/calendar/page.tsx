@@ -256,7 +256,7 @@ export default function CalendarPage() {
         </div>
         <div className="flex items-center gap-2">
           {/* View toggle */}
-          <div className="flex rounded-xl overflow-hidden border border-zinc-200/80 dark:border-border/50">
+          <div className="flex rounded-xl overflow-hidden border border-border dark:border-border/50">
             {(
               [
                 { key: "month", label: "Mois", icon: LayoutGrid },
@@ -273,7 +273,7 @@ export default function CalendarPage() {
                 className={cn(
                   "h-9 px-3 flex items-center gap-1.5 text-xs font-medium transition-all duration-200",
                   v.key !== "month" &&
-                    "border-l border-zinc-200/80 dark:border-border/50",
+                    "border-l border-border dark:border-border/50",
                   view === v.key
                     ? "bg-[#AF0000] text-white"
                     : "bg-surface dark:bg-surface text-muted-foreground hover:text-foreground hover:bg-zinc-50 dark:hover:bg-muted",
@@ -302,7 +302,7 @@ export default function CalendarPage() {
       <motion.div variants={staggerItem} className="flex items-center gap-3">
         <button
           onClick={() => navigate(-1)}
-          className="w-8 h-8 rounded-xl flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-zinc-100 dark:hover:bg-muted border border-zinc-200/80 dark:border-border/50 bg-surface dark:bg-surface transition-all duration-200"
+          className="w-8 h-8 rounded-xl flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-zinc-100 dark:hover:bg-muted border border-border dark:border-border/50 bg-surface dark:bg-surface transition-all duration-200"
         >
           <ChevronLeft className="w-4 h-4" />
         </button>
@@ -314,7 +314,7 @@ export default function CalendarPage() {
         </button>
         <button
           onClick={() => navigate(1)}
-          className="w-8 h-8 rounded-xl flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-zinc-100 dark:hover:bg-muted border border-zinc-200/80 dark:border-border/50 bg-surface dark:bg-surface transition-all duration-200"
+          className="w-8 h-8 rounded-xl flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-zinc-100 dark:hover:bg-muted border border-border dark:border-border/50 bg-surface dark:bg-surface transition-all duration-200"
         >
           <ChevronRight className="w-4 h-4" />
         </button>
@@ -342,7 +342,7 @@ export default function CalendarPage() {
       <motion.div variants={staggerItem}>
         {isLoading ? (
           <div
-            className="bg-surface dark:bg-surface border border-zinc-200/80 dark:border-border/50 rounded-2xl p-8"
+            className="bg-surface dark:bg-surface border border-border dark:border-border/50 rounded-2xl p-8"
             style={{
               boxShadow:
                 "0 1px 3px rgb(0 0 0 / 0.04), 0 8px 20px rgb(0 0 0 / 0.02)",
@@ -394,7 +394,7 @@ export default function CalendarPage() {
       {selectedDay && view !== "day" && (
         <motion.div
           variants={staggerItem}
-          className="bg-surface dark:bg-surface border border-zinc-200/80 dark:border-border/50 rounded-2xl p-5"
+          className="bg-surface dark:bg-surface border border-border dark:border-border/50 rounded-2xl p-5"
           style={{
             boxShadow:
               "0 1px 3px rgb(0 0 0 / 0.04), 0 8px 20px rgb(0 0 0 / 0.02)",
@@ -496,7 +496,7 @@ function MonthView({
 }) {
   return (
     <div
-      className="bg-surface dark:bg-surface border border-zinc-200/80 dark:border-border/50 rounded-2xl overflow-hidden"
+      className="bg-surface dark:bg-surface border border-border dark:border-border/50 rounded-2xl overflow-hidden"
       style={{
         boxShadow: "0 1px 3px rgb(0 0 0 / 0.04), 0 8px 20px rgb(0 0 0 / 0.02)",
       }}
@@ -620,7 +620,7 @@ function WeekViewCalendar({
 
   return (
     <div
-      className="bg-surface dark:bg-surface border border-zinc-200/80 dark:border-border/50 rounded-2xl overflow-hidden"
+      className="bg-surface dark:bg-surface border border-border dark:border-border/50 rounded-2xl overflow-hidden"
       style={{
         boxShadow: "0 1px 3px rgb(0 0 0 / 0.04), 0 8px 20px rgb(0 0 0 / 0.02)",
       }}
@@ -734,7 +734,7 @@ function DayView({
 
   return (
     <div
-      className="bg-surface dark:bg-surface border border-zinc-200/80 dark:border-border/50 rounded-2xl overflow-hidden"
+      className="bg-surface dark:bg-surface border border-border dark:border-border/50 rounded-2xl overflow-hidden"
       style={{
         boxShadow: "0 1px 3px rgb(0 0 0 / 0.04), 0 8px 20px rgb(0 0 0 / 0.02)",
       }}

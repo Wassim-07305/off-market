@@ -15,6 +15,8 @@ export function useMessages(channelId: string | null) {
 
   const messagesQuery = useQuery({
     queryKey: ["messages", channelId],
+    retry: 1,
+    staleTime: 30 * 1000,
     queryFn: async () => {
       if (!channelId) return [];
       const { data, error } = await supabase
@@ -23,8 +25,7 @@ export function useMessages(channelId: string | null) {
           `*,
           sender:profiles!messages_sender_id_fkey(id, full_name, avatar_url, role),
           reactions:message_reactions(id, emoji, profile_id),
-          attachments:message_attachments(id, file_name, file_url, file_type, file_size),
-          reply_message:messages!messages_reply_to_fkey(id, content, sender:profiles!messages_sender_id_fkey(id, full_name))`,
+          attachments:message_attachments(id, file_name, file_url, file_type, file_size)`,
         )
         .eq("channel_id", channelId)
         .is("deleted_at", null)
