@@ -129,18 +129,20 @@ export function useJournal(options?: { sharedOnly?: boolean }) {
     mutationFn: async (file: File) => {
       if (!user) throw new Error("Not authenticated");
       const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
-      const path = `${user.id}/journal/${Date.now()}.${ext}`;
+      const storagePath = `journal-media/${user.id}/journal/${Date.now()}.${ext}`;
 
-      const { error: uploadError } = await supabase.storage
-        .from("journal-media")
-        .upload(path, file, { upsert: false });
-      if (uploadError) throw uploadError;
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("path", storagePath);
 
-      const { data: urlData } = supabase.storage
-        .from("journal-media")
-        .getPublicUrl(path);
+      const res = await fetch("/api/storage/upload", {
+        method: "POST",
+        body: formData,
+      });
+      if (!res.ok) throw new Error("Upload failed");
 
-      return urlData.publicUrl;
+      const { url } = await res.json();
+      return url as string;
     },
     onError: () => {
       toast.error("Erreur lors de l'upload du media");

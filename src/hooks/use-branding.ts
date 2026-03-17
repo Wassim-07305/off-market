@@ -95,21 +95,21 @@ export function useUpdateBranding() {
 }
 
 export function useUploadBrandingAsset() {
-  const supabase = useSupabase();
-
   return useMutation({
     mutationFn: async ({ file, path }: { file: File; path: string }) => {
-      const { error } = await supabase.storage
-        .from("branding")
-        .upload(path, file, { upsert: true });
+      const storagePath = `branding/${path}`;
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("path", storagePath);
 
-      if (error) throw error;
+      const res = await fetch("/api/storage/upload", {
+        method: "POST",
+        body: formData,
+      });
+      if (!res.ok) throw new Error("Upload failed");
 
-      const { data: urlData } = supabase.storage
-        .from("branding")
-        .getPublicUrl(path);
-
-      return urlData.publicUrl;
+      const { url } = await res.json();
+      return url as string;
     },
   });
 }

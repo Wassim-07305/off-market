@@ -110,20 +110,25 @@ export function UserProfileSettings() {
 
     setUploading(true);
     const ext = file.name.split(".").pop();
-    const filePath = `${user.id}/avatar.${ext}`;
+    const filePath = `avatars/${user.id}/avatar.${ext}`;
 
-    const { error: uploadError } = await supabase.storage
-      .from("avatars")
-      .upload(filePath, file, { upsert: true });
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("path", filePath);
 
-    if (uploadError) {
+    const res = await fetch("/api/storage/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!res.ok) {
       toast.error("Erreur lors de l'upload");
       setUploading(false);
       return;
     }
 
-    const { data } = supabase.storage.from("avatars").getPublicUrl(filePath);
-    const newUrl = data.publicUrl + "?t=" + Date.now();
+    const { url } = await res.json();
+    const newUrl = url + "?t=" + Date.now();
 
     const { error: updateError } = await supabase
       .from("profiles")

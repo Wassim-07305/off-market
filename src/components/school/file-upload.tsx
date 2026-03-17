@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useRef, useCallback } from "react";
-import { useSupabase } from "@/hooks/use-supabase";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { Upload, X, FileText, Loader2 } from "lucide-react";
@@ -31,7 +30,6 @@ export function FileUpload({
   label = "Deposer un fichier ou cliquer",
   className,
 }: FileUploadProps) {
-  const supabase = useSupabase();
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
@@ -43,20 +41,52 @@ export function FileUpload({
         return;
       }
 
+      // Detection video : router vers YouTube au lieu de B2
+      const ext = file.name.split(".").pop()?.toLowerCase() ?? "";
+      const isVideo =
+        file.type.startsWith("video/") ||
+        ["mp4", "mov", "avi", "webm", "mkv"].includes(ext);
+
       setUploading(true);
       try {
-        const ext = file.name.split(".").pop();
-        const fileName = `${path}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+        if (isVideo) {
+          // Upload vers YouTube via API route
+          const formData = new FormData();
+          formData.append("file", file);
+          formData.append("title", file.name.replace(/\.[^.]+$/, ""));
 
-        const { error: uploadError } = await supabase.storage
-          .from(bucket)
-          .upload(fileName, file, { upsert: true });
+          const res = await fetch("/api/video/upload", {
+            method: "POST",
+            body: formData,
+          });
+          if (!res.ok) {
+            const data = await res
+              .json()
+              .catch(() => ({ error: "Erreur inconnue" }));
+            throw new Error(data.error || `Erreur ${res.status}`);
+          }
 
-        if (uploadError) throw uploadError;
+          const { videoId } = await res.json();
+          onUpload(`youtube:${videoId}`, file.name);
+          toast.success("Video uploadee sur YouTube");
+        } else {
+          // Upload classique vers B2 via /api/storage/upload
+          const fileName = `${bucket}/${path}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
-        const { data } = supabase.storage.from(bucket).getPublicUrl(fileName);
-        onUpload(data.publicUrl, file.name);
-        toast.success("Fichier televerse");
+          const formData = new FormData();
+          formData.append("file", file);
+          formData.append("path", fileName);
+
+          const res = await fetch("/api/storage/upload", {
+            method: "POST",
+            body: formData,
+          });
+          if (!res.ok) throw new Error("Upload failed");
+
+          const { url } = await res.json();
+          onUpload(url, file.name);
+          toast.success("Fichier televerse");
+        }
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : String(err);
         console.error("[FileUpload] Upload failed:", msg, err);
@@ -65,7 +95,7 @@ export function FileUpload({
         setUploading(false);
       }
     },
-    [bucket, path, maxSizeMB, onUpload, supabase],
+    [bucket, path, maxSizeMB, onUpload],
   );
 
   const handleDrop = useCallback(

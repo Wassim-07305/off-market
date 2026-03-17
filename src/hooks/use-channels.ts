@@ -426,11 +426,16 @@ export function useChannels() {
           for (const att of attachments) {
             try {
               const url = new URL(att.file_url);
-              const match = url.pathname.match(
-                /\/storage\/v1\/object\/public\/([^/]+)\/(.+)/,
-              );
-              if (match) {
-                await supabase.storage.from(match[1]).remove([match[2]]);
+              // Extraire la cle B2 depuis l'URL publique
+              // Format: https://s3.eu-central-003.backblazeb2.com/Off-Market/...
+              const pathParts = url.pathname.split("/").slice(2); // Remove "" and bucket name
+              const key = pathParts.join("/");
+              if (key) {
+                await fetch("/api/storage/delete", {
+                  method: "DELETE",
+                  body: JSON.stringify({ key }),
+                  headers: { "Content-Type": "application/json" },
+                });
               }
             } catch {
               // Ignorer les erreurs de suppression de fichier

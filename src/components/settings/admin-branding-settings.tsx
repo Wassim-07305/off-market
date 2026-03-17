@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
-import { useSupabase } from "@/hooks/use-supabase";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
 import {
@@ -39,7 +38,6 @@ const DEFAULT_SETTINGS: BrandingSettings = {
 
 export function AdminBrandingSettings() {
   const { user, isAdmin } = useAuth();
-  const supabase = useSupabase();
   const { theme, setTheme } = useTheme();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -89,18 +87,23 @@ export function AdminBrandingSettings() {
     const ext = file.name.split(".").pop();
     const filePath = `branding/logo.${ext}`;
 
-    const { error: uploadError } = await supabase.storage
-      .from("avatars")
-      .upload(filePath, file, { upsert: true });
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("path", filePath);
 
-    if (uploadError) {
+    const res = await fetch("/api/storage/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!res.ok) {
       toast.error("Erreur lors de l'upload");
       setUploading(false);
       return;
     }
 
-    const { data } = supabase.storage.from("avatars").getPublicUrl(filePath);
-    const newUrl = data.publicUrl + "?t=" + Date.now();
+    const { url } = await res.json();
+    const newUrl = url + "?t=" + Date.now();
 
     setSettings((prev) => ({ ...prev, logo_url: newUrl }));
     setUploading(false);

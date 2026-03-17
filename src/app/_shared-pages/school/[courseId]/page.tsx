@@ -496,7 +496,7 @@ export default function CourseViewPage({
             className="absolute inset-0 bg-black/50"
             onClick={() => setMobileSidebarOpen(false)}
           />
-          <div className="absolute inset-y-0 left-0 w-[280px] bg-surface border-r border-border shadow-sm flex flex-col animate-in slide-in-from-left duration-200">
+          <div className="absolute inset-y-0 left-0 w-[350px] bg-surface border-r border-border shadow-sm flex flex-col animate-in slide-in-from-left duration-200">
             <div className="flex items-center justify-end p-3 border-b border-border">
               <button
                 onClick={() => setMobileSidebarOpen(false)}
@@ -511,7 +511,7 @@ export default function CourseViewPage({
       )}
 
       {/* Desktop sidebar */}
-      <aside className="hidden md:flex w-[280px] shrink-0 border-r border-border bg-surface flex-col overflow-hidden">
+      <aside className="hidden md:flex w-[350px] shrink-0 border-r border-border bg-surface flex-col overflow-hidden">
         {renderSidebar()}
       </aside>
 

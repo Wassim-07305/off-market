@@ -58,15 +58,17 @@ export function ChallengeSubmission({
       if (proofFile) {
         const ext = proofFile.name.split(".").pop();
         const path = `challenge-proofs/${user.id}/${challengeId}/${Date.now()}.${ext}`;
-        const { error: uploadError } = await (supabase as any).storage
-          .from("uploads")
-          .upload(path, proofFile);
-        if (uploadError) throw uploadError;
+        const formData = new FormData();
+        formData.append("file", proofFile);
+        formData.append("path", `uploads/${path}`);
+        const uploadRes = await fetch("/api/storage/upload", {
+          method: "POST",
+          body: formData,
+        });
+        if (!uploadRes.ok) throw new Error("Upload failed");
 
-        const {
-          data: { publicUrl },
-        } = (supabase as any).storage.from("uploads").getPublicUrl(path);
-        proofUrl = publicUrl;
+        const { url: uploadedUrl } = await uploadRes.json();
+        proofUrl = uploadedUrl;
       }
 
       const { error } = await (supabase as any)

@@ -189,18 +189,22 @@ export default function SettingsPage() {
     const ext = file.name.split(".").pop();
     const filePath = `${user.id}/avatar.${ext}`;
 
-    const { error: uploadError } = await supabase.storage
-      .from("avatars")
-      .upload(filePath, file, { upsert: true });
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("path", `avatars/${filePath}`);
+    const uploadRes = await fetch("/api/storage/upload", {
+      method: "POST",
+      body: formData,
+    });
 
-    if (uploadError) {
+    if (!uploadRes.ok) {
       toast.error("Erreur lors de l'upload");
       setUploading(false);
       return;
     }
 
-    const { data } = supabase.storage.from("avatars").getPublicUrl(filePath);
-    const newUrl = data.publicUrl + "?t=" + Date.now();
+    const { url: uploadedUrl } = await uploadRes.json();
+    const newUrl = uploadedUrl + "?t=" + Date.now();
 
     const { error: updateError } = await supabase
       .from("profiles")

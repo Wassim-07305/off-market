@@ -52,19 +52,21 @@ export function useUploadResource() {
     }) => {
       if (!user) throw new Error("Not authenticated");
 
-      // Upload file to storage
-      const ext = file.name.split(".").pop() ?? "bin";
+      // Upload file to B2 via API route
       const timestamp = Date.now();
-      const storagePath = `${category}/${timestamp}-${file.name}`;
+      const storagePath = `resources/${category}/${timestamp}-${file.name}`;
 
-      const { error: uploadErr } = await supabase.storage
-        .from("resources")
-        .upload(storagePath, file);
-      if (uploadErr) throw uploadErr;
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("path", storagePath);
 
-      const { data: urlData } = supabase.storage
-        .from("resources")
-        .getPublicUrl(storagePath);
+      const res = await fetch("/api/storage/upload", {
+        method: "POST",
+        body: formData,
+      });
+      if (!res.ok) throw new Error("Upload failed");
+
+      const { url: filePublicUrl } = await res.json();
 
       // Create resource record
       const { data, error } = await supabase
@@ -74,7 +76,7 @@ export function useUploadResource() {
           description: description || null,
           category,
           file_name: file.name,
-          file_url: urlData.publicUrl,
+          file_url: filePublicUrl,
           file_type: file.type,
           file_size: file.size,
           uploaded_by: user.id,
@@ -131,13 +133,21 @@ export function useDeleteResource() {
 
   return useMutation({
     mutationFn: async (resource: Pick<Resource, "id" | "file_url">) => {
-      // Extract storage path from URL
-      const url = new URL(resource.file_url);
-      const pathMatch = url.pathname.match(/\/resources\/(.+)$/);
-      if (pathMatch) {
-        await supabase.storage
-          .from("resources")
-          .remove([decodeURIComponent(pathMatch[1])]);
+      // Extract B2 key from URL and delete via API route
+      try {
+        const url = new URL(resource.file_url);
+        // URL format: https://s3.eu-central-003.backblazeb2.com/Off-Market/resources/...
+        const pathParts = url.pathname.split("/").slice(2); // Remove "" and bucket name
+        const key = pathParts.join("/");
+        if (key) {
+          await fetch("/api/storage/delete", {
+            method: "DELETE",
+            body: JSON.stringify({ key }),
+            headers: { "Content-Type": "application/json" },
+          });
+        }
+      } catch {
+        // Ignorer les erreurs de suppression de fichier
       }
 
       const { error } = await supabase

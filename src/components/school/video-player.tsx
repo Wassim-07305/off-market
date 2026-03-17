@@ -24,6 +24,17 @@ function getVideoEmbed(url: string): {
 } {
   if (!url) return { type: "none", src: "" };
 
+  // Format DB migre : youtube:VIDEO_ID
+  if (url.startsWith("youtube:")) {
+    const id = url.slice("youtube:".length);
+    if (id)
+      return {
+        type: "iframe",
+        src: `https://www.youtube.com/embed/${id}`,
+        platform: "youtube",
+      };
+  }
+
   // YouTube
   if (url.includes("youtube.com") || url.includes("youtu.be")) {
     let id: string | null | undefined = null;

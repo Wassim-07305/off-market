@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useExerciseSubmissions, useSubmitExercise } from "@/hooks/use-quizzes";
-import { useSupabase } from "@/hooks/use-supabase";
 import { useAuth } from "@/hooks/use-auth";
 import type { ExerciseSubmission } from "@/types/quiz";
 import { toast } from "sonner";
@@ -59,7 +58,6 @@ export function AssignmentSubmission({
   onComplete,
 }: AssignmentSubmissionProps) {
   const { user } = useAuth();
-  const supabase = useSupabase();
   const { data: submissions, isLoading } = useExerciseSubmissions(
     lessonId,
     user?.id,
@@ -92,18 +90,20 @@ export function AssignmentSubmission({
         const ext = file.name.split(".").pop();
         const path = `exercises/${user.id}/${lessonId}/${Date.now()}.${ext}`;
 
-        const { error } = await supabase.storage
-          .from("attachments")
-          .upload(path, file);
-        if (error) throw error;
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("path", `attachments/${path}`);
+        const uploadRes = await fetch("/api/storage/upload", {
+          method: "POST",
+          body: formData,
+        });
+        if (!uploadRes.ok) throw new Error("Upload failed");
 
-        const { data: urlData } = supabase.storage
-          .from("attachments")
-          .getPublicUrl(path);
+        const { url: uploadedUrl } = await uploadRes.json();
 
         setAttachments((prev) => [
           ...prev,
-          { name: file.name, url: urlData.publicUrl },
+          { name: file.name, url: uploadedUrl },
         ]);
       }
     } catch {

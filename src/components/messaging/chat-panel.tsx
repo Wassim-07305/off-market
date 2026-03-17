@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { useSupabase } from "@/hooks/use-supabase";
 import { useMessagingStore } from "@/stores/messaging-store";
 import { useBookmarks } from "@/hooks/use-bookmarks";
 import { ChatHeader } from "./chat-header";
@@ -83,7 +82,6 @@ export function ChatPanel({
   broadcastTyping,
   stopTyping,
 }: ChatPanelProps) {
-  const supabase = useSupabase();
   const [isDraggingOver, setIsDraggingOver] = useState(false);
   const [droppedFile, setDroppedFile] = useState<File | null>(null);
   const {
@@ -147,20 +145,23 @@ export function ChatPanel({
       }
 
       const ext = file.name.split(".").pop();
-      const filePath = `${channel.id}/${Date.now()}.${ext}`;
+      const filePath = `message-attachments/${channel.id}/${Date.now()}.${ext}`;
 
-      const { error: uploadError } = await supabase.storage
-        .from("message-attachments")
-        .upload(filePath, file);
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("path", filePath);
 
-      if (uploadError) {
+      const res = await fetch("/api/storage/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
         toast.error("Erreur lors de l'upload");
         return;
       }
 
-      const { data: urlData } = supabase.storage
-        .from("message-attachments")
-        .getPublicUrl(filePath);
+      const { url } = await res.json();
 
       const isImage = file.type.startsWith("image/");
       const isVideo = file.type.startsWith("video/");
@@ -176,7 +177,7 @@ export function ChatPanel({
         await addAttachment.mutateAsync({
           messageId: msg.id,
           fileName: file.name,
-          fileUrl: urlData.publicUrl,
+          fileUrl: url,
           fileType: file.type,
           fileSize: file.size,
         });
@@ -185,15 +186,7 @@ export function ChatPanel({
       setReplyTo(null);
       toast.success("Fichier envoye");
     },
-    [
-      supabase,
-      user,
-      channel,
-      sendMessage,
-      addAttachment,
-      replyToMessage,
-      setReplyTo,
-    ],
+    [user, channel, sendMessage, addAttachment, replyToMessage, setReplyTo],
   );
 
   const handleVoiceSend = useCallback(
@@ -205,19 +198,26 @@ export function ChatPanel({
         : blob.type.includes("ogg")
           ? "ogg"
           : "webm";
-      const filePath = `${channel.id}/${Date.now()}.${ext}`;
-      const { error: uploadError } = await supabase.storage
-        .from("message-attachments")
-        .upload(filePath, blob, { contentType: blob.type });
+      const filePath = `message-attachments/${channel.id}/${Date.now()}.${ext}`;
 
-      if (uploadError) {
+      const formData = new FormData();
+      formData.append(
+        "file",
+        new File([blob], `vocal-${Date.now()}.${ext}`, { type: blob.type }),
+      );
+      formData.append("path", filePath);
+
+      const res = await fetch("/api/storage/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
         toast.error("Erreur lors de l'upload");
         return;
       }
 
-      const { data: urlData } = supabase.storage
-        .from("message-attachments")
-        .getPublicUrl(filePath);
+      const { url } = await res.json();
 
       const result = await sendMessage.mutateAsync({
         content: `Message vocal (${Math.ceil(duration)}s)`,
@@ -228,7 +228,7 @@ export function ChatPanel({
         await addAttachment.mutateAsync({
           messageId: result.id,
           fileName: `vocal-${Date.now()}.webm`,
-          fileUrl: urlData.publicUrl,
+          fileUrl: url,
           fileType: "audio/webm",
           fileSize: blob.size,
         });
@@ -236,7 +236,7 @@ export function ChatPanel({
 
       toast.success("Message vocal envoye");
     },
-    [supabase, user, channel, sendMessage, addAttachment],
+    [user, channel, sendMessage, addAttachment],
   );
 
   const handleGifSend = useCallback(

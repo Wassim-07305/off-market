@@ -161,20 +161,24 @@ export function useCallRecording(callId: string | null) {
       const extension = mimeTypeRef.current.includes("video") ? "webm" : "webm";
       const fileName = `${callId}/${timestamp}.${extension}`;
 
-      // Upload to Supabase Storage
-      const { error: uploadError } = await supabase.storage
-        .from("call-recordings")
-        .upload(fileName, recordingBlob, {
-          contentType: mimeTypeRef.current || "video/webm",
-          cacheControl: "3600",
-        });
+      // Upload via API route
+      const uploadFormData = new FormData();
+      uploadFormData.append(
+        "file",
+        new File([recordingBlob], "recording.webm", {
+          type: mimeTypeRef.current || "video/webm",
+        }),
+      );
+      uploadFormData.append("path", `call-recordings/${fileName}`);
+      const uploadRes = await fetch("/api/storage/upload", {
+        method: "POST",
+        body: uploadFormData,
+      });
 
-      if (uploadError) throw uploadError;
+      if (!uploadRes.ok) throw new Error("Upload failed");
 
-      // Get public URL
-      const { data: urlData } = supabase.storage
-        .from("call-recordings")
-        .getPublicUrl(fileName);
+      // Get public URL from response
+      const { url: uploadedUrl } = await uploadRes.json();
 
       // Save metadata to database
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -193,7 +197,7 @@ export function useCallRecording(callId: string | null) {
 
       if (dbError) throw dbError;
 
-      const url = urlData?.publicUrl ?? null;
+      const url = uploadedUrl ?? null;
       setRecordingUrl(url);
       toast.success("Enregistrement sauvegarde avec succes");
 

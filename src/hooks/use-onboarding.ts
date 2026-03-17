@@ -248,22 +248,24 @@ export function useOnboarding() {
       const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
       const path = `${user.id}/avatar_${Date.now()}.${ext}`;
 
-      const { error: uploadError } = await supabase.storage
-        .from("avatars")
-        .upload(path, file, { upsert: true });
-      if (uploadError) throw uploadError;
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("path", `avatars/${path}`);
+      const uploadRes = await fetch("/api/storage/upload", {
+        method: "POST",
+        body: formData,
+      });
+      if (!uploadRes.ok) throw new Error("Upload failed");
 
-      const { data: urlData } = supabase.storage
-        .from("avatars")
-        .getPublicUrl(path);
+      const { url: urlData_publicUrl } = await uploadRes.json();
 
       const { error: updateError } = await supabase
         .from("profiles")
-        .update({ avatar_url: urlData.publicUrl } as never)
+        .update({ avatar_url: urlData_publicUrl } as never)
         .eq("id", user.id);
       if (updateError) throw updateError;
 
-      return urlData.publicUrl;
+      return urlData_publicUrl;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["auth"] });

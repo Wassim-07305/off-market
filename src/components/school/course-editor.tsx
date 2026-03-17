@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useCourseMutations } from "@/hooks/use-courses";
 import { useSupabase } from "@/hooks/use-supabase";
 import { toast } from "sonner";
@@ -50,6 +50,8 @@ import {
   ExternalLink,
   X,
   Headphones,
+  Upload,
+  Loader2,
 } from "lucide-react";
 import { QuizBuilder } from "./quiz-builder";
 import type { QuizConfig } from "@/types/quiz";
@@ -314,6 +316,121 @@ function SortableModuleItem({
 }
 
 // ---------------------------------------------------------------------------
+// Video YouTube Upload — envoie les videos vers YouTube via API route
+// ---------------------------------------------------------------------------
+
+const VIDEO_EXTENSIONS = ["mp4", "mov", "avi", "webm", "mkv"];
+
+function VideoYouTubeUpload({ onUpload }: { onUpload: (ref: string) => void }) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+  const [dragOver, setDragOver] = useState(false);
+  const [progress, setProgress] = useState("");
+
+  const upload = useCallback(
+    async (file: File) => {
+      const ext = file.name.split(".").pop()?.toLowerCase() ?? "";
+      if (!VIDEO_EXTENSIONS.includes(ext) && !file.type.startsWith("video/")) {
+        toast.error(
+          "Le fichier doit etre une video (mp4, mov, avi, webm, mkv)",
+        );
+        return;
+      }
+      if (file.size > 2 * 1024 * 1024 * 1024) {
+        toast.error("Fichier trop volumineux (max 2 Go)");
+        return;
+      }
+
+      setUploading(true);
+      setProgress("Upload en cours vers YouTube...");
+
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("title", file.name.replace(/\.[^.]+$/, ""));
+
+        const res = await fetch("/api/video/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!res.ok) {
+          const data = await res
+            .json()
+            .catch(() => ({ error: "Erreur inconnue" }));
+          throw new Error(data.error || `Erreur ${res.status}`);
+        }
+
+        const { videoId } = await res.json();
+        // Stocker au format DB migre : youtube:VIDEO_ID
+        onUpload(`youtube:${videoId}`);
+        toast.success("Video uploadee sur YouTube");
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : String(err);
+        console.error("[VideoYouTubeUpload] Upload failed:", msg);
+        toast.error(`Erreur upload YouTube: ${msg}`);
+      } finally {
+        setUploading(false);
+        setProgress("");
+      }
+    },
+    [onUpload],
+  );
+
+  return (
+    <div
+      className={cn(
+        "relative border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-colors",
+        dragOver
+          ? "border-primary bg-primary/5"
+          : "border-border hover:border-primary/40",
+        uploading && "pointer-events-none opacity-60",
+      )}
+      onClick={() => inputRef.current?.click()}
+      onDragOver={(e) => {
+        e.preventDefault();
+        setDragOver(true);
+      }}
+      onDragLeave={() => setDragOver(false)}
+      onDrop={(e) => {
+        e.preventDefault();
+        setDragOver(false);
+        const file = e.dataTransfer.files[0];
+        if (file) upload(file);
+      }}
+    >
+      <input
+        ref={inputRef}
+        type="file"
+        accept="video/*"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) upload(file);
+          e.target.value = "";
+        }}
+        className="hidden"
+      />
+      {uploading ? (
+        <div className="flex flex-col items-center gap-2">
+          <Loader2 className="w-6 h-6 text-primary animate-spin" />
+          <span className="text-xs text-muted-foreground">{progress}</span>
+        </div>
+      ) : (
+        <div className="flex flex-col items-center gap-2">
+          <Upload className="w-6 h-6 text-muted-foreground" />
+          <span className="text-xs text-muted-foreground">
+            Glissez une video ou cliquez pour uploader (YouTube)
+          </span>
+          <span className="text-[10px] text-muted-foreground/60">
+            Max 2 Go — mp4, mov, avi, webm, mkv
+          </span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Lesson Editor Panel (right side)
 // ---------------------------------------------------------------------------
 
@@ -456,30 +573,40 @@ function LessonEditorPanel({
   const supabase = useSupabase();
   const attachments = (lesson.attachments ?? []) as LessonAttachment[];
 
-  // Helper: delete a file from Supabase Storage
-  const deleteFromStorage = useCallback(
-    async (fileUrl: string) => {
-      try {
-        const url = new URL(fileUrl);
-        // Extract path after /object/public/course-assets/
-        const match = url.pathname.match(
-          /\/object\/public\/course-assets\/(.+)/,
-        );
-        if (match) {
-          await supabase.storage.from("course-assets").remove([match[1]]);
-        }
-      } catch {
-        // Silently ignore — file may be external (YouTube, etc.)
+  // Helper: delete a file from storage
+  const deleteFromStorage = useCallback(async (fileUrl: string) => {
+    try {
+      const url = new URL(fileUrl);
+      // Extract path after /object/public/course-assets/
+      const match = url.pathname.match(/\/object\/public\/course-assets\/(.+)/);
+      if (match) {
+        await fetch("/api/storage/delete", {
+          method: "DELETE",
+          body: JSON.stringify({ key: `course-assets/${match[1]}` }),
+          headers: { "Content-Type": "application/json" },
+        });
       }
-    },
-    [supabase],
-  );
+    } catch {
+      // Silently ignore — file may be external (YouTube, etc.)
+    }
+  }, []);
 
   // Helper: extract embeddable video URL
   const getEmbedUrl = (
     url: string,
   ): { type: "youtube" | "vimeo" | "direct"; src: string } | null => {
     if (!url) return null;
+
+    // Format DB migre : youtube:VIDEO_ID
+    if (url.startsWith("youtube:")) {
+      const id = url.slice("youtube:".length);
+      if (id)
+        return {
+          type: "youtube",
+          src: `https://www.youtube.com/embed/${id}`,
+        };
+    }
+
     try {
       const u = new URL(url);
       // YouTube
@@ -634,14 +761,7 @@ function LessonEditorPanel({
             <div className="flex-1 border-t border-border" />
           </div>
 
-          <FileUpload
-            bucket="course-assets"
-            path="videos"
-            accept="video/*"
-            maxSizeMB={500}
-            label="Glissez une video ou cliquez pour uploader"
-            onUpload={(url) => setVideoUrl(url)}
-          />
+          <VideoYouTubeUpload onUpload={(ref) => setVideoUrl(ref)} />
         </div>
 
         {/* Pieces jointes */}
@@ -1238,14 +1358,14 @@ export function CourseEditor({ course, routePrefix }: CourseEditorProps) {
             className="absolute inset-0 bg-black/50"
             onClick={() => setSidebarOpen(false)}
           />
-          <div className="absolute left-0 top-0 bottom-0 w-80 bg-surface border-r border-border">
+          <div className="absolute left-0 top-0 bottom-0 w-[350px] bg-surface border-r border-border">
             {sidebarContent}
           </div>
         </div>
       )}
 
       {/* Desktop sidebar */}
-      <div className="hidden lg:flex w-80 min-w-0 bg-surface border-r border-border shrink-0 overflow-hidden">
+      <div className="hidden lg:flex w-[350px] min-w-0 bg-surface border-r border-border shrink-0 overflow-hidden">
         {sidebarContent}
       </div>
 

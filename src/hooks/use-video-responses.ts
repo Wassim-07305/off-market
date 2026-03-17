@@ -66,20 +66,22 @@ export function useSendVideoResponse() {
     }) => {
       if (!user) throw new Error("Non authentifie");
 
-      // Upload video to Supabase Storage
+      // Upload video via API route
       const fileName = `${user.id}/${Date.now()}.webm`;
-      const { error: uploadError } = await supabase.storage
-        .from("video-responses")
-        .upload(fileName, videoBlob, {
-          contentType: "video/webm",
-          upsert: false,
-        });
+      const formData = new FormData();
+      formData.append(
+        "file",
+        new File([videoBlob], "video.webm", { type: "video/webm" }),
+      );
+      formData.append("path", `video-responses/${fileName}`);
+      const uploadRes = await fetch("/api/storage/upload", {
+        method: "POST",
+        body: formData,
+      });
 
-      if (uploadError) throw uploadError;
+      if (!uploadRes.ok) throw new Error("Upload failed");
 
-      const { data: urlData } = supabase.storage
-        .from("video-responses")
-        .getPublicUrl(fileName);
+      const { url: urlData_publicUrl } = await uploadRes.json();
 
       // Create DB record
       const { data, error } = await (
@@ -92,7 +94,7 @@ export function useSendVideoResponse() {
           recipient_id: recipientId,
           related_type: relatedType,
           related_id: relatedId ?? null,
-          video_url: urlData.publicUrl,
+          video_url: urlData_publicUrl,
           message: message ?? null,
         } as never)
         .select()

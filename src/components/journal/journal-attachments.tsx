@@ -8,7 +8,6 @@ import {
   FileText,
   Image as ImageIcon,
 } from "lucide-react";
-import { useSupabase } from "@/hooks/use-supabase";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -48,7 +47,6 @@ export function JournalAttachments({
   onChange,
   readOnly = false,
 }: JournalAttachmentsProps) {
-  const supabase = useSupabase();
   const { user } = useAuth();
   const [uploading, setUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
@@ -73,27 +71,29 @@ export function JournalAttachments({
       const ext = file.name.split(".").pop()?.toLowerCase() || "bin";
       const path = `${user.id}/journal/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
 
-      const { error: uploadError } = await supabase.storage
-        .from("journal-attachments")
-        .upload(path, file, { upsert: false });
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("path", `journal-attachments/${path}`);
+      const uploadRes = await fetch("/api/storage/upload", {
+        method: "POST",
+        body: formData,
+      });
 
-      if (uploadError) {
+      if (!uploadRes.ok) {
         toast.error(`Erreur upload : ${file.name}`);
         return null;
       }
 
-      const { data: urlData } = supabase.storage
-        .from("journal-attachments")
-        .getPublicUrl(path);
+      const { url } = await uploadRes.json();
 
       return {
-        url: urlData.publicUrl,
+        url,
         type: file.type,
         name: file.name,
         size: file.size,
       };
     },
-    [supabase, user],
+    [user],
   );
 
   const handleFiles = useCallback(
