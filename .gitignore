@@ -43,3 +43,9 @@ next-env.d.ts
 # Test simulation files (contain local credentials)
 tests/simulation/*.mjs
 tests/screenshots/
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+tests/.auth/
