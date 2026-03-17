@@ -149,86 +149,85 @@ function TopStatsSection({ prefix }: { prefix: string }) {
   }, [courses, lessonProgress]);
 
   const achievedGoals = goals.filter((g) => g.status === "completed").length;
-  const isLoading = streakLoading || xpLoading;
 
-  if (isLoading) {
-    return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <div
-            key={i}
-            className="bg-white border border-zinc-200 rounded-2xl p-5 animate-pulse"
-          >
-            <div className="h-4 w-24 bg-zinc-100 rounded mb-4" />
-            <div className="h-7 w-16 bg-zinc-100 rounded" />
-          </div>
-        ))}
-      </div>
-    );
-  }
+  // Mini skeleton shared by loading cards
+  const CardSkeleton = () => (
+    <div className="bg-white border border-zinc-200 rounded-2xl p-5 animate-pulse">
+      <div className="h-4 w-24 bg-zinc-100 rounded mb-4" />
+      <div className="h-7 w-16 bg-zinc-100 rounded" />
+    </div>
+  );
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {/* Streak card */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-orange-50 to-white border border-orange-200/50 rounded-2xl p-5 transition-all duration-200 hover:shadow-lg hover:shadow-orange-500/5 hover:-translate-y-0.5">
-        <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-orange-100/40 to-transparent rounded-bl-full" />
-        <div className="flex items-center gap-3 mb-3">
-          <div className="size-9 rounded-xl bg-gradient-to-br from-orange-400 to-orange-500 flex items-center justify-center shadow-sm shadow-orange-500/20">
-            <Flame className="size-4 text-white" />
-          </div>
-          <span className="text-sm text-muted-foreground font-medium">
-            Streak
-          </span>
-        </div>
-        <div className="flex items-baseline gap-2">
-          <span className="text-2xl font-bold text-foreground tabular-nums">
-            {currentStreak}
-          </span>
-          <span className="text-sm text-muted-foreground">
-            jour{currentStreak !== 1 ? "s" : ""}
-          </span>
-        </div>
-        {multiplier > 1 && (
-          <div className="flex items-center gap-1 mt-1.5">
-            <Zap className="size-3 text-amber-500" />
-            <span className="text-xs font-semibold text-amber-600">
-              {multiplier}x XP
+      {streakLoading ? (
+        <CardSkeleton />
+      ) : (
+        <div className="relative overflow-hidden bg-gradient-to-br from-orange-50 to-white border border-orange-200/50 rounded-2xl p-5 transition-all duration-200 hover:shadow-lg hover:shadow-orange-500/5 hover:-translate-y-0.5">
+          <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-orange-100/40 to-transparent rounded-bl-full" />
+          <div className="flex items-center gap-3 mb-3">
+            <div className="size-9 rounded-xl bg-gradient-to-br from-orange-400 to-orange-500 flex items-center justify-center shadow-sm shadow-orange-500/20">
+              <Flame className="size-4 text-white" />
+            </div>
+            <span className="text-sm text-muted-foreground font-medium">
+              Streak
             </span>
           </div>
-        )}
-      </div>
+          <div className="flex items-baseline gap-2">
+            <span className="text-2xl font-bold text-foreground tabular-nums">
+              {currentStreak}
+            </span>
+            <span className="text-sm text-muted-foreground">
+              jour{currentStreak !== 1 ? "s" : ""}
+            </span>
+          </div>
+          {multiplier > 1 && (
+            <div className="flex items-center gap-1 mt-1.5">
+              <Zap className="size-3 text-amber-500" />
+              <span className="text-xs font-semibold text-amber-600">
+                {multiplier}x XP
+              </span>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* XP / Level card */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-red-50/50 to-white border border-red-200/30 rounded-2xl p-5 transition-all duration-200 hover:shadow-lg hover:shadow-[#AF0000]/5 hover:-translate-y-0.5">
-        <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-red-100/30 to-transparent rounded-bl-full" />
-        <div className="flex items-center gap-3 mb-3">
-          <div className="size-9 rounded-xl bg-gradient-to-br from-[#AF0000] to-[#DC2626] flex items-center justify-center shadow-sm shadow-[#AF0000]/20">
-            <Star className="size-4 text-white" />
+      {xpLoading ? (
+        <CardSkeleton />
+      ) : (
+        <div className="relative overflow-hidden bg-gradient-to-br from-red-50/50 to-white border border-red-200/30 rounded-2xl p-5 transition-all duration-200 hover:shadow-lg hover:shadow-[#AF0000]/5 hover:-translate-y-0.5">
+          <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-red-100/30 to-transparent rounded-bl-full" />
+          <div className="flex items-center gap-3 mb-3">
+            <div className="size-9 rounded-xl bg-gradient-to-br from-[#AF0000] to-[#DC2626] flex items-center justify-center shadow-sm shadow-[#AF0000]/20">
+              <Star className="size-4 text-white" />
+            </div>
+            <span className="text-sm text-muted-foreground font-medium">
+              Niveau
+            </span>
           </div>
-          <span className="text-sm text-muted-foreground font-medium">
-            Niveau
-          </span>
+          <div className="flex items-baseline gap-2 mb-2">
+            <span className="text-2xl font-bold text-foreground tabular-nums">
+              {summary.level.level}
+            </span>
+            <span className="text-sm text-muted-foreground">
+              {summary.level.name}
+            </span>
+          </div>
+          {/* XP progress bar */}
+          <div className="h-2 bg-red-100/60 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-[#AF0000] to-[#DC2626] rounded-full transition-all duration-700"
+              style={{ width: `${summary.progressToNext}%` }}
+            />
+          </div>
+          <p className="text-[10px] text-muted-foreground mt-1.5">
+            {summary.totalXp} XP · {summary.progressToNext}% vers niveau{" "}
+            {summary.nextLevel ? summary.nextLevel.level : "max"}
+          </p>
         </div>
-        <div className="flex items-baseline gap-2 mb-2">
-          <span className="text-2xl font-bold text-foreground tabular-nums">
-            {summary.level.level}
-          </span>
-          <span className="text-sm text-muted-foreground">
-            {summary.level.name}
-          </span>
-        </div>
-        {/* XP progress bar */}
-        <div className="h-2 bg-red-100/60 rounded-full overflow-hidden">
-          <div
-            className="h-full bg-gradient-to-r from-[#AF0000] to-[#DC2626] rounded-full transition-all duration-700"
-            style={{ width: `${summary.progressToNext}%` }}
-          />
-        </div>
-        <p className="text-[10px] text-muted-foreground mt-1.5">
-          {summary.totalXp} XP · {summary.progressToNext}% vers niveau{" "}
-          {summary.nextLevel ? summary.nextLevel.level : "max"}
-        </p>
-      </div>
+      )}
 
       {/* Formations completed */}
       <div className="relative overflow-hidden bg-gradient-to-br from-emerald-50 to-white border border-emerald-200/50 rounded-2xl p-5 transition-all duration-200 hover:shadow-lg hover:shadow-emerald-500/5 hover:-translate-y-0.5">
