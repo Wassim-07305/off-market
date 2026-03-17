@@ -1,21 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import {
-  Bell,
-  User,
-  LogOut,
-  Menu,
-  Moon,
-  MoonStar,
-  ChevronDown,
-  Search,
-} from "lucide-react";
+import { Bell, User, LogOut, Menu, Moon, Sun, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
 import { useAuth } from "@/hooks/use-auth";
 import { useUIStore } from "@/stores/ui-store";
 import { useNotificationStore } from "@/stores/notification-store";
-import { useDndMode } from "@/hooks/use-dnd-mode";
 import { Avatar } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -31,23 +21,8 @@ export function Header() {
   const { setMobileMenuOpen, setNotificationPanelOpen, setCommandPaletteOpen } =
     useUIStore();
   const { unreadCount } = useNotificationStore();
-  const { isDnd, toggleDnd, setDndUntil, dndUntil } = useDndMode();
-  const [showDndMenu, setShowDndMenu] = useState(false);
+  const { theme, setTheme } = useTheme();
   const router = useRouter();
-
-  const handleDndDuration = (hours: number) => {
-    const until = new Date(Date.now() + hours * 3600000);
-    setDndUntil(until);
-    setShowDndMenu(false);
-  };
-
-  const handleDndUntilTomorrow = () => {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    tomorrow.setHours(8, 0, 0, 0);
-    setDndUntil(tomorrow);
-    setShowDndMenu(false);
-  };
 
   return (
     <header className="flex h-16 items-center justify-between border-b border-border/40 bg-card/80 px-4 backdrop-blur-sm md:px-6">
@@ -80,99 +55,18 @@ export function Header() {
 
       {/* Right: DND + Notifications + User */}
       <div className="flex items-center gap-0.5">
-        {/* DND toggle */}
-        <div className="relative">
-          <button
-            onClick={toggleDnd}
-            onContextMenu={(e) => {
-              e.preventDefault();
-              setShowDndMenu(!showDndMenu);
-            }}
-            className={cn(
-              "relative size-8 inline-flex items-center justify-center rounded-lg transition-colors",
-              isDnd
-                ? "text-amber-500 bg-amber-500/10 hover:bg-amber-500/15"
-                : "text-muted-foreground hover:bg-muted hover:text-foreground",
-            )}
-            title={
-              isDnd ? "Desactiver Ne pas deranger" : "Activer Ne pas deranger"
-            }
-          >
-            {isDnd ? (
-              <MoonStar className="h-4 w-4" />
-            ) : (
-              <Moon className="h-4 w-4" />
-            )}
-            {isDnd && (
-              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-amber-500 rounded-full border-[1.5px] border-surface" />
-            )}
-          </button>
-
-          {/* DND duration chevron */}
-          <button
-            onClick={() => setShowDndMenu(!showDndMenu)}
-            className={cn(
-              "absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full flex items-center justify-center bg-surface border border-border text-muted-foreground hover:text-foreground transition-colors",
-              showDndMenu && "text-foreground",
-            )}
-          >
-            <ChevronDown className="w-2 h-2" />
-          </button>
-
-          {showDndMenu && (
-            <div className="absolute top-full right-0 mt-1.5 w-48 bg-surface border border-border rounded-lg shadow-lg z-50 py-1 animate-in fade-in slide-in-from-top-2 duration-150">
-              <div className="px-3 py-2 border-b border-border">
-                <p className="text-xs font-medium text-foreground">
-                  Ne pas deranger
-                </p>
-                {isDnd && dndUntil && (
-                  <p className="text-[10px] text-muted-foreground mt-0.5">
-                    Actif jusqu&apos;a{" "}
-                    {dndUntil.toLocaleTimeString("fr-FR", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </p>
-                )}
-              </div>
-              <button
-                onClick={() => handleDndDuration(1)}
-                className="w-full px-3 py-1.5 text-left text-xs text-foreground hover:bg-muted transition-colors"
-              >
-                Pendant 1 heure
-              </button>
-              <button
-                onClick={() => handleDndDuration(2)}
-                className="w-full px-3 py-1.5 text-left text-xs text-foreground hover:bg-muted transition-colors"
-              >
-                Pendant 2 heures
-              </button>
-              <button
-                onClick={() => handleDndDuration(4)}
-                className="w-full px-3 py-1.5 text-left text-xs text-foreground hover:bg-muted transition-colors"
-              >
-                Pendant 4 heures
-              </button>
-              <button
-                onClick={handleDndUntilTomorrow}
-                className="w-full px-3 py-1.5 text-left text-xs text-foreground hover:bg-muted transition-colors"
-              >
-                Jusqu&apos;a demain 8h
-              </button>
-              <div className="border-t border-border mt-1 pt-1">
-                <button
-                  onClick={() => {
-                    toggleDnd();
-                    setShowDndMenu(false);
-                  }}
-                  className="w-full px-3 py-1.5 text-left text-xs font-medium text-primary hover:bg-primary/5 transition-colors"
-                >
-                  {isDnd ? "Desactiver" : "Activer indefiniment"}
-                </button>
-              </div>
-            </div>
+        {/* Theme toggle (clair / sombre) */}
+        <button
+          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          className="size-8 inline-flex items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+          title={theme === "dark" ? "Mode clair" : "Mode sombre"}
+        >
+          {theme === "dark" ? (
+            <Sun className="h-4 w-4" />
+          ) : (
+            <Moon className="h-4 w-4" />
           )}
-        </div>
+        </button>
 
         {/* Notification bell */}
         <button

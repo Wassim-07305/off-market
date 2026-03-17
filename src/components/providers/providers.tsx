@@ -36,7 +36,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
         attribute="class"
         defaultTheme="light"
         enableSystem={false}
-        forcedTheme="light"
       >
         <BrandingProvider>
           <AuthProvider>

@@ -30,6 +30,8 @@ export function useStudents(options: UseStudentsOptions = {}) {
   const studentsQuery = useQuery({
     queryKey: ["students", search, tag, limit],
     enabled: !!user,
+    staleTime: 2 * 60 * 1000, // 2 min — evite de refetch a chaque navigation
+    gcTime: 10 * 60 * 1000, // 10 min — garde en cache
     queryFn: async () => {
       let query = supabase
         .from("profiles")
