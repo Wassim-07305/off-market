@@ -143,7 +143,7 @@ function TextContent({ content }: { content: string }) {
 
 function renderRichText(text: string): React.ReactNode[] {
   const pattern =
-    /(@(?:tous|channel|coachs|[\w\s]+?))(?=[\s,.]|$)|(\*\*(.+?)\*\*)|(_(.+?)_)|(~~(.+?)~~)|(`(.+?)`)|(\[(.+?)\]\((.+?)\))|(https?:\/\/[^\s<>"{}|\\^`[\]]+)|(#urgent\b)/g;
+    /(@(?:tous|channel|coachs|[\w\s]+?))(?=[\s,.]|$)|(\*\*(.+?)\*\*)|(__(.+?)__)|(_(.+?)_)|(~~(.+?)~~)|(`(.+?)`)|(\[(.+?)\]\((.+?)\))|(https?:\/\/[^\s<>"{}|\\^`[\]]+)|(#urgent\b)/g;
 
   const parts: React.ReactNode[] = [];
   let lastIdx = 0;
@@ -176,39 +176,33 @@ function renderRichText(text: string): React.ReactNode[] {
         </strong>,
       );
     } else if (match[4]) {
-      parts.push(<em key={match.index}>{match[5]}</em>);
+      parts.push(
+        <span key={match.index} className="underline">
+          {match[5]}
+        </span>,
+      );
     } else if (match[6]) {
+      parts.push(<em key={match.index}>{match[7]}</em>);
+    } else if (match[8]) {
       parts.push(
         <del key={match.index} className="text-muted-foreground">
-          {match[7]}
+          {match[9]}
         </del>,
       );
-    } else if (match[8]) {
+    } else if (match[10]) {
       parts.push(
         <code
           key={match.index}
           className="px-1 py-0.5 rounded bg-muted text-[13px] font-mono text-foreground"
         >
-          {match[9]}
+          {match[11]}
         </code>,
       );
-    } else if (match[10]) {
+    } else if (match[12]) {
       parts.push(
         <a
           key={match.index}
-          href={match[12]}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-primary underline underline-offset-2 hover:text-primary/80"
-        >
-          {match[11]}
-        </a>,
-      );
-    } else if (match[13]) {
-      parts.push(
-        <a
-          key={match.index}
-          href={match[13]}
+          href={match[14]}
           target="_blank"
           rel="noopener noreferrer"
           className="text-primary underline underline-offset-2 hover:text-primary/80"
@@ -216,7 +210,19 @@ function renderRichText(text: string): React.ReactNode[] {
           {match[13]}
         </a>,
       );
-    } else if (match[14]) {
+    } else if (match[15]) {
+      parts.push(
+        <a
+          key={match.index}
+          href={match[15]}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-primary underline underline-offset-2 hover:text-primary/80"
+        >
+          {match[15]}
+        </a>,
+      );
+    } else if (match[16]) {
       parts.push(
         <span
           key={match.index}

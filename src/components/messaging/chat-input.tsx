@@ -23,6 +23,7 @@ import {
   CornerUpLeft,
   Bold,
   Italic,
+  Underline as UnderlineIcon,
   Strikethrough,
   List,
   ListOrdered,
@@ -67,8 +68,8 @@ function htmlToMarkdown(html: string): string {
     /<(?:s|del|strike)>([\s\S]*?)<\/(?:s|del|strike)>/gi,
     "~~$1~~",
   );
-  // <u> → on garde tel quel (pas de syntaxe markdown standard)
-  md = md.replace(/<\/?u>/gi, "");
+  // <u> → __...__
+  md = md.replace(/<u>([\s\S]*?)<\/u>/gi, "__$1__");
 
   // Listes non ordonnees : <ul><li>...</li></ul>
   md = md.replace(/<ul>([\s\S]*?)<\/ul>/gi, (_match, inner: string) => {
@@ -427,6 +428,12 @@ export function ChatInput({
               title="Italique"
               active={editor?.isActive("italic") ?? false}
               onClick={() => editor?.chain().focus().toggleItalic().run()}
+            />
+            <FormatBtn
+              icon={UnderlineIcon}
+              title="Souligne"
+              active={editor?.isActive("underline") ?? false}
+              onClick={() => editor?.chain().focus().toggleUnderline().run()}
             />
             <FormatBtn
               icon={Strikethrough}
