@@ -1,16 +1,4 @@
-import Stripe from "stripe";
-
-let _stripe: Stripe | null = null;
-
-export function getStripeServer() {
-  if (!_stripe) {
-    if (!process.env.STRIPE_SECRET_KEY) {
-      throw new Error("STRIPE_SECRET_KEY is not set");
-    }
-    _stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: "2026-02-25.clover",
-      typescript: true,
-    });
-  }
-  return _stripe;
-}
+// Stripe removed — stub module
+export function getStripeServer() { return null; }
+export function getStripe() { return null; }
+export default null;

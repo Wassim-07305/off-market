@@ -23,6 +23,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
+import { Breadcrumb } from "@/components/layout/breadcrumb";
 import { cn } from "@/lib/utils";
 
 export function Header() {
@@ -49,8 +50,8 @@ export function Header() {
   };
 
   return (
-    <header className="flex h-14 items-center justify-between border-b border-border/60 bg-surface/80 backdrop-blur-md px-4 md:px-6 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
-      {/* Left: Hamburger (mobile) */}
+    <header className="flex h-16 items-center justify-between border-b border-border/40 bg-card/80 px-4 backdrop-blur-sm md:px-6">
+      {/* Left: Hamburger (mobile) + Breadcrumb */}
       <div className="flex items-center gap-2">
         <button
           type="button"
@@ -58,8 +59,9 @@ export function Header() {
           className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground md:hidden"
           aria-label="Menu"
         >
-          <Menu className="h-4 w-4" />
+          <Menu className="h-5 w-5" />
         </button>
+        <Breadcrumb />
       </div>
 
       {/* Center: Search bar — visible on md+ screens */}

@@ -1,10 +1,3 @@
-import { loadStripe } from "@stripe/stripe-js";
-
-let stripePromise: ReturnType<typeof loadStripe> | null = null;
-
-export function getStripe() {
-  if (!stripePromise) {
-    stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
-  }
-  return stripePromise;
-}
+// Stripe removed — stub module  
+export function getStripeClient() { return null; }
+export async function loadStripe() { return null; }

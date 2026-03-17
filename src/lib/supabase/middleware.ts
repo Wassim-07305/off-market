@@ -17,6 +17,44 @@ const DEFAULT_ROUTES: Record<string, string> = {
   client: "/client/dashboard",
 };
 
+/**
+ * Cookie name used to cache role + onboarding status.
+ * Avoids a DB roundtrip on every middleware invocation.
+ * TTL: 5 minutes — short enough that role changes propagate quickly.
+ */
+const PROFILE_CACHE_COOKIE = "om_profile_cache";
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
+interface ProfileCache {
+  role: string;
+  onboarding_completed: boolean;
+  exp: number; // timestamp ms
+}
+
+function readProfileCache(request: NextRequest): ProfileCache | null {
+  try {
+    const raw = request.cookies.get(PROFILE_CACHE_COOKIE)?.value;
+    if (!raw) return null;
+    const parsed: ProfileCache = JSON.parse(atob(raw));
+    if (parsed.exp < Date.now()) return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function buildCacheCookieValue(
+  role: string,
+  onboarding_completed: boolean,
+): string {
+  const payload: ProfileCache = {
+    role,
+    onboarding_completed,
+    exp: Date.now() + CACHE_TTL_MS,
+  };
+  return btoa(JSON.stringify(payload));
+}
+
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
@@ -45,6 +83,9 @@ export async function updateSession(request: NextRequest) {
     },
   );
 
+  // getUser() is required to refresh the session token — cannot skip.
+  // It uses the local JWT and only hits the network to refresh expired tokens,
+  // so it is fast in the happy path (no network call needed when token is valid).
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -74,23 +115,46 @@ export async function updateSession(request: NextRequest) {
 
   // Not logged in → redirect to login (except auth, API & public pages)
   if (!user && !isAuthPage && !isApiRoute && !isPublicPage) {
+    // Clear stale profile cache on logout
     const url = request.nextUrl.clone();
     url.pathname = "/login";
-    return NextResponse.redirect(url);
+    const redirectResp = NextResponse.redirect(url);
+    redirectResp.cookies.delete(PROFILE_CACHE_COOKIE);
+    return redirectResp;
   }
 
   // Logged in on auth page → redirect to role dashboard
   if (user && isAuthPage && !pathname.startsWith("/auth/callback")) {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", user.id)
-      .single();
+    // Check cache first to avoid DB query
+    const cached = readProfileCache(request);
+    let role: string;
+    let onboardingDone: boolean;
 
-    const role = profile?.role ?? "client";
+    if (cached) {
+      role = cached.role;
+      onboardingDone = cached.onboarding_completed;
+    } else {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("role, onboarding_completed")
+        .eq("id", user.id)
+        .single();
+      role = profile?.role ?? "client";
+      onboardingDone = profile?.onboarding_completed ?? false;
+    }
+
     const url = request.nextUrl.clone();
-    url.pathname = DEFAULT_ROUTES[role] ?? "/client/dashboard";
-    return NextResponse.redirect(url);
+    url.pathname = onboardingDone
+      ? (DEFAULT_ROUTES[role] ?? "/client/dashboard")
+      : "/onboarding";
+    const redirectResp = NextResponse.redirect(url);
+    // Write cache so next requests skip the DB
+    redirectResp.cookies.set(
+      PROFILE_CACHE_COOKIE,
+      buildCacheCookieValue(role, onboardingDone),
+      { path: "/", sameSite: "lax", httpOnly: false, maxAge: 300 },
+    );
+    return redirectResp;
   }
 
   // Role-based route protection + onboarding enforcement
@@ -103,14 +167,25 @@ export async function updateSession(request: NextRequest) {
       pathname.startsWith("/client");
 
     if (isRoleRoute || isOnboardingPage) {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("role, onboarding_completed")
-        .eq("id", user.id)
-        .single();
+      // Use cached profile if fresh — avoids DB query on every navigation
+      const cached = readProfileCache(request);
+      let role: string;
+      let onboardingDone: boolean;
+      let needsWrite = false;
 
-      const role = profile?.role ?? "client";
-      const onboardingDone = profile?.onboarding_completed ?? false;
+      if (cached) {
+        role = cached.role;
+        onboardingDone = cached.onboarding_completed;
+      } else {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("role, onboarding_completed")
+          .eq("id", user.id)
+          .single();
+        role = profile?.role ?? "client";
+        onboardingDone = profile?.onboarding_completed ?? false;
+        needsWrite = true;
+      }
 
       // Enforce onboarding: redirect to /onboarding if not completed
       // Exception: allow call room pages so users can join calls during onboarding
@@ -120,7 +195,15 @@ export async function updateSession(request: NextRequest) {
       if (!onboardingDone && !isOnboardingPage && !isApiRoute && !isCallRoom) {
         const url = request.nextUrl.clone();
         url.pathname = "/onboarding";
-        return NextResponse.redirect(url);
+        const redirectResp = NextResponse.redirect(url);
+        if (needsWrite) {
+          redirectResp.cookies.set(
+            PROFILE_CACHE_COOKIE,
+            buildCacheCookieValue(role, onboardingDone),
+            { path: "/", sameSite: "lax", httpOnly: false, maxAge: 300 },
+          );
+        }
+        return redirectResp;
       }
 
       // Already completed onboarding but on /onboarding → go to dashboard
@@ -138,6 +221,15 @@ export async function updateSession(request: NextRequest) {
           url.pathname = DEFAULT_ROUTES[role] ?? "/client/dashboard";
           return NextResponse.redirect(url);
         }
+      }
+
+      // Write cache on the successful passthrough response (first time)
+      if (needsWrite) {
+        supabaseResponse.cookies.set(
+          PROFILE_CACHE_COOKIE,
+          buildCacheCookieValue(role, onboardingDone),
+          { path: "/", sameSite: "lax", httpOnly: false, maxAge: 300 },
+        );
       }
     }
   }
