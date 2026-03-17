@@ -218,6 +218,11 @@ export default function OnboardingPage() {
     try {
       completeStep.mutate({ stepKey: "completion" });
       await completeOnboarding.mutateAsync();
+
+      // Supprime le cache middleware pour forcer un re-fetch du profil
+      document.cookie =
+        "om_profile_cache=; path=/; max-age=0; SameSite=Lax";
+
       setTimeout(() => {
         window.location.href = getDefaultRouteForRole(role);
       }, 2500);
