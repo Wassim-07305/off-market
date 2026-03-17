@@ -75,13 +75,10 @@ export function Header() {
           title="Notifications"
         >
           <Bell className="h-[18px] w-[18px]" />
-          {unreadCount > 0 && !isDnd && (
+          {unreadCount > 0 && (
             <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#AF0000] px-1 text-[10px] font-semibold text-white shadow-[0_0_8px_rgba(175,0,0,0.3)] animate-pulse">
               {unreadCount > 99 ? "99+" : unreadCount}
             </span>
-          )}
-          {isDnd && (
-            <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-amber-500/60 rounded-full" />
           )}
         </button>
 
