@@ -9,12 +9,14 @@ interface CompletionStepProps {
   firstName: string;
   onComplete: () => void;
   isCompleting: boolean;
+  completedItems?: string[];
 }
 
 export function CompletionStep({
   firstName,
   onComplete,
   isCompleting,
+  completedItems: completedItemsProp,
 }: CompletionStepProps) {
   useEffect(() => {
     // Fire confetti on mount
@@ -44,7 +46,7 @@ export function CompletionStep({
     frame();
   }, []);
 
-  const COMPLETED_ITEMS = [
+  const COMPLETED_ITEMS = completedItemsProp ?? [
     "Video d'accueil regardee",
     "Profil business complete",
     "CSM rencontre",

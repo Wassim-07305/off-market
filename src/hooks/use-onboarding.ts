@@ -7,17 +7,62 @@ import { toast } from "sonner";
 import type { OnboardingStep } from "@/types/billing";
 import { autoAssignCSM } from "@/lib/csm-auto-assign";
 
-// ─── Step keys for the enhanced onboarding flow ──────────────────
-export const ONBOARDING_STEP_KEYS = [
+// ─── Step keys per role ──────────────────────────────────────────
+export const ROLE_ONBOARDING_STEPS = {
+  admin: ["welcome_video", "admin_setup", "completion"] as const,
+  coach: [
+    "welcome_video",
+    "about_you",
+    "coach_tools",
+    "feature_tour",
+    "completion",
+  ] as const,
+  client: [
+    "welcome_video",
+    "about_you",
+    "meet_csm",
+    "feature_tour",
+    "message_test",
+    "completion",
+  ] as const,
+  setter: [
+    "welcome_video",
+    "about_you",
+    "sales_tools",
+    "completion",
+  ] as const,
+  closer: [
+    "welcome_video",
+    "about_you",
+    "sales_tools",
+    "completion",
+  ] as const,
+} as const;
+
+// All possible step keys (union of all roles)
+export const ALL_STEP_KEYS = [
   "welcome_video",
   "about_you",
   "meet_csm",
   "feature_tour",
   "message_test",
+  "admin_setup",
+  "coach_tools",
+  "sales_tools",
   "completion",
 ] as const;
 
-export type OnboardingStepKey = (typeof ONBOARDING_STEP_KEYS)[number];
+// Legacy alias — defaults to client flow
+export const ONBOARDING_STEP_KEYS = ROLE_ONBOARDING_STEPS.client;
+
+export type OnboardingStepKey = (typeof ALL_STEP_KEYS)[number];
+export type AppRole = keyof typeof ROLE_ONBOARDING_STEPS;
+
+export function getStepsForRole(role: string): readonly OnboardingStepKey[] {
+  return (
+    ROLE_ONBOARDING_STEPS[role as AppRole] ?? ROLE_ONBOARDING_STEPS.client
+  );
+}
 
 export interface OnboardingStepRecord {
   id: string;
@@ -254,10 +299,12 @@ export function useOnboarding() {
 }
 
 // ─── Enhanced onboarding progress (granular step tracking) ───────
-export function useOnboardingProgress(userId?: string) {
+export function useOnboardingProgress(userId?: string, role?: string) {
   const supabase = useSupabase();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const targetId = userId ?? user?.id;
+  const effectiveRole = role ?? profile?.role ?? "client";
+  const roleSteps = getStepsForRole(effectiveRole);
 
   const stepsQuery = useQuery({
     queryKey: ["onboarding-steps", targetId],
@@ -280,15 +327,16 @@ export function useOnboardingProgress(userId?: string) {
 
   const completedKeys = new Set((stepsQuery.data ?? []).map((s) => s.step));
 
-  const currentStepIndex = ONBOARDING_STEP_KEYS.findIndex(
+  const currentStepIndex = roleSteps.findIndex(
     (key) => !completedKeys.has(key),
   );
 
   return {
     steps: stepsQuery.data ?? [],
     completedKeys,
+    roleSteps,
     currentStepIndex:
-      currentStepIndex === -1 ? ONBOARDING_STEP_KEYS.length : currentStepIndex,
+      currentStepIndex === -1 ? roleSteps.length : currentStepIndex,
     isAllComplete: currentStepIndex === -1,
     isLoading: stepsQuery.isLoading,
   };

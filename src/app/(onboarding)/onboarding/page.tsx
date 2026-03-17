@@ -11,7 +11,8 @@ import {
   useCompleteStep,
   useCsmWelcomeVideo,
   useOnboardingForm,
-  ONBOARDING_STEP_KEYS,
+  getStepsForRole,
+  type OnboardingStepKey,
 } from "@/hooks/use-onboarding";
 import { useSupabase } from "@/hooks/use-supabase";
 import { useQuery } from "@tanstack/react-query";
@@ -26,6 +27,9 @@ import { MeetCsmStep } from "@/components/onboarding/meet-csm-step";
 import { FeatureTourStep } from "@/components/onboarding/feature-tour-step";
 import { MessageTestStep } from "@/components/onboarding/message-test-step";
 import { CompletionStep } from "@/components/onboarding/completion-step";
+import { AdminSetupStep } from "@/components/onboarding/admin-setup-step";
+import { CoachToolsStep } from "@/components/onboarding/coach-tools-step";
+import { SalesToolsStep } from "@/components/onboarding/sales-tools-step";
 
 // ─── Animated background ─────────────────────────────────────────
 function AnimatedBackground() {
@@ -44,27 +48,83 @@ function AnimatedBackground() {
   );
 }
 
-// ─── Step labels for progress bar ────────────────────────────────
-const STEP_LABELS = [
-  "Accueil",
-  "Ton profil",
-  "Ton coach",
-  "Visite guidee",
-  "Premier message",
-  "Termine !",
-];
+// ─── Step labels per role ─────────────────────────────────────────
+const STEP_LABELS: Record<string, Record<string, string>> = {
+  admin: {
+    welcome_video: "Accueil",
+    admin_setup: "Configuration",
+    completion: "Termine !",
+  },
+  coach: {
+    welcome_video: "Accueil",
+    about_you: "Ton profil",
+    coach_tools: "Tes outils",
+    feature_tour: "Visite guidee",
+    completion: "Termine !",
+  },
+  client: {
+    welcome_video: "Accueil",
+    about_you: "Ton profil",
+    meet_csm: "Ton coach",
+    feature_tour: "Visite guidee",
+    message_test: "Premier message",
+    completion: "Termine !",
+  },
+  setter: {
+    welcome_video: "Accueil",
+    about_you: "Ton profil",
+    sales_tools: "Pipeline & appels",
+    completion: "Termine !",
+  },
+  closer: {
+    welcome_video: "Accueil",
+    about_you: "Ton profil",
+    sales_tools: "Appels & contrats",
+    completion: "Termine !",
+  },
+};
+
+// ─── Completed items per role (for CompletionStep) ────────────────
+const COMPLETED_ITEMS: Record<string, string[]> = {
+  admin: ["Video d'accueil regardee", "Plateforme configuree"],
+  coach: [
+    "Video d'accueil regardee",
+    "Profil complete",
+    "Outils de coaching decouverts",
+    "Visite de la plateforme",
+  ],
+  client: [
+    "Video d'accueil regardee",
+    "Profil business complete",
+    "CSM rencontre",
+    "Visite de la plateforme",
+    "Premier message envoye",
+  ],
+  setter: [
+    "Video d'accueil regardee",
+    "Profil complete",
+    "Pipeline et outils decouverts",
+  ],
+  closer: [
+    "Video d'accueil regardee",
+    "Profil complete",
+    "Outils de closing decouverts",
+  ],
+};
 
 // ─── Main page ───────────────────────────────────────────────────
 export default function OnboardingPage() {
   const { user, profile } = useAuth();
   const router = useRouter();
   const { completeOnboarding } = useOnboarding();
-  const { currentStepIndex } = useOnboardingProgress();
-  const completeStep = useCompleteStep();
-  const onboardingForm = useOnboardingForm();
   const supabase = useSupabase();
 
   const role = profile?.role ?? "client";
+  const roleSteps = getStepsForRole(role) as readonly OnboardingStepKey[];
+  const { currentStepIndex } = useOnboardingProgress(undefined, role);
+  const completeStep = useCompleteStep();
+  const onboardingForm = useOnboardingForm();
+
   const firstName = profile?.full_name?.split(" ")[0] ?? "";
 
   // Redirect if already onboarded
@@ -74,21 +134,18 @@ export default function OnboardingPage() {
     }
   }, [profile?.onboarding_completed, role, router]);
 
-  // Determine current wizard step — start from the first incomplete step
+  // Determine current wizard step
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState(1);
 
   // Sync initial step from progress
   useEffect(() => {
-    if (
-      currentStepIndex > 0 &&
-      currentStepIndex < ONBOARDING_STEP_KEYS.length
-    ) {
+    if (currentStepIndex > 0 && currentStepIndex < roleSteps.length) {
       setStep(currentStepIndex);
     }
-  }, [currentStepIndex]);
+  }, [currentStepIndex, roleSteps.length]);
 
-  // Fetch assigned coach (CSM) for the current user
+  // Fetch assigned coach (CSM) — only for client role
   const csmQuery = useQuery({
     queryKey: ["my-csm", user?.id],
     queryFn: async () => {
@@ -112,12 +169,12 @@ export default function OnboardingPage() {
       } | null;
       return row?.coach ?? null;
     },
-    enabled: !!user,
+    enabled: !!user && role === "client",
   });
 
   const csmVideo = useCsmWelcomeVideo(csmQuery.data?.id);
 
-  const totalSteps = ONBOARDING_STEP_KEYS.length;
+  const totalSteps = roleSteps.length;
   const progress = ((step + 1) / totalSteps) * 100;
 
   const goNext = useCallback(() => {
@@ -135,11 +192,8 @@ export default function OnboardingPage() {
   }, [step]);
 
   const handleStepComplete = useCallback(
-    (
-      stepKey: (typeof ONBOARDING_STEP_KEYS)[number],
-      data?: Record<string, unknown>,
-    ) => {
-      completeStep.mutate({ stepKey, data });
+    (stepKey: OnboardingStepKey) => {
+      completeStep.mutate({ stepKey });
       goNext();
     },
     [completeStep, goNext],
@@ -172,9 +226,9 @@ export default function OnboardingPage() {
     }
   }, [user, role, completeStep, completeOnboarding]);
 
-  // ─── Render current step ──────────────────────────────────────
+  // ─── Render current step by key ─────────────────────────────────
   function renderStep() {
-    const stepKey = ONBOARDING_STEP_KEYS[step];
+    const stepKey = roleSteps[step];
 
     switch (stepKey) {
       case "welcome_video":
@@ -251,12 +305,35 @@ export default function OnboardingPage() {
           </div>
         );
 
+      case "admin_setup":
+        return (
+          <AdminSetupStep
+            onNext={() => handleStepComplete("admin_setup")}
+          />
+        );
+
+      case "coach_tools":
+        return (
+          <CoachToolsStep
+            onNext={() => handleStepComplete("coach_tools")}
+          />
+        );
+
+      case "sales_tools":
+        return (
+          <SalesToolsStep
+            onNext={() => handleStepComplete("sales_tools")}
+            variant={role === "closer" ? "closer" : "setter"}
+          />
+        );
+
       case "completion":
         return (
           <CompletionStep
             firstName={firstName}
             onComplete={handleComplete}
             isCompleting={completeOnboarding.isPending}
+            completedItems={COMPLETED_ITEMS[role] ?? COMPLETED_ITEMS.client}
           />
         );
 
@@ -264,6 +341,8 @@ export default function OnboardingPage() {
         return null;
     }
   }
+
+  const labels = STEP_LABELS[role] ?? STEP_LABELS.client;
 
   return (
     <div className="relative flex min-h-screen flex-col bg-gradient-to-br from-slate-950 via-red-950 to-slate-900">
@@ -310,8 +389,8 @@ export default function OnboardingPage() {
 
       {/* Step labels */}
       <div className="relative z-10 mx-auto flex w-full max-w-2xl items-center justify-center gap-1 px-6 mb-4">
-        {STEP_LABELS.map((label, i) => (
-          <div key={label} className="flex items-center gap-1">
+        {roleSteps.map((key, i) => (
+          <div key={key} className="flex items-center gap-1">
             <div
               className={`h-1.5 w-1.5 rounded-full transition-colors duration-300 ${
                 i <= step ? "bg-primary" : "bg-white/15"
@@ -322,7 +401,7 @@ export default function OnboardingPage() {
                 i === step ? "text-white/70 font-medium" : "text-white/25"
               }`}
             >
-              {label}
+              {labels[key] ?? key}
             </span>
           </div>
         ))}
