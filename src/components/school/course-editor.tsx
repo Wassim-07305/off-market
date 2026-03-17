@@ -224,7 +224,7 @@ function SortableModuleItem({
       ref={setNodeRef}
       style={style}
       className={cn(
-        "group/module rounded-xl border bg-surface transition-all",
+        "group/module rounded-xl border bg-surface transition-all w-full max-w-full",
         isDragging
           ? "opacity-50 border-primary/30 bg-primary/5 shadow-lg"
           : "border-border hover:border-border/80 shadow-sm",
@@ -1042,7 +1042,7 @@ export function CourseEditor({ course, routePrefix }: CourseEditorProps) {
       </div>
 
       {/* Modules list */}
-      <div className="flex-1 overflow-y-auto p-3 space-y-3">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden p-3 space-y-3 min-w-0">
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
@@ -1163,7 +1163,7 @@ export function CourseEditor({ course, routePrefix }: CourseEditorProps) {
       )}
 
       {/* Desktop sidebar */}
-      <div className="hidden lg:flex w-80 min-w-0 bg-surface border-r border-border shrink-0 overflow-hidden">
+      <div className="hidden lg:flex w-80 bg-surface border-r border-border shrink-0 overflow-x-hidden">
         {sidebarContent}
       </div>
 
