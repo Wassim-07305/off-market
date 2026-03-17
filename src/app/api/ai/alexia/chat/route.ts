@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { generateEmbedding, generateText, generateMemoryUpdate } from "@/lib/gemini";
+import {
+  generateEmbedding,
+  generateText,
+  generateMemoryUpdate,
+} from "@/lib/gemini";
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -54,7 +58,11 @@ export async function POST(request: Request) {
     // 3. Get coach profile & AI config
     const [coachResult, configResult] = await Promise.all([
       admin.from("profiles").select("full_name").eq("id", coachId).single(),
-      admin.from("coach_ai_config").select("*").eq("coach_id", coachId).single(),
+      admin
+        .from("coach_ai_config")
+        .select("*")
+        .eq("coach_id", coachId)
+        .single(),
     ]);
     const coachName = coachResult.data?.full_name ?? "ton coach";
     const config = configResult.data;
@@ -129,7 +137,14 @@ ${history ? `HISTORIQUE RECENT:\n${history}\n` : ""}`;
     }
 
     // 10. Update client memory asynchronously (don't block response)
-    updateMemoryInBackground(admin, user.id, coachId, memoryText, message, response);
+    updateMemoryInBackground(
+      admin,
+      user.id,
+      coachId,
+      memoryText,
+      message,
+      response,
+    );
 
     return NextResponse.json({ response });
   } catch (error) {
@@ -153,18 +168,16 @@ function updateMemoryInBackground(
   const conversation = `Client: ${userMessage}\nAlexIA: ${aiResponse}`;
   generateMemoryUpdate(existingMemory, conversation)
     .then(async (updatedMemory) => {
-      await admin
-        .from("client_ai_memory")
-        .upsert(
-          {
-            client_id: clientId,
-            coach_id: coachId,
-            summary: updatedMemory,
-            conversation_count: (existingMemory ? 1 : 0) + 1,
-            updated_at: new Date().toISOString(),
-          },
-          { onConflict: "client_id,coach_id" },
-        );
+      await admin.from("client_ai_memory").upsert(
+        {
+          client_id: clientId,
+          coach_id: coachId,
+          summary: updatedMemory,
+          conversation_count: (existingMemory ? 1 : 0) + 1,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: "client_id,coach_id" },
+      );
     })
     .catch((err) => console.error("[AlexIA Memory] Update failed:", err));
 }

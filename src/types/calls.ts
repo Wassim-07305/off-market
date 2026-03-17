@@ -65,7 +65,14 @@ export interface CallCalendarWithRelations extends CallCalendar {
   assigned_profile?: { id: string; full_name: string } | null;
 }
 
-export type CallType = "manuel" | "iclosed" | "calendly" | "booking" | "autre" | "one_on_one" | "live";
+export type CallType =
+  | "manuel"
+  | "iclosed"
+  | "calendly"
+  | "booking"
+  | "autre"
+  | "one_on_one"
+  | "live";
 export type CallStatus =
   | "planifie"
   | "realise"
@@ -84,7 +91,8 @@ export const CALL_TYPES: { value: CallType; label: string }[] = [
 ];
 
 export const CALL_TYPE_COLORS: Record<CallType, string> = {
-  one_on_one: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+  one_on_one:
+    "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
   live: "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
   manuel: "bg-zinc-100 text-zinc-700 dark:bg-zinc-800/30 dark:text-zinc-400",
   iclosed: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",

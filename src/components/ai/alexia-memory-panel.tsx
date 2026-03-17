@@ -3,7 +3,13 @@
 import { useState } from "react";
 import { useClientMemories } from "@/hooks/use-alexia";
 import { cn } from "@/lib/utils";
-import { Brain, User, ChevronRight, Loader2, MessageSquare } from "lucide-react";
+import {
+  Brain,
+  User,
+  ChevronRight,
+  Loader2,
+  MessageSquare,
+} from "lucide-react";
 
 export function AlexiaMemoryPanel() {
   const { data: memories, isLoading } = useClientMemories();
@@ -65,7 +71,8 @@ export function AlexiaMemoryPanel() {
                   <div className="flex items-center gap-2 mt-0.5">
                     <span className="text-[10px] text-muted-foreground flex items-center gap-1">
                       <MessageSquare className="w-2.5 h-2.5" />
-                      {mem.conversation_count} echange{mem.conversation_count > 1 ? "s" : ""}
+                      {mem.conversation_count} echange
+                      {mem.conversation_count > 1 ? "s" : ""}
                     </span>
                   </div>
                 </div>

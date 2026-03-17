@@ -177,10 +177,7 @@ export default function BookingAdminPage() {
         {pagesLoading ? (
           <div className="space-y-3">
             {[...Array(3)].map((_, i) => (
-              <div
-                key={i}
-                className="h-16 bg-muted animate-pulse rounded-lg"
-              />
+              <div key={i} className="h-16 bg-muted animate-pulse rounded-lg" />
             ))}
           </div>
         ) : !pages || pages.length === 0 ? (
@@ -222,10 +219,7 @@ export default function BookingAdminPage() {
         {bookingsLoading ? (
           <div className="space-y-3">
             {[...Array(3)].map((_, i) => (
-              <div
-                key={i}
-                className="h-14 bg-muted animate-pulse rounded-lg"
-              />
+              <div key={i} className="h-14 bg-muted animate-pulse rounded-lg" />
             ))}
           </div>
         ) : !recentBookings || recentBookings.length === 0 ? (
@@ -501,7 +495,10 @@ function CreateBookingPageModal({ onClose }: { onClose: () => void }) {
     createMutation.mutate(
       {
         title,
-        slug: slug.trim().toLowerCase().replace(/[^a-z0-9-]/g, "-"),
+        slug: slug
+          .trim()
+          .toLowerCase()
+          .replace(/[^a-z0-9-]/g, "-"),
         description: description || null,
         slot_duration: slotDuration,
         buffer_minutes: bufferMinutes,
@@ -566,9 +563,7 @@ function CreateBookingPageModal({ onClose }: { onClose: () => void }) {
                 value={slug}
                 onChange={(e) =>
                   setSlug(
-                    e.target.value
-                      .toLowerCase()
-                      .replace(/[^a-z0-9-]/g, "-"),
+                    e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "-"),
                   )
                 }
                 className="flex-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
@@ -755,9 +750,7 @@ function BookingPageDetailPanel({
         {/* Content */}
         <div className="p-6">
           {activeTab === "settings" && <PageSettingsTab page={page} />}
-          {activeTab === "availability" && (
-            <AvailabilityTab pageId={page.id} />
-          )}
+          {activeTab === "availability" && <AvailabilityTab pageId={page.id} />}
           {activeTab === "exceptions" && <ExceptionsTab pageId={page.id} />}
         </div>
       </motion.div>
@@ -1101,7 +1094,12 @@ function AvailabilityTab({ pageId }: { pageId: string }) {
     } else {
       setSlots([
         ...slots,
-        { day_of_week: day, start_time: "09:00", end_time: "18:00", is_active: true },
+        {
+          day_of_week: day,
+          start_time: "09:00",
+          end_time: "18:00",
+          is_active: true,
+        },
       ]);
     }
   };
@@ -1112,9 +1110,7 @@ function AvailabilityTab({ pageId }: { pageId: string }) {
     value: string,
   ) => {
     setSlots(
-      slots.map((s) =>
-        s.day_of_week === day ? { ...s, [field]: value } : s,
-      ),
+      slots.map((s) => (s.day_of_week === day ? { ...s, [field]: value } : s)),
     );
   };
 
@@ -1164,10 +1160,7 @@ function AvailabilityTab({ pageId }: { pageId: string }) {
                   : "border-border/50 bg-muted/5 opacity-50",
               )}
             >
-              <button
-                onClick={() => toggleDay(day)}
-                className="shrink-0"
-              >
+              <button onClick={() => toggleDay(day)} className="shrink-0">
                 {isActive ? (
                   <Check className="w-4 h-4 text-emerald-500" />
                 ) : (
@@ -1216,7 +1209,9 @@ function AvailabilityTab({ pageId }: { pageId: string }) {
         disabled={upsertMutation.isPending}
         className="w-full px-4 py-2.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
       >
-        {upsertMutation.isPending ? "Enregistrement..." : "Enregistrer les disponibilites"}
+        {upsertMutation.isPending
+          ? "Enregistrement..."
+          : "Enregistrer les disponibilites"}
       </button>
     </div>
   );

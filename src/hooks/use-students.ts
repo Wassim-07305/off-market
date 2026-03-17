@@ -30,8 +30,8 @@ export function useStudents(options: UseStudentsOptions = {}) {
   const studentsQuery = useQuery({
     queryKey: ["students", search, tag, limit],
     enabled: !!user,
-    staleTime: 2 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
+    staleTime: 0,
+    gcTime: 5 * 60 * 1000,
     retry: 1,
     queryFn: async () => {
       let query = supabase
@@ -163,10 +163,22 @@ export function useStudents(options: UseStudentsOptions = {}) {
         .single();
 
       // Update the flag
-      const { error } = await supabase
+      const {
+        error,
+        data: updated,
+        count,
+      } = await supabase
         .from("student_details")
         .update({ flag })
-        .eq("profile_id", profileId);
+        .eq("profile_id", profileId)
+        .select();
+      console.log("[updateStudentFlag]", {
+        profileId,
+        flag,
+        error,
+        updated,
+        count,
+      });
       if (error) throw error;
 
       // Log the change in history
@@ -181,11 +193,11 @@ export function useStudents(options: UseStudentsOptions = {}) {
       }
     },
     onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["students"] });
-      queryClient.invalidateQueries({
+      queryClient.refetchQueries({ queryKey: ["students"] });
+      queryClient.refetchQueries({
         queryKey: ["student", variables.profileId],
       });
-      queryClient.invalidateQueries({
+      queryClient.refetchQueries({
         queryKey: ["student-flag-history", variables.profileId],
       });
     },

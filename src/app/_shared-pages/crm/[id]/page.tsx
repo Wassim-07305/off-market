@@ -153,11 +153,20 @@ export default function StudentDetailPage({
 
   const handleFlagChange = (newFlag: StudentFlag, reason?: string) => {
     if (!profile) return;
-    updateStudentFlag.mutate({
-      profileId: student.id,
-      flag: newFlag,
-      reason,
-    });
+    updateStudentFlag.mutate(
+      {
+        profileId: student.id,
+        flag: newFlag,
+        reason,
+      },
+      {
+        onSuccess: () => toast.success("Drapeau mis a jour"),
+        onError: (err) => {
+          console.error("[Flag] Error:", err);
+          toast.error("Erreur lors du changement de drapeau");
+        },
+      },
+    );
   };
 
   const handleTagChange = (newTag: string) => {

@@ -2,7 +2,11 @@
 
 import { useState, useCallback } from "react";
 import { useStudents } from "@/hooks/use-students";
-import { STUDENT_TAGS } from "@/lib/constants";
+import {
+  STUDENT_TAGS,
+  STUDENT_FLAGS,
+  STUDENT_PIPELINE_STAGES,
+} from "@/lib/constants";
 import { getInitials, formatDate, formatCurrency } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import { useRoutePrefix } from "@/hooks/use-route-prefix";
@@ -318,8 +322,11 @@ export default function ClientsPage() {
                   <th className="text-left text-[11px] font-medium text-muted-foreground/70 uppercase tracking-wider px-4 py-2.5">
                     Client
                   </th>
+                  <th className="text-left text-[11px] font-medium text-muted-foreground/70 uppercase tracking-wider px-4 py-2.5">
+                    Drapeau
+                  </th>
                   <th className="text-left text-[11px] font-medium text-muted-foreground/70 uppercase tracking-wider px-4 py-2.5 hidden md:table-cell">
-                    Tag
+                    Etape
                   </th>
                   <th className="text-left text-[11px] font-medium text-muted-foreground/70 uppercase tracking-wider px-4 py-2.5 hidden lg:table-cell">
                     Progression
@@ -347,12 +354,17 @@ export default function ClientsPage() {
                   return (
                     <tr
                       key={student.id}
+                      onClick={() => setSelectedStudentId(student.id)}
                       className={cn(
-                        "border-b border-border/50 last:border-0 hover:bg-muted/20 transition-colors duration-150 group",
+                        "border-b border-border/50 last:border-0 hover:bg-muted/20 transition-colors duration-150 group cursor-pointer",
                         isSelected && "bg-primary/[0.03]",
+                        selectedStudentId === student.id && "bg-primary/10",
                       )}
                     >
-                      <td className="px-3 py-2.5">
+                      <td
+                        className="px-3 py-2.5"
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         <input
                           type="checkbox"
                           checked={isSelected}
@@ -378,15 +390,38 @@ export default function ClientsPage() {
                           </div>
                         </button>
                       </td>
+                      <td className="px-4 py-2.5">
+                        {(() => {
+                          const f = details?.flag ?? "green";
+                          const flagConfig = STUDENT_FLAGS.find(
+                            (fl) => fl.value === f,
+                          );
+                          return flagConfig ? (
+                            <span
+                              className={cn(
+                                "inline-flex items-center gap-1.5 h-5 px-2 rounded-md text-[10px] font-medium border",
+                                flagConfig.bgColor,
+                                flagConfig.textColor,
+                                flagConfig.borderColor,
+                              )}
+                            >
+                              <span
+                                className={cn(
+                                  "w-1.5 h-1.5 rounded-full",
+                                  flagConfig.dotColor,
+                                )}
+                              />
+                              {flagConfig.label}
+                            </span>
+                          ) : null;
+                        })()}
+                      </td>
                       <td className="px-4 py-2.5 hidden md:table-cell">
-                        {tag && (
-                          <span
-                            className={cn(
-                              "inline-flex items-center h-5 px-2 rounded-md text-[10px] font-medium",
-                              tag.color,
-                            )}
-                          >
-                            {tag.label}
+                        {details?.pipeline_stage && (
+                          <span className="text-[11px] text-muted-foreground capitalize">
+                            {STUDENT_PIPELINE_STAGES.find(
+                              (s) => s.value === details.pipeline_stage,
+                            )?.label ?? details.pipeline_stage}
                           </span>
                         )}
                       </td>

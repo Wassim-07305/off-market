@@ -190,11 +190,24 @@ export function StudentSidePanel({
     reason?: string,
   ) => {
     if (!profile || !student) return;
-    updateStudentFlag.mutate({
-      profileId: student.id,
-      flag: newFlag,
-      reason,
-    });
+    updateStudentFlag.mutate(
+      {
+        profileId: student.id,
+        flag: newFlag,
+        reason,
+      },
+      {
+        onSuccess: () => {
+          toast.success("Drapeau mis a jour");
+          queryClient.invalidateQueries({ queryKey: ["student", student.id] });
+          queryClient.invalidateQueries({ queryKey: ["students"] });
+        },
+        onError: (err) => {
+          console.error("[Flag]", err);
+          toast.error("Erreur changement de drapeau");
+        },
+      },
+    );
   };
 
   const handleTagChange = async (newTag: string) => {

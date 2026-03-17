@@ -117,9 +117,7 @@ function BookingFlow({
 
   const createBooking = useCreateBooking();
 
-  const dateStr = selectedDate
-    ? format(selectedDate, "yyyy-MM-dd")
-    : undefined;
+  const dateStr = selectedDate ? format(selectedDate, "yyyy-MM-dd") : undefined;
 
   const { data: slots, isLoading: slotsLoading } = useAvailableSlots(
     page.id,
@@ -166,17 +164,12 @@ function BookingFlow({
             className="w-10 h-10 rounded-xl flex items-center justify-center"
             style={{ backgroundColor: brandColor + "20" }}
           >
-            <CalendarCheck
-              className="w-5 h-5"
-              style={{ color: brandColor }}
-            />
+            <CalendarCheck className="w-5 h-5" style={{ color: brandColor }} />
           </div>
           <div>
             <h1 className="text-lg font-bold text-white">{page.title}</h1>
             {page.description && (
-              <p className="text-sm text-zinc-400 mt-0.5">
-                {page.description}
-              </p>
+              <p className="text-sm text-zinc-400 mt-0.5">{page.description}</p>
             )}
           </div>
         </div>
@@ -325,9 +318,7 @@ function StepQualification({
     phone: string;
     custom: Record<string, string>;
   };
-  setFormData: React.Dispatch<
-    React.SetStateAction<typeof formData>
-  >;
+  setFormData: React.Dispatch<React.SetStateAction<typeof formData>>;
   customFields: QualificationField[];
   brandColor: string;
   onNext: () => void;
@@ -467,7 +458,13 @@ function StepQualification({
               </select>
             ) : (
               <input
-                type={field.type === "email" ? "email" : field.type === "phone" ? "tel" : "text"}
+                type={
+                  field.type === "email"
+                    ? "email"
+                    : field.type === "phone"
+                      ? "tel"
+                      : "text"
+                }
                 value={formData.custom[field.id] ?? ""}
                 onChange={(e) =>
                   setFormData((p) => ({
@@ -710,8 +707,7 @@ function StepSlot({
       ) : (
         <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
           {slots.map((slot) => {
-            const isSelected =
-              selectedSlot?.start_time === slot.start_time;
+            const isSelected = selectedSlot?.start_time === slot.start_time;
 
             return (
               <button
@@ -807,18 +803,15 @@ function StepConfirm({
             className="w-10 h-10 rounded-xl flex items-center justify-center"
             style={{ backgroundColor: brandColor + "20" }}
           >
-            <CalendarCheck
-              className="w-5 h-5"
-              style={{ color: brandColor }}
-            />
+            <CalendarCheck className="w-5 h-5" style={{ color: brandColor }} />
           </div>
           <div>
             <p className="text-sm font-semibold text-white capitalize">
               {format(selectedDate, "EEEE d MMMM yyyy", { locale: fr })}
             </p>
             <p className="text-xs text-zinc-400">
-              {selectedSlot.start_time} - {selectedSlot.end_time} ({slotDuration}{" "}
-              min)
+              {selectedSlot.start_time} - {selectedSlot.end_time} (
+              {slotDuration} min)
             </p>
           </div>
         </div>

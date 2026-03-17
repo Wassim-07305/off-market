@@ -119,7 +119,9 @@ export function useClientMemories() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("client_ai_memory")
-        .select("*, client:profiles!client_ai_memory_client_id_fkey(id, full_name, avatar_url)")
+        .select(
+          "*, client:profiles!client_ai_memory_client_id_fkey(id, full_name, avatar_url)",
+        )
         .eq("coach_id", user!.id)
         .order("updated_at", { ascending: false });
       if (error) throw error;
@@ -131,7 +133,11 @@ export function useClientMemories() {
         last_topics: unknown[];
         conversation_count: number;
         updated_at: string;
-        client: { id: string; full_name: string; avatar_url: string | null } | null;
+        client: {
+          id: string;
+          full_name: string;
+          avatar_url: string | null;
+        } | null;
       }>;
     },
   });

@@ -4,17 +4,50 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { staggerContainer, staggerItem } from "@/lib/animations";
-import { Kanban, Clock, Users, Magnet, Zap } from "lucide-react";
-import { PipelineKanban } from "@/components/crm/pipeline-kanban";
-import { PipelineTimeline } from "@/components/crm/pipeline-timeline";
-import { CsmDashboard } from "@/components/crm/csm-dashboard";
-import { LeadMagnetStats } from "@/components/leads/lead-magnet-stats";
-import { RelanceSequencesView } from "@/components/crm/relance-sequences-view";
+import { Settings, Plus } from "lucide-react";
+import { SetterPipelineKanban } from "@/components/crm/setter-pipeline-kanban";
+import { SetterPipelineList } from "@/components/crm/setter-pipeline-list";
+import { SetterBilan } from "@/components/crm/setter-bilan";
+import { SetterPipelineConfig } from "@/components/crm/setter-pipeline-config";
+import {
+  useCreateSetterLead,
+  usePipelineColumns,
+} from "@/hooks/use-setter-crm";
+import { useAuth } from "@/hooks/use-auth";
+import { toast } from "sonner";
 
-type CrmView = "pipeline" | "timeline" | "coach" | "leads" | "relances";
+type CrmView = "pipeline" | "liste" | "bilan";
+
+const TABS: { key: CrmView; label: string }[] = [
+  { key: "pipeline", label: "Pipeline" },
+  { key: "liste", label: "Liste" },
+  { key: "bilan", label: "Bilan" },
+];
 
 export default function CRMPage() {
   const [view, setView] = useState<CrmView>("pipeline");
+  const [showConfig, setShowConfig] = useState(false);
+  const { user } = useAuth();
+  const { columns } = usePipelineColumns();
+  const createLead = useCreateSetterLead();
+
+  const handleNewProspect = () => {
+    const firstColumn = columns?.[0];
+    if (!firstColumn) {
+      toast.error("Aucune colonne configuree");
+      return;
+    }
+    createLead.mutate(
+      {
+        setter_id: user?.id ?? "",
+        column_id: firstColumn.id,
+        name: "Sans nom",
+      },
+      {
+        onSuccess: () => toast.success("Prospect ajoute"),
+      },
+    );
+  };
 
   return (
     <motion.div
@@ -23,89 +56,74 @@ export default function CRMPage() {
       animate="visible"
       className="space-y-6"
     >
-      {/* Header */}
+      {/* Header — comme Rivia */}
       <motion.div
         variants={staggerItem}
-        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+        className="flex flex-col sm:flex-row sm:items-start justify-between gap-4"
       >
         <div>
-          <h1 className="text-3xl font-display font-bold text-foreground tracking-tight">
-            CRM
+          <h1 className="text-2xl font-display font-bold text-foreground tracking-tight">
+            CRM Setter
           </h1>
-          <p className="text-sm text-muted-foreground/80 mt-1.5 leading-relaxed">
-            {view === "pipeline"
-              ? "Pipeline commercial"
-              : view === "coach"
-                ? "Vue par coach / CSM"
-                : view === "leads"
-                  ? "Leads entrants & qualification"
-                  : view === "relances"
-                    ? "Sequences de relance automatique"
-                    : "Activite recente"}
+          <p className="text-sm text-muted-foreground mt-1">
+            Pipeline de prospection, suivi des leads et bilan d&apos;activite.
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          {/* View toggle — accent underline on active */}
-          <div className="flex items-center gap-0.5 border-b border-border">
-            {(
-              [
-                { key: "pipeline" as const, label: "Pipeline", icon: Kanban },
-                { key: "timeline" as const, label: "Timeline", icon: Clock },
-                { key: "coach" as const, label: "Par Coach", icon: Users },
-                { key: "leads" as const, label: "Leads", icon: Magnet },
-                { key: "relances" as const, label: "Relances", icon: Zap },
-              ] as const
-            ).map((v) => {
-              const Icon = v.icon;
-              return (
-                <button
-                  key={v.key}
-                  onClick={() => setView(v.key)}
-                  className={cn(
-                    "h-9 px-3 flex items-center gap-1.5 text-xs font-medium transition-all relative",
-                    view === v.key
-                      ? "text-foreground"
-                      : "text-muted-foreground hover:text-foreground",
-                  )}
-                >
-                  <Icon className="w-3.5 h-3.5" />
-                  {v.label}
-                  {view === v.key && (
-                    <span className="absolute bottom-0 left-1 right-1 h-0.5 rounded-full bg-gradient-to-r from-[#AF0000] to-[#DC2626]" />
-                  )}
-                </button>
-              );
-            })}
-          </div>
+        <div className="flex items-center gap-3 shrink-0">
+          <button
+            onClick={() => setShowConfig(true)}
+            className="h-10 px-4 rounded-xl border border-border text-sm font-medium text-foreground hover:bg-muted transition-colors flex items-center gap-2"
+          >
+            <Settings className="w-4 h-4" />
+            Colonnes
+          </button>
+          <button
+            onClick={handleNewProspect}
+            disabled={createLead.isPending}
+            className="h-10 px-5 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-2"
+          >
+            <Plus className="w-4 h-4" />
+            Nouveau prospect
+          </button>
         </div>
       </motion.div>
 
-      {/* Pipeline / Timeline / Coach / Leads view */}
-      {view === "timeline" ? (
-        <motion.div variants={staggerItem}>
-          <PipelineTimeline />
-        </motion.div>
-      ) : view === "coach" ? (
-        <motion.div variants={staggerItem}>
-          <CsmDashboard
-            onFilterByCoach={() => {
-              setView("pipeline");
-            }}
-          />
-        </motion.div>
-      ) : view === "leads" ? (
-        <motion.div variants={staggerItem}>
-          <LeadMagnetStats />
-        </motion.div>
-      ) : view === "relances" ? (
-        <motion.div variants={staggerItem}>
-          <RelanceSequencesView />
-        </motion.div>
-      ) : (
-        <motion.div variants={staggerItem}>
-          <PipelineKanban />
-        </motion.div>
-      )}
+      {/* Tabs — alignés à gauche comme Rivia */}
+      <motion.div variants={staggerItem}>
+        <div className="flex items-center gap-0 border-b border-border">
+          {TABS.map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setView(tab.key)}
+              className={cn(
+                "h-10 px-4 text-sm font-medium transition-all relative",
+                view === tab.key
+                  ? "text-foreground"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {tab.label}
+              {view === tab.key && (
+                <span className="absolute bottom-0 left-2 right-2 h-0.5 rounded-full bg-foreground" />
+              )}
+            </button>
+          ))}
+        </div>
+      </motion.div>
+
+      {/* Tab content */}
+      <motion.div variants={staggerItem}>
+        {view === "pipeline" && <SetterPipelineKanban />}
+        {view === "liste" && <SetterPipelineList />}
+        {view === "bilan" && <SetterBilan />}
+      </motion.div>
+
+      {/* Column config modal */}
+      <SetterPipelineConfig
+        open={showConfig}
+        onClose={() => setShowConfig(false)}
+        columns={columns ?? []}
+      />
     </motion.div>
   );
 }

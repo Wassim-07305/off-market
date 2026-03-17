@@ -54,19 +54,6 @@ export function AlexiaConfigPanel() {
       </div>
 
       <div className="bg-surface border border-border rounded-2xl p-6 space-y-5">
-        {/* AI Name */}
-        <div>
-          <label className="block text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
-            Nom de l&apos;IA
-          </label>
-          <input
-            value={aiName}
-            onChange={(e) => setAiName(e.target.value)}
-            placeholder="AlexIA"
-            className={inputClass}
-          />
-        </div>
-
         {/* Tone */}
         <div>
           <label className="block text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
@@ -107,7 +94,9 @@ export function AlexiaConfigPanel() {
             value={instructions}
             onChange={(e) => setInstructions(e.target.value)}
             rows={6}
-            placeholder={"Ex:\n- Tutoie toujours le client\n- Utilise des emojis\n- Sois direct et concis\n- Rappelle les objectifs du client a chaque echange"}
+            placeholder={
+              "Ex:\n- Tutoie toujours le client\n- Utilise des emojis\n- Sois direct et concis\n- Rappelle les objectifs du client a chaque echange"
+            }
             className="w-full px-4 py-3 bg-muted/50 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none transition-shadow"
           />
           <p className="text-[10px] text-muted-foreground mt-1">

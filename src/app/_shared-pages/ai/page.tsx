@@ -44,7 +44,7 @@ interface ChatMessage {
   content: string;
 }
 
-type AITab = "chat" | "knowledge" | "config" | "memory";
+type AITab = "chat" | "config";
 
 export default function AIPage() {
   const { user, isStaff } = useAuth();
@@ -206,11 +206,14 @@ export default function AIPage() {
     );
   }
 
-  const tabs: { id: AITab; label: string; icon: typeof Bot; staffOnly?: boolean }[] = [
+  const tabs: {
+    id: AITab;
+    label: string;
+    icon: typeof Bot;
+    staffOnly?: boolean;
+  }[] = [
     { id: "chat", label: "Chat", icon: MessageSquare },
-    { id: "knowledge", label: "Connaissances", icon: BookOpen, staffOnly: true },
     { id: "config", label: "Configuration", icon: Settings, staffOnly: true },
-    { id: "memory", label: "Memoire clients", icon: Brain, staffOnly: true },
   ];
 
   return (
@@ -239,216 +242,229 @@ export default function AIPage() {
       )}
 
       {/* Tab content */}
-      {activeTab === "knowledge" && isStaff ? (
-        <div className="bg-surface border border-border rounded-2xl p-6" style={{ minHeight: "calc(100vh - 12rem)" }}>
-          <AlexiaKnowledgePanel />
-        </div>
-      ) : activeTab === "config" && isStaff ? (
-        <div className="bg-surface border border-border rounded-2xl p-6" style={{ minHeight: "calc(100vh - 12rem)" }}>
-          <AlexiaConfigPanel />
-        </div>
-      ) : activeTab === "memory" && isStaff ? (
-        <div className="bg-surface border border-border rounded-2xl p-6" style={{ minHeight: "calc(100vh - 12rem)" }}>
-          <AlexiaMemoryPanel />
+      {activeTab === "config" && isStaff ? (
+        <div
+          className="grid grid-cols-1 lg:grid-cols-3 gap-4 overflow-y-auto pb-8"
+          style={{ maxHeight: "calc(100vh - 10rem)" }}
+        >
+          <div
+            className="bg-surface border border-border rounded-2xl p-5 overflow-y-auto"
+            style={{ maxHeight: "calc(100vh - 11rem)" }}
+          >
+            <AlexiaKnowledgePanel />
+          </div>
+          <div
+            className="bg-surface border border-border rounded-2xl p-5 overflow-y-auto"
+            style={{ maxHeight: "calc(100vh - 11rem)" }}
+          >
+            <AlexiaConfigPanel />
+          </div>
+          <div
+            className="bg-surface border border-border rounded-2xl p-5 overflow-y-auto"
+            style={{ maxHeight: "calc(100vh - 11rem)" }}
+          >
+            <AlexiaMemoryPanel />
+          </div>
         </div>
       ) : (
-    <div
-      className="flex h-[calc(100vh-10rem)] bg-surface dark:bg-surface border border-border dark:border-border/50 rounded-2xl overflow-hidden relative"
-      style={{
-        boxShadow: "0 1px 3px rgb(0 0 0 / 0.04), 0 8px 20px rgb(0 0 0 / 0.02)",
-      }}
-    >
-      {/* Sidebar */}
-      {showSidebar && (
-        <div className="w-64 border-r border-border dark:border-border/50 flex flex-col shrink-0 bg-zinc-50/50 dark:bg-muted/20">
-          <div className="p-3 border-b border-border dark:border-border/50 flex items-center gap-2">
-            <button
-              onClick={startNewConversation}
-              className="flex-1 h-9 rounded-xl border border-border dark:border-border text-sm text-muted-foreground hover:text-foreground hover:bg-surface dark:hover:bg-muted transition-all duration-200 flex items-center justify-center gap-2 font-medium"
-            >
-              <Plus className="w-4 h-4" />
-              Nouvelle conversation
-            </button>
-            <button
-              onClick={() => setShowSidebar(false)}
-              className="w-9 h-9 rounded-xl text-muted-foreground hover:text-foreground hover:bg-surface dark:hover:bg-muted transition-all duration-200 flex items-center justify-center shrink-0"
-              title="Masquer le panneau"
-            >
-              <PanelLeftClose className="w-4 h-4" />
-            </button>
-          </div>
-          <div className="flex-1 overflow-y-auto p-2 space-y-0.5">
-            {conversations?.length === 0 && (
-              <p className="text-xs text-muted-foreground/50 text-center py-8 px-4">
-                Aucune conversation
-              </p>
-            )}
-            {conversations?.map((conv) => (
-              <button
-                key={conv.id}
-                onClick={() => loadConversation(conv.id)}
-                className={cn(
-                  "w-full text-left px-3 py-2.5 rounded-xl text-sm transition-all duration-200 flex items-center gap-2 group",
-                  conversationId === conv.id
-                    ? "bg-[#AF0000]/10 text-[#AF0000] font-medium"
-                    : "text-muted-foreground hover:text-foreground hover:bg-surface dark:hover:bg-muted",
-                )}
-              >
-                <MessageSquare className="w-3.5 h-3.5 shrink-0" />
-                <span className="truncate flex-1">
-                  {conv.title ?? "Conversation"}
-                </span>
+        <div
+          className="flex h-[calc(100vh-10rem)] bg-surface dark:bg-surface border border-border dark:border-border/50 rounded-2xl overflow-hidden relative"
+          style={{
+            boxShadow:
+              "0 1px 3px rgb(0 0 0 / 0.04), 0 8px 20px rgb(0 0 0 / 0.02)",
+          }}
+        >
+          {/* Sidebar */}
+          {showSidebar && (
+            <div className="w-64 border-r border-border dark:border-border/50 flex flex-col shrink-0 bg-zinc-50/50 dark:bg-muted/20">
+              <div className="p-3 border-b border-border dark:border-border/50 flex items-center gap-2">
                 <button
-                  onClick={(e) => deleteConversation(conv.id, e)}
-                  className="opacity-0 group-hover:opacity-100 w-6 h-6 rounded-lg flex items-center justify-center text-muted-foreground hover:text-red-500 hover:bg-red-500/10 transition-all duration-200 shrink-0"
-                  title="Supprimer"
+                  onClick={startNewConversation}
+                  className="flex-1 h-9 rounded-xl border border-border dark:border-border text-sm text-muted-foreground hover:text-foreground hover:bg-surface dark:hover:bg-muted transition-all duration-200 flex items-center justify-center gap-2 font-medium"
                 >
-                  <Trash2 className="w-3 h-3" />
+                  <Plus className="w-4 h-4" />
+                  Nouvelle conversation
                 </button>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Chat */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Toggle sidebar button when hidden */}
-        {!showSidebar && (
-          <div className="absolute top-2 left-2 z-10">
-            <button
-              onClick={() => setShowSidebar(true)}
-              className="w-9 h-9 rounded-xl bg-surface dark:bg-surface border border-border dark:border-border/50 text-muted-foreground hover:text-foreground hover:bg-zinc-50 dark:hover:bg-muted transition-all duration-200 flex items-center justify-center shadow-sm"
-              title="Afficher le panneau"
-            >
-              <PanelLeftOpen className="w-4 h-4" />
-            </button>
-          </div>
-        )}
-
-        {messages.length === 0 ? (
-          <div className="flex-1 flex items-center justify-center p-6">
-            <motion.div
-              initial="hidden"
-              animate="visible"
-              variants={fadeInUp}
-              transition={defaultTransition}
-              className="text-center max-w-lg"
-            >
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#AF0000]/10 via-violet-500/10 to-blue-500/10 flex items-center justify-center mx-auto mb-5 relative">
-                <Sparkles className="w-8 h-8 text-[#AF0000]" />
-                {/* Decorative glow */}
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#AF0000]/5 to-violet-500/5 blur-xl" />
+                <button
+                  onClick={() => setShowSidebar(false)}
+                  className="w-9 h-9 rounded-xl text-muted-foreground hover:text-foreground hover:bg-surface dark:hover:bg-muted transition-all duration-200 flex items-center justify-center shrink-0"
+                  title="Masquer le panneau"
+                >
+                  <PanelLeftClose className="w-4 h-4" />
+                </button>
               </div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight mb-2">
-                <span className="bg-gradient-to-r from-foreground via-foreground/90 to-foreground/70 bg-clip-text text-transparent">
-                  AlexIA
-                </span>
-              </h1>
-              <p className="text-sm text-muted-foreground/70 mb-8">
-                Pose-moi une question sur tes eleves, ton business ou ta
-                strategie.
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {suggestions.map((s) => (
+              <div className="flex-1 overflow-y-auto p-2 space-y-0.5">
+                {conversations?.length === 0 && (
+                  <p className="text-xs text-muted-foreground/50 text-center py-8 px-4">
+                    Aucune conversation
+                  </p>
+                )}
+                {conversations?.map((conv) => (
                   <button
-                    key={s}
-                    onClick={() => handleSend(s)}
-                    disabled={isStreaming}
-                    className="text-left p-3.5 rounded-xl text-sm text-foreground bg-surface dark:bg-surface border border-border dark:border-border/50 hover:border-[#AF0000]/20 hover:bg-[#AF0000]/[0.02] hover:shadow-sm transition-all duration-200 disabled:opacity-50 group"
+                    key={conv.id}
+                    onClick={() => loadConversation(conv.id)}
+                    className={cn(
+                      "w-full text-left px-3 py-2.5 rounded-xl text-sm transition-all duration-200 flex items-center gap-2 group",
+                      conversationId === conv.id
+                        ? "bg-[#AF0000]/10 text-[#AF0000] font-medium"
+                        : "text-muted-foreground hover:text-foreground hover:bg-surface dark:hover:bg-muted",
+                    )}
                   >
-                    <span className="group-hover:text-[#AF0000] transition-colors">
-                      {s}
+                    <MessageSquare className="w-3.5 h-3.5 shrink-0" />
+                    <span className="truncate flex-1">
+                      {conv.title ?? "Conversation"}
                     </span>
+                    <button
+                      onClick={(e) => deleteConversation(conv.id, e)}
+                      className="opacity-0 group-hover:opacity-100 w-6 h-6 rounded-lg flex items-center justify-center text-muted-foreground hover:text-red-500 hover:bg-red-500/10 transition-all duration-200 shrink-0"
+                      title="Supprimer"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </button>
                   </button>
                 ))}
               </div>
-            </motion.div>
-          </div>
-        ) : (
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
-            {messages.map((msg, i) => (
-              <div
-                key={i}
-                className={cn(
-                  "flex gap-3",
-                  msg.role === "user" ? "justify-end" : "",
-                )}
-              >
-                {msg.role === "assistant" && (
-                  <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-violet-500/15 to-blue-500/15 flex items-center justify-center shrink-0 mt-0.5 relative">
-                    <Sparkles className="w-4 h-4 text-violet-600 dark:text-violet-400" />
-                  </div>
-                )}
-                <div
-                  className={cn(
-                    "max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed",
-                    msg.role === "user"
-                      ? "bg-gradient-to-r from-[#AF0000] to-[#DC2626] text-white rounded-br-md shadow-sm shadow-[#AF0000]/20"
-                      : "bg-gradient-to-br from-violet-50/80 via-blue-50/50 to-indigo-50/30 dark:from-violet-500/10 dark:via-blue-500/5 dark:to-indigo-500/5 text-foreground rounded-bl-md border border-violet-100/50 dark:border-violet-500/10",
-                  )}
+            </div>
+          )}
+
+          {/* Chat */}
+          <div className="flex-1 flex flex-col min-w-0">
+            {/* Toggle sidebar button when hidden */}
+            {!showSidebar && (
+              <div className="absolute top-2 left-2 z-10">
+                <button
+                  onClick={() => setShowSidebar(true)}
+                  className="w-9 h-9 rounded-xl bg-surface dark:bg-surface border border-border dark:border-border/50 text-muted-foreground hover:text-foreground hover:bg-zinc-50 dark:hover:bg-muted transition-all duration-200 flex items-center justify-center shadow-sm"
+                  title="Afficher le panneau"
                 >
-                  {msg.role === "assistant" ? (
-                    <>
-                      <div className="prose prose-sm prose-neutral dark:prose-invert max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 [&_p]:my-1.5 [&_ul]:my-1.5 [&_ol]:my-1.5 [&_li]:my-0.5 [&_h2]:text-sm [&_h2]:font-semibold [&_h2]:mt-3 [&_h2]:mb-1 [&_h3]:text-sm [&_h3]:font-medium [&_h3]:mt-2 [&_h3]:mb-1 [&_code]:text-xs [&_code]:bg-black/5 [&_code]:dark:bg-surface/10 [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded [&_pre]:bg-black/5 [&_pre]:dark:bg-surface/10 [&_pre]:rounded-lg [&_pre]:p-3 [&_hr]:my-2">
-                        <ReactMarkdown>{msg.content}</ReactMarkdown>
-                      </div>
-                      <div className="mt-2 flex justify-end">
-                        <AiResponseBadge />
-                      </div>
-                    </>
-                  ) : (
-                    <p className="whitespace-pre-wrap">{msg.content}</p>
-                  )}
-                </div>
-              </div>
-            ))}
-            {isStreaming && (
-              <div className="flex gap-3">
-                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-violet-500/15 to-blue-500/15 flex items-center justify-center shrink-0">
-                  <Loader2 className="w-4 h-4 text-violet-600 dark:text-violet-400 animate-spin" />
-                </div>
-                <div className="bg-gradient-to-br from-violet-50/80 via-blue-50/50 to-indigo-50/30 dark:from-violet-500/10 dark:via-blue-500/5 dark:to-indigo-500/5 border border-violet-100/50 dark:border-violet-500/10 rounded-2xl rounded-bl-md px-4 py-3">
-                  <div className="flex gap-1.5">
-                    <span className="w-2 h-2 bg-violet-400/50 rounded-full animate-bounce" />
-                    <span className="w-2 h-2 bg-violet-400/50 rounded-full animate-bounce [animation-delay:150ms]" />
-                    <span className="w-2 h-2 bg-violet-400/50 rounded-full animate-bounce [animation-delay:300ms]" />
-                  </div>
-                </div>
+                  <PanelLeftOpen className="w-4 h-4" />
+                </button>
               </div>
             )}
-            <div ref={messagesEndRef} />
-          </div>
-        )}
 
-        {/* Input */}
-        <div className="border-t border-border dark:border-border/50 p-4 bg-zinc-50/30 dark:bg-muted/10">
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleSend();
-            }}
-            className="flex gap-2 max-w-3xl mx-auto"
-          >
-            <input
-              ref={inputRef}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Ecris ton message..."
-              disabled={isStreaming}
-              className="flex-1 h-11 px-4 bg-surface dark:bg-surface border border-border dark:border-border/50 rounded-xl text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20 focus:border-[#AF0000]/30 disabled:opacity-60 transition-all duration-200"
-            />
-            <button
-              type="submit"
-              disabled={!input.trim() || isStreaming}
-              className="w-11 h-11 bg-gradient-to-r from-[#AF0000] to-[#DC2626] rounded-xl flex items-center justify-center text-white hover:shadow-lg hover:shadow-[#AF0000]/20 transition-all duration-300 active:scale-[0.95] disabled:opacity-50 disabled:pointer-events-none"
-            >
-              <Send className="w-4 h-4" />
-            </button>
-          </form>
+            {messages.length === 0 ? (
+              <div className="flex-1 flex items-center justify-center p-6">
+                <motion.div
+                  initial="hidden"
+                  animate="visible"
+                  variants={fadeInUp}
+                  transition={defaultTransition}
+                  className="text-center max-w-lg"
+                >
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#AF0000]/10 via-violet-500/10 to-blue-500/10 flex items-center justify-center mx-auto mb-5 relative">
+                    <Sparkles className="w-8 h-8 text-[#AF0000]" />
+                    {/* Decorative glow */}
+                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#AF0000]/5 to-violet-500/5 blur-xl" />
+                  </div>
+                  <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight mb-2">
+                    <span className="bg-gradient-to-r from-foreground via-foreground/90 to-foreground/70 bg-clip-text text-transparent">
+                      AlexIA
+                    </span>
+                  </h1>
+                  <p className="text-sm text-muted-foreground/70 mb-8">
+                    Pose-moi une question sur tes eleves, ton business ou ta
+                    strategie.
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {suggestions.map((s) => (
+                      <button
+                        key={s}
+                        onClick={() => handleSend(s)}
+                        disabled={isStreaming}
+                        className="text-left p-3.5 rounded-xl text-sm text-foreground bg-surface dark:bg-surface border border-border dark:border-border/50 hover:border-[#AF0000]/20 hover:bg-[#AF0000]/[0.02] hover:shadow-sm transition-all duration-200 disabled:opacity-50 group"
+                      >
+                        <span className="group-hover:text-[#AF0000] transition-colors">
+                          {s}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </motion.div>
+              </div>
+            ) : (
+              <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                {messages.map((msg, i) => (
+                  <div
+                    key={i}
+                    className={cn(
+                      "flex gap-3",
+                      msg.role === "user" ? "justify-end" : "",
+                    )}
+                  >
+                    {msg.role === "assistant" && (
+                      <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-violet-500/15 to-blue-500/15 flex items-center justify-center shrink-0 mt-0.5 relative">
+                        <Sparkles className="w-4 h-4 text-violet-600 dark:text-violet-400" />
+                      </div>
+                    )}
+                    <div
+                      className={cn(
+                        "max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed",
+                        msg.role === "user"
+                          ? "bg-gradient-to-r from-[#AF0000] to-[#DC2626] text-white rounded-br-md shadow-sm shadow-[#AF0000]/20"
+                          : "bg-gradient-to-br from-violet-50/80 via-blue-50/50 to-indigo-50/30 dark:from-violet-500/10 dark:via-blue-500/5 dark:to-indigo-500/5 text-foreground rounded-bl-md border border-violet-100/50 dark:border-violet-500/10",
+                      )}
+                    >
+                      {msg.role === "assistant" ? (
+                        <>
+                          <div className="prose prose-sm prose-neutral dark:prose-invert max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 [&_p]:my-1.5 [&_ul]:my-1.5 [&_ol]:my-1.5 [&_li]:my-0.5 [&_h2]:text-sm [&_h2]:font-semibold [&_h2]:mt-3 [&_h2]:mb-1 [&_h3]:text-sm [&_h3]:font-medium [&_h3]:mt-2 [&_h3]:mb-1 [&_code]:text-xs [&_code]:bg-black/5 [&_code]:dark:bg-surface/10 [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded [&_pre]:bg-black/5 [&_pre]:dark:bg-surface/10 [&_pre]:rounded-lg [&_pre]:p-3 [&_hr]:my-2">
+                            <ReactMarkdown>{msg.content}</ReactMarkdown>
+                          </div>
+                          <div className="mt-2 flex justify-end">
+                            <AiResponseBadge />
+                          </div>
+                        </>
+                      ) : (
+                        <p className="whitespace-pre-wrap">{msg.content}</p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+                {isStreaming && (
+                  <div className="flex gap-3">
+                    <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-violet-500/15 to-blue-500/15 flex items-center justify-center shrink-0">
+                      <Loader2 className="w-4 h-4 text-violet-600 dark:text-violet-400 animate-spin" />
+                    </div>
+                    <div className="bg-gradient-to-br from-violet-50/80 via-blue-50/50 to-indigo-50/30 dark:from-violet-500/10 dark:via-blue-500/5 dark:to-indigo-500/5 border border-violet-100/50 dark:border-violet-500/10 rounded-2xl rounded-bl-md px-4 py-3">
+                      <div className="flex gap-1.5">
+                        <span className="w-2 h-2 bg-violet-400/50 rounded-full animate-bounce" />
+                        <span className="w-2 h-2 bg-violet-400/50 rounded-full animate-bounce [animation-delay:150ms]" />
+                        <span className="w-2 h-2 bg-violet-400/50 rounded-full animate-bounce [animation-delay:300ms]" />
+                      </div>
+                    </div>
+                  </div>
+                )}
+                <div ref={messagesEndRef} />
+              </div>
+            )}
+
+            {/* Input */}
+            <div className="border-t border-border dark:border-border/50 p-4 bg-zinc-50/30 dark:bg-muted/10">
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSend();
+                }}
+                className="flex gap-2 max-w-3xl mx-auto"
+              >
+                <input
+                  ref={inputRef}
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder="Ecris ton message..."
+                  disabled={isStreaming}
+                  className="flex-1 h-11 px-4 bg-surface dark:bg-surface border border-border dark:border-border/50 rounded-xl text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20 focus:border-[#AF0000]/30 disabled:opacity-60 transition-all duration-200"
+                />
+                <button
+                  type="submit"
+                  disabled={!input.trim() || isStreaming}
+                  className="w-11 h-11 bg-gradient-to-r from-[#AF0000] to-[#DC2626] rounded-xl flex items-center justify-center text-white hover:shadow-lg hover:shadow-[#AF0000]/20 transition-all duration-300 active:scale-[0.95] disabled:opacity-50 disabled:pointer-events-none"
+                >
+                  <Send className="w-4 h-4" />
+                </button>
+              </form>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
       )}
     </div>
   );

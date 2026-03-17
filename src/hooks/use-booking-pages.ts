@@ -532,7 +532,10 @@ export function useBookingKPIs(
       // Contacts uniques (avec email ou telephone)
       const uniqueContacts = new Set<string>();
       (bookingsData ?? []).forEach(
-        (b: { prospect_email: string | null; prospect_phone: string | null }) => {
+        (b: {
+          prospect_email: string | null;
+          prospect_phone: string | null;
+        }) => {
           if (b.prospect_email) uniqueContacts.add(b.prospect_email);
           else if (b.prospect_phone) uniqueContacts.add(b.prospect_phone);
         },
@@ -560,13 +563,7 @@ export function useUpdateBookingStatus() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({
-      id,
-      status,
-    }: {
-      id: string;
-      status: string;
-    }) => {
+    mutationFn: async ({ id, status }: { id: string; status: string }) => {
       const { error } = await supabase
         .from("bookings")
         .update({ status, updated_at: new Date().toISOString() })

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { STUDENT_FLAGS } from "@/lib/constants";
 import type { StudentFlag } from "@/types/database";
@@ -92,9 +92,22 @@ export function FlagSelector({
   const [open, setOpen] = useState(false);
   const [selectedFlag, setSelectedFlag] = useState<StudentFlag | null>(null);
   const [reason, setReason] = useState("");
+  const [optimisticFlag, setOptimisticFlag] = useState<StudentFlag | null>(
+    null,
+  );
+
+  // Display the optimistic flag if set, otherwise the current flag from props
+  const displayFlag = optimisticFlag ?? currentFlag;
+
+  // Reset optimistic flag when props catch up
+  useEffect(() => {
+    if (optimisticFlag && currentFlag === optimisticFlag) {
+      setOptimisticFlag(null);
+    }
+  }, [currentFlag, optimisticFlag]);
 
   const handleSelect = (flag: StudentFlag) => {
-    if (flag === currentFlag) {
+    if (flag === displayFlag) {
       setOpen(false);
       return;
     }
@@ -103,6 +116,7 @@ export function FlagSelector({
 
   const handleConfirm = () => {
     if (!selectedFlag) return;
+    setOptimisticFlag(selectedFlag);
     onSelect(selectedFlag, reason || undefined);
     setOpen(false);
     setSelectedFlag(null);
@@ -115,7 +129,7 @@ export function FlagSelector({
     setOpen(false);
   };
 
-  const currentConfig = STUDENT_FLAGS.find((f) => f.value === currentFlag);
+  const currentConfig = STUDENT_FLAGS.find((f) => f.value === displayFlag);
 
   return (
     <div className={cn("relative", className)}>
@@ -135,7 +149,7 @@ export function FlagSelector({
       </button>
 
       {open && (
-        <div className="absolute top-full mt-1 right-0 bg-surface border border-border rounded-xl shadow-lg z-50 w-72 overflow-hidden">
+        <div className="absolute top-full mt-1 left-0 bg-surface border border-border rounded-xl shadow-lg z-50 w-72 overflow-hidden">
           {!selectedFlag ? (
             <div className="py-1">
               {STUDENT_FLAGS.map((f) => (
@@ -144,7 +158,7 @@ export function FlagSelector({
                   onClick={() => handleSelect(f.value)}
                   className={cn(
                     "w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-muted transition-colors text-left",
-                    f.value === currentFlag && "bg-muted/50",
+                    f.value === displayFlag && "bg-muted/50",
                   )}
                 >
                   <span
@@ -156,7 +170,7 @@ export function FlagSelector({
                       {f.description}
                     </p>
                   </div>
-                  {f.value === currentFlag && (
+                  {f.value === displayFlag && (
                     <span className="text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
                       Actuel
                     </span>

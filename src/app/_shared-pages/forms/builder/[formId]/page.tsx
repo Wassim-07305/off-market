@@ -320,11 +320,7 @@ export default function EditFormPage({
             />
             <select
               value={status}
-              onChange={(e) =>
-                setStatus(
-                  e.target.value as "active" | "closed",
-                )
-              }
+              onChange={(e) => setStatus(e.target.value as "active" | "closed")}
               className="h-9 pl-7 pr-3 rounded-xl border border-border/50 text-sm text-foreground bg-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all appearance-none cursor-pointer"
             >
               <option value="active">Actif</option>
@@ -1162,7 +1158,10 @@ function FormPreview({
     return (
       <div className="flex flex-col items-center justify-center h-[70vh] gap-4">
         <p className="text-muted-foreground">Aucun champ a afficher</p>
-        <button onClick={onExit} className="text-sm text-primary hover:underline">
+        <button
+          onClick={onExit}
+          className="text-sm text-primary hover:underline"
+        >
           Retour a l&apos;editeur
         </button>
       </div>
@@ -1196,7 +1195,9 @@ function FormPreview({
             <X className="w-4 h-4" />
           </button>
           <div>
-            <h3 className="text-sm font-medium text-white/50">{title || "Sans titre"}</h3>
+            <h3 className="text-sm font-medium text-white/50">
+              {title || "Sans titre"}
+            </h3>
             {currentHeading && (
               <p className="text-[10px] font-semibold uppercase tracking-wider mt-0.5 text-primary/70">
                 {currentHeading.label}
@@ -1229,10 +1230,14 @@ function FormPreview({
               <div className="mb-8">
                 <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white leading-tight">
                   {current.label || "Sans titre"}
-                  {current.is_required && <span className="text-primary ml-1">*</span>}
+                  {current.is_required && (
+                    <span className="text-primary ml-1">*</span>
+                  )}
                 </h2>
                 {current.description && (
-                  <p className="text-base text-white/40 mt-3">{current.description}</p>
+                  <p className="text-base text-white/40 mt-3">
+                    {current.description}
+                  </p>
                 )}
               </div>
 
@@ -1249,11 +1254,18 @@ function FormPreview({
       <div className="relative z-10 px-6 pb-6">
         <div className="flex items-center justify-center gap-4 max-w-xl mx-auto">
           <button
-            onClick={() => { if (!isFirst) { setDirection(-1); setCurrentIndex((i) => i - 1); } }}
+            onClick={() => {
+              if (!isFirst) {
+                setDirection(-1);
+                setCurrentIndex((i) => i - 1);
+              }
+            }}
             disabled={isFirst}
             className={cn(
               "h-11 px-5 rounded-xl text-sm font-medium transition-all flex items-center gap-2",
-              isFirst ? "opacity-0 pointer-events-none" : "bg-white/10 text-white hover:bg-white/20",
+              isFirst
+                ? "opacity-0 pointer-events-none"
+                : "bg-white/10 text-white hover:bg-white/20",
             )}
           >
             <ArrowLeft className="w-4 h-4" />
@@ -1261,7 +1273,10 @@ function FormPreview({
           </button>
           <button
             onClick={() => {
-              if (isLast) { onExit(); return; }
+              if (isLast) {
+                onExit();
+                return;
+              }
               setDirection(1);
               setCurrentIndex((i) => i + 1);
             }}
