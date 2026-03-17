@@ -79,29 +79,29 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
       className={cn(
         "fixed left-0 top-0 h-screen flex flex-col transition-all duration-300 z-40 hidden lg:flex",
         "bg-gradient-to-b from-[#0C0E10] to-[#1A1D24] border-r border-white/[0.04]",
-        sidebarCollapsed ? "w-[68px]" : "w-[248px]",
+        sidebarCollapsed ? "w-[72px]" : "w-64",
       )}
     >
       {/* Logo */}
       <div
         className={cn(
-          "h-14 flex items-center px-3 shrink-0",
-          sidebarCollapsed ? "justify-center" : "gap-2.5",
+          "flex h-16 items-center border-b border-white/5 px-5 shrink-0",
+          sidebarCollapsed ? "justify-center px-0" : "",
         )}
       >
         <Link
           href={`/${variant}/dashboard`}
-          className="flex items-center gap-2.5 group"
+          className="flex items-center gap-3 group"
         >
           <img
-            src={branding?.logo_url || "/logo.png"}
+            src="/logo-sidebar.png"
             alt={branding?.app_name || "Off Market"}
-            width={30}
-            height={30}
-            className="rounded-lg shrink-0 transition-transform duration-200 group-hover:scale-105"
+            width={36}
+            height={36}
+            className="rounded-xl shrink-0 transition-transform duration-200 group-hover:scale-105"
           />
           {!sidebarCollapsed && (
-            <span className="text-[15px] text-white font-display font-bold tracking-tight">
+            <span className="text-[15px] text-white font-bold tracking-tight">
               {branding?.app_name || "Off Market"}
             </span>
           )}
@@ -109,7 +109,7 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 py-2 px-2 space-y-px overflow-y-auto">
+      <nav className="flex-1 py-4 px-3 space-y-px overflow-y-auto">
         {navigation.map((item) => {
           const isActive =
             pathname === item.href || pathname.startsWith(item.href + "/");
@@ -128,7 +128,7 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
                 href={item.href}
                 data-tour={tourMap[item.name]}
                 className={cn(
-                  "relative flex items-center gap-2.5 h-9 rounded-lg px-2.5 transition-all duration-200 group",
+                  "relative flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-[13px] font-medium transition-all duration-200 group",
                   isActive
                     ? "bg-[#AF0000]/15 text-white shadow-[inset_0_0_12px_rgba(175,0,0,0.08)]"
                     : "text-zinc-400 hover:text-white hover:bg-white/[0.06]",

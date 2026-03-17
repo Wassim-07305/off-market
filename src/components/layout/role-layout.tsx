@@ -63,11 +63,11 @@ export function RoleLayout({ variant, children }: RoleLayoutProps) {
       <div
         className={cn(
           "transition-all duration-300 min-h-screen flex flex-col",
-          sidebarCollapsed ? "lg:ml-[68px]" : "lg:ml-[248px]",
+          sidebarCollapsed ? "lg:ml-[72px]" : "lg:ml-64",
         )}
       >
         <Header />
-        <main className="flex-1 p-5 pb-24 lg:p-6 lg:pb-6">
+        <main className="flex-1 p-5 pb-24 md:p-8 lg:p-10 lg:pb-10 overflow-y-auto">
           <div className="mx-auto max-w-[1400px]">
             <AnimatePresence mode="wait">
               <motion.div
