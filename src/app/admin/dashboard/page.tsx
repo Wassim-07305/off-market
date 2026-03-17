@@ -197,8 +197,8 @@ function ChartCard({
 }
 
 const TOOLTIP_STYLE = {
-  backgroundColor: "#fff",
-  border: "1px solid #e4e4e7",
+  backgroundColor: "var(--surface)",
+  border: "1px solid var(--border-color)",
   borderRadius: "12px",
   fontSize: "13px",
   boxShadow:
@@ -320,7 +320,7 @@ export default function AdminDashboardPage() {
               change={revenueQuery.data?.revenueChange ?? 0}
               changeLabel="vs mois dernier"
               icon={DollarSign}
-              gradient="bg-gradient-to-br from-rose-50/80 via-white to-white"
+              gradient="bg-gradient-to-br from-rose-50/80 via-surface to-surface"
               iconBg="bg-[#AF0000]/10"
               iconColor="text-[#AF0000]"
             />
@@ -328,7 +328,7 @@ export default function AdminDashboardPage() {
               title="Eleves actifs"
               value={studentsQuery.data?.totalStudents ?? 0}
               icon={Users}
-              gradient="bg-gradient-to-br from-blue-50/80 via-white to-white"
+              gradient="bg-gradient-to-br from-blue-50/80 via-surface to-surface"
               iconBg="bg-blue-500/10"
               iconColor="text-blue-600"
             />
@@ -336,7 +336,7 @@ export default function AdminDashboardPage() {
               title="Nouveaux ce mois"
               value={studentsQuery.data?.newStudentsThisMonth ?? 0}
               icon={UserPlus}
-              gradient="bg-gradient-to-br from-emerald-50/80 via-white to-white"
+              gradient="bg-gradient-to-br from-emerald-50/80 via-surface to-surface"
               iconBg="bg-emerald-500/10"
               iconColor="text-emerald-600"
             />
@@ -344,7 +344,7 @@ export default function AdminDashboardPage() {
               title="LTV moyen"
               value={formatCurrency(studentsQuery.data?.averageLtv ?? 0)}
               icon={Receipt}
-              gradient="bg-gradient-to-br from-violet-50/80 via-white to-white"
+              gradient="bg-gradient-to-br from-violet-50/80 via-surface to-surface"
               iconBg="bg-violet-500/10"
               iconColor="text-violet-600"
             />

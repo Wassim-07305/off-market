@@ -237,7 +237,7 @@ export function ChatInput({
   );
 
   return (
-    <div className="border-t border-border/20 bg-gradient-to-t from-gray-50/80 to-white">
+    <div className="border-t border-border/20 bg-gradient-to-t from-muted/80 to-surface">
       {replyTo && (
         <div className="flex items-center gap-2.5 px-5 py-2.5 bg-[#AF0000]/[0.04] border-b border-[#AF0000]/10 animate-fade-in">
           <div className="w-1 h-8 rounded-full bg-gradient-to-b from-[#AF0000] to-[#DC2626]" />

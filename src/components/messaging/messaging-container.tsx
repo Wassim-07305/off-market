@@ -122,7 +122,7 @@ export default function MessagingContainer() {
             {/* Sidebar */}
             <div
               className={`
-              w-[272px] border-r border-border/30 flex flex-col shrink-0 bg-gradient-to-b from-[#FAFAFA] to-[#F5F5F5]
+              w-[272px] border-r border-border/30 flex flex-col shrink-0 bg-surface
               max-sm:absolute max-sm:inset-y-0 max-sm:left-0 max-sm:z-30 max-sm:w-[272px] max-sm:bg-surface max-sm:shadow-xl max-sm:shadow-black/10
               ${mobileSidebarOpen ? "max-sm:translate-x-0" : "max-sm:-translate-x-full"}
               sm:relative sm:translate-x-0 transition-transform duration-300 ease-out
@@ -189,7 +189,7 @@ export default function MessagingContainer() {
                   stopTyping={stopTyping}
                 />
               ) : (
-                <div className="flex-1 flex items-center justify-center bg-gradient-to-br from-white via-white to-[#AF0000]/[0.02]">
+                <div className="flex-1 flex items-center justify-center bg-gradient-to-br from-surface via-surface to-[#AF0000]/[0.02]">
                   <div className="text-center">
                     <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#AF0000]/10 to-[#DC2626]/10 flex items-center justify-center mx-auto mb-4 shadow-sm shadow-[#AF0000]/5">
                       <Hash className="w-6 h-6 text-[#AF0000]/60" />

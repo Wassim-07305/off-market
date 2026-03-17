@@ -220,8 +220,7 @@ export default function OnboardingPage() {
       await completeOnboarding.mutateAsync();
 
       // Supprime le cache middleware pour forcer un re-fetch du profil
-      document.cookie =
-        "om_profile_cache=; path=/; max-age=0; SameSite=Lax";
+      document.cookie = "om_profile_cache=; path=/; max-age=0; SameSite=Lax";
 
       setTimeout(() => {
         window.location.href = getDefaultRouteForRole(role);

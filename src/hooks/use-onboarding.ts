@@ -25,18 +25,8 @@ export const ROLE_ONBOARDING_STEPS = {
     "message_test",
     "completion",
   ] as const,
-  setter: [
-    "welcome_video",
-    "about_you",
-    "sales_tools",
-    "completion",
-  ] as const,
-  closer: [
-    "welcome_video",
-    "about_you",
-    "sales_tools",
-    "completion",
-  ] as const,
+  setter: ["welcome_video", "about_you", "sales_tools", "completion"] as const,
+  closer: ["welcome_video", "about_you", "sales_tools", "completion"] as const,
 } as const;
 
 // All possible step keys (union of all roles)
@@ -59,9 +49,7 @@ export type OnboardingStepKey = (typeof ALL_STEP_KEYS)[number];
 export type AppRole = keyof typeof ROLE_ONBOARDING_STEPS;
 
 export function getStepsForRole(role: string): readonly OnboardingStepKey[] {
-  return (
-    ROLE_ONBOARDING_STEPS[role as AppRole] ?? ROLE_ONBOARDING_STEPS.client
-  );
+  return ROLE_ONBOARDING_STEPS[role as AppRole] ?? ROLE_ONBOARDING_STEPS.client;
 }
 
 export interface OnboardingStepRecord {

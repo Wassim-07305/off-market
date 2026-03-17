@@ -164,7 +164,7 @@ function TopStatsSection({ prefix }: { prefix: string }) {
       {streakLoading ? (
         <CardSkeleton />
       ) : (
-        <div className="relative overflow-hidden bg-gradient-to-br from-orange-50 to-white border border-orange-200/50 rounded-2xl p-5 transition-all duration-200 hover:shadow-lg hover:shadow-orange-500/5 hover:-translate-y-0.5">
+        <div className="relative overflow-hidden bg-gradient-to-br from-orange-50 to-surface border border-orange-200/50 rounded-2xl p-5 transition-all duration-200 hover:shadow-lg hover:shadow-orange-500/5 hover:-translate-y-0.5">
           <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-orange-100/40 to-transparent rounded-bl-full" />
           <div className="flex items-center gap-3 mb-3">
             <div className="size-9 rounded-xl bg-gradient-to-br from-orange-400 to-orange-500 flex items-center justify-center shadow-sm shadow-orange-500/20">
@@ -197,7 +197,7 @@ function TopStatsSection({ prefix }: { prefix: string }) {
       {xpLoading ? (
         <CardSkeleton />
       ) : (
-        <div className="relative overflow-hidden bg-gradient-to-br from-red-50/50 to-white border border-red-200/30 rounded-2xl p-5 transition-all duration-200 hover:shadow-lg hover:shadow-[#AF0000]/5 hover:-translate-y-0.5">
+        <div className="relative overflow-hidden bg-gradient-to-br from-red-50/50 to-surface border border-red-200/30 rounded-2xl p-5 transition-all duration-200 hover:shadow-lg hover:shadow-[#AF0000]/5 hover:-translate-y-0.5">
           <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-red-100/30 to-transparent rounded-bl-full" />
           <div className="flex items-center gap-3 mb-3">
             <div className="size-9 rounded-xl bg-gradient-to-br from-[#AF0000] to-[#DC2626] flex items-center justify-center shadow-sm shadow-[#AF0000]/20">
@@ -230,7 +230,7 @@ function TopStatsSection({ prefix }: { prefix: string }) {
       )}
 
       {/* Formations completed */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-emerald-50 to-white border border-emerald-200/50 rounded-2xl p-5 transition-all duration-200 hover:shadow-lg hover:shadow-emerald-500/5 hover:-translate-y-0.5">
+      <div className="relative overflow-hidden bg-gradient-to-br from-emerald-50 to-surface border border-emerald-200/50 rounded-2xl p-5 transition-all duration-200 hover:shadow-lg hover:shadow-emerald-500/5 hover:-translate-y-0.5">
         <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-emerald-100/40 to-transparent rounded-bl-full" />
         <div className="flex items-center gap-3 mb-3">
           <div className="size-9 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center shadow-sm shadow-emerald-500/20">
@@ -250,7 +250,7 @@ function TopStatsSection({ prefix }: { prefix: string }) {
       </div>
 
       {/* Goals achieved */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-amber-50 to-white border border-amber-200/50 rounded-2xl p-5 transition-all duration-200 hover:shadow-lg hover:shadow-amber-500/5 hover:-translate-y-0.5">
+      <div className="relative overflow-hidden bg-gradient-to-br from-amber-50 to-surface border border-amber-200/50 rounded-2xl p-5 transition-all duration-200 hover:shadow-lg hover:shadow-amber-500/5 hover:-translate-y-0.5">
         <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-amber-100/40 to-transparent rounded-bl-full" />
         <div className="flex items-center gap-3 mb-3">
           <div className="size-9 rounded-xl bg-gradient-to-br from-amber-400 to-amber-500 flex items-center justify-center shadow-sm shadow-amber-500/20">
@@ -718,7 +718,7 @@ function BadgesSection() {
           {recentBadges.map((userBadge) => (
             <div
               key={userBadge.id}
-              className="flex flex-col items-center gap-1.5 p-2.5 rounded-xl bg-gradient-to-b from-amber-50/80 to-white border border-amber-200/40 hover:border-amber-300/60 hover:shadow-sm transition-all"
+              className="flex flex-col items-center gap-1.5 p-2.5 rounded-xl bg-gradient-to-b from-amber-50/80 to-surface border border-amber-200/40 hover:border-amber-300/60 hover:shadow-sm transition-all"
               title={userBadge.badge?.description ?? userBadge.badge?.name}
             >
               <div className="size-11 rounded-xl bg-gradient-to-br from-amber-100 to-amber-50 flex items-center justify-center text-lg shadow-inner">

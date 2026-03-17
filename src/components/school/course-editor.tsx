@@ -497,52 +497,8 @@ function LessonEditorPanel({
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
-              <Clock className="w-3 h-3 inline mr-1" />
-              Duree (minutes)
-            </label>
-            <input
-              type="number"
-              min={0}
-              value={duration || ""}
-              onChange={(e) => setDuration(parseInt(e.target.value) || 0)}
-              placeholder="Ex : 15"
-              className={inputClass}
-            />
-          </div>
-          <div>
-            <label className="block text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
-              Type de contenu
-            </label>
-            <div className="flex flex-wrap gap-1.5">
-              {[
-                { value: "video", label: "Video", icon: Video },
-                { value: "audio", label: "Audio", icon: Headphones },
-                { value: "text", label: "Texte", icon: FileText },
-                { value: "quiz", label: "Quiz", icon: HelpCircle },
-                { value: "embed", label: "Embed", icon: ExternalLink },
-              ].map((t) => (
-                <button
-                  key={t.value}
-                  type="button"
-                  onClick={() =>
-                    setContentType(t.value as Lesson["content_type"])
-                  }
-                  className={cn(
-                    "h-8 px-3 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-all",
-                    contentType === t.value
-                      ? "bg-foreground text-background"
-                      : "bg-muted text-muted-foreground hover:text-foreground",
-                  )}
-                >
-                  <t.icon className="w-3 h-3" />
-                  {t.label}
-                </button>
-              ))}
-            </div>
-          </div>
+        <div className="grid grid-cols-1 gap-4">
+          <div className="hidden"></div>
         </div>
 
         <div className="flex justify-end">

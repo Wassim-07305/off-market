@@ -385,7 +385,7 @@ export function ChannelSidebar({
                                 )}
                               </div>
                               {online && (
-                                <div className="absolute -bottom-px -right-px w-3 h-3 bg-emerald-500 border-2 border-[#F5F5F5] rounded-full shadow-sm shadow-emerald-500/30" />
+                                <div className="absolute -bottom-px -right-px w-3 h-3 bg-emerald-500 border-2 border-surface rounded-full shadow-sm shadow-emerald-500/30" />
                               )}
                               {ch.unreadCount > 0 && !ch.isMuted && (
                                 <span
@@ -506,7 +506,7 @@ export function ChannelSidebar({
                                 )}
                               </div>
                               {online && (
-                                <div className="absolute -bottom-px -right-px w-2.5 h-2.5 bg-emerald-500 border-2 border-[#F5F5F5] rounded-full shadow-sm shadow-emerald-500/30" />
+                                <div className="absolute -bottom-px -right-px w-2.5 h-2.5 bg-emerald-500 border-2 border-surface rounded-full shadow-sm shadow-emerald-500/30" />
                               )}
                             </div>
                             <span className="truncate flex-1 text-left">

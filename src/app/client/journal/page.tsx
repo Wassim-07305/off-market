@@ -345,7 +345,7 @@ export default function JournalPage() {
 
       {/* Stats */}
       <motion.div variants={staggerItem} className="grid grid-cols-3 gap-3">
-        <div className="relative overflow-hidden bg-gradient-to-br from-red-50/60 to-white rounded-2xl border border-red-200/30 p-4 text-center transition-all hover:shadow-md hover:shadow-[#AF0000]/5">
+        <div className="relative overflow-hidden bg-gradient-to-br from-red-50/60 to-surface rounded-2xl border border-red-200/30 p-4 text-center transition-all hover:shadow-md hover:shadow-[#AF0000]/5">
           <div className="absolute top-0 right-0 w-12 h-12 bg-gradient-to-bl from-red-100/30 to-transparent rounded-bl-full" />
           <div className="size-8 rounded-xl bg-gradient-to-br from-[#AF0000] to-[#DC2626] flex items-center justify-center mx-auto mb-2 shadow-sm shadow-[#AF0000]/20">
             <FileText className="w-3.5 h-3.5 text-white" />
@@ -355,7 +355,7 @@ export default function JournalPage() {
             Entrees
           </p>
         </div>
-        <div className="relative overflow-hidden bg-gradient-to-br from-orange-50/60 to-white rounded-2xl border border-orange-200/30 p-4 text-center transition-all hover:shadow-md hover:shadow-orange-500/5">
+        <div className="relative overflow-hidden bg-gradient-to-br from-orange-50/60 to-surface rounded-2xl border border-orange-200/30 p-4 text-center transition-all hover:shadow-md hover:shadow-orange-500/5">
           <div className="absolute top-0 right-0 w-12 h-12 bg-gradient-to-bl from-orange-100/30 to-transparent rounded-bl-full" />
           <div className="size-8 rounded-xl bg-gradient-to-br from-orange-400 to-orange-500 flex items-center justify-center mx-auto mb-2 shadow-sm shadow-orange-500/20">
             <Flame className="w-3.5 h-3.5 text-white" />
@@ -365,7 +365,7 @@ export default function JournalPage() {
             Jours de suite
           </p>
         </div>
-        <div className="relative overflow-hidden bg-gradient-to-br from-emerald-50/60 to-white rounded-2xl border border-emerald-200/30 p-4 text-center transition-all hover:shadow-md hover:shadow-emerald-500/5">
+        <div className="relative overflow-hidden bg-gradient-to-br from-emerald-50/60 to-surface rounded-2xl border border-emerald-200/30 p-4 text-center transition-all hover:shadow-md hover:shadow-emerald-500/5">
           <div className="absolute top-0 right-0 w-12 h-12 bg-gradient-to-bl from-emerald-100/30 to-transparent rounded-bl-full" />
           <div className="size-8 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center mx-auto mb-2 shadow-sm shadow-emerald-500/20">
             <TrendingUp className="w-3.5 h-3.5 text-white" />

@@ -367,7 +367,7 @@ function PostCard({
       className={cn(
         "bg-surface rounded-2xl border transition-all duration-200 hover:shadow-md hover:-translate-y-0.5",
         isVictory
-          ? "border-amber-200/60 bg-gradient-to-br from-amber-50/30 to-white shadow-sm shadow-amber-100/30"
+          ? "border-amber-200/60 bg-gradient-to-br from-amber-50/30 to-surface shadow-sm shadow-amber-100/30"
           : "border-border",
       )}
     >
