@@ -20,10 +20,7 @@ import {
   Loader2,
   Users,
 } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { format, parseISO, isToday } from "date-fns";
 import { fr } from "date-fns/locale";
 import { toast } from "sonner";
@@ -106,11 +103,20 @@ function LiveFormModal({
     }
   }, [open]);
 
+  const today = new Date().toISOString().split("T")[0];
+
   if (!open) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !date) return;
+
+    // Vérifier que la date/heure n'est pas dans le passé
+    const selectedDateTime = new Date(`${date}T${time}`);
+    if (selectedDateTime < new Date()) {
+      toast.error("La date et l'heure doivent etre dans le futur");
+      return;
+    }
 
     setSaving(true);
     try {
@@ -160,8 +166,18 @@ function LiveFormModal({
             className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
           >
             <span className="sr-only">Fermer</span>
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
@@ -185,6 +201,7 @@ function LiveFormModal({
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
+                min={today}
                 required
                 className={inputClass}
               />
@@ -307,15 +324,25 @@ function SimpleCallFormModal({
     }
   }, [editCall, open]);
 
+  const today = new Date().toISOString().split("T")[0];
+
   if (!open) return null;
 
   const selectedClient = clients.find((c) => c.id === clientId);
   const resolvedTitle =
-    title.trim() || (selectedClient ? `Appel avec ${selectedClient.full_name}` : "Appel");
+    title.trim() ||
+    (selectedClient ? `Appel avec ${selectedClient.full_name}` : "Appel");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!date) return;
+
+    // Vérifier que la date/heure n'est pas dans le passé
+    const selectedDateTime = new Date(`${date}T${time}`);
+    if (selectedDateTime < new Date()) {
+      toast.error("La date et l'heure doivent etre dans le futur");
+      return;
+    }
 
     setSaving(true);
     try {
@@ -377,8 +404,18 @@ function SimpleCallFormModal({
             className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
           >
             <span className="sr-only">Fermer</span>
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
@@ -421,6 +458,7 @@ function SimpleCallFormModal({
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
+                min={today}
                 required
                 className={inputClass}
               />
@@ -743,14 +781,13 @@ export default function CallsPage() {
               </p>
               <p className="text-xs text-muted-foreground/60 mt-1">
                 {tab === "lives"
-                  ? "Cliquez sur \"Nouvel appel\" puis \"Nouveau live\" pour en creer un"
-                  : "Cliquez sur \"Nouvel appel\" pour en planifier un"}
+                  ? 'Cliquez sur "Nouvel appel" puis "Nouveau live" pour en creer un'
+                  : 'Cliquez sur "Nouvel appel" pour en planifier un'}
               </p>
             </div>
           ) : (
             filteredCalls.map((call) => {
-              const badge =
-                STATUS_BADGE[call.status] ?? STATUS_BADGE.planifie;
+              const badge = STATUS_BADGE[call.status] ?? STATUS_BADGE.planifie;
               const joinable = isJoinable(call);
               const isLive = call.call_type === "live";
 
@@ -783,7 +820,9 @@ export default function CallsPage() {
                     </p>
                     <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1.5">
                       <span>
-                        {isLive ? "Tous les clients" : call.client?.full_name ?? "Sans client"}
+                        {isLive
+                          ? "Tous les clients"
+                          : (call.client?.full_name ?? "Sans client")}
                       </span>
                       <span className="text-muted-foreground/30">·</span>
                       <span>{formatCallDate(call.date, call.time)}</span>
