@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 const VIDEO_URL =
   "https://srhpdgqqiuzdrlqaitdk.supabase.co/storage/v1/object/public/branding/onboarding-welcome.mp4";
@@ -31,19 +31,6 @@ export function WelcomeStep({ firstName, onNext }: WelcomeStepProps) {
           className="relative rounded-3xl"
           priority
         />
-      </motion.div>
-
-      {/* Premium badge */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="mb-4 flex items-center gap-2 rounded-full bg-gradient-to-r from-amber-500/20 to-primary/20 border border-amber-500/30 px-4 py-1.5"
-      >
-        <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-        <span className="text-xs font-medium text-amber-300">
-          Programme Premium
-        </span>
       </motion.div>
 
       {/* Welcome title */}
