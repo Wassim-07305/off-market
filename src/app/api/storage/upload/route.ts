@@ -34,7 +34,8 @@ export async function POST(request: Request) {
     const buffer = Buffer.from(await file.arrayBuffer());
     await uploadToB2(path, buffer, file.type || "application/octet-stream");
 
-    const url = getPublicB2Url(path);
+    // Retourner une URL proxy (le bucket B2 est privé)
+    const url = `/api/storage/proxy?key=${encodeURIComponent(path)}`;
     return NextResponse.json({ url });
   } catch (err) {
     console.error("[storage/upload] Erreur:", err);
