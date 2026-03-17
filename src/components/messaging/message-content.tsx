@@ -87,19 +87,57 @@ function TextContent({ content }: { content: string }) {
   const firstUrl = extractFirstUrl(content);
 
   const lines = content.split("\n");
-  const blocks: Array<{ type: "quote" | "text"; content: string }> = [];
-  let currentBlock: { type: "quote" | "text"; content: string } | null = null;
+  type BlockType = "quote" | "text" | "ul" | "ol";
+  const blocks: Array<{ type: BlockType; content: string; items?: string[] }> =
+    [];
+  let currentBlock: {
+    type: BlockType;
+    content: string;
+    items?: string[];
+  } | null = null;
 
   for (const line of lines) {
     const isQuoteLine = line.startsWith("> ");
-    const blockType = isQuoteLine ? "quote" : "text";
-    const cleanLine = isQuoteLine ? line.slice(2) : line;
+    const bulletMatch = line.match(/^[-*] (.+)/);
+    const orderedMatch = line.match(/^\d+\.\s(.+)/);
 
-    if (currentBlock && currentBlock.type === blockType) {
+    let blockType: BlockType;
+    let cleanLine: string;
+
+    if (isQuoteLine) {
+      blockType = "quote";
+      cleanLine = line.slice(2);
+    } else if (bulletMatch) {
+      blockType = "ul";
+      cleanLine = bulletMatch[1];
+    } else if (orderedMatch) {
+      blockType = "ol";
+      cleanLine = orderedMatch[1];
+    } else {
+      blockType = "text";
+      cleanLine = line;
+    }
+
+    if (
+      currentBlock &&
+      currentBlock.type === blockType &&
+      (blockType === "ul" || blockType === "ol")
+    ) {
+      currentBlock.items!.push(cleanLine);
+    } else if (
+      currentBlock &&
+      currentBlock.type === blockType &&
+      blockType !== "ul" &&
+      blockType !== "ol"
+    ) {
       currentBlock.content += "\n" + cleanLine;
     } else {
       if (currentBlock) blocks.push(currentBlock);
-      currentBlock = { type: blockType, content: cleanLine };
+      if (blockType === "ul" || blockType === "ol") {
+        currentBlock = { type: blockType, content: "", items: [cleanLine] };
+      } else {
+        currentBlock = { type: blockType, content: cleanLine };
+      }
     }
   }
   if (currentBlock) blocks.push(currentBlock);
@@ -124,6 +162,30 @@ function TextContent({ content }: { content: string }) {
               >
                 {renderRichText(block.content)}
               </blockquote>
+            );
+          }
+          if (block.type === "ul") {
+            return (
+              <ul
+                key={i}
+                className="list-disc list-inside text-[14px] text-foreground leading-relaxed space-y-0.5 my-1"
+              >
+                {block.items?.map((item, j) => (
+                  <li key={j}>{renderRichText(item)}</li>
+                ))}
+              </ul>
+            );
+          }
+          if (block.type === "ol") {
+            return (
+              <ol
+                key={i}
+                className="list-decimal list-inside text-[14px] text-foreground leading-relaxed space-y-0.5 my-1"
+              >
+                {block.items?.map((item, j) => (
+                  <li key={j}>{renderRichText(item)}</li>
+                ))}
+              </ol>
             );
           }
           return (
@@ -363,7 +425,7 @@ function AudioContent({ message }: { message: EnrichedMessage }) {
       <audio
         ref={audioRef}
         src={url}
-        preload="metadata"
+        preload="auto"
         onLoadedMetadata={() => {
           const el = audioRef.current;
           if (el && isFinite(el.duration)) setDuration(el.duration);
@@ -371,6 +433,15 @@ function AudioContent({ message }: { message: EnrichedMessage }) {
         onDurationChange={() => {
           const el = audioRef.current;
           if (el && isFinite(el.duration)) setDuration(el.duration);
+        }}
+        onTimeUpdate={() => {
+          const el = audioRef.current;
+          if (!el) return;
+          if (isFinite(el.duration) && el.duration > 0) {
+            setDuration(el.duration);
+            setProgress(el.currentTime / el.duration);
+            setCurrentTime(el.currentTime);
+          }
         }}
         onEnded={() => {
           setPlaying(false);

@@ -84,6 +84,8 @@ export function ChatPanel({
   stopTyping,
 }: ChatPanelProps) {
   const supabase = useSupabase();
+  const [isDraggingOver, setIsDraggingOver] = useState(false);
+  const [droppedFile, setDroppedFile] = useState<File | null>(null);
   const {
     replyToMessage,
     setReplyTo,
@@ -257,7 +259,49 @@ export function ChatPanel({
     : messages;
 
   return (
-    <div className="flex flex-1 min-h-0">
+    <div
+      className="flex flex-1 min-h-0 relative"
+      onDragOver={(e) => {
+        e.preventDefault();
+        setIsDraggingOver(true);
+      }}
+      onDragLeave={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+          setIsDraggingOver(false);
+        }
+      }}
+      onDrop={(e) => {
+        e.preventDefault();
+        setIsDraggingOver(false);
+        const file = e.dataTransfer.files?.[0];
+        if (file) setDroppedFile(file);
+      }}
+    >
+      {/* Drag overlay */}
+      {isDraggingOver && (
+        <div className="absolute inset-0 z-50 bg-primary/5 border-2 border-dashed border-primary rounded-2xl flex items-center justify-center pointer-events-none">
+          <div className="text-center">
+            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2">
+              <svg
+                className="w-6 h-6 text-primary"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                />
+              </svg>
+            </div>
+            <p className="text-sm font-medium text-primary">
+              Deposer le fichier ici
+            </p>
+          </div>
+        </div>
+      )}
       <div className="flex flex-col flex-1 min-w-0">
         <ChatHeader
           channel={channel}
@@ -330,6 +374,8 @@ export function ChatPanel({
             stopTyping(user?.user_metadata?.full_name ?? "Quelqu'un")
           }
           channelId={channel.id}
+          droppedFile={droppedFile}
+          onClearDroppedFile={() => setDroppedFile(null)}
         />
       </div>
 

@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { useChannelMembers } from "@/hooks/use-channels";
 import { EmojiPicker } from "./emoji-picker";
 import { GifPicker } from "./gif-picker";
-import { VoiceRecorder } from "./voice-recorder";
+import { VoiceRecorder, VoicePreview } from "./voice-recorder";
 import { MentionAutocomplete } from "./mention-autocomplete";
 import { TemplatePicker } from "./template-picker";
 import { TemplateManagerModal } from "./template-manager-modal";
@@ -50,6 +50,8 @@ interface ChatInputProps {
   onTyping?: () => void;
   onStopTyping?: () => void;
   channelId: string;
+  droppedFile?: File | null;
+  onClearDroppedFile?: () => void;
 }
 
 /**
@@ -139,6 +141,8 @@ export function ChatInput({
   onTyping,
   onStopTyping,
   channelId,
+  droppedFile,
+  onClearDroppedFile,
 }: ChatInputProps) {
   const [message, setMessage] = useState("");
   const [showEmoji, setShowEmoji] = useState(false);
@@ -155,6 +159,19 @@ export function ChatInput({
   >(null);
   const [templateSlashStartPos, setTemplateSlashStartPos] = useState(0);
   const [showAiCommands, setShowAiCommands] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [pendingFiles, setPendingFiles] = useState<File[]>([]);
+  const [pendingVoices, setPendingVoices] = useState<
+    Array<{ blob: Blob; duration: number; levels: number[] }>
+  >([]);
+
+  // Receive dropped file from parent
+  useEffect(() => {
+    if (droppedFile) {
+      setPendingFiles((prev) => [...prev, droppedFile]);
+      onClearDroppedFile?.();
+    }
+  }, [droppedFile, onClearDroppedFile]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: channelMembers } = useChannelMembers(channelId);
@@ -188,23 +205,32 @@ export function ChatInput({
   showAiCommandsRef.current = showAiCommands;
 
   // Extension custom pour Enter = envoyer, Shift+Enter = nouvelle ligne
-  const EnterToSend = Extension.create({
-    name: "enterToSend",
-    addKeyboardShortcuts() {
-      return {
-        Enter: () => {
-          // Ne pas intercepter si un autocomplete est ouvert
-          if (mentionQueryRef.current !== null) return false;
-          if (showTemplatePickerRef.current) return false;
-          if (showAiCommandsRef.current) return false;
-          handleSendRef.current();
-          return true;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const EnterToSend = useMemo(
+    () =>
+      Extension.create({
+        name: "enterToSend",
+        priority: 50,
+        addKeyboardShortcuts() {
+          return {
+            Enter: ({ editor: ed }) => {
+              if (mentionQueryRef.current !== null) return false;
+              if (showTemplatePickerRef.current) return false;
+              if (showAiCommandsRef.current) return false;
+              // Dans une liste, Enter crée un nouvel item au lieu d'envoyer
+              if (ed.isActive("bulletList") || ed.isActive("orderedList"))
+                return false;
+              handleSendRef.current();
+              return true;
+            },
+          };
         },
-      };
-    },
-  });
+      }),
+    [],
+  );
 
   const editor = useEditor({
+    immediatelyRender: false,
     extensions: [
       StarterKit.configure({
         heading: false,
@@ -302,29 +328,73 @@ export function ChatInput({
     const html = editor.getHTML();
     const markdown = htmlToMarkdown(html);
     const trimmed = markdown.trim();
-    if (!trimmed || isSending) return;
+
+    const hasText = !!trimmed;
+    const hasFile = pendingFiles.length > 0;
+    const hasVoice = pendingVoices.length > 0;
+
+    if (!hasText && !hasFile && !hasVoice) return;
+    if (isSending) return;
+
     const schedule = scheduledAt
       ? new Date(scheduledAt).toISOString()
       : undefined;
     const urgent = isUrgent;
-    editor.commands.clearContent();
-    setMessage("");
-    setScheduledAt("");
-    setShowSchedule(false);
-    setIsUrgent(false);
-    onStopTyping?.();
-    await onSend(trimmed, schedule, urgent);
+
+    // Send voice first if pending
+    if (hasVoice) {
+      for (const v of pendingVoices) {
+        await onVoiceSend(v.blob, v.duration);
+      }
+      setPendingVoices([]);
+    }
+
+    // Send files if pending
+    if (hasFile) {
+      for (const f of pendingFiles) {
+        await onFileUpload(f);
+      }
+      setPendingFiles([]);
+    }
+
+    // Send text if any
+    if (hasText) {
+      editor.commands.clearContent();
+      setMessage("");
+      setScheduledAt("");
+      setShowSchedule(false);
+      setIsUrgent(false);
+      onStopTyping?.();
+      await onSend(trimmed, schedule, urgent);
+    } else {
+      // Reset UI even if no text
+      setScheduledAt("");
+      setShowSchedule(false);
+      setIsUrgent(false);
+    }
+
     editor.commands.focus();
-  }, [editor, onSend, isSending, onStopTyping, scheduledAt, isUrgent]);
+  }, [
+    editor,
+    onSend,
+    onFileUpload,
+    onVoiceSend,
+    pendingFiles,
+    pendingVoices,
+    isSending,
+    onStopTyping,
+    scheduledAt,
+    isUrgent,
+  ]);
 
   // Mettre a jour la ref stable
   useEffect(() => {
     handleSendRef.current = handleSend;
   }, [handleSend]);
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) await onFileUpload(file);
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? []);
+    if (files.length) setPendingFiles((prev) => [...prev, ...files]);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
@@ -390,15 +460,17 @@ export function ChatInput({
         <div
           className={cn(
             "rounded-2xl transition-all duration-200 relative cursor-text shadow-sm",
-            isUrgent
-              ? "bg-red-50 dark:bg-red-950/20 ring-1 ring-red-300 dark:ring-red-800 shadow-red-500/10"
-              : "bg-surface ring-1 ring-border/40 shadow-black/[0.03] hover:ring-border/60 focus-within:ring-[#AF0000]/20 focus-within:shadow-[#AF0000]/5",
+            isDragging
+              ? "ring-2 ring-primary ring-dashed bg-primary/5"
+              : isUrgent
+                ? "bg-red-50 dark:bg-red-950/20 ring-1 ring-red-300 dark:ring-red-800 shadow-red-500/10"
+                : "bg-surface ring-1 ring-border/40 shadow-black/[0.03] hover:ring-border/60 focus-within:ring-[#AF0000]/20 focus-within:shadow-[#AF0000]/5",
           )}
           onClick={(e) => {
             const target = e.target as HTMLElement;
             if (
               target.closest(
-                "button, input, [role='dialog'], [data-emoji-picker]",
+                "button, input, label, [role='dialog'], [data-emoji-picker]",
               )
             )
               return;
@@ -412,6 +484,51 @@ export function ChatInput({
               <span className="text-[11px] font-semibold text-red-500 uppercase tracking-wide">
                 Message urgent
               </span>
+            </div>
+          )}
+
+          {/* Pending files preview */}
+          {pendingFiles.length > 0 && (
+            <div className="px-4 pt-3 pb-1 space-y-1.5">
+              {pendingFiles.map((file, i) => (
+                <div
+                  key={i}
+                  className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-xl border border-border/50"
+                >
+                  <Paperclip className="w-4 h-4 text-primary shrink-0" />
+                  <span className="text-sm text-foreground truncate flex-1">
+                    {file.name}
+                  </span>
+                  <span className="text-xs text-muted-foreground shrink-0">
+                    {(file.size / 1024).toFixed(0)} Ko
+                  </span>
+                  <button
+                    onClick={() =>
+                      setPendingFiles((prev) => prev.filter((_, j) => j !== i))
+                    }
+                    className="w-5 h-5 rounded-md flex items-center justify-center text-muted-foreground hover:text-red-500 hover:bg-red-500/10 transition-colors"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Pending voice previews */}
+          {pendingVoices.length > 0 && (
+            <div className="px-4 pt-3 pb-1 space-y-1.5">
+              {pendingVoices.map((voice, i) => (
+                <VoicePreview
+                  key={i}
+                  blob={voice.blob}
+                  duration={voice.duration}
+                  levels={voice.levels}
+                  onRemove={() =>
+                    setPendingVoices((prev) => prev.filter((_, j) => j !== i))
+                  }
+                />
+              ))}
             </div>
           )}
 
@@ -457,7 +574,7 @@ export function ChatInput({
           </div>
 
           {/* TipTap editor + action buttons */}
-          <div className="flex items-end gap-2 px-4 pb-3">
+          <div className="flex items-end gap-2 px-4 pb-3 relative">
             <div className="flex-1 py-1">
               <EditorContent editor={editor} />
             </div>
@@ -465,18 +582,36 @@ export function ChatInput({
               <input
                 ref={fileInputRef}
                 type="file"
+                multiple
                 onChange={handleFileChange}
-                className="hidden"
+                style={{
+                  position: "absolute",
+                  width: 0,
+                  height: 0,
+                  overflow: "hidden",
+                  opacity: 0,
+                }}
               />
               <button
-                onClick={() => fileInputRef.current?.click()}
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  fileInputRef.current?.click();
+                }}
                 className="w-7 h-7 rounded-lg flex items-center justify-center text-muted-foreground/70 hover:text-foreground hover:bg-muted/60 transition-all duration-200"
                 title="Joindre un fichier"
               >
                 <Paperclip className="w-4 h-4" />
               </button>
 
-              <VoiceRecorder onSend={onVoiceSend} />
+              <VoiceRecorder
+                onRecordingComplete={(blob, duration, levels) => {
+                  setPendingVoices((prev) => [
+                    ...prev,
+                    { blob, duration, levels },
+                  ]);
+                }}
+              />
 
               <button
                 onClick={() => {
@@ -599,7 +734,12 @@ export function ChatInput({
 
               <button
                 onClick={handleSend}
-                disabled={!message.trim() || isSending}
+                disabled={
+                  (!message.trim() &&
+                    !pendingFiles.length &&
+                    !pendingVoices.length) ||
+                  isSending
+                }
                 className={cn(
                   "w-8 h-8 rounded-xl flex items-center justify-center text-white transition-all duration-200 active:scale-90 disabled:opacity-25 disabled:pointer-events-none disabled:scale-100 shrink-0 shadow-sm",
                   isUrgent

@@ -57,8 +57,10 @@ export function FileUpload({
         const { data } = supabase.storage.from(bucket).getPublicUrl(fileName);
         onUpload(data.publicUrl, file.name);
         toast.success("Fichier televerse");
-      } catch {
-        toast.error("Erreur lors du telechargement");
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : String(err);
+        console.error("[FileUpload] Upload failed:", msg, err);
+        toast.error(`Erreur lors du telechargement: ${msg}`);
       } finally {
         setUploading(false);
       }

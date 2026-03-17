@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { useSupabase } from "@/hooks/use-supabase";
@@ -58,6 +58,17 @@ export function CreateChannelModal({
     },
     enabled: !!user && open,
   });
+
+  // Pré-sélectionner tout le monde quand les profils chargent en mode public
+  useEffect(() => {
+    if (
+      type === "public" &&
+      allProfiles?.length &&
+      selectedMembers.size === 0
+    ) {
+      setSelectedMembers(new Set(allProfiles.map((p) => p.id)));
+    }
+  }, [allProfiles, type, selectedMembers.size]);
 
   const filteredProfiles = useMemo(() => {
     if (!memberSearch.trim()) return allProfiles ?? [];
@@ -152,7 +163,13 @@ export function CreateChannelModal({
           <div className="flex gap-2">
             <button
               type="button"
-              onClick={() => setType("public")}
+              onClick={() => {
+                setType("public");
+                // Sélectionner tout le monde automatiquement
+                setSelectedMembers(
+                  new Set((allProfiles ?? []).map((p) => p.id)),
+                );
+              }}
               className={cn(
                 "flex-1 flex items-center justify-center gap-2 h-10 rounded-xl border text-sm font-medium transition-all duration-200 cursor-pointer",
                 type === "public"
@@ -165,7 +182,11 @@ export function CreateChannelModal({
             </button>
             <button
               type="button"
-              onClick={() => setType("private")}
+              onClick={() => {
+                setType("private");
+                // Vider la sélection pour choisir manuellement
+                setSelectedMembers(new Set());
+              }}
               className={cn(
                 "flex-1 flex items-center justify-center gap-2 h-10 rounded-xl border text-sm font-medium transition-all duration-200 cursor-pointer",
                 type === "private"

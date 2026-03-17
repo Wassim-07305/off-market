@@ -32,6 +32,7 @@ export default function MessagingContainer() {
     archiveChannel,
     unarchiveChannel,
     pinChannel,
+    deleteChannel,
     showArchived,
     setShowArchived,
   } = useChannels();
@@ -239,6 +240,12 @@ export default function MessagingContainer() {
                 onPin={(channelId, pinned) =>
                   pinChannel.mutate({ channelId, pinned })
                 }
+                onDelete={() => {
+                  if (selectedChannel) {
+                    deleteChannel.mutate(selectedChannel.id);
+                    setActiveChannelId(null);
+                  }
+                }}
                 userRole={user?.user_metadata?.role}
               />
             )}

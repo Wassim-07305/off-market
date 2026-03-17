@@ -17,6 +17,7 @@ import { EnhancedVideoPlayer } from "@/components/school/video-player";
 import { ActionChecklist } from "@/components/school/action-checklist";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
+import { useUIStore } from "@/stores/ui-store";
 import { toast } from "sonner";
 import DOMPurify from "dompurify";
 import type { Lesson } from "@/types/database";
@@ -97,6 +98,7 @@ export default function CourseViewPage({
   const { courseId } = use(params);
   const prefix = useRoutePrefix();
   const { isStaff } = useAuth();
+  const { sidebarCollapsed } = useUIStore();
 
   const { data: course, isLoading } = useCourse(courseId);
   const { data: progress } = useLessonProgress();
@@ -469,7 +471,13 @@ export default function CourseViewPage({
   }>;
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] -m-5 md:-m-8">
+    <div
+      className={cn(
+        "fixed top-16 right-0 bottom-0 flex bg-background z-20",
+        sidebarCollapsed ? "lg:left-[72px]" : "lg:left-64",
+        "left-0",
+      )}
+    >
       {/* Mobile sidebar toggle */}
       <div className="md:hidden fixed top-[4.5rem] left-4 z-40">
         <button
@@ -509,22 +517,71 @@ export default function CourseViewPage({
 
       {/* Content area */}
       <div className="flex-1 overflow-y-auto">
-        <div className="p-6 md:p-8 pt-16 md:pt-8 max-w-4xl mx-auto">
+        <div className="p-4 md:p-6 pt-14 md:pt-6 max-w-5xl">
           {selectedLesson ? (
             <>
               {/* Video */}
               {videoUrl && <EnhancedVideoPlayer videoUrl={videoUrl} />}
 
-              {/* Lesson title */}
-              <h1 className="text-xl font-semibold text-foreground tracking-tight mt-6">
-                {selectedLesson.title}
-              </h1>
-
-              {selectedLesson.description && (
-                <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">
-                  {selectedLesson.description}
-                </p>
-              )}
+              {/* Title + Mark complete (like builder layout) */}
+              <div className="flex items-start gap-3 mt-5">
+                <div className="flex-1 min-w-0">
+                  <h1 className="text-xl font-semibold text-foreground tracking-tight">
+                    {selectedLesson.title}
+                  </h1>
+                  {selectedLesson.description && (
+                    <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                      {selectedLesson.description}
+                    </p>
+                  )}
+                </div>
+                <div className="shrink-0 flex flex-col items-end gap-2">
+                  {completedIds.has(selectedLesson.id) ? (
+                    <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-xl">
+                      <CheckCircle className="h-3 w-3" />
+                      Termine
+                    </span>
+                  ) : (
+                    <button
+                      onClick={handleMarkComplete}
+                      disabled={markComplete.isPending}
+                      className="h-9 px-4 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-all active:scale-[0.98] flex items-center gap-1.5 disabled:opacity-50"
+                    >
+                      {markComplete.isPending ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <CheckCircle className="h-3.5 w-3.5" />
+                      )}
+                      {markComplete.isPending
+                        ? "Enregistrement..."
+                        : "Marquer comme termine"}
+                    </button>
+                  )}
+                  <div className="flex items-center gap-1">
+                    <button
+                      className="h-7 px-2 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors flex items-center gap-1 disabled:opacity-30 disabled:cursor-not-allowed"
+                      disabled={selectedLessonIndex <= 0}
+                      onClick={() => navigateLesson("prev")}
+                    >
+                      <ArrowLeft className="h-3 w-3" />
+                      Precedente
+                    </button>
+                    <button
+                      className="h-7 px-2 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors flex items-center gap-1 disabled:opacity-30 disabled:cursor-not-allowed"
+                      disabled={
+                        selectedLessonIndex >= flatLessons.length - 1 ||
+                        !isLessonUnlocked(
+                          flatLessons[selectedLessonIndex + 1]?.id ?? "",
+                        )
+                      }
+                      onClick={() => navigateLesson("next")}
+                    >
+                      Suivante
+                      <ArrowRight className="h-3 w-3" />
+                    </button>
+                  </div>
+                </div>
+              </div>
 
               {/* HTML content — admin-authored, stored in DB */}
               {htmlContent && (
@@ -538,7 +595,7 @@ export default function CourseViewPage({
 
               {/* Attachments */}
               {attachments.length > 0 && (
-                <div className="mt-8">
+                <div>
                   <h3 className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-2.5">
                     Ressources
                   </h3>
@@ -567,57 +624,6 @@ export default function CourseViewPage({
                   </div>
                 </div>
               )}
-
-              {/* Actions + Navigation */}
-              <div className="mt-8 pt-6 border-t border-border flex flex-wrap items-center gap-3">
-                {completedIds.has(selectedLesson.id) ? (
-                  <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md">
-                    <CheckCircle className="h-3 w-3" />
-                    Termine
-                  </span>
-                ) : (
-                  <button
-                    onClick={handleMarkComplete}
-                    disabled={markComplete.isPending}
-                    className="h-9 px-4 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-all active:scale-[0.98] flex items-center gap-2 disabled:opacity-50"
-                  >
-                    {markComplete.isPending ? (
-                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                    ) : (
-                      <CheckCircle className="h-3.5 w-3.5" />
-                    )}
-                    {markComplete.isPending
-                      ? "Enregistrement..."
-                      : "Marquer comme termine"}
-                  </button>
-                )}
-
-                <div className="flex-1" />
-
-                <div className="flex items-center gap-1">
-                  <button
-                    className="h-8 px-3 rounded-lg text-[13px] text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors flex items-center gap-1.5 disabled:opacity-30 disabled:cursor-not-allowed"
-                    disabled={selectedLessonIndex <= 0}
-                    onClick={() => navigateLesson("prev")}
-                  >
-                    <ArrowLeft className="h-3.5 w-3.5" />
-                    <span className="hidden sm:inline">Precedente</span>
-                  </button>
-                  <button
-                    className="h-8 px-3 rounded-lg text-[13px] text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors flex items-center gap-1.5 disabled:opacity-30 disabled:cursor-not-allowed"
-                    disabled={
-                      selectedLessonIndex >= flatLessons.length - 1 ||
-                      !isLessonUnlocked(
-                        flatLessons[selectedLessonIndex + 1]?.id ?? "",
-                      )
-                    }
-                    onClick={() => navigateLesson("next")}
-                  >
-                    <span className="hidden sm:inline">Suivante</span>
-                    <ArrowRight className="h-3.5 w-3.5" />
-                  </button>
-                </div>
-              </div>
 
               {/* Course completion + certificate */}
               {progressPercent === 100 && course && (

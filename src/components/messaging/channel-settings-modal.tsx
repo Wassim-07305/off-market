@@ -24,6 +24,7 @@ import {
   Search,
   Loader2,
   Pin,
+  Trash2,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import type { ChannelWithMeta } from "@/types/messaging";
@@ -38,6 +39,7 @@ interface ChannelSettingsModalProps {
   onArchive?: () => void;
   onUnarchive?: () => void;
   onPin?: (channelId: string, pinned: boolean) => void;
+  onDelete?: () => void;
   userRole?: string;
 }
 
@@ -65,6 +67,7 @@ export function ChannelSettingsModal({
   onArchive,
   onUnarchive,
   onPin,
+  onDelete,
   userRole,
 }: ChannelSettingsModalProps) {
   const { user } = useAuth();
@@ -394,6 +397,28 @@ export function ChannelSettingsModal({
                   })}
                 </p>
               </div>
+
+              {/* Supprimer le canal */}
+              {canEdit && (
+                <div className="pt-3 border-t border-border/40">
+                  <button
+                    onClick={() => {
+                      if (
+                        confirm(
+                          `Supprimer le canal "${channel.name}" ? Cette action est irreversible.`,
+                        )
+                      ) {
+                        onDelete?.();
+                        onClose();
+                      }
+                    }}
+                    className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium text-red-500 hover:bg-red-500/10 transition-colors"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    Supprimer le canal
+                  </button>
+                </div>
+              )}
             </div>
           )}
 

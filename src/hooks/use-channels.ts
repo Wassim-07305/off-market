@@ -406,6 +406,70 @@ export function useChannels() {
     },
   });
 
+  const deleteChannel = useMutation({
+    mutationFn: async (channelId: string) => {
+      // 1. Récupérer les IDs des messages du canal
+      const { data: msgs } = await supabase
+        .from("messages")
+        .select("id")
+        .eq("channel_id", channelId);
+      const messageIds = (msgs ?? []).map((m) => m.id);
+
+      // 2. Supprimer les fichiers du storage
+      if (messageIds.length) {
+        const { data: attachments } = await supabase
+          .from("message_attachments")
+          .select("file_url")
+          .in("message_id", messageIds);
+
+        if (attachments?.length) {
+          for (const att of attachments) {
+            try {
+              const url = new URL(att.file_url);
+              const match = url.pathname.match(
+                /\/storage\/v1\/object\/public\/([^/]+)\/(.+)/,
+              );
+              if (match) {
+                await supabase.storage.from(match[1]).remove([match[2]]);
+              }
+            } catch {
+              // Ignorer les erreurs de suppression de fichier
+            }
+          }
+        }
+
+        // 3. Supprimer réactions et pièces jointes
+        await supabase
+          .from("message_reactions")
+          .delete()
+          .in("message_id", messageIds);
+        await supabase
+          .from("message_attachments")
+          .delete()
+          .in("message_id", messageIds);
+      }
+
+      // 4. Supprimer messages, membres, canal
+      await supabase.from("messages").delete().eq("channel_id", channelId);
+      await supabase
+        .from("channel_members")
+        .delete()
+        .eq("channel_id", channelId);
+      const { error } = await supabase
+        .from("channels")
+        .delete()
+        .eq("id", channelId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["channels"] });
+      toast.success("Canal supprime");
+    },
+    onError: () => {
+      toast.error("Erreur lors de la suppression");
+    },
+  });
+
   return {
     channels,
     publicChannels: activePublicChannels,
@@ -419,6 +483,7 @@ export function useChannels() {
     archiveChannel,
     unarchiveChannel,
     pinChannel,
+    deleteChannel,
     showArchived,
     setShowArchived,
   };

@@ -2,8 +2,10 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { useCourseMutations } from "@/hooks/use-courses";
+import { useSupabase } from "@/hooks/use-supabase";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useUIStore } from "@/stores/ui-store";
 import {
   DndContext,
   closestCenter,
@@ -234,7 +236,7 @@ function SortableModuleItem({
       )}
     >
       {/* Module header */}
-      <div className="flex items-center gap-2 px-3 py-3">
+      <div className="flex items-center gap-2 px-3 py-3 min-w-0">
         <button
           {...attributes}
           {...listeners}
@@ -352,6 +354,7 @@ function LessonEditorPanel({
   const [embedUrl, setEmbedUrl] = useState(lesson.embed_url ?? "");
   const [embedType, setEmbedType] = useState(lesson.embed_type ?? "generic");
 
+  // Only reset local state when switching to a different lesson (not on refetch)
   useEffect(() => {
     setTitle(lesson.title);
     setDescription(lesson.description ?? "");
@@ -372,7 +375,8 @@ function LessonEditorPanel({
     setContentType(lesson.content_type);
     setEmbedUrl(lesson.embed_url ?? "");
     setEmbedType(lesson.embed_type ?? "generic");
-  }, [lesson]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lesson.id]);
 
   // Auto-detect embed type when URL changes
   const handleEmbedUrlChange = (url: string) => {
@@ -449,63 +453,132 @@ function LessonEditorPanel({
   const inputClass =
     "w-full h-10 px-4 bg-muted/50 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-shadow";
 
+  const supabase = useSupabase();
   const attachments = (lesson.attachments ?? []) as LessonAttachment[];
 
+  // Helper: delete a file from Supabase Storage
+  const deleteFromStorage = useCallback(
+    async (fileUrl: string) => {
+      try {
+        const url = new URL(fileUrl);
+        // Extract path after /object/public/course-assets/
+        const match = url.pathname.match(
+          /\/object\/public\/course-assets\/(.+)/,
+        );
+        if (match) {
+          await supabase.storage.from("course-assets").remove([match[1]]);
+        }
+      } catch {
+        // Silently ignore — file may be external (YouTube, etc.)
+      }
+    },
+    [supabase],
+  );
+
+  // Helper: extract embeddable video URL
+  const getEmbedUrl = (
+    url: string,
+  ): { type: "youtube" | "vimeo" | "direct"; src: string } | null => {
+    if (!url) return null;
+    try {
+      const u = new URL(url);
+      // YouTube
+      if (
+        u.hostname.includes("youtube.com") ||
+        u.hostname.includes("youtu.be")
+      ) {
+        const videoId = u.hostname.includes("youtu.be")
+          ? u.pathname.slice(1)
+          : u.searchParams.get("v");
+        if (videoId)
+          return {
+            type: "youtube",
+            src: `https://www.youtube.com/embed/${videoId}`,
+          };
+      }
+      // Vimeo
+      if (u.hostname.includes("vimeo.com")) {
+        const vimeoId = u.pathname.split("/").filter(Boolean).pop();
+        if (vimeoId)
+          return {
+            type: "vimeo",
+            src: `https://player.vimeo.com/video/${vimeoId}`,
+          };
+      }
+      // Direct video file
+      const ext = u.pathname.split(".").pop()?.toLowerCase();
+      if (ext && ["mp4", "webm", "mov", "ogg"].includes(ext)) {
+        return { type: "direct", src: url };
+      }
+      // Supabase storage URLs (direct video)
+      if (u.pathname.includes("/storage/") || u.pathname.includes("/object/")) {
+        return { type: "direct", src: url };
+      }
+    } catch {
+      /* ignore */
+    }
+    return null;
+  };
+
+  const videoEmbed = getEmbedUrl(videoUrl);
+
   return (
-    <div className="max-w-2xl space-y-6">
-      {/* Header with badge */}
-      <div>
-        <span className="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full bg-muted text-muted-foreground mb-3">
-          <FileText className="w-3 h-3" />
-          Lecon
-        </span>
-        {moduleTitle && (
-          <p className="text-xs text-muted-foreground mb-1">{moduleTitle}</p>
-        )}
-        <h2 className="text-xl font-display font-semibold text-foreground">
-          {lesson.title}
-        </h2>
-      </div>
-
-      {/* Card 1: Informations generales */}
-      <div
-        className="bg-surface rounded-2xl border border-border p-6 space-y-4"
-        style={{ boxShadow: "var(--shadow-card)" }}
-      >
-        <div>
-          <label className="block text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
-            Titre
-          </label>
-          <input
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className={inputClass}
-            placeholder="Titre de la lecon"
-          />
+    <div className="max-w-5xl space-y-5">
+      {/* Video preview — front and center when available */}
+      {videoUrl && videoEmbed && (
+        <div className="rounded-2xl overflow-hidden border border-border bg-black">
+          {videoEmbed.type === "direct" ? (
+            <video
+              src={videoEmbed.src}
+              controls
+              className="w-full aspect-video"
+              preload="metadata"
+            />
+          ) : (
+            <iframe
+              src={videoEmbed.src}
+              title="Apercu video"
+              className="w-full aspect-video border-0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          )}
         </div>
+      )}
 
-        <div>
-          <label className="block text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
-            Description
-          </label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            rows={3}
-            className="w-full px-4 py-3 bg-muted/50 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none transition-shadow"
-            placeholder="Description de la lecon (optionnelle)"
-          />
-        </div>
-
-        <div className="grid grid-cols-1 gap-4">
-          <div className="hidden"></div>
-        </div>
-
-        <div className="flex justify-end">
+      {/* Inline title + description + save */}
+      <div className="space-y-3">
+        <div className="flex items-start gap-3">
+          <div className="flex-1 min-w-0 space-y-2">
+            <div className="flex items-center gap-2">
+              <span className="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full bg-muted text-muted-foreground shrink-0">
+                <FileText className="w-3 h-3" />
+                Lecon
+              </span>
+              {moduleTitle && (
+                <span className="text-xs text-muted-foreground truncate">
+                  {moduleTitle}
+                </span>
+              )}
+            </div>
+            <input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="w-full text-xl font-display font-semibold text-foreground bg-transparent placeholder:text-muted-foreground focus:outline-none border-b border-transparent hover:border-border focus:border-primary/30 transition-colors pb-1"
+              placeholder="Titre de la lecon"
+            />
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={2}
+              className="w-full text-sm text-muted-foreground bg-transparent placeholder:text-muted-foreground/50 focus:outline-none resize-none focus:text-foreground transition-colors"
+              placeholder="Ajouter une description (optionnel)"
+            />
+          </div>
           <button
             onClick={handleSave}
             disabled={isPending}
-            className="h-9 px-4 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-1.5"
+            className="shrink-0 h-9 px-4 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-1.5 mt-6"
           >
             {isPending && <Save className="w-3.5 h-3.5 animate-spin" />}
             Enregistrer
@@ -513,71 +586,136 @@ function LessonEditorPanel({
         </div>
       </div>
 
-      {/* Card 2: Video */}
-      <div
-        className="bg-surface rounded-2xl border border-border p-6 space-y-4"
-        style={{ boxShadow: "var(--shadow-card)" }}
-      >
-        <div className="flex items-center gap-2 mb-2">
-          <Video className="w-4 h-4 text-muted-foreground" />
-          <span className="text-base font-display font-semibold text-foreground">
-            Video
-          </span>
-        </div>
-
-        {videoUrl && (
-          <div className="rounded-xl border border-border bg-muted/30 p-3 space-y-2">
-            <p className="text-xs font-medium text-muted-foreground">
-              Video actuelle :
-            </p>
-            <p className="text-sm truncate">{videoUrl}</p>
-            <button
-              onClick={() => setVideoUrl("")}
-              className="h-7 px-2 rounded-lg text-xs text-error hover:bg-error/10 transition-colors flex items-center gap-1"
-            >
-              <X className="w-3 h-3" />
-              Retirer la video
-            </button>
+      {/* Video + Pieces jointes side by side */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Video management */}
+        <div
+          className="bg-surface rounded-2xl border border-border p-5 space-y-4"
+          style={{ boxShadow: "var(--shadow-card)" }}
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Video className="w-4 h-4 text-muted-foreground" />
+              <span className="text-sm font-display font-semibold text-foreground">
+                Video
+              </span>
+            </div>
+            {videoUrl && (
+              <button
+                onClick={() => {
+                  deleteFromStorage(videoUrl);
+                  setVideoUrl("");
+                }}
+                className="h-7 px-2 rounded-lg text-xs text-error hover:bg-error/10 transition-colors flex items-center gap-1"
+              >
+                <X className="w-3 h-3" />
+                Retirer
+              </button>
+            )}
           </div>
-        )}
 
-        <div>
-          <label className="block text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
-            URL de la video (YouTube, Vimeo, etc.)
-          </label>
+          {videoUrl && !videoEmbed && (
+            <div className="rounded-xl bg-muted/30 border border-border p-3">
+              <p className="text-xs text-muted-foreground">URL actuelle :</p>
+              <p className="text-sm truncate mt-1">{videoUrl}</p>
+            </div>
+          )}
+
           <input
             value={videoUrl}
             onChange={(e) => setVideoUrl(e.target.value)}
-            placeholder="https://www.youtube.com/watch?v=..."
+            placeholder="URL de la video (YouTube, Vimeo, lien direct...)"
             className={inputClass}
+          />
+
+          <div className="relative flex items-center">
+            <div className="flex-1 border-t border-border" />
+            <span className="px-3 text-xs text-muted-foreground">ou</span>
+            <div className="flex-1 border-t border-border" />
+          </div>
+
+          <FileUpload
+            bucket="course-assets"
+            path="videos"
+            accept="video/*"
+            maxSizeMB={500}
+            label="Glissez une video ou cliquez pour uploader"
+            onUpload={(url) => setVideoUrl(url)}
           />
         </div>
 
-        <div className="relative flex items-center">
-          <div className="flex-1 border-t border-border" />
-          <span className="px-3 text-xs text-muted-foreground">ou</span>
-          <div className="flex-1 border-t border-border" />
-        </div>
-
-        <FileUpload
-          bucket="course-assets"
-          path="videos"
-          accept="video/*"
-          maxSizeMB={500}
-          label="Glissez une video ou cliquez pour uploader"
-          onUpload={(url) => setVideoUrl(url)}
-        />
-      </div>
-
-      {/* Card 2b: Audio/Podcast */}
-      {contentType === "audio" && (
+        {/* Pieces jointes */}
         <div
-          className="bg-surface rounded-2xl border border-border p-6 space-y-4"
+          className="bg-surface rounded-2xl border border-border p-5 space-y-4"
           style={{ boxShadow: "var(--shadow-card)" }}
         >
-          <div className="flex items-center gap-2 mb-2">
+          <div className="flex items-center gap-2">
+            <FileText className="w-4 h-4 text-muted-foreground" />
+            <span className="text-sm font-display font-semibold text-foreground">
+              Pieces jointes
+            </span>
+          </div>
+
+          {attachments.length > 0 && (
+            <div className="space-y-2">
+              {attachments.map((att) => (
+                <div
+                  key={att.url}
+                  className="flex items-center gap-3 rounded-xl border border-border px-3 py-2"
+                >
+                  <FileText className="w-4 h-4 text-muted-foreground shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm truncate">{att.name}</p>
+                    <p className="text-xs text-muted-foreground uppercase">
+                      {att.type}
+                    </p>
+                  </div>
+                  <a
+                    href={att.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-primary hover:underline shrink-0"
+                  >
+                    Ouvrir
+                  </a>
+                  <button
+                    onClick={() => onRemoveAttachment(att.url)}
+                    className="p-1 text-muted-foreground hover:text-error rounded shrink-0"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <FileUpload
+            bucket="course-assets"
+            path="resources"
+            maxSizeMB={100}
+            label="Ajouter une piece jointe"
+            onUpload={(url, name) => {
+              const ext = name.split(".").pop()?.toLowerCase() ?? "";
+              let type = "document";
+              if (["mp4", "webm", "mov"].includes(ext)) type = "video";
+              if (["mp3", "wav", "ogg"].includes(ext)) type = "audio";
+              if (["jpg", "jpeg", "png", "gif", "webp"].includes(ext))
+                type = "image";
+              onAddAttachment({ name, url, type });
+            }}
+          />
+        </div>
+      </div>
+
+      {/* Audio/Podcast (full width below) */}
+      {contentType === "audio" && (
+        <div
+          className="bg-surface rounded-2xl border border-border p-5 space-y-4"
+          style={{ boxShadow: "var(--shadow-card)" }}
+        >
+          <div className="flex items-center gap-2">
             <Headphones className="w-4 h-4 text-muted-foreground" />
-            <span className="text-base font-display font-semibold text-foreground">
+            <span className="text-sm font-display font-semibold text-foreground">
               Audio / Podcast
             </span>
           </div>
@@ -607,113 +745,50 @@ function LessonEditorPanel({
             </div>
           )}
 
-          <div>
-            <label className="block text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
-              URL de l&apos;audio (MP3, WAV, etc.)
-            </label>
-            <input
-              value={audioUrl}
-              onChange={(e) => setAudioUrl(e.target.value)}
-              onBlur={handleAudioUrlBlur}
-              placeholder="https://example.com/podcast-episode.mp3"
-              className={inputClass}
-            />
-          </div>
-
-          <div className="relative flex items-center">
-            <div className="flex-1 border-t border-border" />
-            <span className="px-3 text-xs text-muted-foreground">ou</span>
-            <div className="flex-1 border-t border-border" />
-          </div>
-
-          <FileUpload
-            bucket="course-assets"
-            path="audio"
-            accept="audio/*"
-            maxSizeMB={200}
-            label="Glissez un fichier audio ou cliquez pour uploader"
-            onUpload={(url) => {
-              setAudioUrl(url);
-              // Try to detect duration
-              try {
-                const audio = new Audio(url);
-                audio.addEventListener("loadedmetadata", () => {
-                  if (audio.duration && isFinite(audio.duration)) {
-                    setAudioDuration(Math.round(audio.duration));
-                    if (!duration) {
-                      setDuration(Math.ceil(audio.duration / 60));
-                    }
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
+                URL de l&apos;audio (MP3, WAV, etc.)
+              </label>
+              <input
+                value={audioUrl}
+                onChange={(e) => setAudioUrl(e.target.value)}
+                onBlur={handleAudioUrlBlur}
+                placeholder="https://example.com/podcast-episode.mp3"
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
+                Ou uploader un fichier
+              </label>
+              <FileUpload
+                bucket="course-assets"
+                path="audio"
+                accept="audio/*"
+                maxSizeMB={200}
+                label="Glissez un fichier audio"
+                onUpload={(url) => {
+                  setAudioUrl(url);
+                  try {
+                    const audio = new Audio(url);
+                    audio.addEventListener("loadedmetadata", () => {
+                      if (audio.duration && isFinite(audio.duration)) {
+                        setAudioDuration(Math.round(audio.duration));
+                        if (!duration) {
+                          setDuration(Math.ceil(audio.duration / 60));
+                        }
+                      }
+                    });
+                  } catch {
+                    // Silently ignore
                   }
-                });
-              } catch {
-                // Silently ignore
-              }
-            }}
-          />
+                }}
+              />
+            </div>
+          </div>
         </div>
       )}
-
-      {/* Card 3: Pieces jointes */}
-      <div
-        className="bg-surface rounded-2xl border border-border p-6 space-y-4"
-        style={{ boxShadow: "var(--shadow-card)" }}
-      >
-        <div className="flex items-center gap-2 mb-2">
-          <FileText className="w-4 h-4 text-muted-foreground" />
-          <span className="text-base font-display font-semibold text-foreground">
-            Pieces jointes
-          </span>
-        </div>
-
-        {attachments.length > 0 && (
-          <div className="space-y-2">
-            {attachments.map((att) => (
-              <div
-                key={att.url}
-                className="flex items-center gap-3 rounded-xl border border-border px-3 py-2"
-              >
-                <FileText className="w-4 h-4 text-muted-foreground shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm truncate">{att.name}</p>
-                  <p className="text-xs text-muted-foreground uppercase">
-                    {att.type}
-                  </p>
-                </div>
-                <a
-                  href={att.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs text-primary hover:underline shrink-0"
-                >
-                  Ouvrir
-                </a>
-                <button
-                  onClick={() => onRemoveAttachment(att.url)}
-                  className="p-1 text-muted-foreground hover:text-error rounded shrink-0"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-
-        <FileUpload
-          bucket="course-assets"
-          path="resources"
-          maxSizeMB={100}
-          label="Ajouter une piece jointe"
-          onUpload={(url, name) => {
-            const ext = name.split(".").pop()?.toLowerCase() ?? "";
-            let type = "document";
-            if (["mp4", "webm", "mov"].includes(ext)) type = "video";
-            if (["mp3", "wav", "ogg"].includes(ext)) type = "audio";
-            if (["jpg", "jpeg", "png", "gif", "webp"].includes(ext))
-              type = "image";
-            onAddAttachment({ name, url, type });
-          }}
-        />
-      </div>
 
       {/* Card 4: Text/HTML Content */}
       {contentType === "text" && (
@@ -925,6 +1000,7 @@ interface CourseEditorProps {
 }
 
 export function CourseEditor({ course, routePrefix }: CourseEditorProps) {
+  const { sidebarCollapsed } = useUIStore();
   const mutations = useCourseMutations();
 
   // Local state for modules (for optimistic DnD reordering)
@@ -1009,15 +1085,15 @@ export function CourseEditor({ course, routePrefix }: CourseEditorProps) {
 
   // Sidebar content
   const sidebarContent = (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full min-w-0 overflow-hidden">
       {/* Course header */}
       <div className="p-5 border-b border-border">
         <Link
-          href={`${routePrefix}/school`}
+          href={`${routePrefix}/school/admin`}
           className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors mb-3 group"
         >
           <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
-          Formations
+          Gerer les formations
         </Link>
         <h2 className="text-base font-display font-bold text-foreground truncate">
           {course.title}
@@ -1140,7 +1216,13 @@ export function CourseEditor({ course, routePrefix }: CourseEditorProps) {
   );
 
   return (
-    <div className="flex h-[calc(100vh-8rem)] -mx-4 -mt-4 lg:-mx-8 lg:-mt-8">
+    <div
+      className={cn(
+        "fixed top-16 right-0 bottom-0 flex bg-background z-20",
+        sidebarCollapsed ? "lg:left-[72px]" : "lg:left-64",
+        "left-0",
+      )}
+    >
       {/* Mobile sidebar toggle */}
       <button
         onClick={() => setSidebarOpen(true)}
@@ -1163,7 +1245,7 @@ export function CourseEditor({ course, routePrefix }: CourseEditorProps) {
       )}
 
       {/* Desktop sidebar */}
-      <div className="hidden lg:flex w-80 bg-surface border-r border-border shrink-0 overflow-x-hidden">
+      <div className="hidden lg:flex w-80 min-w-0 bg-surface border-r border-border shrink-0 overflow-hidden">
         {sidebarContent}
       </div>
 
