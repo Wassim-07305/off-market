@@ -78,7 +78,7 @@ export function WelcomeStep({ firstName, onNext }: WelcomeStepProps) {
           controls
           playsInline
           preload="metadata"
-          src={VIDEO_URL}
+          src={`${VIDEO_URL}#t=0.1`}
         />
       </motion.div>
 
