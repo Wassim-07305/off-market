@@ -401,6 +401,43 @@ body {
   min-height: 80px;
 }
 
+/* Chat input — compact tiptap */
+.tiptap-chat {
+  outline: none;
+  min-height: 22px;
+  max-height: 200px;
+  overflow-y: auto;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.tiptap-chat p {
+  margin: 0;
+}
+
+.tiptap-chat p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  pointer-events: none;
+  height: 0;
+  color: var(--muted-foreground);
+  opacity: 0.5;
+}
+
+.tiptap-chat ul,
+.tiptap-chat ol {
+  padding-left: 1.5em;
+  margin: 0.15em 0;
+}
+
+.tiptap-chat ul {
+  list-style-type: disc;
+}
+
+.tiptap-chat ol {
+  list-style-type: decimal;
+}
+
 .tiptap p.is-editor-empty:first-child::before {
   color: var(--muted-foreground);
   content: attr(data-placeholder);

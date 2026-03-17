@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { useChannelMembers } from "@/hooks/use-channels";
 import { EmojiPicker } from "./emoji-picker";
@@ -10,6 +10,11 @@ import { MentionAutocomplete } from "./mention-autocomplete";
 import { TemplatePicker } from "./template-picker";
 import { TemplateManagerModal } from "./template-manager-modal";
 import { AiSlashCommands, isAiSlashCommand } from "./ai-slash-commands";
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import Placeholder from "@tiptap/extension-placeholder";
+import Underline from "@tiptap/extension-underline";
+import { Extension } from "@tiptap/core";
 import {
   Send,
   Paperclip,
@@ -46,6 +51,81 @@ interface ChatInputProps {
   channelId: string;
 }
 
+/**
+ * Convertit le HTML TipTap en markdown simplifie compatible avec renderRichText
+ */
+function htmlToMarkdown(html: string): string {
+  // Remplacer les balises de formatage inline
+  let md = html;
+
+  // <strong> / <b> → **...**
+  md = md.replace(/<(?:strong|b)>([\s\S]*?)<\/(?:strong|b)>/gi, "**$1**");
+  // <em> / <i> → _..._
+  md = md.replace(/<(?:em|i)>([\s\S]*?)<\/(?:em|i)>/gi, "_$1_");
+  // <s> / <del> / <strike> → ~~...~~
+  md = md.replace(
+    /<(?:s|del|strike)>([\s\S]*?)<\/(?:s|del|strike)>/gi,
+    "~~$1~~",
+  );
+  // <u> → on garde tel quel (pas de syntaxe markdown standard)
+  md = md.replace(/<\/?u>/gi, "");
+
+  // Listes non ordonnees : <ul><li>...</li></ul>
+  md = md.replace(/<ul>([\s\S]*?)<\/ul>/gi, (_match, inner: string) => {
+    const items = inner.match(/<li>([\s\S]*?)<\/li>/gi) || [];
+    return (
+      items
+        .map(
+          (item) =>
+            "- " +
+            item
+              .replace(/<\/?li>/gi, "")
+              .replace(/<\/?p>/gi, "")
+              .trim(),
+        )
+        .join("\n") + "\n"
+    );
+  });
+
+  // Listes ordonnees : <ol><li>...</li></ol>
+  md = md.replace(/<ol>([\s\S]*?)<\/ol>/gi, (_match, inner: string) => {
+    const items = inner.match(/<li>([\s\S]*?)<\/li>/gi) || [];
+    return (
+      items
+        .map(
+          (item, i) =>
+            `${i + 1}. ` +
+            item
+              .replace(/<\/?li>/gi, "")
+              .replace(/<\/?p>/gi, "")
+              .trim(),
+        )
+        .join("\n") + "\n"
+    );
+  });
+
+  // <br> → \n
+  md = md.replace(/<br\s*\/?>/gi, "\n");
+  // <p>...</p> → contenu + \n
+  md = md.replace(/<p>([\s\S]*?)<\/p>/gi, "$1\n");
+
+  // Nettoyer les balises HTML restantes
+  md = md.replace(/<[^>]+>/g, "");
+
+  // Decoder les entites HTML courantes
+  md = md.replace(/&amp;/g, "&");
+  md = md.replace(/&lt;/g, "<");
+  md = md.replace(/&gt;/g, ">");
+  md = md.replace(/&quot;/g, '"');
+  md = md.replace(/&#39;/g, "'");
+  md = md.replace(/&nbsp;/g, " ");
+
+  // Supprimer les \n en trop a la fin
+  md = md.replace(/\n+$/, "");
+
+  return md;
+}
+
 export function ChatInput({
   channelName,
   onSend,
@@ -74,7 +154,6 @@ export function ChatInput({
   >(null);
   const [templateSlashStartPos, setTemplateSlashStartPos] = useState(0);
   const [showAiCommands, setShowAiCommands] = useState(false);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: channelMembers } = useChannelMembers(channelId);
@@ -97,32 +176,150 @@ export function ChatInput({
     })
     .filter((p): p is NonNullable<typeof p> => p !== null);
 
+  // Ref stable pour les callbacks utilises dans l'extension TipTap
+  const handleSendRef = useRef<() => void>(() => {});
+  const mentionQueryRef = useRef<string | null>(null);
+  const showTemplatePickerRef = useRef(false);
+  const showAiCommandsRef = useRef(false);
+
+  mentionQueryRef.current = mentionQuery;
+  showTemplatePickerRef.current = showTemplatePicker;
+  showAiCommandsRef.current = showAiCommands;
+
+  // Extension custom pour Enter = envoyer, Shift+Enter = nouvelle ligne
+  const EnterToSend = Extension.create({
+    name: "enterToSend",
+    addKeyboardShortcuts() {
+      return {
+        Enter: () => {
+          // Ne pas intercepter si un autocomplete est ouvert
+          if (mentionQueryRef.current !== null) return false;
+          if (showTemplatePickerRef.current) return false;
+          if (showAiCommandsRef.current) return false;
+          handleSendRef.current();
+          return true;
+        },
+      };
+    },
+  });
+
+  const editor = useEditor({
+    extensions: [
+      StarterKit.configure({
+        heading: false,
+        codeBlock: false,
+        blockquote: false,
+        horizontalRule: false,
+      }),
+      Placeholder.configure({
+        placeholder: `Message ${channelName}...`,
+      }),
+      Underline,
+      EnterToSend,
+    ],
+    editorProps: {
+      attributes: {
+        class: "tiptap-chat",
+      },
+    },
+    onUpdate: ({ editor: ed }) => {
+      const plainText = ed.getText();
+      setMessage(plainText);
+      onTyping?.();
+
+      // Detect @mention
+      // On utilise la position du curseur via l'API de l'editeur
+      const text = plainText;
+      const cursorOffset = ed.state.selection.from;
+      // Approximation : on prend le texte brut jusqu'au curseur
+      // TipTap getText() donne tout le texte sans balises
+      const textNodes: string[] = [];
+      let charCount = 0;
+      let cursorTextPos = text.length;
+      ed.state.doc.descendants((node, pos) => {
+        if (node.isText && node.text) {
+          const start = charCount;
+          charCount += node.text.length;
+          if (cursorOffset >= pos && cursorOffset <= pos + node.nodeSize) {
+            cursorTextPos = start + (cursorOffset - pos);
+          }
+          textNodes.push(node.text);
+        } else if (node.isBlock && charCount > 0) {
+          charCount += 1; // pour le \n entre les blocs
+        }
+        return true;
+      });
+
+      const textBefore = text.slice(0, cursorTextPos);
+      const atMatch = textBefore.match(/@(\w*)$/);
+
+      if (atMatch) {
+        setMentionQuery(atMatch[1]);
+        setMentionStartPos(cursorTextPos - atMatch[0].length);
+      } else {
+        setMentionQuery(null);
+      }
+
+      // Detect AI slash commands
+      if (isAiSlashCommand(text)) {
+        setShowAiCommands(true);
+        setShowTemplatePicker(false);
+        setTemplateShortcutQuery(null);
+      } else {
+        setShowAiCommands(false);
+
+        // Detect /template shortcut
+        const slashMatch = textBefore.match(/(^|\s)(\/\w*)$/);
+        if (slashMatch) {
+          const fullMatch = slashMatch[2];
+          const partialCmd = fullMatch.replace(/^\//, "").toLowerCase();
+          const aiCommandNames = ["help", "resume", "translate", "suggest"];
+          const matchesAiPrefix = aiCommandNames.some((c) =>
+            c.startsWith(partialCmd),
+          );
+          if (matchesAiPrefix && textBefore.trim() === fullMatch) {
+            setShowAiCommands(true);
+            setShowTemplatePicker(false);
+            setTemplateShortcutQuery(null);
+          } else {
+            setTemplateShortcutQuery(fullMatch);
+            setTemplateSlashStartPos(cursorTextPos - fullMatch.length);
+            setShowTemplatePicker(true);
+          }
+        } else if (templateShortcutQuery !== null) {
+          setTemplateShortcutQuery(null);
+          if (showTemplatePicker && templateShortcutQuery) {
+            setShowTemplatePicker(false);
+          }
+        }
+      }
+    },
+  });
+
   const handleSend = useCallback(async () => {
-    const trimmed = message.trim();
+    if (!editor) return;
+    const html = editor.getHTML();
+    const markdown = htmlToMarkdown(html);
+    const trimmed = markdown.trim();
     if (!trimmed || isSending) return;
     const schedule = scheduledAt
       ? new Date(scheduledAt).toISOString()
       : undefined;
     const urgent = isUrgent;
+    editor.commands.clearContent();
     setMessage("");
     setScheduledAt("");
     setShowSchedule(false);
     setIsUrgent(false);
     onStopTyping?.();
     await onSend(trimmed, schedule, urgent);
-    textareaRef.current?.focus();
-    if (textareaRef.current) textareaRef.current.style.height = "auto";
-  }, [message, onSend, isSending, onStopTyping, scheduledAt, isUrgent]);
+    editor.commands.focus();
+  }, [editor, onSend, isSending, onStopTyping, scheduledAt, isUrgent]);
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (mentionQuery !== null) return;
-    if (showTemplatePicker) return;
-    if (showAiCommands) return;
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
-  };
+  // Mettre a jour la ref stable
+  useEffect(() => {
+    handleSendRef.current = handleSend;
+  }, [handleSend]);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -130,110 +327,39 @@ export function ChatInput({
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const wrapSelection = (prefix: string, suffix: string) => {
-    const ta = textareaRef.current;
-    if (!ta) return;
-    const start = ta.selectionStart;
-    const end = ta.selectionEnd;
-    const selected = message.slice(start, end);
-    const newText =
-      message.slice(0, start) + prefix + selected + suffix + message.slice(end);
-    setMessage(newText);
-    setTimeout(() => {
-      ta.focus();
-      ta.setSelectionRange(start + prefix.length, end + prefix.length);
-    }, 0);
-  };
-
-  const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const val = e.target.value;
-    setMessage(val);
-    onTyping?.();
-
-    const ta = e.target;
-    ta.style.height = "auto";
-    ta.style.height = `${Math.min(ta.scrollHeight, 160)}px`;
-
-    // Detect @mention
-    const cursorPos = ta.selectionStart;
-    const textBefore = val.slice(0, cursorPos);
-    const atMatch = textBefore.match(/@(\w*)$/);
-
-    if (atMatch) {
-      setMentionQuery(atMatch[1]);
-      setMentionStartPos(cursorPos - atMatch[0].length);
-    } else {
-      setMentionQuery(null);
-    }
-
-    // Detect AI slash commands (priority check before template shortcuts)
-    if (isAiSlashCommand(val)) {
-      setShowAiCommands(true);
-      setShowTemplatePicker(false);
-      setTemplateShortcutQuery(null);
-    } else {
-      setShowAiCommands(false);
-
-      // Detect /template shortcut (only at start of input or after whitespace)
-      const slashMatch = textBefore.match(/(^|\s)(\/\w*)$/);
-      if (slashMatch) {
-        const fullMatch = slashMatch[2]; // the /word part
-        // Check if the partial command matches an AI command prefix — if so, show AI panel instead
-        const partialCmd = fullMatch.replace(/^\//, "").toLowerCase();
-        const aiCommandNames = ["help", "resume", "translate", "suggest"];
-        const matchesAiPrefix = aiCommandNames.some((c) =>
-          c.startsWith(partialCmd),
-        );
-        if (matchesAiPrefix && textBefore.trim() === fullMatch) {
-          setShowAiCommands(true);
-          setShowTemplatePicker(false);
-          setTemplateShortcutQuery(null);
-        } else {
-          setTemplateShortcutQuery(fullMatch);
-          setTemplateSlashStartPos(cursorPos - fullMatch.length);
-          setShowTemplatePicker(true);
-        }
-      } else if (templateShortcutQuery !== null) {
-        setTemplateShortcutQuery(null);
-        // Only close if it was opened via shortcut, not via button
-        if (showTemplatePicker && templateShortcutQuery) {
-          setShowTemplatePicker(false);
-        }
-      }
-    }
-  };
-
   const handleMentionSelect = (member: { id: string; full_name: string }) => {
-    const before = message.slice(0, mentionStartPos);
-    const after = message.slice(
-      textareaRef.current?.selectionStart ?? message.length,
-    );
+    if (!editor) return;
+    const text = editor.getText();
+    const before = text.slice(0, mentionStartPos);
+    // On reconstruit le texte avec la mention inseree
+    // Il faut remplacer dans l'editeur TipTap
+    const cursorTextPos = message.length; // approximation
+    const after = text.slice(cursorTextPos);
     const newText = `${before}@${member.full_name} ${after}`;
-    setMessage(newText);
+    editor.commands.setContent(`<p>${newText}</p>`);
     setMentionQuery(null);
-    textareaRef.current?.focus();
+    editor.commands.focus("end");
   };
 
   const handleTemplateSelect = useCallback(
     (content: string) => {
+      if (!editor) return;
       if (templateShortcutQuery !== null) {
-        // Replace the /shortcut text with template content
-        const before = message.slice(0, templateSlashStartPos);
-        const cursorPos = textareaRef.current?.selectionStart ?? message.length;
-        const after = message.slice(cursorPos);
-        setMessage(before + content + after);
+        // Remplacer le /shortcut avec le contenu du template
+        const text = editor.getText();
+        const before = text.slice(0, templateSlashStartPos);
+        const cursorTextPos = text.length;
+        const after = text.slice(cursorTextPos);
+        editor.commands.setContent(`<p>${before}${content}${after}</p>`);
       } else {
-        // Insert at cursor or append
-        const cursorPos = textareaRef.current?.selectionStart ?? message.length;
-        const before = message.slice(0, cursorPos);
-        const after = message.slice(cursorPos);
-        setMessage(before + content + after);
+        // Inserer a la position du curseur
+        editor.chain().focus().insertContent(content).run();
       }
       setTemplateShortcutQuery(null);
       setShowTemplatePicker(false);
-      textareaRef.current?.focus();
+      editor.commands.focus();
     },
-    [message, templateShortcutQuery, templateSlashStartPos],
+    [editor, templateShortcutQuery, templateSlashStartPos],
   );
 
   return (
@@ -275,7 +401,7 @@ export function ChatInput({
               )
             )
               return;
-            textareaRef.current?.focus();
+            editor?.commands.focus();
           }}
         >
           {/* Urgent indicator */}
@@ -293,42 +419,41 @@ export function ChatInput({
             <FormatBtn
               icon={Bold}
               title="Gras"
-              onClick={() => wrapSelection("**", "**")}
+              active={editor?.isActive("bold") ?? false}
+              onClick={() => editor?.chain().focus().toggleBold().run()}
             />
             <FormatBtn
               icon={Italic}
               title="Italique"
-              onClick={() => wrapSelection("_", "_")}
+              active={editor?.isActive("italic") ?? false}
+              onClick={() => editor?.chain().focus().toggleItalic().run()}
             />
             <FormatBtn
               icon={Strikethrough}
               title="Barre"
-              onClick={() => wrapSelection("~~", "~~")}
+              active={editor?.isActive("strike") ?? false}
+              onClick={() => editor?.chain().focus().toggleStrike().run()}
             />
             <div className="w-px h-4 bg-border/40 mx-1" />
             <FormatBtn
               icon={List}
               title="Liste"
-              onClick={() => wrapSelection("\n- ", "")}
+              active={editor?.isActive("bulletList") ?? false}
+              onClick={() => editor?.chain().focus().toggleBulletList().run()}
             />
             <FormatBtn
               icon={ListOrdered}
               title="Liste numerotee"
-              onClick={() => wrapSelection("\n1. ", "")}
+              active={editor?.isActive("orderedList") ?? false}
+              onClick={() => editor?.chain().focus().toggleOrderedList().run()}
             />
           </div>
 
-          {/* Textarea + action buttons */}
+          {/* TipTap editor + action buttons */}
           <div className="flex items-end gap-2 px-4 pb-3">
-            <textarea
-              ref={textareaRef}
-              value={message}
-              onChange={handleInput}
-              placeholder={`Message ${channelName}...`}
-              className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground/50 outline-none border-0 resize-none min-h-[22px] max-h-[160px] leading-5 py-1"
-              rows={1}
-              onKeyDown={handleKeyDown}
-            />
+            <div className="flex-1 py-1">
+              <EditorContent editor={editor} />
+            </div>
             <div className="flex items-center gap-0.5 shrink-0 relative">
               <input
                 ref={fileInputRef}
@@ -377,8 +502,7 @@ export function ChatInput({
               {showEmoji && (
                 <EmojiPicker
                   onSelect={(emoji) => {
-                    setMessage((prev) => prev + emoji);
-                    textareaRef.current?.focus();
+                    editor?.chain().focus().insertContent(emoji).run();
                   }}
                   onClose={() => setShowEmoji(false)}
                 />
@@ -405,8 +529,7 @@ export function ChatInput({
                     if (onGifSend) {
                       onGifSend(gifUrl);
                     } else {
-                      setMessage((prev) => prev + gifUrl);
-                      textareaRef.current?.focus();
+                      editor?.chain().focus().insertContent(gifUrl).run();
                     }
                     setShowGif(false);
                   }}
@@ -512,12 +635,16 @@ export function ChatInput({
               query={message.trim()}
               channelId={channelId}
               onInsertResult={(text) => {
+                editor?.commands.setContent(`<p>${text}</p>`);
                 setMessage(text);
                 setShowAiCommands(false);
-                textareaRef.current?.focus();
+                editor?.commands.focus();
               }}
               onClose={() => setShowAiCommands(false)}
-              onClearInput={() => setMessage("")}
+              onClearInput={() => {
+                editor?.commands.clearContent();
+                setMessage("");
+              }}
             />
           )}
 
@@ -545,17 +672,24 @@ export function ChatInput({
 function FormatBtn({
   icon: Icon,
   title,
+  active,
   onClick,
 }: {
   icon: React.ComponentType<{ className?: string }>;
   title: string;
+  active?: boolean;
   onClick: () => void;
 }) {
   return (
     <button
       onClick={onClick}
       title={title}
-      className="w-7 h-7 rounded-lg flex items-center justify-center text-muted-foreground/60 hover:text-foreground hover:bg-muted/60 transition-all duration-200"
+      className={cn(
+        "w-7 h-7 rounded-lg flex items-center justify-center transition-all duration-200",
+        active
+          ? "text-[#AF0000] bg-[#AF0000]/10"
+          : "text-muted-foreground/60 hover:text-foreground hover:bg-muted/60",
+      )}
     >
       <Icon className="w-3.5 h-3.5" />
     </button>
