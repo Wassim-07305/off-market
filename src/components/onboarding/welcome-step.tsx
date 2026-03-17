@@ -2,8 +2,10 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { Play, ArrowRight, Sparkles } from "lucide-react";
-import { useState, useRef } from "react";
+import { ArrowRight, Sparkles } from "lucide-react";
+
+const VIDEO_URL =
+  "https://srhpdgqqiuzdrlqaitdk.supabase.co/storage/v1/object/public/branding/onboarding-welcome.mp4";
 
 interface WelcomeStepProps {
   firstName: string;
@@ -11,14 +13,6 @@ interface WelcomeStepProps {
 }
 
 export function WelcomeStep({ firstName, onNext }: WelcomeStepProps) {
-  const [videoPlaying, setVideoPlaying] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
-
-  const handlePlayVideo = () => {
-    setVideoPlaying(true);
-    videoRef.current?.play();
-  };
-
   return (
     <div className="flex flex-col items-center text-center">
       {/* Logo with glow */}
@@ -72,38 +66,20 @@ export function WelcomeStep({ firstName, onNext }: WelcomeStepProps) {
         minutes comment la plateforme va t&apos;accompagner vers tes objectifs.
       </motion.p>
 
-      {/* Welcome video */}
+      {/* Welcome video — toujours visible, un seul clic pour lancer */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.65 }}
-        className="mb-8 w-full max-w-lg rounded-2xl overflow-hidden border border-white/10 bg-black/30 aspect-video relative"
+        className="mb-8 w-full max-w-lg rounded-2xl overflow-hidden border border-white/10 bg-black/30 aspect-video"
       >
-        {!videoPlaying ? (
-          <button
-            onClick={handlePlayVideo}
-            className="absolute inset-0 flex flex-col items-center justify-center gap-3 group"
-          >
-            <div className="w-16 h-16 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center border border-white/20 group-hover:bg-primary/80 group-hover:border-primary transition-all duration-300">
-              <Play className="w-7 h-7 text-white ml-1" />
-            </div>
-            <span className="text-sm text-white/50 group-hover:text-white/70 transition-colors">
-              Regarder la video d&apos;accueil
-            </span>
-          </button>
-        ) : (
-          <video
-            ref={videoRef}
-            className="w-full h-full object-cover"
-            controls
-            playsInline
-          >
-            <source
-              src="https://srhpdgqqiuzdrlqaitdk.supabase.co/storage/v1/object/public/branding/onboarding-welcome.mp4"
-              type="video/mp4"
-            />
-          </video>
-        )}
+        <video
+          className="w-full h-full object-cover"
+          controls
+          playsInline
+          preload="metadata"
+          src={VIDEO_URL}
+        />
       </motion.div>
 
       {/* CTA */}
