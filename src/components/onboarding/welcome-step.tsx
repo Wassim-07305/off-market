@@ -97,9 +97,11 @@ export function WelcomeStep({ firstName, onNext }: WelcomeStepProps) {
             className="w-full h-full object-cover"
             controls
             playsInline
-            poster="/images/onboarding-poster.jpg"
           >
-            <source src="/videos/welcome.mp4" type="video/mp4" />
+            <source
+              src="https://srhpdgqqiuzdrlqaitdk.supabase.co/storage/v1/object/public/branding/onboarding-welcome.mp4"
+              type="video/mp4"
+            />
           </video>
         )}
       </motion.div>
