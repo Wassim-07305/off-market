@@ -3,7 +3,13 @@
 import { useMemo } from "react";
 import { motion } from "framer-motion";
 import { staggerContainer, staggerItem } from "@/lib/animations";
-import { useAdminDashboard } from "@/hooks/use-admin-dashboard";
+import {
+  useRevenueStats,
+  useStudentStats,
+  useSalesStats,
+  useEngagementStats,
+  useCoachLeaderboard,
+} from "@/hooks/use-admin-dashboard";
 import { useAuth } from "@/hooks/use-auth";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { ActivityFeed } from "@/components/dashboard/activity-feed";
@@ -206,14 +212,26 @@ const TOOLTIP_STYLE = {
 
 export default function AdminDashboardPage() {
   const { profile } = useAuth();
-  const { data, isLoading } = useAdminDashboard();
+
+  // Independent hooks — each section renders as soon as its data arrives
+  const revenueQuery = useRevenueStats();
+  const studentsQuery = useStudentStats();
+  const salesQuery = useSalesStats();
+  const engagementQuery = useEngagementStats();
+  const coachesQuery = useCoachLeaderboard();
 
   const firstName = profile?.full_name?.split(" ")[0] ?? "Admin";
 
   const alertsCount = useMemo(() => {
-    if (!data) return 0;
-    return data.inactiveStudents + data.latePayments + data.atRiskStudents;
-  }, [data]);
+    if (!studentsQuery.data || !coachesQuery.data) return 0;
+    return (
+      studentsQuery.data.inactiveStudents +
+      coachesQuery.data.latePayments +
+      studentsQuery.data.atRiskStudents
+    );
+  }, [studentsQuery.data, coachesQuery.data]);
+
+  const alertsReady = !!studentsQuery.data && !!coachesQuery.data;
 
   return (
     <motion.div
@@ -235,7 +253,7 @@ export default function AdminDashboardPage() {
       </motion.div>
 
       {/* ─── System alerts banner ─── */}
-      {!isLoading && alertsCount > 0 && (
+      {alertsReady && alertsCount > 0 && (
         <motion.div
           variants={staggerItem}
           className="relative overflow-hidden rounded-2xl border border-amber-200/80 p-4 sm:p-5"
@@ -256,17 +274,19 @@ export default function AdminDashboardPage() {
                 {alertsCount} alerte{alertsCount > 1 ? "s" : ""} systeme
               </p>
               <p className="text-xs text-amber-800/80 mt-0.5">
-                {data!.inactiveStudents > 0 &&
-                  `${data!.inactiveStudents} eleve${data!.inactiveStudents > 1 ? "s" : ""} inactif${data!.inactiveStudents > 1 ? "s" : ""}`}
-                {data!.inactiveStudents > 0 &&
-                  data!.atRiskStudents > 0 &&
+                {studentsQuery.data!.inactiveStudents > 0 &&
+                  `${studentsQuery.data!.inactiveStudents} eleve${studentsQuery.data!.inactiveStudents > 1 ? "s" : ""} inactif${studentsQuery.data!.inactiveStudents > 1 ? "s" : ""}`}
+                {studentsQuery.data!.inactiveStudents > 0 &&
+                  studentsQuery.data!.atRiskStudents > 0 &&
                   " · "}
-                {data!.atRiskStudents > 0 && `${data!.atRiskStudents} a risque`}
-                {(data!.inactiveStudents > 0 || data!.atRiskStudents > 0) &&
-                  data!.latePayments > 0 &&
+                {studentsQuery.data!.atRiskStudents > 0 &&
+                  `${studentsQuery.data!.atRiskStudents} a risque`}
+                {(studentsQuery.data!.inactiveStudents > 0 ||
+                  studentsQuery.data!.atRiskStudents > 0) &&
+                  coachesQuery.data!.latePayments > 0 &&
                   " · "}
-                {data!.latePayments > 0 &&
-                  `${data!.latePayments} paiement${data!.latePayments > 1 ? "s" : ""} en retard`}
+                {coachesQuery.data!.latePayments > 0 &&
+                  `${coachesQuery.data!.latePayments} paiement${coachesQuery.data!.latePayments > 1 ? "s" : ""} en retard`}
               </p>
             </div>
             <button className="shrink-0 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-900/90 text-white text-xs font-semibold hover:bg-amber-900 transition-colors shadow-sm">
@@ -277,12 +297,12 @@ export default function AdminDashboardPage() {
         </motion.div>
       )}
 
-      {/* ─── KPI Cards — Row 1: Revenue ─── */}
+      {/* ─── KPI Cards — Row 1: Revenue + Student stats ─── */}
       <motion.div
         variants={staggerItem}
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
       >
-        {isLoading ? (
+        {revenueQuery.isLoading || studentsQuery.isLoading ? (
           Array.from({ length: 4 }).map((_, i) => (
             <div
               key={i}
@@ -296,8 +316,8 @@ export default function AdminDashboardPage() {
           <>
             <StatCard
               title="CA du mois"
-              value={formatCurrency(data?.revenueThisMonth ?? 0)}
-              change={data?.revenueChange ?? 0}
+              value={formatCurrency(revenueQuery.data?.revenueThisMonth ?? 0)}
+              change={revenueQuery.data?.revenueChange ?? 0}
               changeLabel="vs mois dernier"
               icon={DollarSign}
               gradient="bg-gradient-to-br from-rose-50/80 via-white to-white"
@@ -306,7 +326,7 @@ export default function AdminDashboardPage() {
             />
             <StatCard
               title="Eleves actifs"
-              value={data?.totalStudents ?? 0}
+              value={studentsQuery.data?.totalStudents ?? 0}
               icon={Users}
               gradient="bg-gradient-to-br from-blue-50/80 via-white to-white"
               iconBg="bg-blue-500/10"
@@ -314,7 +334,7 @@ export default function AdminDashboardPage() {
             />
             <StatCard
               title="Nouveaux ce mois"
-              value={data?.newStudentsThisMonth ?? 0}
+              value={studentsQuery.data?.newStudentsThisMonth ?? 0}
               icon={UserPlus}
               gradient="bg-gradient-to-br from-emerald-50/80 via-white to-white"
               iconBg="bg-emerald-500/10"
@@ -322,7 +342,7 @@ export default function AdminDashboardPage() {
             />
             <StatCard
               title="LTV moyen"
-              value={formatCurrency(data?.averageLtv ?? 0)}
+              value={formatCurrency(studentsQuery.data?.averageLtv ?? 0)}
               icon={Receipt}
               gradient="bg-gradient-to-br from-violet-50/80 via-white to-white"
               iconBg="bg-violet-500/10"
@@ -337,40 +357,44 @@ export default function AdminDashboardPage() {
         variants={staggerItem}
         className="grid grid-cols-2 sm:grid-cols-4 gap-4"
       >
-        {isLoading ? (
+        {studentsQuery.isLoading ||
+        salesQuery.isLoading ||
+        engagementQuery.isLoading ? (
           Array.from({ length: 4 }).map((_, i) => <MiniStatSkeleton key={i} />)
         ) : (
           <>
             <MiniKPI
               label="Retention"
-              value={`${data?.retentionRate ?? 0}%`}
+              value={`${studentsQuery.data?.retentionRate ?? 0}%`}
               icon={ShieldCheck}
               color="text-emerald-600"
               accentBg="bg-emerald-500/10"
             />
             <MiniKPI
               label="Churn"
-              value={`${data?.churnRate ?? 0}%`}
+              value={`${studentsQuery.data?.churnRate ?? 0}%`}
               icon={UserMinus}
               color={
-                (data?.churnRate ?? 0) > 10
+                (studentsQuery.data?.churnRate ?? 0) > 10
                   ? "text-red-600"
                   : "text-muted-foreground"
               }
               accentBg={
-                (data?.churnRate ?? 0) > 10 ? "bg-red-500/10" : "bg-zinc-100"
+                (studentsQuery.data?.churnRate ?? 0) > 10
+                  ? "bg-red-500/10"
+                  : "bg-zinc-100"
               }
             />
             <MiniKPI
               label="Taux closing"
-              value={`${data?.globalClosingRate ?? 0}%`}
+              value={`${salesQuery.data?.globalClosingRate ?? 0}%`}
               icon={Target}
               color="text-[#AF0000]"
               accentBg="bg-[#AF0000]/8"
             />
             <MiniKPI
               label="Completion formations"
-              value={`${data?.formationCompletionRate ?? 0}%`}
+              value={`${engagementQuery.data?.formationCompletionRate ?? 0}%`}
               icon={GraduationCap}
               color="text-amber-600"
               accentBg="bg-amber-500/10"
@@ -390,10 +414,13 @@ export default function AdminDashboardPage() {
             icon={BarChart3}
             label="Evolution CA"
             extra={
-              data && (
+              revenueQuery.data && (
                 <span className="text-xl font-bold text-foreground tracking-tight tabular-nums">
                   {formatCurrency(
-                    data.revenueByMonth.reduce((s, m) => s + m.revenue, 0),
+                    revenueQuery.data.revenueByMonth.reduce(
+                      (s, m) => s + m.revenue,
+                      0,
+                    ),
                   )}
                 </span>
               )
@@ -403,11 +430,11 @@ export default function AdminDashboardPage() {
             6 derniers mois
           </p>
           <div className="h-64">
-            {isLoading ? (
+            {revenueQuery.isLoading ? (
               <div className="h-full bg-zinc-50 rounded-xl animate-pulse" />
             ) : (
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={data?.revenueByMonth ?? []}>
+                <AreaChart data={revenueQuery.data?.revenueByMonth ?? []}>
                   <defs>
                     <linearGradient
                       id="adminRevGrad"
@@ -464,12 +491,12 @@ export default function AdminDashboardPage() {
           </div>
         </ChartCard>
 
-        {/* Channel distribution (1 col) */}
+        {/* Channel distribution (1 col) — from student details */}
         <ChartCard>
           <SectionHeader icon={PieChartIcon} label="CA par canal" />
-          {isLoading ? (
+          {studentsQuery.isLoading ? (
             <div className="h-48 bg-zinc-50 rounded-xl animate-pulse" />
-          ) : !data?.revenueByChannel.length ? (
+          ) : !studentsQuery.data?.revenueByChannel.length ? (
             <div className="h-48 flex items-center justify-center text-sm text-muted-foreground">
               Aucune donnee
             </div>
@@ -479,7 +506,7 @@ export default function AdminDashboardPage() {
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
-                      data={data.revenueByChannel}
+                      data={studentsQuery.data.revenueByChannel}
                       cx="50%"
                       cy="50%"
                       innerRadius={38}
@@ -489,7 +516,7 @@ export default function AdminDashboardPage() {
                       nameKey="channel"
                       stroke="none"
                     >
-                      {data.revenueByChannel.map((_, i) => (
+                      {studentsQuery.data.revenueByChannel.map((_, i) => (
                         <Cell
                           key={i}
                           fill={CHANNEL_COLORS[i % CHANNEL_COLORS.length]}
@@ -506,7 +533,7 @@ export default function AdminDashboardPage() {
                 </ResponsiveContainer>
               </div>
               <div className="mt-5 space-y-2">
-                {data.revenueByChannel.map((item, i) => (
+                {studentsQuery.data.revenueByChannel.map((item, i) => (
                   <div
                     key={item.channel}
                     className="flex items-center justify-between text-xs group/legend"
@@ -539,27 +566,27 @@ export default function AdminDashboardPage() {
         variants={staggerItem}
         className="grid grid-cols-1 sm:grid-cols-3 gap-4"
       >
-        {isLoading ? (
+        {revenueQuery.isLoading || engagementQuery.isLoading ? (
           Array.from({ length: 3 }).map((_, i) => <MiniStatSkeleton key={i} />)
         ) : (
           <>
             <CashCard
               label="Cash encaisse"
-              value={formatCurrency(data?.cashCollected ?? 0)}
+              value={formatCurrency(revenueQuery.data?.cashCollected ?? 0)}
               icon={DollarSign}
               color="text-emerald-600"
               accentBg="bg-emerald-500/10"
             />
             <CashCard
               label="Cash facture"
-              value={formatCurrency(data?.cashInvoiced ?? 0)}
+              value={formatCurrency(revenueQuery.data?.cashInvoiced ?? 0)}
               icon={Receipt}
               color="text-[#AF0000]"
               accentBg="bg-[#AF0000]/8"
             />
             <CashCard
               label="Check-ins semaine"
-              value={String(data?.weeklyCheckins ?? 0)}
+              value={String(engagementQuery.data?.weeklyCheckins ?? 0)}
               icon={CalendarCheck}
               color="text-blue-600"
               accentBg="bg-blue-500/10"
@@ -569,13 +596,13 @@ export default function AdminDashboardPage() {
       </motion.div>
 
       {/* ─── Revenue by quarter ─── */}
-      {data && data.revenueByQuarter.length > 0 && (
+      {revenueQuery.data && revenueQuery.data.revenueByQuarter.length > 0 && (
         <motion.div variants={staggerItem}>
           <ChartCard>
             <SectionHeader icon={Percent} label="CA par trimestre" />
             <div className="h-48">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={data.revenueByQuarter}>
+                <BarChart data={revenueQuery.data.revenueByQuarter}>
                   <defs>
                     <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor="#AF0000" stopOpacity={1} />
@@ -657,7 +684,7 @@ export default function AdminDashboardPage() {
         </div>
         <ChartCard>
           <SectionHeader icon={Crown} label="Leaderboard coaches" />
-          {isLoading ? (
+          {coachesQuery.isLoading ? (
             <div className="space-y-3">
               {Array.from({ length: 3 }).map((_, i) => (
                 <div
@@ -666,13 +693,13 @@ export default function AdminDashboardPage() {
                 />
               ))}
             </div>
-          ) : !data?.coachLeaderboard.length ? (
+          ) : !coachesQuery.data?.coachLeaderboard.length ? (
             <p className="text-sm text-muted-foreground text-center py-8">
               Aucun coach
             </p>
           ) : (
             <div className="space-y-1">
-              {data.coachLeaderboard.map((coach, i) => (
+              {coachesQuery.data.coachLeaderboard.map((coach, i) => (
                 <div
                   key={coach.name}
                   className={cn(

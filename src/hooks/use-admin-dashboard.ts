@@ -47,14 +47,18 @@ export interface AdminDashboardData {
   }[];
 }
 
-export function useAdminDashboard() {
+/* ─────────────────────────────────────────────
+   Hook 1 — Revenue data (invoices)
+───────────────────────────────────────────── */
+export function useRevenueStats() {
   const supabase = useSupabase();
   const { user } = useAuth();
 
   return useQuery({
-    queryKey: ["admin-dashboard"],
+    queryKey: ["admin-revenue"],
     enabled: !!user,
-    queryFn: async (): Promise<AdminDashboardData> => {
+    staleTime: 5 * 60 * 1000,
+    queryFn: async () => {
       const now = new Date();
       const startOfMonth = new Date(
         now.getFullYear(),
@@ -71,97 +75,27 @@ export function useAdminDashboard() {
         now.getMonth(),
         0,
       ).toISOString();
-
-      // Monday of current week
-      const dayOfWeek = now.getDay();
-      const monday = new Date(now);
-      monday.setDate(now.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
-      monday.setHours(0, 0, 0, 0);
-      const weekStart = monday.toISOString().split("T")[0];
-
       const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1);
 
-      const [
-        clientsRes,
-        newClientsRes,
-        churnedRes,
-        invoicesAllRes,
-        invoicesThisMonthRes,
-        invoicesLastMonthRes,
-        contactsRes,
-        completionsRes,
-        totalLessonsRes,
-        checkinsRes,
-        detailsRes,
-        latePaymentsRes,
-        coachesRes,
-      ] = await Promise.all([
-        // Total active clients
-        supabase
-          .from("profiles")
-          .select("id", { count: "exact", head: true })
-          .eq("role", "client"),
-        // New clients this month
-        supabase
-          .from("profiles")
-          .select("id", { count: "exact", head: true })
-          .eq("role", "client")
-          .gte("created_at", startOfMonth),
-        // Churned students
-        supabase
-          .from("student_details")
-          .select("id", { count: "exact", head: true })
-          .eq("tag", "churned"),
-        // All paid invoices for revenue history
-        supabase
-          .from("invoices")
-          .select("total, status, paid_at, created_at")
-          .gte("created_at", sixMonthsAgo.toISOString()),
-        // Revenue this month
-        supabase
-          .from("invoices")
-          .select("total")
-          .eq("status", "paid")
-          .gte("created_at", startOfMonth),
-        // Revenue last month
-        supabase
-          .from("invoices")
-          .select("total")
-          .eq("status", "paid")
-          .gte("created_at", startOfLastMonth)
-          .lte("created_at", endOfLastMonth),
-        // Pipeline contacts
-        supabase.from("crm_contacts").select("stage, source, estimated_value"),
-        // Formation completions
-        supabase
-          .from("lesson_progress")
-          .select("id", { count: "exact", head: true }),
-        // Total lessons
-        supabase.from("lessons").select("id", { count: "exact", head: true }),
-        // Check-ins this week
-        supabase
-          .from("weekly_checkins")
-          .select("id", { count: "exact", head: true })
-          .gte("week_start", weekStart),
-        // Student details for at-risk and inactive
-        supabase
-          .from("student_details")
-          .select(
-            "tag, health_score, last_engagement_at, acquisition_source, lifetime_value",
-          ),
-        // Late payments
-        supabase
-          .from("invoices")
-          .select("id", { count: "exact", head: true })
-          .eq("status", "overdue"),
-        // Coaches with student counts
-        supabase
-          .from("profiles")
-          .select("id, full_name, avatar_url")
-          .eq("role", "coach"),
-      ]);
+      const [invoicesAllRes, invoicesThisMonthRes, invoicesLastMonthRes] =
+        await Promise.all([
+          supabase
+            .from("invoices")
+            .select("total, status, paid_at, created_at")
+            .gte("created_at", sixMonthsAgo.toISOString()),
+          supabase
+            .from("invoices")
+            .select("total")
+            .eq("status", "paid")
+            .gte("created_at", startOfMonth),
+          supabase
+            .from("invoices")
+            .select("total")
+            .eq("status", "paid")
+            .gte("created_at", startOfLastMonth)
+            .lte("created_at", endOfLastMonth),
+        ]);
 
-      // ─── Revenue calculations ─────────────
       const revenueThisMonth = (invoicesThisMonthRes.data ?? []).reduce(
         (sum, inv) => sum + Number(inv.total ?? 0),
         0,
@@ -216,7 +150,6 @@ export function useAdminDashboard() {
         .map(([quarter, revenue]) => ({ quarter, revenue }))
         .slice(-4);
 
-      // Cash collected vs invoiced
       const cashCollected = allInvoices
         .filter((i) => i.status === "paid")
         .reduce((sum, i) => sum + Number(i.total), 0);
@@ -225,8 +158,92 @@ export function useAdminDashboard() {
         0,
       );
 
-      // Revenue by channel (from acquisition_source in student_details)
+      return {
+        revenueThisMonth,
+        revenueLastMonth,
+        revenueChange,
+        cashCollected,
+        cashInvoiced,
+        revenueByMonth,
+        revenueByQuarter,
+      };
+    },
+  });
+}
+
+/* ─────────────────────────────────────────────
+   Hook 2 — Student stats (profiles + student_details)
+───────────────────────────────────────────── */
+export function useStudentStats() {
+  const supabase = useSupabase();
+  const { user } = useAuth();
+
+  return useQuery({
+    queryKey: ["admin-students"],
+    enabled: !!user,
+    staleTime: 5 * 60 * 1000,
+    queryFn: async () => {
+      const now = new Date();
+      const startOfMonth = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        1,
+      ).toISOString();
+
+      const [clientsRes, newClientsRes, churnedRes, detailsRes] =
+        await Promise.all([
+          supabase
+            .from("profiles")
+            .select("id", { count: "exact", head: true })
+            .eq("role", "client"),
+          supabase
+            .from("profiles")
+            .select("id", { count: "exact", head: true })
+            .eq("role", "client")
+            .gte("created_at", startOfMonth),
+          supabase
+            .from("student_details")
+            .select("id", { count: "exact", head: true })
+            .eq("tag", "churned"),
+          supabase
+            .from("student_details")
+            .select(
+              "tag, health_score, last_engagement_at, acquisition_source, lifetime_value",
+            ),
+        ]);
+
+      const totalStudents = clientsRes.count ?? 0;
+      const newStudentsThisMonth = newClientsRes.count ?? 0;
+      const churnedStudents = churnedRes.count ?? 0;
+      const retentionRate =
+        totalStudents > 0
+          ? Math.round(
+              ((totalStudents - churnedStudents) / totalStudents) * 100,
+            )
+          : 100;
+      const churnRate = 100 - retentionRate;
+
       const details = detailsRes.data ?? [];
+
+      const atRiskStudents = details.filter((d) => d.tag === "at_risk").length;
+
+      const fourteenDaysAgo = new Date();
+      fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14);
+      const inactiveStudents = details.filter((d) => {
+        if (!d.last_engagement_at) return true;
+        return new Date(d.last_engagement_at) < fourteenDaysAgo;
+      }).length;
+
+      // Average LTV
+      const ltvValues = details
+        .map((d) => Number(d.lifetime_value ?? 0))
+        .filter((v) => v > 0);
+      const averageLtv =
+        ltvValues.length > 0
+          ? Math.round(ltvValues.reduce((s, v) => s + v, 0) / ltvValues.length)
+          : 0;
+
+      // Revenue by channel (from acquisition_source in student_details)
       const channelRevenue: Record<string, number> = {};
       for (const d of details) {
         const source = d.acquisition_source ?? "autre";
@@ -249,39 +266,37 @@ export function useAdminDashboard() {
         .sort((a, b) => b.revenue - a.revenue)
         .slice(0, 6);
 
-      // Average LTV
-      const ltvValues = details
-        .map((d) => Number(d.lifetime_value ?? 0))
-        .filter((v) => v > 0);
-      const averageLtv =
-        ltvValues.length > 0
-          ? Math.round(ltvValues.reduce((s, v) => s + v, 0) / ltvValues.length)
-          : 0;
+      return {
+        totalStudents,
+        newStudentsThisMonth,
+        churnedStudents,
+        retentionRate,
+        churnRate,
+        atRiskStudents,
+        inactiveStudents,
+        averageLtv,
+        revenueByChannel,
+      };
+    },
+  });
+}
 
-      // ─── Students ─────────────
-      const totalStudents = clientsRes.count ?? 0;
-      const newStudentsThisMonth = newClientsRes.count ?? 0;
-      const churnedStudents = churnedRes.count ?? 0;
-      const retentionRate =
-        totalStudents > 0
-          ? Math.round(
-              ((totalStudents - churnedStudents) / totalStudents) * 100,
-            )
-          : 100;
-      const churnRate = 100 - retentionRate;
+/* ─────────────────────────────────────────────
+   Hook 3 — Sales pipeline (crm_contacts)
+───────────────────────────────────────────── */
+export function useSalesStats() {
+  const supabase = useSupabase();
+  const { user } = useAuth();
 
-      // At-risk students
-      const atRiskStudents = details.filter((d) => d.tag === "at_risk").length;
+  return useQuery({
+    queryKey: ["admin-sales"],
+    enabled: !!user,
+    staleTime: 5 * 60 * 1000,
+    queryFn: async () => {
+      const contactsRes = await supabase
+        .from("crm_contacts")
+        .select("stage, source, estimated_value");
 
-      // Inactive students (no engagement in 14 days)
-      const fourteenDaysAgo = new Date();
-      fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14);
-      const inactiveStudents = details.filter((d) => {
-        if (!d.last_engagement_at) return true;
-        return new Date(d.last_engagement_at) < fourteenDaysAgo;
-      }).length;
-
-      // ─── Sales ─────────────
       const contacts = contactsRes.data ?? [];
       const contactsByStage: Record<string, number> = {};
       for (const c of contacts) {
@@ -295,9 +310,49 @@ export function useAdminDashboard() {
           ? Math.round((closedContacts / totalContacts) * 100)
           : 0;
 
-      // ─── Formations ─────────────
+      return { globalClosingRate, contactsByStage };
+    },
+  });
+}
+
+/* ─────────────────────────────────────────────
+   Hook 4 — Formation + engagement (lesson_progress, lessons, weekly_checkins)
+───────────────────────────────────────────── */
+export function useEngagementStats() {
+  const supabase = useSupabase();
+  const { user } = useAuth();
+
+  return useQuery({
+    queryKey: ["admin-engagement"],
+    enabled: !!user,
+    staleTime: 5 * 60 * 1000,
+    queryFn: async () => {
+      const now = new Date();
+      const dayOfWeek = now.getDay();
+      const monday = new Date(now);
+      monday.setDate(now.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
+      monday.setHours(0, 0, 0, 0);
+      const weekStart = monday.toISOString().split("T")[0];
+
+      const [completionsRes, totalLessonsRes, checkinsRes, clientsCountRes] =
+        await Promise.all([
+          supabase
+            .from("lesson_progress")
+            .select("id", { count: "exact", head: true }),
+          supabase.from("lessons").select("id", { count: "exact", head: true }),
+          supabase
+            .from("weekly_checkins")
+            .select("id", { count: "exact", head: true })
+            .gte("week_start", weekStart),
+          supabase
+            .from("profiles")
+            .select("id", { count: "exact", head: true })
+            .eq("role", "client"),
+        ]);
+
       const totalCompletions = completionsRes.count ?? 0;
       const totalLessons = totalLessonsRes.count ?? 0;
+      const totalStudents = clientsCountRes.count ?? 0;
       const formationCompletionRate =
         totalLessons > 0 && totalStudents > 0
           ? Math.min(
@@ -308,8 +363,37 @@ export function useAdminDashboard() {
             )
           : 0;
 
-      // ─── Coach leaderboard ─────────────
-      // Note: we build a simplified leaderboard from available data
+      return {
+        formationCompletionRate,
+        weeklyCheckins: checkinsRes.count ?? 0,
+      };
+    },
+  });
+}
+
+/* ─────────────────────────────────────────────
+   Hook 5 — Coach leaderboard + alerts (profiles coaches, invoices overdue)
+───────────────────────────────────────────── */
+export function useCoachLeaderboard() {
+  const supabase = useSupabase();
+  const { user } = useAuth();
+
+  return useQuery({
+    queryKey: ["admin-coaches"],
+    enabled: !!user,
+    staleTime: 5 * 60 * 1000,
+    queryFn: async () => {
+      const [coachesRes, latePaymentsRes] = await Promise.all([
+        supabase
+          .from("profiles")
+          .select("id, full_name, avatar_url")
+          .eq("role", "coach"),
+        supabase
+          .from("invoices")
+          .select("id", { count: "exact", head: true })
+          .eq("status", "overdue"),
+      ]);
+
       const coaches = coachesRes.data ?? [];
       const coachLeaderboard = coaches.map((coach) => ({
         name: coach.full_name,
@@ -319,30 +403,53 @@ export function useAdminDashboard() {
       }));
 
       return {
-        revenueThisMonth,
-        revenueLastMonth,
-        revenueChange,
-        cashCollected,
-        cashInvoiced,
-        averageLtv,
-        revenueByQuarter,
-        revenueByMonth,
-        revenueByChannel,
-        totalStudents,
-        newStudentsThisMonth,
-        churnedStudents,
-        retentionRate,
-        churnRate,
-        globalClosingRate,
-        contactsByStage,
-        formationCompletionRate,
-        weeklyCheckins: checkinsRes.count ?? 0,
-        inactiveStudents,
-        latePayments: latePaymentsRes.count ?? 0,
-        atRiskStudents,
         coachLeaderboard,
+        latePayments: latePaymentsRes.count ?? 0,
       };
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
   });
+}
+
+/* ─────────────────────────────────────────────
+   Backward-compatible aggregate hook
+───────────────────────────────────────────── */
+export function useAdminDashboard() {
+  const revenue = useRevenueStats();
+  const students = useStudentStats();
+  const sales = useSalesStats();
+  const engagement = useEngagementStats();
+  const coaches = useCoachLeaderboard();
+
+  const isLoading =
+    revenue.isLoading ||
+    students.isLoading ||
+    sales.isLoading ||
+    engagement.isLoading ||
+    coaches.isLoading;
+
+  const data =
+    revenue.data &&
+    students.data &&
+    sales.data &&
+    engagement.data &&
+    coaches.data
+      ? {
+          ...revenue.data,
+          ...students.data,
+          ...sales.data,
+          ...engagement.data,
+          ...coaches.data,
+        }
+      : undefined;
+
+  return {
+    data,
+    isLoading,
+    // Individual loading states for progressive rendering:
+    revenue,
+    students,
+    sales,
+    engagement,
+    coaches,
+  };
 }
