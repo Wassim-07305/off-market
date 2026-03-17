@@ -109,18 +109,26 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 py-4 px-3 space-y-px overflow-y-auto">
-        {navigation.map((item) => {
+      <nav className="flex-1 pt-2 pb-4 px-3 space-y-px overflow-y-auto">
+        {navigation.map((item, idx) => {
           const isActive =
             pathname === item.href || pathname.startsWith(item.href + "/");
+          const isFirstSection = item.section && idx === 0;
 
           return (
             <div key={item.name}>
               {item.section && (
                 <>
-                  <div className="my-3 mx-2 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" />
+                  {!isFirstSection && (
+                    <div className="my-2 mx-2 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" />
+                  )}
                   {!sidebarCollapsed && (
-                    <div className="px-3 pt-1 pb-2">
+                    <div
+                      className={cn(
+                        "px-3 pb-1.5",
+                        isFirstSection ? "pt-0" : "pt-0.5",
+                      )}
+                    >
                       <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-600">
                         {item.section}
                       </span>
