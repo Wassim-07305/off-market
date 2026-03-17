@@ -307,16 +307,12 @@ export default function OnboardingPage() {
 
       case "admin_setup":
         return (
-          <AdminSetupStep
-            onNext={() => handleStepComplete("admin_setup")}
-          />
+          <AdminSetupStep onNext={() => handleStepComplete("admin_setup")} />
         );
 
       case "coach_tools":
         return (
-          <CoachToolsStep
-            onNext={() => handleStepComplete("coach_tools")}
-          />
+          <CoachToolsStep onNext={() => handleStepComplete("coach_tools")} />
         );
 
       case "sales_tools":
@@ -377,7 +373,7 @@ export default function OnboardingPage() {
             alt="Off Market"
             width={24}
             height={24}
-            className="rounded-md"
+            className="rounded-lg"
           />
           <span className="text-sm font-medium text-white/60">Off Market</span>
         </div>

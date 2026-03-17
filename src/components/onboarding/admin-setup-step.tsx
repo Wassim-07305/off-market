@@ -7,7 +7,6 @@ import {
   GraduationCap,
   CreditCard,
   ArrowRight,
-  ExternalLink,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -15,7 +14,6 @@ interface SetupItem {
   icon: typeof Palette;
   title: string;
   description: string;
-  link: string;
   badge: "recommended" | "optional";
   color: string;
 }
@@ -25,7 +23,6 @@ const SETUP_ITEMS: SetupItem[] = [
     icon: Palette,
     title: "Personnaliser le branding",
     description: "Nom, logo et couleurs de ta plateforme",
-    link: "/admin/settings",
     badge: "recommended",
     color: "text-purple-400",
   },
@@ -33,7 +30,6 @@ const SETUP_ITEMS: SetupItem[] = [
     icon: UserPlus,
     title: "Inviter ton equipe",
     description: "Coaches, setters et closers",
-    link: "/admin/invitations",
     badge: "recommended",
     color: "text-blue-400",
   },
@@ -41,7 +37,6 @@ const SETUP_ITEMS: SetupItem[] = [
     icon: GraduationCap,
     title: "Creer ta premiere formation",
     description: "Modules et contenus pour tes clients",
-    link: "/admin/school",
     badge: "recommended",
     color: "text-emerald-400",
   },
@@ -49,7 +44,6 @@ const SETUP_ITEMS: SetupItem[] = [
     icon: CreditCard,
     title: "Configurer la facturation",
     description: "Methodes de paiement et echeanciers",
-    link: "/admin/billing",
     badge: "optional",
     color: "text-amber-400",
   },
@@ -115,12 +109,6 @@ export function AdminSetupStep({ onNext }: AdminSetupStepProps) {
                   </span>
                 </div>
                 <p className="text-xs text-white/40">{item.description}</p>
-              </div>
-
-              <div className="shrink-0 flex items-center">
-                <span className="flex items-center gap-1 text-xs text-white/30">
-                  <ExternalLink className="w-3.5 h-3.5" />
-                </span>
               </div>
             </motion.div>
           );
