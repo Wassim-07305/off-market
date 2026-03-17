@@ -114,15 +114,19 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
           const isActive =
             pathname === item.href || pathname.startsWith(item.href + "/");
 
-          const showSeparator =
-            (variant === "admin" && item.name === "Feed") ||
-            (variant === "coach" && item.name === "Feed") ||
-            (variant === "client" && item.name === "Feed");
-
           return (
             <div key={item.name}>
-              {showSeparator && (
-                <div className="my-3 mx-2 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" />
+              {item.section && (
+                <>
+                  <div className="my-3 mx-2 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" />
+                  {!sidebarCollapsed && (
+                    <div className="px-3 pt-1 pb-2">
+                      <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-600">
+                        {item.section}
+                      </span>
+                    </div>
+                  )}
+                </>
               )}
               <Link
                 href={item.href}

@@ -42,53 +42,88 @@ export interface NavItem {
   name: string;
   href: string;
   icon: LucideIcon;
+  section?: string;
 }
 
 /** Admin / Fondateur */
 export const adminNavigation: NavItem[] = [
-  { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
+  // ── Pilotage ──
+  {
+    name: "Dashboard",
+    href: "/admin/dashboard",
+    icon: LayoutDashboard,
+    section: "Pilotage",
+  },
   { name: "CRM", href: "/admin/crm", icon: Kanban },
   { name: "Clients", href: "/admin/clients", icon: Contact },
+  { name: "Appels & Lives", href: "/admin/calls", icon: Phone },
   { name: "Messagerie", href: "/admin/messaging", icon: MessageSquare },
-  { name: "Formation", href: "/admin/school", icon: GraduationCap },
-  { name: "Formulaires", href: "/admin/forms", icon: FileText },
-  { name: "Facturation", href: "/admin/billing", icon: CreditCard },
-
-  { name: "Contenu", href: "/admin/content", icon: Palette },
-  { name: "Feed", href: "/admin/feed", icon: Rss },
-  { name: "Appels", href: "/admin/calls", icon: Phone },
-  { name: "Disponibilites", href: "/admin/settings/availability", icon: Clock },
-  { name: "AlexIA", href: "/admin/ai", icon: Bot },
-  { name: "Invitations", href: "/admin/invitations", icon: Send },
-  { name: "Ressources", href: "/admin/resources", icon: FolderOpen },
-  { name: "Recompenses", href: "/admin/rewards", icon: Gift },
-  { name: "Badges", href: "/admin/badges", icon: Award },
-  { name: "Moderation", href: "/admin/moderation", icon: Shield },
-  { name: "Calendrier", href: "/admin/calendar", icon: Calendar },
-  { name: "Equipe CSM", href: "/admin/csm", icon: UserCog },
   { name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
-  { name: "Audit", href: "/admin/audit", icon: ClipboardCheck },
+
+  // ── Contenu ──
+  {
+    name: "Formation",
+    href: "/admin/school",
+    icon: GraduationCap,
+    section: "Contenu",
+  },
+  { name: "Feed", href: "/admin/feed", icon: Rss },
+  { name: "Ressources", href: "/admin/resources", icon: FolderOpen },
   { name: "FAQ / Base IA", href: "/admin/faq", icon: BookOpen },
+  { name: "Formulaires", href: "/admin/forms", icon: FileText },
+
+  // ── Business ──
+  {
+    name: "Booking",
+    href: "/admin/booking",
+    icon: CalendarCheck,
+    section: "Business",
+  },
+  { name: "Facturation", href: "/admin/billing", icon: CreditCard },
   { name: "Upsell", href: "/admin/upsell", icon: TrendingUp },
-  { name: "Booking", href: "/admin/booking", icon: CalendarCheck },
+
+  // ── Administration ──
+  {
+    name: "Equipe CSM",
+    href: "/admin/csm",
+    icon: UserCog,
+    section: "Administration",
+  },
+  { name: "Invitations", href: "/admin/invitations", icon: Send },
+  { name: "Gamification", href: "/admin/rewards", icon: Trophy },
+  { name: "Moderation", href: "/admin/moderation", icon: Shield },
+  { name: "AlexIA", href: "/admin/ai", icon: Bot },
+  { name: "Audit", href: "/admin/audit", icon: ClipboardCheck },
 ];
 
 /** Coach / CSM */
 export const coachNavigation: NavItem[] = [
-  { name: "Dashboard", href: "/coach/dashboard", icon: LayoutDashboard },
+  // ── Pilotage ──
+  {
+    name: "Dashboard",
+    href: "/coach/dashboard",
+    icon: LayoutDashboard,
+    section: "Pilotage",
+  },
   { name: "CRM", href: "/coach/crm", icon: Users },
+  { name: "Appels & Lives", href: "/coach/calls", icon: Phone },
   { name: "Messagerie", href: "/coach/messaging", icon: MessageSquare },
-  { name: "Formation", href: "/coach/school", icon: GraduationCap },
-  { name: "Contenu", href: "/coach/content", icon: Palette },
+  { name: "Check-ins", href: "/coach/checkins", icon: ClipboardCheck },
+
+  // ── Contenu ──
+  {
+    name: "Formation",
+    href: "/coach/school",
+    icon: GraduationCap,
+    section: "Contenu",
+  },
   { name: "Feed", href: "/coach/feed", icon: Rss },
   { name: "Communaute", href: "/coach/community", icon: Users },
-  { name: "Check-ins", href: "/coach/checkins", icon: ClipboardCheck },
-  { name: "Alertes", href: "/coach/alerts", icon: Bell },
-  { name: "Seances", href: "/coach/sessions", icon: Video },
-  { name: "Appels", href: "/coach/calls", icon: Phone },
-  { name: "Calendrier", href: "/coach/calendar", icon: Calendar },
   { name: "Ressources", href: "/coach/resources", icon: FolderOpen },
-  { name: "Disponibilites", href: "/coach/settings/availability", icon: Clock },
+
+  // ── Gestion ──
+  { name: "Alertes", href: "/coach/alerts", icon: Bell, section: "Gestion" },
+  { name: "Seances", href: "/coach/sessions", icon: Video },
 ];
 
 /** Sales (Setter + Closer) */
