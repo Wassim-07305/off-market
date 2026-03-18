@@ -19,6 +19,21 @@ export interface MemberEntry {
   level_icon: string;
 }
 
+// Row shape returned by the member_stats view
+interface MemberStatsRow {
+  id: string;
+  full_name: string;
+  avatar_url: string | null;
+  role: string;
+  bio: string | null;
+  created_at: string;
+  total_xp: number;
+  badge_count: number;
+  level: number;
+  level_name: string;
+  level_icon: string;
+}
+
 export function useMembers() {
   const supabase = useSupabase();
   const { user } = useAuth();
@@ -31,7 +46,8 @@ export function useMembers() {
       const { data, error } = await supabase
         .from("member_stats")
         .select("*")
-        .order("full_name", { ascending: true });
+        .order("full_name", { ascending: true })
+        .returns<MemberStatsRow[]>();
 
       if (error) throw error;
 

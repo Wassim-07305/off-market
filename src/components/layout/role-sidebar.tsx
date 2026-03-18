@@ -71,9 +71,11 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
     Calendrier: "calendar",
     Equipe: "csm",
     "Closer Calls": "closer-calls",
+    "Appels Closing": "closer-calls",
     Documents: "documents",
     Suivi: "suivi",
     Commissions: "commissions",
+    Personnes: "personnes",
   };
 
   return (

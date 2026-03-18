@@ -51,7 +51,8 @@ export async function POST(
       );
     }
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+    const appUrl =
+      process.env.NEXT_PUBLIC_APP_URL ?? "https://off-market-amber.vercel.app";
     const signUrl = `${appUrl}/contracts/${contract.id}/sign`;
 
     const formatDate = (d: string | null) => {

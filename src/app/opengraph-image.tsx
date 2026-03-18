@@ -23,7 +23,7 @@ export default async function Image() {
       <img
         src={new URL(
           "/logo.png",
-          process.env.NEXT_PUBLIC_APP_URL ?? "https://app.offmarket.fr",
+          process.env.NEXT_PUBLIC_APP_URL ?? "https://off-market-amber.vercel.app",
         ).toString()}
         width={160}
         height={160}

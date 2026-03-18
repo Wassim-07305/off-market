@@ -6,7 +6,8 @@ import { digestEmail } from "@/lib/email/templates";
 // This route is designed to be called by a cron job (Vercel Cron or external)
 // It sends digest emails to users based on their email_digest preference
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://offmarket.app";
+const SITE_URL =
+  process.env.NEXT_PUBLIC_APP_URL ?? "https://off-market-amber.vercel.app";
 
 export async function POST(request: Request) {
   // Verify cron secret to prevent unauthorized calls

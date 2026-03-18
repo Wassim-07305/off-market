@@ -4,6 +4,26 @@ import { useQuery } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
 
+// Row shapes for views
+interface DashboardKpisRow {
+  total_clients: number;
+  last_month_clients: number;
+  revenue_this_month: number;
+  revenue_last_month: number;
+  active_courses: number;
+  weekly_checkins: number;
+}
+
+interface RevenueByMonthRow {
+  month: string;
+  label: string;
+  revenue: number;
+}
+
+interface TimestampedRow {
+  created_at: string;
+}
+
 export function useDashboardStats() {
   const supabase = useSupabase();
   const { user } = useAuth();
@@ -17,6 +37,7 @@ export function useDashboardStats() {
       const { data, error } = await supabase
         .from("dashboard_kpis")
         .select("*")
+        .returns<DashboardKpisRow[]>()
         .single();
 
       if (error) throw error;
@@ -76,13 +97,24 @@ export function useRevenueChart() {
       const { data, error } = await supabase
         .from("revenue_by_month")
         .select("*")
-        .order("month", { ascending: true });
+        .order("month", { ascending: true })
+        .returns<RevenueByMonthRow[]>();
 
       if (error) throw error;
 
       const months = [
-        "Jan", "Fev", "Mar", "Avr", "Mai", "Juin",
-        "Juil", "Aout", "Sep", "Oct", "Nov", "Dec",
+        "Jan",
+        "Fev",
+        "Mar",
+        "Avr",
+        "Mai",
+        "Juin",
+        "Juil",
+        "Aout",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
       ];
 
       // Build the last 6 months skeleton (in case some months have no invoices)
@@ -126,17 +158,21 @@ export function useEngagementChart() {
       const days = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
 
       // These two queries are lightweight (only this week's data) — no view needed
-      const [{ data: messages, error: messagesErr }, { data: checkins, error: checkinsErr }] =
-        await Promise.all([
-          supabase
-            .from("messages")
-            .select("created_at")
-            .gte("created_at", monday.toISOString()),
-          supabase
-            .from("weekly_checkins")
-            .select("created_at")
-            .gte("created_at", monday.toISOString()),
-        ]);
+      const [
+        { data: messages, error: messagesErr },
+        { data: checkins, error: checkinsErr },
+      ] = await Promise.all([
+        supabase
+          .from("messages")
+          .select("created_at")
+          .gte("created_at", monday.toISOString())
+          .returns<TimestampedRow[]>(),
+        supabase
+          .from("weekly_checkins")
+          .select("created_at")
+          .gte("created_at", monday.toISOString())
+          .returns<TimestampedRow[]>(),
+      ]);
 
       if (messagesErr) throw messagesErr;
       if (checkinsErr) throw checkinsErr;

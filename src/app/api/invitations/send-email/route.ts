@@ -43,7 +43,8 @@ export async function POST(req: NextRequest) {
       .eq("id", invite.invited_by)
       .single();
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+    const appUrl =
+      process.env.NEXT_PUBLIC_APP_URL ?? "https://off-market-amber.vercel.app";
 
     const { subject, html } = invitationEmail({
       inviterName: inviter?.full_name ?? "Off-Market",

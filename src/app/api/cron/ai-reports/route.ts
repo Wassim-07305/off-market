@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const AI_REPORT_URL =
-  process.env.NEXT_PUBLIC_APP_URL ?? "https://offmarket.app";
+  process.env.NEXT_PUBLIC_APP_URL ?? "https://off-market-amber.vercel.app";
 
 /**
  * Cron endpoint pour la generation hebdomadaire des rapports IA.

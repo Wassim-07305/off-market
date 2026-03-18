@@ -47,6 +47,66 @@ export interface AdminDashboardData {
   }[];
 }
 
+// ── Row types for views ──────────────────────────────────────
+
+interface DashboardKpisRow {
+  total_clients: number;
+  last_month_clients: number;
+  revenue_this_month: number;
+  revenue_last_month: number;
+  active_courses: number;
+  weekly_checkins: number;
+}
+
+interface RevenueByMonthRow {
+  month: string;
+  label: string;
+  revenue: number;
+}
+
+interface RevenueByQuarterRow {
+  quarter: string;
+  revenue: number;
+}
+
+interface InvoiceTotalRow {
+  total: number;
+  status: string;
+}
+
+interface StudentStatsSummaryRow {
+  total_students: number;
+  new_students_this_month: number;
+  churned_students: number;
+  at_risk_students: number;
+  average_ltv: number;
+}
+
+interface RevenueByChannelRow {
+  channel: string;
+  revenue: number;
+}
+
+interface SalesPipelineRow {
+  stage: string;
+  count: number;
+}
+
+interface EngagementStatsRow {
+  total_completions: number;
+  total_lessons: number;
+  total_students: number;
+  weekly_checkins: number;
+}
+
+interface CoachLeaderboardRow {
+  id: string;
+  name: string;
+  avatar: string | null;
+  students: number;
+  avg_health: number;
+}
+
 /* ─────────────────────────────────────────────
    Hook 1 — Revenue data (views: dashboard_kpis, revenue_by_month, revenue_by_quarter)
    Replaces 3 parallel invoice queries + client-side aggregation
@@ -62,14 +122,20 @@ export function useRevenueStats() {
     queryFn: async () => {
       const [kpisRes, monthlyRes, quarterlyRes, invoiceTotalsRes] =
         await Promise.all([
-          supabase.from("dashboard_kpis").select("*").single(),
+          supabase
+            .from("dashboard_kpis")
+            .select("*")
+            .returns<DashboardKpisRow[]>()
+            .single(),
           supabase
             .from("revenue_by_month")
             .select("*")
-            .order("month", { ascending: true }),
-          supabase.from("revenue_by_quarter").select("*"),
-          // cashCollected + cashInvoiced need all invoices from last 6 months
-          // We still fetch these as a lightweight aggregate
+            .order("month", { ascending: true })
+            .returns<RevenueByMonthRow[]>(),
+          supabase
+            .from("revenue_by_quarter")
+            .select("*")
+            .returns<RevenueByQuarterRow[]>(),
           supabase
             .from("invoices")
             .select("total, status")
@@ -80,7 +146,8 @@ export function useRevenueStats() {
                 new Date().getMonth() - 5,
                 1,
               ).toISOString(),
-            ),
+            )
+            .returns<InvoiceTotalRow[]>(),
         ]);
 
       if (kpisRes.error) throw kpisRes.error;
@@ -100,7 +167,11 @@ export function useRevenueStats() {
       for (const row of monthlyRes.data ?? []) {
         revenueMap.set(row.month, Number(row.revenue ?? 0));
       }
-      const revenueByMonth: { month: string; label: string; revenue: number }[] = [];
+      const revenueByMonth: {
+        month: string;
+        label: string;
+        revenue: number;
+      }[] = [];
       for (let i = 5; i >= 0; i--) {
         const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
         const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
@@ -154,8 +225,15 @@ export function useStudentStats() {
     staleTime: 5 * 60 * 1000,
     queryFn: async () => {
       const [statsRes, channelRes] = await Promise.all([
-        supabase.from("student_stats_summary").select("*").single(),
-        supabase.from("revenue_by_channel").select("*"),
+        supabase
+          .from("student_stats_summary")
+          .select("*")
+          .returns<StudentStatsSummaryRow[]>()
+          .single(),
+        supabase
+          .from("revenue_by_channel")
+          .select("*")
+          .returns<RevenueByChannelRow[]>(),
       ]);
 
       if (statsRes.error) throw statsRes.error;
@@ -179,8 +257,7 @@ export function useStudentStats() {
       const revenueByChannel = channelData.map((row) => {
         const revenue = Number(row.revenue ?? 0);
         return {
-          channel:
-            row.channel.charAt(0).toUpperCase() + row.channel.slice(1),
+          channel: row.channel.charAt(0).toUpperCase() + row.channel.slice(1),
           revenue,
           percent:
             totalChannelRevenue > 0
@@ -219,7 +296,8 @@ export function useSalesStats() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("sales_pipeline_summary")
-        .select("*");
+        .select("*")
+        .returns<SalesPipelineRow[]>();
 
       if (error) throw error;
 
@@ -256,6 +334,7 @@ export function useEngagementStats() {
       const { data, error } = await supabase
         .from("engagement_stats")
         .select("*")
+        .returns<EngagementStatsRow[]>()
         .single();
 
       if (error) throw error;
@@ -295,7 +374,10 @@ export function useCoachLeaderboard() {
     staleTime: 5 * 60 * 1000,
     queryFn: async () => {
       const [coachesRes, latePaymentsRes] = await Promise.all([
-        supabase.from("coach_leaderboard").select("*"),
+        supabase
+          .from("coach_leaderboard")
+          .select("*")
+          .returns<CoachLeaderboardRow[]>(),
         supabase
           .from("invoices")
           .select("id", { count: "exact", head: true })

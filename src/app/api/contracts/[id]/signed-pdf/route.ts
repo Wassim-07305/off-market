@@ -66,32 +66,32 @@ export async function GET(
     const clientCity = sigData?.signer_city ?? "";
 
     // Fill in client info on first page (right column "LE CLIENT")
-    // These coordinates are approximate for the PDF layout — adjust as needed
+    // Page 1: encadré client - "Nom et Prénom:" label ends ~x=375, fields at y≈395/375/355
     firstPage.drawText(clientName, {
-      x: 340,
-      y: 510,
-      size: 10,
+      x: 378,
+      y: 393,
+      size: 9,
       font: font,
-      color: rgb(0.2, 0.2, 0.2),
+      color: rgb(0.15, 0.15, 0.15),
     });
 
     if (clientAddress) {
       firstPage.drawText(clientAddress, {
-        x: 340,
-        y: 494,
-        size: 10,
+        x: 348,
+        y: 370,
+        size: 9,
         font: font,
-        color: rgb(0.2, 0.2, 0.2),
+        color: rgb(0.15, 0.15, 0.15),
       });
     }
 
     if (clientCity) {
       firstPage.drawText(clientCity, {
-        x: 340,
-        y: 478,
-        size: 10,
+        x: 390,
+        y: 347,
+        size: 9,
         font: font,
-        color: rgb(0.2, 0.2, 0.2),
+        color: rgb(0.15, 0.15, 0.15),
       });
     }
 
@@ -105,37 +105,35 @@ export async function GET(
           })
         : "";
 
-      // "Lu et approuve" + client name in the signature box (right side)
-      lastPage.drawText("Lu et approuve", {
-        x: 340,
-        y: 238,
+      // Page 9: "Fait a Plaisance du Touch, le ___" — date after "le"
+      lastPage.drawText(signedDate, {
+        x: 208,
+        y: 270,
         size: 9,
+        font: font,
+        color: rgb(0.15, 0.15, 0.15),
+      });
+
+      // Right box "Le Client" — "Lu et approuve" text
+      const signerName = sigData?.signer_name ?? clientName;
+      lastPage.drawText("Lu et approuve", {
+        x: 320,
+        y: 165,
+        size: 8,
         font: font,
         color: rgb(0.3, 0.3, 0.3),
       });
 
-      // Signer name (typed signature)
-      const signerName = sigData?.signer_name ?? clientName;
+      // Signer name below "Lu et approuve"
       lastPage.drawText(signerName, {
-        x: 340,
-        y: 218,
-        size: 12,
+        x: 320,
+        y: 145,
+        size: 11,
         font: fontBold,
         color: rgb(0.1, 0.1, 0.1),
       });
 
-      // Date
-      if (signedDate) {
-        lastPage.drawText(`Signe le ${signedDate}`, {
-          x: 340,
-          y: 200,
-          size: 8,
-          font: font,
-          color: rgb(0.5, 0.5, 0.5),
-        });
-      }
-
-      // If there's a signature image (canvas), embed it
+      // If there's a signature image (canvas), embed it in the right box
       if (contract.signature_image) {
         try {
           const sigImageBytes = Buffer.from(
@@ -143,25 +141,28 @@ export async function GET(
             "base64",
           );
           const sigImage = await pdfDoc.embedPng(sigImageBytes);
-          const sigDims = sigImage.scale(0.3);
+          // Scale to fit in the signature box (~160px wide, ~40px tall)
+          const maxW = 140;
+          const maxH = 40;
+          const scale = Math.min(maxW / sigImage.width, maxH / sigImage.height);
           lastPage.drawImage(sigImage, {
-            x: 340,
-            y: 160,
-            width: Math.min(sigDims.width, 150),
-            height: Math.min(sigDims.height, 50),
+            x: 320,
+            y: 88,
+            width: sigImage.width * scale,
+            height: sigImage.height * scale,
           });
         } catch {
           // If image embedding fails, skip it
         }
       }
 
-      // Fill in the date field "Fait a Plaisance du Touch, le ..."
-      lastPage.drawText(signedDate, {
-        x: 270,
-        y: 310,
-        size: 10,
+      // "Signe le" date under the signature
+      lastPage.drawText(`Signe le ${signedDate}`, {
+        x: 320,
+        y: 75,
+        size: 7,
         font: font,
-        color: rgb(0.2, 0.2, 0.2),
+        color: rgb(0.5, 0.5, 0.5),
       });
     }
 

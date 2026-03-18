@@ -26,7 +26,6 @@ import {
   AlertTriangle,
   Eye,
 } from "lucide-react";
-import { StripePayButton } from "@/components/billing/stripe-pay-button";
 import { toast } from "sonner";
 
 type Tab = "contrats" | "factures";
@@ -377,10 +376,6 @@ function InvoicesTab({
                         : "En attente"}
                     </span>
                   </div>
-                  <StripePayButton
-                    invoiceId={invoice.id}
-                    amount={Number(invoice.total)}
-                  />
                 </div>
               </div>
             ))}

@@ -18,7 +18,7 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_APP_URL ?? "https://app.offmarket.fr",
+    process.env.NEXT_PUBLIC_APP_URL ?? "https://off-market-amber.vercel.app",
   ),
   title: {
     default: "Off Market — Deviens le choix evident",

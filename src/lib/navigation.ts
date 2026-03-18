@@ -56,7 +56,7 @@ export const adminNavigation: NavItem[] = [
     section: "Pilotage",
   },
   { name: "CRM", href: "/admin/crm", icon: Kanban },
-  { name: "Clients", href: "/admin/clients", icon: Contact },
+  { name: "Personnes", href: "/admin/personnes", icon: Users },
   { name: "Appels & Lives", href: "/admin/calls", icon: Phone },
   { name: "Messagerie", href: "/admin/messaging", icon: MessageSquare },
   { name: "Finances", href: "/admin/analytics", icon: BarChart3 },
@@ -80,18 +80,16 @@ export const adminNavigation: NavItem[] = [
     icon: CalendarCheck,
     section: "Business",
   },
-  { name: "Closer Calls", href: "/admin/closer-calls", icon: PhoneCall },
+  { name: "Appels Closing", href: "/admin/closer-calls", icon: PhoneCall },
   { name: "Facturation", href: "/admin/billing", icon: CreditCard },
 
   // ── Administration ──
   {
-    name: "Equipe",
-    href: "/admin/csm",
-    icon: UserCog,
+    name: "Gamification",
+    href: "/admin/rewards",
+    icon: Trophy,
     section: "Administration",
   },
-  { name: "Invitations", href: "/admin/invitations", icon: Send },
-  { name: "Gamification", href: "/admin/rewards", icon: Trophy },
   { name: "Miro", href: "/admin/miro", icon: Presentation },
 ];
 

@@ -66,21 +66,13 @@ function RegisterContent() {
     if (error) {
       toast.error(error.message);
     } else {
-      // Mark invitation as accepted
+      // Mark invitation as accepted via API (bypasses RLS)
       if (code) {
-        try {
-          const { createClient } = await import("@/lib/supabase/client");
-          const supabase = createClient();
-          await (supabase as any)
-            .from("user_invites")
-            .update({
-              status: "accepted",
-              accepted_at: new Date().toISOString(),
-            })
-            .eq("invite_code", code);
-        } catch {
-          // Non-blocking — invitation status update is not critical
-        }
+        fetch("/api/invitations/accept", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ invite_code: code }),
+        }).catch(() => {});
       }
       toast.success("Compte cree ! Connecte-toi maintenant.");
       window.location.href = "/login";

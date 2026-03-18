@@ -6,7 +6,8 @@ import { sendEmail } from "@/lib/email/send";
 // Finds all active enrollments where next_step_at <= now(), sends the
 // next step, advances the enrollment, and auto-cancels when applicable.
 
-const SITE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://offmarket.app";
+const SITE_URL =
+  process.env.NEXT_PUBLIC_APP_URL ?? "https://off-market-amber.vercel.app";
 
 function getAdminSupabase() {
   return createClient(

@@ -9,7 +9,8 @@ import { dispatchWebhook } from "@/lib/webhooks";
 // 2. Send payment reminders
 // 3. Generate recurring invoices from payment schedules
 
-const SITE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://offmarket.app";
+const SITE_URL =
+  process.env.NEXT_PUBLIC_APP_URL ?? "https://off-market-amber.vercel.app";
 
 function getAdminSupabase() {
   return createClient(

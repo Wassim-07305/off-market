@@ -23,6 +23,21 @@ export interface HallOfFameEntry {
   badge_count: number;
 }
 
+// Row shape returned by the hall_of_fame_enriched view
+interface HallOfFameEnrichedRow {
+  id: string;
+  profile_id: string;
+  achievement: string | null;
+  description: string | null;
+  featured_at: string | null;
+  created_at: string;
+  full_name: string | null;
+  avatar_url: string | null;
+  bio: string | null;
+  total_xp: number;
+  badge_count: number;
+}
+
 export function useHallOfFame() {
   const supabase = useSupabase();
   const { user } = useAuth();
@@ -35,7 +50,8 @@ export function useHallOfFame() {
       const { data, error } = await supabase
         .from("hall_of_fame_enriched")
         .select("*")
-        .order("featured_at", { ascending: false });
+        .order("featured_at", { ascending: false })
+        .returns<HallOfFameEnrichedRow[]>();
 
       if (error) {
         // View might not be available yet — return empty
