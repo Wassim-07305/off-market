@@ -20,7 +20,7 @@ import {
 function getVideoEmbed(url: string): {
   type: "iframe" | "video" | "none";
   src: string;
-  platform?: "youtube" | "vimeo" | "loom";
+  platform?: string;
 } {
   if (!url) return { type: "none", src: "" };
 
@@ -30,7 +30,7 @@ function getVideoEmbed(url: string): {
     if (id)
       return {
         type: "iframe",
-        src: `https://www.youtube.com/embed/${id}`,
+        src: `https://www.youtube.com/embed/${id}?modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&color=white`,
         platform: "youtube",
       };
   }
@@ -50,7 +50,7 @@ function getVideoEmbed(url: string): {
     if (id)
       return {
         type: "iframe",
-        src: `https://www.youtube.com/embed/${id}`,
+        src: `https://www.youtube.com/embed/${id}?modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&color=white`,
         platform: "youtube",
       };
   }
@@ -75,6 +75,52 @@ function getVideoEmbed(url: string): {
         src: `https://www.loom.com/embed/${id}`,
         platform: "loom",
       };
+  }
+
+  // Tella
+  if (url.includes("tella.tv")) {
+    // Support both direct URLs and embed URLs
+    // Direct: https://www.tella.tv/video/vid_xxx/embed?...
+    // Or: https://www.tella.tv/video/vid_xxx
+    if (url.includes("/embed")) {
+      return { type: "iframe", src: url, platform: "tella" };
+    }
+    const match = url.match(/tella\.tv\/video\/(vid_[a-z0-9]+)/i);
+    if (match) {
+      return {
+        type: "iframe",
+        src: `https://www.tella.tv/video/${match[1]}/embed?b=1&title=1&a=1&loop=0&t=0&muted=0&wt=1&o=1`,
+        platform: "tella",
+      };
+    }
+  }
+
+  // Wistia
+  if (url.includes("wistia.com") || url.includes("wi.st")) {
+    const match = url.match(
+      /(?:wistia\.com|wi\.st)\/(?:medias|embed\/iframe)\/([a-z0-9]+)/i,
+    );
+    if (match) {
+      return {
+        type: "iframe",
+        src: `https://fast.wistia.net/embed/iframe/${match[1]}`,
+        platform: "wistia",
+      };
+    }
+  }
+
+  // Generic iframe/embed URL (any URL with /embed in the path)
+  try {
+    const u = new URL(url);
+    if (u.pathname.includes("/embed") || u.pathname.includes("/player")) {
+      return {
+        type: "iframe",
+        src: url,
+        platform: u.hostname.split(".").slice(-2, -1)[0],
+      };
+    }
+  } catch {
+    /* not a valid URL */
   }
 
   return { type: "video", src: url };

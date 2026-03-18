@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { X, UserMinus, AlertTriangle, Loader2, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUserManagement, useCoaches } from "@/hooks/use-user-management";
@@ -85,9 +86,11 @@ export function UserOffboardingModal({
         {/* User info */}
         <div className="flex items-center gap-3 p-3 bg-muted rounded-xl">
           {targetUser.avatar_url ? (
-            <img
+            <Image
               src={targetUser.avatar_url}
               alt={targetUser.full_name}
+              width={40}
+              height={40}
               className="w-10 h-10 rounded-full object-cover"
             />
           ) : (

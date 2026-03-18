@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import Image from "next/image";
 import { useAuth } from "@/hooks/use-auth";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
@@ -183,9 +184,11 @@ export function AdminBrandingSettings() {
         <div className="flex items-center gap-4">
           {settings.logo_url ? (
             <div className="relative group">
-              <img
+              <Image
                 src={settings.logo_url}
                 alt="Logo"
+                width={80}
+                height={80}
                 className="w-20 h-20 rounded-xl object-contain border border-border bg-surface p-2"
               />
               <button

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import Image from "next/image";
 import {
   CalendarCheck,
   Clock,
@@ -258,9 +259,11 @@ export function SessionList() {
 
                   {/* Client avatar */}
                   {session.client?.avatar_url ? (
-                    <img
+                    <Image
                       src={session.client.avatar_url}
                       alt={session.client.full_name}
+                      width={36}
+                      height={36}
                       className="w-9 h-9 rounded-full object-cover shrink-0"
                     />
                   ) : session.client ? (

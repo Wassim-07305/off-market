@@ -66,7 +66,24 @@ function RegisterContent() {
     if (error) {
       toast.error(error.message);
     } else {
-      toast.success("Compte cree ! Verifie tes emails pour confirmer.");
+      // Mark invitation as accepted
+      if (code) {
+        try {
+          const { createClient } = await import("@/lib/supabase/client");
+          const supabase = createClient();
+          await (supabase as any)
+            .from("user_invites")
+            .update({
+              status: "accepted",
+              accepted_at: new Date().toISOString(),
+            })
+            .eq("invite_code", code);
+        } catch {
+          // Non-blocking — invitation status update is not critical
+        }
+      }
+      toast.success("Compte cree ! Connecte-toi maintenant.");
+      window.location.href = "/login";
     }
   };
 

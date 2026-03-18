@@ -373,9 +373,19 @@ export default function CourseViewPage({
                           const completed = completedIds.has(lesson.id);
                           const isActive = selectedLessonId === lesson.id;
                           const unlocked = isLessonUnlocked(lesson.id);
-                          const contentConfig = getContentIcon(
-                            lesson.content_type,
+                          const lessonContent = lesson.content as
+                            | Record<string, string>
+                            | undefined;
+                          const hasVideo = !!(
+                            lesson.video_url ??
+                            lessonContent?.video_url ??
+                            lessonContent?.url
                           );
+                          const effectiveType =
+                            lesson.content_type === "video" && !hasVideo
+                              ? "text"
+                              : lesson.content_type;
+                          const contentConfig = getContentIcon(effectiveType);
                           const ContentIcon = contentConfig.icon;
 
                           return (

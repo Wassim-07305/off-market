@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import Image from "next/image";
 import { useAuth } from "@/hooks/use-auth";
 import { useSupabase } from "@/hooks/use-supabase";
 import { toast } from "sonner";
@@ -279,9 +280,11 @@ export function UserProfileSettings() {
         <div className="flex items-center gap-4 mb-4">
           <div className="relative group">
             {avatarUrl ? (
-              <img
+              <Image
                 src={avatarUrl}
                 alt={fullName}
+                width={64}
+                height={64}
                 className="w-16 h-16 rounded-full object-cover"
               />
             ) : (

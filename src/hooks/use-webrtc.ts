@@ -659,6 +659,7 @@ export function useWebRTC({ callId, onError }: UseWebRTCOptions) {
   return {
     localStream,
     remoteStream,
+    cameraStream: localStreamRef.current,
     joinCall,
     leaveCall,
     toggleMic,

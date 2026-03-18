@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import Image from "next/image";
+import { usePathname, useRouter } from "next/navigation";
 import { cn, getInitials } from "@/lib/utils";
 import { useUIStore } from "@/stores/ui-store";
 import { useAuth } from "@/hooks/use-auth";
@@ -15,6 +16,7 @@ interface RoleSidebarProps {
 
 export function RoleSidebar({ variant }: RoleSidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const { sidebarCollapsed, toggleSidebar } = useUIStore();
   const { profile, loading, signOut } = useAuth();
   const { branding } = useBrandingContext();
@@ -44,7 +46,7 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
     Clients: "clients",
     Appels: "calls",
     Facturation: "billing",
-    Analytics: "analytics",
+    Finances: "finances",
     Journal: "journal",
     Communaute: "community",
     Pipeline: "pipeline",
@@ -53,7 +55,6 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
     Invitations: "invitations",
     Ressources: "resources",
     Recompenses: "rewards",
-    Moderation: "moderation",
     Seances: "sessions",
     Alertes: "alerts",
     Disponibilites: "availability",
@@ -67,11 +68,12 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
     Roadmap: "roadmap",
     "Hall of Fame": "hall-of-fame",
     Reserver: "booking",
-    Audit: "audit",
-    "FAQ / Base IA": "faq",
-    Upsell: "upsell",
     Calendrier: "calendar",
-    "Equipe CSM": "csm",
+    Equipe: "csm",
+    "Closer Calls": "closer-calls",
+    Documents: "documents",
+    Suivi: "suivi",
+    Commissions: "commissions",
   };
 
   return (
@@ -93,7 +95,7 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
           href={`/${variant}/dashboard`}
           className="flex items-center gap-3 group"
         >
-          <img
+          <Image
             src="/logo.png"
             alt={branding?.app_name || "Off Market"}
             width={36}
@@ -138,6 +140,7 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
               )}
               <Link
                 href={item.href}
+                onMouseEnter={() => router.prefetch(item.href)}
                 data-tour={tourMap[item.name]}
                 className={cn(
                   "relative flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-[13px] font-medium transition-all duration-200 group",
@@ -211,9 +214,11 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
           <div className="relative shrink-0">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-600/20 to-blue-500/10 text-xs font-semibold text-blue-300 ring-2 ring-blue-600/10">
               {profile?.avatar_url ? (
-                <img
+                <Image
                   src={profile.avatar_url}
                   alt={profile.full_name ?? ""}
+                  width={36}
+                  height={36}
                   className="h-9 w-9 rounded-full object-cover"
                 />
               ) : loading ? (
@@ -242,6 +247,7 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
         {/* Paramètres */}
         <Link
           href={settingsHref}
+          onMouseEnter={() => router.prefetch(settingsHref)}
           className={cn(
             "mt-1 flex w-full items-center rounded-xl px-3 py-2 text-sm transition-all duration-200 text-slate-500 hover:bg-white/[0.06] hover:text-slate-300",
             sidebarCollapsed && "justify-center px-0",

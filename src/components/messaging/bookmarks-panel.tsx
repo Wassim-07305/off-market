@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Bookmark, X, MessageSquare } from "lucide-react";
 import { cn, getInitials } from "@/lib/utils";
 import { formatMessageTime } from "@/lib/messaging-utils";
@@ -62,9 +63,11 @@ export function BookmarksPanel({
             >
               <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
                 {msg.sender?.avatar_url ? (
-                  <img
+                  <Image
                     src={msg.sender.avatar_url}
                     alt=""
+                    width={28}
+                    height={28}
                     className="w-7 h-7 rounded-full object-cover"
                   />
                 ) : (

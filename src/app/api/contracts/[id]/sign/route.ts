@@ -123,11 +123,12 @@ export async function POST(
         const contractTitle = contract?.title ?? "Contrat";
 
         const notifications = admins.map((admin: { id: string }) => ({
-          user_id: admin.id,
+          recipient_id: admin.id,
           type: "contract_signed",
           title: "Contrat signe",
           body: `${clientName} a signe le contrat "${contractTitle}"`,
           data: { contract_id: id, client_id: contract?.client_id },
+          action_url: `/admin/billing`,
         }));
 
         await supabase.from("notifications").insert(notifications);

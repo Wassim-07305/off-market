@@ -23,8 +23,8 @@ export function useCourses(status?: string) {
   return useQuery({
     queryKey: ["courses", status],
     enabled: !!user,
-    staleTime: 2 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
+    staleTime: 30 * 60 * 1000, // 30 min — les formations changent rarement
+    gcTime: 60 * 60 * 1000,
     queryFn: async () => {
       let query = supabase
         .from("courses")
@@ -49,6 +49,7 @@ export function useCourse(courseId: string) {
 
   return useQuery({
     queryKey: ["course", courseId],
+    staleTime: 30 * 60 * 1000, // 30 min — donnees de reference
     queryFn: async () => {
       const { data, error } = await supabase
         .from("courses")
@@ -384,6 +385,7 @@ export function useLessonProgress() {
 
   return useQuery({
     queryKey: ["lesson-progress", user?.id],
+    staleTime: 5 * 60 * 1000, // 5 min — progression mise a jour par mutation
     queryFn: async () => {
       const { data, error } = await supabase
         .from("lesson_progress")

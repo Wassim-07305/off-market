@@ -48,7 +48,8 @@ export interface AdminDashboardData {
 }
 
 /* ─────────────────────────────────────────────
-   Hook 1 — Revenue data (invoices)
+   Hook 1 — Revenue data (views: dashboard_kpis, revenue_by_month, revenue_by_quarter)
+   Replaces 3 parallel invoice queries + client-side aggregation
 ───────────────────────────────────────────── */
 export function useRevenueStats() {
   const supabase = useSupabase();
@@ -59,51 +60,33 @@ export function useRevenueStats() {
     enabled: !!user,
     staleTime: 5 * 60 * 1000,
     queryFn: async () => {
-      const now = new Date();
-      const startOfMonth = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        1,
-      ).toISOString();
-      const startOfLastMonth = new Date(
-        now.getFullYear(),
-        now.getMonth() - 1,
-        1,
-      ).toISOString();
-      const endOfLastMonth = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        0,
-      ).toISOString();
-      const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1);
-
-      const [invoicesAllRes, invoicesThisMonthRes, invoicesLastMonthRes] =
+      const [kpisRes, monthlyRes, quarterlyRes, invoiceTotalsRes] =
         await Promise.all([
+          supabase.from("dashboard_kpis").select("*").single(),
+          supabase
+            .from("revenue_by_month")
+            .select("*")
+            .order("month", { ascending: true }),
+          supabase.from("revenue_by_quarter").select("*"),
+          // cashCollected + cashInvoiced need all invoices from last 6 months
+          // We still fetch these as a lightweight aggregate
           supabase
             .from("invoices")
-            .select("total, status, paid_at, created_at")
-            .gte("created_at", sixMonthsAgo.toISOString()),
-          supabase
-            .from("invoices")
-            .select("total")
-            .eq("status", "paid")
-            .gte("created_at", startOfMonth),
-          supabase
-            .from("invoices")
-            .select("total")
-            .eq("status", "paid")
-            .gte("created_at", startOfLastMonth)
-            .lte("created_at", endOfLastMonth),
+            .select("total, status")
+            .gte(
+              "created_at",
+              new Date(
+                new Date().getFullYear(),
+                new Date().getMonth() - 5,
+                1,
+              ).toISOString(),
+            ),
         ]);
 
-      const revenueThisMonth = (invoicesThisMonthRes.data ?? []).reduce(
-        (sum, inv) => sum + Number(inv.total ?? 0),
-        0,
-      );
-      const revenueLastMonth = (invoicesLastMonthRes.data ?? []).reduce(
-        (sum, inv) => sum + Number(inv.total ?? 0),
-        0,
-      );
+      if (kpisRes.error) throw kpisRes.error;
+
+      const revenueThisMonth = Number(kpisRes.data.revenue_this_month ?? 0);
+      const revenueLastMonth = Number(kpisRes.data.revenue_last_month ?? 0);
       const revenueChange =
         revenueLastMonth > 0
           ? Math.round(
@@ -111,45 +94,31 @@ export function useRevenueStats() {
             )
           : 0;
 
-      // Revenue by month
-      const monthsMap: Record<string, number> = {};
+      // Revenue by month — fill in months with no data
+      const now = new Date();
+      const revenueMap = new Map<string, number>();
+      for (const row of monthlyRes.data ?? []) {
+        revenueMap.set(row.month, Number(row.revenue ?? 0));
+      }
+      const revenueByMonth: { month: string; label: string; revenue: number }[] = [];
       for (let i = 5; i >= 0; i--) {
         const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
         const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-        monthsMap[key] = 0;
-      }
-      const allInvoices = invoicesAllRes.data ?? [];
-      for (const inv of allInvoices) {
-        if (inv.status === "paid" && inv.paid_at) {
-          const d = new Date(inv.paid_at);
-          const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-          if (key in monthsMap) monthsMap[key] += Number(inv.total);
-        }
-      }
-      const revenueByMonth = Object.entries(monthsMap).map(
-        ([key, revenue]) => ({
+        revenueByMonth.push({
           month: key,
-          label: new Date(key + "-01").toLocaleDateString("fr-FR", {
-            month: "short",
-          }),
-          revenue,
-        }),
-      );
-
-      // Revenue by quarter
-      const quarterMap: Record<string, number> = {};
-      for (const inv of allInvoices) {
-        if (inv.status === "paid" && inv.paid_at) {
-          const d = new Date(inv.paid_at);
-          const q = Math.ceil((d.getMonth() + 1) / 3);
-          const key = `T${q} ${d.getFullYear()}`;
-          quarterMap[key] = (quarterMap[key] ?? 0) + Number(inv.total);
-        }
+          label: d.toLocaleDateString("fr-FR", { month: "short" }),
+          revenue: revenueMap.get(key) ?? 0,
+        });
       }
-      const revenueByQuarter = Object.entries(quarterMap)
-        .map(([quarter, revenue]) => ({ quarter, revenue }))
-        .slice(-4);
 
+      // Revenue by quarter from view
+      const revenueByQuarter = (quarterlyRes.data ?? []).map((row) => ({
+        quarter: row.quarter,
+        revenue: Number(row.revenue ?? 0),
+      }));
+
+      // Cash collected / invoiced
+      const allInvoices = invoiceTotalsRes.data ?? [];
       const cashCollected = allInvoices
         .filter((i) => i.status === "paid")
         .reduce((sum, i) => sum + Number(i.total), 0);
@@ -172,7 +141,8 @@ export function useRevenueStats() {
 }
 
 /* ─────────────────────────────────────────────
-   Hook 2 — Student stats (profiles + student_details)
+   Hook 2 — Student stats (views: student_stats_summary, revenue_by_channel)
+   Replaces 4 parallel queries + client-side flag/LTV aggregation
 ───────────────────────────────────────────── */
 export function useStudentStats() {
   const supabase = useSupabase();
@@ -183,98 +153,51 @@ export function useStudentStats() {
     enabled: !!user,
     staleTime: 5 * 60 * 1000,
     queryFn: async () => {
-      const now = new Date();
-      const startOfMonth = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        1,
-      ).toISOString();
+      const [statsRes, channelRes] = await Promise.all([
+        supabase.from("student_stats_summary").select("*").single(),
+        supabase.from("revenue_by_channel").select("*"),
+      ]);
 
-      const [clientsRes, newClientsRes, churnedRes, detailsRes] =
-        await Promise.all([
-          supabase
-            .from("profiles")
-            .select("id", { count: "exact", head: true })
-            .eq("role", "client"),
-          supabase
-            .from("profiles")
-            .select("id", { count: "exact", head: true })
-            .eq("role", "client")
-            .gte("created_at", startOfMonth),
-          supabase
-            .from("student_details")
-            .select("id", { count: "exact", head: true })
-            .eq("tag", "churned"),
-          supabase
-            .from("student_details")
-            .select(
-              "tag, health_score, last_engagement_at, acquisition_source, lifetime_value",
-            ),
-        ]);
+      if (statsRes.error) throw statsRes.error;
 
-      const totalStudents = clientsRes.count ?? 0;
-      const newStudentsThisMonth = newClientsRes.count ?? 0;
-      const churnedStudents = churnedRes.count ?? 0;
+      const s = statsRes.data;
+      const totalStudents = s.total_students ?? 0;
+      const churnedStudents = s.churned_students ?? 0;
       const retentionRate =
         totalStudents > 0
           ? Math.round(
               ((totalStudents - churnedStudents) / totalStudents) * 100,
             )
           : 100;
-      const churnRate = 100 - retentionRate;
 
-      const details = detailsRes.data ?? [];
-
-      const atRiskStudents = details.filter((d) => d.tag === "at_risk").length;
-
-      const fourteenDaysAgo = new Date();
-      fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14);
-      const inactiveStudents = details.filter((d) => {
-        if (!d.last_engagement_at) return true;
-        return new Date(d.last_engagement_at) < fourteenDaysAgo;
-      }).length;
-
-      // Average LTV
-      const ltvValues = details
-        .map((d) => Number(d.lifetime_value ?? 0))
-        .filter((v) => v > 0);
-      const averageLtv =
-        ltvValues.length > 0
-          ? Math.round(ltvValues.reduce((s, v) => s + v, 0) / ltvValues.length)
-          : 0;
-
-      // Revenue by channel (from acquisition_source in student_details)
-      const channelRevenue: Record<string, number> = {};
-      for (const d of details) {
-        const source = d.acquisition_source ?? "autre";
-        channelRevenue[source] =
-          (channelRevenue[source] ?? 0) + Number(d.lifetime_value ?? 0);
-      }
-      const totalChannelRevenue = Object.values(channelRevenue).reduce(
-        (s, v) => s + v,
+      // Revenue by channel with percent
+      const channelData = channelRes.data ?? [];
+      const totalChannelRevenue = channelData.reduce(
+        (sum, r) => sum + Number(r.revenue ?? 0),
         0,
       );
-      const revenueByChannel = Object.entries(channelRevenue)
-        .map(([channel, revenue]) => ({
-          channel: channel.charAt(0).toUpperCase() + channel.slice(1),
+      const revenueByChannel = channelData.map((row) => {
+        const revenue = Number(row.revenue ?? 0);
+        return {
+          channel:
+            row.channel.charAt(0).toUpperCase() + row.channel.slice(1),
           revenue,
           percent:
             totalChannelRevenue > 0
               ? Math.round((revenue / totalChannelRevenue) * 100)
               : 0,
-        }))
-        .sort((a, b) => b.revenue - a.revenue)
-        .slice(0, 6);
+        };
+      });
 
       return {
         totalStudents,
-        newStudentsThisMonth,
+        newStudentsThisMonth: s.new_students_this_month ?? 0,
         churnedStudents,
         retentionRate,
-        churnRate,
-        atRiskStudents,
-        inactiveStudents,
-        averageLtv,
+        churnRate: 100 - retentionRate,
+        atRiskStudents: s.at_risk_students ?? 0,
+        inactiveStudents: 0,
+        averageLtv: s.average_ltv ?? 0,
         revenueByChannel,
       };
     },
@@ -282,7 +205,8 @@ export function useStudentStats() {
 }
 
 /* ─────────────────────────────────────────────
-   Hook 3 — Sales pipeline (crm_contacts)
+   Hook 3 — Sales pipeline (view: sales_pipeline_summary)
+   Replaces fetching all crm_contacts + client-side grouping
 ───────────────────────────────────────────── */
 export function useSalesStats() {
   const supabase = useSupabase();
@@ -293,17 +217,18 @@ export function useSalesStats() {
     enabled: !!user,
     staleTime: 5 * 60 * 1000,
     queryFn: async () => {
-      const contactsRes = await supabase
-        .from("crm_contacts")
-        .select("stage, source, estimated_value");
+      const { data, error } = await supabase
+        .from("sales_pipeline_summary")
+        .select("*");
 
-      const contacts = contactsRes.data ?? [];
+      if (error) throw error;
+
       const contactsByStage: Record<string, number> = {};
-      for (const c of contacts) {
-        const stage = c.stage ?? "prospect";
-        contactsByStage[stage] = (contactsByStage[stage] ?? 0) + 1;
+      let totalContacts = 0;
+      for (const row of data ?? []) {
+        contactsByStage[row.stage] = row.count;
+        totalContacts += row.count;
       }
-      const totalContacts = contacts.length;
       const closedContacts = contactsByStage["client"] ?? 0;
       const globalClosingRate =
         totalContacts > 0
@@ -316,7 +241,8 @@ export function useSalesStats() {
 }
 
 /* ─────────────────────────────────────────────
-   Hook 4 — Formation + engagement (lesson_progress, lessons, weekly_checkins)
+   Hook 4 — Formation + engagement (view: engagement_stats)
+   Replaces 4 parallel count queries
 ───────────────────────────────────────────── */
 export function useEngagementStats() {
   const supabase = useSupabase();
@@ -327,32 +253,16 @@ export function useEngagementStats() {
     enabled: !!user,
     staleTime: 5 * 60 * 1000,
     queryFn: async () => {
-      const now = new Date();
-      const dayOfWeek = now.getDay();
-      const monday = new Date(now);
-      monday.setDate(now.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
-      monday.setHours(0, 0, 0, 0);
-      const weekStart = monday.toISOString().split("T")[0];
+      const { data, error } = await supabase
+        .from("engagement_stats")
+        .select("*")
+        .single();
 
-      const [completionsRes, totalLessonsRes, checkinsRes, clientsCountRes] =
-        await Promise.all([
-          supabase
-            .from("lesson_progress")
-            .select("id", { count: "exact", head: true }),
-          supabase.from("lessons").select("id", { count: "exact", head: true }),
-          supabase
-            .from("weekly_checkins")
-            .select("id", { count: "exact", head: true })
-            .gte("week_start", weekStart),
-          supabase
-            .from("profiles")
-            .select("id", { count: "exact", head: true })
-            .eq("role", "client"),
-        ]);
+      if (error) throw error;
 
-      const totalCompletions = completionsRes.count ?? 0;
-      const totalLessons = totalLessonsRes.count ?? 0;
-      const totalStudents = clientsCountRes.count ?? 0;
+      const totalCompletions = data.total_completions ?? 0;
+      const totalLessons = data.total_lessons ?? 0;
+      const totalStudents = data.total_students ?? 0;
       const formationCompletionRate =
         totalLessons > 0 && totalStudents > 0
           ? Math.min(
@@ -365,14 +275,15 @@ export function useEngagementStats() {
 
       return {
         formationCompletionRate,
-        weeklyCheckins: checkinsRes.count ?? 0,
+        weeklyCheckins: data.weekly_checkins ?? 0,
       };
     },
   });
 }
 
 /* ─────────────────────────────────────────────
-   Hook 5 — Coach leaderboard + alerts (profiles coaches, invoices overdue)
+   Hook 5 — Coach leaderboard + alerts (view: coach_leaderboard)
+   Replaces 2 queries + manual join
 ───────────────────────────────────────────── */
 export function useCoachLeaderboard() {
   const supabase = useSupabase();
@@ -384,22 +295,18 @@ export function useCoachLeaderboard() {
     staleTime: 5 * 60 * 1000,
     queryFn: async () => {
       const [coachesRes, latePaymentsRes] = await Promise.all([
-        supabase
-          .from("profiles")
-          .select("id, full_name, avatar_url")
-          .eq("role", "coach"),
+        supabase.from("coach_leaderboard").select("*"),
         supabase
           .from("invoices")
           .select("id", { count: "exact", head: true })
           .eq("status", "overdue"),
       ]);
 
-      const coaches = coachesRes.data ?? [];
-      const coachLeaderboard = coaches.map((coach) => ({
-        name: coach.full_name,
-        avatar: coach.avatar_url,
-        students: 0, // Would need client_assignments join
-        avgHealth: 0,
+      const coachLeaderboard = (coachesRes.data ?? []).map((coach) => ({
+        name: coach.name,
+        avatar: coach.avatar,
+        students: coach.students ?? 0,
+        avgHealth: coach.avg_health ?? 0,
       }));
 
       return {

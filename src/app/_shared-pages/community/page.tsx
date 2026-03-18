@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 import { useMembers, type MemberEntry } from "@/hooks/use-members";
@@ -280,9 +281,11 @@ function MemberGridCard({
         {/* Avatar */}
         <div className="relative mx-auto w-14 h-14 mb-3">
           {member.avatar_url ? (
-            <img
+            <Image
               src={member.avatar_url}
               alt={member.full_name}
+              width={56}
+              height={56}
               className="w-14 h-14 rounded-full object-cover"
             />
           ) : (
@@ -369,9 +372,11 @@ function MemberListRow({
         {/* Avatar */}
         <div className="relative shrink-0">
           {member.avatar_url ? (
-            <img
+            <Image
               src={member.avatar_url}
               alt={member.full_name}
+              width={40}
+              height={40}
               className="w-10 h-10 rounded-full object-cover"
             />
           ) : (

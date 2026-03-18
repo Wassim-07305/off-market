@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback } from "react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { Upload, X, FileText, Loader2 } from "lucide-react";
@@ -125,11 +126,12 @@ export function FileUpload({
       <div className={cn("relative group", className)}>
         {isImage ? (
           <div className="w-full h-40 rounded-xl overflow-hidden bg-muted">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src={currentUrl}
               alt="Apercu"
+              fill
               className="w-full h-full object-cover"
+              unoptimized
             />
           </div>
         ) : (

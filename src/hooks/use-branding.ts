@@ -59,7 +59,7 @@ export function useBranding() {
         } as BrandingSettings)
       );
     },
-    staleTime: 5 * 60 * 1000, // Cache 5 minutes
+    staleTime: Infinity, // Branding ne change jamais sauf mutation explicite
   });
 }
 

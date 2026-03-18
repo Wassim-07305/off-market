@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { fadeInUp, defaultTransition } from "@/lib/animations";
 import { useCompetitionLeaderboard } from "@/hooks/use-competitions";
@@ -75,9 +76,11 @@ function ParticipantDisplay({
   return (
     <div className="flex items-center gap-2 min-w-0">
       {profile?.avatar_url ? (
-        <img
+        <Image
           src={profile.avatar_url}
           alt=""
+          width={28}
+          height={28}
           className="w-7 h-7 rounded-full object-cover shrink-0"
         />
       ) : (
@@ -170,9 +173,11 @@ export function CompetitionLeaderboard({
                   <div className="mb-1">
                     <div className="w-10 h-10 rounded-full bg-muted mx-auto flex items-center justify-center text-sm font-medium text-foreground">
                       {entry.profile?.avatar_url ? (
-                        <img
+                        <Image
                           src={entry.profile.avatar_url}
                           alt=""
+                          width={40}
+                          height={40}
                           className="w-10 h-10 rounded-full object-cover"
                         />
                       ) : (

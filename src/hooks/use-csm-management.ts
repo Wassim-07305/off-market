@@ -37,6 +37,8 @@ export function useCoachesWithStats() {
   return useQuery({
     queryKey: ["csm-coaches-stats"],
     enabled: !!user,
+    staleTime: 5 * 60 * 1000,
+    retry: 1,
     queryFn: async () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const sb = supabase as any;
@@ -51,14 +53,19 @@ export function useCoachesWithStats() {
       if (cErr) throw cErr;
 
       // 2. Fetch all active assignments with client profiles + student_details
-      const { data: assignments, error: aErr } = await sb
-        .from("coach_assignments")
-        .select(
-          "*, coach:profiles!coach_assignments_coach_id_fkey(id, full_name, email, avatar_url, role), client:profiles!coach_assignments_client_id_fkey(id, full_name, email, avatar_url, role, student_details(*))",
-        )
-        .eq("status", "active");
-
-      if (aErr) throw aErr;
+      let assignments: unknown[] = [];
+      try {
+        const { data: aData, error: aErr } = await sb
+          .from("coach_assignments")
+          .select(
+            "*, coach:profiles!coach_assignments_coach_id_fkey(id, full_name, email, avatar_url, role), client:profiles!coach_assignments_client_id_fkey(id, full_name, email, avatar_url, role, student_details(*))",
+          )
+          .eq("status", "active");
+        if (aErr) console.warn("[CSM] assignments error:", aErr.message);
+        else assignments = aData ?? [];
+      } catch (e) {
+        console.warn("[CSM] assignments fetch failed:", e);
+      }
 
       // 3. Fetch calls this month for session count per coach
       const now = new Date();
@@ -71,21 +78,25 @@ export function useCoachesWithStats() {
         .toISOString()
         .split("T")[0];
 
-      const { data: callsMonth, error: callErr } = await supabase
-        .from("call_calendar")
-        .select("assigned_to, status, date")
-        .gte("date", startOfMonth)
-        .in("status", ["completed", "done"]);
+      let callsMonth: { assigned_to: string; status: string }[] = [];
+      let callsWeek: { id: string }[] = [];
+      try {
+        const { data: cmData } = await supabase
+          .from("call_calendar")
+          .select("assigned_to, status, date")
+          .gte("date", startOfMonth)
+          .in("status", ["completed", "done"]);
+        callsMonth = (cmData ?? []) as typeof callsMonth;
 
-      if (callErr) throw callErr;
-
-      const { data: callsWeek, error: cwErr } = await supabase
-        .from("call_calendar")
-        .select("id")
-        .gte("date", startOfWeek)
-        .in("status", ["completed", "done"]);
-
-      if (cwErr) throw cwErr;
+        const { data: cwData } = await supabase
+          .from("call_calendar")
+          .select("id")
+          .gte("date", startOfWeek)
+          .in("status", ["completed", "done"]);
+        callsWeek = (cwData ?? []) as typeof callsWeek;
+      } catch (e) {
+        console.warn("[CSM] calls fetch failed:", e);
+      }
 
       // 4. Group assignments by coach
       const coachMap = new Map<string, CoachWithStats>();
@@ -162,9 +173,7 @@ export function useCoachesWithStats() {
         }
 
         // Count sessions this month for this coach
-        const coachCalls = (
-          callsMonth as { assigned_to: string; status: string }[]
-        )?.filter((c) => c.assigned_to === coachId);
+        const coachCalls = callsMonth.filter((c) => c.assigned_to === coachId);
         entry.sessionsThisMonth = coachCalls?.length ?? 0;
       }
 
@@ -182,7 +191,7 @@ export function useCoachesWithStats() {
         .order("full_name");
 
       const { data: allClients, error: ucErr } = await unassignedQuery;
-      if (ucErr) throw ucErr;
+      if (ucErr) console.warn("[CSM] unassigned query:", ucErr.message);
 
       const unassigned = (
         (allClients ?? []) as (Profile & {
@@ -195,7 +204,7 @@ export function useCoachesWithStats() {
         totalCoaches: coachMap.size,
         totalAssigned: assignedIds.size,
         totalUnassigned: unassigned.length,
-        sessionsThisWeek: (callsWeek as { id: string }[])?.length ?? 0,
+        sessionsThisWeek: callsWeek.length,
         averageSatisfaction:
           coachMap.size > 0
             ? Math.round(

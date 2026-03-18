@@ -13,6 +13,7 @@ export function useResources(category?: string) {
   return useQuery({
     queryKey: ["resources", category],
     enabled: !!user,
+    staleTime: 30 * 60 * 1000, // 30 min — contenu statique, rarement modifie
     queryFn: async () => {
       let query = supabase
         .from("resources")

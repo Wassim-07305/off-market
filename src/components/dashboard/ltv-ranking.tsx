@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useLTVRanking } from "@/hooks/use-ltv";
 import { formatCurrency, cn } from "@/lib/utils";
 import { Crown, TrendingUp } from "lucide-react";
@@ -91,9 +92,11 @@ export function LTVRanking() {
                     <td className="py-2.5">
                       <div className="flex items-center gap-2.5">
                         {client.avatarUrl ? (
-                          <img
+                          <Image
                             src={client.avatarUrl}
                             alt=""
+                            width={28}
+                            height={28}
                             className="w-7 h-7 rounded-full object-cover"
                           />
                         ) : (

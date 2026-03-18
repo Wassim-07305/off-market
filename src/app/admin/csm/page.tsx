@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import Image from "next/image";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { staggerContainer, staggerItem } from "@/lib/animations";
@@ -617,9 +618,11 @@ export default function AdminCsmPage() {
                           </span>
                           <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center text-[10px] text-primary font-medium shrink-0">
                             {c.coach.avatar_url ? (
-                              <img
+                              <Image
                                 src={c.coach.avatar_url}
                                 alt=""
+                                width={28}
+                                height={28}
                                 className="w-full h-full rounded-full object-cover"
                               />
                             ) : (
@@ -747,9 +750,11 @@ function ReassignModal({
             >
               <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center text-xs text-primary font-medium shrink-0">
                 {c.coach.avatar_url ? (
-                  <img
+                  <Image
                     src={c.coach.avatar_url}
                     alt=""
+                    width={36}
+                    height={36}
                     className="w-full h-full rounded-full object-cover"
                   />
                 ) : (

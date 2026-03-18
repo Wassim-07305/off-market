@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Crown, Users, LogIn, LogOut, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
@@ -75,9 +76,11 @@ export function TeamCard({ team, className }: TeamCardProps) {
             <Crown className="w-3.5 h-3.5 text-amber-500 shrink-0" />
             <div className="flex items-center gap-2 min-w-0">
               {team.captain.avatar_url ? (
-                <img
+                <Image
                   src={team.captain.avatar_url}
                   alt=""
+                  width={20}
+                  height={20}
                   className="w-5 h-5 rounded-full object-cover"
                 />
               ) : (
@@ -106,9 +109,11 @@ export function TeamCard({ team, className }: TeamCardProps) {
                   className="w-7 h-7 rounded-full border-2 border-surface bg-muted flex items-center justify-center text-[10px] font-medium text-foreground"
                 >
                   {m.profile?.avatar_url ? (
-                    <img
+                    <Image
                       src={m.profile.avatar_url}
                       alt=""
+                      width={28}
+                      height={28}
                       className="w-full h-full rounded-full object-cover"
                     />
                   ) : (

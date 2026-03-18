@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { Play, ArrowRight, Star, MessageCircle, Calendar } from "lucide-react";
 import { useState, useRef } from "react";
@@ -82,9 +83,11 @@ export function MeetCsmStep({
           className="mx-auto mb-4 relative"
         >
           {csm.avatar_url ? (
-            <img
+            <Image
               src={csm.avatar_url}
               alt={csm.full_name}
+              width={96}
+              height={96}
               className="w-24 h-24 rounded-3xl object-cover border-2 border-primary/50 mx-auto"
             />
           ) : (
@@ -144,9 +147,10 @@ export function MeetCsmStep({
               className="absolute inset-0 flex flex-col items-center justify-center gap-3 group"
             >
               {thumbnailUrl && (
-                <img
+                <Image
                   src={thumbnailUrl}
                   alt="Video"
+                  fill
                   className="absolute inset-0 w-full h-full object-cover opacity-50"
                 />
               )}

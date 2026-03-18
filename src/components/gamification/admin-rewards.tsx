@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { fadeInUp, defaultTransition } from "@/lib/animations";
 import { useManageRewards, usePendingRedemptions } from "@/hooks/use-rewards";
@@ -151,9 +152,11 @@ export function AdminRewards() {
                   {/* User avatar */}
                   <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs font-medium text-foreground shrink-0">
                     {profile?.avatar_url ? (
-                      <img
+                      <Image
                         src={profile.avatar_url}
                         alt={profile.full_name}
+                        width={32}
+                        height={32}
                         className="w-8 h-8 rounded-full object-cover"
                       />
                     ) : (

@@ -5,6 +5,7 @@ import { useRoutePrefix } from "@/hooks/use-route-prefix";
 import { useFlaggedClients } from "@/hooks/use-client-flags";
 import { ClientFlagBadge } from "./client-flag-badge";
 import { AlertTriangle, ArrowRight, User, Clock } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import type { ClientFlagValue } from "@/types/roadmap";
 
@@ -127,9 +128,11 @@ function FlagAlertItem({
       {/* Avatar */}
       <div className="relative">
         {item.client?.avatar_url ? (
-          <img
+          <Image
             src={item.client.avatar_url}
             alt={item.client.full_name}
+            width={32}
+            height={32}
             className="w-8 h-8 rounded-full object-cover"
           />
         ) : (

@@ -88,7 +88,7 @@ export function InviteUserModal({ open, onClose }: InviteUserModalProps) {
           <div className="space-y-4">
             <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
               <p className="text-sm text-emerald-600 dark:text-emerald-400 font-medium mb-1">
-                Invitation envoyee !
+                Invitation creee !
               </p>
               <p className="text-xs text-muted-foreground">
                 {createdInvite.full_name} ({createdInvite.email}) —{" "}

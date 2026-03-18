@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRoutePrefix } from "@/hooks/use-route-prefix";
@@ -12,6 +13,7 @@ import {
   useStudentNotes,
   useStudentTasks,
   useStudents as useStudentsHook,
+  getStudentDetail,
 } from "@/hooks/use-students";
 import { useAuth } from "@/hooks/use-auth";
 import { STUDENT_PIPELINE_STAGES, ACTIVITY_TYPES } from "@/lib/constants";
@@ -100,7 +102,7 @@ export function StudentSidePanel({
 
   useEffect(() => {
     if (student) {
-      const d = student.student_details?.[0];
+      const d = getStudentDetail(student);
       setSelectedTag(d?.tag ?? "standard");
       setEditForm({
         full_name: student.full_name ?? "",
@@ -159,7 +161,7 @@ export function StudentSidePanel({
     }
   };
 
-  const details = student?.student_details?.[0];
+  const details = student ? getStudentDetail(student) : undefined;
   const score = details?.health_score ?? 0;
   const flag = details?.flag ?? ("green" as const);
   const pipelineStage = details?.pipeline_stage ?? ("onboarding" as const);
@@ -348,9 +350,11 @@ export function StudentSidePanel({
                   <div className="relative">
                     <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center text-lg text-primary font-semibold shrink-0">
                       {student.avatar_url ? (
-                        <img
+                        <Image
                           src={student.avatar_url}
                           alt=""
+                          width={56}
+                          height={56}
                           className="w-14 h-14 rounded-full object-cover"
                         />
                       ) : (
@@ -412,10 +416,18 @@ export function StudentSidePanel({
                           <h3 className="text-base font-semibold text-foreground">
                             {student.full_name}
                           </h3>
-                          <FlagBadge flag={flag} />
                         </div>
-                        {details?.tag && (
-                          <EngagementTagBadge tag={details.tag} />
+                        {details?.enrollment_date && (
+                          <p className="text-[10px] text-muted-foreground mt-0.5">
+                            Membre depuis le{" "}
+                            {new Date(
+                              details.enrollment_date,
+                            ).toLocaleDateString("fr-FR", {
+                              day: "numeric",
+                              month: "long",
+                              year: "numeric",
+                            })}
+                          </p>
                         )}
                         <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-foreground flex-wrap">
                           <span className="flex items-center gap-1">
@@ -513,20 +525,6 @@ export function StudentSidePanel({
                     {formatCurrency(Number(details?.revenue ?? 0))}
                   </p>
                 </div>
-              </div>
-
-              {/* Engagement tag */}
-              <div className="bg-surface border border-border rounded-lg p-3">
-                <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                  Tag engagement
-                </p>
-                <EngagementTagSelector
-                  currentTag={
-                    selectedTag as import("@/types/database").StudentEngagementTag
-                  }
-                  onSelect={handleTagChange}
-                  isPending={false}
-                />
               </div>
 
               {/* Tabs */}

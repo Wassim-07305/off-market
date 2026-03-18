@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
@@ -316,10 +317,13 @@ export default function ContractDetailPage() {
               <div className="flex items-start gap-6">
                 {contract.signature_image && (
                   <div className="bg-surface border border-border rounded-lg p-3">
-                    <img
+                    <Image
                       src={contract.signature_image}
                       alt="Signature"
+                      width={200}
+                      height={64}
                       className="h-16 w-auto"
+                      unoptimized
                     />
                   </div>
                 )}

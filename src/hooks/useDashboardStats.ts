@@ -5,6 +5,7 @@ import type { DashboardStats } from "@/types/database";
 export function useDashboardStats() {
   return useQuery({
     queryKey: ["dashboard-stats"],
+    staleTime: 5 * 60 * 1000, // 5 min — donnees dashboard
     queryFn: async () => {
       const { data, error } = await supabase.rpc("get_dashboard_stats");
       if (error) throw error;
@@ -17,6 +18,7 @@ export function useDashboardStats() {
 export function useRevenueChart() {
   return useQuery({
     queryKey: ["revenue-chart"],
+    staleTime: 5 * 60 * 1000, // 5 min — graphiques dashboard
     queryFn: async () => {
       const sixMonthsAgo = new Date();
       sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
@@ -50,6 +52,7 @@ export function useRevenueChart() {
 export function useLeadsChart() {
   return useQuery({
     queryKey: ["leads-chart"],
+    staleTime: 5 * 60 * 1000, // 5 min — graphiques dashboard
     queryFn: async () => {
       const threeMonthsAgo = new Date();
       threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
@@ -86,6 +89,7 @@ export function useLeadsChart() {
 export function useSetterActivityChart() {
   return useQuery({
     queryKey: ["setter-activity-chart"],
+    staleTime: 5 * 60 * 1000, // 5 min — graphiques dashboard
     queryFn: async () => {
       const twoWeeksAgo = new Date();
       twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);

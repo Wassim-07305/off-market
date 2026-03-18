@@ -193,6 +193,17 @@ export function useOnboarding() {
         console.warn("Auto-DM creation skipped");
       }
 
+      // Auto-action: generate contract for client
+      try {
+        const role = profile?.role ?? "client";
+        if (role === "client") {
+          await fetch("/api/contracts/auto-generate", { method: "POST" });
+        }
+      } catch {
+        // Non-critical — onboarding should not fail because of contract generation
+        console.warn("Auto-contract generation skipped");
+      }
+
       // Auto-action: notify admins of onboarding completion
       try {
         const { data: admins } = await supabase

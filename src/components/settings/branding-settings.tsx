@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import Image from "next/image";
 import {
   useBranding,
   useUpdateBranding,
@@ -241,9 +242,11 @@ export function BrandingSettings() {
             {uploadingLogo ? (
               <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
             ) : liveBranding?.logo_url ? (
-              <img
+              <Image
                 src={liveBranding.logo_url}
                 alt="Logo"
+                width={48}
+                height={48}
                 className="w-12 h-12 rounded-lg object-contain"
               />
             ) : (
@@ -276,9 +279,11 @@ export function BrandingSettings() {
             {uploadingFavicon ? (
               <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
             ) : liveBranding?.favicon_url ? (
-              <img
+              <Image
                 src={liveBranding.favicon_url}
                 alt="Favicon"
+                width={32}
+                height={32}
                 className="w-8 h-8 rounded object-contain"
               />
             ) : (

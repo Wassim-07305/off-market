@@ -138,6 +138,28 @@ export function useMyUpsellOffers() {
   });
 }
 
+// ─── Client upsell triggers (for CRM detail) ────
+export function useClientUpsellTriggers(clientId: string | undefined) {
+  const supabase = useSupabase();
+
+  return useQuery({
+    queryKey: ["client-upsell-triggers", clientId],
+    enabled: !!clientId,
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from("upsell_triggers")
+        .select("*, rule:upsell_rules(*)")
+        .eq("client_id", clientId)
+        .order("triggered_at", { ascending: false });
+      if (error) {
+        console.warn("upsell_triggers:", error.message);
+        return [] as UpsellTrigger[];
+      }
+      return (data ?? []) as UpsellTrigger[];
+    },
+  });
+}
+
 // ─── Check if client meets upsell thresholds ────
 export function useTriggerUpsellCheck() {
   const supabase = useSupabase();

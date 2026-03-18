@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { useStudents } from "@/hooks/use-students";
+import { useStudents, getStudentDetail } from "@/hooks/use-students";
 import {
   STUDENT_TAGS,
   STUDENT_FLAGS,
@@ -26,7 +26,14 @@ import {
   CheckSquare,
 } from "lucide-react";
 import { AddClientModal } from "@/components/crm/add-client-modal";
-import { StudentSidePanel } from "@/components/crm/student-side-panel";
+import dynamic from "next/dynamic";
+const StudentSidePanel = dynamic(
+  () =>
+    import("@/components/crm/student-side-panel").then((m) => ({
+      default: m.StudentSidePanel,
+    })),
+  { ssr: false },
+);
 import { SavedSegments } from "@/components/crm/saved-segments";
 import type { SegmentFilters } from "@/components/crm/saved-segments";
 
@@ -80,7 +87,7 @@ export default function ClientsPage() {
       const ids = Array.from(selectedIds);
       for (const id of ids) {
         const student = students.find((s) => s.id === id);
-        const detailId = student?.student_details?.[0]?.id;
+        const detailId = student ? getStudentDetail(student)?.id : undefined;
         if (detailId) {
           await supabase
             .from("student_details")
@@ -109,7 +116,7 @@ export default function ClientsPage() {
         ? students.filter((s) => selectedIds.has(s.id))
         : students;
     const rows = targetStudents.map((s) => {
-      const d = s.student_details?.[0];
+      const d = getStudentDetail(s);
       return [
         s.full_name,
         s.email,
@@ -182,40 +189,6 @@ export default function ClientsPage() {
 
           <div className="flex-1" />
 
-          <div className="relative">
-            <button
-              onClick={() => setBulkAction(bulkAction === "tag" ? null : "tag")}
-              disabled={bulkLoading}
-              className="h-7 px-2.5 rounded-md border border-border text-[11px] font-medium text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors flex items-center gap-1 disabled:opacity-50"
-            >
-              {bulkLoading ? (
-                <Loader2 className="w-3 h-3 animate-spin" />
-              ) : (
-                <Tag className="w-3 h-3" />
-              )}
-              Changer le tag
-            </button>
-            {bulkAction === "tag" && (
-              <div className="absolute top-full mt-1 right-0 bg-surface border border-border rounded-lg shadow-sm z-50 py-0.5 w-36">
-                {STUDENT_TAGS.map((tag) => (
-                  <button
-                    key={tag.value}
-                    onClick={() => handleBulkTag(tag.value)}
-                    className="w-full flex items-center gap-2 px-2.5 py-1.5 text-[13px] hover:bg-muted/50 transition-colors text-left"
-                  >
-                    <span
-                      className={cn(
-                        "w-1.5 h-1.5 rounded-full",
-                        tag.color.split(" ")[0].replace("text-", "bg-"),
-                      )}
-                    />
-                    {tag.label}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
           <button
             onClick={clearSelection}
             className="h-7 w-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors flex items-center justify-center"
@@ -249,34 +222,6 @@ export default function ClientsPage() {
             onApplySegment={handleApplySegment}
             hasActiveFilters={hasActiveFilters}
           />
-          <div className="w-px h-4 bg-border/40 mx-1" />
-          <div className="flex items-center bg-muted rounded-lg p-0.5">
-            <button
-              onClick={() => setActiveTag("all")}
-              className={cn(
-                "h-7 px-2.5 rounded-md text-[11px] font-medium whitespace-nowrap transition-all duration-200",
-                activeTag === "all"
-                  ? "bg-surface text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              Tous
-            </button>
-            {STUDENT_TAGS.map((tag) => (
-              <button
-                key={tag.value}
-                onClick={() => setActiveTag(tag.value)}
-                className={cn(
-                  "h-7 px-2.5 rounded-md text-[11px] font-medium whitespace-nowrap transition-all duration-200",
-                  activeTag === tag.value
-                    ? "bg-surface text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground",
-                )}
-              >
-                {tag.label}
-              </button>
-            ))}
-          </div>
         </div>
       </motion.div>
 
@@ -345,7 +290,7 @@ export default function ClientsPage() {
               </thead>
               <tbody>
                 {students.map((student) => {
-                  const details = student.student_details?.[0];
+                  const details = getStudentDetail(student);
                   const tag = STUDENT_TAGS.find(
                     (t) => t.value === details?.tag,
                   );

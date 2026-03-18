@@ -14,6 +14,7 @@ import {
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import { Breadcrumb } from "@/components/layout/breadcrumb";
+import { useRoutePrefix } from "@/hooks/use-route-prefix";
 import { cn } from "@/lib/utils";
 
 export function Header() {
@@ -21,6 +22,7 @@ export function Header() {
   const { setMobileMenuOpen, setNotificationPanelOpen, setCommandPaletteOpen } =
     useUIStore();
   const { unreadCount } = useNotificationStore();
+  const prefix = useRoutePrefix();
   const { theme, setTheme } = useTheme();
   const router = useRouter();
 
@@ -108,7 +110,7 @@ export function Header() {
           <DropdownMenuSeparator />
           <DropdownMenuItem
             icon={<User className="h-4 w-4" />}
-            onClick={() => router.push("/settings")}
+            onClick={() => router.push(`${prefix}/settings`)}
           >
             Mon profil
           </DropdownMenuItem>

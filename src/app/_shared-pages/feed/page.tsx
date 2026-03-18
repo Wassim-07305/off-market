@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 import { useFeed } from "@/hooks/use-feed";
@@ -384,9 +385,11 @@ function PostCard({
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center gap-3">
             {post.author?.avatar_url ? (
-              <img
+              <Image
                 src={post.author.avatar_url}
                 alt=""
+                width={40}
+                height={40}
                 className="w-10 h-10 rounded-full object-cover ring-2 ring-[#AF0000]/10 ring-offset-1"
               />
             ) : (

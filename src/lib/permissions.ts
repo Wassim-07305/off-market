@@ -33,17 +33,16 @@ export type Module =
   | "community"
   | "hall-of-fame"
   | "audit"
-  | "faq"
-  | "upsell"
   | "roadmap"
-  | "booking";
+  | "booking"
+  | "miro";
 
 const PERMISSIONS: Record<Module, AppRole[]> = {
   dashboard: ["admin", "coach", "client", "setter", "closer"],
   messaging: ["admin", "coach", "client", "setter", "closer"],
   formations: ["admin", "coach", "client"],
   eleves: ["admin", "coach"],
-  pipeline: ["admin", "setter", "closer"],
+  pipeline: ["admin", "client", "setter", "closer"],
   calendrier: ["admin", "coach"],
   activite: ["admin", "setter", "closer"],
   finances: ["admin"],
@@ -62,7 +61,7 @@ const PERMISSIONS: Record<Module, AppRole[]> = {
   coaching: ["admin", "coach"],
   assistant: ["admin", "coach", "client"],
   feed: ["admin", "coach", "client"],
-  contracts: ["admin", "setter", "closer"],
+  contracts: ["admin", "client", "setter", "closer"],
   documentation: ["admin", "coach", "client"],
   billing: ["admin"],
   invitations: ["admin"],
@@ -71,10 +70,9 @@ const PERMISSIONS: Record<Module, AppRole[]> = {
   community: ["admin", "coach", "client"],
   "hall-of-fame": ["admin", "coach", "client"],
   audit: ["admin"],
-  faq: ["admin", "coach"],
-  upsell: ["admin"],
   roadmap: ["admin", "coach", "client"],
-  booking: ["admin", "coach"],
+  booking: ["admin", "coach", "client"],
+  miro: ["admin"],
 };
 
 export function canAccess(role: AppRole | null, module: Module): boolean {

@@ -7,6 +7,7 @@ import {
   useCallback,
   type KeyboardEvent,
 } from "react";
+import Image from "next/image";
 import { cn, getInitials } from "@/lib/utils";
 import { useProfilesForMention } from "@/hooks/use-profiles-search";
 import type { MentionProfile } from "@/hooks/use-profiles-search";
@@ -175,9 +176,11 @@ export function MentionInput({
               )}
             >
               {profile.avatar_url ? (
-                <img
+                <Image
                   src={profile.avatar_url}
                   alt=""
+                  width={24}
+                  height={24}
                   className="w-6 h-6 rounded-full object-cover"
                 />
               ) : (

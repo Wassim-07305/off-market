@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import {
   staggerContainer,
@@ -476,9 +477,11 @@ export default function SalesDashboardPage() {
                     {i + 1}.
                   </span>
                   {c.avatar ? (
-                    <img
+                    <Image
                       src={c.avatar}
                       alt=""
+                      width={28}
+                      height={28}
                       className="w-7 h-7 rounded-full object-cover"
                     />
                   ) : (

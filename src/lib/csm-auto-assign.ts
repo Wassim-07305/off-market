@@ -34,7 +34,7 @@ export async function autoAssignCSM(
   // 1. Fetch all coaches
   const { data: coaches, error: coachError } = await supabase
     .from("profiles")
-    .select("id, full_name, specialties")
+    .select("id, full_name")
     .eq("role", "coach");
 
   if (coachError) {
@@ -56,8 +56,7 @@ export async function autoAssignCSM(
   const { data: assignments, error: assignError } = await supabase
     .from("coach_assignments")
     .select("coach_id")
-    .in("coach_id", coachIds)
-    .eq("status", "active");
+    .in("coach_id", coachIds);
 
   if (assignError) {
     console.error(
@@ -74,34 +73,19 @@ export async function autoAssignCSM(
   }
 
   // 3. Score each coach
-  const candidates: CoachCandidate[] = coaches.map(
-    (coach: { id: string; specialties: string[] | null }) => {
-      const specialties = Array.isArray(coach.specialties)
-        ? (coach.specialties as string[])
-        : [];
-      const activeClients = loadMap.get(coach.id) ?? 0;
+  const candidates: CoachCandidate[] = coaches.map((coach: { id: string }) => {
+    const activeClients = loadMap.get(coach.id) ?? 0;
 
-      // Specialty match: 50 points if coach has a specialty matching the business type
-      const specialtyMatch =
-        businessType && specialties.length > 0
-          ? specialties.some(
-              (s) => s.toLowerCase() === businessType.toLowerCase(),
-            )
-            ? 50
-            : 0
-          : 0;
+    // Inverse load: 50 - active clients (minimum 0)
+    const inverseLoad = Math.max(0, 50 - activeClients);
 
-      // Inverse load: 50 - active clients (minimum 0)
-      const inverseLoad = Math.max(0, 50 - activeClients);
-
-      return {
-        id: coach.id,
-        specialties,
-        activeClients,
-        score: specialtyMatch + inverseLoad,
-      };
-    },
-  );
+    return {
+      id: coach.id,
+      specialties: [],
+      activeClients,
+      score: inverseLoad,
+    };
+  });
 
   // 4. Sort by score (desc), then by load (asc) for tie-breaking
   candidates.sort((a, b) => {
@@ -112,12 +96,11 @@ export async function autoAssignCSM(
   const bestCoach = candidates[0];
   if (!bestCoach) return null;
 
-  // 5. Check if an active assignment already exists for this client
+  // 5. Check if an assignment already exists for this client
   const { data: existingAssignment } = await supabase
     .from("coach_assignments")
     .select("id")
     .eq("client_id", clientId)
-    .eq("status", "active")
     .maybeSingle();
 
   if (existingAssignment) {
@@ -132,7 +115,6 @@ export async function autoAssignCSM(
     .insert({
       coach_id: bestCoach.id,
       client_id: clientId,
-      status: "active",
     });
 
   if (insertError) {

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { X } from "lucide-react";
 import type { StudentOverview } from "@/types/database";
 import { ActivityBadge } from "./ActivityBadge";
@@ -67,9 +68,11 @@ export function StudentDetailDrawer({
           <div className="flex items-center gap-4">
             <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-blue-100 text-lg font-semibold text-blue-700">
               {student.avatar_url ? (
-                <img
+                <Image
                   src={student.avatar_url}
                   alt=""
+                  width={56}
+                  height={56}
                   className="h-14 w-14 rounded-full object-cover"
                 />
               ) : (

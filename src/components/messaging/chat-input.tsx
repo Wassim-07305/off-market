@@ -3,7 +3,11 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { useChannelMembers } from "@/hooks/use-channels";
-import { EmojiPicker } from "./emoji-picker";
+import dynamic from "next/dynamic";
+const EmojiPicker = dynamic(
+  () => import("./emoji-picker").then((m) => ({ default: m.EmojiPicker })),
+  { ssr: false },
+);
 import { GifPicker } from "./gif-picker";
 import { VoiceRecorder, VoicePreview } from "./voice-recorder";
 import { MentionAutocomplete } from "./mention-autocomplete";

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useRoutePrefix } from "@/hooks/use-route-prefix";
 import type { StudentWithDetails } from "@/hooks/use-students";
@@ -77,9 +78,11 @@ export function StudentGrid({
               <div className="flex flex-col items-center text-center mb-4">
                 <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary/15 to-primary/5 flex items-center justify-center text-lg text-primary font-semibold mb-2.5">
                   {student.avatar_url ? (
-                    <img
+                    <Image
                       src={student.avatar_url}
                       alt=""
+                      width={56}
+                      height={56}
                       className="w-14 h-14 rounded-full object-cover"
                     />
                   ) : (

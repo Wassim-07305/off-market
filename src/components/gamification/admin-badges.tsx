@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { fadeInUp, defaultTransition } from "@/lib/animations";
 import {
@@ -693,9 +694,11 @@ function BadgeEarnersPanel({
             >
               <div className="w-7 h-7 rounded-full bg-muted flex items-center justify-center text-[10px] font-medium text-foreground shrink-0">
                 {earner.profile?.avatar_url ? (
-                  <img
+                  <Image
                     src={earner.profile.avatar_url}
                     alt={earner.profile.full_name}
+                    width={28}
+                    height={28}
                     className="w-7 h-7 rounded-full object-cover"
                   />
                 ) : (

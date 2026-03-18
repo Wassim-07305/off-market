@@ -304,10 +304,25 @@ export function useMoveSetterLeadToColumn() {
         .eq("id", id);
       if (error) throw error;
     },
-    onSuccess: () => {
+    onMutate: async ({ id, columnId }) => {
+      await queryClient.cancelQueries({ queryKey: ["setter-leads"] });
+      const previous = queryClient.getQueryData<SetterLead[]>(["setter-leads"]);
+      queryClient.setQueryData<SetterLead[]>(["setter-leads"], (old) =>
+        (old ?? []).map((l) =>
+          l.id === id ? { ...l, column_id: columnId } : l,
+        ),
+      );
+      return { previous };
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(["setter-leads"], context.previous);
+      }
+      toast.error("Erreur lors du deplacement du lead");
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["setter-leads"] });
     },
-    onError: () => toast.error("Erreur lors du deplacement du lead"),
   });
 }
 

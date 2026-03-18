@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { ExternalLink, Globe, Loader2 } from "lucide-react";
 
 interface LinkPreviewProps {
@@ -168,10 +169,12 @@ export function LinkPreview({ url }: LinkPreviewProps) {
       {/* Preview image */}
       {data.image && (
         <div className="relative w-full h-36 overflow-hidden bg-muted">
-          <img
+          <Image
             src={data.image}
             alt=""
+            fill
             className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
+            unoptimized
             onError={(e) => {
               (e.target as HTMLImageElement).style.display = "none";
             }}
@@ -184,10 +187,13 @@ export function LinkPreview({ url }: LinkPreviewProps) {
         {/* Site info */}
         <div className="flex items-center gap-1.5 mb-1">
           {data.favicon ? (
-            <img
+            <Image
               src={data.favicon}
               alt=""
+              width={14}
+              height={14}
               className="w-3.5 h-3.5 rounded-sm"
+              unoptimized
               onError={(e) => {
                 (e.target as HTMLImageElement).style.display = "none";
               }}

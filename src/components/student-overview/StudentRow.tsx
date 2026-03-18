@@ -1,3 +1,4 @@
+import Image from "next/image";
 import type { StudentOverview } from "@/types/database";
 import { ActivityBadge } from "./ActivityBadge";
 import { ProgressBar } from "@/components/formations/ProgressBar";
@@ -28,9 +29,11 @@ export function StudentRow({ student, onClick }: StudentRowProps) {
         <div className="flex items-center gap-3">
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-medium text-blue-700">
             {student.avatar_url ? (
-              <img
+              <Image
                 src={student.avatar_url}
                 alt=""
+                width={32}
+                height={32}
                 className="h-8 w-8 rounded-full object-cover"
               />
             ) : (

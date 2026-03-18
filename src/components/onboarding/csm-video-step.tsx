@@ -13,6 +13,7 @@ import {
   Volume2,
   VolumeX,
 } from "lucide-react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 // ─── Types ──────────────────────────────────────────────────────
@@ -143,9 +144,11 @@ export function CsmVideoStep({
           className="mx-auto mb-4 relative"
         >
           {csm.avatar_url ? (
-            <img
+            <Image
               src={csm.avatar_url}
               alt={csm.full_name}
+              width={96}
+              height={96}
               className="w-24 h-24 rounded-3xl object-cover border-2 border-primary/50 mx-auto"
             />
           ) : (
@@ -198,9 +201,10 @@ export function CsmVideoStep({
                 className="absolute inset-0 flex flex-col items-center justify-center gap-3"
               >
                 {thumbnailUrl && (
-                  <img
+                  <Image
                     src={thumbnailUrl}
                     alt="Video"
+                    fill
                     className="absolute inset-0 w-full h-full object-cover opacity-50"
                   />
                 )}

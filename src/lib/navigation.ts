@@ -25,7 +25,6 @@ import {
   Calendar,
   Clock,
   Kanban,
-  Shield,
   Award,
   FolderOpen,
   FileSignature,
@@ -35,6 +34,8 @@ import {
   TrendingUp,
   UserCog,
   Palette,
+  PhoneCall,
+  Presentation,
   type LucideIcon,
 } from "lucide-react";
 
@@ -58,7 +59,7 @@ export const adminNavigation: NavItem[] = [
   { name: "Clients", href: "/admin/clients", icon: Contact },
   { name: "Appels & Lives", href: "/admin/calls", icon: Phone },
   { name: "Messagerie", href: "/admin/messaging", icon: MessageSquare },
-  { name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
+  { name: "Finances", href: "/admin/analytics", icon: BarChart3 },
 
   // ── Contenu ──
   {
@@ -69,7 +70,7 @@ export const adminNavigation: NavItem[] = [
   },
   { name: "Feed", href: "/admin/feed", icon: Rss },
   { name: "Ressources", href: "/admin/resources", icon: FolderOpen },
-  { name: "FAQ / Base IA", href: "/admin/faq", icon: BookOpen },
+  { name: "AlexIA", href: "/admin/ai", icon: Bot },
   { name: "Formulaires", href: "/admin/forms", icon: FileText },
 
   // ── Business ──
@@ -79,21 +80,19 @@ export const adminNavigation: NavItem[] = [
     icon: CalendarCheck,
     section: "Business",
   },
+  { name: "Closer Calls", href: "/admin/closer-calls", icon: PhoneCall },
   { name: "Facturation", href: "/admin/billing", icon: CreditCard },
-  { name: "Upsell", href: "/admin/upsell", icon: TrendingUp },
 
   // ── Administration ──
   {
-    name: "Equipe CSM",
+    name: "Equipe",
     href: "/admin/csm",
     icon: UserCog,
     section: "Administration",
   },
   { name: "Invitations", href: "/admin/invitations", icon: Send },
   { name: "Gamification", href: "/admin/rewards", icon: Trophy },
-  { name: "Moderation", href: "/admin/moderation", icon: Shield },
-  { name: "AlexIA", href: "/admin/ai", icon: Bot },
-  { name: "Audit", href: "/admin/audit", icon: ClipboardCheck },
+  { name: "Miro", href: "/admin/miro", icon: Presentation },
 ];
 
 /** Coach / CSM */
@@ -130,6 +129,7 @@ export const coachNavigation: NavItem[] = [
 export const salesNavigation: NavItem[] = [
   { name: "Dashboard", href: "/sales/dashboard", icon: LayoutDashboard },
   { name: "Pipeline", href: "/sales/pipeline", icon: Kanban },
+  { name: "Commissions", href: "/sales/commissions", icon: Receipt },
   { name: "Messagerie", href: "/sales/messaging", icon: MessageSquare },
   { name: "Appels", href: "/sales/calls", icon: Phone },
   { name: "Ressources", href: "/sales/resources", icon: FolderOpen },
@@ -137,26 +137,29 @@ export const salesNavigation: NavItem[] = [
 
 /** Client / Freelance */
 export const clientNavigation: NavItem[] = [
-  { name: "Dashboard", href: "/client/dashboard", icon: LayoutDashboard },
+  // ── Mon Espace ──
+  {
+    name: "Dashboard",
+    href: "/client/dashboard",
+    icon: LayoutDashboard,
+    section: "Mon Espace",
+  },
   { name: "Formation", href: "/client/school", icon: GraduationCap },
-  { name: "Messagerie", href: "/client/messaging", icon: MessageSquare },
-  { name: "Formulaires", href: "/client/forms", icon: FileText },
-  { name: "Contrats", href: "/client/contracts", icon: FileSignature },
-  { name: "Factures", href: "/client/invoices", icon: Receipt },
-  { name: "Feed", href: "/client/feed", icon: Rss },
-  { name: "Check-in", href: "/client/checkin", icon: ClipboardCheck },
-  { name: "Journal", href: "/client/journal", icon: BookOpen },
-  { name: "Objectifs", href: "/client/goals", icon: Target },
-  { name: "Certificats", href: "/client/certificates", icon: Award },
-  { name: "Progression", href: "/client/progress", icon: Trophy },
-  { name: "Defis", href: "/client/challenges", icon: Flame },
-  { name: "Classement", href: "/client/leaderboard", icon: Crown },
-  { name: "Recompenses", href: "/client/rewards", icon: Gift },
-  { name: "Roadmap", href: "/client/roadmap", icon: Map },
-  { name: "Communaute", href: "/client/community", icon: Users },
-  { name: "Hall of Fame", href: "/client/hall-of-fame", icon: Star },
-  { name: "Ressources", href: "/client/resources", icon: FolderOpen },
+  { name: "Suivi", href: "/client/suivi", icon: ClipboardCheck },
+
+  // ── Business ──
+  { name: "CRM", href: "/client/crm", icon: Kanban, section: "Business" },
+  { name: "Documents", href: "/client/documents", icon: FileSignature },
   { name: "Reserver", href: "/client/booking", icon: CalendarCheck },
+
+  // ── Communaute ──
+  { name: "Feed", href: "/client/feed", icon: Rss, section: "Communaute" },
+  { name: "Communaute", href: "/client/community", icon: Users },
+  { name: "Messagerie", href: "/client/messaging", icon: MessageSquare },
+
+  // ── Outils ──
+  { name: "AlexIA", href: "/client/ai", icon: Bot, section: "Outils" },
+  { name: "Ressources", href: "/client/resources", icon: FolderOpen },
   { name: "Appels", href: "/client/calls", icon: Phone },
 ];
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import Image from "next/image";
 import { cn, getInitials } from "@/lib/utils";
 import {
   useUnipileAccounts,
@@ -444,9 +445,11 @@ export function UnifiedInbox() {
                       {!isSelf && (
                         <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center shrink-0 overflow-hidden">
                           {avatar ? (
-                            <img
+                            <Image
                               src={avatar}
                               alt=""
+                              width={32}
+                              height={32}
                               className="w-8 h-8 rounded-full object-cover"
                             />
                           ) : (

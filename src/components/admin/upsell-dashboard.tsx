@@ -14,6 +14,7 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useUpsellDashboard } from "@/hooks/use-upsell";
@@ -121,9 +122,11 @@ export function UpsellDashboard() {
                   >
                     <div className="flex items-center gap-3">
                       {trigger.client?.avatar_url ? (
-                        <img
+                        <Image
                           src={trigger.client.avatar_url}
                           alt=""
+                          width={32}
+                          height={32}
                           className="w-8 h-8 rounded-full object-cover"
                         />
                       ) : (

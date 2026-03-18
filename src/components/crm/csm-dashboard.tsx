@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 import { cn, getInitials, formatCurrency } from "@/lib/utils";
@@ -290,9 +291,11 @@ function CoachCard({
         <div className="flex items-center gap-3 mb-4">
           <div className="w-11 h-11 rounded-full bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center text-sm text-primary font-medium shrink-0">
             {coach.avatar_url ? (
-              <img
+              <Image
                 src={coach.avatar_url}
                 alt={coach.full_name}
+                width={44}
+                height={44}
                 className="w-full h-full rounded-full object-cover"
               />
             ) : (

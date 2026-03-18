@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import Image from "next/image";
 import {
   UserMinus,
   X,
@@ -243,9 +244,11 @@ export function OffboardingWizard({
               {selectedUser && (
                 <div className="flex items-center gap-3 p-3 bg-muted rounded-xl">
                   {selectedUser.avatar_url ? (
-                    <img
+                    <Image
                       src={selectedUser.avatar_url}
                       alt={selectedUser.full_name}
+                      width={40}
+                      height={40}
                       className="w-10 h-10 rounded-full object-cover"
                     />
                   ) : (
@@ -308,9 +311,11 @@ export function OffboardingWizard({
                 <div className="flex items-center gap-3 p-3 bg-muted rounded-xl">
                   <div className="flex items-center gap-2 flex-1">
                     {selectedUser.avatar_url ? (
-                      <img
+                      <Image
                         src={selectedUser.avatar_url}
                         alt={selectedUser.full_name}
+                        width={32}
+                        height={32}
                         className="w-8 h-8 rounded-full object-cover"
                       />
                     ) : (
@@ -325,9 +330,11 @@ export function OffboardingWizard({
                   <ArrowRight className="w-4 h-4 text-muted-foreground shrink-0" />
                   <div className="flex items-center gap-2 flex-1">
                     {transferTarget.avatar_url ? (
-                      <img
+                      <Image
                         src={transferTarget.avatar_url}
                         alt={transferTarget.full_name}
+                        width={32}
+                        height={32}
                         className="w-8 h-8 rounded-full object-cover"
                       />
                     ) : (

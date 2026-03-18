@@ -33,7 +33,7 @@ function VideoModal({
       /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
     );
     if (ytMatch)
-      return `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1`;
+      return `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&color=white`;
 
     // Vimeo
     const vimeoMatch = url.match(/(?:vimeo\.com\/)(\d+)/);

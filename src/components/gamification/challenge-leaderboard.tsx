@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useQuery } from "@tanstack/react-query";
 import { Trophy, Medal, CheckCircle, AlertCircle, Crown } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -138,9 +139,11 @@ export function ChallengeLeaderboard({
 
                   {/* Avatar */}
                   {row.avatar_url ? (
-                    <img
+                    <Image
                       src={row.avatar_url}
                       alt=""
+                      width={32}
+                      height={32}
                       className="w-8 h-8 rounded-full object-cover"
                     />
                   ) : (

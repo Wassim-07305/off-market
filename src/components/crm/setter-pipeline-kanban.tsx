@@ -73,11 +73,11 @@ function isRelanceOverdue(dateStr: string | null | undefined): boolean {
 function ProspectCard({
   lead,
   isDragging,
-  onDoubleClick,
+  onClick,
 }: {
   lead: SetterLead;
   isDragging?: boolean;
-  onDoubleClick: () => void;
+  onClick: () => void;
 }) {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: lead.id,
@@ -87,26 +87,24 @@ function ProspectCard({
     ? { transform: `translate(${transform.x}px, ${transform.y}px)` }
     : undefined;
 
-  const overdue = isRelanceOverdue(lead.relance_date);
+  const overdue = isRelanceOverdue(lead.date_relance);
 
   return (
     <div
       ref={setNodeRef}
       style={style}
-      onDoubleClick={onDoubleClick}
+      {...attributes}
+      {...listeners}
+      onClick={onClick}
       className={cn(
-        "bg-surface border border-border rounded-xl p-3 group transition-all duration-200 cursor-pointer",
+        "bg-surface border border-border rounded-xl p-3 group transition-all duration-200 cursor-pointer touch-none",
         isDragging
           ? "shadow-2xl opacity-80 rotate-1 scale-[1.03] ring-2 ring-primary/20"
           : "hover:border-zinc-300 hover:shadow-md hover:-translate-y-0.5",
       )}
     >
       <div className="flex items-start gap-2">
-        <div
-          className="flex flex-col items-center gap-0.5 mt-0.5 shrink-0 cursor-grab opacity-30 group-hover:opacity-100 transition-opacity touch-none"
-          {...attributes}
-          {...listeners}
-        >
+        <div className="flex flex-col items-center gap-0.5 mt-0.5 shrink-0 opacity-30 group-hover:opacity-100 transition-opacity">
           <GripVertical className="w-4 h-4 text-muted-foreground" />
         </div>
         <div className="flex-1 min-w-0">
@@ -124,9 +122,9 @@ function ProspectCard({
               </Badge>
             )}
           </div>
-          {(lead.contracted_revenue ?? 0) > 0 && (
+          {(lead.ca_contracte ?? 0) > 0 && (
             <p className="text-xs text-muted-foreground mt-1">
-              {formatCurrency(lead.contracted_revenue ?? 0)}
+              {formatCurrency(lead.ca_contracte ?? 0)}
             </p>
           )}
         </div>
@@ -138,7 +136,7 @@ function ProspectCard({
 // ─── Overlay Card (drag preview) ───────────────────────────
 
 function OverlayCard({ lead }: { lead: SetterLead }) {
-  const overdue = isRelanceOverdue(lead.relance_date);
+  const overdue = isRelanceOverdue(lead.date_relance);
   return (
     <div className="bg-surface border border-border rounded-xl p-3 shadow-2xl rotate-2 scale-105 w-64">
       <div className="flex items-center gap-2">
@@ -212,7 +210,7 @@ function KanbanColumn({
           <ProspectCard
             key={lead.id}
             lead={lead}
-            onDoubleClick={() => onOpenDrawer(lead)}
+            onClick={() => onOpenDrawer(lead)}
           />
         ))}
 
@@ -302,7 +300,7 @@ export function SetterPipelineKanban() {
       // Verify target is a valid column
       if (!columns.some((c) => c.id === targetColumnId)) return;
 
-      moveLead.mutate({ leadId, columnId: targetColumnId });
+      moveLead.mutate({ id: leadId, columnId: targetColumnId });
     },
     [leads, columns, moveLead],
   );

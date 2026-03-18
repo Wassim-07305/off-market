@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback } from "react";
+import Image from "next/image";
 import {
   Paperclip,
   X,
@@ -167,10 +168,12 @@ export function JournalAttachments({
             >
               {isImageType(att.type) ? (
                 <div className="w-20 h-20">
-                  <img
+                  <Image
                     src={att.url}
                     alt={att.name}
+                    fill
                     className="w-full h-full object-cover"
+                    unoptimized
                   />
                 </div>
               ) : (

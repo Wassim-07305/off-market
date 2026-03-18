@@ -1,277 +1,430 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { staggerContainer, staggerItem } from "@/lib/animations";
-import { cn } from "@/lib/utils";
+import { cn, formatCurrency, formatDate } from "@/lib/utils";
 import {
+  TrendingUp,
+  Sparkles,
   DollarSign,
-  Phone,
-  Users,
-  Activity,
-  BarChart3,
-  Bell,
+  Receipt,
+  Clock,
+  Plus,
+  Download,
+  Upload,
+  Pencil,
+  Trash2,
 } from "lucide-react";
-import { PeriodSelector } from "@/components/analytics/period-selector";
-import { FinancialTab } from "@/components/analytics/financial-tab";
-import { CallsTab } from "@/components/analytics/calls-tab";
-import { PipelineTab } from "@/components/analytics/pipeline-tab";
-import { EngagementTab } from "@/components/analytics/engagement-tab";
-import { AnalyticsActivityHeatmap } from "@/components/analytics/activity-heatmap";
-import { AnalyticsPeriodComparison } from "@/components/analytics/period-comparison";
-import { ClosingRateChart } from "@/components/analytics/closing-rate-chart";
-import { NotificationAnalytics } from "@/components/analytics/notification-analytics";
-import { ReportExportButton } from "@/components/analytics/report-export";
+import { Button } from "@/components/ui/button";
+import { Select } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { TabsList, TabsContent } from "@/components/ui/tabs";
 import {
-  periodToDateRange,
-  useFinancialReport,
-  useCallMetrics,
-  usePipelineReport,
-  useEngagementReport,
-} from "@/hooks/use-reports";
-import type { PeriodPreset } from "@/types/analytics";
+  useFinancialEntries,
+  useFinancialKPIs,
+  useTogglePaid,
+  useDeleteEntry,
+  useClientProfiles,
+  type FinancialEntryFilters,
+} from "@/hooks/use-financial-entries";
+import { useBillingStats } from "@/hooks/use-invoices";
+import { FinancialEntryModal } from "@/components/finances/entry-modal";
+import { InvoicesTab } from "@/components/finances/invoices-tab";
+import { EcheanciersTab } from "@/components/finances/echeanciers-tab";
+import { CommissionsTab } from "@/components/finances/commissions-tab";
+import { ProjectionsTab } from "@/components/finances/projections-tab";
+import { exportToCSV } from "@/hooks/use-reports";
+import { toast } from "sonner";
 
-type AnalyticsTab =
-  | "finances"
-  | "appels"
-  | "pipeline"
-  | "engagement"
-  | "notifications"
-  | "avance";
+// ─── Types ─────────────────────────────────
 
-const TABS: {
-  value: AnalyticsTab;
-  label: string;
-  icon: typeof DollarSign;
-  color: string;
-  accentBg: string;
-}[] = [
-  {
-    value: "finances",
-    label: "Finances",
-    icon: DollarSign,
-    color: "text-[#AF0000]",
-    accentBg: "bg-[#AF0000]/10",
-  },
-  {
-    value: "appels",
-    label: "Appels",
-    icon: Phone,
-    color: "text-blue-600",
-    accentBg: "bg-blue-500/10",
-  },
-  {
-    value: "pipeline",
-    label: "Pipeline",
-    icon: Users,
-    color: "text-emerald-600",
-    accentBg: "bg-emerald-500/10",
-  },
-  {
-    value: "engagement",
-    label: "Engagement",
-    icon: Activity,
-    color: "text-violet-600",
-    accentBg: "bg-violet-500/10",
-  },
-  {
-    value: "notifications",
-    label: "Notifications",
-    icon: Bell,
-    color: "text-amber-600",
-    accentBg: "bg-amber-500/10",
-  },
-  {
-    value: "avance",
-    label: "Avance",
-    icon: BarChart3,
-    color: "text-zinc-600",
-    accentBg: "bg-zinc-500/10",
-  },
+type FinanceTab =
+  | "entrees"
+  | "echeanciers"
+  | "projections"
+  | "factures"
+  | "commissions";
+
+const TABS = [
+  { value: "entrees", label: "Entrees" },
+  { value: "echeanciers", label: "Echeanciers" },
+  { value: "projections", label: "Projections" },
+  { value: "factures", label: "Factures" },
+  { value: "commissions", label: "Commissions" },
 ];
 
-const PERIOD_LABELS: Record<PeriodPreset, string> = {
-  "7d": "7 derniers jours",
-  "30d": "30 derniers jours",
-  "90d": "90 derniers jours",
-  "12m": "12 derniers mois",
-  ytd: "Depuis janvier",
-  all: "Tout",
-};
+// ─── KPI Card ──────────────────────────────
 
-function useReportSections(
-  activeTab: AnalyticsTab,
-  range: ReturnType<typeof periodToDateRange>,
-) {
-  const financial = useFinancialReport(range);
-  const calls = useCallMetrics(range);
-  const pipeline = usePipelineReport();
-  const engagement = useEngagementReport(range);
-
-  switch (activeTab) {
-    case "finances": {
-      const d = financial.data;
-      if (!d) return null;
-      return [
-        {
-          title: "Resume financier",
-          rows: [
-            {
-              label: "Revenus total",
-              value: `${d.totalRevenue.toLocaleString("fr-FR")} EUR`,
-            },
-            { label: "MRR", value: `${d.mrr.toLocaleString("fr-FR")} EUR` },
-            { label: "ARR", value: `${d.arr.toLocaleString("fr-FR")} EUR` },
-            {
-              label: "Montant en attente",
-              value: `${d.pendingAmount.toLocaleString("fr-FR")} EUR`,
-            },
-            {
-              label: "Montant en retard",
-              value: `${d.overdueAmount.toLocaleString("fr-FR")} EUR`,
-            },
-            {
-              label: "Tendance",
-              value: `${d.revenueTrend > 0 ? "+" : ""}${d.revenueTrend}%`,
-            },
-            {
-              label: "Valeur moyenne / facture",
-              value: `${d.avgDealValue.toLocaleString("fr-FR")} EUR`,
-            },
-          ],
-        },
-        {
-          title: "Statut des factures",
-          rows: [
-            { label: "Payees", value: String(d.invoiceStatus.paid) },
-            { label: "Envoyees", value: String(d.invoiceStatus.sent) },
-            { label: "En retard", value: String(d.invoiceStatus.overdue) },
-            { label: "Brouillons", value: String(d.invoiceStatus.draft) },
-            { label: "Annulees", value: String(d.invoiceStatus.cancelled) },
-          ],
-        },
-        {
-          title: "Revenus par mois",
-          rows: d.revenueByMonth.map((m) => ({
-            label: m.label,
-            value: `${m.revenue.toLocaleString("fr-FR")} EUR (${m.invoiceCount} factures)`,
-          })),
-        },
-      ];
-    }
-    case "appels": {
-      const d = calls.data;
-      if (!d) return null;
-      return [
-        {
-          title: "Metriques appels",
-          rows: [
-            { label: "Total appels", value: String(d.totalCalls) },
-            { label: "Realises", value: String(d.completedCalls) },
-            { label: "No-show", value: String(d.noShowCalls) },
-            { label: "Taux completion", value: `${d.completionRate}%` },
-            { label: "Taux no-show", value: `${d.noShowRate}%` },
-            { label: "Duree moyenne", value: `${d.avgDurationMinutes} min` },
-            { label: "Duree totale", value: `${d.totalDurationHours}h` },
-          ],
-        },
-        {
-          title: "Par type",
-          rows: d.callsByType.map((c) => ({
-            label: c.label,
-            value: String(c.count),
-          })),
-        },
-      ];
-    }
-    case "pipeline": {
-      const d = pipeline.data;
-      if (!d) return null;
-      return [
-        {
-          title: "Pipeline CRM",
-          rows: [
-            { label: "Contacts total", value: String(d.totalContacts) },
-            {
-              label: "Valeur pipeline",
-              value: `${d.totalPipelineValue.toLocaleString("fr-FR")} EUR`,
-            },
-            { label: "Taux conversion", value: `${d.conversionRate}%` },
-            {
-              label: "Deal moyen",
-              value: `${d.avgDealValue.toLocaleString("fr-FR")} EUR`,
-            },
-            { label: "Convertis (30j)", value: String(d.recentlyConverted) },
-            { label: "Perdus (30j)", value: String(d.recentlyLost) },
-          ],
-        },
-        {
-          title: "Par etape",
-          rows: d.contactsByStage.map((s) => ({
-            label: s.label,
-            value: `${s.count} contacts — ${s.totalValue.toLocaleString("fr-FR")} EUR`,
-          })),
-        },
-      ];
-    }
-    case "engagement": {
-      const d = engagement.data;
-      if (!d) return null;
-      return [
-        {
-          title: "Engagement",
-          rows: [
-            { label: "Clients total", value: String(d.totalClients) },
-            { label: "Clients actifs", value: String(d.activeClients) },
-            { label: "Taux retention", value: `${d.retentionRate}%` },
-            { label: "Score sante moyen", value: String(d.avgHealthScore) },
-            { label: "Humeur moyenne", value: `${d.avgMood}/5` },
-            { label: "Nouveaux clients", value: String(d.newClientsInPeriod) },
-            { label: "Clients perdus", value: String(d.churnedClients) },
-            { label: "Check-ins", value: String(d.checkinsCount) },
-          ],
-        },
-        {
-          title: "Segmentation",
-          rows: d.tagDistribution.map((t) => ({
-            label: t.label,
-            value: String(t.count),
-          })),
-        },
-      ];
-    }
-    case "notifications": {
-      return [
-        {
-          title: "Notifications",
-          rows: [
-            { label: "Analytics notifications", value: "Voir ci-dessous" },
-          ],
-        },
-      ];
-    }
-    case "avance": {
-      return [
-        {
-          title: "Analyse avancee",
-          rows: [
-            { label: "Heatmap d'activite", value: "Voir ci-dessous" },
-            { label: "Comparaison de periodes", value: "Voir ci-dessous" },
-            { label: "Taux de closing par source", value: "Voir ci-dessous" },
-          ],
-        },
-      ];
-    }
-  }
+function KPICard({
+  title,
+  value,
+  icon: Icon,
+  color,
+  bgColor,
+}: {
+  title: string;
+  value: string;
+  icon: typeof TrendingUp;
+  color: string;
+  bgColor: string;
+}) {
+  return (
+    <motion.div
+      variants={staggerItem}
+      className="bg-surface border border-border rounded-2xl p-5 flex flex-col gap-3"
+    >
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+          {title}
+        </span>
+        <div
+          className={cn(
+            "w-8 h-8 rounded-xl flex items-center justify-center",
+            bgColor,
+          )}
+        >
+          <Icon className={cn("w-4 h-4", color)} />
+        </div>
+      </div>
+      <p className="text-2xl font-bold text-foreground tracking-tight">
+        {value}
+      </p>
+    </motion.div>
+  );
 }
 
-export default function AnalyticsPage() {
-  const [activeTab, setActiveTab] = useState<AnalyticsTab>("finances");
-  const [period, setPeriod] = useState<PeriodPreset>("12m");
-  const range = periodToDateRange(period);
-  const sections = useReportSections(activeTab, range);
+// ─── Type badge ────────────────────────────
 
-  const tabLabel = TABS.find((t) => t.value === activeTab)?.label ?? "";
+function TypeBadge({ type }: { type: string }) {
+  const isCA = type === "ca" || type === "récurrent";
+  return (
+    <span
+      className={cn(
+        "px-2 py-0.5 rounded-md text-[10px] font-medium",
+        isCA
+          ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+          : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+      )}
+    >
+      {type === "ca"
+        ? "CA"
+        : type === "récurrent"
+          ? "Recurrent"
+          : type === "charge"
+            ? "Charge"
+            : "Prestataire"}
+    </span>
+  );
+}
+
+// ─── Entrees tab content ───────────────────
+
+function EntreesTab() {
+  const [filters, setFilters] = useState<FinancialEntryFilters>({});
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+
+  const { data: entries = [], isLoading } = useFinancialEntries(filters);
+  const { data: clients = [] } = useClientProfiles();
+  const togglePaid = useTogglePaid();
+  const deleteEntry = useDeleteEntry();
+
+  const clientOptions = [
+    { value: "", label: "Tous les clients" },
+    ...clients.map((c) => ({ value: c.id, label: c.full_name || c.email })),
+  ];
+
+  const typeOptions = [
+    { value: "", label: "Tous les types" },
+    { value: "ca", label: "CA" },
+    { value: "récurrent", label: "Recurrent" },
+    { value: "charge", label: "Charge" },
+    { value: "prestataire", label: "Prestataire" },
+  ];
+
+  const handleExport = useCallback(() => {
+    if (entries.length === 0) {
+      toast.error("Aucune entree a exporter");
+      return;
+    }
+    exportToCSV(
+      `finances_entrees_${new Date().toISOString().split("T")[0]}.csv`,
+      [
+        "Description",
+        "Type",
+        "Montant",
+        "Client",
+        "Prestataire",
+        "Paye",
+        "Date",
+      ],
+      entries.map((e) => [
+        e.label,
+        e.type,
+        String(e.amount),
+        e.client?.full_name ?? "",
+        e.prestataire ?? "",
+        e.is_paid ? "Oui" : "Non",
+        e.date,
+      ]),
+    );
+    toast.success("Export CSV termine");
+  }, [entries]);
+
+  const handleDelete = useCallback(
+    (id: string) => {
+      if (window.confirm("Supprimer cette entree ?")) {
+        deleteEntry.mutate(id);
+      }
+    },
+    [deleteEntry],
+  );
+
+  const handleEdit = useCallback((id: string) => {
+    setEditingId(id);
+    setModalOpen(true);
+  }, []);
+
+  const handleCloseModal = useCallback(() => {
+    setModalOpen(false);
+    setEditingId(null);
+  }, []);
+
+  return (
+    <div className="space-y-4">
+      {/* Filters row */}
+      <div className="flex flex-wrap items-end gap-3">
+        <Select
+          options={clientOptions}
+          value={filters.clientId ?? ""}
+          onChange={(v) =>
+            setFilters((prev) => ({ ...prev, clientId: v || undefined }))
+          }
+          placeholder="Tous les clients"
+          wrapperClassName="w-48"
+        />
+        <Select
+          options={typeOptions}
+          value={filters.type ?? ""}
+          onChange={(v) =>
+            setFilters((prev) => ({ ...prev, type: v || undefined }))
+          }
+          placeholder="Tous les types"
+          wrapperClassName="w-40"
+        />
+        <Input
+          type="date"
+          value={filters.dateFrom ?? ""}
+          onChange={(e) =>
+            setFilters((prev) => ({
+              ...prev,
+              dateFrom: e.target.value || undefined,
+            }))
+          }
+          placeholder="Date debut"
+          wrapperClassName="w-40"
+        />
+        <Input
+          type="date"
+          value={filters.dateTo ?? ""}
+          onChange={(e) =>
+            setFilters((prev) => ({
+              ...prev,
+              dateTo: e.target.value || undefined,
+            }))
+          }
+          placeholder="Date fin"
+          wrapperClassName="w-40"
+        />
+        <div className="flex items-center gap-2 ml-auto">
+          <Button
+            variant="secondary"
+            size="sm"
+            icon={<Upload className="w-3.5 h-3.5" />}
+            onClick={() => toast.info("Import CSV bientot disponible")}
+          >
+            Import
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            icon={<Download className="w-3.5 h-3.5" />}
+            onClick={handleExport}
+          >
+            Export
+          </Button>
+          <Button
+            size="sm"
+            icon={<Plus className="w-3.5 h-3.5" />}
+            onClick={() => {
+              setEditingId(null);
+              setModalOpen(true);
+            }}
+          >
+            Nouvelle entree
+          </Button>
+        </div>
+      </div>
+
+      {/* Table */}
+      <div className="bg-surface border border-border rounded-2xl overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-border/50">
+                <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  Description
+                </th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  Type
+                </th>
+                <th className="text-right px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  Montant
+                </th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  Client
+                </th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  Prestataire
+                </th>
+                <th className="text-center px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  Paye
+                </th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  Date
+                </th>
+                <th className="text-right px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {isLoading ? (
+                <tr>
+                  <td
+                    colSpan={8}
+                    className="px-4 py-8 text-center text-muted-foreground"
+                  >
+                    Chargement...
+                  </td>
+                </tr>
+              ) : entries.length === 0 ? (
+                <tr>
+                  <td colSpan={8} className="px-4 py-12 text-center">
+                    <div className="flex flex-col items-center gap-2">
+                      <Receipt className="w-8 h-8 text-muted-foreground/40" />
+                      <p className="text-sm text-muted-foreground">
+                        Aucune entree financiere
+                      </p>
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        icon={<Plus className="w-3.5 h-3.5" />}
+                        onClick={() => {
+                          setEditingId(null);
+                          setModalOpen(true);
+                        }}
+                      >
+                        Ajouter une entree
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                entries.map((entry) => (
+                  <tr
+                    key={entry.id}
+                    className="border-b border-border/50 last:border-0 hover:bg-muted/30 transition-colors"
+                  >
+                    <td className="px-4 py-3 font-medium text-foreground">
+                      {entry.label}
+                    </td>
+                    <td className="px-4 py-3">
+                      <TypeBadge type={entry.type} />
+                    </td>
+                    <td className="px-4 py-3 text-right font-semibold tabular-nums">
+                      <span
+                        className={cn(
+                          entry.type === "charge" ||
+                            entry.type === "prestataire"
+                            ? "text-red-600 dark:text-red-400"
+                            : "text-foreground",
+                        )}
+                      >
+                        {entry.type === "charge" || entry.type === "prestataire"
+                          ? "- "
+                          : ""}
+                        {formatCurrency(entry.amount)}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-muted-foreground">
+                      {entry.client?.full_name ?? "—"}
+                    </td>
+                    <td className="px-4 py-3 text-muted-foreground">
+                      {entry.prestataire ?? "—"}
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <Checkbox
+                        checked={entry.is_paid}
+                        onChange={() =>
+                          togglePaid.mutate({
+                            id: entry.id,
+                            is_paid: !entry.is_paid,
+                          })
+                        }
+                      />
+                    </td>
+                    <td className="px-4 py-3 text-muted-foreground text-sm">
+                      {formatDate(entry.date)}
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        <button
+                          onClick={() => handleEdit(entry.id)}
+                          className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                        >
+                          <Pencil className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(entry.id)}
+                          className="p-1.5 rounded-lg text-muted-foreground hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <FinancialEntryModal
+        open={modalOpen}
+        onClose={handleCloseModal}
+        entryId={editingId}
+      />
+    </div>
+  );
+}
+
+// ─── Main Page ─────────────────────────────
+
+export default function FinancesPage() {
+  const [activeTab, setActiveTab] = useState<FinanceTab>("entrees");
+  const { data: kpis } = useFinancialKPIs();
+  const { data: billingStats } = useBillingStats();
+
+  // Fallback to billing stats if KPI data is all zeros
+  const caTotal = kpis?.caTotal ?? billingStats?.totalRevenue ?? 0;
+  const newCash = kpis?.newCash ?? 0;
+  const mrr = kpis?.mrr ?? 0;
+  const chargesTotales = kpis?.chargesTotales ?? 0;
+  const marge = kpis?.marge ?? 0;
 
   return (
     <motion.div
@@ -281,83 +434,85 @@ export default function AnalyticsPage() {
       className="space-y-6"
     >
       {/* Header */}
+      <motion.div variants={staggerItem}>
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+          <span className="bg-gradient-to-r from-foreground via-foreground/90 to-foreground/70 bg-clip-text text-transparent">
+            Finances
+          </span>
+        </h1>
+        <p className="text-sm text-muted-foreground/70 mt-1">
+          Suivi financier, entrees, echeanciers, factures et commissions.
+        </p>
+      </motion.div>
+
+      {/* KPI Cards */}
       <motion.div
         variants={staggerItem}
-        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+        className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4"
       >
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-            <span className="bg-gradient-to-r from-foreground via-foreground/90 to-foreground/70 bg-clip-text text-transparent">
-              Analytics
-            </span>
-          </h1>
-          <p className="text-sm text-muted-foreground/70 mt-1">
-            Performance et metriques detaillees
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          {sections && (
-            <ReportExportButton
-              title={`Rapport ${tabLabel}`}
-              period={PERIOD_LABELS[period]}
-              sections={sections}
-            />
-          )}
-          <PeriodSelector value={period} onChange={setPeriod} />
-        </div>
+        <KPICard
+          title="CA Total"
+          value={formatCurrency(caTotal)}
+          icon={TrendingUp}
+          color="text-emerald-600"
+          bgColor="bg-emerald-100 dark:bg-emerald-900/30"
+        />
+        <KPICard
+          title="New Cash"
+          value={formatCurrency(newCash)}
+          icon={Sparkles}
+          color="text-amber-600"
+          bgColor="bg-amber-100 dark:bg-amber-900/30"
+        />
+        <KPICard
+          title="MRR"
+          value={formatCurrency(mrr)}
+          icon={DollarSign}
+          color="text-emerald-600"
+          bgColor="bg-emerald-100 dark:bg-emerald-900/30"
+        />
+        <KPICard
+          title="Charges Totales"
+          value={formatCurrency(chargesTotales)}
+          icon={Receipt}
+          color="text-orange-600"
+          bgColor="bg-orange-100 dark:bg-orange-900/30"
+        />
+        <KPICard
+          title="Marge"
+          value={`${marge}%`}
+          icon={Clock}
+          color="text-blue-600"
+          bgColor="bg-blue-100 dark:bg-blue-900/30"
+        />
       </motion.div>
 
       {/* Tabs */}
       <motion.div variants={staggerItem}>
-        <div className="flex items-center gap-1 border-b border-border dark:border-border/50 overflow-x-auto">
-          {TABS.map((tab) => {
-            const Icon = tab.icon;
-            const isActive = activeTab === tab.value;
-            return (
-              <button
-                key={tab.value}
-                onClick={() => setActiveTab(tab.value)}
-                className={cn(
-                  "flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-all duration-200 border-b-2 -mb-px whitespace-nowrap",
-                  isActive
-                    ? "border-[#AF0000] text-foreground"
-                    : "border-transparent text-muted-foreground/60 hover:text-foreground hover:border-zinc-300 dark:hover:border-zinc-600",
-                )}
-              >
-                <div
-                  className={cn(
-                    "w-6 h-6 rounded-lg flex items-center justify-center transition-all duration-200",
-                    isActive ? tab.accentBg : "bg-transparent",
-                  )}
-                >
-                  <Icon
-                    className={cn(
-                      "w-3.5 h-3.5 transition-colors duration-200",
-                      isActive ? tab.color : "text-muted-foreground/60",
-                    )}
-                  />
-                </div>
-                {tab.label}
-              </button>
-            );
-          })}
-        </div>
+        <TabsList
+          tabs={TABS}
+          value={activeTab}
+          onChange={(v) => setActiveTab(v as FinanceTab)}
+        />
       </motion.div>
 
-      {/* Tab content */}
+      {/* Tab Content */}
       <motion.div variants={staggerItem}>
-        {activeTab === "finances" && <FinancialTab range={range} />}
-        {activeTab === "appels" && <CallsTab range={range} />}
-        {activeTab === "pipeline" && <PipelineTab />}
-        {activeTab === "engagement" && <EngagementTab range={range} />}
-        {activeTab === "notifications" && <NotificationAnalytics />}
-        {activeTab === "avance" && (
-          <div className="space-y-6">
-            <AnalyticsActivityHeatmap />
-            <AnalyticsPeriodComparison />
-            <ClosingRateChart />
-          </div>
-        )}
+        <TabsContent value="entrees" activeValue={activeTab}>
+          <EntreesTab />
+        </TabsContent>
+        <TabsContent value="echeanciers" activeValue={activeTab}>
+          <EcheanciersTab />
+        </TabsContent>
+        <TabsContent value="projections" activeValue={activeTab}>
+          <ProjectionsTab />
+        </TabsContent>
+        <TabsContent value="factures" activeValue={activeTab}>
+          <InvoicesTab />
+        </TabsContent>
+        <TabsContent value="commissions" activeValue={activeTab}>
+          <CommissionsTab />
+        </TabsContent>
       </motion.div>
     </motion.div>
   );

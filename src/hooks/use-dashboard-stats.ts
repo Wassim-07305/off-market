@@ -11,77 +11,18 @@ export function useDashboardStats() {
   const { data: stats, isLoading } = useQuery({
     queryKey: ["dashboard-stats"],
     enabled: !!user,
+    staleTime: 5 * 60 * 1000,
     queryFn: async () => {
-      const now = new Date();
-      const startOfMonth = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        1,
-      ).toISOString();
-      const startOfLastMonth = new Date(
-        now.getFullYear(),
-        now.getMonth() - 1,
-        1,
-      ).toISOString();
-      const endOfLastMonth = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        0,
-      ).toISOString();
+      // Single query via the dashboard_kpis view (replaces 6 parallel queries)
+      const { data, error } = await supabase
+        .from("dashboard_kpis")
+        .select("*")
+        .single();
 
-      // Get Monday of current week
-      const dayOfWeek = now.getDay();
-      const monday = new Date(now);
-      monday.setDate(now.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
-      monday.setHours(0, 0, 0, 0);
-      const weekStart = monday.toISOString().split("T")[0];
+      if (error) throw error;
 
-      const [
-        clientsRes,
-        clientsLastRes,
-        revenueRes,
-        revenueLastRes,
-        coursesRes,
-        checkinsRes,
-      ] = await Promise.all([
-        // Total clients
-        supabase
-          .from("profiles")
-          .select("id", { count: "exact", head: true })
-          .eq("role", "client"),
-        // Clients last month (for comparison)
-        supabase
-          .from("profiles")
-          .select("id", { count: "exact", head: true })
-          .eq("role", "client")
-          .lte("created_at", endOfLastMonth),
-        // Revenue this month (paid invoices)
-        supabase
-          .from("invoices")
-          .select("total")
-          .eq("status", "paid")
-          .gte("created_at", startOfMonth),
-        // Revenue last month
-        supabase
-          .from("invoices")
-          .select("total")
-          .eq("status", "paid")
-          .gte("created_at", startOfLastMonth)
-          .lte("created_at", endOfLastMonth),
-        // Active courses
-        supabase
-          .from("courses")
-          .select("id", { count: "exact", head: true })
-          .eq("status", "published"),
-        // Check-ins this week
-        supabase
-          .from("weekly_checkins")
-          .select("id", { count: "exact", head: true })
-          .gte("week_start", weekStart),
-      ]);
-
-      const totalClients = clientsRes.count ?? 0;
-      const lastMonthClients = clientsLastRes.count ?? 0;
+      const totalClients = data.total_clients ?? 0;
+      const lastMonthClients = data.last_month_clients ?? 0;
       const clientChange =
         lastMonthClients > 0
           ? Math.round(
@@ -89,14 +30,8 @@ export function useDashboardStats() {
             )
           : 0;
 
-      const revenueThisMonth = (revenueRes.data ?? []).reduce(
-        (sum, inv) => sum + Number(inv.total ?? 0),
-        0,
-      );
-      const revenueLastMonth = (revenueLastRes.data ?? []).reduce(
-        (sum, inv) => sum + Number(inv.total ?? 0),
-        0,
-      );
+      const revenueThisMonth = Number(data.revenue_this_month ?? 0);
+      const revenueLastMonth = Number(data.revenue_last_month ?? 0);
       const revenueChange =
         revenueLastMonth > 0
           ? Math.round(
@@ -104,16 +39,13 @@ export function useDashboardStats() {
             )
           : 0;
 
-      const activeCourses = coursesRes.count ?? 0;
-      const weeklyCheckins = checkinsRes.count ?? 0;
-
       return {
         totalClients,
         clientChange,
         revenueThisMonth,
         revenueChange,
-        activeCourses,
-        weeklyCheckins,
+        activeCourses: data.active_courses ?? 0,
+        weeklyCheckins: data.weekly_checkins ?? 0,
       };
     },
   });
@@ -138,53 +70,40 @@ export function useRevenueChart() {
   return useQuery({
     queryKey: ["revenue-chart"],
     enabled: !!user,
+    staleTime: 5 * 60 * 1000,
     queryFn: async () => {
-      const now = new Date();
-      const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1);
-
+      // Single query via the revenue_by_month view (replaces fetch all invoices + client-side grouping)
       const { data, error } = await supabase
-        .from("invoices")
-        .select("total, created_at")
-        .eq("status", "paid")
-        .gte("created_at", sixMonthsAgo.toISOString())
-        .order("created_at", { ascending: true });
+        .from("revenue_by_month")
+        .select("*")
+        .order("month", { ascending: true });
+
       if (error) throw error;
 
       const months = [
-        "Jan",
-        "Fev",
-        "Mar",
-        "Avr",
-        "Mai",
-        "Juin",
-        "Juil",
-        "Aout",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
+        "Jan", "Fev", "Mar", "Avr", "Mai", "Juin",
+        "Juil", "Aout", "Sep", "Oct", "Nov", "Dec",
       ];
-      const monthlyRevenue: Record<string, number> = {};
 
-      // Initialize last 6 months
-      for (let i = 5; i >= 0; i--) {
-        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-        const key = `${d.getFullYear()}-${d.getMonth()}`;
-        monthlyRevenue[key] = 0;
+      // Build the last 6 months skeleton (in case some months have no invoices)
+      const now = new Date();
+      const result: { month: string; revenue: number }[] = [];
+      const revenueMap = new Map<string, number>();
+
+      for (const row of data ?? []) {
+        revenueMap.set(row.month, Number(row.revenue ?? 0));
       }
 
-      (data ?? []).forEach((inv) => {
-        const d = new Date(inv.created_at);
-        const key = `${d.getFullYear()}-${d.getMonth()}`;
-        if (key in monthlyRevenue) {
-          monthlyRevenue[key] += Number(inv.total ?? 0);
-        }
-      });
+      for (let i = 5; i >= 0; i--) {
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+        result.push({
+          month: months[d.getMonth()],
+          revenue: revenueMap.get(key) ?? 0,
+        });
+      }
 
-      return Object.entries(monthlyRevenue).map(([key, revenue]) => {
-        const [, monthIdx] = key.split("-");
-        return { month: months[Number(monthIdx)], revenue };
-      });
+      return result;
     },
   });
 }
@@ -196,6 +115,7 @@ export function useEngagementChart() {
   return useQuery({
     queryKey: ["engagement-chart"],
     enabled: !!user,
+    staleTime: 5 * 60 * 1000,
     queryFn: async () => {
       const now = new Date();
       const dayOfWeek = now.getDay();
@@ -205,16 +125,20 @@ export function useEngagementChart() {
 
       const days = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
 
-      const { data: messages, error: messagesErr } = await supabase
-        .from("messages")
-        .select("created_at")
-        .gte("created_at", monday.toISOString());
-      if (messagesErr) throw messagesErr;
+      // These two queries are lightweight (only this week's data) — no view needed
+      const [{ data: messages, error: messagesErr }, { data: checkins, error: checkinsErr }] =
+        await Promise.all([
+          supabase
+            .from("messages")
+            .select("created_at")
+            .gte("created_at", monday.toISOString()),
+          supabase
+            .from("weekly_checkins")
+            .select("created_at")
+            .gte("created_at", monday.toISOString()),
+        ]);
 
-      const { data: checkins, error: checkinsErr } = await supabase
-        .from("weekly_checkins")
-        .select("created_at")
-        .gte("created_at", monday.toISOString());
+      if (messagesErr) throw messagesErr;
       if (checkinsErr) throw checkinsErr;
 
       const result = days.map((day, i) => {

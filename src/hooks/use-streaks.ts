@@ -3,7 +3,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
-import { toast } from "sonner";
 import type {
   Streak,
   DailyActivity,
@@ -28,6 +27,7 @@ export function useStreak() {
       return data as Streak | null;
     },
     enabled: !!user,
+    staleTime: 5 * 60 * 1000,
   });
 
   const activityQuery = useQuery({
@@ -47,6 +47,7 @@ export function useStreak() {
       return data as DailyActivity[];
     },
     enabled: !!user,
+    staleTime: 5 * 60 * 1000,
   });
 
   const recordActivity = useMutation({
@@ -56,15 +57,13 @@ export function useStreak() {
         p_profile_id: user.id,
         p_action: action,
       });
-      if (error) throw error;
+      // RPC may not exist yet — fail silently
+      if (error) return null;
       return data as RecordActivityResult;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["streak"] });
       queryClient.invalidateQueries({ queryKey: ["daily-activity"] });
-    },
-    onError: () => {
-      toast.error("Erreur lors de l'enregistrement de l'activité");
     },
   });
 

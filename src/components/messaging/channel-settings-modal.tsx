@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { useChannelMembers } from "@/hooks/use-channels";
 import { useAuth } from "@/hooks/use-auth";
 import { useSupabase } from "@/hooks/use-supabase";
@@ -212,9 +213,11 @@ export function ChannelSettingsModal({
             {isDM ? (
               <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
                 {channel.dmPartner?.avatar_url ? (
-                  <img
+                  <Image
                     src={channel.dmPartner.avatar_url}
                     alt=""
+                    width={40}
+                    height={40}
                     className="w-10 h-10 rounded-full object-cover"
                   />
                 ) : (
@@ -451,9 +454,11 @@ export function ChannelSettingsModal({
                         >
                           <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                             {p.avatar_url ? (
-                              <img
+                              <Image
                                 src={p.avatar_url}
                                 alt=""
+                                width={24}
+                                height={24}
                                 className="w-6 h-6 rounded-full object-cover"
                               />
                             ) : (
@@ -519,9 +524,11 @@ export function ChannelSettingsModal({
                       <div className="relative shrink-0">
                         <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
                           {profile.avatar_url ? (
-                            <img
+                            <Image
                               src={profile.avatar_url}
                               alt=""
+                              width={32}
+                              height={32}
                               className="w-8 h-8 rounded-full object-cover"
                             />
                           ) : (

@@ -49,3 +49,5 @@ tests/screenshots/
 /playwright-report/
 /blob-report/
 tests/.auth/
+.playwright-mcp/
+tests/debug-*

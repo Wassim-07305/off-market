@@ -104,7 +104,7 @@ export function SetterPipelineList() {
             <tbody>
               {filteredLeads.map((lead) => {
                 const col = columnMap[lead.column_id];
-                const overdue = isRelanceOverdue(lead.relance_date);
+                const overdue = isRelanceOverdue(lead.date_relance);
 
                 return (
                   <tr
@@ -125,7 +125,7 @@ export function SetterPipelineList() {
                       )}
                     </td>
                     <td className="px-4 py-3">
-                      {lead.relance_date ? (
+                      {lead.date_relance ? (
                         <div className="flex items-center gap-1.5">
                           {overdue && (
                             <CalendarClock className="w-3.5 h-3.5 text-red-500" />
@@ -138,7 +138,7 @@ export function SetterPipelineList() {
                                 : "text-muted-foreground",
                             )}
                           >
-                            {format(new Date(lead.relance_date), "d MMM yyyy", {
+                            {format(new Date(lead.date_relance), "d MMM yyyy", {
                               locale: fr,
                             })}
                           </span>
@@ -148,9 +148,9 @@ export function SetterPipelineList() {
                       )}
                     </td>
                     <td className="px-4 py-3 text-right">
-                      {(lead.contracted_revenue ?? 0) > 0 ? (
+                      {(lead.ca_contracte ?? 0) > 0 ? (
                         <span className="font-medium text-foreground">
-                          {formatCurrency(lead.contracted_revenue ?? 0)}
+                          {formatCurrency(lead.ca_contracte ?? 0)}
                         </span>
                       ) : (
                         <span className="text-muted-foreground">—</span>

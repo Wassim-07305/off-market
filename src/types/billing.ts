@@ -175,11 +175,15 @@ export type CommissionStatus = "pending" | "paid" | "cancelled";
 export interface Commission {
   id: string;
   sale_id: string | null;
+  closer_call_id: string | null;
   contractor_id: string;
   contractor_role: CommissionRole;
   sale_amount: number;
   commission_rate: number;
   commission_amount: number;
+  percentage: number;
+  amount: number;
+  split_type: string;
   status: CommissionStatus;
   paid_at: string | null;
   created_at: string;

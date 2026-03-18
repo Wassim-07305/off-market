@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { getInitials, cn } from "@/lib/utils";
 import {
   Hash,
@@ -76,9 +77,11 @@ export function ChatHeader({
                   )}
                 >
                   {partner.avatar_url ? (
-                    <img
+                    <Image
                       src={partner.avatar_url}
                       alt=""
+                      width={36}
+                      height={36}
                       className="w-9 h-9 rounded-full object-cover"
                     />
                   ) : (

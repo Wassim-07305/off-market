@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { X, UserCheck, Loader2, Users, Zap } from "lucide-react";
 import { cn, getInitials } from "@/lib/utils";
 import {
@@ -116,9 +117,11 @@ export function AssignCoachModal({
                 >
                   <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center text-xs text-primary font-medium shrink-0">
                     {coach.avatar_url ? (
-                      <img
+                      <Image
                         src={coach.avatar_url}
                         alt={coach.full_name}
+                        width={36}
+                        height={36}
                         className="w-full h-full rounded-full object-cover"
                       />
                     ) : (

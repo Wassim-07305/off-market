@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { useQuery } from "@tanstack/react-query";
 import { Trophy } from "lucide-react";
 import { supabase } from "@/lib/supabase";
@@ -80,9 +81,11 @@ export function MiniLeaderboard() {
               </div>
               <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-red-500/10 to-red-400/5 text-[10px] font-semibold text-red-600">
                 {entry.avatarUrl ? (
-                  <img
+                  <Image
                     src={entry.avatarUrl}
                     alt={entry.name}
+                    width={32}
+                    height={32}
                     className="h-8 w-8 rounded-full object-cover"
                   />
                 ) : (

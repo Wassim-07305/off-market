@@ -196,15 +196,12 @@ export default function AIPage() {
     inputRef.current?.focus();
   };
 
-  // Afficher la modal de consentement si pas encore accepte (F46.2)
-  if (!consentLoading && !hasConsent) {
-    return (
-      <AiConsentModal
-        onAccept={(scopes) => acceptConsent(scopes)}
-        isAccepting={isAccepting}
-      />
-    );
-  }
+  // Auto-accept consent silently if not yet accepted
+  useEffect(() => {
+    if (!consentLoading && !hasConsent && !isAccepting) {
+      acceptConsent(["chat", "analysis", "suggestions"]);
+    }
+  }, [consentLoading, hasConsent, isAccepting, acceptConsent]);
 
   const tabs: {
     id: AITab;
@@ -300,11 +297,17 @@ export default function AIPage() {
                   </p>
                 )}
                 {conversations?.map((conv) => (
-                  <button
+                  <div
                     key={conv.id}
+                    role="button"
+                    tabIndex={0}
                     onClick={() => loadConversation(conv.id)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ")
+                        loadConversation(conv.id);
+                    }}
                     className={cn(
-                      "w-full text-left px-3 py-2.5 rounded-xl text-sm transition-all duration-200 flex items-center gap-2 group",
+                      "w-full text-left px-3 py-2.5 rounded-xl text-sm transition-all duration-200 flex items-center gap-2 group cursor-pointer",
                       conversationId === conv.id
                         ? "bg-[#AF0000]/10 text-[#AF0000] font-medium"
                         : "text-muted-foreground hover:text-foreground hover:bg-surface dark:hover:bg-muted",
@@ -321,7 +324,7 @@ export default function AIPage() {
                     >
                       <Trash2 className="w-3 h-3" />
                     </button>
-                  </button>
+                  </div>
                 ))}
               </div>
             </div>

@@ -94,7 +94,7 @@ function getNotificationLink(
     case "feed":
       return `${prefix}/feed`;
     case "report":
-      return `${prefix}/moderation`;
+      return `${prefix}/feed`;
     case "checkin":
       return prefix.startsWith("/admin") || prefix.startsWith("/coach")
         ? `${prefix}/checkins`

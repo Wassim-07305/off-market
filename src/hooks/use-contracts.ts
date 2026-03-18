@@ -130,7 +130,11 @@ export function useContracts(options: UseContractsOptions = {}) {
       signatureImage,
     }: {
       id: string;
-      signatureData: { ip_address: string; user_agent: string };
+      signatureData: {
+        ip_address: string;
+        user_agent: string;
+        signer_name?: string;
+      };
       signatureImage?: string;
     }) => {
       const now = new Date().toISOString();

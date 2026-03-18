@@ -38,7 +38,14 @@ import {
   Globe,
   Upload,
 } from "lucide-react";
-import { EnrichmentPanel } from "@/components/crm/enrichment-panel";
+import dynamic from "next/dynamic";
+const EnrichmentPanel = dynamic(
+  () =>
+    import("@/components/crm/enrichment-panel").then((m) => ({
+      default: m.EnrichmentPanel,
+    })),
+  { ssr: false },
+);
 import { CsvImportModal } from "@/components/crm/csv-import-modal";
 import { RelanceEnrollmentBadge } from "@/components/crm/relance-enrollment-badge";
 import {

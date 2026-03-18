@@ -13,6 +13,7 @@ import {
   StickyNote,
   PhoneOff,
   ClipboardList,
+  MessageSquare,
 } from "lucide-react";
 
 interface CallControlsProps {
@@ -21,10 +22,12 @@ interface CallControlsProps {
   onToggleScreenShare: () => void;
   onToggleTranscript: () => void;
   onToggleNotes?: () => void;
+  onToggleChat?: () => void;
   onTogglePreCallResponses?: () => void;
   onHangUp: () => void;
   showTranscript: boolean;
   showNotes?: boolean;
+  showChat?: boolean;
   showPreCallResponses?: boolean;
   isTranscriptionSupported: boolean;
 }
@@ -35,10 +38,12 @@ export function CallControls({
   onToggleScreenShare,
   onToggleTranscript,
   onToggleNotes,
+  onToggleChat,
   onTogglePreCallResponses,
   onHangUp,
   showTranscript,
   showNotes,
+  showChat,
   showPreCallResponses,
   isTranscriptionSupported,
 }: CallControlsProps) {
@@ -97,6 +102,18 @@ export function CallControls({
           activeIcon={StickyNote}
           inactiveIcon={StickyNote}
           label="Notes de seance"
+          highlightWhenActive
+        />
+      )}
+
+      {/* Chat */}
+      {onToggleChat && (
+        <ControlButton
+          onClick={onToggleChat}
+          active={!!showChat}
+          activeIcon={MessageSquare}
+          inactiveIcon={MessageSquare}
+          label="Chat"
           highlightWhenActive
         />
       )}

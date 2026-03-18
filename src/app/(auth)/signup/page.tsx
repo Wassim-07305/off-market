@@ -31,7 +31,8 @@ export default function SignupPage() {
     if (error) {
       toast.error(error.message);
     } else {
-      toast.success("Compte cree ! Verifie tes emails pour confirmer.");
+      toast.success("Compte cree !");
+      window.location.href = "/login";
     }
   };
 

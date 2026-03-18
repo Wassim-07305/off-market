@@ -16,7 +16,7 @@ export function useMessages(channelId: string | null) {
   const messagesQuery = useQuery({
     queryKey: ["messages", channelId],
     retry: 1,
-    staleTime: 30 * 1000,
+    staleTime: 0, // Temps reel — toujours refetch, les subscriptions gerent les updates
     queryFn: async () => {
       if (!channelId) return [];
       const { data, error } = await supabase

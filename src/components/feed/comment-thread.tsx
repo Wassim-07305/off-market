@@ -12,6 +12,7 @@ import {
   ChevronRight,
   CornerDownRight,
 } from "lucide-react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 const MAX_VISIBLE_DEPTH = 3;
@@ -127,9 +128,11 @@ function ThreadedComment({
       {/* Comment bubble */}
       <div className="flex items-start gap-2">
         {comment.author?.avatar_url ? (
-          <img
+          <Image
             src={comment.author.avatar_url}
             alt=""
+            width={depth === 0 ? 28 : 24}
+            height={depth === 0 ? 28 : 24}
             className={cn(
               "rounded-full object-cover mt-0.5 flex-shrink-0",
               depth === 0 ? "w-7 h-7" : "w-6 h-6",

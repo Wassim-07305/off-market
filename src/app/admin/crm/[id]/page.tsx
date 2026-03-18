@@ -1,6 +1,7 @@
 "use client";
 
 import { use, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRoutePrefix } from "@/hooks/use-route-prefix";
 import {
@@ -191,9 +192,11 @@ export default function AdminStudentDetailPage({
           <div className="relative">
             <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-xl text-primary font-semibold shrink-0">
               {student.avatar_url ? (
-                <img
+                <Image
                   src={student.avatar_url}
                   alt=""
+                  width={64}
+                  height={64}
                   className="w-16 h-16 rounded-full object-cover"
                 />
               ) : (

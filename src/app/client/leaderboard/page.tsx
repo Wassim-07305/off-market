@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import {
   staggerContainer,
@@ -333,9 +334,11 @@ function IndividualLeaderboard() {
                       {isAnonymous ? (
                         <UserX className="w-4 h-4 text-muted-foreground" />
                       ) : entry.avatar_url ? (
-                        <img
+                        <Image
                           src={entry.avatar_url}
                           alt={entry.full_name}
+                          width={40}
+                          height={40}
                           className="w-10 h-10 rounded-full object-cover"
                         />
                       ) : (
@@ -408,9 +411,11 @@ function IndividualLeaderboard() {
                       {isAnonymous ? (
                         <UserX className="w-3.5 h-3.5 text-muted-foreground" />
                       ) : entry.avatar_url ? (
-                        <img
+                        <Image
                           src={entry.avatar_url}
                           alt={entry.full_name}
+                          width={32}
+                          height={32}
                           className="w-8 h-8 rounded-full object-cover"
                         />
                       ) : (

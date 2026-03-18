@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useMemo } from "react";
+import Image from "next/image";
 import { Search, X, ChevronUp, ChevronDown } from "lucide-react";
 import { cn, getInitials } from "@/lib/utils";
 import { formatMessageTime } from "@/lib/messaging-utils";
@@ -143,9 +144,11 @@ export function MessageSearch({
             >
               <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
                 {msg.sender?.avatar_url ? (
-                  <img
+                  <Image
                     src={msg.sender.avatar_url}
                     alt=""
+                    width={24}
+                    height={24}
                     className="w-6 h-6 rounded-full object-cover"
                   />
                 ) : (

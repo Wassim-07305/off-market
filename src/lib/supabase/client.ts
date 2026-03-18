@@ -13,9 +13,17 @@ const cookieStorage = {
     const match = document.cookie
       .split("; ")
       .find((row) => row.startsWith(`${key}=`));
-    return match
-      ? decodeURIComponent(match.split("=").slice(1).join("="))
-      : null;
+    if (!match) return null;
+    let value = decodeURIComponent(match.split("=").slice(1).join("="));
+    // Handle base64-encoded session from @supabase/ssr middleware
+    if (value.startsWith("base64-")) {
+      try {
+        value = atob(value.slice(7));
+      } catch {
+        // If decoding fails, return as-is
+      }
+    }
+    return value;
   },
   setItem(key: string, value: string): void {
     if (typeof document === "undefined") return;

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useCallback, useState } from "react";
+import Image from "next/image";
 import { X, ZoomIn, ZoomOut, Download, RotateCw } from "lucide-react";
 
 interface ImageLightboxProps {
@@ -92,6 +93,7 @@ export function ImageLightbox({ src, alt, onClose }: ImageLightboxProps) {
       )}
 
       {/* Image */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={src}
         alt={alt ?? ""}

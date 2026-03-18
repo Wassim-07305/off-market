@@ -12,6 +12,7 @@ import { WalkthroughProvider } from "@/components/onboarding/walkthrough-provide
 import { BrandingProvider } from "@/components/providers/branding-provider";
 import { IncomingCallToast } from "@/components/calls/video-room/incoming-call-toast";
 import { RgpdConsentBanner } from "@/components/shared/rgpd-consent-banner";
+import { LazyMotion, domAnimation } from "framer-motion";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -37,15 +38,17 @@ export function Providers({ children }: { children: React.ReactNode }) {
         defaultTheme="light"
         enableSystem={false}
       >
-        <BrandingProvider>
-          <AuthProvider>
-            <WalkthroughProvider>
-              {children}
-              <IncomingCallToast />
-              <RgpdConsentBanner />
-            </WalkthroughProvider>
-          </AuthProvider>
-        </BrandingProvider>
+        <LazyMotion features={domAnimation}>
+          <BrandingProvider>
+            <AuthProvider>
+              <WalkthroughProvider>
+                {children}
+                <IncomingCallToast />
+                <RgpdConsentBanner />
+              </WalkthroughProvider>
+            </AuthProvider>
+          </BrandingProvider>
+        </LazyMotion>
       </ThemeProvider>
     </QueryClientProvider>
   );

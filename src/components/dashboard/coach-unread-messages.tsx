@@ -5,6 +5,7 @@ import { useSupabase } from "@/hooks/use-supabase";
 import { useAuth } from "@/hooks/use-auth";
 import { cn, getInitials } from "@/lib/utils";
 import { MessageSquare, ArrowRight } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRoutePrefix } from "@/hooks/use-route-prefix";
 
@@ -144,9 +145,11 @@ export function CoachUnreadMessages() {
               className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-muted/30 transition-colors group"
             >
               {msg.avatarUrl ? (
-                <img
+                <Image
                   src={msg.avatarUrl}
                   alt={msg.fullName}
+                  width={32}
+                  height={32}
                   className="w-8 h-8 rounded-full object-cover shrink-0"
                 />
               ) : (

@@ -12,8 +12,17 @@ import type {
 import { useEffect } from "react";
 
 export type StudentWithDetails = Profile & {
-  student_details: StudentDetail[];
+  student_details: StudentDetail[] | StudentDetail | null;
 };
+
+/** Extract the first StudentDetail whether Supabase returns an array or object */
+export function getStudentDetail(
+  s: StudentWithDetails,
+): StudentDetail | undefined {
+  if (!s.student_details) return undefined;
+  if (Array.isArray(s.student_details)) return s.student_details[0];
+  return s.student_details;
+}
 
 interface UseStudentsOptions {
   search?: string;
@@ -30,7 +39,7 @@ export function useStudents(options: UseStudentsOptions = {}) {
   const studentsQuery = useQuery({
     queryKey: ["students", search, tag, limit],
     enabled: !!user,
-    staleTime: 0,
+    staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 5 * 60 * 1000,
     retry: 1,
     queryFn: async () => {
@@ -46,12 +55,20 @@ export function useStudents(options: UseStudentsOptions = {}) {
       }
 
       const { data, error } = await query;
+      console.log(
+        "[useStudents] raw data:",
+        JSON.stringify(
+          data?.map((d) => ({ name: d.full_name, details: d.student_details })),
+          null,
+          2,
+        ),
+      );
       if (error) throw error;
 
       let results = data as StudentWithDetails[];
 
       if (tag && tag !== "all") {
-        results = results.filter((s) => s.student_details?.[0]?.tag === tag);
+        results = results.filter((s) => getStudentDetail(s)?.tag === tag);
       }
 
       return results;
@@ -83,18 +100,14 @@ export function useStudents(options: UseStudentsOptions = {}) {
     };
   }, [supabase, queryClient]);
 
+  /** Upsert student_details row — single round trip instead of SELECT + INSERT */
   const ensureStudentDetails = async (profileId: string) => {
-    const { data } = await supabase
+    const { error } = await supabase
       .from("student_details")
+      .upsert({ profile_id: profileId }, { onConflict: "profile_id" })
       .select("id")
-      .eq("profile_id", profileId)
-      .maybeSingle();
-    if (!data) {
-      const { error } = await supabase
-        .from("student_details")
-        .insert({ profile_id: profileId });
-      if (error) throw error;
-    }
+      .single();
+    if (error) throw error;
   };
 
   const updateStudentTag = useMutation({
@@ -105,11 +118,10 @@ export function useStudents(options: UseStudentsOptions = {}) {
       profileId: string;
       tag: string;
     }) => {
-      await ensureStudentDetails(profileId);
+      // Single upsert: creates row if missing, updates tag if exists
       const { error } = await supabase
         .from("student_details")
-        .update({ tag })
-        .eq("profile_id", profileId);
+        .upsert({ profile_id: profileId, tag }, { onConflict: "profile_id" });
       if (error) throw error;
     },
     onSuccess: (_data, variables) => {
@@ -128,11 +140,13 @@ export function useStudents(options: UseStudentsOptions = {}) {
       profileId: string;
       updates: Partial<StudentDetail>;
     }) => {
-      await ensureStudentDetails(profileId);
+      // Single upsert: creates row if missing, applies updates if exists
       const { error } = await supabase
         .from("student_details")
-        .update(updates)
-        .eq("profile_id", profileId);
+        .upsert(
+          { profile_id: profileId, ...updates },
+          { onConflict: "profile_id" },
+        );
       if (error) throw error;
     },
     onSuccess: (_data, variables) => {
@@ -153,14 +167,15 @@ export function useStudents(options: UseStudentsOptions = {}) {
       flag: StudentFlag;
       reason?: string;
     }) => {
-      await ensureStudentDetails(profileId);
-
-      // Get current flag for history
-      const { data: current } = await supabase
+      // Upsert to ensure row exists, then read back old flag in one go
+      const { data: upserted, error: upsertError } = await supabase
         .from("student_details")
+        .upsert({ profile_id: profileId }, { onConflict: "profile_id" })
         .select("flag")
-        .eq("profile_id", profileId)
         .single();
+      if (upsertError) throw upsertError;
+
+      const oldFlag = (upserted as { flag: string } | null)?.flag ?? null;
 
       // Update the flag
       const {
@@ -185,7 +200,7 @@ export function useStudents(options: UseStudentsOptions = {}) {
       if (user) {
         await supabase.from("student_flag_history").insert({
           student_id: profileId,
-          old_flag: (current as { flag: string } | null)?.flag ?? null,
+          old_flag: oldFlag,
           new_flag: flag,
           reason: reason ?? null,
           changed_by: user.id,
@@ -211,11 +226,13 @@ export function useStudents(options: UseStudentsOptions = {}) {
       profileId: string;
       stage: StudentPipelineStage;
     }) => {
-      await ensureStudentDetails(profileId);
+      // Single upsert: creates row if missing, updates pipeline_stage if exists
       const { error } = await supabase
         .from("student_details")
-        .update({ pipeline_stage: stage })
-        .eq("profile_id", profileId);
+        .upsert(
+          { profile_id: profileId, pipeline_stage: stage },
+          { onConflict: "profile_id" },
+        );
       if (error) throw error;
     },
     onSuccess: (_data, variables) => {

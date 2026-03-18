@@ -12,6 +12,7 @@ import { CallControls } from "./call-controls";
 import { CallTimer } from "./call-timer";
 import { ConnectionStatus } from "./connection-status";
 import { TranscriptPanel } from "./transcript-panel";
+import { CallChatPanel } from "./call-chat-panel";
 import { SessionNotesPanel } from "./session-notes-panel";
 import { CallEndedSummary } from "./call-ended-summary";
 import {
@@ -45,6 +46,7 @@ export function VideoRoom({ callId }: VideoRoomProps) {
   const [showTranscript, setShowTranscript] = useState(false);
   const [showNotes, setShowNotes] = useState(false);
   const [showPreCallResponses, setShowPreCallResponses] = useState(false);
+  const [showChat, setShowChat] = useState(false);
   const [hasJoined, setHasJoined] = useState(false);
   const [isJoining, setIsJoining] = useState(false);
   const [preCallCompleted, setPreCallCompleted] = useState(false);
@@ -210,6 +212,7 @@ export function VideoRoom({ callId }: VideoRoomProps) {
     startScreenShare,
     stopScreenShare,
     broadcastTranscript,
+    cameraStream,
   } = useWebRTC({ callId, onError: handleWebRTCError });
 
   const {
@@ -635,6 +638,7 @@ export function VideoRoom({ callId }: VideoRoomProps) {
         <VideoGrid
           localStream={localStream}
           remoteStream={remoteStream}
+          cameraStream={cameraStream}
           localName={myName}
         />
 
@@ -645,6 +649,8 @@ export function VideoRoom({ callId }: VideoRoomProps) {
           onToggleScreenShare={handleToggleScreenShare}
           onToggleTranscript={handleToggleTranscript}
           onToggleNotes={() => setShowNotes((v) => !v)}
+          onToggleChat={() => setShowChat((v) => !v)}
+          showChat={showChat}
           onTogglePreCallResponses={
             isStaffUser ? () => setShowPreCallResponses((v) => !v) : undefined
           }
@@ -659,6 +665,11 @@ export function VideoRoom({ callId }: VideoRoomProps) {
       {/* Transcript panel (slides in from right) */}
       {showTranscript && (
         <TranscriptPanel onClose={() => setShowTranscript(false)} />
+      )}
+
+      {/* Chat panel */}
+      {showChat && (
+        <CallChatPanel callId={callId} onClose={() => setShowChat(false)} />
       )}
 
       {/* Session notes panel */}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 import { useHallOfFame, type HallOfFameEntry } from "@/hooks/use-hall-of-fame";
@@ -199,9 +200,11 @@ function HallOfFameCard({
             >
               <div className="relative">
                 {entry.profile?.avatar_url ? (
-                  <img
+                  <Image
                     src={entry.profile.avatar_url}
                     alt={entry.profile.full_name}
+                    width={64}
+                    height={64}
                     className="w-16 h-16 rounded-2xl object-cover group-hover:ring-2 ring-amber-500/30 transition-all"
                   />
                 ) : (

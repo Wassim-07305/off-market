@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { useAlumni } from "@/hooks/use-upsell";
 import { formatCurrency, formatDate, getInitials } from "@/lib/utils";
 import { cn } from "@/lib/utils";
@@ -139,9 +140,11 @@ export function AlumniSection() {
               >
                 <div className="flex items-center gap-3 min-w-0">
                   {alumnus.profile?.avatar_url ? (
-                    <img
+                    <Image
                       src={alumnus.profile.avatar_url}
                       alt={alumnus.profile.full_name}
+                      width={36}
+                      height={36}
                       className="w-9 h-9 rounded-full object-cover"
                     />
                   ) : (

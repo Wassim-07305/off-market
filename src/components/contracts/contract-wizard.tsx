@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import Image from "next/image";
 import { useContractTemplates } from "@/hooks/use-contracts";
 import { useStudents } from "@/hooks/use-students";
 import type { ContractTemplate, TemplateVariable } from "@/types/billing";
@@ -303,9 +304,11 @@ export function ContractWizard({
                   >
                     <div className="w-9 h-9 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
                       {c.avatar_url ? (
-                        <img
+                        <Image
                           src={c.avatar_url}
                           alt=""
+                          width={36}
+                          height={36}
                           className="w-9 h-9 rounded-full object-cover"
                         />
                       ) : (

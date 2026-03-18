@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { useRoutePrefix } from "@/hooks/use-route-prefix";
 import { useSupabase } from "@/hooks/use-supabase";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Phone,
   Plus,
@@ -19,6 +20,11 @@ import {
   ChevronRight,
   Loader2,
   Users,
+  Zap,
+  Copy,
+  Check,
+  ExternalLink,
+  X,
 } from "lucide-react";
 import { DropdownMenu, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { format, parseISO, isToday } from "date-fns";
@@ -542,9 +548,11 @@ export default function CallsPage() {
   );
   // Legacy modal for editing old call types
   const [showLegacyForm, setShowLegacyForm] = useState(false);
+  const [instantCallLink, setInstantCallLink] = useState<string | null>(null);
+  const [instantCallId, setInstantCallId] = useState<string | null>(null);
 
   const prefix = useRoutePrefix();
-  const { calls, isLoading } = useCalls();
+  const { calls, isLoading, createCall } = useCalls();
 
   /* ─── Filtrage ─── */
   const filteredCalls = useMemo(() => {
@@ -608,6 +616,8 @@ export default function CallsPage() {
     }
   };
 
+  const router = useRouter();
+
   const handleNewCall = () => {
     setEditCall(null);
     setShowCallForm(true);
@@ -615,6 +625,29 @@ export default function CallsPage() {
 
   const handleNewLive = () => {
     setShowLiveForm(true);
+  };
+
+  const handleInstantCall = async () => {
+    const now = new Date();
+    const date = now.toISOString().split("T")[0];
+    const time = now.toTimeString().slice(0, 5);
+    try {
+      const call = await createCall.mutateAsync({
+        title: `Appel instantane — ${now.toLocaleDateString("fr-FR")}`,
+        date,
+        time,
+        duration_minutes: 60,
+        call_type: "one_on_one",
+        status: "planifie",
+      });
+      if (call?.id) {
+        const link = `${window.location.origin}${prefix}/calls/${call.id}`;
+        setInstantCallId(call.id);
+        setInstantCallLink(link);
+      }
+    } catch {
+      toast.error("Erreur lors de la creation de l'appel");
+    }
   };
 
   const totalCalls = calls.filter((c) => c.call_type !== "live").length;
@@ -655,10 +688,16 @@ export default function CallsPage() {
           }
         >
           <DropdownMenuItem
+            icon={<Zap className="w-4 h-4" />}
+            onClick={handleInstantCall}
+          >
+            Appel instantane
+          </DropdownMenuItem>
+          <DropdownMenuItem
             icon={<Phone className="w-4 h-4" />}
             onClick={handleNewCall}
           >
-            Nouvel appel
+            Planifier un appel
           </DropdownMenuItem>
           <DropdownMenuItem
             icon={<Radio className="w-4 h-4" />}
@@ -900,6 +939,72 @@ export default function CallsPage() {
         open={showLiveForm}
         onClose={() => setShowLiveForm(false)}
       />
+
+      {/* Instant call modal */}
+      {instantCallLink && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setInstantCallLink(null)}
+          />
+          <div className="relative bg-surface border border-border rounded-2xl shadow-xl w-full max-w-md p-6 space-y-5 mx-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <Zap className="w-5 h-5 text-primary" />
+                </div>
+                <div>
+                  <h3 className="text-base font-semibold text-foreground">
+                    Appel instantane cree
+                  </h3>
+                  <p className="text-xs text-muted-foreground">
+                    Partagez ce lien pour inviter quelqu&apos;un
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setInstantCallLink(null)}
+                className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Link display */}
+            <div className="flex items-center gap-2">
+              <input
+                readOnly
+                value={instantCallLink}
+                className="flex-1 h-10 px-3 bg-muted/50 rounded-xl text-sm text-foreground border border-border font-mono truncate"
+              />
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(instantCallLink);
+                  toast.success("Lien copie !");
+                }}
+                className="h-10 px-3 rounded-xl border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-all flex items-center gap-1.5"
+              >
+                <Copy className="w-3.5 h-3.5" />
+                Copier
+              </button>
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  setInstantCallLink(null);
+                  router.push(`${prefix}/calls/${instantCallId}`);
+                }}
+                className="flex-1 h-10 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+              >
+                <ExternalLink className="w-4 h-4" />
+                Rejoindre l&apos;appel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Legacy form for editing existing calls */}
       <CallFormModal

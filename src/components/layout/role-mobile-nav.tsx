@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { cn, getInitials } from "@/lib/utils";
 import { useUIStore } from "@/stores/ui-store";
@@ -57,7 +58,7 @@ export function RoleMobileNav({ variant }: RoleMobileNavProps) {
                 onClick={() => setMobileMenuOpen(false)}
                 className="flex items-center gap-3"
               >
-                <img
+                <Image
                   src={branding?.logo_url || "/logo.png"}
                   alt={branding?.app_name || "Off Market"}
                   width={34}
@@ -126,9 +127,11 @@ export function RoleMobileNav({ variant }: RoleMobileNavProps) {
               <div className="flex items-center gap-3">
                 <div className="relative shrink-0">
                   {profile?.avatar_url ? (
-                    <img
+                    <Image
                       src={profile.avatar_url}
                       alt={profile.full_name ?? ""}
+                      width={36}
+                      height={36}
                       className="w-9 h-9 rounded-full object-cover ring-2 ring-primary/10"
                     />
                   ) : (

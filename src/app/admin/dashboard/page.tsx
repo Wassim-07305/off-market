@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 import {
@@ -19,6 +20,7 @@ import { ActivityHeatmap } from "@/components/dashboard/activity-heatmap";
 import { PeriodComparison } from "@/components/dashboard/period-comparison";
 import { LTVRanking } from "@/components/dashboard/ltv-ranking";
 import { AiPeriodicReport } from "@/components/dashboard/ai-periodic-report";
+import Link from "next/link";
 import { formatCurrency, cn } from "@/lib/utils";
 import {
   DollarSign,
@@ -224,24 +226,15 @@ export default function AdminDashboardPage() {
 
   const alertsCount = useMemo(() => {
     if (!studentsQuery.data || !coachesQuery.data) return 0;
-    return (
-      studentsQuery.data.inactiveStudents +
-      coachesQuery.data.latePayments +
-      studentsQuery.data.atRiskStudents
-    );
+    return studentsQuery.data.atRiskStudents + coachesQuery.data.latePayments;
   }, [studentsQuery.data, coachesQuery.data]);
 
   const alertsReady = !!studentsQuery.data && !!coachesQuery.data;
 
   return (
-    <motion.div
-      variants={staggerContainer}
-      initial="hidden"
-      animate="visible"
-      className="space-y-6"
-    >
+    <div className="space-y-4">
       {/* ─── Header ─── */}
-      <motion.div variants={staggerItem} className="space-y-1">
+      <div className="space-y-1">
         <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
           <span className="bg-gradient-to-r from-foreground via-foreground/90 to-foreground/70 bg-clip-text text-transparent">
             {getGreeting()}, {firstName}
@@ -250,7 +243,7 @@ export default function AdminDashboardPage() {
         <p className="text-sm text-muted-foreground/70">
           Vue d&apos;ensemble de la plateforme
         </p>
-      </motion.div>
+      </div>
 
       {/* ─── System alerts banner ─── */}
       {alertsReady && alertsCount > 0 && (
@@ -274,34 +267,28 @@ export default function AdminDashboardPage() {
                 {alertsCount} alerte{alertsCount > 1 ? "s" : ""} systeme
               </p>
               <p className="text-xs text-amber-800/80 mt-0.5">
-                {studentsQuery.data!.inactiveStudents > 0 &&
-                  `${studentsQuery.data!.inactiveStudents} eleve${studentsQuery.data!.inactiveStudents > 1 ? "s" : ""} inactif${studentsQuery.data!.inactiveStudents > 1 ? "s" : ""}`}
-                {studentsQuery.data!.inactiveStudents > 0 &&
-                  studentsQuery.data!.atRiskStudents > 0 &&
-                  " · "}
                 {studentsQuery.data!.atRiskStudents > 0 &&
-                  `${studentsQuery.data!.atRiskStudents} a risque`}
-                {(studentsQuery.data!.inactiveStudents > 0 ||
-                  studentsQuery.data!.atRiskStudents > 0) &&
+                  `${studentsQuery.data!.atRiskStudents} eleve${studentsQuery.data!.atRiskStudents > 1 ? "s" : ""} signale${studentsQuery.data!.atRiskStudents > 1 ? "s" : ""}`}
+                {studentsQuery.data!.atRiskStudents > 0 &&
                   coachesQuery.data!.latePayments > 0 &&
                   " · "}
                 {coachesQuery.data!.latePayments > 0 &&
                   `${coachesQuery.data!.latePayments} paiement${coachesQuery.data!.latePayments > 1 ? "s" : ""} en retard`}
               </p>
             </div>
-            <button className="shrink-0 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-900/90 text-white text-xs font-semibold hover:bg-amber-900 transition-colors shadow-sm">
+            <Link
+              href="/admin/clients"
+              className="shrink-0 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-900/90 text-white text-xs font-semibold hover:bg-amber-900 transition-colors shadow-sm"
+            >
               Voir les alertes
               <ArrowRight className="size-3" />
-            </button>
+            </Link>
           </div>
         </motion.div>
       )}
 
       {/* ─── KPI Cards — Row 1: Revenue + Student stats ─── */}
-      <motion.div
-        variants={staggerItem}
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
-      >
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {revenueQuery.isLoading || studentsQuery.isLoading ? (
           Array.from({ length: 4 }).map((_, i) => (
             <div
@@ -346,13 +333,10 @@ export default function AdminDashboardPage() {
             />
           </>
         )}
-      </motion.div>
+      </div>
 
       {/* ─── KPI Cards — Row 2: Rates ─── */}
-      <motion.div
-        variants={staggerItem}
-        className="grid grid-cols-2 sm:grid-cols-4 gap-4"
-      >
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {studentsQuery.isLoading ||
         salesQuery.isLoading ||
         engagementQuery.isLoading ? (
@@ -397,7 +381,7 @@ export default function AdminDashboardPage() {
             />
           </>
         )}
-      </motion.div>
+      </div>
 
       {/* ─── Charts row: Revenue evolution + Channel distribution ─── */}
       <motion.div
@@ -718,9 +702,11 @@ export default function AdminDashboardPage() {
                     {i + 1}
                   </span>
                   {coach.avatar ? (
-                    <img
+                    <Image
                       src={coach.avatar}
                       alt=""
+                      width={36}
+                      height={36}
                       className="size-9 rounded-full object-cover ring-2 ring-white shadow-sm"
                     />
                   ) : (
@@ -743,6 +729,6 @@ export default function AdminDashboardPage() {
           )}
         </ChartCard>
       </motion.div>
-    </motion.div>
+    </div>
   );
 }

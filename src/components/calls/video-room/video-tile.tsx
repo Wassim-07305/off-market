@@ -2,6 +2,7 @@
 
 import { useRef, useEffect } from "react";
 import { MicOff, VideoOff } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface VideoTileProps {
   stream: MediaStream | null;
@@ -10,6 +11,7 @@ interface VideoTileProps {
   isCameraOff?: boolean;
   isLocal?: boolean;
   isScreenShare?: boolean;
+  compact?: boolean;
 }
 
 export function VideoTile({
@@ -18,6 +20,7 @@ export function VideoTile({
   isMuted,
   isCameraOff,
   isLocal,
+  compact,
   isScreenShare,
 }: VideoTileProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -32,7 +35,12 @@ export function VideoTile({
     stream?.getVideoTracks().some((t) => t.enabled) && !isCameraOff;
 
   return (
-    <div className="relative bg-zinc-900 rounded-2xl overflow-hidden flex items-center justify-center aspect-video group">
+    <div
+      className={cn(
+        "relative bg-zinc-900 overflow-hidden flex items-center justify-center group",
+        compact ? "rounded-xl h-full" : "rounded-2xl aspect-video",
+      )}
+    >
       {/* Video element */}
       <video
         ref={videoRef}

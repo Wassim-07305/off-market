@@ -14,7 +14,7 @@ import {
 import { cn } from "@/lib/utils";
 
 const aboutYouSchema = z.object({
-  business_type: z.string().min(1, "Selectionne ton type d'activite"),
+  business_type: z.string().min(1, "Selectionne ta niche"),
   current_revenue: z.string().min(1, "Indique ta tranche de revenus"),
   goals: z.string().min(3, "Decris tes objectifs"),
   how_found_alexia: z.string().min(1, "Dis-nous comment tu nous as trouve"),
@@ -23,28 +23,31 @@ const aboutYouSchema = z.object({
 export type AboutYouFormData = z.infer<typeof aboutYouSchema>;
 
 const BUSINESS_TYPES = [
-  { value: "coaching", label: "Coaching / Consulting" },
-  { value: "agency", label: "Agence" },
-  { value: "freelance", label: "Freelance" },
-  { value: "ecommerce", label: "E-commerce" },
-  { value: "saas", label: "SaaS / Tech" },
+  { value: "dev-web", label: "Developpement web" },
+  { value: "copywriting", label: "Copywriting" },
+  { value: "marketing", label: "Marketing digital" },
+  { value: "design", label: "Design / UI-UX" },
+  { value: "coaching", label: "Coaching" },
+  { value: "video", label: "Video / Montage" },
+  { value: "ads", label: "Media buying / Ads" },
+  { value: "seo", label: "SEO / Redaction" },
+  { value: "community", label: "Community management" },
   { value: "other", label: "Autre" },
 ];
 
 const REVENUE_RANGES = [
-  { value: "0-2k", label: "0 - 2 000 EUR/mois" },
-  { value: "2k-5k", label: "2 000 - 5 000 EUR/mois" },
+  { value: "0-1k", label: "0 - 1 000 EUR/mois" },
+  { value: "1k-3k", label: "1 000 - 3 000 EUR/mois" },
+  { value: "3k-5k", label: "3 000 - 5 000 EUR/mois" },
   { value: "5k-10k", label: "5 000 - 10 000 EUR/mois" },
-  { value: "10k-20k", label: "10 000 - 20 000 EUR/mois" },
-  { value: "20k+", label: "20 000+ EUR/mois" },
 ];
 
 const SOURCES = [
   { value: "instagram", label: "Instagram" },
   { value: "youtube", label: "YouTube" },
+  { value: "prospection", label: "Prospection" },
   { value: "referral", label: "Recommendation" },
   { value: "google", label: "Google" },
-  { value: "event", label: "Evenement" },
   { value: "other", label: "Autre" },
 ];
 
@@ -91,9 +94,9 @@ export function AboutYouStep({
       <div>
         <label className="flex items-center gap-2 text-sm font-medium text-white/70 mb-3">
           <Briefcase className="w-4 h-4 text-primary" />
-          Quel est ton type d&apos;activite ?
+          Quelle est ta niche ?
         </label>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+        <div className="grid grid-cols-2 gap-2">
           {BUSINESS_TYPES.map((type) => (
             <button
               key={type.value}

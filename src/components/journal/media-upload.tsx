@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import NextImage from "next/image";
 import { ImagePlus, X, Loader2 } from "lucide-react";
 import { useJournal } from "@/hooks/use-journal";
 import { cn } from "@/lib/utils";
@@ -84,10 +85,12 @@ export function MediaUpload({
               key={url}
               className="relative group w-20 h-20 rounded-xl overflow-hidden border border-border"
             >
-              <img
+              <NextImage
                 src={url}
                 alt={`Media ${i + 1}`}
+                fill
                 className="w-full h-full object-cover"
+                unoptimized
               />
               <button
                 onClick={() => removeMedia(i)}

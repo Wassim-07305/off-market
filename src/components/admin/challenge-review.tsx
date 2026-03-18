@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import Image from "next/image";
 import {
   Shield,
   CheckCircle,
@@ -170,9 +171,11 @@ export function ChallengeReview({ challengeId }: ChallengeReviewProps) {
                     >
                       {/* Avatar */}
                       {entry.user?.avatar_url ? (
-                        <img
+                        <Image
                           src={entry.user.avatar_url}
                           alt=""
+                          width={36}
+                          height={36}
                           className="w-9 h-9 rounded-full object-cover mt-0.5"
                         />
                       ) : (

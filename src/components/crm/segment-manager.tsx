@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect } from "react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import {
   Bookmark,
@@ -592,9 +593,11 @@ function SegmentRow({
             {segment.is_shared && !isOwner && creatorInitial && (
               <div className="flex items-center gap-1">
                 {segment.creator?.avatar_url ? (
-                  <img
+                  <Image
                     src={segment.creator.avatar_url}
                     alt=""
+                    width={14}
+                    height={14}
                     className="w-3.5 h-3.5 rounded-full"
                   />
                 ) : (

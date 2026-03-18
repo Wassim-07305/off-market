@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
+import Image from "next/image";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { useSupabase } from "@/hooks/use-supabase";
@@ -272,9 +273,11 @@ export function CreateChannelModal({
                     {/* Avatar */}
                     <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden shrink-0">
                       {profile.avatar_url ? (
-                        <img
+                        <Image
                           src={profile.avatar_url}
                           alt=""
+                          width={32}
+                          height={32}
                           className="w-8 h-8 rounded-full object-cover"
                         />
                       ) : (

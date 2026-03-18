@@ -2,6 +2,7 @@
 
 import { use } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import {
   staggerContainer,
@@ -65,9 +66,11 @@ export default function ClientOnboardingPage({
         </Link>
         <div className="flex items-center gap-4">
           {client.avatar_url ? (
-            <img
+            <Image
               src={client.avatar_url}
               alt=""
+              width={48}
+              height={48}
               className="w-12 h-12 rounded-full object-cover"
             />
           ) : (

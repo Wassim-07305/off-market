@@ -68,13 +68,13 @@ export function SetterProspectDrawer({
       setName(lead.name);
       setPhone(lead.phone ?? "");
       setEmail(lead.email ?? "");
-      setInstagram(lead.instagram ?? "");
-      setLinkedin(lead.linkedin ?? "");
-      setObjective(lead.objective ?? "");
-      setPain(lead.pain ?? "");
-      setRelanceDate(lead.relance_date ?? "");
-      setContractedRevenue(lead.contracted_revenue ?? 0);
-      setCollectedRevenue(lead.collected_revenue ?? 0);
+      setInstagram(lead.instagram_handle ?? "");
+      setLinkedin(lead.linkedin_handle ?? "");
+      setObjective(lead.objectif ?? "");
+      setPain(lead.douleur ?? "");
+      setRelanceDate(lead.date_relance ?? "");
+      setContractedRevenue(lead.ca_contracte ?? 0);
+      setCollectedRevenue(lead.ca_collecte ?? 0);
       setNotes(lead.notes ?? "");
       setColumnId(lead.column_id);
     }
@@ -114,13 +114,13 @@ export function SetterProspectDrawer({
         name: name.trim(),
         phone: phone || null,
         email: email || null,
-        instagram: instagram || null,
-        linkedin: linkedin || null,
-        objective: objective || null,
-        pain: pain || null,
-        relance_date: relanceDate || null,
-        contracted_revenue: contractedRevenue,
-        collected_revenue: collectedRevenue,
+        instagram_handle: instagram || null,
+        linkedin_handle: linkedin || null,
+        objectif: objective || null,
+        douleur: pain || null,
+        date_relance: relanceDate || null,
+        ca_contracte: contractedRevenue,
+        ca_collecte: collectedRevenue,
         notes: notes || null,
         column_id: columnId,
       },

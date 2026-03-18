@@ -1,5 +1,6 @@
 "use client";
 
+import NextImage from "next/image";
 import { formatFileSize } from "@/lib/messaging-utils";
 import {
   FileText,
@@ -51,6 +52,7 @@ function GifContent({ message }: { message: EnrichedMessage }) {
   return (
     <>
       <div className="mt-1 max-w-xs">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={url}
           alt="GIF"
@@ -309,6 +311,7 @@ function InlineImage({ url }: { url: string }) {
   const [showLightbox, setShowLightbox] = useState(false);
   return (
     <>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={url}
         alt="image"
@@ -331,6 +334,7 @@ function ImageContent({ message }: { message: EnrichedMessage }) {
 
   return (
     <>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={url}
         alt={message.attachments?.[0]?.file_name ?? "image"}

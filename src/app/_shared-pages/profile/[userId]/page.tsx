@@ -1,6 +1,7 @@
 "use client";
 
 import { use } from "react";
+import Image from "next/image";
 import { useQuery } from "@tanstack/react-query";
 import { useSupabase } from "@/hooks/use-supabase";
 import { useAuth } from "@/hooks/use-auth";
@@ -251,9 +252,11 @@ export default function PublicProfilePage({
           <div className="flex flex-col sm:flex-row sm:items-end gap-4 -mt-10">
             <div className="shrink-0 relative">
               {profile.avatar_url ? (
-                <img
+                <Image
                   src={profile.avatar_url}
                   alt={profile.full_name}
+                  width={80}
+                  height={80}
                   className="w-20 h-20 rounded-2xl object-cover border-4 border-surface"
                 />
               ) : (

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import { getInitials, cn } from "@/lib/utils";
 
 interface MemberOption {
@@ -96,9 +97,11 @@ export function MentionAutocomplete({
         >
           <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0 overflow-hidden">
             {member.avatar_url ? (
-              <img
+              <Image
                 src={member.avatar_url}
                 alt=""
+                width={28}
+                height={28}
                 className="w-7 h-7 rounded-full object-cover"
               />
             ) : (

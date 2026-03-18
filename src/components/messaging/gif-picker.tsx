@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect } from "react";
+import NextImage from "next/image";
 import { Search, Loader2, X, Image as ImageIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -208,11 +209,13 @@ export function GifPicker({ onSelect, onClose }: GifPickerProps) {
                   className="w-full mb-1.5 rounded-lg overflow-hidden hover:ring-2 hover:ring-primary/50 transition-all cursor-pointer break-inside-avoid"
                   title={gif.title}
                 >
-                  <img
+                  <NextImage
                     src={preview.url}
                     alt={gif.title}
+                    width={preview.dims?.[0] ?? 200}
+                    height={preview.dims?.[1] ?? 200}
                     className="w-full h-auto rounded-lg"
-                    loading="lazy"
+                    unoptimized
                   />
                 </button>
               );

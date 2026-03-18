@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import Image from "next/image";
 import { X, Send, MessageSquare } from "lucide-react";
 import { cn, getInitials } from "@/lib/utils";
 import { formatMessageTime } from "@/lib/messaging-utils";
@@ -83,9 +84,11 @@ export function ThreadPanel({
           <div className="flex items-start gap-2.5">
             <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
               {parentSender?.avatar_url ? (
-                <img
+                <Image
                   src={parentSender.avatar_url}
                   alt=""
+                  width={32}
+                  height={32}
                   className="w-8 h-8 rounded-full object-cover"
                 />
               ) : (
@@ -138,9 +141,11 @@ export function ThreadPanel({
             <div key={reply.id} className="flex items-start gap-2.5">
               <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                 {sender?.avatar_url ? (
-                  <img
+                  <Image
                     src={sender.avatar_url}
                     alt=""
+                    width={28}
+                    height={28}
                     className="w-7 h-7 rounded-full object-cover"
                   />
                 ) : (

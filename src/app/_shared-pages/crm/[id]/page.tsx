@@ -1,6 +1,7 @@
 "use client";
 
 import { use, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRoutePrefix } from "@/hooks/use-route-prefix";
 import {
@@ -12,6 +13,12 @@ import {
 } from "@/hooks/use-students";
 import { useAuth } from "@/hooks/use-auth";
 import { useClientBriefing } from "@/hooks/use-client-briefing";
+import {
+  useClientUpsellTriggers,
+  useTriggerUpsellCheck,
+  useConvertUpsell,
+  useDismissUpsell,
+} from "@/hooks/use-upsell";
 import type { StudentFlag } from "@/types/database";
 import { STUDENT_PIPELINE_STAGES, ACTIVITY_TYPES } from "@/lib/constants";
 import { getInitials, formatDate, formatCurrency, cn } from "@/lib/utils";
@@ -49,6 +56,8 @@ import {
   Brain,
   Loader2,
   X,
+  Sparkles,
+  ArrowUpRight,
 } from "lucide-react";
 import { toast } from "sonner";
 import ReactMarkdown from "react-markdown";
@@ -59,7 +68,8 @@ type TabType =
   | "timeline"
   | "notes"
   | "tasks"
-  | "flags";
+  | "flags"
+  | "upsell";
 
 export default function StudentDetailPage({
   params,
@@ -84,6 +94,10 @@ export default function StudentDetailPage({
     isLoading: briefingLoading,
     generateBriefing,
   } = useClientBriefing(id);
+  const { data: upsellTriggers } = useClientUpsellTriggers(id);
+  const triggerCheck = useTriggerUpsellCheck();
+  const convertUpsell = useConvertUpsell();
+  const dismissUpsell = useDismissUpsell();
 
   const handleGenerateBriefing = () => {
     setBriefingOpen(true);
@@ -183,6 +197,7 @@ export default function StudentDetailPage({
     { key: "timeline", label: "Timeline", icon: History },
     { key: "notes", label: "Notes", icon: FileText },
     { key: "tasks", label: "Taches", icon: CheckCircle },
+    { key: "upsell", label: "Upsell", icon: ArrowUpRight },
     { key: "flags", label: "Drapeaux", icon: Flag },
   ];
 
@@ -218,9 +233,11 @@ export default function StudentDetailPage({
           <div className="relative">
             <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-xl text-primary font-semibold shrink-0">
               {student.avatar_url ? (
-                <img
+                <Image
                   src={student.avatar_url}
                   alt=""
+                  width={64}
+                  height={64}
                   className="w-16 h-16 rounded-full object-cover"
                 />
               ) : (
@@ -793,6 +810,176 @@ export default function StudentDetailPage({
                   </span>
                 </div>
               ))
+            )}
+          </div>
+        )}
+
+        {activeTab === "upsell" && (
+          <div className="space-y-6">
+            {/* Check upsell button */}
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-primary" />
+                Opportunites d&apos;upsell
+              </h3>
+              <button
+                onClick={() => triggerCheck.mutate(id)}
+                disabled={triggerCheck.isPending}
+                className="h-8 px-3 rounded-lg border border-border text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors disabled:opacity-50 flex items-center gap-1.5"
+              >
+                {triggerCheck.isPending ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <Zap className="w-3.5 h-3.5" />
+                )}
+                Verifier les seuils
+              </button>
+            </div>
+
+            {/* Avancement */}
+            {details?.current_revenue != null && (
+              <div className="bg-surface border border-border rounded-xl p-4 space-y-3">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Revenu actuel</span>
+                  <span className="font-semibold text-foreground">
+                    {formatCurrency(details.current_revenue ?? 0)}
+                    /mois
+                  </span>
+                </div>
+                {(details.revenue_objective ?? 0) > 0 && (
+                  <>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">Objectif</span>
+                      <span className="font-semibold text-foreground">
+                        {formatCurrency(details.revenue_objective ?? 0)}
+                        /mois
+                      </span>
+                    </div>
+                    <div className="h-2 bg-muted rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-gradient-to-r from-primary to-red-500 rounded-full transition-all duration-500"
+                        style={{
+                          width: `${Math.min(100, Math.round(((details.current_revenue ?? 0) / (details.revenue_objective ?? 1)) * 100))}%`,
+                        }}
+                      />
+                    </div>
+                    <p className="text-[11px] text-muted-foreground text-right">
+                      {Math.round(
+                        ((details.current_revenue ?? 0) /
+                          (details.revenue_objective ?? 1)) *
+                          100,
+                      )}
+                      % de l&apos;objectif
+                    </p>
+                  </>
+                )}
+              </div>
+            )}
+
+            {/* Triggers list */}
+            {!upsellTriggers || upsellTriggers.length === 0 ? (
+              <div className="text-center py-8">
+                <ArrowUpRight className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
+                <p className="text-sm text-muted-foreground">
+                  Aucune opportunite d&apos;upsell pour ce client
+                </p>
+                <p className="text-xs text-muted-foreground/60 mt-1">
+                  Cliquez sur &quot;Verifier les seuils&quot; pour detecter les
+                  opportunites
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {upsellTriggers.map((trigger) => {
+                  const statusConfig: Record<
+                    string,
+                    { label: string; color: string }
+                  > = {
+                    pending: {
+                      label: "En attente",
+                      color: "bg-amber-500/10 text-amber-600",
+                    },
+                    notified: {
+                      label: "Notifie",
+                      color: "bg-blue-500/10 text-blue-600",
+                    },
+                    converted: {
+                      label: "Converti",
+                      color: "bg-emerald-500/10 text-emerald-600",
+                    },
+                    dismissed: {
+                      label: "Refuse",
+                      color: "bg-zinc-500/10 text-zinc-500",
+                    },
+                  };
+                  const status =
+                    statusConfig[trigger.status] ?? statusConfig.pending;
+
+                  return (
+                    <div
+                      key={trigger.id}
+                      className="bg-surface border border-border rounded-xl p-4 space-y-3"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium text-foreground">
+                            {trigger.rule?.offer_title ?? "Offre upsell"}
+                          </p>
+                          {trigger.rule?.offer_description && (
+                            <p className="text-xs text-muted-foreground mt-0.5">
+                              {trigger.rule.offer_description}
+                            </p>
+                          )}
+                          <p className="text-[11px] text-muted-foreground/60 mt-1">
+                            Declenche le {formatDate(trigger.triggered_at)}
+                            {trigger.rule?.trigger_type ===
+                              "revenue_threshold" && (
+                              <>
+                                {" "}
+                                — Seuil :{" "}
+                                {formatCurrency(
+                                  (
+                                    trigger.rule.trigger_config as Record<
+                                      string,
+                                      number
+                                    >
+                                  )?.threshold ?? 0,
+                                )}
+                              </>
+                            )}
+                          </p>
+                        </div>
+                        <span
+                          className={cn(
+                            "text-[11px] font-medium px-2 py-0.5 rounded-full shrink-0",
+                            status.color,
+                          )}
+                        >
+                          {status.label}
+                        </span>
+                      </div>
+
+                      {(trigger.status === "pending" ||
+                        trigger.status === "notified") && (
+                        <div className="flex items-center gap-2 pt-1">
+                          <button
+                            onClick={() => convertUpsell.mutate(trigger.id)}
+                            className="h-7 px-3 rounded-lg bg-primary text-white text-xs font-medium hover:bg-primary-hover transition-colors"
+                          >
+                            Marquer converti
+                          </button>
+                          <button
+                            onClick={() => dismissUpsell.mutate(trigger.id)}
+                            className="h-7 px-3 rounded-lg border border-border text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                          >
+                            Refuser
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             )}
           </div>
         )}

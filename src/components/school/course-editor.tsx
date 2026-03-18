@@ -594,7 +594,10 @@ function LessonEditorPanel({
   // Helper: extract embeddable video URL
   const getEmbedUrl = (
     url: string,
-  ): { type: "youtube" | "vimeo" | "direct"; src: string } | null => {
+  ): {
+    type: "youtube" | "vimeo" | "iframe" | "direct";
+    src: string;
+  } | null => {
     if (!url) return null;
 
     // Format DB migre : youtube:VIDEO_ID
@@ -603,7 +606,7 @@ function LessonEditorPanel({
       if (id)
         return {
           type: "youtube",
-          src: `https://www.youtube.com/embed/${id}`,
+          src: `https://www.youtube.com/embed/${id}?modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&color=white`,
         };
     }
 
@@ -620,7 +623,7 @@ function LessonEditorPanel({
         if (videoId)
           return {
             type: "youtube",
-            src: `https://www.youtube.com/embed/${videoId}`,
+            src: `https://www.youtube.com/embed/${videoId}?modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&color=white`,
           };
       }
       // Vimeo
@@ -631,6 +634,41 @@ function LessonEditorPanel({
             type: "vimeo",
             src: `https://player.vimeo.com/video/${vimeoId}`,
           };
+      }
+      // Loom
+      if (u.hostname.includes("loom.com")) {
+        const id = u.pathname.split("/").pop()?.split("?")[0];
+        if (id)
+          return { type: "iframe", src: `https://www.loom.com/embed/${id}` };
+      }
+      // Tella
+      if (u.hostname.includes("tella.tv")) {
+        if (url.includes("/embed")) {
+          return { type: "iframe", src: url };
+        }
+        const match = url.match(/tella\.tv\/video\/(vid_[a-z0-9]+)/i);
+        if (match) {
+          return {
+            type: "iframe",
+            src: `https://www.tella.tv/video/${match[1]}/embed?b=1&title=1&a=1&loop=0&t=0&muted=0&wt=1&o=1`,
+          };
+        }
+      }
+      // Wistia
+      if (u.hostname.includes("wistia.com") || u.hostname.includes("wi.st")) {
+        const match = url.match(
+          /(?:wistia\.com|wi\.st)\/(?:medias|embed\/iframe)\/([a-z0-9]+)/i,
+        );
+        if (match) {
+          return {
+            type: "iframe",
+            src: `https://fast.wistia.net/embed/iframe/${match[1]}`,
+          };
+        }
+      }
+      // Generic embed URL
+      if (u.pathname.includes("/embed") || u.pathname.includes("/player")) {
+        return { type: "iframe", src: url };
       }
       // Direct video file
       const ext = u.pathname.split(".").pop()?.toLowerCase();
@@ -751,7 +789,7 @@ function LessonEditorPanel({
           <input
             value={videoUrl}
             onChange={(e) => setVideoUrl(e.target.value)}
-            placeholder="URL de la video (YouTube, Vimeo, lien direct...)"
+            placeholder="URL de la video (YouTube, Tella, Loom, Vimeo, Wistia...)"
             className={inputClass}
           />
 

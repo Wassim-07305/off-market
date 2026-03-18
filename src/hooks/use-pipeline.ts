@@ -136,31 +136,63 @@ export function usePipelineContacts(stage?: PipelineStage) {
       if (error) throw error;
       return { id, stage };
     },
+    onMutate: async ({ id, stage, sort_order }) => {
+      // Optimistic update: move contact in cache immediately
+      await queryClient.cancelQueries({ queryKey: ["pipeline-contacts"] });
+      const previousContacts = queryClient.getQueriesData<CrmContact[]>({
+        queryKey: ["pipeline-contacts"],
+      });
+
+      queryClient.setQueriesData<CrmContact[]>(
+        { queryKey: ["pipeline-contacts"] },
+        (old) =>
+          old?.map((c) =>
+            c.id === id
+              ? {
+                  ...c,
+                  stage,
+                  ...(sort_order !== undefined ? { sort_order } : {}),
+                }
+              : c,
+          ),
+      );
+
+      return { previousContacts };
+    },
+    onError: (_err, _vars, context) => {
+      // Rollback on error
+      if (context?.previousContacts) {
+        for (const [key, data] of context.previousContacts) {
+          queryClient.setQueryData(key, data);
+        }
+      }
+      toast.error("Erreur lors du deplacement");
+    },
     onSuccess: async (result) => {
       queryClient.invalidateQueries({ queryKey: ["pipeline-contacts"] });
 
       // Auto-create commissions when contact moves to "client" stage
       if (result.stage === "client") {
         try {
-          // Fetch the contact to get deal value and assigned user
-          const { data: contact } = await supabase
-            .from("crm_contacts")
-            .select("id, full_name, estimated_value, assigned_to, created_by")
-            .eq("id", result.id)
-            .single();
+          // Fetch contact and check existing commissions in parallel
+          const [contactResult, commissionResult] = await Promise.all([
+            supabase
+              .from("crm_contacts")
+              .select("id, full_name, estimated_value, assigned_to, created_by")
+              .eq("id", result.id)
+              .single(),
+            supabase
+              .from("commissions")
+              .select("id", { count: "exact", head: true })
+              .eq("sale_id", result.id),
+          ]);
 
+          const contact = contactResult.data;
           if (!contact || !contact.estimated_value) return;
+          if (commissionResult.count && commissionResult.count > 0) return; // Already created
 
           const saleAmount = Number(contact.estimated_value);
           if (saleAmount <= 0) return;
-
-          // Check if commissions already exist for this contact
-          const { count: existingCount } = await supabase
-            .from("commissions")
-            .select("id", { count: "exact", head: true })
-            .eq("sale_id", contact.id);
-
-          if (existingCount && existingCount > 0) return; // Already created
 
           // Determine commission recipients
           const commissionEntries: Array<{

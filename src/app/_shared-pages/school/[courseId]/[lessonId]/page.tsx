@@ -57,6 +57,27 @@ function getLoomId(url: string): string | null {
   return match?.[1] ?? null;
 }
 
+function getTellaEmbedUrl(url: string): string | null {
+  if (!url.includes("tella.tv")) return null;
+  if (url.includes("/embed")) return url;
+  const match = url.match(/tella\.tv\/video\/(vid_[a-z0-9]+)/i);
+  if (match) {
+    return `https://www.tella.tv/video/${match[1]}/embed?b=1&title=1&a=1&loop=0&t=0&muted=0&wt=1&o=1`;
+  }
+  return null;
+}
+
+function getWistiaEmbedUrl(url: string): string | null {
+  if (!url.includes("wistia.com") && !url.includes("wi.st")) return null;
+  const match = url.match(
+    /(?:wistia\.com\/medias|wi\.st\/medias)\/([a-z0-9]+)/i,
+  );
+  if (match) {
+    return `https://fast.wistia.net/embed/iframe/${match[1]}`;
+  }
+  return null;
+}
+
 function getAttachmentIcon(type: string) {
   switch (type) {
     case "video":
@@ -207,7 +228,21 @@ export default function LessonPage({
   const vimeoId = videoUrl && !youtubeId ? getVimeoId(videoUrl) : null;
   const loomId =
     videoUrl && !youtubeId && !vimeoId ? getLoomId(videoUrl) : null;
-  const isDirectVideo = videoUrl && !youtubeId && !vimeoId && !loomId;
+  const tellaEmbed =
+    videoUrl && !youtubeId && !vimeoId && !loomId
+      ? getTellaEmbedUrl(videoUrl)
+      : null;
+  const wistiaEmbed =
+    videoUrl && !youtubeId && !vimeoId && !loomId && !tellaEmbed
+      ? getWistiaEmbedUrl(videoUrl)
+      : null;
+  const isDirectVideo =
+    videoUrl &&
+    !youtubeId &&
+    !vimeoId &&
+    !loomId &&
+    !tellaEmbed &&
+    !wistiaEmbed;
   const isAudioLesson = lesson.content_type === "audio" && audioUrl;
 
   const htmlContent = lesson.content_html ?? content?.html;
@@ -296,7 +331,7 @@ export default function LessonPage({
             style={{ boxShadow: "var(--shadow-elevated)" }}
           >
             <iframe
-              src={`https://www.youtube.com/embed/${youtubeId}`}
+              src={`https://www.youtube.com/embed/${youtubeId}?modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&color=white`}
               title={lesson.title}
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
@@ -330,6 +365,38 @@ export default function LessonPage({
             <iframe
               src={`https://www.loom.com/embed/${loomId}`}
               title={lesson.title}
+              allowFullScreen
+              className="w-full h-full"
+            />
+          </div>
+        )}
+
+        {/* Tella */}
+        {tellaEmbed && (
+          <div
+            className="aspect-video bg-black rounded-2xl overflow-hidden mb-6"
+            style={{ boxShadow: "var(--shadow-elevated)" }}
+          >
+            <iframe
+              src={tellaEmbed}
+              title={lesson.title}
+              allow="autoplay; fullscreen"
+              allowFullScreen
+              className="w-full h-full"
+            />
+          </div>
+        )}
+
+        {/* Wistia */}
+        {wistiaEmbed && (
+          <div
+            className="aspect-video bg-black rounded-2xl overflow-hidden mb-6"
+            style={{ boxShadow: "var(--shadow-elevated)" }}
+          >
+            <iframe
+              src={wistiaEmbed}
+              title={lesson.title}
+              allow="autoplay; fullscreen"
               allowFullScreen
               className="w-full h-full"
             />

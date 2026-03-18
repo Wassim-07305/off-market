@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import Image from "next/image";
 import { getInitials, cn } from "@/lib/utils";
 import { formatMessageTime } from "@/lib/messaging-utils";
 import { MessageContent } from "./message-content";
@@ -120,9 +121,11 @@ export function MessageBubble({
             )}
           >
             {sender?.avatar_url ? (
-              <img
+              <Image
                 src={sender.avatar_url}
                 alt=""
+                width={36}
+                height={36}
                 className="w-9 h-9 rounded-full object-cover"
               />
             ) : (

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import {
   staggerContainer,
@@ -68,9 +69,11 @@ export default function OnboardingListPage() {
               >
                 <div className="flex items-center gap-3">
                   {client.avatar_url ? (
-                    <img
+                    <Image
                       src={client.avatar_url}
                       alt=""
+                      width={40}
+                      height={40}
                       className="w-10 h-10 rounded-full object-cover"
                     />
                   ) : (
@@ -111,9 +114,11 @@ export default function OnboardingListPage() {
               >
                 <div className="flex items-center gap-3">
                   {client.avatar_url ? (
-                    <img
+                    <Image
                       src={client.avatar_url}
                       alt=""
+                      width={40}
+                      height={40}
                       className="w-10 h-10 rounded-full object-cover"
                     />
                   ) : (

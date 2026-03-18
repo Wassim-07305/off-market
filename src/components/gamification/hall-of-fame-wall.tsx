@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import { cn, getInitials, formatCurrency } from "@/lib/utils";
 import type { HallOfFameEntry } from "@/hooks/use-hall-of-fame";
 import { motion } from "framer-motion";
+import Image from "next/image";
 import Link from "next/link";
 import {
   Crown,
@@ -270,9 +271,11 @@ function PremiumHallOfFameCard({
               >
                 <div className="relative">
                   {entry.profile?.avatar_url ? (
-                    <img
+                    <Image
                       src={entry.profile.avatar_url}
                       alt={entry.profile.full_name}
+                      width={56}
+                      height={56}
                       className={cn(
                         "w-14 h-14 rounded-2xl object-cover transition-all",
                         "group-hover:ring-2 ring-amber-500/30",

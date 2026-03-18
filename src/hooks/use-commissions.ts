@@ -55,7 +55,7 @@ export function useCommissions(options: UseCommissionsOptions = {}) {
     }) => {
       const { data, error } = await supabase
         .from("commissions")
-        .insert(commission)
+        .insert(commission as never)
         .select()
         .single();
       if (error) throw error;
@@ -73,7 +73,7 @@ export function useCommissions(options: UseCommissionsOptions = {}) {
     mutationFn: async (id: string) => {
       const { error } = await supabase
         .from("commissions")
-        .update({ status: "paid", paid_at: new Date().toISOString() })
+        .update({ status: "paid", paid_at: new Date().toISOString() } as never)
         .eq("id", id);
       if (error) throw error;
     },

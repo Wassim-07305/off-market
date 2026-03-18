@@ -9,6 +9,26 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  compiler: {
+    removeConsole: {
+      exclude: ["error"],
+    },
+  },
+  poweredByHeader: false,
+  reactCompiler: true,
+  experimental: {
+    optimizePackageImports: [
+      "@dnd-kit/core",
+      "@dnd-kit/sortable",
+      "@dnd-kit/utilities",
+      "recharts",
+      "date-fns",
+      "lucide-react",
+      "@tiptap/react",
+      "@tiptap/starter-kit",
+      "framer-motion",
+    ],
+  },
   images: {
     remotePatterns: [
       {

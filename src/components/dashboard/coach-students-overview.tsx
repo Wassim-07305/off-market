@@ -11,6 +11,7 @@ import {
   ArrowUpDown,
   Users,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 type Tag = "at_risk" | "new" | "standard" | "vip" | "churned";
@@ -238,9 +239,11 @@ export function CoachStudentsOverview() {
                 {/* Avatar */}
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center text-xs text-primary font-medium shrink-0">
                   {student.avatar_url ? (
-                    <img
+                    <Image
                       src={student.avatar_url}
                       alt={student.full_name}
+                      width={40}
+                      height={40}
                       className="w-10 h-10 rounded-full object-cover"
                     />
                   ) : (

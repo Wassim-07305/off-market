@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Image from "next/image";
 import { cn, getInitials } from "@/lib/utils";
 
 const avatarSizes = {
@@ -34,9 +35,10 @@ function Avatar({ src, name, size = "md", className }: AvatarProps) {
       title={name}
     >
       {showImage ? (
-        <img
+        <Image
           src={src}
           alt={name}
+          fill
           className="h-full w-full rounded-full object-cover"
           onError={() => setImageError(true)}
         />

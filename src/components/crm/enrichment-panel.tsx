@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import type { CrmContact } from "@/types/pipeline";
 import { useEnrichContact } from "@/hooks/use-enrichment";
 import { usePipelineContacts } from "@/hooks/use-pipeline";
@@ -434,9 +435,11 @@ export function EnrichmentPanel({
               <div className="bg-muted/50 border border-border rounded-xl p-4 space-y-3">
                 {linkedin.profilePicture && (
                   <div className="flex items-center gap-3">
-                    <img
+                    <Image
                       src={linkedin.profilePicture as string}
                       alt=""
+                      width={48}
+                      height={48}
                       className="w-12 h-12 rounded-full object-cover border-2 border-[#0A66C2]/20"
                     />
                     <div>
@@ -572,9 +575,11 @@ export function EnrichmentPanel({
               <div className="bg-muted/50 border border-border rounded-xl p-4 space-y-3">
                 <div className="flex items-center gap-3">
                   {instagram.profilePicUrl && (
-                    <img
+                    <Image
                       src={instagram.profilePicUrl as string}
                       alt=""
+                      width={48}
+                      height={48}
                       className="w-12 h-12 rounded-full object-cover border-2 border-[#E4405F]/20"
                     />
                   )}
@@ -697,9 +702,11 @@ export function EnrichmentPanel({
               <div className="bg-muted/50 border border-border rounded-xl p-4 space-y-3">
                 <div className="flex items-center gap-3">
                   {tiktok.profilePicUrl && (
-                    <img
+                    <Image
                       src={tiktok.profilePicUrl as string}
                       alt=""
+                      width={48}
+                      height={48}
                       className="w-12 h-12 rounded-full object-cover border-2 border-zinc-300 dark:border-zinc-600"
                     />
                   )}

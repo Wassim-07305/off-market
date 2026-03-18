@@ -20,7 +20,8 @@ export function useChannels() {
     gcTime: 5 * 60 * 1000,
     retry: 1,
     queryFn: async () => {
-      let query = supabase
+      // Fetch channels where user is a member
+      let memberQuery = supabase
         .from("channels")
         .select(
           `*,
@@ -29,23 +30,59 @@ export function useChannels() {
         .eq("channel_members.profile_id", user?.id ?? "");
 
       if (!showArchived) {
-        query = query.eq("is_archived", false);
+        memberQuery = memberQuery.eq("is_archived", false);
       }
 
-      const { data, error } = await query.order("last_message_at", {
-        ascending: false,
-        nullsFirst: false,
-      });
-      if (error) throw error;
+      const { data: memberChannels, error: memberErr } =
+        await memberQuery.order("last_message_at", {
+          ascending: false,
+          nullsFirst: false,
+        });
+      if (memberErr)
+        console.warn("[channels] member query:", memberErr.message);
 
-      return (data ?? []) as (Channel & {
-        channel_members: Array<{
-          profile_id: string;
-          last_read_at: string;
-          notifications_muted: boolean;
-          is_pinned: boolean;
-        }>;
-      })[];
+      // Also fetch public channels (visible to everyone even without membership)
+      let publicQuery = supabase
+        .from("channels")
+        .select("*")
+        .eq("type", "public");
+
+      if (!showArchived) {
+        publicQuery = publicQuery.eq("is_archived", false);
+      }
+
+      const { data: publicChannelsData, error: pubErr } =
+        await publicQuery.order("last_message_at", {
+          ascending: false,
+          nullsFirst: false,
+        });
+      if (pubErr) console.warn("[channels] public query:", pubErr.message);
+
+      // Merge: member channels take priority, then add public channels not already included
+      const memberIds = new Set((memberChannels ?? []).map((c) => c.id));
+      const publicOnly = (publicChannelsData ?? [])
+        .filter((c) => !memberIds.has(c.id))
+        .map((c) => ({
+          ...c,
+          channel_members: [] as Array<{
+            profile_id: string;
+            last_read_at: string;
+            notifications_muted: boolean;
+            is_pinned: boolean;
+          }>,
+        }));
+
+      return [
+        ...((memberChannels ?? []) as (Channel & {
+          channel_members: Array<{
+            profile_id: string;
+            last_read_at: string;
+            notifications_muted: boolean;
+            is_pinned: boolean;
+          }>;
+        })[]),
+        ...publicOnly,
+      ];
     },
     enabled: !!user,
   });

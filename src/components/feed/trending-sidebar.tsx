@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useTrendingPosts } from "@/hooks/use-feed";
 import { Heart, MessageCircle, TrendingUp, Flame } from "lucide-react";
 import type { FeedPost } from "@/types/feed";
@@ -32,9 +33,11 @@ function TrendingCard({
       </div>
 
       {post.author?.avatar_url ? (
-        <img
+        <Image
           src={post.author.avatar_url}
           alt=""
+          width={32}
+          height={32}
           className="w-8 h-8 rounded-full object-cover flex-shrink-0"
         />
       ) : (

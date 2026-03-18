@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useCallback } from "react";
+import Image from "next/image";
 import { useMarkVideoViewed } from "@/hooks/use-video-responses";
 import type { VideoResponse } from "@/types/database";
 import { Video, Eye, Clock, MessageSquare } from "lucide-react";
@@ -51,9 +52,11 @@ export function VideoResponsePlayer({
       <div className="flex items-center gap-3 px-4 py-3">
         <div className="relative">
           {senderAvatar ? (
-            <img
+            <Image
               src={senderAvatar}
               alt={senderName}
+              width={36}
+              height={36}
               className="w-9 h-9 rounded-full object-cover"
             />
           ) : (

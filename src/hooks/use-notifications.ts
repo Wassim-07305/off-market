@@ -23,6 +23,7 @@ export function useNotifications(options?: UseNotificationsOptions) {
 
   const notificationsQuery = useQuery({
     queryKey: ["notifications", { category }],
+    staleTime: 0, // Temps reel — les subscriptions Supabase gerent les updates
     queryFn: async () => {
       let query = supabase
         .from("notifications")

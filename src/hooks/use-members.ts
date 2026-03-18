@@ -27,75 +27,27 @@ export function useMembers() {
     queryKey: ["members-directory"],
     enabled: !!user,
     queryFn: async () => {
-      // Get all non-admin profiles
-      const { data: profiles, error: profileError } = await supabase
-        .from("profiles")
-        .select("id, full_name, avatar_url, role, bio, created_at")
+      // Single query via the member_stats view (replaces 3 separate queries + client-side aggregation)
+      const { data, error } = await supabase
+        .from("member_stats")
+        .select("*")
         .order("full_name", { ascending: true });
 
-      if (profileError) throw profileError;
-      if (!profiles || profiles.length === 0) return [];
+      if (error) throw error;
 
-      const profileIds = profiles.map((p) => p.id);
-
-      // Get XP totals
-      const { data: xpData, error: xpError } = await supabase
-        .from("xp_transactions")
-        .select("profile_id, xp_amount")
-        .in("profile_id", profileIds);
-      if (xpError) throw xpError;
-
-      const xpMap = new Map<string, number>();
-      for (const tx of xpData ?? []) {
-        xpMap.set(
-          tx.profile_id,
-          (xpMap.get(tx.profile_id) ?? 0) + tx.xp_amount,
-        );
-      }
-
-      // Get badge counts
-      const { data: badgeData, error: badgeError } = await supabase
-        .from("user_badges")
-        .select("profile_id")
-        .in("profile_id", profileIds);
-      if (badgeError) throw badgeError;
-
-      const badgeMap = new Map<string, number>();
-      for (const b of badgeData ?? []) {
-        badgeMap.set(b.profile_id, (badgeMap.get(b.profile_id) ?? 0) + 1);
-      }
-
-      // Get level config
-      const { data: levels, error: levelError } = await supabase
-        .from("level_config")
-        .select("*")
-        .order("min_xp", { ascending: true });
-      if (levelError) throw levelError;
-
-      const levelConfig = levels ?? [];
-
-      function getLevel(xp: number) {
-        const level = [...levelConfig].reverse().find((l) => xp >= l.min_xp);
-        return level ?? { level: 1, name: "Debutant", icon: "🌱" };
-      }
-
-      return profiles.map((p) => {
-        const totalXp = xpMap.get(p.id) ?? 0;
-        const level = getLevel(totalXp);
-        return {
-          id: p.id,
-          full_name: p.full_name,
-          avatar_url: p.avatar_url,
-          role: p.role,
-          bio: p.bio,
-          created_at: p.created_at,
-          total_xp: totalXp,
-          badge_count: badgeMap.get(p.id) ?? 0,
-          level: level.level,
-          level_name: level.name,
-          level_icon: level.icon ?? "🌱",
-        } satisfies MemberEntry;
-      });
+      return (data ?? []).map((row) => ({
+        id: row.id,
+        full_name: row.full_name,
+        avatar_url: row.avatar_url,
+        role: row.role,
+        bio: row.bio,
+        created_at: row.created_at,
+        total_xp: row.total_xp ?? 0,
+        badge_count: row.badge_count ?? 0,
+        level: row.level ?? 1,
+        level_name: row.level_name ?? "Debutant",
+        level_icon: row.level_icon ?? "🌱",
+      })) satisfies MemberEntry[];
     },
   });
 

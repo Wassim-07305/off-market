@@ -8,6 +8,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useRoutePrefix } from "@/hooks/use-route-prefix";
 import { cn, getInitials } from "@/lib/utils";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Search,
   Users,
@@ -267,9 +268,11 @@ function MemberGridCard({
           {/* Avatar */}
           <div className="relative mx-auto w-14 h-14 mb-3">
             {member.avatar_url ? (
-              <img
+              <Image
                 src={member.avatar_url}
                 alt={member.full_name}
+                width={56}
+                height={56}
                 className="w-14 h-14 rounded-full object-cover"
               />
             ) : (
@@ -365,9 +368,11 @@ function MemberListRow({
         {/* Avatar */}
         <div className="relative shrink-0">
           {member.avatar_url ? (
-            <img
+            <Image
               src={member.avatar_url}
               alt={member.full_name}
+              width={40}
+              height={40}
               className="w-10 h-10 rounded-full object-cover"
             />
           ) : (

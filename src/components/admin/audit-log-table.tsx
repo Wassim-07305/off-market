@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import Image from "next/image";
 import {
   useReactTable,
   getCoreRowModel,
@@ -72,9 +73,11 @@ const columns: ColumnDef<AuditLog>[] = [
       return (
         <div className="flex items-center gap-2">
           {user.avatar_url ? (
-            <img
+            <Image
               src={user.avatar_url}
               alt=""
+              width={24}
+              height={24}
               className="w-6 h-6 rounded-full object-cover"
             />
           ) : (

@@ -172,11 +172,6 @@ export default function FormResponsesPage({
                   onClick: handleExportCSV,
                 },
                 {
-                  label: "Exporter PDF",
-                  icon: FileText,
-                  onClick: handleExportPDF,
-                },
-                {
                   label: "Exporter Markdown",
                   icon: FileText,
                   onClick: handleExportMarkdown,

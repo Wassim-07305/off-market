@@ -13,6 +13,7 @@ export function useBadges() {
   const allBadgesQuery = useQuery({
     queryKey: ["badges"],
     enabled: !!user,
+    staleTime: 30 * 60 * 1000, // 30 min — catalogue de badges, rarement modifie
     queryFn: async () => {
       const { data, error } = await supabase
         .from("badges")
@@ -27,6 +28,7 @@ export function useBadges() {
   // User's earned badges
   const userBadgesQuery = useQuery({
     queryKey: ["user-badges", user?.id],
+    staleTime: 5 * 60 * 1000, // 5 min — badges gagnes, mis a jour par mutations
     queryFn: async () => {
       if (!user) return [];
       const { data, error } = await supabase

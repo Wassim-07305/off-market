@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useMemo } from "react";
+import Image from "next/image";
 import {
   Users,
   Search,
@@ -323,9 +324,11 @@ export default function UsersPage() {
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
                           {u.avatar_url ? (
-                            <img
+                            <Image
                               src={u.avatar_url}
                               alt={u.full_name}
+                              width={36}
+                              height={36}
                               className="w-9 h-9 rounded-full object-cover"
                             />
                           ) : (

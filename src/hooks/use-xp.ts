@@ -20,6 +20,7 @@ export function useXp() {
   // Fetch all XP for current user
   const xpQuery = useQuery({
     queryKey: ["xp", user?.id],
+    staleTime: 5 * 60 * 1000, // 5 min — gamification, mis a jour par mutations
     queryFn: async () => {
       if (!user) return { transactions: [], total: 0 };
       const { data, error } = await supabase
@@ -39,6 +40,7 @@ export function useXp() {
   const levelsQuery = useQuery({
     queryKey: ["level-config"],
     enabled: !!user,
+    staleTime: Infinity, // Config de niveaux — ne change jamais en cours de session
     queryFn: async () => {
       const { data, error } = await supabase
         .from("level_config")
@@ -52,6 +54,7 @@ export function useXp() {
   // Fetch user badges
   const badgesQuery = useQuery({
     queryKey: ["user-badges", user?.id],
+    staleTime: 5 * 60 * 1000, // 5 min — badges mis a jour par mutations XP
     queryFn: async () => {
       if (!user) return [];
       const { data, error } = await supabase
@@ -68,6 +71,7 @@ export function useXp() {
   // Fetch rank from leaderboard view
   const rankQuery = useQuery({
     queryKey: ["my-rank", user?.id],
+    staleTime: 5 * 60 * 1000, // 5 min — rang mis a jour par mutations XP
     queryFn: async () => {
       if (!user) return 0;
       const { data, error } = await supabase
@@ -158,6 +162,7 @@ export function useXpConfig() {
   const configQuery = useQuery({
     queryKey: ["xp-config"],
     enabled: !!user,
+    staleTime: Infinity, // Config XP — ne change jamais sauf mutation admin
     queryFn: async () => {
       const { data, error } = await supabase
         .from("xp_config")

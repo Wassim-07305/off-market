@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Image from "next/image";
 import { useAuth } from "@/hooks/use-auth";
 import { useSupabase } from "@/hooks/use-supabase";
 import { useQuery } from "@tanstack/react-query";
@@ -373,9 +374,11 @@ export function ChannelSidebar({
                                 )}
                               >
                                 {partner?.avatar_url ? (
-                                  <img
+                                  <Image
                                     src={partner.avatar_url}
                                     alt=""
+                                    width={40}
+                                    height={40}
                                     className="w-10 h-10 rounded-full object-cover"
                                   />
                                 ) : (
@@ -427,9 +430,11 @@ export function ChannelSidebar({
                           <div className="relative">
                             <div className="w-9 h-9 rounded-full bg-muted flex items-center justify-center overflow-hidden">
                               {p.avatar_url ? (
-                                <img
+                                <Image
                                   src={p.avatar_url}
                                   alt=""
+                                  width={36}
+                                  height={36}
                                   className="w-9 h-9 rounded-full object-cover"
                                 />
                               ) : (
@@ -494,9 +499,11 @@ export function ChannelSidebar({
                                 )}
                               >
                                 {partner?.avatar_url ? (
-                                  <img
+                                  <Image
                                     src={partner.avatar_url}
                                     alt=""
+                                    width={28}
+                                    height={28}
                                     className="w-7 h-7 rounded-full object-cover"
                                   />
                                 ) : (
@@ -552,9 +559,11 @@ export function ChannelSidebar({
                           <div className="relative shrink-0">
                             <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center overflow-hidden">
                               {p.avatar_url ? (
-                                <img
+                                <Image
                                   src={p.avatar_url}
                                   alt=""
+                                  width={24}
+                                  height={24}
                                   className="w-6 h-6 rounded-full object-cover"
                                 />
                               ) : (

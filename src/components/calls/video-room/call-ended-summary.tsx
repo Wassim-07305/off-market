@@ -96,38 +96,14 @@ export function CallEndedSummary({
 
         {/* Actions */}
         <div className="space-y-3">
-          {/* Generate / View AI Summary */}
-          {!showSummary && (
-            <>
-              {summary ? (
-                <button
-                  onClick={() => setShowSummary(true)}
-                  className="w-full h-11 rounded-xl bg-emerald-600/90 text-white text-sm font-medium hover:bg-emerald-600 transition-all flex items-center justify-center gap-2"
-                >
-                  <FileText className="w-4 h-4" />
-                  Voir la synthese IA
-                </button>
-              ) : (
-                <button
-                  onClick={() => generateSummary.mutate(callId)}
-                  disabled={isGenerating || summaryLoading}
-                  className="w-full h-11 rounded-xl bg-red-600 text-white text-sm font-medium hover:bg-red-500 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isGenerating ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      Generation en cours...
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="w-4 h-4" />
-                      Generer la synthese IA
-                    </>
-                  )}
-                </button>
-              )}
-            </>
-          )}
+          {/* Download transcript */}
+          <button
+            onClick={onDownloadTranscript}
+            className="w-full h-11 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-all flex items-center justify-center gap-2"
+          >
+            <Download className="w-4 h-4" />
+            Telecharger la transcription
+          </button>
 
           {/* Summary content */}
           {showSummary && summary && (

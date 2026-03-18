@@ -3,7 +3,14 @@
 import { use } from "react";
 import { useRoutePrefix } from "@/hooks/use-route-prefix";
 import { useCourse } from "@/hooks/use-courses";
-import { CourseEditor } from "@/components/school/course-editor";
+import dynamic from "next/dynamic";
+const CourseEditor = dynamic(
+  () =>
+    import("@/components/school/course-editor").then((m) => ({
+      default: m.CourseEditor,
+    })),
+  { ssr: false },
+);
 
 export default function EditCoursePage({
   params,
