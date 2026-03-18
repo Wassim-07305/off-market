@@ -187,37 +187,45 @@ export default function SettingsPage() {
     }
 
     setUploading(true);
-    const ext = file.name.split(".").pop();
-    const filePath = `${user.id}/avatar.${ext}`;
+    try {
+      const ext = file.name.split(".").pop() ?? "jpg";
+      const filePath = `${user.id}/avatar.${ext}`;
 
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("path", `avatars/${filePath}`);
-    const uploadRes = await fetch("/api/storage/upload", {
-      method: "POST",
-      body: formData,
-    });
+      // Upload directly to Supabase Storage (avatars bucket)
+      const { error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(filePath, file, { upsert: true, contentType: file.type });
 
-    if (!uploadRes.ok) {
-      toast.error("Erreur lors de l'upload");
-      setUploading(false);
-      return;
-    }
+      if (uploadError) {
+        // If bucket doesn't exist, try creating it then retry
+        if (uploadError.message?.includes("not found")) {
+          toast.error("Le bucket avatars n'existe pas. Contactez l'admin.");
+          setUploading(false);
+          return;
+        }
+        throw uploadError;
+      }
 
-    const { url: uploadedUrl } = await uploadRes.json();
-    const newUrl = uploadedUrl + "?t=" + Date.now();
+      const { data: publicData } = supabase.storage
+        .from("avatars")
+        .getPublicUrl(filePath);
 
-    const { error: updateError } = await supabase
-      .from("profiles")
-      .update({ avatar_url: newUrl })
-      .eq("id", user.id);
+      const newUrl = publicData.publicUrl + "?t=" + Date.now();
 
-    setUploading(false);
-    if (updateError) {
-      toast.error("Erreur lors de la mise a jour");
-    } else {
+      const { error: updateError } = await supabase
+        .from("profiles")
+        .update({ avatar_url: newUrl } as never)
+        .eq("id", user.id);
+
+      if (updateError) throw updateError;
+
       setAvatarUrl(newUrl);
       toast.success("Photo de profil mise a jour");
+    } catch (err) {
+      console.error("[avatar upload]", err);
+      toast.error("Erreur lors de l'upload de la photo");
+    } finally {
+      setUploading(false);
     }
   };
 

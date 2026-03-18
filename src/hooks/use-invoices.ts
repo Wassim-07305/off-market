@@ -116,11 +116,6 @@ export function useInvoices(options: UseInvoicesOptions = {}) {
         .update({ status: "sent" })
         .eq("id", id);
       if (error) throw error;
-
-      // Send email notification to client (fire-and-forget)
-      fetch(`/api/invoices/${id}/send-email`, { method: "POST" }).catch(
-        () => {},
-      );
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["invoices"] });

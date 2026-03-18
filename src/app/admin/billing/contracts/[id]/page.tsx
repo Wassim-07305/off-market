@@ -100,23 +100,8 @@ export default function ContractDetailPage() {
     }
   };
 
-  const handleSendEmail = async () => {
-    setSendingEmail(true);
-    try {
-      const res = await fetch(`/api/contracts/${id}/send-email`, {
-        method: "POST",
-      });
-      if (!res.ok) {
-        const data = await res.json();
-        toast.error(data.error ?? "Erreur lors de l'envoi");
-        return;
-      }
-      toast.success("Email envoye au client !");
-    } catch {
-      toast.error("Erreur de connexion");
-    } finally {
-      setSendingEmail(false);
-    }
+  const handleSendEmail = () => {
+    toast.info("Envoi d'email non configure");
   };
 
   if (isLoading) {

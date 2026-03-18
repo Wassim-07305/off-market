@@ -43,16 +43,9 @@ export function useInvitations() {
       if (error) throw error;
       return data as UserInvite;
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["invitations"] });
       toast.success("Invitation creee avec succes");
-
-      // Send invitation email (fire-and-forget)
-      fetch("/api/invitations/send-email", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ inviteId: data.id }),
-      }).catch(() => {});
     },
     onError: (error: Error) => {
       toast.error(error.message || "Erreur lors de la creation");

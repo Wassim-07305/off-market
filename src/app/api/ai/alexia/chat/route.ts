@@ -68,18 +68,24 @@ export async function POST(request: Request) {
     const config = configResult.data;
     const aiName = config?.ai_name ?? "AlexIA";
 
-    // 4. Generate embedding for user question & search relevant chunks
-    const queryEmbedding = await generateEmbedding(message);
-    const { data: relevantChunks } = await admin.rpc("match_coach_chunks", {
-      query_embedding: JSON.stringify(queryEmbedding),
-      p_coach_id: coachId,
-      match_threshold: 0.3,
-      match_count: 5,
-    });
-
-    const context = (relevantChunks ?? [])
-      .map((c: { content: string }) => c.content)
-      .join("\n\n---\n\n");
+    // 4. Search relevant document chunks (if available)
+    let context = "";
+    try {
+      const queryEmbedding = await generateEmbedding(message);
+      if (queryEmbedding.length > 0) {
+        const { data: relevantChunks } = await admin.rpc("match_coach_chunks", {
+          query_embedding: JSON.stringify(queryEmbedding),
+          p_coach_id: coachId,
+          match_threshold: 0.3,
+          match_count: 5,
+        });
+        context = (relevantChunks ?? [])
+          .map((c: { content: string }) => c.content)
+          .join("\n\n---\n\n");
+      }
+    } catch {
+      // RAG not available — AlexIA responds without document context
+    }
 
     // 5. Get client memory
     const { data: memory } = await admin

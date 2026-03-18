@@ -469,7 +469,7 @@ function AudioContent({ message }: { message: EnrichedMessage }) {
           {WAVEFORM_BARS.map((h, i) => (
             <div
               key={i}
-              className="flex-1 rounded-full bg-border"
+              className="flex-1 rounded-full bg-muted-foreground/25"
               style={{ height: `${h}%` }}
             />
           ))}

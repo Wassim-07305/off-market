@@ -60,7 +60,7 @@ export function ChannelSidebar({
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [dmSearch, setDmSearch] = useState("");
   const [viewMode, setViewMode] = useState<"list" | "mosaic">("list");
-  const { user } = useAuth();
+  const { user, isStaff } = useAuth();
   const supabase = useSupabase();
 
   // Toujours charger tous les profils pour les afficher directement
@@ -154,22 +154,26 @@ export function ChannelSidebar({
                   )}
                   Canaux
                 </div>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setShowCreateModal(true);
-                  }}
-                  className="w-5 h-5 rounded-md flex items-center justify-center hover:bg-[#AF0000]/10 text-[#AF0000]/50 hover:text-[#AF0000] transition-all duration-200"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                </button>
+                {isStaff && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowCreateModal(true);
+                    }}
+                    className="w-5 h-5 rounded-md flex items-center justify-center hover:bg-[#AF0000]/10 text-[#AF0000]/50 hover:text-[#AF0000] transition-all duration-200"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                  </button>
+                )}
               </div>
 
-              <CreateChannelModal
-                open={showCreateModal}
-                onClose={() => setShowCreateModal(false)}
-                onCreateChannel={onCreateChannel}
-              />
+              {isStaff && (
+                <CreateChannelModal
+                  open={showCreateModal}
+                  onClose={() => setShowCreateModal(false)}
+                  onCreateChannel={onCreateChannel}
+                />
+              )}
 
               {channelsOpen && (
                 <div className="px-2 space-y-0.5">

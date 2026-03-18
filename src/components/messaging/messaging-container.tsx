@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useCallback, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useChannels } from "@/hooks/use-channels";
 import { useMessages } from "@/hooks/use-messages";
 import { useAuth } from "@/hooks/use-auth";
@@ -19,6 +20,7 @@ type InboxMode = "internal" | "external";
 export default function MessagingContainer() {
   const [inboxMode, setInboxMode] = useState<InboxMode>("internal");
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const {
     channels,
     publicChannels,
@@ -72,10 +74,18 @@ export default function MessagingContainer() {
     }
   }, [channels, activeChannelId, setActiveChannelId]);
 
-  // Mark as read when channel changes
+  // Mark as read when channel changes, then refresh unread counts
   useEffect(() => {
-    if (activeChannelId) markAsRead();
-  }, [activeChannelId]);
+    if (activeChannelId) {
+      markAsRead().then(() => {
+        // Small delay to let the DB update, then refetch channel list
+        setTimeout(() => {
+          queryClient.invalidateQueries({ queryKey: ["channels"] });
+          queryClient.invalidateQueries({ queryKey: ["unread-counts"] });
+        }, 500);
+      });
+    }
+  }, [activeChannelId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSelectChannel = useCallback(
     (id: string) => {
