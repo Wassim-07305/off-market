@@ -46,6 +46,8 @@ export function BrandingProvider({ children }: { children: ReactNode }) {
     const lightPrimary = colorVariants(branding.primary_color);
     root.style.setProperty("--primary", lightPrimary.base);
     root.style.setProperty("--primary-hover", lightPrimary.hover);
+    root.style.setProperty("--primary-glow", lightPrimary.light);
+    root.style.setProperty("--primary-glow-subtle", lightPrimary.soft);
     root.style.setProperty("--primary-light", lightPrimary.light);
     root.style.setProperty("--primary-soft", lightPrimary.soft);
 
@@ -58,7 +60,7 @@ export function BrandingProvider({ children }: { children: ReactNode }) {
     root.style.setProperty("--radius-md", `${radius}px`);
     root.style.setProperty("--radius-lg", `${radius + 4}px`);
     root.style.setProperty("--radius-xl", `${radius + 8}px`);
-    root.style.setProperty("--radius-2xl", `${radius + 12}px`);
+    root.style.setProperty("--radius-full", "9999px");
 
     // Font
     if (branding.font_family !== "Inter") {
@@ -105,6 +107,8 @@ export function BrandingProvider({ children }: { children: ReactNode }) {
       .dark {
         --primary: ${darkPrimary.base};
         --primary-hover: ${darkPrimary.hover};
+        --primary-glow: ${darkPrimary.light};
+        --primary-glow-subtle: ${darkPrimary.soft};
         --primary-light: ${darkPrimary.light};
         --primary-soft: ${darkPrimary.soft};
         --accent: ${branding.accent_color_dark};

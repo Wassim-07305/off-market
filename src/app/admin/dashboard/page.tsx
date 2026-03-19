@@ -200,7 +200,7 @@ function ChartCard({
 
 const TOOLTIP_STYLE = {
   backgroundColor: "var(--surface)",
-  border: "1px solid var(--border-color)",
+  border: "1px solid var(--border)",
   borderRadius: "12px",
   fontSize: "13px",
   boxShadow:
