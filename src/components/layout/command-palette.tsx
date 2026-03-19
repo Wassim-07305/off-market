@@ -159,7 +159,7 @@ export function CommandPalette() {
         }}
       />
       <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-full max-w-lg animate-scale-in">
-        <div className="bg-surface border border-border rounded-2xl shadow-2xl overflow-hidden">
+        <div className="bg-surface border border-border rounded-xl shadow-2xl overflow-hidden">
           <div className="flex items-center gap-3 px-4 h-14 border-b border-border">
             <Search className="w-5 h-5 text-muted-foreground" />
             <input

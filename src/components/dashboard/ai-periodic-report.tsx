@@ -25,7 +25,7 @@ export function AiPeriodicReport() {
   if (!isEligible) return null;
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-border bg-surface transition-shadow duration-300 hover:shadow-md">
+    <div className="relative overflow-hidden rounded-xl border border-border bg-surface transition-shadow duration-300 hover:shadow-md">
       {/* Subtle gradient header */}
       <div
         className="flex items-center justify-between px-5 py-4 border-b border-zinc-100"

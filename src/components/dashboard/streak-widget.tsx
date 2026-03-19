@@ -20,7 +20,7 @@ export function StreakWidget() {
   if (isLoading) {
     return (
       <div
-        className="bg-surface rounded-2xl p-6 animate-shimmer"
+        className="bg-surface rounded-xl p-6 animate-shimmer"
         style={{ boxShadow: "var(--shadow-card)" }}
       >
         <div className="h-5 w-32 bg-muted rounded-lg mb-4" />
@@ -53,7 +53,7 @@ export function StreakWidget() {
 
   return (
     <div
-      className="bg-surface rounded-2xl p-6"
+      className="bg-surface rounded-xl p-6"
       style={{ boxShadow: "var(--shadow-card)" }}
     >
       {/* Header */}

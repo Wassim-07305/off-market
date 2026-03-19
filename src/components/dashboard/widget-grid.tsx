@@ -138,7 +138,7 @@ export function WidgetGrid() {
           <div
             key={i}
             className={cn(
-              "h-48 bg-surface rounded-2xl animate-shimmer",
+              "h-48 bg-surface rounded-xl animate-shimmer",
               i === 0 && "col-span-1 md:col-span-2 lg:col-span-3",
               (i === 1 || i === 2) && "lg:col-span-2",
             )}
@@ -220,7 +220,7 @@ export function WidgetGrid() {
             className={cn(
               "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5",
               isEditing &&
-                "p-4 rounded-2xl border-2 border-dashed border-border/50 bg-muted/20",
+                "p-4 rounded-xl border-2 border-dashed border-border/50 bg-muted/20",
             )}
           >
             {visibleWidgets.map((widget) => (
@@ -239,7 +239,7 @@ export function WidgetGrid() {
         {/* Drag overlay */}
         <DragOverlay>
           {activeWidget ? (
-            <div className="rounded-2xl border-2 border-[#DC2626]/40 bg-surface shadow-xl opacity-90 p-4">
+            <div className="rounded-xl border-2 border-[#DC2626]/40 bg-surface shadow-xl opacity-90 p-4">
               <p className="text-sm font-medium text-foreground">
                 {WIDGET_META[activeWidget.type]?.label ?? activeWidget.type}
               </p>

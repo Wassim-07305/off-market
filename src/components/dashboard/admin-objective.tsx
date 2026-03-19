@@ -25,7 +25,7 @@ export function AdminObjective({
 
   return (
     <div
-      className={cn("bg-surface rounded-2xl p-6", className)}
+      className={cn("bg-surface rounded-xl p-6", className)}
       style={{ boxShadow: "var(--shadow-card)" }}
     >
       <div className="flex items-center justify-between mb-4">

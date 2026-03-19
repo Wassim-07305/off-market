@@ -34,7 +34,7 @@ export function ProgressWidget({
 }: ProgressWidgetProps) {
   return (
     <div
-      className={cn("bg-surface rounded-2xl p-6", className)}
+      className={cn("bg-surface rounded-xl p-6", className)}
       style={{ boxShadow: "var(--shadow-card)" }}
     >
       <h3 className="text-[13px] font-semibold text-foreground flex items-center gap-2 mb-5">
@@ -115,7 +115,7 @@ export function GamificationSummary({
 }: GamificationSummaryProps) {
   return (
     <div
-      className={cn("bg-surface rounded-2xl p-6", className)}
+      className={cn("bg-surface rounded-xl p-6", className)}
       style={{ boxShadow: "var(--shadow-card)" }}
     >
       <h3 className="text-[13px] font-semibold text-foreground flex items-center gap-2 mb-5">

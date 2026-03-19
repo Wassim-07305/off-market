@@ -55,7 +55,7 @@ function WidgetWrapperBase({
         sizeClasses[widget.size] ?? "col-span-1",
         "relative group/widget transition-all duration-200",
         isDragging && "z-50 opacity-80 scale-[1.02]",
-        isEditing && "rounded-2xl",
+        isEditing && "rounded-xl",
         isEditing && !widget.visible && "opacity-40",
       )}
     >
@@ -103,7 +103,7 @@ function WidgetWrapperBase({
       <div
         className={cn(
           "h-full transition-all duration-200",
-          isEditing && "mt-8 rounded-2xl border-2 border-dashed",
+          isEditing && "mt-8 rounded-xl border-2 border-dashed",
           isEditing && widget.visible && "border-border",
           isEditing && !widget.visible && "border-error/30",
           isEditing && isDragging && "border-[#DC2626]/50 shadow-lg",

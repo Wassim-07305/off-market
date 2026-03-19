@@ -19,7 +19,7 @@ function StatsOverviewWidgetBase() {
         {Array.from({ length: 4 }).map((_, i) => (
           <div
             key={i}
-            className="bg-surface rounded-2xl p-6 animate-shimmer"
+            className="bg-surface rounded-xl p-6 animate-shimmer"
             style={{ boxShadow: "var(--shadow-card)" }}
           >
             <div className="h-4 w-24 bg-muted rounded-lg mb-4" />

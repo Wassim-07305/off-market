@@ -58,7 +58,7 @@ export function RiskAnalysisPanel() {
 
   return (
     <div
-      className="bg-surface rounded-2xl overflow-hidden"
+      className="bg-surface rounded-xl overflow-hidden"
       style={{ boxShadow: "var(--shadow-card)" }}
     >
       {/* Header */}

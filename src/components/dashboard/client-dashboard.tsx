@@ -15,9 +15,9 @@ import { useAnnouncements } from "@/hooks/useAnnouncements";
 import { useRoutePrefix } from "@/hooks/use-route-prefix";
 import { OnboardingBanner } from "@/components/onboarding/onboarding-banner";
 import { OnboardingChecklist } from "@/components/onboarding/onboarding-checklist";
-import { StreakWidget } from "@/components/dashboard/streak-widget";
-import { ProgressWidget } from "@/components/dashboard/progress-widget";
-import { MiniLeaderboard } from "@/components/dashboard/MiniLeaderboard";
+import { HeroMetric } from "@/components/dashboard/hero-metric";
+import { MetricCard } from "@/components/dashboard/metric-card";
+import { StaggerList, StaggerItem } from "@/components/ui/stagger-list";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 import { cn } from "@/lib/utils";
 import {
@@ -61,12 +61,12 @@ export function ClientDashboard() {
     >
       {/* Page title with greeting */}
       <motion.div variants={staggerItem}>
-        <h1 className="text-2xl font-bold bg-gradient-to-r from-[#AF0000] via-[#DC2626] to-[#AF0000] bg-clip-text text-transparent tracking-tight">
+        <h1 className="text-[20px] font-bold tracking-[-0.02em] text-foreground font-[family-name:var(--font-heading)]">
           {getGreeting()} {firstName} !
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Voici ton espace personnel — ta progression, tes prochaines étapes et
-          ton activité.
+          Voici ton espace personnel — ta progression, tes prochaines etapes et
+          ton activite.
         </p>
       </motion.div>
 
@@ -75,18 +75,14 @@ export function ClientDashboard() {
         <OnboardingBanner />
       </motion.div>
 
+      {/* Hero Metric: Progression */}
+      <motion.div variants={staggerItem}>
+        <ProgressionHero />
+      </motion.div>
+
       {/* Top section: Streak + XP + Quick stats */}
       <motion.div variants={staggerItem}>
         <TopStatsSection prefix={prefix} />
-      </motion.div>
-
-      {/* Streak details + Progress overview */}
-      <motion.div
-        variants={staggerItem}
-        className="grid grid-cols-1 lg:grid-cols-2 gap-4"
-      >
-        <StreakWidget />
-        <ProgressWidgetSection />
       </motion.div>
 
       {/* Onboarding checklist */}
@@ -117,75 +113,59 @@ export function ClientDashboard() {
         <BadgesSection />
         <CommunitySection prefix={prefix} />
       </motion.div>
-
-      {/* Leaderboard */}
-      <motion.div variants={staggerItem}>
-        <MiniLeaderboard />
-      </motion.div>
     </motion.div>
   );
 }
 
 // ===================================================================
-// PROGRESS WIDGET SECTION (wraps ProgressWidget with live data)
+// PROGRESSION HERO
 // ===================================================================
 
-function ProgressWidgetSection() {
-  const { summary, isLoading: xpLoading } = useXp();
-  const { goals, isLoading: goalsLoading } = useCoachingGoals();
+function ProgressionHero() {
   const { data: courses } = useCourses("published");
   const { data: lessonProgress } = useLessonProgress();
 
-  const items = useMemo(() => {
-    // Formations progress
-    const totalLessons =
-      courses?.reduce(
-        (acc, c) =>
-          acc +
-          (c.modules?.reduce((a, m) => a + (m.lessons?.length ?? 0), 0) ?? 0),
-        0,
-      ) ?? 0;
-    const completedLessons = lessonProgress
-      ? lessonProgress.filter((p) => p.status === "completed").length
+  const progressPercent = useMemo(() => {
+    if (!courses || !lessonProgress) return 0;
+    let totalLessons = 0;
+    let completedLessons = 0;
+    const completedIds = new Set(
+      lessonProgress
+        .filter((p) => p.status === "completed")
+        .map((p) => p.lesson_id),
+    );
+    for (const course of courses) {
+      for (const mod of course.modules ?? []) {
+        const lessons = mod.lessons ?? [];
+        totalLessons += lessons.length;
+        completedLessons += lessons.filter((l) =>
+          completedIds.has(l.id),
+        ).length;
+      }
+    }
+    return totalLessons > 0
+      ? Math.round((completedLessons / totalLessons) * 100)
       : 0;
-
-    const activeGoals = goals.filter((g) => g.status !== "completed");
-    const completedGoals = goals.filter(
-      (g) => g.status === "completed",
-    ).length;
-
-    return [
-      {
-        label: "XP vers prochain niveau",
-        current: summary.totalXp - (summary.level.min_xp ?? 0),
-        target: summary.nextLevel
-          ? summary.nextLevel.min_xp - (summary.level.min_xp ?? 0)
-          : 1,
-        icon: Star,
-        color: "text-amber-500",
-      },
-      {
-        label: "Lecons terminees",
-        current: completedLessons,
-        target: Math.max(totalLessons, 1),
-        icon: GraduationCap,
-        color: "text-emerald-500",
-      },
-      {
-        label: "Objectifs atteints",
-        current: completedGoals,
-        target: Math.max(goals.length, 1),
-        icon: Target,
-        color: "text-amber-500",
-      },
-    ];
-  }, [summary, goals, courses, lessonProgress]);
+  }, [courses, lessonProgress]);
 
   return (
-    <ProgressWidget
-      items={items}
-      isLoading={xpLoading || goalsLoading}
-    />
+    <div className="bg-gradient-to-br from-primary-glow to-primary-glow-subtle border border-primary/[0.12] rounded-lg p-4 sm:p-5">
+      <p className="text-[9px] sm:text-[10px] uppercase tracking-wider text-primary font-semibold">
+        Ta progression
+      </p>
+      <p className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight mt-1">
+        {progressPercent}%
+      </p>
+      <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-primary/10">
+        <div
+          className="h-full rounded-full bg-primary transition-all duration-700"
+          style={{ width: `${progressPercent}%` }}
+        />
+      </div>
+      <p className="text-[10px] sm:text-xs text-muted-foreground mt-1.5">
+        de tes formations completees
+      </p>
+    </div>
   );
 }
 
@@ -233,7 +213,7 @@ function TopStatsSection({ prefix }: { prefix: string }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {/* Streak card */}
-      <div className="relative overflow-hidden bg-surface border border-border rounded-2xl p-5 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5">
+      <div className="relative overflow-hidden bg-surface border border-border rounded-lg p-5 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
         <div className="absolute inset-0 bg-gradient-to-br from-orange-500/[0.06] to-transparent pointer-events-none" />
         <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-orange-500/[0.08] to-transparent rounded-bl-full" />
         <div className="flex items-center gap-3 mb-3">
@@ -263,7 +243,7 @@ function TopStatsSection({ prefix }: { prefix: string }) {
       </div>
 
       {/* XP / Level card */}
-      <div className="relative overflow-hidden bg-surface border border-border rounded-2xl p-5 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5">
+      <div className="relative overflow-hidden bg-surface border border-border rounded-lg p-5 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
         <div className="absolute inset-0 bg-gradient-to-br from-red-500/[0.06] to-transparent pointer-events-none" />
         <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-red-500/[0.08] to-transparent rounded-bl-full" />
         <div className="flex items-center gap-3 mb-3">
@@ -296,7 +276,7 @@ function TopStatsSection({ prefix }: { prefix: string }) {
       </div>
 
       {/* Formations completed */}
-      <div className="relative overflow-hidden bg-surface border border-border rounded-2xl p-5 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5">
+      <div className="relative overflow-hidden bg-surface border border-border rounded-lg p-5 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
         <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/[0.06] to-transparent pointer-events-none" />
         <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-emerald-500/[0.08] to-transparent rounded-bl-full" />
         <div className="flex items-center gap-3 mb-3">
@@ -304,7 +284,7 @@ function TopStatsSection({ prefix }: { prefix: string }) {
             <GraduationCap className="size-4 text-white" />
           </div>
           <span className="text-sm text-muted-foreground font-medium">
-            Formations terminées
+            Formations terminees
           </span>
         </div>
         <div className="text-2xl font-bold text-foreground tracking-tight">
@@ -317,7 +297,7 @@ function TopStatsSection({ prefix }: { prefix: string }) {
       </div>
 
       {/* Goals achieved */}
-      <div className="relative overflow-hidden bg-surface border border-border rounded-2xl p-5 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5">
+      <div className="relative overflow-hidden bg-surface border border-border rounded-lg p-5 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
         <div className="absolute inset-0 bg-gradient-to-br from-amber-500/[0.06] to-transparent pointer-events-none" />
         <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-amber-500/[0.08] to-transparent rounded-bl-full" />
         <div className="flex items-center gap-3 mb-3">
@@ -426,7 +406,7 @@ function NextActionsSection({ prefix }: { prefix: string }) {
   if (actions.length === 0) return null;
 
   return (
-    <div className="bg-surface border border-border rounded-2xl overflow-hidden shadow-sm">
+    <div className="bg-surface border border-border rounded-xl overflow-hidden shadow-sm">
       {/* Header */}
       <div className="px-5 py-4 border-b border-border bg-gradient-to-r from-muted/50 to-transparent">
         <div className="flex items-center gap-2">
@@ -434,7 +414,7 @@ function NextActionsSection({ prefix }: { prefix: string }) {
             <Sparkles className="size-3.5 text-white" />
           </div>
           <h3 className="text-sm font-semibold text-foreground">
-            Prochaines étapes
+            Prochaines etapes
           </h3>
         </div>
       </div>
@@ -520,7 +500,7 @@ function CourseProgressSection({ prefix }: { prefix: string }) {
   }, [courses, lessonProgress]);
 
   return (
-    <div className="bg-surface border border-border rounded-2xl p-5 transition-all duration-200 hover:shadow-md">
+    <div className="bg-surface border border-border rounded-xl p-5 transition-all duration-200 hover:shadow-md">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
           <div className="size-7 rounded-lg bg-gradient-to-br from-[#AF0000] to-[#DC2626] flex items-center justify-center">
@@ -588,7 +568,7 @@ function GoalProgressSection({ prefix }: { prefix: string }) {
   const { activeGoals, isLoading } = useCoachingGoals();
 
   return (
-    <div className="bg-surface border border-border rounded-2xl p-5 transition-all duration-200 hover:shadow-md">
+    <div className="bg-surface border border-border rounded-xl p-5 transition-all duration-200 hover:shadow-md">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
           <div className="size-7 rounded-lg bg-gradient-to-br from-amber-400 to-amber-500 flex items-center justify-center">
@@ -673,7 +653,7 @@ function RecentJournalSection({ prefix }: { prefix: string }) {
   const recentEntries = entries.slice(0, 3);
 
   return (
-    <div className="bg-surface border border-border rounded-2xl p-5 transition-all duration-200 hover:shadow-md">
+    <div className="bg-surface border border-border rounded-xl p-5 transition-all duration-200 hover:shadow-md">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
           <div className="size-7 rounded-lg bg-gradient-to-br from-zinc-600 to-zinc-700 flex items-center justify-center">
@@ -717,9 +697,9 @@ function RecentJournalSection({ prefix }: { prefix: string }) {
                 </div>
                 {entry.tags && entry.tags.length > 0 && (
                   <div className="flex items-center gap-1 mt-1">
-                    {entry.tags.slice(0, 3).map((tag, i) => (
+                    {entry.tags.slice(0, 3).map((tag) => (
                       <span
-                        key={`${tag}-${i}`}
+                        key={tag}
                         className="text-[9px] px-1.5 py-0.5 rounded-full bg-[#AF0000]/5 text-[#AF0000] font-medium"
                       >
                         {tag}
@@ -740,7 +720,7 @@ function RecentJournalSection({ prefix }: { prefix: string }) {
             href={`${prefix}/journal`}
             className="text-xs text-[#AF0000] font-medium hover:text-[#DC2626] transition-colors"
           >
-            Ecrire une première entree
+            Ecrire une premiere entree
           </Link>
         </div>
       )}
@@ -759,7 +739,7 @@ function BadgesSection() {
   const recentBadges = badges.slice(0, 5);
 
   return (
-    <div className="bg-surface border border-border rounded-2xl p-5 transition-all duration-200 hover:shadow-md">
+    <div className="bg-surface border border-border rounded-xl p-5 transition-all duration-200 hover:shadow-md">
       <div className="flex items-center gap-2 mb-4">
         <div className="size-7 rounded-lg bg-gradient-to-br from-amber-400 to-amber-500 flex items-center justify-center">
           <Trophy className="size-3.5 text-white" />
@@ -837,7 +817,7 @@ function CommunitySection({ prefix }: { prefix: string }) {
   const recentAnnouncements = (announcements ?? []).slice(0, 3);
 
   return (
-    <div className="bg-surface border border-border rounded-2xl p-5 transition-all duration-200 hover:shadow-md">
+    <div className="bg-surface border border-border rounded-xl p-5 transition-all duration-200 hover:shadow-md">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
           <div className="size-7 rounded-lg bg-gradient-to-br from-[#AF0000] to-[#DC2626] flex items-center justify-center">
@@ -846,7 +826,7 @@ function CommunitySection({ prefix }: { prefix: string }) {
           Actualites
         </h3>
         <Link
-          href={`${prefix}/feed`}
+          href={`${prefix}/community`}
           className="text-xs text-[#AF0000] hover:text-[#DC2626] transition-colors font-medium"
         >
           Voir tout

@@ -28,11 +28,11 @@ function PageSkeleton() {
         {[...Array(4)].map((_, i) => (
           <div
             key={i}
-            className="h-28 rounded-2xl border border-border/40 bg-surface"
+            className="h-28 rounded-xl border border-border/40 bg-surface"
           />
         ))}
       </div>
-      <div className="h-64 rounded-2xl border border-border/40 bg-surface" />
+      <div className="h-64 rounded-xl border border-border/40 bg-surface" />
     </div>
   );
 }

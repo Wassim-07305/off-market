@@ -32,7 +32,7 @@ function UpcomingCallsWidgetBase() {
   if (isLoading) {
     return (
       <div
-        className="bg-surface rounded-2xl p-6"
+        className="bg-surface rounded-xl p-6"
         style={{ boxShadow: "var(--shadow-card)" }}
       >
         <div className="h-4 w-32 bg-muted rounded-lg mb-4 animate-shimmer" />
@@ -47,7 +47,7 @@ function UpcomingCallsWidgetBase() {
 
   return (
     <div
-      className="bg-surface rounded-2xl p-6"
+      className="bg-surface rounded-xl p-6"
       style={{ boxShadow: "var(--shadow-card)" }}
     >
       <div className="flex items-center gap-2 mb-4">

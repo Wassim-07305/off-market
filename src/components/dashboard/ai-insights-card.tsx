@@ -75,7 +75,7 @@ export function AIInsightsCard() {
 
   return (
     <div
-      className="bg-surface rounded-2xl p-6 relative overflow-hidden"
+      className="bg-surface rounded-xl p-6 relative overflow-hidden"
       style={{ boxShadow: "var(--shadow-card)" }}
     >
       {/* Subtle gradient background */}

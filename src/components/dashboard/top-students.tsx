@@ -23,7 +23,7 @@ export function TopStudents() {
   if (isLoading) {
     return (
       <div
-        className="bg-surface rounded-2xl p-6"
+        className="bg-surface rounded-xl p-6"
         style={{ boxShadow: "var(--shadow-card)" }}
       >
         <h3 className="text-[13px] font-semibold text-foreground mb-4">
@@ -46,7 +46,7 @@ export function TopStudents() {
 
   return (
     <div
-      className="bg-surface rounded-2xl p-6"
+      className="bg-surface rounded-xl p-6"
       style={{ boxShadow: "var(--shadow-card)" }}
     >
       <h3 className="text-[13px] font-semibold text-foreground mb-4">

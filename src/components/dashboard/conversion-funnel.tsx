@@ -54,7 +54,7 @@ export function ConversionFunnel() {
 
   return (
     <div
-      className="bg-surface rounded-2xl p-5"
+      className="bg-surface rounded-xl p-5"
       style={{ boxShadow: "var(--shadow-card)" }}
     >
       <div className="flex items-center gap-2 mb-4">

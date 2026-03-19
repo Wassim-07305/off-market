@@ -50,7 +50,7 @@ export function ActivityHeatmap() {
 
   return (
     <div
-      className="bg-surface rounded-2xl p-6"
+      className="bg-surface rounded-xl p-6"
       style={{ boxShadow: "var(--shadow-card)" }}
     >
       <div className="flex items-center gap-2 mb-5">

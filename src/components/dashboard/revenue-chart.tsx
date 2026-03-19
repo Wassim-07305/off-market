@@ -19,7 +19,7 @@ export function RevenueChart() {
 
   return (
     <div
-      className="bg-surface rounded-2xl p-6"
+      className="bg-surface rounded-xl p-6"
       style={{ boxShadow: "var(--shadow-card)" }}
     >
       <div className="flex items-center justify-between mb-6">

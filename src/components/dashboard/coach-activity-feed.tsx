@@ -108,7 +108,7 @@ export function CoachActivityFeed() {
   if (isLoading) {
     return (
       <div
-        className="bg-surface rounded-2xl p-6"
+        className="bg-surface rounded-xl p-6"
         style={{ boxShadow: "var(--shadow-card)" }}
       >
         <h3 className="text-[13px] font-semibold text-foreground mb-4">
@@ -131,7 +131,7 @@ export function CoachActivityFeed() {
 
   return (
     <div
-      className="bg-surface rounded-2xl p-6"
+      className="bg-surface rounded-xl p-6"
       style={{ boxShadow: "var(--shadow-card)" }}
     >
       {/* Header */}

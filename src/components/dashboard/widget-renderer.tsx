@@ -32,7 +32,7 @@ function WidgetRendererBase({ type }: { type: WidgetType }) {
   if (!Component) {
     return (
       <div
-        className="bg-surface rounded-2xl p-6 flex items-center justify-center"
+        className="bg-surface rounded-xl p-6 flex items-center justify-center"
         style={{ boxShadow: "var(--shadow-card)" }}
       >
         <p className="text-sm text-muted-foreground">Widget indisponible</p>
