@@ -225,9 +225,9 @@ export function MessageBubble({
             className={cn(
               "inline-block max-w-full",
               isOwn && !message.is_urgent
-                ? "bg-gradient-to-br from-[#AF0000]/[0.06] to-[#DC2626]/[0.04] rounded-2xl rounded-tr-sm px-3.5 py-2"
+                ? "bg-gradient-to-br from-[#AF0000]/[0.06] to-[#DC2626]/[0.04] rounded-lg rounded-tr-sm px-3.5 py-2"
                 : !message.is_urgent
-                  ? "bg-muted/30 rounded-2xl rounded-tl-sm px-3.5 py-2"
+                  ? "bg-surface rounded-lg rounded-tl-sm px-3.5 py-2"
                   : "",
             )}
           >

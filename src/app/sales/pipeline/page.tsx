@@ -3,6 +3,8 @@
 import { useState, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { staggerContainer, staggerItem, fadeInUp } from "@/lib/animations";
+import { PageTransition } from "@/components/ui/page-transition";
+import { HeroMetric } from "@/components/dashboard/hero-metric";
 import {
   usePipelineContacts,
   useUpdateContactStage,
@@ -83,7 +85,7 @@ function StatsBar({ contacts }: { contacts: CrmContact[] }) {
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-      <div className="bg-surface border border-border rounded-xl p-3">
+      <div className="bg-surface border border-border rounded-md p-3">
         <div className="flex items-center gap-2 text-muted-foreground mb-1">
           <Users className="w-3.5 h-3.5" />
           <span className="text-[10px] font-medium uppercase tracking-wider">
@@ -92,7 +94,7 @@ function StatsBar({ contacts }: { contacts: CrmContact[] }) {
         </div>
         <p className="text-lg font-semibold text-foreground">{totalContacts}</p>
       </div>
-      <div className="bg-surface border border-border rounded-xl p-3">
+      <div className="bg-surface border border-border rounded-md p-3">
         <div className="flex items-center gap-2 text-muted-foreground mb-1">
           <TrendingUp className="w-3.5 h-3.5" />
           <span className="text-[10px] font-medium uppercase tracking-wider">
@@ -106,7 +108,7 @@ function StatsBar({ contacts }: { contacts: CrmContact[] }) {
       {perStage.slice(0, 2).map((s) => (
         <div
           key={s.value}
-          className="bg-surface border border-border rounded-xl p-3"
+          className="bg-surface border border-border rounded-md p-3"
         >
           <div className="flex items-center gap-2 text-muted-foreground mb-1">
             <BarChart3 className="w-3.5 h-3.5" />
@@ -136,7 +138,7 @@ function ContactCard({
     <motion.button
       variants={fadeInUp}
       onClick={onClick}
-      className="w-full text-left bg-surface border border-border rounded-xl p-3 hover:shadow-sm transition-shadow group"
+      className="w-full text-left bg-surface border border-border rounded-md p-3 hover:border-hover hover:shadow-sm hover:-translate-y-[1px] transition-all group"
     >
       <div className="flex items-start justify-between mb-1.5">
         <p className="text-sm font-medium text-foreground truncate pr-2">
@@ -210,7 +212,12 @@ function StageColumn({
 
   return (
     <div className="flex flex-col min-w-[260px] w-[260px] shrink-0">
-      <div className={cn("rounded-xl px-3 py-2 mb-2 border", stage.bg)}>
+      <div
+        className={cn(
+          "rounded-md px-3 py-2 mb-2 border border-border",
+          stage.bg,
+        )}
+      >
         <div className="flex items-center justify-between">
           <span className={cn("text-xs font-semibold", stage.color)}>
             {stage.label}
@@ -695,100 +702,118 @@ export default function SalesPipelinePage() {
     .reduce((sum, c) => sum + Number(c.estimated_value ?? 0), 0);
 
   return (
-    <motion.div
-      variants={staggerContainer}
-      initial="hidden"
-      animate="visible"
-      className="space-y-6"
-    >
-      {/* Header */}
-      <motion.div variants={staggerItem}>
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-display font-bold text-foreground tracking-tight">
-              Pipeline CRM
-            </h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Gerez vos prospects et opportunites commerciales
-            </p>
+    <PageTransition>
+      <motion.div
+        variants={staggerContainer}
+        initial="hidden"
+        animate="visible"
+        className="space-y-6"
+      >
+        {/* Header */}
+        <motion.div variants={staggerItem}>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-heading font-bold text-foreground tracking-tight">
+                Pipeline CRM
+              </h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Gerez vos prospects et opportunites commerciales
+              </p>
+            </div>
+            <button
+              onClick={() => setShowAdd(true)}
+              className="h-8 px-3 rounded-lg bg-primary text-white text-xs font-medium hover:bg-primary/90 transition-colors flex items-center gap-1.5"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              Contact
+            </button>
           </div>
-          <button
-            onClick={() => setShowAdd(true)}
-            className="h-8 px-3 rounded-lg bg-primary text-white text-xs font-medium hover:bg-primary/90 transition-colors flex items-center gap-1.5"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            Contact
-          </button>
-        </div>
-      </motion.div>
+        </motion.div>
 
-      {/* Stats */}
-      <motion.div variants={staggerItem}>
-        <StatsBar contacts={contacts} />
-      </motion.div>
-
-      {/* Search + pipeline value */}
-      <motion.div variants={staggerItem}>
-        <div className="flex items-center justify-between gap-4">
-          <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Rechercher un contact..."
-              className="w-full h-8 pl-8 pr-3 bg-muted border border-border rounded-lg text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
-            />
-          </div>
-          <span className="text-xs font-medium text-foreground font-mono shrink-0">
-            Pipeline: {totalValue.toLocaleString("fr-FR")} EUR
-          </span>
-        </div>
-      </motion.div>
-
-      {/* Kanban Board */}
-      <motion.div variants={staggerItem}>
-        {isLoading ? (
-          <div className="flex gap-4 overflow-x-auto pb-4">
-            {KANBAN_STAGES.map((s) => (
-              <div key={s.value} className="min-w-[260px] space-y-2">
-                <div className="h-8 bg-muted rounded-xl animate-pulse" />
-                <div className="h-24 bg-muted rounded-xl animate-pulse" />
-                <div className="h-24 bg-muted rounded-xl animate-pulse" />
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="flex gap-4 overflow-x-auto pb-4">
-            {KANBAN_STAGES.map((stage) => (
-              <StageColumn
-                key={stage.value}
-                stage={stage}
-                contacts={contactsByStage.get(stage.value) ?? []}
-                onCardClick={(contact) => setSelectedContact(contact)}
-              />
-            ))}
-          </div>
-        )}
-      </motion.div>
-
-      {/* Contact detail drawer */}
-      <AnimatePresence>
-        {selectedContact && (
-          <ContactDetailDrawer
-            key={selectedContact.id}
-            contact={selectedContact}
-            onClose={() => setSelectedContact(null)}
+        {/* Pipeline value hero */}
+        <motion.div variants={staggerItem}>
+          <HeroMetric
+            label="Valeur du pipeline"
+            value={`${totalValue.toLocaleString("fr-FR")} EUR`}
+            change={
+              contacts.length > 0
+                ? {
+                    value: `${contacts.filter((c) => c.stage !== "perdu").length} contacts actifs`,
+                    positive: true,
+                  }
+                : undefined
+            }
           />
-        )}
-      </AnimatePresence>
+        </motion.div>
 
-      {/* Add contact modal */}
-      <AddContactModal
-        open={showAdd}
-        onClose={() => setShowAdd(false)}
-        onAdd={(data) => createContact.mutate(data)}
-        isPending={createContact.isPending}
-      />
-    </motion.div>
+        {/* Stats */}
+        <motion.div variants={staggerItem}>
+          <StatsBar contacts={contacts} />
+        </motion.div>
+
+        {/* Search + pipeline value */}
+        <motion.div variants={staggerItem}>
+          <div className="flex items-center justify-between gap-4">
+            <div className="relative flex-1 max-w-sm">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Rechercher un contact..."
+                className="w-full h-8 pl-8 pr-3 bg-muted border border-border rounded-lg text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+              />
+            </div>
+            <span className="text-xs font-medium text-foreground font-mono shrink-0">
+              Pipeline: {totalValue.toLocaleString("fr-FR")} EUR
+            </span>
+          </div>
+        </motion.div>
+
+        {/* Kanban Board */}
+        <motion.div variants={staggerItem}>
+          {isLoading ? (
+            <div className="flex gap-4 overflow-x-auto pb-4">
+              {KANBAN_STAGES.map((s) => (
+                <div key={s.value} className="min-w-[260px] space-y-2">
+                  <div className="h-8 bg-muted rounded-xl animate-pulse" />
+                  <div className="h-24 bg-muted rounded-xl animate-pulse" />
+                  <div className="h-24 bg-muted rounded-xl animate-pulse" />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex gap-4 overflow-x-auto pb-4">
+              {KANBAN_STAGES.map((stage) => (
+                <StageColumn
+                  key={stage.value}
+                  stage={stage}
+                  contacts={contactsByStage.get(stage.value) ?? []}
+                  onCardClick={(contact) => setSelectedContact(contact)}
+                />
+              ))}
+            </div>
+          )}
+        </motion.div>
+
+        {/* Contact detail drawer */}
+        <AnimatePresence>
+          {selectedContact && (
+            <ContactDetailDrawer
+              key={selectedContact.id}
+              contact={selectedContact}
+              onClose={() => setSelectedContact(null)}
+            />
+          )}
+        </AnimatePresence>
+
+        {/* Add contact modal */}
+        <AddContactModal
+          open={showAdd}
+          onClose={() => setShowAdd(false)}
+          onAdd={(data) => createContact.mutate(data)}
+          isPending={createContact.isPending}
+        />
+      </motion.div>
+    </PageTransition>
   );
 }

@@ -461,10 +461,10 @@ export function UnifiedInbox() {
                       {/* Bubble */}
                       <div
                         className={cn(
-                          "max-w-[70%] rounded-2xl px-3.5 py-2",
+                          "max-w-[70%] rounded-lg px-3.5 py-2",
                           isSelf
                             ? "bg-primary text-primary-foreground rounded-tr-sm"
-                            : "bg-muted/80 text-foreground rounded-tl-sm",
+                            : "bg-surface text-foreground rounded-tl-sm",
                         )}
                       >
                         {!isSelf && (
