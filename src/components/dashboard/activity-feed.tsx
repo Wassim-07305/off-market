@@ -45,13 +45,16 @@ const activityLabels: Record<string, string> = {
 };
 
 const activityDotColors: Record<string, string> = {
+  module_started: "bg-blue-500",
   module_completed: "bg-success",
   lesson_completed: "bg-success",
   payment_received: "bg-success",
-  milestone_reached: "bg-warning",
-  message_sent: "bg-info",
-  form_submitted: "bg-info",
+  milestone_reached: "bg-primary",
+  message_sent: "bg-blue-500",
+  form_submitted: "bg-blue-500",
   call_scheduled: "bg-primary",
+  login: "bg-primary",
+  note_added: "bg-primary",
 };
 
 export function ActivityFeed() {
@@ -74,20 +77,17 @@ export function ActivityFeed() {
 
   if (isLoading) {
     return (
-      <div
-        className="bg-surface rounded-2xl p-6"
-        style={{ boxShadow: "var(--shadow-card)" }}
-      >
-        <h3 className="text-[13px] font-semibold text-foreground mb-4">
+      <div className="bg-surface border border-border rounded-lg p-4">
+        <h3 className="text-[10px] uppercase tracking-wider text-muted-foreground mb-3">
           Activite recente
         </h3>
-        <div className="space-y-4">
+        <div className="space-y-3">
           {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="flex items-start gap-3">
-              <div className="w-8 h-8 rounded-full animate-shimmer" />
-              <div className="flex-1 space-y-1.5">
-                <div className="h-3 w-48 animate-shimmer rounded-lg" />
-                <div className="h-2.5 w-20 animate-shimmer rounded-lg" />
+            <div key={i} className="flex items-center gap-3">
+              <div className="size-1.5 rounded-full animate-shimmer shrink-0" />
+              <div className="flex-1 space-y-1">
+                <div className="h-3 w-48 animate-shimmer rounded" />
+                <div className="h-2.5 w-20 animate-shimmer rounded" />
               </div>
             </div>
           ))}
@@ -97,27 +97,18 @@ export function ActivityFeed() {
   }
 
   return (
-    <div
-      className="bg-surface rounded-2xl p-6"
-      style={{ boxShadow: "var(--shadow-card)" }}
-    >
-      <h3 className="text-[13px] font-semibold text-foreground mb-4">
+    <div className="bg-surface border border-border rounded-lg p-4">
+      <h3 className="text-[10px] uppercase tracking-wider text-muted-foreground mb-3">
         Activite recente
       </h3>
       <div className="relative max-h-96 overflow-y-auto">
-        {/* Timeline line */}
-        {activities && activities.length > 0 && (
-          <div className="absolute left-[15px] top-2 bottom-2 w-px bg-border" />
-        )}
-
-        <div className="space-y-4">
+        <div className="space-y-1">
           {!activities || activities.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-8">
+            <p className="text-xs text-muted-foreground text-center py-8">
               Aucune activite recente
             </p>
           ) : (
             activities.map((activity) => {
-              const Icon = activityIcons[activity.activity_type] || BookOpen;
               const student = activity.student as {
                 full_name: string;
                 avatar_url: string | null;
@@ -127,25 +118,23 @@ export function ActivityFeed() {
               return (
                 <div
                   key={activity.id}
-                  className="flex items-start gap-3 relative group hover:bg-muted/30 -mx-2 px-2 py-1 rounded-lg transition-colors duration-200"
+                  className="flex items-center gap-3 py-1.5 px-1 rounded-md hover:bg-muted/30 transition-colors duration-150"
                 >
-                  <div className="relative z-10 w-8 h-8 rounded-full bg-surface flex items-center justify-center shrink-0">
-                    <div className={cn("w-2.5 h-2.5 rounded-full", dotColor)} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[13px] text-foreground">
-                      <span className="font-medium">
-                        {student?.full_name ?? "Utilisateur"}
-                      </span>{" "}
-                      <span className="text-muted-foreground">
-                        {activityLabels[activity.activity_type] ??
-                          activity.activity_type}
-                      </span>
-                    </p>
-                    <p className="text-[11px] text-muted-foreground font-mono mt-0.5">
-                      {formatDate(activity.created_at, "relative")}
-                    </p>
-                  </div>
+                  <div
+                    className={cn("size-1.5 rounded-full shrink-0", dotColor)}
+                  />
+                  <p className="flex-1 text-xs text-foreground min-w-0 truncate">
+                    <span className="font-medium">
+                      {student?.full_name ?? "Utilisateur"}
+                    </span>{" "}
+                    <span className="text-muted-foreground">
+                      {activityLabels[activity.activity_type] ??
+                        activity.activity_type}
+                    </span>
+                  </p>
+                  <span className="text-[10px] text-muted-foreground shrink-0 tabular-nums">
+                    {formatDate(activity.created_at, "relative")}
+                  </span>
                 </div>
               );
             })
