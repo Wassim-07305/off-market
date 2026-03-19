@@ -38,7 +38,7 @@ function TabsList({ tabs, value, onChange, className }: TabsListProps) {
             "disabled:pointer-events-none disabled:opacity-50",
             "cursor-pointer",
             value === tab.value
-              ? "bg-surface text-foreground shadow-sm border border-border/60"
+              ? "bg-surface text-foreground shadow-sm border border-border"
               : "text-muted-foreground hover:text-foreground",
           )}
         >
