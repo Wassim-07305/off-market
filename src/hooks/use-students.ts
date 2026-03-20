@@ -33,16 +33,35 @@ interface UseStudentsOptions {
 export function useStudents(options: UseStudentsOptions = {}) {
   const supabase = useSupabase();
   const queryClient = useQueryClient();
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const { search, tag, limit = 50 } = options;
 
   const studentsQuery = useQuery({
-    queryKey: ["students", search, tag, limit],
+    queryKey: ["students", search, tag, limit, user?.id, isAdmin],
     enabled: !!user,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 5 * 60 * 1000,
     gcTime: 5 * 60 * 1000,
     retry: 1,
     queryFn: async () => {
+      // For coaches: only show their assigned clients
+      // For admins: show all clients
+      let clientIds: string[] | null = null;
+
+      if (!isAdmin) {
+        const { data: assignments } = await supabase
+          .from("coach_assignments")
+          .select("client_id")
+          .eq("coach_id", user!.id)
+          .eq("status", "active");
+
+        clientIds = (assignments ?? []).map(
+          (a: { client_id: string }) => a.client_id,
+        );
+
+        // No assignments → return empty
+        if (clientIds.length === 0) return [];
+      }
+
       let query = supabase
         .from("profiles")
         .select("*, student_details!student_details_profile_id_fkey(*)")
@@ -50,19 +69,18 @@ export function useStudents(options: UseStudentsOptions = {}) {
         .order("created_at", { ascending: false })
         .limit(limit);
 
+      // Filter by assigned clients for non-admin
+      if (clientIds) {
+        query = query.in("id", clientIds);
+      }
+
       if (search) {
-        query = query.or(`full_name.ilike.%${search}%,email.ilike.%${search}%`);
+        query = query.or(
+          `full_name.ilike.%${search}%,email.ilike.%${search}%`,
+        );
       }
 
       const { data, error } = await query;
-      console.log(
-        "[useStudents] raw data:",
-        JSON.stringify(
-          data?.map((d) => ({ name: d.full_name, details: d.student_details })),
-          null,
-          2,
-        ),
-      );
       if (error) throw error;
 
       let results = data as StudentWithDetails[];

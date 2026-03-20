@@ -64,14 +64,25 @@ function RegisterContent() {
     setLoading(false);
 
     if (error) {
+      // User already exists — redirect to login with invite code to apply role
+      if (
+        error.message?.toLowerCase().includes("already registered") ||
+        error.message?.toLowerCase().includes("already been registered")
+      ) {
+        toast.info(
+          "Ce compte existe deja. Connecte-toi pour appliquer ton invitation.",
+        );
+        window.location.href = `/login?code=${code}`;
+        return;
+      }
       toast.error(error.message);
     } else {
-      // Mark invitation as accepted via API (bypasses RLS)
+      // Mark invitation as accepted AND force role update via API (bypasses RLS)
       if (code) {
-        fetch("/api/invitations/accept", {
+        await fetch("/api/invitations/accept", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ invite_code: code }),
+          body: JSON.stringify({ invite_code: code, apply_role: true }),
         }).catch(() => {});
       }
       toast.success("Compte cree ! Connecte-toi maintenant.");

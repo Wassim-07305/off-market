@@ -25,7 +25,7 @@ const DEFAULT_ROUTES: Record<string, string> = {
  * TTL: 5 minutes — short enough that role changes propagate quickly.
  */
 const PROFILE_CACHE_COOKIE = "om_profile_cache";
-const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+const CACHE_TTL_MS = 60 * 1000; // 1 minute — fast role propagation on account switch
 
 interface ProfileCache {
   role: string;

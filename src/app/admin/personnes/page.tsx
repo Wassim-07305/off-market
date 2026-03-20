@@ -15,9 +15,11 @@ const ClientsContent = dynamic(
   () => import("@/app/_shared-pages/clients/page"),
   { ssr: false },
 );
+
 const EquipeContent = dynamic(() => import("@/app/admin/csm/page"), {
   ssr: false,
 });
+
 const InvitationsContent = dynamic(
   () => import("@/app/admin/invitations/page"),
   { ssr: false },

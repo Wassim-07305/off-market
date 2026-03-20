@@ -43,20 +43,46 @@ export async function POST(request: Request) {
   }
 
   try {
-    // 1. Fetch all students — try with student_details join, fallback to plain
+    // 1. For coaches, only analyze their assigned students
+    let assignedIds: string[] | null = null;
+    if (profile.role === "coach") {
+      const { data: assignments } = await supabase
+        .from("coach_assignments")
+        .select("client_id")
+        .eq("coach_id", user.id)
+        .eq("status", "active");
+      assignedIds = (assignments ?? []).map((a: { client_id: string }) => a.client_id);
+      if (assignedIds.length === 0) {
+        return NextResponse.json({
+          results: [],
+          summary: { total: 0, at_risk: 0, critical: 0 },
+        });
+      }
+    }
+
+    // 2. Fetch students — try with student_details join, fallback to plain
     let students: { id: string; full_name: string; last_seen_at: string | null; student_details?: unknown[] }[] | null = null;
 
-    const { data: withDetails, error: detailsErr } = await supabase
+    let query = supabase
       .from("profiles")
       .select("id, full_name, last_seen_at, student_details(*)")
       .in("role", ["client", "prospect", "student"]);
 
+    if (assignedIds) {
+      query = query.in("id", assignedIds);
+    }
+
+    const { data: withDetails, error: detailsErr } = await query;
+
     if (detailsErr) {
-      // student_details table may not exist (PGRST201) — fetch without join
-      const { data: plain, error: plainErr } = await supabase
+      let fallbackQuery = supabase
         .from("profiles")
         .select("id, full_name, last_seen_at")
         .in("role", ["client", "prospect", "student"]);
+      if (assignedIds) {
+        fallbackQuery = fallbackQuery.in("id", assignedIds);
+      }
+      const { data: plain, error: plainErr } = await fallbackQuery;
       if (plainErr) throw plainErr;
       students = (plain ?? []).map((p) => ({ ...p, student_details: [] }));
     } else {

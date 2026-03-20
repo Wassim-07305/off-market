@@ -11,7 +11,8 @@ import { getInitials, formatDate, formatCurrency } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import { useRoutePrefix } from "@/hooks/use-route-prefix";
 import { useSupabase } from "@/hooks/use-supabase";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
+import { useAuth } from "@/hooks/use-auth";
 import { motion, AnimatePresence } from "framer-motion";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 import { toast } from "sonner";
@@ -59,10 +60,75 @@ export default function ClientsPage() {
   const hasActiveFilters = search !== "" || activeTag !== "all";
   const supabase = useSupabase();
   const queryClient = useQueryClient();
+  const { isAdmin } = useAuth();
   const { students, isLoading, updateStudentTag } = useStudents({
     search,
     tag: activeTag,
   });
+
+  // Fetch coach assignments + coach list (admin only)
+  const { data: assignmentMap } = useQuery({
+    queryKey: ["client-coach-map"],
+    enabled: isAdmin,
+    staleTime: 60_000,
+    queryFn: async () => {
+      const { data: assignments } = await supabase
+        .from("coach_assignments")
+        .select("client_id, coach_id")
+        .eq("status", "active");
+      const map = new Map<string, string>();
+      for (const a of (assignments ?? []) as { client_id: string; coach_id: string }[]) {
+        map.set(a.client_id, a.coach_id);
+      }
+      return map;
+    },
+  });
+
+  const { data: coachesList } = useQuery({
+    queryKey: ["coaches-list"],
+    enabled: isAdmin,
+    staleTime: 5 * 60_000,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("id, full_name")
+        .in("role", ["coach", "admin"])
+        .order("full_name");
+      return (data ?? []) as { id: string; full_name: string }[];
+    },
+  });
+
+  const getCoachName = (clientId: string) => {
+    const coachId = assignmentMap?.get(clientId);
+    if (!coachId) return null;
+    return coachesList?.find((c) => c.id === coachId)?.full_name ?? null;
+  };
+
+  const handleAssignCoach = async (clientId: string, coachId: string | null) => {
+    if (coachId) {
+      // Delete old then insert new (avoids UNIQUE constraint issues)
+      await supabase
+        .from("coach_assignments")
+        .delete()
+        .eq("client_id", clientId);
+
+      await supabase.from("coach_assignments").insert({
+        client_id: clientId,
+        coach_id: coachId,
+        status: "active",
+      });
+    } else {
+      // Unassign: just delete
+      await supabase
+        .from("coach_assignments")
+        .delete()
+        .eq("client_id", clientId);
+    }
+
+    queryClient.invalidateQueries({ queryKey: ["client-coach-map"] });
+    queryClient.invalidateQueries({ queryKey: ["csm-coaches-stats"] });
+    queryClient.invalidateQueries({ queryKey: ["students"] });
+  };
 
   const toggleSelect = useCallback((id: string) => {
     setSelectedIds((prev) => {
@@ -283,6 +349,11 @@ export default function ClientsPage() {
                     <th className="text-left text-[11px] font-medium text-muted-foreground/70 uppercase tracking-wider px-4 py-2.5">
                       Drapeau
                     </th>
+                    {isAdmin && (
+                      <th className="text-left text-[11px] font-medium text-muted-foreground/70 uppercase tracking-wider px-4 py-2.5 hidden md:table-cell">
+                        Coach
+                      </th>
+                    )}
                     <th className="text-left text-[11px] font-medium text-muted-foreground/70 uppercase tracking-wider px-4 py-2.5 hidden md:table-cell">
                       Etape
                     </th>
@@ -374,6 +445,25 @@ export default function ClientsPage() {
                             ) : null;
                           })()}
                         </td>
+                        {isAdmin && (
+                          <td
+                            className="px-4 py-2.5 hidden md:table-cell"
+                            
+                          >
+                            {(() => {
+                              const coachName = getCoachName(student.id);
+                              return coachName ? (
+                                <span className="text-[11px] text-foreground font-medium">
+                                  {coachName}
+                                </span>
+                              ) : (
+                                <span className="text-[10px] text-amber-500 font-medium">
+                                  Non assigne
+                                </span>
+                              );
+                            })()}
+                          </td>
+                        )}
                         <td className="px-4 py-2.5 hidden md:table-cell">
                           {details?.pipeline_stage && (
                             <span className="text-[11px] text-muted-foreground capitalize">
@@ -455,6 +545,9 @@ export default function ClientsPage() {
             <StudentSidePanel
               studentId={selectedStudentId}
               onClose={() => setSelectedStudentId(null)}
+              assignedCoachId={isAdmin ? assignmentMap?.get(selectedStudentId) ?? null : undefined}
+              coaches={isAdmin ? coachesList ?? [] : undefined}
+              onAssignCoach={isAdmin ? handleAssignCoach : undefined}
             />
           )}
         </AnimatePresence>

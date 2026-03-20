@@ -29,6 +29,7 @@ export function useInvitations() {
       email: string;
       full_name: string;
       role: string;
+      specialties?: string[];
     }) => {
       const { data, error } = await supabase
         .from("user_invites")
@@ -37,6 +38,7 @@ export function useInvitations() {
           full_name: invite.full_name,
           role: invite.role,
           invited_by: user!.id,
+          specialties: invite.specialties ?? [],
         })
         .select()
         .single();

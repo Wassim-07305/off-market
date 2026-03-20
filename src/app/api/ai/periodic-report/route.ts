@@ -61,7 +61,7 @@ export async function GET() {
       );
     }
 
-    const result = await generateWeeklyReport(supabase, profile);
+    const result = await generateWeeklyReport(supabase, profile, user.id);
     return NextResponse.json(result);
   } catch (error) {
     console.error("AI periodic report error:", error);
@@ -165,9 +165,66 @@ export async function POST(request: NextRequest) {
 async function generateWeeklyReport(
   supabase: any,
   profile: { id?: string; full_name: string; role: string },
+  userId?: string,
 ) {
   const now = new Date();
   const sevenDaysAgo = new Date(now.getTime() - 7 * 86400000).toISOString();
+
+  // For coaches, get assigned client IDs to scope all queries
+  let assignedIds: string[] | null = null;
+  if (profile.role === "coach" && userId) {
+    const { data: assignments } = await supabase
+      .from("coach_assignments")
+      .select("client_id")
+      .eq("coach_id", userId)
+      .eq("status", "active");
+    assignedIds = (assignments ?? []).map((a: { client_id: string }) => a.client_id);
+  }
+
+  // Build scoped queries
+  let journalQuery = supabase
+    .from("journal_entries")
+    .select("title, mood, tags, created_at")
+    .gte("created_at", sevenDaysAgo)
+    .order("created_at", { ascending: false })
+    .limit(50);
+  if (assignedIds) journalQuery = journalQuery.in("user_id", assignedIds);
+
+  let checkinsQuery = supabase
+    .from("weekly_checkins")
+    .select("mood, energy, goals_progress, blockers, wins, created_at")
+    .gte("created_at", sevenDaysAgo)
+    .order("created_at", { ascending: false })
+    .limit(30);
+  if (assignedIds) checkinsQuery = checkinsQuery.in("user_id", assignedIds);
+
+  let messagesQuery = supabase
+    .from("messages")
+    .select("id", { count: "exact", head: true })
+    .gte("created_at", sevenDaysAgo);
+  if (assignedIds) messagesQuery = messagesQuery.in("sender_id", assignedIds);
+
+  let sessionsQuery = supabase
+    .from("coaching_sessions")
+    .select("title, status, created_at")
+    .gte("created_at", sevenDaysAgo)
+    .limit(20);
+  if (assignedIds && userId) sessionsQuery = sessionsQuery.eq("coach_id", userId);
+
+  let callsQuery = supabase
+    .from("call_calendar")
+    .select("title, call_type, status, date")
+    .gte("date", sevenDaysAgo.split("T")[0])
+    .limit(20);
+  if (userId && profile.role === "coach") callsQuery = callsQuery.eq("assigned_to", userId);
+
+  let studentsQuery = supabase
+    .from("profiles")
+    .select("full_name, last_active_at")
+    .in("role", ["client", "prospect"])
+    .order("last_active_at", { ascending: false })
+    .limit(50);
+  if (assignedIds) studentsQuery = studentsQuery.in("id", assignedIds);
 
   const [
     journalRes,
@@ -177,38 +234,12 @@ async function generateWeeklyReport(
     callsRes,
     studentsRes,
   ] = await Promise.all([
-    supabase
-      .from("journal_entries")
-      .select("title, mood, tags, created_at")
-      .gte("created_at", sevenDaysAgo)
-      .order("created_at", { ascending: false })
-      .limit(50),
-    supabase
-      .from("weekly_checkins")
-      .select("mood, energy, goals_progress, blockers, wins, created_at")
-      .gte("created_at", sevenDaysAgo)
-      .order("created_at", { ascending: false })
-      .limit(30),
-    supabase
-      .from("messages")
-      .select("id", { count: "exact", head: true })
-      .gte("created_at", sevenDaysAgo),
-    supabase
-      .from("coaching_sessions")
-      .select("title, status, created_at")
-      .gte("created_at", sevenDaysAgo)
-      .limit(20),
-    supabase
-      .from("call_calendar")
-      .select("title, call_type, status, date")
-      .gte("date", sevenDaysAgo.split("T")[0])
-      .limit(20),
-    supabase
-      .from("profiles")
-      .select("full_name, last_active_at")
-      .eq("role", "prospect")
-      .order("last_active_at", { ascending: false })
-      .limit(50),
+    journalQuery,
+    checkinsQuery,
+    messagesQuery,
+    sessionsQuery,
+    callsQuery,
+    studentsQuery,
   ]);
 
   const journalEntries = journalRes.data ?? [];

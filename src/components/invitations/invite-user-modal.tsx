@@ -5,6 +5,8 @@ import { Loader2, X, Mail, Copy, Check } from "lucide-react";
 import { useInvitations } from "@/hooks/use-invitations";
 import { ROLE_OPTIONS } from "@/types/invitations";
 import type { UserInvite } from "@/types/invitations";
+import { SPECIALTIES } from "@/lib/specialties";
+import { cn } from "@/lib/utils";
 
 interface InviteUserModalProps {
   open: boolean;
@@ -15,9 +17,18 @@ export function InviteUserModal({ open, onClose }: InviteUserModalProps) {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("client");
+  const [specialties, setSpecialties] = useState<string[]>([]);
   const [createdInvite, setCreatedInvite] = useState<UserInvite | null>(null);
   const [copied, setCopied] = useState(false);
   const { createInvitation } = useInvitations();
+
+  const showSpecialties = role === "coach";
+
+  const toggleSpecialty = (value: string) => {
+    setSpecialties((prev) =>
+      prev.includes(value) ? prev.filter((s) => s !== value) : [...prev, value],
+    );
+  };
 
   if (!open) return null;
 
@@ -28,9 +39,15 @@ export function InviteUserModal({ open, onClose }: InviteUserModalProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!fullName.trim() || !email.trim()) return;
+    if (showSpecialties && specialties.length === 0) return;
 
     createInvitation.mutate(
-      { email: email.trim(), full_name: fullName.trim(), role },
+      {
+        email: email.trim(),
+        full_name: fullName.trim(),
+        role,
+        specialties: showSpecialties ? specialties : undefined,
+      },
       {
         onSuccess: (data) => {
           setCreatedInvite(data);
@@ -49,6 +66,7 @@ export function InviteUserModal({ open, onClose }: InviteUserModalProps) {
     setFullName("");
     setEmail("");
     setRole("client");
+    setSpecialties([]);
     setCreatedInvite(null);
     setCopied(false);
     onClose();
@@ -179,6 +197,36 @@ export function InviteUserModal({ open, onClose }: InviteUserModalProps) {
                 ))}
               </select>
             </div>
+
+            {showSpecialties && (
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-1.5">
+                  Specialites * <span className="text-xs text-muted-foreground font-normal">(min. 1)</span>
+                </label>
+                <div className="grid grid-cols-2 gap-1.5">
+                  {SPECIALTIES.map((s) => (
+                    <button
+                      key={s.value}
+                      type="button"
+                      onClick={() => toggleSpecialty(s.value)}
+                      className={cn(
+                        "h-9 px-3 rounded-lg text-xs font-medium transition-all border",
+                        specialties.includes(s.value)
+                          ? "bg-primary/15 border-primary/30 text-primary"
+                          : "bg-muted/50 border-border text-muted-foreground hover:border-primary/20 hover:text-foreground",
+                      )}
+                    >
+                      {s.label}
+                    </button>
+                  ))}
+                </div>
+                {specialties.length === 0 && (
+                  <p className="text-xs text-amber-500 mt-1.5">
+                    Selectionne au moins une specialite
+                  </p>
+                )}
+              </div>
+            )}
 
             <div className="flex gap-3 pt-2">
               <button

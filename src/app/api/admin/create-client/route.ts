@@ -91,5 +91,17 @@ export async function POST(request: Request) {
     }
   }
 
+  // Auto-assign the client to the coach who created them
+  if (newUser.user && profile?.role === "coach") {
+    await admin
+      .from("coach_assignments")
+      .insert({
+        coach_id: user.id,
+        client_id: newUser.user.id,
+        status: "active",
+      })
+      .then(() => {});
+  }
+
   return NextResponse.json({ success: true, userId: newUser.user?.id });
 }

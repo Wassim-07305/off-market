@@ -64,11 +64,17 @@ type TabType =
 interface StudentSidePanelProps {
   studentId: string;
   onClose: () => void;
+  assignedCoachId?: string | null;
+  coaches?: { id: string; full_name: string }[];
+  onAssignCoach?: (clientId: string, coachId: string | null) => void;
 }
 
 export function StudentSidePanel({
   studentId,
   onClose,
+  assignedCoachId,
+  coaches,
+  onAssignCoach,
 }: StudentSidePanelProps) {
   const prefix = useRoutePrefix();
   const supabase = useSupabase();
@@ -558,6 +564,45 @@ export function StudentSidePanel({
               <div>
                 {activeTab === "overview" && (
                   <div className="space-y-4">
+                    {/* Coach assigné (admin only) */}
+                    {onAssignCoach && coaches && (
+                      <div>
+                        <h3 className="text-xs font-semibold text-foreground flex items-center gap-1.5 mb-1.5">
+                          <User className="w-3.5 h-3.5 text-primary" />
+                          Coach assigne
+                        </h3>
+                        {isEditing ? (
+                          <select
+                            value={assignedCoachId ?? ""}
+                            onChange={(e) =>
+                              onAssignCoach(
+                                studentId,
+                                e.target.value || null,
+                              )
+                            }
+                            className="w-full h-8 px-2.5 bg-muted border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                          >
+                            <option value="">Non assigne</option>
+                            {coaches.map((c) => (
+                              <option key={c.id} value={c.id}>
+                                {c.full_name}
+                              </option>
+                            ))}
+                          </select>
+                        ) : (
+                          <p className="text-sm text-foreground">
+                            {assignedCoachId
+                              ? coaches.find((c) => c.id === assignedCoachId)
+                                  ?.full_name ?? "Inconnu"
+                              : (
+                                <span className="text-amber-500">
+                                  Non assigne
+                                </span>
+                              )}
+                          </p>
+                        )}
+                      </div>
+                    )}
                     <div>
                       <h3 className="text-xs font-semibold text-foreground flex items-center gap-1.5 mb-1.5">
                         <Target className="w-3.5 h-3.5 text-primary" />

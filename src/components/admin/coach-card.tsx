@@ -13,14 +13,20 @@ import {
   Eye,
   TrendingUp,
   ShieldCheck,
+  Pencil,
+  Check,
+  X,
 } from "lucide-react";
 import type { CoachWithStats } from "@/hooks/use-csm-management";
+import { useUpdateCoachSpecialties } from "@/hooks/use-csm-management";
 import type { Profile, StudentDetail } from "@/types/database";
+import { SPECIALTIES } from "@/lib/specialties";
 
 interface CoachCardProps {
   data: CoachWithStats;
   onViewDetails?: (coachId: string) => void;
   onReassignClient?: (clientId: string, clientName: string) => void;
+  onUnassignClient?: (clientId: string) => void;
 }
 
 function getWorkloadColor(clientCount: number): {
@@ -51,8 +57,12 @@ export function CoachCard({
   data,
   onViewDetails,
   onReassignClient,
+  onUnassignClient,
 }: CoachCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [editingSpecs, setEditingSpecs] = useState(false);
+  const [selectedSpecs, setSelectedSpecs] = useState<string[]>([]);
+  const updateSpecialties = useUpdateCoachSpecialties();
   const {
     coach,
     clientCount,
@@ -64,6 +74,25 @@ export function CoachCard({
     clients,
   } = data;
   const workload = getWorkloadColor(clientCount);
+  const coachSpecs = (coach as Profile & { specialties?: string[] }).specialties ?? [];
+
+  const handleEditSpecs = () => {
+    setSelectedSpecs([...coachSpecs]);
+    setEditingSpecs(true);
+  };
+
+  const handleSaveSpecs = () => {
+    updateSpecialties.mutate(
+      { coachId: coach.id, specialties: selectedSpecs },
+      { onSuccess: () => setEditingSpecs(false) },
+    );
+  };
+
+  const toggleSpec = (value: string) => {
+    setSelectedSpecs((prev) =>
+      prev.includes(value) ? prev.filter((s) => s !== value) : [...prev, value],
+    );
+  };
 
   return (
     <div
@@ -93,9 +122,29 @@ export function CoachCard({
             <p className="text-sm font-semibold text-foreground truncate">
               {coach.full_name}
             </p>
-            <p className="text-xs text-muted-foreground">
-              {coach.role === "admin" ? "Admin" : "Coach"}
-            </p>
+            <div className="flex items-center gap-1.5 flex-wrap mt-0.5">
+              {coachSpecs.length > 0 ? (
+                coachSpecs.map((s) => (
+                  <span
+                    key={s}
+                    className="text-[9px] font-medium px-1.5 py-0.5 rounded-full bg-primary/10 text-primary"
+                  >
+                    {SPECIALTIES.find((sp) => sp.value === s)?.label ?? s}
+                  </span>
+                ))
+              ) : (
+                <span className="text-[10px] text-muted-foreground">
+                  Aucune specialite
+                </span>
+              )}
+              <button
+                onClick={handleEditSpecs}
+                className="w-4 h-4 rounded flex items-center justify-center text-muted-foreground hover:text-primary transition-colors"
+                title="Modifier les specialites"
+              >
+                <Pencil className="w-2.5 h-2.5" />
+              </button>
+            </div>
           </div>
           <span
             className={cn(
@@ -110,6 +159,51 @@ export function CoachCard({
             {workload.label}
           </span>
         </div>
+
+        {/* Specialties editor */}
+        {editingSpecs && (
+          <div className="mb-4 p-3 rounded-xl border border-primary/20 bg-primary/5">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-xs font-medium text-foreground">Specialites</p>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => setEditingSpecs(false)}
+                  className="w-6 h-6 rounded-md flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  onClick={handleSaveSpecs}
+                  disabled={updateSpecialties.isPending || selectedSpecs.length === 0}
+                  className="h-6 px-2 rounded-md bg-primary text-white text-[10px] font-medium hover:bg-primary/90 disabled:opacity-50 flex items-center gap-1 transition-colors"
+                >
+                  <Check className="w-3 h-3" />
+                  Sauvegarder
+                </button>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-1">
+              {SPECIALTIES.map((s) => (
+                <button
+                  key={s.value}
+                  type="button"
+                  onClick={() => toggleSpec(s.value)}
+                  className={cn(
+                    "h-7 px-2 rounded-md text-[10px] font-medium transition-all border",
+                    selectedSpecs.includes(s.value)
+                      ? "bg-primary/15 border-primary/30 text-primary"
+                      : "bg-surface border-border text-muted-foreground hover:border-primary/20",
+                  )}
+                >
+                  {s.label}
+                </button>
+              ))}
+            </div>
+            {selectedSpecs.length === 0 && (
+              <p className="text-[10px] text-amber-500 mt-1.5">Min. 1 specialite</p>
+            )}
+          </div>
+        )}
 
         {/* Stats grid */}
         <div className="grid grid-cols-2 gap-3 mb-4">
@@ -211,6 +305,7 @@ export function CoachCard({
                 client={client}
                 details={d}
                 onReassign={onReassignClient}
+                onUnassign={onUnassignClient}
               />
             );
           })}
@@ -232,10 +327,12 @@ function ClientRow({
   client,
   details,
   onReassign,
+  onUnassign,
 }: {
   client: Profile;
   details?: StudentDetail;
   onReassign?: (clientId: string, clientName: string) => void;
+  onUnassign?: (clientId: string) => void;
 }) {
   const flag = details?.flag ?? "green";
   const flagColors: Record<string, string> = {
@@ -271,14 +368,24 @@ function ClientRow({
           {formatCurrency(details?.revenue ?? 0)}
         </span>
       </div>
-      {onReassign && (
-        <button
-          onClick={() => onReassign(client.id, client.full_name)}
-          className="opacity-0 group-hover:opacity-100 text-[10px] text-primary hover:underline transition-opacity"
-        >
-          Reassigner
-        </button>
-      )}
+      <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+        {onReassign && (
+          <button
+            onClick={() => onReassign(client.id, client.full_name)}
+            className="text-[10px] text-primary hover:underline"
+          >
+            Reassigner
+          </button>
+        )}
+        {onUnassign && (
+          <button
+            onClick={() => onUnassign(client.id)}
+            className="text-[10px] text-red-500 hover:underline"
+          >
+            Retirer
+          </button>
+        )}
+      </div>
     </div>
   );
 }

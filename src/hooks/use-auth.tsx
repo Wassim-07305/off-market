@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from "react";
 import { useSupabase } from "./use-supabase";
+import { useQueryClient } from "@tanstack/react-query";
 import type { Profile } from "@/types/database";
 import type { User, AuthError } from "@supabase/supabase-js";
 
@@ -45,6 +46,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const supabase = useSupabase();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     let cancelled = false;
@@ -144,13 +146,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = useCallback(
     async (email: string, password: string) => {
+      // Clear stale profile cache cookie (role from previous user)
+      document.cookie = "om_profile_cache=; path=/; max-age=0; SameSite=Lax";
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
+      if (!error) {
+        // Invalidate all queries so they refetch with the new user's data
+        queryClient.invalidateQueries();
+      }
       return { error };
     },
-    [supabase],
+    [supabase, queryClient],
   );
 
   const signUp = useCallback(
@@ -192,12 +200,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = useCallback(async () => {
     try {
+      // Clear all React Query caches
+      queryClient.clear();
+      // Clear profile cache cookie
+      document.cookie = "om_profile_cache=; path=/; max-age=0; SameSite=Lax";
+      // Clear auth state
+      setUser(null);
+      setProfile(null);
       await supabase.auth.signOut();
     } catch {
       // Ignore signOut errors
     }
     window.location.replace("/login");
-  }, [supabase]);
+  }, [supabase, queryClient]);
 
   const resetPassword = useCallback(
     async (email: string) => {

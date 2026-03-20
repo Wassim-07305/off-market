@@ -9,6 +9,7 @@ import { cn, getInitials, formatCurrency } from "@/lib/utils";
 import {
   useCoachesWithStats,
   useReassignClient,
+  useUnassignClient,
   useBulkAssign,
 } from "@/hooks/use-csm-management";
 import { useCoaches, useAutoAssignCoach } from "@/hooks/use-coach-assignments";
@@ -43,6 +44,7 @@ export default function AdminCsmPage() {
   const { data, isLoading } = useCoachesWithStats();
   const autoAssign = useAutoAssignCoach();
   const reassignClient = useReassignClient();
+  const unassignClient = useUnassignClient();
   const bulkAssign = useBulkAssign();
 
   const [search, setSearch] = useState("");
@@ -147,8 +149,6 @@ export default function AdminCsmPage() {
   return (
     <motion.div
       variants={staggerContainer}
-      initial="hidden"
-      animate="visible"
       className="space-y-6"
     >
       {/* Header */}
@@ -362,6 +362,9 @@ export default function AdminCsmPage() {
                     data={coachData}
                     onReassignClient={(clientId, clientName) =>
                       setReassignModal({ clientId, clientName })
+                    }
+                    onUnassignClient={(clientId) =>
+                      unassignClient.mutate(clientId)
                     }
                   />
                 ))}

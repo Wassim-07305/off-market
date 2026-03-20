@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { Suspense, useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { useSupabase } from "@/hooks/use-supabase";
 import { useBrandingContext } from "@/components/providers/branding-provider";
@@ -11,6 +11,14 @@ import { toast } from "sonner";
 import { Loader2, Eye, EyeOff, ShieldCheck } from "lucide-react";
 
 export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="animate-fade-in text-center py-12"><Loader2 className="w-8 h-8 text-primary animate-spin mx-auto" /></div>}>
+      <LoginContent />
+    </Suspense>
+  );
+}
+
+function LoginContent() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -25,6 +33,8 @@ export default function LoginPage() {
   const { signIn } = useAuth();
   const supabase = useSupabase();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const inviteCode = searchParams.get("code");
   const { branding } = useBrandingContext();
   const primaryColor = branding?.primary_color ?? "#DC2626";
   const brandVariants = colorVariants(primaryColor);
@@ -65,6 +75,20 @@ export default function LoginPage() {
         setNeeds2FA(true);
         setLoading(false);
         return;
+      }
+    }
+
+    // If logging in with an invite code, apply the invitation (update role)
+    if (inviteCode) {
+      try {
+        await fetch("/api/invitations/accept", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ invite_code: inviteCode, apply_role: true }),
+        });
+        toast.success("Invitation appliquee ! Ton role a ete mis a jour.");
+      } catch {
+        // Non-blocking — role update failed but login succeeded
       }
     }
 
@@ -237,6 +261,14 @@ export default function LoginPage() {
             "0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 0 80px rgba(175, 0, 0, 0.05)",
         }}
       >
+        {inviteCode && (
+          <div className="flex items-center gap-3 p-3 mb-6 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+            <ShieldCheck className="w-5 h-5 text-emerald-400 shrink-0" />
+            <p className="text-sm text-emerald-300">
+              Connecte-toi pour activer ton invitation et mettre a jour ton role.
+            </p>
+          </div>
+        )}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label

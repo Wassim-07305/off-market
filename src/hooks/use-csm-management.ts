@@ -52,17 +52,62 @@ export function useCoachesWithStats() {
 
       if (cErr) throw cErr;
 
-      // 2. Fetch all active assignments with client profiles + student_details
+      // 2. Fetch all active assignments — simple flat query, then enrich
       let assignments: unknown[] = [];
       try {
         const { data: aData, error: aErr } = await sb
           .from("coach_assignments")
-          .select(
-            "*, coach:profiles!coach_assignments_coach_id_fkey(id, full_name, email, avatar_url, role), client:profiles!coach_assignments_client_id_fkey(id, full_name, email, avatar_url, role, student_details(*))",
-          )
+          .select("id, coach_id, client_id, status, notes, assigned_at")
           .eq("status", "active");
-        if (aErr) console.warn("[CSM] assignments error:", aErr.message);
-        else assignments = aData ?? [];
+
+        if (aErr) {
+          console.warn("[CSM] assignments error:", aErr.message);
+        }
+
+        const rawAssignments = aData ?? [];
+
+        // Enrich with client profiles if we have assignments
+        const clientIds = rawAssignments.map((a: { client_id: string }) => a.client_id);
+        const clientMap = new Map<string, unknown>();
+
+        if (clientIds.length > 0) {
+          // Try with student_details join, fallback without
+          let clientProfiles: unknown[] | null = null;
+          const { data: cpData, error: cpErr } = await sb
+            .from("profiles")
+            .select("*, student_details(*)")
+            .in("id", clientIds);
+
+          if (cpErr) {
+            // student_details might not exist
+            const { data: cpFallback } = await sb
+              .from("profiles")
+              .select("*")
+              .in("id", clientIds);
+            clientProfiles = (cpFallback ?? []).map((p: Profile) => ({
+              ...p,
+              student_details: [],
+            }));
+          } else {
+            clientProfiles = cpData ?? [];
+          }
+
+          for (const cp of clientProfiles as { id: string }[]) {
+            clientMap.set(cp.id, cp);
+          }
+        }
+
+        // Build enriched assignments
+        assignments = rawAssignments.map(
+          (a: { coach_id: string; client_id: string }) => ({
+            ...a,
+            coach:
+              (coaches ?? []).find(
+                (c: { id: string }) => c.id === a.coach_id,
+              ) ?? null,
+            client: clientMap.get(a.client_id) ?? null,
+          }),
+        );
       } catch (e) {
         console.warn("[CSM] assignments fetch failed:", e);
       }
@@ -85,14 +130,14 @@ export function useCoachesWithStats() {
           .from("call_calendar")
           .select("assigned_to, status, date")
           .gte("date", startOfMonth)
-          .in("status", ["completed", "done"]);
+          .in("status", ["realise", "completed", "done"]);
         callsMonth = (cmData ?? []) as typeof callsMonth;
 
         const { data: cwData } = await supabase
           .from("call_calendar")
           .select("id")
           .gte("date", startOfWeek)
-          .in("status", ["completed", "done"]);
+          .in("status", ["realise", "completed", "done"]);
         callsWeek = (cwData ?? []) as typeof callsWeek;
       } catch (e) {
         console.warn("[CSM] calls fetch failed:", e);
@@ -227,6 +272,31 @@ export function useCoachesWithStats() {
   });
 }
 
+// ─── Unassign a client from their coach ──────────────────────
+export function useUnassignClient() {
+  const supabase = useSupabase();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (clientId: string) => {
+      const { error } = await supabase
+        .from("coach_assignments")
+        .delete()
+        .eq("client_id", clientId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Client desassigne");
+      queryClient.invalidateQueries({ queryKey: ["csm-coaches-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["coach-assignments"] });
+      queryClient.invalidateQueries({ queryKey: ["students"] });
+    },
+    onError: () => {
+      toast.error("Erreur lors de la desassignation");
+    },
+  });
+}
+
 // ─── Reassign a client to a different coach ──────────────────
 
 export function useReassignClient() {
@@ -245,19 +315,16 @@ export function useReassignClient() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const sb = supabase as any;
 
-      // End current active assignment
+      // Delete old assignment then create new (avoids UNIQUE constraint)
       await sb
         .from("coach_assignments")
-        .update({ status: "ended", updated_at: new Date().toISOString() })
-        .eq("client_id", clientId)
-        .eq("status", "active");
+        .delete()
+        .eq("client_id", clientId);
 
-      // Create new assignment
       const { error } = await sb.from("coach_assignments").insert({
         client_id: clientId,
         coach_id: newCoachId,
         status: "active",
-        assigned_by: user?.id ?? null,
       });
 
       if (error) throw error;
@@ -339,6 +406,35 @@ export function useBulkAssign() {
     },
     onError: () => {
       toast.error("Erreur lors de l'assignation en masse");
+    },
+  });
+}
+
+// ─── Update coach specialties ─────────────────────────────────
+export function useUpdateCoachSpecialties() {
+  const sb = useSupabase();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      coachId,
+      specialties,
+    }: {
+      coachId: string;
+      specialties: string[];
+    }) => {
+      const { error } = await sb
+        .from("profiles")
+        .update({ specialties } as never)
+        .eq("id", coachId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Specialites mises a jour");
+      queryClient.invalidateQueries({ queryKey: ["csm-coaches-stats"] });
+    },
+    onError: () => {
+      toast.error("Erreur lors de la mise a jour des specialites");
     },
   });
 }
