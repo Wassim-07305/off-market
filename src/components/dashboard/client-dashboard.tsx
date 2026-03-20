@@ -637,9 +637,9 @@ function RecentJournalSection({ prefix }: { prefix: string }) {
                 </div>
                 {entry.tags && entry.tags.length > 0 && (
                   <div className="flex items-center gap-1 mt-1">
-                    {entry.tags.slice(0, 3).map((tag) => (
+                    {entry.tags.slice(0, 3).map((tag, i) => (
                       <span
-                        key={tag}
+                        key={`${tag}-${i}`}
                         className="text-[9px] px-1.5 py-0.5 rounded-full bg-[#AF0000]/5 text-[#AF0000] font-medium"
                       >
                         {tag}

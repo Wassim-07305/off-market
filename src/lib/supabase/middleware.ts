@@ -7,6 +7,7 @@ const ROLE_PREFIXES: Record<string, string> = {
   setter: "/sales",
   closer: "/sales",
   client: "/client",
+  prospect: "/client",
 };
 
 const DEFAULT_ROUTES: Record<string, string> = {
@@ -15,6 +16,7 @@ const DEFAULT_ROUTES: Record<string, string> = {
   setter: "/sales/dashboard",
   closer: "/sales/dashboard",
   client: "/client/dashboard",
+  prospect: "/client/dashboard",
 };
 
 /**

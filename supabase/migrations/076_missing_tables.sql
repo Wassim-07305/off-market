@@ -84,18 +84,6 @@ ALTER TABLE course_prerequisites ENABLE ROW LEVEL SECURITY;
 CREATE POLICY IF NOT EXISTS prereqs_read ON course_prerequisites FOR SELECT USING (true);
 
 -- coach_assignments (CSM attribution)
-CREATE TABLE IF NOT EXISTS coach_assignments (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  client_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-  coach_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-  assigned_at TIMESTAMPTZ DEFAULT now(),
-  UNIQUE(client_id)
-);
-ALTER TABLE coach_assignments ENABLE ROW LEVEL SECURITY;
-CREATE POLICY IF NOT EXISTS coach_assign_read ON coach_assignments FOR SELECT USING (
-  client_id = auth.uid() OR coach_id = auth.uid()
-  OR EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
-);
-CREATE POLICY IF NOT EXISTS coach_assign_admin ON coach_assignments FOR ALL USING (
-  EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
-);
+-- ⚠️ DEPRECATED - Use migration 20260310235000_add_coach_assignments.sql instead
+-- DROP old version if it exists to avoid IF NOT EXISTS conflicts
+-- DO NOT create table here to allow newer migration to handle it

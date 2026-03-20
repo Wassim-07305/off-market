@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -l \"streaks\\\\|daily_activity\\\\|rituals\\\\|leaderboard\" c:/Users/ELITEBOOK/off-market/supabase/migrations/*.sql)"
+    ]
+  }
+}

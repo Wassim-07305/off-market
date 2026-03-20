@@ -1,6 +1,16 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { uploadToB2, getPublicB2Url } from "@/lib/b2";
+import { createAdminClient } from "@/lib/supabase/admin";
+
+const B2_CONFIGURED = !!(
+  process.env.B2_KEY_ID &&
+  process.env.B2_APP_KEY &&
+  process.env.B2_BUCKET_NAME &&
+  process.env.B2_REGION &&
+  process.env.B2_ENDPOINT
+);
+
+const SUPABASE_BUCKET = "attachments";
 
 export async function POST(request: Request) {
   // Verifier l'auth
@@ -32,11 +42,39 @@ export async function POST(request: Request) {
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());
-    await uploadToB2(path, buffer, file.type || "application/octet-stream");
 
-    // Retourner une URL proxy (le bucket B2 est privé)
-    const url = `/api/storage/proxy?key=${encodeURIComponent(path)}`;
-    return NextResponse.json({ url });
+    if (B2_CONFIGURED) {
+      // Upload vers B2 (stockage principal)
+      const { uploadToB2 } = await import("@/lib/b2");
+      await uploadToB2(path, buffer, file.type || "application/octet-stream");
+      const url = `/api/storage/proxy?key=${encodeURIComponent(path)}`;
+      return NextResponse.json({ url });
+    } else {
+      // Fallback : Supabase Storage
+      const admin = createAdminClient();
+
+      // Creer le bucket s'il n'existe pas encore
+      await admin.storage
+        .createBucket(SUPABASE_BUCKET, { public: true })
+        .catch(() => {
+          /* bucket existe deja */
+        });
+
+      const { error: uploadError } = await admin.storage
+        .from(SUPABASE_BUCKET)
+        .upload(path, buffer, {
+          contentType: file.type || "application/octet-stream",
+          upsert: true,
+        });
+
+      if (uploadError) throw uploadError;
+
+      const {
+        data: { publicUrl },
+      } = admin.storage.from(SUPABASE_BUCKET).getPublicUrl(path);
+
+      return NextResponse.json({ url: publicUrl });
+    }
   } catch (err) {
     console.error("[storage/upload] Erreur:", err);
     return NextResponse.json(

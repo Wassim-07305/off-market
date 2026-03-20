@@ -19,7 +19,7 @@ type InboxMode = "internal" | "external";
 
 export default function MessagingContainer() {
   const [inboxMode, setInboxMode] = useState<InboxMode>("internal");
-  const { user } = useAuth();
+  const { user, isStaff } = useAuth();
   const queryClient = useQueryClient();
   const {
     channels,
@@ -67,6 +67,13 @@ export default function MessagingContainer() {
   const { typingUsers, broadcastTyping, stopTyping } =
     useTyping(activeChannelId);
 
+  // If user loses staff access, reset to internal inbox
+  useEffect(() => {
+    if (!isStaff && inboxMode === "external") {
+      setInboxMode("internal");
+    }
+  }, [isStaff, inboxMode]);
+
   // Auto-select first channel
   useEffect(() => {
     if (!activeChannelId && channels.length > 0) {
@@ -111,18 +118,20 @@ export default function MessagingContainer() {
           <MessageSquare className="w-3.5 h-3.5" />
           Off-Market
         </button>
-        <button
-          onClick={() => setInboxMode("external")}
-          className={cn(
-            "flex items-center gap-2 px-4 h-8 rounded-lg text-xs font-semibold transition-all duration-200",
-            inboxMode === "external"
-              ? "bg-surface text-foreground shadow-md shadow-black/5 ring-1 ring-black/5"
-              : "text-muted-foreground hover:text-foreground hover:bg-surface/50",
-          )}
-        >
-          <Globe className="w-3.5 h-3.5" />
-          Boite unifiee
-        </button>
+        {isStaff && (
+          <button
+            onClick={() => setInboxMode("external")}
+            className={cn(
+              "flex items-center gap-2 px-4 h-8 rounded-lg text-xs font-semibold transition-all duration-200",
+              inboxMode === "external"
+                ? "bg-surface text-foreground shadow-md shadow-black/5 ring-1 ring-black/5"
+                : "text-muted-foreground hover:text-foreground hover:bg-surface/50",
+            )}
+          >
+            <Globe className="w-3.5 h-3.5" />
+            Boite unifiee
+          </button>
+        )}
       </div>
 
       {/* ── Content ── */}

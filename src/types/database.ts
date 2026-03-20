@@ -1,4 +1,4 @@
-export type AppRole = "admin" | "coach" | "client" | "setter" | "closer";
+export type AppRole = "admin" | "coach" | "client" | "setter" | "closer" | "prospect";
 
 // Upsell opportunity types used by dashboard components
 export type UpsellStatus = "detected" | "proposed" | "accepted" | "declined";
@@ -261,7 +261,7 @@ export interface Profile {
   email: string;
   full_name: string;
   avatar_url: string | null;
-  role: "admin" | "coach" | "setter" | "closer" | "client";
+  role: AppRole;
   phone: string | null;
   bio: string | null;
   timezone: string;

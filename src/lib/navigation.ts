@@ -133,7 +133,7 @@ export const salesNavigation: NavItem[] = [
   { name: "Ressources", href: "/sales/resources", icon: FolderOpen },
 ];
 
-/** Client / Freelance */
+/** Client / Freelance / Prospect */
 export const clientNavigation: NavItem[] = [
   // ── Mon Espace ──
   {
@@ -146,8 +146,7 @@ export const clientNavigation: NavItem[] = [
   { name: "Suivi", href: "/client/suivi", icon: ClipboardCheck },
 
   // ── Business ──
-  { name: "CRM", href: "/client/crm", icon: Kanban, section: "Business" },
-  { name: "Documents", href: "/client/documents", icon: FileSignature },
+  { name: "Documents", href: "/client/documents", icon: FileSignature, section: "Business" },
   { name: "Reserver", href: "/client/booking", icon: CalendarCheck },
 
   // ── Communaute ──
@@ -158,7 +157,6 @@ export const clientNavigation: NavItem[] = [
   // ── Outils ──
   { name: "AlexIA", href: "/client/ai", icon: Bot, section: "Outils" },
   { name: "Ressources", href: "/client/resources", icon: FolderOpen },
-  { name: "Appels", href: "/client/calls", icon: Phone },
 ];
 
 export type RoleVariant = "admin" | "coach" | "sales" | "client";
@@ -192,6 +190,7 @@ export function getDefaultRouteForRole(role: string): string {
     case "closer":
       return "/sales/dashboard";
     case "client":
+    case "prospect":
       return "/client/dashboard";
     default:
       return "/login";
@@ -209,6 +208,7 @@ export function getRoutePrefix(role: string): string {
     case "closer":
       return "/sales";
     case "client":
+    case "prospect":
       return "/client";
     default:
       return "";

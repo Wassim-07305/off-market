@@ -24,6 +24,19 @@ export async function POST(request: Request) {
 
   const admin = createAdminClient();
 
+  // Create conversation server-side if not provided (bypasses client RLS issues)
+  let activeConvId = conversation_id;
+  if (!activeConvId) {
+    const title =
+      message.length > 50 ? message.slice(0, 50) + "..." : message;
+    const { data: newConv } = await admin
+      .from("ai_conversations")
+      .insert({ user_id: user.id, title })
+      .select("id")
+      .single();
+    activeConvId = newConv?.id ?? null;
+  }
+
   try {
     // 1. Get user profile
     const { data: userProfile } = await admin
@@ -37,11 +50,12 @@ export async function POST(request: Request) {
     let coachId = user.id;
     if (userProfile?.role === "client" || userProfile?.role === "prospect") {
       const { data: assignment } = await admin
-        .from("client_assignments")
+        .from("coach_assignments")
         .select("coach_id")
         .eq("client_id", user.id)
+        .eq("status", "active")
         .limit(1)
-        .single();
+        .maybeSingle();
       if (assignment) coachId = assignment.coach_id;
       else {
         // Fallback: get first admin
@@ -99,11 +113,11 @@ export async function POST(request: Request) {
 
     // 6. Get recent conversation history
     let history = "";
-    if (conversation_id) {
+    if (activeConvId) {
       const { data: recentMessages } = await admin
         .from("ai_messages")
         .select("role, content")
-        .eq("conversation_id", conversation_id)
+        .eq("conversation_id", activeConvId)
         .order("created_at", { ascending: false })
         .limit(6);
       if (recentMessages && recentMessages.length > 0) {
@@ -135,10 +149,10 @@ ${history ? `HISTORIQUE RECENT:\n${history}\n` : ""}`;
     const response = await generateText(systemPrompt, message);
 
     // 9. Store messages
-    if (conversation_id) {
+    if (activeConvId) {
       await admin.from("ai_messages").insert([
-        { conversation_id, role: "user", content: message },
-        { conversation_id, role: "assistant", content: response },
+        { conversation_id: activeConvId, role: "user", content: message },
+        { conversation_id: activeConvId, role: "assistant", content: response },
       ]);
     }
 
@@ -152,7 +166,7 @@ ${history ? `HISTORIQUE RECENT:\n${history}\n` : ""}`;
       response,
     );
 
-    return NextResponse.json({ response });
+    return NextResponse.json({ response, conversation_id: activeConvId });
   } catch (error) {
     console.error("[AlexIA Chat] Error:", error);
     return NextResponse.json(

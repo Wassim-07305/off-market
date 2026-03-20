@@ -114,7 +114,7 @@ const COMPLETED_ITEMS: Record<string, string[]> = {
 
 // ─── Main page ───────────────────────────────────────────────────
 export default function OnboardingPage() {
-  const { user, profile } = useAuth();
+  const { user, profile, loading } = useAuth();
   const router = useRouter();
   const { completeOnboarding } = useOnboarding();
   const supabase = useSupabase();
@@ -150,26 +150,32 @@ export default function OnboardingPage() {
     queryKey: ["my-csm", user?.id],
     queryFn: async () => {
       if (!user) return null;
-      const { data } = await supabase
-        .from("coach_assignments" as never)
-        .select(
-          "coach:profiles!coach_assignments_coach_id_fkey(id, full_name, avatar_url, bio)",
-        )
+      // Fetch assignment first
+      const { data: assignment } = await supabase
+        .from("coach_assignments")
+        .select("coach_id")
         .eq("client_id", user.id)
         .eq("status", "active")
         .limit(1)
         .maybeSingle();
-      const row = data as {
-        coach: {
-          id: string;
-          full_name: string;
-          avatar_url: string | null;
-          bio: string | null;
-        };
+
+      if (!assignment) return null;
+
+      // Then fetch coach profile
+      const { data: coach } = await supabase
+        .from("profiles")
+        .select("id, full_name, avatar_url, bio")
+        .eq("id", assignment.coach_id)
+        .maybeSingle();
+
+      return coach as {
+        id: string;
+        full_name: string;
+        avatar_url: string | null;
+        bio: string | null;
       } | null;
-      return row?.coach ?? null;
     },
-    enabled: !!user && role === "client",
+    enabled: !!user && (role === "client" || role === "prospect"),
   });
 
   const csmVideo = useCsmWelcomeVideo(csmQuery.data?.id);
@@ -229,6 +235,14 @@ export default function OnboardingPage() {
       toast.error("Erreur lors de la finalisation");
     }
   }, [user, role, completeStep, completeOnboarding]);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-950">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-red-600 border-t-transparent" />
+      </div>
+    );
+  }
 
   // ─── Render current step by key ─────────────────────────────────
   function renderStep() {
@@ -345,7 +359,7 @@ export default function OnboardingPage() {
   const labels = STEP_LABELS[role] ?? STEP_LABELS.client;
 
   return (
-    <div className="relative flex min-h-screen flex-col bg-gradient-to-br from-slate-950 via-red-950 to-slate-900">
+    <div className="relative flex min-h-screen flex-col bg-gradient-to-br  from-slate-950 via-red-950 to-slate-900 ">
       <AnimatedBackground />
 
       {/* Progress bar */}
@@ -408,7 +422,7 @@ export default function OnboardingPage() {
       </div>
 
       {/* Main content */}
-      <div className="relative z-10 mx-auto flex w-full max-w-2xl flex-1 flex-col justify-center px-6 py-8">
+      <div className="relative z-10 mx-auto flex w-full max-w-2xl flex-1 flex-col justify-center px-6 py-8 ">
         <AnimatePresence mode="wait" custom={direction}>
           <motion.div
             key={step}

@@ -293,7 +293,7 @@ export function ChatbotOnboarding() {
       </div>
 
       {/* Chat area */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto px-6 py-6">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto px-6 py-6 onboarding-scroll">
         <div className="max-w-xl mx-auto flex flex-col gap-4">
           <AnimatePresence mode="sync">
             {messages.map((msg, i) => (

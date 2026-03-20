@@ -26,7 +26,6 @@ export function useCertificates(studentId?: string) {
 }
 
 export function useIssueCertificate() {
-  const supabase = useSupabase();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -47,30 +46,31 @@ export function useIssueCertificate() {
       totalModules: number;
       quizAverage?: number | null;
     }) => {
-      // Generate certificate number: CERT-YYYYMMDD-XXXXX
-      const date = new Date().toISOString().slice(0, 10).replace(/-/g, "");
-      const rand = Math.random().toString(36).substring(2, 7).toUpperCase();
-      const certificateNumber = `CERT-${date}-${rand}`;
-
-      const { data, error } = await supabase
-        .from("certificates")
-        .insert({
-          student_id: studentId,
-          course_id: courseId,
-          certificate_number: certificateNumber,
-          course_title: courseTitle,
-          student_name: studentName,
-          total_lessons: totalLessons,
-          total_modules: totalModules,
-          quiz_average: quizAverage ?? null,
-        })
-        .select()
-        .single();
-      if (error) throw error;
-      return data as Certificate;
+      const res = await fetch("/api/certificates/issue", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          studentId,
+          courseId,
+          courseTitle,
+          studentName,
+          totalLessons,
+          totalModules,
+          quizAverage: quizAverage ?? null,
+        }),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error ?? `Erreur ${res.status}`);
+      }
+      return (await res.json()) as Certificate;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["certificates"] });
+      queryClient.invalidateQueries({ queryKey: ["xp"] });
+      queryClient.invalidateQueries({ queryKey: ["user-badges"] });
+      queryClient.invalidateQueries({ queryKey: ["my-rank"] });
+      queryClient.invalidateQueries({ queryKey: ["leaderboard"] });
     },
   });
 }

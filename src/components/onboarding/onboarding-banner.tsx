@@ -52,7 +52,7 @@ export function OnboardingBanner() {
   const [dismissed, setDismissed] = useState(false);
 
   // Only show for clients with incomplete onboarding
-  if (dismissed || completed || profile?.role !== "client" || step >= 7)
+  if (dismissed || completed || (profile?.role !== "client" && profile?.role !== "prospect") || step >= 7)
     return null;
 
   return (

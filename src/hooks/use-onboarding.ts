@@ -5,7 +5,6 @@ import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
 import { toast } from "sonner";
 import type { OnboardingStep } from "@/types/billing";
-import { autoAssignCSM } from "@/lib/csm-auto-assign";
 
 // ─── Step keys per role ──────────────────────────────────────────
 export const ROLE_ONBOARDING_STEPS = {
@@ -130,28 +129,16 @@ export function useOnboarding() {
 
       // Auto-action: create a welcome DM channel with the assigned coach
       try {
-        // First try profiles.assigned_coach (set by autoAssignCSM)
-        const { data: profileData } = await supabase
-          .from("profiles")
-          .select("assigned_coach")
-          .eq("id", user.id)
-          .single();
+        // Check coach_assignments table
+        const { data: assignment } = await supabase
+          .from("coach_assignments")
+          .select("coach_id")
+          .eq("client_id", user.id)
+          .eq("status", "active")
+          .limit(1)
+          .maybeSingle();
 
-        let coachId = (profileData as { assigned_coach?: string } | null)
-          ?.assigned_coach;
-
-        // Fallback: check coach_assignments table
-        if (!coachId) {
-          const { data: assignment } = await supabase
-            .from("coach_assignments")
-            .select("coach_id")
-            .eq("client_id", user.id)
-            .eq("status", "active")
-            .order("assigned_at", { ascending: false })
-            .limit(1)
-            .maybeSingle();
-          coachId = (assignment as { coach_id?: string } | null)?.coach_id;
-        }
+        const coachId = (assignment as { coach_id?: string } | null)?.coach_id;
         if (coachId) {
           // Check if DM channel already exists
           const { data: existingChannels } = await supabase
@@ -196,7 +183,7 @@ export function useOnboarding() {
       // Auto-action: generate contract for client
       try {
         const role = profile?.role ?? "client";
-        if (role === "client") {
+        if (role === "client" || role === "prospect") {
           await fetch("/api/contracts/auto-generate", { method: "POST" });
         }
       } catch {
@@ -216,12 +203,12 @@ export function useOnboarding() {
             user.user_metadata?.full_name ?? user.email ?? "Un utilisateur";
           await supabase.from("notifications").insert(
             admins.map((admin) => ({
-              profile_id: admin.id,
-              type: "onboarding_complete",
+              recipient_id: admin.id,
+              type: "system",
               title: "Onboarding terminé",
               body: `${userName} a terminé son onboarding.`,
-              link: `/admin/clients`,
-            })),
+              data: { link: `/admin/clients` },
+            })) as never,
           );
         }
       } catch {
@@ -454,9 +441,16 @@ export function useOnboardingForm() {
         if (error) throw error;
       }
 
-      // Auto-assign a CSM/coach based on the client's business type
+      // Auto-assign a CSM/coach via API (bypasses RLS)
       try {
-        await autoAssignCSM(supabase, user.id, formData.business_type);
+        await fetch("/api/assign-coach", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            client_id: user.id,
+            business_type: formData.business_type,
+          }),
+        });
       } catch {
         // Non-critical — onboarding should not fail because of auto-assignment
         console.warn("[onboarding] Auto-assign CSM skipped");

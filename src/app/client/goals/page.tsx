@@ -255,128 +255,131 @@ export default function GoalsPage() {
         </div>
       </motion.div>
 
-      {/* Goals list */}
-      {isLoading ? (
-        <div className="space-y-3">
-          {[...Array(3)].map((_, i) => (
-            <div
-              key={i}
-              className="h-32 bg-surface rounded-2xl animate-shimmer"
-              style={{ boxShadow: "var(--shadow-card)" }}
-            />
-          ))}
-        </div>
-      ) : activeTab === "active" ? (
-        /* Active goals */
-        <motion.div variants={staggerItem}>
-          {active.length === 0 ? (
-            <div
-              className="bg-surface rounded-2xl p-12 text-center"
-              style={{ boxShadow: "var(--shadow-card)" }}
-            >
-              <Target className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
-              <p className="text-sm text-muted-foreground">
-                Aucun objectif en cours. Ton coach en definira bientot.
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {active.map((goal) => (
-                <GoalCard
-                  key={goal.id}
-                  goal={goal}
-                  onUpdateProgress={(value) =>
-                    updateProgress.mutate({ id: goal.id, currentValue: value })
-                  }
-                  onUpdateStatus={(status) =>
-                    updateGoal.mutate({ id: goal.id, status })
-                  }
-                />
-              ))}
-            </div>
-          )}
-        </motion.div>
-      ) : (
-        /* All goals grouped by status */
-        <motion.div variants={staggerItem} className="space-y-6">
-          {/* Active */}
-          {active.length > 0 && (
-            <GoalSection
-              title="En cours"
-              count={active.length}
-              icon={Target}
-              iconColor="text-primary"
-            >
-              {active.map((goal) => (
-                <GoalCard
-                  key={goal.id}
-                  goal={goal}
-                  onUpdateProgress={(value) =>
-                    updateProgress.mutate({ id: goal.id, currentValue: value })
-                  }
-                  onUpdateStatus={(status) =>
-                    updateGoal.mutate({ id: goal.id, status })
-                  }
-                />
-              ))}
-            </GoalSection>
-          )}
+      {/* Goals list — staggerItem toujours présent pour participer
+          au stagger initial, même pendant le chargement */}
+      <motion.div variants={staggerItem}>
+        {isLoading ? (
+          <div className="space-y-3">
+            {[...Array(3)].map((_, i) => (
+              <div
+                key={i}
+                className="h-32 bg-surface rounded-2xl animate-shimmer"
+                style={{ boxShadow: "var(--shadow-card)" }}
+              />
+            ))}
+          </div>
+        ) : activeTab === "active" ? (
+          /* Active goals */
+          <div>
+            {active.length === 0 ? (
+              <div
+                className="bg-surface rounded-2xl p-12 text-center"
+                style={{ boxShadow: "var(--shadow-card)" }}
+              >
+                <Target className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
+                <p className="text-sm text-muted-foreground">
+                  Aucun objectif en cours. Ton coach en definira bientot.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {active.map((goal) => (
+                  <GoalCard
+                    key={goal.id}
+                    goal={goal}
+                    onUpdateProgress={(value) =>
+                      updateProgress.mutate({ id: goal.id, currentValue: value })
+                    }
+                    onUpdateStatus={(status) =>
+                      updateGoal.mutate({ id: goal.id, status })
+                    }
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        ) : (
+          /* All goals grouped by status */
+          <div className="space-y-6">
+            {/* Active */}
+            {active.length > 0 && (
+              <GoalSection
+                title="En cours"
+                count={active.length}
+                icon={Target}
+                iconColor="text-primary"
+              >
+                {active.map((goal) => (
+                  <GoalCard
+                    key={goal.id}
+                    goal={goal}
+                    onUpdateProgress={(value) =>
+                      updateProgress.mutate({ id: goal.id, currentValue: value })
+                    }
+                    onUpdateStatus={(status) =>
+                      updateGoal.mutate({ id: goal.id, status })
+                    }
+                  />
+                ))}
+              </GoalSection>
+            )}
 
-          {/* Completed */}
-          {completed.length > 0 && (
-            <GoalSection
-              title="Termines"
-              count={completed.length}
-              icon={Trophy}
-              iconColor="text-emerald-500"
-            >
-              {completed.map((goal) => (
-                <CompactGoalCard key={goal.id} goal={goal} status="completed" />
-              ))}
-            </GoalSection>
-          )}
+            {/* Completed */}
+            {completed.length > 0 && (
+              <GoalSection
+                title="Termines"
+                count={completed.length}
+                icon={Trophy}
+                iconColor="text-emerald-500"
+              >
+                {completed.map((goal) => (
+                  <CompactGoalCard key={goal.id} goal={goal} status="completed" />
+                ))}
+              </GoalSection>
+            )}
 
-          {/* Paused */}
-          {paused.length > 0 && (
-            <GoalSection
-              title="En pause"
-              count={paused.length}
-              icon={Pause}
-              iconColor="text-amber-500"
-            >
-              {paused.map((goal) => (
-                <CompactGoalCard key={goal.id} goal={goal} status="paused" />
-              ))}
-            </GoalSection>
-          )}
+            {/* Paused */}
+            {paused.length > 0 && (
+              <GoalSection
+                title="En pause"
+                count={paused.length}
+                icon={Pause}
+                iconColor="text-amber-500"
+              >
+                {paused.map((goal) => (
+                  <CompactGoalCard key={goal.id} goal={goal} status="paused" />
+                ))}
+              </GoalSection>
+            )}
 
-          {/* Abandoned */}
-          {abandoned.length > 0 && (
-            <GoalSection
-              title="Abandonnes"
-              count={abandoned.length}
-              icon={XCircle}
-              iconColor="text-zinc-400"
-            >
-              {abandoned.map((goal) => (
-                <CompactGoalCard key={goal.id} goal={goal} status="abandoned" />
-              ))}
-            </GoalSection>
-          )}
+            {/* Abandoned */}
+            {abandoned.length > 0 && (
+              <GoalSection
+                title="Abandonnes"
+                count={abandoned.length}
+                icon={XCircle}
+                iconColor="text-zinc-400"
+              >
+                {abandoned.map((goal) => (
+                  <CompactGoalCard key={goal.id} goal={goal} status="abandoned" />
+                ))}
+              </GoalSection>
+            )}
 
-          {goals.length === 0 && (
-            <div
-              className="bg-surface rounded-2xl p-12 text-center"
-              style={{ boxShadow: "var(--shadow-card)" }}
-            >
-              <Target className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
-              <p className="text-sm text-muted-foreground">
-                Aucun objectif pour le moment
-              </p>
-            </div>
-          )}
-        </motion.div>
-      )}
+            {goals.length === 0 && (
+              <div
+                className="bg-surface rounded-2xl p-12 text-center"
+                style={{ boxShadow: "var(--shadow-card)" }}
+              >
+                <Target className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
+                <p className="text-sm text-muted-foreground">
+                  Aucun objectif pour le moment
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+      </motion.div>
     </motion.div>
   );
 }

@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
+const nextConfig = {
   typescript: {
     // Pre-existing TS errors from Vite→Next.js migration (Supabase Database types)
     // TODO: generate proper Database types with `supabase gen types`
@@ -59,4 +59,4 @@ const nextConfig: NextConfig = {
   ],
 };
 
-export default nextConfig;
+export default nextConfig as NextConfig;

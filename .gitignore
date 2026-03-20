@@ -51,3 +51,4 @@ tests/screenshots/
 tests/.auth/
 .playwright-mcp/
 tests/debug-*
+.env*.local

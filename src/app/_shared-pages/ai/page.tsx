@@ -30,14 +30,64 @@ import { useAiConsent } from "@/hooks/use-ai-consent";
 import { AiConsentModal } from "@/components/ai/ai-consent-modal";
 import { AiResponseBadge } from "@/components/ai/ai-response-badge";
 
-const suggestions = [
-  "Analyse la progression de mes eleves",
-  "Quels eleves sont a risque d'abandon ?",
-  "Redige un message de relance pour les eleves inactifs",
-  "Fais un rapport de performance de la semaine",
-  "Suggere du contenu pour mon prochain module",
-  "Cree un plan d'action personnalise",
-];
+const SUGGESTIONS_BY_ROLE: Record<string, string[]> = {
+  admin: [
+    "Fais un rapport de performance de la semaine",
+    "Quels eleves sont a risque d'abandon ?",
+    "Donne-moi une vue d'ensemble du revenu ce mois-ci",
+    "Quels clients n'ont pas eu de session ce mois ?",
+    "Redige un message de relance pour les eleves inactifs",
+    "Suggere du contenu pour mon prochain module",
+  ],
+  coach: [
+    "Quels clients ont besoin d'attention urgente ?",
+    "Prepare-moi une session de coaching pour un client bloque",
+    "Redige un message de motivation pour mes clients",
+    "Quels eleves progressent le mieux cette semaine ?",
+    "Suggere des exercices pratiques pour debloquer mes clients",
+    "Fais un bilan de progression de mes eleves",
+  ],
+  setter: [
+    "Aide-moi a qualifier un prospect froid",
+    "Redige un message d'approche LinkedIn percutant",
+    "Quelles sont les meilleures questions de decouverte ?",
+    "Comment gerer un prospect qui ne repond plus ?",
+    "Redige un follow-up apres un premier contact",
+    "Aide-moi a preparer mon script d'appel",
+  ],
+  closer: [
+    "Comment traiter l'objection 'c'est trop cher' ?",
+    "Aide-moi a preparer un closing pour demain",
+    "Quelles questions poser pour creer de l'urgence ?",
+    "Redige une offre commerciale percutante",
+    "Comment relancer un prospect apres un refus ?",
+    "Analyse mon taux de conversion et suggere des ameliorations",
+  ],
+  sales: [
+    "Aide-moi a qualifier un prospect froid",
+    "Comment traiter l'objection 'c'est trop cher' ?",
+    "Redige un message d'approche percutant",
+    "Prepare-moi pour un appel de vente demain",
+    "Quelles techniques de closing sont les plus efficaces ?",
+    "Fais un bilan de mes performances commerciales",
+  ],
+  client: [
+    "Aide-moi a definir mes objectifs pour ce mois",
+    "Je suis bloque sur un probleme, aide-moi a le resoudre",
+    "Comment rester motive quand ca devient difficile ?",
+    "Fais le bilan de ma progression",
+    "Donne-moi un plan d'action pour cette semaine",
+    "Quelles habitudes devrais-je adopter pour progresser ?",
+  ],
+  prospect: [
+    "Aide-moi a definir mes premiers objectifs",
+    "Par ou commencer pour atteindre mes buts ?",
+    "Comment organiser ma semaine pour etre productif ?",
+    "Quels sont les premiers pas vers le succes ?",
+    "Donne-moi un plan d'action pour commencer",
+    "Comment rester motive dans les premiers mois ?",
+  ],
+};
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -47,7 +97,7 @@ interface ChatMessage {
 type AITab = "chat" | "config";
 
 export default function AIPage() {
-  const { user, isStaff } = useAuth();
+  const { user, isStaff, profile } = useAuth();
   const [activeTab, setActiveTab] = useState<AITab>("chat");
   const supabase = useSupabase();
   const queryClient = useQueryClient();
@@ -64,6 +114,10 @@ export default function AIPage() {
   const [showSidebar, setShowSidebar] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const role = profile?.role ?? "client";
+  const suggestions =
+    SUGGESTIONS_BY_ROLE[role] ?? SUGGESTIONS_BY_ROLE.client;
 
   const { data: conversations } = useQuery({
     queryKey: ["ai-conversations"],
@@ -113,61 +167,44 @@ export default function AIPage() {
     if (!message.trim() || !user || isStreaming) return;
 
     setInput("");
-    const userMsg: ChatMessage = { role: "user", content: message };
-    setMessages((prev) => [...prev, userMsg]);
-
-    // Create conversation if needed — capture the ID for this scope
-    let activeConvId = conversationId;
-    if (!activeConvId) {
-      const { data, error } = await supabase
-        .from("ai_conversations")
-        .insert({
-          user_id: user.id,
-          title: message.length > 50 ? message.slice(0, 50) + "..." : message,
-        })
-        .select()
-        .single();
-      if (error) {
-        toast.error("Impossible de creer la conversation");
-        return;
-      }
-      activeConvId = data.id;
-      setConversationId(data.id);
-      queryClient.invalidateQueries({ queryKey: ["ai-conversations"] });
-    }
-
-    // AlexIA endpoint saves messages server-side
     setIsStreaming(true);
+    setMessages((prev) => [...prev, { role: "user", content: message }]);
+
     try {
-      const allMessages = [...messages, userMsg];
+      // Conversation creation is handled server-side — no client RLS risk
       const res = await fetch("/api/ai/alexia/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message, conversation_id: activeConvId }),
+        body: JSON.stringify({ message, conversation_id: conversationId }),
       });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error ?? `Erreur ${res.status}`);
+      }
+
       const data = await res.json();
       const response = data.response ?? "Erreur de reponse";
+
+      // Sync conversation ID if it was created server-side
+      if (data.conversation_id && !conversationId) {
+        setConversationId(data.conversation_id);
+        queryClient.invalidateQueries({ queryKey: ["ai-conversations"] });
+      }
 
       setMessages((prev) => [
         ...prev,
         { role: "assistant", content: response },
       ]);
 
-      // Update conversation timestamp
-      await supabase
-        .from("ai_conversations")
-        .update({ updated_at: new Date().toISOString() })
-        .eq("id", activeConvId);
-
       queryClient.invalidateQueries({ queryKey: ["ai-conversations"] });
-    } catch {
+    } catch (err) {
+      const msg =
+        err instanceof Error ? err.message : "Erreur de connexion avec AlexIA";
+      toast.error(msg);
       setMessages((prev) => [
         ...prev,
-        {
-          role: "assistant",
-          content:
-            "Erreur de connexion avec l'assistant IA. Veuillez reessayer.",
-        },
+        { role: "assistant", content: "Erreur : " + msg },
       ]);
     } finally {
       setIsStreaming(false);
@@ -199,7 +236,7 @@ export default function AIPage() {
   // Auto-accept consent silently if not yet accepted
   useEffect(() => {
     if (!consentLoading && !hasConsent && !isAccepting) {
-      acceptConsent(["chat", "analysis", "suggestions"]);
+      acceptConsent(["chat_analysis", "content_suggestions", "report_generation", "risk_scoring"]);
     }
   }, [consentLoading, hasConsent, isAccepting, acceptConsent]);
 

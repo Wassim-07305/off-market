@@ -7,8 +7,11 @@ import { motion } from "framer-motion";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 
 export default function DashboardPage() {
-  const { profile } = useAuth();
-  const isClient = profile?.role === "client";
+  const { isClient, loading } = useAuth();
+
+  // Wait for profile to load before deciding which dashboard to show
+  // Without this guard, profile=null → isClient=false → StaffDashboard renders for clients
+  if (loading) return null;
 
   // Clients get the enhanced dedicated dashboard
   if (isClient) {

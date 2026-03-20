@@ -165,6 +165,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 
   const role = profile?.role;
+  // Computed before the object literal to avoid TypeScript control-flow narrowing
+  // exhausting all other role values before it reaches the isClient line
+  const isClientRole = role === "client" || role === "prospect";
 
   const value: AuthContextValue = {
     user,
@@ -182,7 +185,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isSetter: role === "setter",
     isCloser: role === "closer",
     isSales: role === "setter" || role === "closer",
-    isClient: role === "client",
+    isClient: isClientRole,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { staggerContainer, staggerItem } from "@/lib/animations";
+import { staggerItem } from "@/lib/animations";
 import { useMembers, type MemberEntry } from "@/hooks/use-members";
 import { useAuth } from "@/hooks/use-auth";
 import { useRoutePrefix } from "@/hooks/use-route-prefix";
@@ -94,8 +94,8 @@ export default function CommunityPage() {
 
   return (
     <motion.div
-      variants={staggerContainer}
-      initial="hidden"
+      variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.06 } } }}
+      initial="visible"
       animate="visible"
       className="max-w-4xl mx-auto space-y-6"
     >

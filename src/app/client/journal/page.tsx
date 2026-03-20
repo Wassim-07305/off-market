@@ -585,61 +585,61 @@ export default function JournalPage() {
         </motion.div>
       )}
 
-      {/* Entries grouped by month */}
-      {isLoading ? (
-        <div className="space-y-3">
-          {[...Array(3)].map((_, i) => (
-            <div
-              key={i}
-              className="h-28 bg-muted/50 rounded-2xl animate-shimmer"
-            />
-          ))}
-        </div>
-      ) : filtered.length === 0 ? (
-        <motion.div
-          variants={staggerItem}
-          className="bg-surface rounded-2xl border border-border p-12 text-center"
-        >
-          <BookOpen className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
-          <p className="text-sm text-muted-foreground">
-            {search.trim() || filterMood !== "all"
-              ? "Aucun resultat"
-              : "Ton journal est vide. Commence a ecrire !"}
-          </p>
-        </motion.div>
-      ) : (
-        <motion.div variants={staggerItem} className="space-y-6">
-          {grouped.map((group) => (
-            <div key={group.month}>
-              <div className="flex items-center gap-2 mb-3">
-                <CalendarDays className="w-3.5 h-3.5 text-[#AF0000]" />
-                <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  {group.month}
-                </h3>
-                <span className="text-[10px] text-muted-foreground/60">
-                  ({group.entries.length})
-                </span>
+      {/* Entries grouped by month — staggerItem toujours présent pour
+          participer au stagger initial, même pendant le chargement */}
+      <motion.div variants={staggerItem}>
+        {isLoading ? (
+          <div className="space-y-3">
+            {[...Array(3)].map((_, i) => (
+              <div
+                key={i}
+                className="h-28 bg-muted/50 rounded-2xl animate-shimmer"
+              />
+            ))}
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="bg-surface rounded-2xl border border-border p-12 text-center">
+            <BookOpen className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
+            <p className="text-sm text-muted-foreground">
+              {search.trim() || filterMood !== "all"
+                ? "Aucun resultat"
+                : "Ton journal est vide. Commence a ecrire !"}
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            {grouped.map((group) => (
+              <div key={group.month}>
+                <div className="flex items-center gap-2 mb-3">
+                  <CalendarDays className="w-3.5 h-3.5 text-[#AF0000]" />
+                  <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                    {group.month}
+                  </h3>
+                  <span className="text-[10px] text-muted-foreground/60">
+                    ({group.entries.length})
+                  </span>
+                </div>
+                <div className="space-y-3">
+                  {group.entries.map((entry) => (
+                    <JournalEntryCard
+                      key={entry.id}
+                      entry={entry}
+                      isExpanded={expandedEntryId === entry.id}
+                      onToggle={() =>
+                        setExpandedEntryId(
+                          expandedEntryId === entry.id ? null : entry.id,
+                        )
+                      }
+                      onEdit={() => startEditing(entry)}
+                      onDelete={() => deleteEntry.mutate(entry.id)}
+                    />
+                  ))}
+                </div>
               </div>
-              <div className="space-y-3">
-                {group.entries.map((entry) => (
-                  <JournalEntryCard
-                    key={entry.id}
-                    entry={entry}
-                    isExpanded={expandedEntryId === entry.id}
-                    onToggle={() =>
-                      setExpandedEntryId(
-                        expandedEntryId === entry.id ? null : entry.id,
-                      )
-                    }
-                    onEdit={() => startEditing(entry)}
-                    onDelete={() => deleteEntry.mutate(entry.id)}
-                  />
-                ))}
-              </div>
-            </div>
-          ))}
-        </motion.div>
-      )}
+            ))}
+          </div>
+        )}
+      </motion.div>
     </motion.div>
   );
 }
@@ -734,9 +734,9 @@ function JournalEntryCard({
 
         {entry.tags.length > 0 && (
           <div className="flex gap-1 mt-2">
-            {entry.tags.map((tag) => (
+            {entry.tags.map((tag, i) => (
               <span
-                key={tag}
+                key={`${tag}-${i}`}
                 className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#AF0000]/5 text-[#AF0000]"
               >
                 #{tag}

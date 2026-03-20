@@ -1,24 +1,28 @@
 /**
- * OpenRouter API helper — drop-in replacement for Anthropic SDK calls.
- * Uses the OpenAI-compatible chat completions endpoint.
+ * Unified AI API helper.
+ * Priorité : Groq (si GROQ_API_KEY défini) → OpenRouter (si OPENROUTER_API_KEY défini)
+ * Interface identique pour les deux, drop-in replacement.
  */
 
+import { callGroq, GROQ_DEFAULT_MODEL } from "./groq";
+
 const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1/chat/completions";
-const DEFAULT_MODEL = "anthropic/claude-sonnet-4.6";
+const OPENROUTER_DEFAULT_MODEL = "anthropic/claude-sonnet-4.6";
 
 interface OpenRouterMessage {
   role: "system" | "user" | "assistant";
   content: string;
 }
 
-interface OpenRouterOptions {
+export interface OpenRouterOptions {
   model?: string;
   maxTokens?: number;
   system?: string;
   messages: Array<{ role: "user" | "assistant"; content: string }>;
+  temperature?: number;
 }
 
-interface OpenRouterResult {
+export interface OpenRouterResult {
   text: string;
   usage: { input_tokens: number; output_tokens: number };
 }
@@ -26,19 +30,31 @@ interface OpenRouterResult {
 export async function callOpenRouter(
   options: OpenRouterOptions,
 ): Promise<OpenRouterResult> {
+  // ── Groq en priorité ──────────────────────────────────────────────
+  if (process.env.GROQ_API_KEY) {
+    return callGroq({
+      model: options.model?.startsWith("groq/")
+        ? options.model.replace("groq/", "")
+        : GROQ_DEFAULT_MODEL,
+      maxTokens: options.maxTokens,
+      system: options.system,
+      messages: options.messages,
+      temperature: options.temperature,
+    });
+  }
+
+  // ── Fallback : OpenRouter ─────────────────────────────────────────
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
     throw new Error(
-      "OPENROUTER_API_KEY non configuree dans les variables d'environnement.",
+      "Aucune clé IA configurée. Ajoutez GROQ_API_KEY ou OPENROUTER_API_KEY dans votre .env.local",
     );
   }
 
   const allMessages: OpenRouterMessage[] = [];
-
   if (options.system) {
     allMessages.push({ role: "system", content: options.system });
   }
-
   for (const m of options.messages) {
     allMessages.push({ role: m.role, content: m.content });
   }
@@ -50,7 +66,7 @@ export async function callOpenRouter(
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: options.model ?? DEFAULT_MODEL,
+      model: options.model ?? OPENROUTER_DEFAULT_MODEL,
       max_tokens: options.maxTokens ?? 4096,
       messages: allMessages,
     }),
@@ -58,7 +74,7 @@ export async function callOpenRouter(
 
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({}));
-    console.error("OpenRouter API error:", res.status, errorData);
+    console.error("[OpenRouter] API error:", res.status, errorData);
     throw new Error(
       `OpenRouter API error: ${res.status} — ${JSON.stringify(errorData)}`,
     );

@@ -9,17 +9,9 @@ import {
 } from "@/lib/animations";
 import { cn } from "@/lib/utils";
 import { ClipboardCheck, BookOpen, Target } from "lucide-react";
-import dynamic from "next/dynamic";
-
-const CheckinContent = dynamic(() => import("@/app/client/checkin/page"), {
-  ssr: false,
-});
-const JournalContent = dynamic(() => import("@/app/client/journal/page"), {
-  ssr: false,
-});
-const GoalsContent = dynamic(() => import("@/app/client/goals/page"), {
-  ssr: false,
-});
+import CheckinContent from "@/app/client/checkin/page";
+import JournalContent from "@/app/client/journal/page";
+import GoalsContent from "@/app/client/goals/page";
 
 type Tab = "checkin" | "journal" | "objectifs";
 
@@ -84,7 +76,8 @@ export default function ClientSuiviPage() {
         </div>
       </motion.div>
 
-      {/* Content */}
+      {/* Plain div — rompt la propagation des variants framer-motion du parent
+          vers les pages enfants qui ont leur propre staggerContainer */}
       <div>
         {tab === "checkin" && <CheckinContent />}
         {tab === "journal" && <JournalContent />}

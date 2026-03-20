@@ -20,11 +20,10 @@ export function useRole() {
     canAccess: checkAccess,
     isAdmin: role === "admin",
     isCoach: role === "coach",
-    isClient: role === "client",
+    isClient: role === "client" || role === "prospect",
     isSetter: role === "setter",
     isCloser: role === "closer",
     isSales: role === "setter" || role === "closer",
-    // Backward compat
-    isProspect: role === "client",
+    isProspect: role === "prospect",
   };
 }

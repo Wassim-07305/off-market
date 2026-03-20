@@ -41,7 +41,7 @@ export async function GET(request: Request) {
   // RLS handles row-level access, but we also scope the query per role
   if (profile.role === "coach") {
     query = query.eq("coach_id", user.id);
-  } else if (profile.role === "client") {
+  } else if (profile.role === "client" || profile.role === "prospect") {
     query = query.eq("client_id", user.id);
   } else if (!["admin"].includes(profile.role)) {
     return NextResponse.json({ error: "Accès refusé" }, { status: 403 });

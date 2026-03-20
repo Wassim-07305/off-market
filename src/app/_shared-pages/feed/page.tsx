@@ -3,7 +3,7 @@
 import { useState, useCallback } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { staggerContainer, staggerItem } from "@/lib/animations";
+import { staggerItem } from "@/lib/animations";
 import { useFeed } from "@/hooks/use-feed";
 import { useAuth } from "@/hooks/use-auth";
 import { POST_TYPE_CONFIG } from "@/types/feed";
@@ -94,8 +94,8 @@ export default function FeedPage() {
 
   return (
     <motion.div
-      variants={staggerContainer}
-      initial="hidden"
+      variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.06 } } }}
+      initial="visible"
       animate="visible"
       className="max-w-5xl mx-auto space-y-8"
     >
