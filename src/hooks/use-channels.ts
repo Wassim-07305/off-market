@@ -72,7 +72,7 @@ export function useChannels() {
           }>,
         }));
 
-      return [
+      const allChannels = [
         ...((memberChannels ?? []) as (Channel & {
           channel_members: Array<{
             profile_id: string;
@@ -83,6 +83,18 @@ export function useChannels() {
         })[]),
         ...publicOnly,
       ];
+
+      // Sort: pinned first, then by last_message_at desc
+      allChannels.sort((a, b) => {
+        const aPinned = a.channel_members?.[0]?.is_pinned ? 1 : 0;
+        const bPinned = b.channel_members?.[0]?.is_pinned ? 1 : 0;
+        if (aPinned !== bPinned) return bPinned - aPinned;
+        const aTime = a.last_message_at ?? a.created_at ?? "";
+        const bTime = b.last_message_at ?? b.created_at ?? "";
+        return bTime.localeCompare(aTime);
+      });
+
+      return allChannels;
     },
     enabled: !!user,
   });
@@ -100,26 +112,35 @@ export function useChannels() {
 
       for (const ch of channelsQuery.data) {
         const memberInfo = ch.channel_members[0];
-        if (!memberInfo?.last_read_at) {
-          unreads[ch.id] = { total: 0, urgent: 0 };
-          continue;
-        }
-        // Total unread
-        const { count, error } = await supabase
+        const lastRead = memberInfo?.last_read_at;
+
+        // Count unread messages NOT sent by me
+        let totalQuery = supabase
           .from("messages")
           .select("*", { count: "exact", head: true })
           .eq("channel_id", ch.id)
-          .is("deleted_at", null)
-          .gt("created_at", memberInfo.last_read_at);
+          .neq("sender_id", user!.id)
+          .is("deleted_at", null);
+
+        if (lastRead) {
+          totalQuery = totalQuery.gt("created_at", lastRead);
+        }
+
+        const { count, error } = await totalQuery;
         if (!error) {
-          // Urgent unread
-          const { count: urgentCount } = await supabase
+          let urgentQuery = supabase
             .from("messages")
             .select("*", { count: "exact", head: true })
             .eq("channel_id", ch.id)
+            .neq("sender_id", user!.id)
             .eq("is_urgent", true)
-            .is("deleted_at", null)
-            .gt("created_at", memberInfo.last_read_at);
+            .is("deleted_at", null);
+
+          if (lastRead) {
+            urgentQuery = urgentQuery.gt("created_at", lastRead);
+          }
+
+          const { count: urgentCount } = await urgentQuery;
           unreads[ch.id] = {
             total: count ?? 0,
             urgent: urgentCount ?? 0,
@@ -222,6 +243,15 @@ export function useChannels() {
         { event: "*", schema: "public", table: "channel_members" },
         () => queryClient.invalidateQueries({ queryKey: ["channels"] }),
       )
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "messages" },
+        () => {
+          // New message in any channel → refresh unread badges
+          queryClient.invalidateQueries({ queryKey: ["channel-unreads"] });
+          queryClient.invalidateQueries({ queryKey: ["channels"] });
+        },
+      )
       .subscribe();
 
     return () => {
@@ -306,20 +336,25 @@ export function useChannels() {
         }
       }
 
-      // Fetch other user's name
-      const { data: otherProfile } = await supabase
-        .from("profiles")
-        .select("full_name")
-        .eq("id", otherUserId)
-        .single();
+      // Fetch both profiles in parallel
+      const [otherRes, myRes] = await Promise.all([
+        supabase
+          .from("profiles")
+          .select("full_name")
+          .eq("id", otherUserId)
+          .single(),
+        supabase
+          .from("profiles")
+          .select("full_name")
+          .eq("id", user.id)
+          .single(),
+      ]);
 
-      const { data: myProfile } = await supabase
-        .from("profiles")
-        .select("full_name")
-        .eq("id", user.id)
-        .single();
+      if (otherRes.error || !otherRes.data) {
+        throw new Error("Profil du destinataire introuvable");
+      }
 
-      const dmName = `${myProfile?.full_name ?? "?"} & ${otherProfile?.full_name ?? "?"}`;
+      const dmName = `${myRes.data?.full_name ?? "Moi"} & ${otherRes.data.full_name}`;
 
       const { data: channel, error } = await supabase
         .from("channels")
@@ -328,16 +363,29 @@ export function useChannels() {
         .single();
       if (error) throw error;
 
-      await supabase.from("channel_members").insert([
-        { channel_id: channel.id, profile_id: user.id, role: "admin" },
-        { channel_id: channel.id, profile_id: otherUserId, role: "member" },
-      ]);
+      const { error: membersError } = await supabase
+        .from("channel_members")
+        .insert([
+          { channel_id: channel.id, profile_id: user.id, role: "admin" },
+          { channel_id: channel.id, profile_id: otherUserId, role: "member" },
+        ]);
+
+      if (membersError) {
+        // Rollback: delete the channel if members insert failed
+        await supabase.from("channels").delete().eq("id", channel.id);
+        throw membersError;
+      }
 
       return channel as Channel;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["channels"] });
       queryClient.invalidateQueries({ queryKey: ["dm-partners"] });
+    },
+    onError: (err: unknown) => {
+      const msg =
+        err instanceof Error ? err.message : "Erreur lors de la creation du DM";
+      toast.error(msg);
     },
   });
 

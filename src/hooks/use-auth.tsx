@@ -97,6 +97,51 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, [supabase]);
 
+  // Realtime: listen to changes on the user's own profile row (role, name, etc.)
+  useEffect(() => {
+    if (!user) return;
+
+    const channel = supabase
+      .channel(`profile-${user.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "profiles",
+          filter: `id=eq.${user.id}`,
+        },
+        (payload) => {
+          const newProfile = payload.new as Profile;
+          const oldRole = profile?.role;
+          setProfile(newProfile);
+
+          // If role changed, redirect to the correct dashboard
+          if (oldRole && newProfile.role !== oldRole) {
+            const ROLE_DASHBOARDS: Record<string, string> = {
+              admin: "/admin/dashboard",
+              coach: "/coach/dashboard",
+              setter: "/sales/dashboard",
+              closer: "/sales/dashboard",
+              client: "/client/dashboard",
+              prospect: "/client/dashboard",
+            };
+            const target =
+              ROLE_DASHBOARDS[newProfile.role] ?? "/client/dashboard";
+            // Clear middleware cache cookie, then redirect
+            document.cookie =
+              "om_profile_cache=; path=/; max-age=0; SameSite=Lax";
+            window.location.replace(target);
+          }
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [supabase, user, profile?.role]);
+
   const signIn = useCallback(
     async (email: string, password: string) => {
       const { error } = await supabase.auth.signInWithPassword({

@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { staggerContainer, staggerItem, fadeInUp } from "@/lib/animations";
+import { staggerContainer, staggerItem } from "@/lib/animations";
 import { PageTransition } from "@/components/ui/page-transition";
 import { HeroMetric } from "@/components/dashboard/hero-metric";
 import {
@@ -136,7 +136,10 @@ function ContactCard({
 
   return (
     <motion.button
-      variants={fadeInUp}
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25, ease: [0.25, 0.4, 0, 1] }}
+      layout
       onClick={onClick}
       className="w-full text-left bg-surface border border-border rounded-md p-3 hover:border-hover hover:shadow-sm hover:-translate-y-[1px] transition-all group"
     >
@@ -212,18 +215,24 @@ function StageColumn({
 
   return (
     <div className="flex flex-col min-w-[260px] w-[260px] shrink-0">
-      <div
-        className={cn(
-          "rounded-md px-3 py-2 mb-2 border border-border",
-          stage.bg,
-        )}
-      >
+      <div className="rounded-md px-3 py-2 mb-2 border border-border bg-surface">
         <div className="flex items-center justify-between">
-          <span className={cn("text-xs font-semibold", stage.color)}>
-            {stage.label}
-          </span>
           <div className="flex items-center gap-2">
-            <span className="text-[10px] text-muted-foreground font-mono">
+            <span
+              className={cn("w-2 h-2 rounded-full shrink-0", stage.dotColor)}
+            />
+            <span className="text-xs font-semibold text-foreground">
+              {stage.label}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span
+              className={cn(
+                "text-[10px] font-mono font-semibold min-w-[1rem] text-center px-1.5 py-0.5 rounded-md",
+                stage.bg,
+                stage.color,
+              )}
+            >
               {contacts.length}
             </span>
             {total > 0 && (
@@ -234,12 +243,7 @@ function StageColumn({
           </div>
         </div>
       </div>
-      <motion.div
-        variants={staggerContainer}
-        initial="hidden"
-        animate="visible"
-        className="flex-1 space-y-2 min-h-[100px]"
-      >
+      <div className="flex-1 space-y-2 min-h-[100px]">
         {contacts.map((contact) => (
           <ContactCard
             key={contact.id}
@@ -247,7 +251,7 @@ function StageColumn({
             onClick={() => onCardClick(contact)}
           />
         ))}
-      </motion.div>
+      </div>
     </div>
   );
 }
@@ -535,14 +539,17 @@ function AddContactModal({
 }: {
   open: boolean;
   onClose: () => void;
-  onAdd: (data: {
-    full_name: string;
-    email?: string;
-    phone?: string;
-    company?: string;
-    source?: string;
-    estimated_value?: number;
-  }) => void;
+  onAdd: (
+    data: {
+      full_name: string;
+      email?: string;
+      phone?: string;
+      company?: string;
+      source?: string;
+      estimated_value?: number;
+    },
+    callbacks: { onSuccess: () => void },
+  ) => void;
   isPending: boolean;
 }) {
   const [name, setName] = useState("");
@@ -554,24 +561,34 @@ function AddContactModal({
 
   if (!open) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!name.trim()) return;
-    onAdd({
-      full_name: name,
-      email: email || undefined,
-      phone: phone || undefined,
-      company: company || undefined,
-      source: source || undefined,
-      estimated_value: parseFloat(value) || undefined,
-    });
+  const resetForm = () => {
     setName("");
     setEmail("");
     setPhone("");
     setCompany("");
     setSource("");
     setValue("");
-    onClose();
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name.trim()) return;
+    onAdd(
+      {
+        full_name: name,
+        email: email || undefined,
+        phone: phone || undefined,
+        company: company || undefined,
+        source: source || undefined,
+        estimated_value: parseFloat(value) || undefined,
+      },
+      {
+        onSuccess: () => {
+          resetForm();
+          onClose();
+        },
+      },
+    );
   };
 
   return (
@@ -810,7 +827,9 @@ export default function SalesPipelinePage() {
         <AddContactModal
           open={showAdd}
           onClose={() => setShowAdd(false)}
-          onAdd={(data) => createContact.mutate(data)}
+          onAdd={(data, { onSuccess }) =>
+            createContact.mutate(data, { onSuccess })
+          }
           isPending={createContact.isPending}
         />
       </motion.div>

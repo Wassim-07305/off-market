@@ -43,11 +43,18 @@ export async function POST(request: Request) {
 
     const buffer = Buffer.from(await file.arrayBuffer());
 
+    // Sanitize path: remove special characters that Supabase Storage rejects
+    const sanitizedPath = path
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "") // strip accents
+      .replace(/[^a-zA-Z0-9/_.\-]/g, "_") // replace special chars with _
+      .replace(/_{2,}/g, "_"); // collapse multiple underscores
+
     if (B2_CONFIGURED) {
       // Upload vers B2 (stockage principal)
       const { uploadToB2 } = await import("@/lib/b2");
-      await uploadToB2(path, buffer, file.type || "application/octet-stream");
-      const url = `/api/storage/proxy?key=${encodeURIComponent(path)}`;
+      await uploadToB2(sanitizedPath, buffer, file.type || "application/octet-stream");
+      const url = `/api/storage/proxy?key=${encodeURIComponent(sanitizedPath)}`;
       return NextResponse.json({ url });
     } else {
       // Fallback : Supabase Storage
@@ -62,7 +69,7 @@ export async function POST(request: Request) {
 
       const { error: uploadError } = await admin.storage
         .from(SUPABASE_BUCKET)
-        .upload(path, buffer, {
+        .upload(sanitizedPath, buffer, {
           contentType: file.type || "application/octet-stream",
           upsert: true,
         });
@@ -71,14 +78,20 @@ export async function POST(request: Request) {
 
       const {
         data: { publicUrl },
-      } = admin.storage.from(SUPABASE_BUCKET).getPublicUrl(path);
+      } = admin.storage.from(SUPABASE_BUCKET).getPublicUrl(sanitizedPath);
 
       return NextResponse.json({ url: publicUrl });
     }
   } catch (err) {
-    console.error("[storage/upload] Erreur:", err);
+    const message =
+      err instanceof Error
+        ? err.message
+        : typeof err === "object" && err !== null && "message" in err
+          ? String((err as { message: unknown }).message)
+          : JSON.stringify(err);
+    console.error("[storage/upload] Erreur:", message);
     return NextResponse.json(
-      { error: "Erreur lors de l'upload" },
+      { error: "Erreur lors de l'upload", debug: message },
       { status: 500 },
     );
   }

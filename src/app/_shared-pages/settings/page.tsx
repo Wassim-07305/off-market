@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { useAuth } from "@/hooks/use-auth";
 import { useSupabase } from "@/hooks/use-supabase";
+import { useQueryClient } from "@tanstack/react-query";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
@@ -106,6 +107,7 @@ const DIGEST_OPTIONS = [
 export default function SettingsPage() {
   const { profile, user, signOut, isAdmin } = useAuth();
   const supabase = useSupabase();
+  const queryClient = useQueryClient();
   const { theme, setTheme } = useTheme();
   const [fullName, setFullName] = useState(profile?.full_name ?? "");
   const [phone, setPhone] = useState(profile?.phone ?? "");
@@ -177,6 +179,9 @@ export default function SettingsPage() {
     const file = e.target.files?.[0];
     if (!file || !user) return;
 
+    // Reset file input so re-selecting the same file triggers onChange
+    e.target.value = "";
+
     if (!file.type.startsWith("image/")) {
       toast.error("Seules les images sont acceptees");
       return;
@@ -189,37 +194,37 @@ export default function SettingsPage() {
     setUploading(true);
     try {
       const ext = file.name.split(".").pop() ?? "jpg";
-      const filePath = `${user.id}/avatar.${ext}`;
+      const filePath = `avatars/${user.id}/avatar.${ext}`;
 
-      // Upload directly to Supabase Storage (avatars bucket)
-      const { error: uploadError } = await supabase.storage
-        .from("avatars")
-        .upload(filePath, file, { upsert: true, contentType: file.type });
+      // Upload via API route (handles B2/Supabase fallback + auto-creates bucket)
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("path", filePath);
 
-      if (uploadError) {
-        // If bucket doesn't exist, try creating it then retry
-        if (uploadError.message?.includes("not found")) {
-          toast.error("Le bucket avatars n'existe pas. Contactez l'admin.");
-          setUploading(false);
-          return;
-        }
-        throw uploadError;
+      const res = await fetch("/api/storage/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error ?? "Upload failed");
       }
 
-      const { data: publicData } = supabase.storage
-        .from("avatars")
-        .getPublicUrl(filePath);
+      const { url } = await res.json();
+      const newUrl = url + "?t=" + Date.now();
 
-      const newUrl = publicData.publicUrl + "?t=" + Date.now();
-
+      // Update profile in DB
       const { error: updateError } = await supabase
         .from("profiles")
-        .update({ avatar_url: newUrl } as never)
+        .update({ avatar_url: newUrl } as Record<string, unknown>)
         .eq("id", user.id);
 
       if (updateError) throw updateError;
 
       setAvatarUrl(newUrl);
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      queryClient.invalidateQueries({ queryKey: ["auth"] });
       toast.success("Photo de profil mise a jour");
     } catch (err) {
       console.error("[avatar upload]", err);
@@ -234,15 +239,20 @@ export default function SettingsPage() {
     setSaving(true);
     const { error } = await supabase
       .from("profiles")
-      .update({ full_name: fullName, phone, bio })
+      .update({ full_name: fullName, phone, bio } as Record<string, unknown>)
       .eq("id", user.id);
     setSaving(false);
-    if (error) toast.error("Erreur lors de la sauvegarde");
-    else toast.success("Profil mis a jour");
+    if (error) {
+      toast.error("Erreur lors de la sauvegarde");
+    } else {
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      queryClient.invalidateQueries({ queryKey: ["auth"] });
+      toast.success("Profil mis a jour");
+    }
   };
 
   const handleChangePassword = async () => {
-    if (!newPassword || !confirmPassword) {
+    if (!currentPassword || !newPassword || !confirmPassword) {
       toast.error("Remplis tous les champs");
       return;
     }
@@ -258,16 +268,14 @@ export default function SettingsPage() {
     setChangingPassword(true);
     try {
       // Verify current password by re-authenticating
-      if (currentPassword) {
-        const { error: signInErr } = await supabase.auth.signInWithPassword({
-          email: profile?.email ?? "",
-          password: currentPassword,
-        });
-        if (signInErr) {
-          toast.error("Mot de passe actuel incorrect");
-          setChangingPassword(false);
-          return;
-        }
+      const { error: signInErr } = await supabase.auth.signInWithPassword({
+        email: profile?.email ?? "",
+        password: currentPassword,
+      });
+      if (signInErr) {
+        toast.error("Mot de passe actuel incorrect");
+        setChangingPassword(false);
+        return;
       }
 
       const { error } = await supabase.auth.updateUser({
@@ -586,8 +594,7 @@ export default function SettingsPage() {
                         icon: "/logo.png",
                         badge: "/logo.png",
                         tag: "test",
-                        vibrate: [200, 100, 200],
-                      });
+                      } as NotificationOptions);
                     });
                   }, 5000);
                 }}
@@ -725,7 +732,7 @@ export default function SettingsPage() {
 
             <button
               onClick={handleChangePassword}
-              disabled={changingPassword || !newPassword || !confirmPassword}
+              disabled={changingPassword || !currentPassword || !newPassword || !confirmPassword}
               className="h-9 px-4 rounded-xl bg-foreground text-background text-sm font-medium hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-2"
             >
               {changingPassword ? (

@@ -74,8 +74,6 @@ export default function CoachSessionsPage() {
   return (
     <motion.div
       variants={staggerContainer}
-      initial="hidden"
-      animate="visible"
       className="space-y-6"
     >
       <motion.div

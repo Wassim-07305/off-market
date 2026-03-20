@@ -13,7 +13,7 @@ export default function BookingPage() {
   return (
     <motion.div
       variants={staggerContainer}
-      initial="hidden"
+      initial="visible"
       animate="visible"
       className="max-w-3xl mx-auto space-y-6"
     >

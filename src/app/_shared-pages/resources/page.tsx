@@ -203,7 +203,9 @@ export default function ResourcesPage() {
       {/* Upload form */}
       {showUpload && (
         <motion.div
-          variants={staggerItem}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.2 }}
           className="bg-surface rounded-2xl p-6 space-y-4 border border-border"
           style={{ boxShadow: "var(--shadow-card)" }}
         >

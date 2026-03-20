@@ -85,7 +85,7 @@ export function SetterBilan() {
 
     return {
       dms_week: weekActivities.reduce((s, a) => s + (a.dms_sent ?? 0), 0),
-      relances_week: weekActivities.reduce((s, a) => s + (a.relances ?? 0), 0),
+      relances_week: weekActivities.reduce((s, a) => s + (a.followups_sent ?? 0), 0),
       links_week: weekActivities.reduce((s, a) => s + (a.links_sent ?? 0), 0),
       calls_week: weekActivities.reduce((s, a) => s + (a.calls_booked ?? 0), 0),
     };
@@ -100,7 +100,7 @@ export function SetterBilan() {
       {
         date,
         dms_sent: dms,
-        relances,
+        followups_sent: relances,
         links_sent: links,
         calls_booked: calls,
         notes: notes || null,
@@ -274,7 +274,7 @@ export function SetterBilan() {
                     {activity.dms_sent ?? 0}
                   </td>
                   <td className="px-4 py-3 text-center text-foreground">
-                    {activity.relances ?? 0}
+                    {activity.followups_sent ?? 0}
                   </td>
                   <td className="px-4 py-3 text-center text-foreground">
                     {activity.links_sent ?? 0}

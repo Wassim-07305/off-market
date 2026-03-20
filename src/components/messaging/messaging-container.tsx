@@ -81,18 +81,12 @@ export default function MessagingContainer() {
     }
   }, [channels, activeChannelId, setActiveChannelId]);
 
-  // Mark as read when channel changes, then refresh unread counts
+  // Mark as read when channel changes or markAsRead updates (new channel's closure)
   useEffect(() => {
     if (activeChannelId) {
-      markAsRead().then(() => {
-        // Small delay to let the DB update, then refetch channel list
-        setTimeout(() => {
-          queryClient.invalidateQueries({ queryKey: ["channels"] });
-          queryClient.invalidateQueries({ queryKey: ["unread-counts"] });
-        }, 500);
-      });
+      markAsRead();
     }
-  }, [activeChannelId]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [activeChannelId, markAsRead]);
 
   const handleSelectChannel = useCallback(
     (id: string) => {

@@ -10,7 +10,6 @@ import {
   Clock,
   CheckCircle,
   TrendingUp,
-  ArrowUpRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -35,7 +34,7 @@ export default function SetterCommissionsPage() {
   return (
     <motion.div
       variants={staggerContainer}
-      initial="hidden"
+      initial="visible"
       animate="visible"
       className="space-y-6"
     >
@@ -87,37 +86,42 @@ export default function SetterCommissionsPage() {
             {pending.length})
           </h2>
           <div className="space-y-2">
-            {pending.map((c) => (
-              <div
-                key={c.id}
-                className="flex items-center justify-between p-4 bg-surface border border-border rounded-xl"
-              >
-                <div>
-                  <p className="text-sm font-medium text-foreground">
-                    Vente de {formatCurrency(c.sale_amount ?? 0)}
-                  </p>
-                  <div className="flex items-center gap-2 mt-0.5">
-                    <span className="text-xs text-muted-foreground">
-                      Taux:{" "}
-                      {(
-                        (c.commission_rate ?? c.percentage / 100) * 100
-                      ).toFixed(0)}
-                      %
-                    </span>
-                    {c.split_type && c.split_type !== "full" && (
-                      <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600">
-                        {c.split_type === "first_payment"
-                          ? "1er versement"
-                          : "2eme versement"}
+            {pending.map((c) => {
+              const rate = c.commission_rate ?? (c.percentage ? c.percentage / 100 : 0);
+              return (
+                <div
+                  key={c.id}
+                  className="flex items-center justify-between p-4 bg-surface border border-border rounded-xl"
+                >
+                  <div>
+                    <p className="text-sm font-medium text-foreground">
+                      Vente de {formatCurrency(c.sale_amount ?? 0)}
+                    </p>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="text-xs text-muted-foreground">
+                        Taux: {(rate * 100).toFixed(0)}%
                       </span>
-                    )}
+                      <span className="text-[10px] text-muted-foreground">
+                        {new Date(c.created_at).toLocaleDateString("fr-FR", {
+                          day: "numeric",
+                          month: "short",
+                        })}
+                      </span>
+                      {c.split_type && c.split_type !== "full" && (
+                        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600">
+                          {c.split_type === "first_payment"
+                            ? "1er versement"
+                            : "2eme versement"}
+                        </span>
+                      )}
+                    </div>
                   </div>
+                  <span className="text-sm font-bold text-amber-600">
+                    {formatCurrency(c.commission_amount ?? c.amount ?? 0)}
+                  </span>
                 </div>
-                <span className="text-sm font-bold text-amber-600">
-                  {formatCurrency(c.commission_amount ?? c.amount ?? 0)}
-                </span>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </motion.div>
       )}
@@ -201,10 +205,7 @@ function StatCard({
   color: string;
 }) {
   return (
-    <div
-      className="bg-surface rounded-2xl p-4"
-      style={{ boxShadow: "var(--shadow-card)" }}
-    >
+    <div className="bg-surface border border-border rounded-xl p-4">
       <div className="flex items-center gap-2 mb-1">
         <Icon className={cn("w-4 h-4", color)} />
         <span className="text-xs text-muted-foreground">{label}</span>

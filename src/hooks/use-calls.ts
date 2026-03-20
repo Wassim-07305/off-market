@@ -183,26 +183,43 @@ export function useCalls(weekStart?: Date) {
       newTime: string;
       reason: string;
     }) => {
-      // First get the current call to save original date/time
+      // Get the current call date/time to preserve as original
       const { data: current, error: fetchErr } = await supabase
         .from("call_calendar")
-        .select("date, time, original_date, original_time")
+        .select("date, time")
         .eq("id", id)
         .single();
       if (fetchErr) throw fetchErr;
 
+      // Build update payload — include original_date/time only if columns exist
+      const updatePayload: Record<string, unknown> = {
+        date: newDate,
+        time: newTime,
+        status: "reporte",
+        notes: reason ? `Report: ${reason}` : undefined,
+      };
+
+      // Try with reschedule columns first, fallback without
       const { error } = await supabase
         .from("call_calendar")
         .update({
-          date: newDate,
-          time: newTime,
-          status: "reporte",
+          ...updatePayload,
           reschedule_reason: reason,
-          original_date: current.original_date ?? current.date,
-          original_time: current.original_time ?? current.time,
+          original_date: current.date,
+          original_time: current.time,
         })
         .eq("id", id);
-      if (error) throw error;
+
+      if (error && error.code === "PGRST204") {
+        // Columns don't exist — update without them
+        const { error: fallbackErr } = await supabase
+          .from("call_calendar")
+          .update(updatePayload)
+          .eq("id", id);
+        if (fallbackErr) throw fallbackErr;
+      } else if (error) {
+        throw error;
+      }
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["calls"] }),
     onError: () => {

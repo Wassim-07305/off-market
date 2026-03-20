@@ -216,8 +216,9 @@ export function SetterPipelineConfig({
       toast.error("Entrez un nom de colonne");
       return;
     }
+    const nextPosition = Math.max(...(columns ?? []).map((c) => c.position ?? 0), -1) + 1;
     createColumn.mutate(
-      { name: newName.trim(), color: newColor },
+      { name: newName.trim(), color: newColor, position: nextPosition },
       {
         onSuccess: () => {
           setNewName("");
@@ -253,8 +254,8 @@ export function SetterPipelineConfig({
     if (oldIndex === -1 || newIndex === -1) return;
 
     const reordered = arrayMove(columns ?? [], oldIndex, newIndex);
-    const orderedIds = reordered.map((c) => c.id);
-    reorderColumns.mutate(orderedIds);
+    const updates = reordered.map((c, idx) => ({ id: c.id, position: idx }));
+    reorderColumns.mutate(updates);
   }
 
   return (

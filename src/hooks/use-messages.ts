@@ -165,10 +165,12 @@ export function useMessages(channelId: string | null) {
           context.previousMessages,
         );
       }
+      scrollLockRef.current = false;
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["messages", channelId] });
       queryClient.invalidateQueries({ queryKey: ["channels"] });
+      scrollLockRef.current = false;
     },
   });
 
@@ -386,12 +388,17 @@ export function useMessages(channelId: string | null) {
 
   const markAsRead = useCallback(async () => {
     if (!channelId || !user) return;
-    await supabase
+    const { error } = await supabase
       .from("channel_members")
       .update({ last_read_at: new Date().toISOString() })
       .eq("channel_id", channelId)
       .eq("profile_id", user.id);
-  }, [channelId, user, supabase]);
+    if (!error) {
+      // Refresh channels (for updated last_read_at) then unread counts
+      await queryClient.invalidateQueries({ queryKey: ["channels"] });
+      queryClient.invalidateQueries({ queryKey: ["channel-unreads"] });
+    }
+  }, [channelId, user, supabase, queryClient]);
 
   return {
     messages: messagesQuery.data ?? [],

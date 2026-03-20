@@ -128,7 +128,7 @@ export default function ClientDocumentsPage() {
   return (
     <motion.div
       variants={staggerContainer}
-      initial="hidden"
+      initial="visible"
       animate="visible"
       className="space-y-6"
     >

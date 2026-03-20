@@ -49,7 +49,7 @@ export default function CoachAlertsPage() {
   return (
     <motion.div
       variants={staggerContainer}
-      initial="hidden"
+      initial="visible"
       animate="visible"
       className="space-y-6"
     >

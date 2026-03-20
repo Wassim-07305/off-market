@@ -736,8 +736,6 @@ export default function CloserCallsPage() {
   return (
     <motion.div
       variants={staggerContainer}
-      initial="hidden"
-      animate="visible"
       className="space-y-6"
     >
       {/* Header */}

@@ -86,9 +86,8 @@ export const pageTransition: Variants = {
 // ═══════════════════════════════════════════
 
 export const staggerContainer: Variants = {
-  hidden: { opacity: 0 },
+  hidden: {},
   visible: {
-    opacity: 1,
     transition: {
       staggerChildren: 0.06,
       ease: [0.25, 0.4, 0, 1],

@@ -127,27 +127,30 @@ export function TemplateManagerModal({
         : `/${formShortcut.trim()}`
       : undefined;
 
-    if (editingTemplate) {
-      await updateTemplate.mutateAsync({
-        id: editingTemplate.id,
-        title: formTitle.trim(),
-        content: formContent.trim(),
-        category: formCategory,
-        shortcut: shortcut ?? null,
-        is_shared: formShared,
-      });
-    } else {
-      await createTemplate.mutateAsync({
-        title: formTitle.trim(),
-        content: formContent.trim(),
-        category: formCategory,
-        shortcut,
-        is_shared: formShared,
-      });
+    try {
+      if (editingTemplate) {
+        await updateTemplate.mutateAsync({
+          id: editingTemplate.id,
+          title: formTitle.trim(),
+          content: formContent.trim(),
+          category: formCategory,
+          shortcut: shortcut ?? null,
+          is_shared: formShared,
+        });
+      } else {
+        await createTemplate.mutateAsync({
+          title: formTitle.trim(),
+          content: formContent.trim(),
+          category: formCategory,
+          shortcut,
+          is_shared: formShared,
+        });
+      }
+      resetForm();
+      setView("list");
+    } catch {
+      // Error toast is handled by mutation onError
     }
-
-    resetForm();
-    setView("list");
   };
 
   const handleDelete = async (id: string) => {

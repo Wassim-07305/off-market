@@ -2,7 +2,6 @@
 
 import { Suspense } from "react";
 import { usePathname } from "next/navigation";
-import { AnimatePresence, motion } from "framer-motion";
 import { RoleSidebar } from "@/components/layout/role-sidebar";
 import { Header } from "@/components/layout/header";
 import { RoleMobileNav } from "@/components/layout/role-mobile-nav";
@@ -69,17 +68,7 @@ export function RoleLayout({ variant, children }: RoleLayoutProps) {
         <Header />
         <main className="flex-1 p-5 pb-24 md:p-8 lg:p-10 lg:pb-10 overflow-y-auto">
           <div className="mx-auto max-w-[1400px]">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={pathname}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2, ease: "easeOut" }}
-              >
-                <Suspense fallback={<PageSkeleton />}>{children}</Suspense>
-              </motion.div>
-            </AnimatePresence>
+            <Suspense fallback={<PageSkeleton />}>{children}</Suspense>
           </div>
         </main>
       </div>

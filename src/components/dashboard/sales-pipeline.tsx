@@ -13,33 +13,34 @@ interface PipelineDeal {
   probability: number;
 }
 
+// 🎨 COULEURS VIVES + CONTRASTE MAX
 const PIPELINE_STAGES: {
   key: string;
   label: string;
   color: string;
   probability: number;
 }[] = [
-  { key: "prospect", label: "Prospect", color: "bg-blue-500", probability: 10 },
-  {
-    key: "qualifie",
-    label: "Qualifie",
-    color: "bg-indigo-500",
-    probability: 25,
+  { key: "prospect", label: "Prospect", color: "bg-blue-600", probability: 10 },
+  { 
+    key: "qualifie", 
+    label: "Qualifié", 
+    color: "bg-indigo-600", 
+    probability: 25 
   },
-  {
-    key: "proposition",
-    label: "Proposition",
-    color: "bg-violet-500",
-    probability: 50,
+  { 
+    key: "proposition", 
+    label: "Proposition", 
+    color: "bg-purple-600", 
+    probability: 50 
   },
-  {
-    key: "negociation",
-    label: "Negociation",
-    color: "bg-amber-500",
-    probability: 75,
+  { 
+    key: "negociation", 
+    label: "Négociation", 
+    color: "bg-amber-500", 
+    probability: 75 
   },
   { key: "closing", label: "Closing", color: "bg-orange-500", probability: 90 },
-  { key: "client", label: "Gagne", color: "bg-emerald-500", probability: 100 },
+  { key: "client", label: "Gagné ✅", color: "bg-emerald-600", probability: 100 },
 ];
 
 function useSalesPipeline() {
@@ -59,8 +60,7 @@ function useSalesPipeline() {
         pipeline_stage: string | null;
         estimated_value: number | null;
       };
-      const stageMap: Record<string, { count: number; totalValue: number }> =
-        {};
+      const stageMap: Record<string, { count: number; totalValue: number }> = {};
       for (const row of (data ?? []) as ContactRow[]) {
         const stage = row.pipeline_stage ?? "prospect";
         if (!stageMap[stage]) stageMap[stage] = { count: 0, totalValue: 0 };
@@ -100,7 +100,7 @@ export function SalesPipeline() {
           Pipeline commercial
         </h3>
         <div className="text-right">
-          <p className="text-[10px] text-muted-foreground">Revenu pondere</p>
+          <p className="text-[10px] text-muted-foreground">Revenu pondéré</p>
           <p className="text-sm font-semibold text-foreground">
             {formatCurrency(weightedRevenue)}
           </p>
@@ -130,22 +130,25 @@ export function SalesPipeline() {
                 <span className="w-24 text-[11px] text-muted-foreground truncate shrink-0">
                   {stage.label}
                 </span>
-                <div className="flex-1 h-7 bg-muted/50 rounded-lg overflow-hidden relative">
+                <div className="flex-1 h-7 bg-muted/50 rounded-lg overflow-hidden relative border">
                   <div
                     className={cn(
-                      "h-full rounded-lg transition-all duration-700",
+                      "h-full rounded-lg transition-all duration-700 shadow-md border-2 border-white/20 relative",
                       stage.color,
                     )}
                     style={{
-                      width: `${Math.max(widthPercent, count > 0 ? 6 : 0)}%`,
-                      opacity: 0.8,
+                      width: `${Math.max(widthPercent, count > 0 ? 8 : 2)}%`,
+                      opacity: 0.9,
                     }}
-                  />
-                  <span className="absolute inset-0 flex items-center px-2 text-[11px] font-semibold text-foreground">
+                  >
+                    {/* Glow subtil */}
+                    <div className="absolute inset-0 bg-white/20 backdrop-blur-sm rounded-lg" />
+                  </div>
+                  <span className="absolute inset-0 flex items-center px-2 text-xs font-bold text-white drop-shadow-md z-10">
                     {count > 0 ? `${count} · ${formatCurrency(value)}` : "0"}
                   </span>
                 </div>
-                <span className="text-[10px] font-mono text-muted-foreground w-8 text-right shrink-0">
+                <span className="text-[10px] font-mono text-muted-foreground w-8 text-right shrink-0 font-bold">
                   {stage.probability}%
                 </span>
               </div>
@@ -166,7 +169,7 @@ export function SalesPipeline() {
         <div className="flex items-center gap-1.5 text-xs text-emerald-600">
           <TrendingUp className="w-3.5 h-3.5" />
           <span className="font-medium">
-            {formatCurrency(weightedRevenue)} previsionnel
+            {formatCurrency(weightedRevenue)} prévisionnel
           </span>
         </div>
       </div>

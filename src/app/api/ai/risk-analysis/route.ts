@@ -43,13 +43,26 @@ export async function POST(request: Request) {
   }
 
   try {
-    // 1. Fetch all students with details
-    const { data: students, error: studentsError } = await supabase
+    // 1. Fetch all students — try with student_details join, fallback to plain
+    let students: { id: string; full_name: string; last_seen_at: string | null; student_details?: unknown[] }[] | null = null;
+
+    const { data: withDetails, error: detailsErr } = await supabase
       .from("profiles")
       .select("id, full_name, last_seen_at, student_details(*)")
-      .eq("role", "client");
+      .in("role", ["client", "prospect", "student"]);
 
-    if (studentsError) throw studentsError;
+    if (detailsErr) {
+      // student_details table may not exist (PGRST201) — fetch without join
+      const { data: plain, error: plainErr } = await supabase
+        .from("profiles")
+        .select("id, full_name, last_seen_at")
+        .in("role", ["client", "prospect", "student"]);
+      if (plainErr) throw plainErr;
+      students = (plain ?? []).map((p) => ({ ...p, student_details: [] }));
+    } else {
+      students = withDetails;
+    }
+
     if (!students || students.length === 0) {
       return NextResponse.json({
         results: [],
@@ -96,13 +109,29 @@ export async function POST(request: Request) {
       const fourWeeksAgo = new Date(now);
       fourWeeksAgo.setDate(fourWeeksAgo.getDate() - 28);
 
-      const { data: checkins } = await supabase
+      // weekly_checkins may use client_id (008) or user_id (010) depending on which migration created it
+      let checkins: { mood: number | null; energy: number | null; revenue: number | null; week_start: string }[] | null = null;
+      const { data: checkinsData, error: checkinsErr } = await supabase
         .from("weekly_checkins")
         .select("mood, energy, revenue, week_start")
         .eq("client_id", student.id)
         .gte("week_start", fourWeeksAgo.toISOString().slice(0, 10))
         .order("week_start", { ascending: false })
         .limit(4);
+
+      if (checkinsErr) {
+        // Fallback: try user_id column
+        const { data: fallbackData } = await supabase
+          .from("weekly_checkins")
+          .select("mood, energy, revenue, week_start")
+          .eq("user_id", student.id)
+          .gte("week_start", fourWeeksAgo.toISOString().slice(0, 10))
+          .order("week_start", { ascending: false })
+          .limit(4);
+        checkins = fallbackData;
+      } else {
+        checkins = checkinsData;
+      }
 
       if (checkins && checkins.length >= 2) {
         const moods = checkins
@@ -165,37 +194,40 @@ export async function POST(request: Request) {
       }
 
       // ── Factor 5: Course progress stall ──────────────────
-      const { data: recentProgress } = await supabase
-        .from("lesson_progress")
-        .select("completed_at")
-        .eq("student_id", student.id)
-        .eq("status", "completed")
-        .order("completed_at", { ascending: false })
-        .limit(1);
-
-      if (recentProgress && recentProgress.length > 0) {
-        const lastCompletion = new Date(recentProgress[0].completed_at!);
-        const daysSinceCompletion = Math.floor(
-          (now.getTime() - lastCompletion.getTime()) / (1000 * 60 * 60 * 24),
-        );
-        if (daysSinceCompletion >= 14) {
-          penalty += WEIGHTS.course_stall;
-          riskFactors.push(
-            `Aucune lecon terminee depuis ${daysSinceCompletion} jours`,
-          );
-        } else if (daysSinceCompletion >= 7) {
-          penalty += WEIGHTS.course_stall * 0.4;
-        }
-      } else {
-        // No completed lesson at all — check if enrolled
-        const { count } = await supabase
+      try {
+        const { data: recentProgress } = await supabase
           .from("lesson_progress")
-          .select("id", { count: "exact", head: true })
-          .eq("student_id", student.id);
-        if (count === 0) {
-          penalty += WEIGHTS.course_stall * 0.6;
-          riskFactors.push("Aucune lecon commencee");
+          .select("completed_at")
+          .eq("student_id", student.id)
+          .eq("status", "completed")
+          .order("completed_at", { ascending: false })
+          .limit(1);
+
+        if (recentProgress && recentProgress.length > 0) {
+          const lastCompletion = new Date(recentProgress[0].completed_at!);
+          const daysSinceCompletion = Math.floor(
+            (now.getTime() - lastCompletion.getTime()) / (1000 * 60 * 60 * 24),
+          );
+          if (daysSinceCompletion >= 14) {
+            penalty += WEIGHTS.course_stall;
+            riskFactors.push(
+              `Aucune lecon terminee depuis ${daysSinceCompletion} jours`,
+            );
+          } else if (daysSinceCompletion >= 7) {
+            penalty += WEIGHTS.course_stall * 0.4;
+          }
+        } else {
+          const { count } = await supabase
+            .from("lesson_progress")
+            .select("id", { count: "exact", head: true })
+            .eq("student_id", student.id);
+          if (count === 0) {
+            penalty += WEIGHTS.course_stall * 0.6;
+            riskFactors.push("Aucune lecon commencee");
+          }
         }
+      } catch {
+        // lesson_progress table may not exist — skip this factor
       }
 
       // ── Compute new health score ──────────────────────────
@@ -237,81 +269,73 @@ export async function POST(request: Request) {
         recommendation,
       });
 
-      // ── Update health_score in DB ──────────────────────────
+      // ── Update health_score + auto-tag (non-blocking) ──────
       if (details && newScore !== previousScore) {
-        await supabase
+        supabase
           .from("student_details")
           .update({ health_score: newScore })
-          .eq("profile_id", student.id);
+          .eq("profile_id", student.id)
+          .then(() => {});
       }
 
-      // ── Auto-tag at_risk / churned ──────────────────────────
       if (details) {
         const currentTag = details.tag;
         let newTag = currentTag;
-
-        if (newScore <= 25 && currentTag !== "churned") {
-          newTag = "churned";
-        } else if (
-          newScore <= 45 &&
-          currentTag !== "at_risk" &&
-          currentTag !== "churned"
-        ) {
-          newTag = "at_risk";
-        } else if (
-          newScore > 65 &&
-          (currentTag === "at_risk" || currentTag === "churned")
-        ) {
-          newTag = "standard";
-        }
+        if (newScore <= 25 && currentTag !== "churned") newTag = "churned";
+        else if (newScore <= 45 && currentTag !== "at_risk" && currentTag !== "churned") newTag = "at_risk";
+        else if (newScore > 65 && (currentTag === "at_risk" || currentTag === "churned")) newTag = "standard";
 
         if (newTag !== currentTag) {
-          await supabase
+          supabase
             .from("student_details")
             .update({ tag: newTag })
-            .eq("profile_id", student.id);
+            .eq("profile_id", student.id)
+            .then(() => {});
         }
       }
 
-      // ── Create alerts for high/critical ──────────────────
+      // ── Create alerts for high/critical (non-blocking) ────
       if (severity === "critical" || severity === "high") {
-        // Check if active alert already exists for this student
-        const { data: existingAlert } = await supabase
-          .from("coach_alerts")
-          .select("id")
-          .eq("client_id", student.id)
-          .eq("is_resolved", false)
-          .eq(
-            "alert_type",
-            daysSinceLastSeen >= 14
-              ? "inactive_14d"
-              : daysSinceLastSeen >= 7
-                ? "inactive_7d"
-                : "goal_at_risk",
-          )
-          .limit(1);
+        try {
+          const { data: existingAlert } = await supabase
+            .from("coach_alerts")
+            .select("id")
+            .eq("client_id", student.id)
+            .eq("is_resolved", false)
+            .eq(
+              "alert_type",
+              daysSinceLastSeen >= 14
+                ? "inactive_14d"
+                : daysSinceLastSeen >= 7
+                  ? "inactive_7d"
+                  : "goal_at_risk",
+            )
+            .limit(1);
 
-        if (!existingAlert || existingAlert.length === 0) {
-          const alertType =
-            daysSinceLastSeen >= 14
-              ? "inactive_14d"
-              : daysSinceLastSeen >= 7
-                ? "inactive_7d"
-                : riskFactors.some((f) => f.includes("Moral"))
-                  ? "low_mood"
-                  : riskFactors.some((f) => f.includes("CA"))
-                    ? "revenue_drop"
-                    : "goal_at_risk";
+          if (!existingAlert || existingAlert.length === 0) {
+            const alertType =
+              daysSinceLastSeen >= 14
+                ? "inactive_14d"
+                : daysSinceLastSeen >= 7
+                  ? "inactive_7d"
+                  : riskFactors.some((f) => f.includes("Moral"))
+                    ? "low_mood"
+                    : riskFactors.some((f) => f.includes("CA"))
+                      ? "revenue_drop"
+                      : "goal_at_risk";
 
-          await supabase.from("coach_alerts").insert({
-            client_id: student.id,
-            coach_id: user.id,
-            alert_type: alertType,
-            title: `${student.full_name} — Score sante: ${newScore}/100`,
-            description: riskFactors.slice(0, 3).join(". "),
-            severity,
-            is_resolved: false,
-          });
+            await supabase.from("coach_alerts").insert({
+              client_id: student.id,
+              coach_id: user.id,
+              alert_type: alertType,
+              title: `${student.full_name} — Score sante: ${newScore}/100`,
+              description: riskFactors.slice(0, 3).join(". "),
+              severity,
+              is_resolved: false,
+            });
+          }
+        } catch {
+          // coach_alerts may not exist — skip alert creation
         }
       }
     }
@@ -332,9 +356,14 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ results, summary });
   } catch (error) {
-    console.error("Risk analysis error:", error);
+    const pg = error as { message?: string; code?: string; details?: string; hint?: string } | null;
+    const message = pg?.message ?? (error instanceof Error ? error.message : JSON.stringify(error));
+    console.error("Risk analysis error:", JSON.stringify(error));
     return NextResponse.json(
-      { error: "Erreur lors de l'analyse de risque" },
+      {
+        error: "Erreur lors de l'analyse de risque",
+        debug: { message, code: pg?.code, details: pg?.details, hint: pg?.hint },
+      },
       { status: 500 },
     );
   }

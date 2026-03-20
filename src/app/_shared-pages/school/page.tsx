@@ -136,7 +136,7 @@ export default function SchoolPage() {
     <PageTransition>
       <motion.div
         variants={staggerContainer}
-        initial="hidden"
+        initial="visible"
         animate="visible"
         className="space-y-6"
       >

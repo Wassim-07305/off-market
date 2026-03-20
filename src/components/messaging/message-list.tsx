@@ -10,6 +10,7 @@ interface MessageListProps {
   messages: EnrichedMessage[];
   isLoading: boolean;
   currentUserId: string;
+  channelId: string | null;
   onReact: (messageId: string, emoji: string) => void;
   onReply: (msg: EnrichedMessage) => void;
   onEdit: (id: string, content: string) => void;
@@ -25,6 +26,7 @@ export function MessageList({
   messages,
   isLoading,
   currentUserId,
+  channelId,
   onReact,
   onReply,
   onEdit,
@@ -38,24 +40,42 @@ export function MessageList({
   const endRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const prevCountRef = useRef(0);
-  const initialLoadRef = useRef(true);
+  const prevChannelRef = useRef<string | null>(null);
 
   const scrollToBottom = useCallback((instant = false) => {
-    endRef.current?.scrollIntoView({
-      behavior: instant ? "instant" : "smooth",
-    });
+    const container = containerRef.current;
+    if (!container) return;
+    if (instant) {
+      container.scrollTop = container.scrollHeight;
+    } else {
+      container.scrollTo({
+        top: container.scrollHeight,
+        behavior: "smooth",
+      });
+    }
   }, []);
 
-  // Scroll on new messages — instant on first load, smooth on subsequent
+  // Reset scroll state on channel change
+  useEffect(() => {
+    if (channelId !== prevChannelRef.current) {
+      prevChannelRef.current = channelId;
+      prevCountRef.current = 0;
+    }
+  }, [channelId]);
+
+  // Scroll on new messages — instant on channel switch, smooth on new messages
   useEffect(() => {
     if (messages.length === 0) return;
 
-    if (initialLoadRef.current) {
-      // First load: instant scroll, no animation
-      initialLoadRef.current = false;
-      requestAnimationFrame(() => scrollToBottom(true));
-    } else if (messages.length > prevCountRef.current) {
-      // New message: check if near bottom, then smooth scroll
+    if (prevCountRef.current === 0) {
+      // First load or channel switch — force scroll after DOM paints
+      const t = setTimeout(() => scrollToBottom(true), 50);
+      prevCountRef.current = messages.length;
+      return () => clearTimeout(t);
+    }
+
+    if (messages.length > prevCountRef.current) {
+      // New message arrived: scroll only if near bottom
       const container = containerRef.current;
       if (container) {
         const { scrollTop, scrollHeight, clientHeight } = container;
@@ -65,14 +85,6 @@ export function MessageList({
     }
     prevCountRef.current = messages.length;
   }, [messages.length, scrollToBottom]);
-
-  // Reset initial load flag when channel changes (messages go empty then refill)
-  useEffect(() => {
-    if (messages.length === 0) {
-      initialLoadRef.current = true;
-      prevCountRef.current = 0;
-    }
-  }, [messages.length]);
 
   if (isLoading) {
     return (

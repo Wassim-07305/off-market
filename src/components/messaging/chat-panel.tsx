@@ -337,6 +337,7 @@ export function ChatPanel({
           messages={displayedMessages}
           isLoading={isLoading}
           currentUserId={user?.id ?? ""}
+          channelId={channel.id}
           onReact={(messageId, emoji) =>
             toggleReaction.mutate({ messageId, emoji })
           }

@@ -19,11 +19,11 @@ const WIDGET_MAP: Record<WidgetType, React.ComponentType> = {
   engagement_chart: EngagementChart,
   activity_feed: ActivityFeed,
   recent_clients: TopStudents,
-  goals_progress: AIInsightsCard,
-  pipeline_summary: KpiGoalsWidget,
-  upcoming_calls: ConversionFunnel,
+  goals_progress: KpiGoalsWidget,
+  pipeline_summary: ConversionFunnel,
+  upcoming_calls: UpcomingCallsWidget,
   gamification: GamificationWidget,
-  ai_insights: UpcomingCallsWidget,
+  ai_insights: AIInsightsCard,
 };
 
 function WidgetRendererBase({ type }: { type: WidgetType }) {
