@@ -75,15 +75,19 @@ export async function POST(request: Request) {
       if (targetUserId) {
         const skipOnboarding = !["client", "prospect"].includes(invite.role);
         const specialties = (invite as Record<string, unknown>).specialties as string[] | null;
-        await admin
-          .from("profiles")
-          .update({
+
+        // Upsert: create profile if trigger didn't, or update if it did
+        await admin.from("profiles").upsert(
+          {
+            id: targetUserId,
+            email: invite.email,
+            full_name: invite.full_name,
             role: invite.role,
             onboarding_completed: skipOnboarding,
-            ...(skipOnboarding ? { onboarding_step: 7 } : {}),
             ...(specialties?.length ? { specialties } : {}),
-          })
-          .eq("id", targetUserId);
+          },
+          { onConflict: "id" },
+        );
       }
     }
 

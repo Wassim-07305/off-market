@@ -12,7 +12,8 @@ import {
   useDraggable,
 } from "@dnd-kit/core";
 import { useDroppable } from "@dnd-kit/core";
-import { usePipelineContacts } from "@/hooks/use-pipeline";
+import { usePipelineContacts, type PipelineMode } from "@/hooks/use-pipeline";
+import { AddProspectModal } from "@/components/crm/add-prospect-modal";
 import {
   PIPELINE_STAGES,
   CONTACT_SOURCES,
@@ -574,15 +575,17 @@ function AddContactForm({
 // ─── Main Kanban Board ───────────────────────────────────────
 
 export function PipelineKanban() {
+  const [pipelineMode, setPipelineMode] = useState<PipelineMode>("manual");
   const {
     contacts: allContacts,
     isLoading,
     createContact,
     moveContact,
     deleteContact,
-  } = usePipelineContacts();
+  } = usePipelineContacts(undefined, pipelineMode);
   const bulkEnrich = useBulkEnrich();
   const [showAdd, setShowAdd] = useState(false);
+  const [showAddProspect, setShowAddProspect] = useState(false);
   const [showImport, setShowImport] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [enrichContactId, setEnrichContactId] = useState<string | null>(null);
@@ -681,6 +684,32 @@ export function PipelineKanban() {
 
   return (
     <div className="space-y-5">
+      {/* Tab switcher */}
+      <div className="flex gap-1 bg-muted rounded-xl p-1 w-fit">
+        <button
+          onClick={() => setPipelineMode("manual")}
+          className={cn(
+            "px-4 py-2 text-xs font-medium rounded-lg transition-all",
+            pipelineMode === "manual"
+              ? "bg-surface text-foreground shadow-sm"
+              : "text-muted-foreground hover:text-foreground",
+          )}
+        >
+          Leads manuels
+        </button>
+        <button
+          onClick={() => setPipelineMode("signup")}
+          className={cn(
+            "px-4 py-2 text-xs font-medium rounded-lg transition-all",
+            pipelineMode === "signup"
+              ? "bg-surface text-foreground shadow-sm"
+              : "text-muted-foreground hover:text-foreground",
+          )}
+        >
+          Prospects inscrits
+        </button>
+      </div>
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
@@ -702,31 +731,39 @@ export function PipelineKanban() {
             onApplySegment={handleApplySegment}
             hasActiveFilters={hasActiveFilters}
           />
+          {pipelineMode === "manual" && (
+            <>
+              <button
+                onClick={() => bulkEnrich.mutate(contacts)}
+                disabled={bulkEnrich.isPending}
+                className="h-9 px-4 rounded-xl border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted/80 hover:border-zinc-300 transition-all disabled:opacity-50 flex items-center gap-1.5"
+              >
+                {bulkEnrich.isPending ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Sparkles className="w-4 h-4" />
+                )}
+                {bulkEnrich.isPending ? "Enrichissement..." : "Enrichir tout"}
+              </button>
+              <button
+                onClick={() => setShowImport(true)}
+                className="h-9 px-4 rounded-xl border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted/80 hover:border-zinc-300 transition-all flex items-center gap-1.5"
+              >
+                <Upload className="w-4 h-4" />
+                Importer CSV
+              </button>
+            </>
+          )}
           <button
-            onClick={() => bulkEnrich.mutate(contacts)}
-            disabled={bulkEnrich.isPending}
-            className="h-9 px-4 rounded-xl border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted/80 hover:border-zinc-300 transition-all disabled:opacity-50 flex items-center gap-1.5"
-          >
-            {bulkEnrich.isPending ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <Sparkles className="w-4 h-4" />
-            )}
-            {bulkEnrich.isPending ? "Enrichissement..." : "Enrichir tout"}
-          </button>
-          <button
-            onClick={() => setShowImport(true)}
-            className="h-9 px-4 rounded-xl border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted/80 hover:border-zinc-300 transition-all flex items-center gap-1.5"
-          >
-            <Upload className="w-4 h-4" />
-            Importer CSV
-          </button>
-          <button
-            onClick={() => setShowAdd(true)}
+            onClick={() =>
+              pipelineMode === "signup"
+                ? setShowAddProspect(true)
+                : setShowAdd(true)
+            }
             className="h-9 px-4 rounded-xl bg-gradient-to-r from-[#AF0000] to-[#DC2626] text-white text-sm font-semibold hover:from-[#8B0000] hover:to-[#B91C1C] transition-all active:scale-[0.98] shadow-sm shadow-red-500/20 flex items-center gap-1.5"
           >
             <Plus className="w-4 h-4" />
-            Contact
+            {pipelineMode === "signup" ? "Prospect" : "Contact"}
           </button>
         </div>
       </div>
@@ -776,6 +813,12 @@ export function PipelineKanban() {
           })
         }
         isPending={createContact.isPending}
+      />
+
+      {/* Add prospect modal (signed-up prospects) */}
+      <AddProspectModal
+        open={showAddProspect}
+        onClose={() => setShowAddProspect(false)}
       />
 
       {/* CSV import modal */}

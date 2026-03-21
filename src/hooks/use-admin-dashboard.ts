@@ -105,6 +105,9 @@ interface CoachLeaderboardRow {
   avatar: string | null;
   students: number;
   avg_health: number;
+  sessions_month: number;
+  at_risk: number;
+  score: number;
 }
 
 /* ─────────────────────────────────────────────
@@ -384,12 +387,18 @@ export function useCoachLeaderboard() {
           .eq("status", "overdue"),
       ]);
 
-      const coachLeaderboard = (coachesRes.data ?? []).map((coach) => ({
-        name: coach.name,
-        avatar: coach.avatar,
-        students: coach.students ?? 0,
-        avgHealth: coach.avg_health ?? 0,
-      }));
+      const coachLeaderboard = (coachesRes.data ?? [])
+        .map((coach) => ({
+          id: coach.id,
+          name: coach.name,
+          avatar: coach.avatar,
+          students: coach.students ?? 0,
+          avgHealth: coach.avg_health ?? 0,
+          sessionsMonth: coach.sessions_month ?? 0,
+          atRisk: coach.at_risk ?? 0,
+          score: coach.score ?? 0,
+        }))
+        .sort((a, b) => b.score - a.score || b.students - a.students);
 
       return {
         coachLeaderboard,

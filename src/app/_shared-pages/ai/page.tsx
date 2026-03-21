@@ -63,14 +63,6 @@ const SUGGESTIONS_BY_ROLE: Record<string, string[]> = {
     "Comment relancer un prospect apres un refus ?",
     "Analyse mon taux de conversion et suggere des ameliorations",
   ],
-  sales: [
-    "Aide-moi a qualifier un prospect froid",
-    "Comment traiter l'objection 'c'est trop cher' ?",
-    "Redige un message d'approche percutant",
-    "Prepare-moi pour un appel de vente demain",
-    "Quelles techniques de closing sont les plus efficaces ?",
-    "Fais un bilan de mes performances commerciales",
-  ],
   client: [
     "Aide-moi a definir mes objectifs pour ce mois",
     "Je suis bloque sur un probleme, aide-moi a le resoudre",

@@ -108,21 +108,10 @@ export default function ClientDocumentsPage() {
 
   const handleDownloadPDF = async (
     invoiceId: string,
-    invoiceNumber: string,
+    _invoiceNumber: string,
   ) => {
-    try {
-      const res = await fetch(`/api/invoices/${invoiceId}/pdf`);
-      if (!res.ok) throw new Error("Erreur");
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${invoiceNumber}.pdf`;
-      a.click();
-      URL.revokeObjectURL(url);
-    } catch {
-      toast.error("Impossible de telecharger la facture");
-    }
+    // Open invoice in a new tab — user can print to PDF via Ctrl+P
+    window.open(`/api/invoices/${invoiceId}/pdf`, "_blank");
   };
 
   return (

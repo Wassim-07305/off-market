@@ -70,6 +70,12 @@ const STEP_LABELS: Record<string, Record<string, string>> = {
     message_test: "Premier message",
     completion: "Termine !",
   },
+  prospect: {
+    welcome_video: "Accueil",
+    about_you: "Ton profil",
+    feature_tour: "Decouvrir",
+    completion: "Termine !",
+  },
   setter: {
     welcome_video: "Accueil",
     about_you: "Ton profil",
@@ -99,6 +105,11 @@ const COMPLETED_ITEMS: Record<string, string[]> = {
     "CSM rencontre",
     "Visite de la plateforme",
     "Premier message envoye",
+  ],
+  prospect: [
+    "Video d'accueil regardee",
+    "Profil complete",
+    "Plateforme decouverte",
   ],
   setter: [
     "Video d'accueil regardee",
@@ -175,7 +186,7 @@ export default function OnboardingPage() {
         bio: string | null;
       } | null;
     },
-    enabled: !!user && (role === "client" || role === "prospect"),
+    enabled: !!user && role === "client",
   });
 
   const csmVideo = useCsmWelcomeVideo(csmQuery.data?.id);

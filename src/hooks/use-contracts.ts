@@ -126,9 +126,20 @@ export function useContracts(options: UseContractsOptions = {}) {
           signed_at: now,
           signature_data: { signed_at: now, ...signatureData },
           ...(signatureImage ? { signature_image: signatureImage } : {}),
-        })
+        } as never)
         .eq("id", id);
       if (error) throw error;
+
+      // Notify admin that contract was signed → they need to create an invoice
+      try {
+        await fetch("/api/contracts/on-signed", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ contractId: id }),
+        });
+      } catch {
+        console.warn("[signContract] Admin notification skipped");
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["contracts"] });

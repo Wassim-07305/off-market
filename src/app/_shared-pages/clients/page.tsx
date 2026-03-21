@@ -50,21 +50,29 @@ export default function ClientsPage() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [bulkAction, setBulkAction] = useState<string | null>(null);
   const [bulkLoading, setBulkLoading] = useState(false);
+  const [page, setPage] = useState(0);
+  const [flagFilter, setFlagFilter] = useState("all");
+  const PAGE_SIZE = 10;
   const prefix = useRoutePrefix();
 
   const handleApplySegment = useCallback((filters: SegmentFilters) => {
     setSearch(filters.search ?? "");
     setActiveTag(filters.tag ?? "all");
+    setPage(0);
   }, []);
 
-  const hasActiveFilters = search !== "" || activeTag !== "all";
+  const hasActiveFilters = search !== "" || activeTag !== "all" || flagFilter !== "all";
   const supabase = useSupabase();
   const queryClient = useQueryClient();
   const { isAdmin } = useAuth();
-  const { students, isLoading, updateStudentTag } = useStudents({
+  const { students, totalCount, isLoading, updateStudentTag } = useStudents({
     search,
     tag: activeTag,
+    flag: flagFilter !== "all" ? flagFilter : undefined,
+    limit: PAGE_SIZE,
+    page,
   });
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
   // Fetch coach assignments + coach list (admin only)
   const { data: assignmentMap } = useQuery({
@@ -143,7 +151,7 @@ export default function ClientsPage() {
     if (selectedIds.size === students.length) {
       setSelectedIds(new Set());
     } else {
-      setSelectedIds(new Set(students.map((s) => s.id)));
+      setSelectedIds(new Set(displayedStudents.map((s) => s.id)));
     }
   }, [students, selectedIds.size]);
 
@@ -205,7 +213,10 @@ export default function ClientsPage() {
     URL.revokeObjectURL(url);
   };
 
-  const activeCount = students.length;
+  const activeCount = totalCount;
+
+  // Flag filter is now server-side — displayedStudents = students
+  const displayedStudents = students;
 
   return (
     <PageTransition>
@@ -233,7 +244,7 @@ export default function ClientsPage() {
               Clients
             </h1>
             <p className="text-sm text-muted-foreground mt-1">
-              {students.length} client{students.length !== 1 ? "s" : ""}
+              {totalCount} client{totalCount !== 1 ? "s" : ""}
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -293,6 +304,28 @@ export default function ClientsPage() {
             />
           </div>
           <div className="flex items-center gap-1 overflow-x-auto pb-1">
+            {[
+              { value: "all", label: "Tous", dot: "" },
+              { value: "green", label: "En bonne voie", dot: "bg-emerald-500" },
+              { value: "yellow", label: "Attention", dot: "bg-amber-500" },
+              { value: "orange", label: "A risque", dot: "bg-orange-500" },
+              { value: "red", label: "Critique", dot: "bg-red-500" },
+            ].map((f) => (
+              <button
+                key={f.value}
+                onClick={() => { setFlagFilter(f.value); setPage(0); }}
+                className={cn(
+                  "h-7 px-2.5 rounded-md text-xs font-medium whitespace-nowrap transition-colors flex items-center gap-1.5",
+                  flagFilter === f.value
+                    ? "bg-primary text-white"
+                    : "bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground",
+                )}
+              >
+                {f.dot && <span className={cn("w-2 h-2 rounded-full", f.dot)} />}
+                {f.label}
+              </button>
+            ))}
+            <div className="w-px h-5 bg-border mx-1" />
             <SavedSegments
               currentFilters={{
                 tag: activeTag !== "all" ? activeTag : undefined,
@@ -373,7 +406,7 @@ export default function ClientsPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {students.map((student) => {
+                  {displayedStudents.map((student) => {
                     const details = getStudentDetail(student);
                     const tag = STUDENT_TAGS.find(
                       (t) => t.value === details?.tag,
@@ -531,6 +564,49 @@ export default function ClientsPage() {
                   })}
                 </tbody>
               </table>
+            </div>
+          )}
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between pt-4 px-1">
+              <p className="text-xs text-muted-foreground">
+                Page {page + 1} sur {totalPages} ({totalCount} clients)
+              </p>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => setPage((p) => Math.max(0, p - 1))}
+                  disabled={page === 0}
+                  className="h-8 px-3 rounded-lg border border-border text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted disabled:opacity-30 disabled:pointer-events-none transition-colors"
+                >
+                  Precedent
+                </button>
+                {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                  const start = Math.max(0, Math.min(page - 2, totalPages - 5));
+                  const p = start + i;
+                  if (p >= totalPages) return null;
+                  return (
+                    <button
+                      key={p}
+                      onClick={() => setPage(p)}
+                      className={`h-8 w-8 rounded-lg text-xs font-medium transition-colors ${
+                        p === page
+                          ? "bg-primary text-white"
+                          : "border border-border text-muted-foreground hover:text-foreground hover:bg-muted"
+                      }`}
+                    >
+                      {p + 1}
+                    </button>
+                  );
+                })}
+                <button
+                  onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+                  disabled={page >= totalPages - 1}
+                  className="h-8 px-3 rounded-lg border border-border text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted disabled:opacity-30 disabled:pointer-events-none transition-colors"
+                >
+                  Suivant
+                </button>
+              </div>
             </div>
           )}
         </motion.div>

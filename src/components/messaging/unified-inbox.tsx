@@ -472,7 +472,7 @@ export function UnifiedInbox() {
                             {displayName}
                           </p>
                         )}
-                        <p className="text-[13px] leading-relaxed whitespace-pre-wrap break-words">
+                        <p className="text-[13px]  leading-relaxed whitespace-pre-wrap break-words">
                           {msg.text}
                         </p>
                         <p

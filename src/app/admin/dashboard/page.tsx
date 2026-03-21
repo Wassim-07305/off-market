@@ -301,15 +301,17 @@ export default function AdminDashboardPage() {
           ))
         ) : (
           <>
-            <StatCard
-              title="CA du mois"
-              value={formatCurrency(revenueQuery.data?.revenueThisMonth ?? 0)}
-              change={revenueQuery.data?.revenueChange ?? 0}
-              changeLabel="vs mois dernier"
-              icon={DollarSign}
-              iconBg="bg-[#AF0000]/10"
-              iconColor="text-[#AF0000]"
-            />
+            <Link href="/admin/billing/ca" className="block hover:ring-2 hover:ring-primary/20 rounded-[14px] transition-shadow">
+              <StatCard
+                title="CA du mois"
+                value={formatCurrency(revenueQuery.data?.revenueThisMonth ?? 0)}
+                change={revenueQuery.data?.revenueChange ?? 0}
+                changeLabel="vs mois dernier"
+                icon={DollarSign}
+                iconBg="bg-[#AF0000]/10"
+                iconColor="text-[#AF0000]"
+              />
+            </Link>
             <StatCard
               title="Eleves actifs"
               value={studentsQuery.data?.totalStudents ?? 0}
@@ -681,7 +683,7 @@ export default function AdminDashboardPage() {
             <div className="space-y-1">
               {coachesQuery.data.coachLeaderboard.map((coach, i) => (
                 <div
-                  key={coach.name}
+                  key={coach.id ?? `coach-${i}`}
                   className={cn(
                     "flex items-center gap-3 p-2.5 rounded-xl transition-all duration-200 hover:bg-zinc-50",
                     i === 0 && "bg-amber-50/50",
@@ -715,12 +717,30 @@ export default function AdminDashboardPage() {
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-foreground truncate">
-                      {coach.name}
-                    </p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-semibold text-foreground truncate">
+                        {coach.name}
+                      </p>
+                      <span
+                        className={cn(
+                          "text-[10px] font-bold px-1.5 py-0.5 rounded-full",
+                          coach.score >= 70
+                            ? "bg-emerald-100 text-emerald-700"
+                            : coach.score >= 40
+                              ? "bg-amber-100 text-amber-700"
+                              : "bg-red-100 text-red-700",
+                        )}
+                      >
+                        {coach.score}
+                      </span>
+                    </div>
                     <p className="text-[10px] text-muted-foreground/70">
-                      {coach.students} eleve
-                      {coach.students !== 1 ? "s" : ""}
+                      {coach.students} eleve{coach.students !== 1 ? "s" : ""}
+                      {coach.avgHealth > 0 && ` · ${coach.avgHealth}% sante`}
+                      {coach.sessionsMonth > 0 && ` · ${coach.sessionsMonth} sessions`}
+                      {coach.atRisk > 0 && (
+                        <span className="text-red-500"> · {coach.atRisk} a risque</span>
+                      )}
                     </p>
                   </div>
                 </div>

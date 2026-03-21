@@ -2,6 +2,7 @@ import { ShieldAlert } from "lucide-react";
 import { useAuthStore } from "@/stores/auth-store";
 import { canAccess } from "@/lib/permissions";
 import type { Module } from "@/lib/permissions";
+import type { AppRole } from "@/types/database";
 import type { ReactNode } from "react";
 
 interface RoleGuardProps {
@@ -10,7 +11,10 @@ interface RoleGuardProps {
 }
 
 export function RoleGuard({ module, children }: RoleGuardProps) {
-  const role = useAuthStore((state) => state.role);
+  const storeRole = useAuthStore((state) => state.role);
+  const profileRole = useAuthStore((state) => state.profile?.role) as AppRole | null;
+  // Prefer profile.role (source of truth) over user_roles table role
+  const role = profileRole ?? storeRole;
 
   if (!canAccess(role, module)) {
     return (

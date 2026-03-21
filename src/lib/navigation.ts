@@ -36,6 +36,7 @@ import {
   Palette,
   PhoneCall,
   Presentation,
+  Megaphone,
   type LucideIcon,
 } from "lucide-react";
 
@@ -90,6 +91,7 @@ export const adminNavigation: NavItem[] = [
     icon: Trophy,
     section: "Administration",
   },
+  { name: "Annonces", href: "/admin/announcements", icon: Megaphone },
   { name: "Miro", href: "/admin/miro", icon: Presentation },
 ];
 
@@ -133,7 +135,7 @@ export const salesNavigation: NavItem[] = [
   { name: "Ressources", href: "/sales/resources", icon: FolderOpen },
 ];
 
-/** Client / Freelance / Prospect */
+/** Client / Freelance */
 export const clientNavigation: NavItem[] = [
   // ── Mon Espace ──
   {
@@ -144,6 +146,7 @@ export const clientNavigation: NavItem[] = [
   },
   { name: "Formation", href: "/client/school", icon: GraduationCap },
   { name: "Suivi", href: "/client/suivi", icon: ClipboardCheck },
+  { name: "Progression", href: "/client/gamification", icon: Trophy },
 
   // ── Business ──
   { name: "Documents", href: "/client/documents", icon: FileSignature, section: "Business" },
@@ -159,7 +162,34 @@ export const clientNavigation: NavItem[] = [
   { name: "Ressources", href: "/client/resources", icon: FolderOpen },
 ];
 
-export type RoleVariant = "admin" | "coach" | "sales" | "client";
+/** Prospect (client potentiel — meme sidebar que client, acces limites avec blur) */
+export const prospectNavigation: NavItem[] = [
+  // ── Mon Espace ──
+  {
+    name: "Dashboard",
+    href: "/client/dashboard",
+    icon: LayoutDashboard,
+    section: "Mon Espace",
+  },
+  { name: "Formation", href: "/client/school", icon: GraduationCap },
+  { name: "Suivi", href: "/client/suivi", icon: ClipboardCheck },
+  { name: "Progression", href: "/client/gamification", icon: Trophy },
+
+  // ── Business ──
+  { name: "Documents", href: "/client/documents", icon: FileSignature, section: "Business" },
+  { name: "Reserver", href: "/client/booking", icon: CalendarCheck },
+
+  // ── Communaute ──
+  { name: "Feed", href: "/client/feed", icon: Rss, section: "Communaute" },
+  { name: "Communaute", href: "/client/community", icon: Users },
+  { name: "Messagerie", href: "/client/messaging", icon: MessageSquare },
+
+  // ── Outils ──
+  { name: "AlexIA", href: "/client/ai", icon: Bot, section: "Outils" },
+  { name: "Ressources", href: "/client/resources", icon: FolderOpen },
+];
+
+export type RoleVariant = "admin" | "coach" | "sales" | "client" | "prospect";
 
 export function getNavigationForRole(variant: RoleVariant): NavItem[] {
   switch (variant) {
@@ -169,6 +199,8 @@ export function getNavigationForRole(variant: RoleVariant): NavItem[] {
       return coachNavigation;
     case "sales":
       return salesNavigation;
+    case "prospect":
+      return prospectNavigation;
     case "client":
       return clientNavigation;
   }

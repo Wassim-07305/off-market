@@ -73,20 +73,35 @@ export function useFinancialEntries(filters: FinancialEntryFilters = {}) {
     queryKey: ["financial-entries", filters],
     enabled: !!user,
     queryFn: async () => {
-      let query = fromTable(supabase, "financial_entries")
-        .select(
-          "*, client:profiles!financial_entries_client_id_fkey(id, full_name, email, avatar_url)",
-        )
-        .order("date", { ascending: false });
+      // Try with client join first, fallback without if FK doesn't exist
+      let data: unknown[] | null = null;
+      let error: { message: string } | null = null;
 
-      if (filters.clientId) query = query.eq("client_id", filters.clientId);
-      if (filters.type) query = query.eq("type", filters.type);
-      if (filters.dateFrom) query = query.gte("date", filters.dateFrom);
-      if (filters.dateTo) query = query.lte("date", filters.dateTo);
-      if (filters.isPaid !== undefined)
-        query = query.eq("is_paid", filters.isPaid);
+      const buildQuery = (selectStr: string) => {
+        let q = fromTable(supabase, "financial_entries")
+          .select(selectStr)
+          .order("date", { ascending: false });
+        if (filters.clientId) q = q.eq("client_id", filters.clientId);
+        if (filters.type) q = q.eq("type", filters.type);
+        if (filters.dateFrom) q = q.gte("date", filters.dateFrom);
+        if (filters.dateTo) q = q.lte("date", filters.dateTo);
+        if (filters.isPaid !== undefined) q = q.eq("is_paid", filters.isPaid);
+        return q;
+      };
 
-      const { data, error } = await query;
+      const res1 = await buildQuery(
+        "*, client:profiles!financial_entries_client_id_fkey(id, full_name, email, avatar_url)",
+      );
+
+      if (res1.error) {
+        // FK or client_id column doesn't exist — fetch without join
+        const res2 = await buildQuery("*");
+        data = res2.data;
+        error = res2.error;
+      } else {
+        data = res1.data;
+        error = res1.error;
+      }
       if (error) throw error;
       return (data ?? []) as FinancialEntry[];
     },

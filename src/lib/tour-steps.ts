@@ -186,6 +186,8 @@ export function getTourStepsForRole(variant: RoleVariant): TourStep[] {
       return coachSteps;
     case "sales":
       return salesSteps;
+    case "prospect":
+      return [];
     case "client":
       return clientSteps;
   }

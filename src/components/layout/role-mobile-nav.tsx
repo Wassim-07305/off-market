@@ -27,7 +27,8 @@ export function RoleMobileNav({ variant }: RoleMobileNavProps) {
   const bottomItems = getMobileNavForRole(variant);
   const allItems = getNavigationForRole(variant);
   const initials = profile?.full_name ? getInitials(profile.full_name) : "";
-  const settingsHref = `/${variant}/settings`;
+  const routePrefix = variant === "prospect" ? "client" : variant;
+  const settingsHref = `/${routePrefix}/settings`;
 
   const roleLabel =
     variant === "admin"

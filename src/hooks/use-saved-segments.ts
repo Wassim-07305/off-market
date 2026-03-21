@@ -30,7 +30,7 @@ export function useSavedSegments() {
       const { data, error } = await (supabase as any)
         .from("saved_segments")
         .select(
-          "*, creator:profiles!saved_segments_created_by_fkey(full_name, avatar_url)",
+          "*, creator:profiles!saved_segments_user_id_fkey(full_name, avatar_url)",
         )
         .order("created_at", { ascending: false });
       if (error) {

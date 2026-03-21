@@ -40,3 +40,8 @@
 .read-the-docs {
   color: #888;
 }
+
+input::-ms-reveal,
+input::-ms-clear {
+  display: none;
+}

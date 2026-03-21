@@ -23,7 +23,8 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
 
   const navigation = getNavigationForRole(variant);
   const initials = profile?.full_name ? getInitials(profile.full_name) : "";
-  const settingsHref = `/${variant}/settings`;
+  const routePrefix = variant === "prospect" ? "client" : variant;
+  const settingsHref = `/${routePrefix}/settings`;
 
   const roleLabel =
     variant === "admin"
@@ -32,7 +33,9 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
         ? "Coach"
         : variant === "sales"
           ? "Sales"
-          : "Client";
+          : variant === "prospect"
+            ? "Prospect"
+            : "Client";
 
   // Map nav item names to data-tour attributes for guided tour
   const tourMap: Record<string, string> = {
@@ -94,7 +97,7 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
         )}
       >
         <Link
-          href={`/${variant}/dashboard`}
+          href={`/${routePrefix}/dashboard`}
           className="flex items-center gap-3 group"
         >
           <Image

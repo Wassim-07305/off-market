@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { staggerItem } from "@/lib/animations";
@@ -22,18 +22,37 @@ import {
   ThumbsUp,
   Loader2,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, formatDate } from "@/lib/utils";
 import { ReportButton } from "@/components/feed/report-modal";
 import { CommentThread } from "@/components/feed/comment-thread";
 import { TrendingSidebar } from "@/components/feed/trending-sidebar";
+import { useAnnouncements } from "@/hooks/useAnnouncements";
+import { Megaphone, Info, AlertTriangle, CheckCircle2, Sparkles, Zap } from "lucide-react";
 
-const TYPE_FILTERS: { label: string; value: PostType | "all" }[] = [
+const TYPE_FILTERS: { label: string; value: PostType | "all" | "announcements"; emoji?: string }[] = [
   { label: "Tout", value: "all" },
+  { label: "Annonces", value: "announcements", emoji: "📢" },
   { label: "Victoires", value: "victory" },
   { label: "Questions", value: "question" },
   { label: "Experiences", value: "experience" },
   { label: "General", value: "general" },
 ];
+
+const ANNOUNCEMENT_ICONS: Record<string, typeof Info> = {
+  info: Info,
+  warning: AlertTriangle,
+  success: CheckCircle2,
+  update: Sparkles,
+  urgent: Zap,
+};
+
+const ANNOUNCEMENT_COLORS: Record<string, string> = {
+  info: "border-blue-200 bg-blue-50 dark:border-blue-900 dark:bg-blue-950/30",
+  warning: "border-amber-200 bg-amber-50 dark:border-amber-900 dark:bg-amber-950/30",
+  success: "border-emerald-200 bg-emerald-50 dark:border-emerald-900 dark:bg-emerald-950/30",
+  update: "border-purple-200 bg-purple-50 dark:border-purple-900 dark:bg-purple-950/30",
+  urgent: "border-red-200 bg-red-50 dark:border-red-900 dark:bg-red-950/30",
+};
 
 const SORT_OPTIONS: {
   label: string;
@@ -62,9 +81,11 @@ function timeAgo(date: string) {
 
 export default function FeedPage() {
   const { user, profile } = useAuth();
-  const [typeFilter, setTypeFilter] = useState<PostType | "all">("all");
+  const [typeFilter, setTypeFilter] = useState<PostType | "all" | "announcements">("all");
   const [sortMode, setSortMode] = useState<FeedSortMode>("recent");
-  const feedPostType = typeFilter === "all" ? undefined : typeFilter;
+  const { data: announcements } = useAnnouncements();
+  const showAnnouncementsOnly = typeFilter === "announcements";
+  const feedPostType = typeFilter === "all" || typeFilter === "announcements" ? undefined : typeFilter;
   const {
     posts,
     isLoading,
@@ -78,6 +99,18 @@ export default function FeedPage() {
   } = useFeed(feedPostType, sortMode);
 
   const isStaff = profile?.role === "admin" || profile?.role === "coach";
+
+  // Infinite scroll observer
+  const loadMoreRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!loadMoreRef.current || !hasNextPage || isFetchingNextPage) return;
+    const observer = new IntersectionObserver(
+      (entries) => { if (entries[0].isIntersecting) fetchNextPage(); },
+      { threshold: 0.1 },
+    );
+    observer.observe(loadMoreRef.current);
+    return () => observer.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   // Scroll to a specific post when clicking from trending sidebar
   const scrollToPost = useCallback((postId: string) => {
@@ -141,8 +174,9 @@ export default function FeedPage() {
                       : "bg-muted text-muted-foreground hover:text-foreground",
                   )}
                 >
-                  {f.value !== "all" && `${POST_TYPE_CONFIG[f.value].emoji} `}
+                  {f.emoji ? `${f.emoji} ` : f.value !== "all" && f.value !== "announcements" ? `${POST_TYPE_CONFIG[f.value as PostType].emoji} ` : ""}
                   {f.label}
+                  {f.value === "announcements" && announcements?.length ? ` (${announcements.length})` : ""}
                 </button>
               ))}
             </div>
@@ -170,8 +204,43 @@ export default function FeedPage() {
             </div>
           </motion.div>
 
+          {/* Announcements */}
+          {(showAnnouncementsOnly || typeFilter === "all") && announcements && announcements.length > 0 && (
+            <div className="space-y-3">
+              {(showAnnouncementsOnly ? announcements : announcements.slice(0, 2)).map((a) => {
+                const Icon = ANNOUNCEMENT_ICONS[a.type] ?? Megaphone;
+                return (
+                  <div
+                    key={a.id}
+                    className={cn(
+                      "rounded-2xl border-2 p-4 flex items-start gap-3",
+                      ANNOUNCEMENT_COLORS[a.type] ?? ANNOUNCEMENT_COLORS.info,
+                    )}
+                  >
+                    <div className="w-9 h-9 rounded-xl bg-surface/80 flex items-center justify-center shrink-0 shadow-sm">
+                      <Megaphone className="w-4 h-4 text-[#AF0000]" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-[#AF0000]/10 text-[#AF0000] font-semibold uppercase tracking-wider">
+                          Annonce
+                        </span>
+                        <span className="text-[10px] text-muted-foreground">
+                          {formatDate(a.created_at, "relative")}
+                        </span>
+                      </div>
+                      <p className="text-sm font-semibold text-foreground">{a.title}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{a.content}</p>
+                    </div>
+                    <Icon className="w-4 h-4 text-muted-foreground shrink-0 mt-1" />
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
           {/* Posts list */}
-          {isLoading ? (
+          {showAnnouncementsOnly ? null : isLoading ? (
             <div className="space-y-4">
               {[...Array(3)].map((_, i) => (
                 <div
@@ -237,23 +306,11 @@ export default function FeedPage() {
                 ))}
               </AnimatePresence>
 
-              {/* Bouton de pagination */}
-              {hasNextPage && (
-                <div className="flex justify-center pt-2">
-                  <button
-                    onClick={() => fetchNextPage()}
-                    disabled={isFetchingNextPage}
-                    className="h-9 px-5 bg-muted hover:bg-muted/80 text-sm font-medium text-foreground rounded-xl transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-2"
-                  >
-                    {isFetchingNextPage ? (
-                      <>
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                        Chargement...
-                      </>
-                    ) : (
-                      "Charger plus"
-                    )}
-                  </button>
+              {/* Infinite scroll sentinel */}
+              <div ref={loadMoreRef} className="h-4" />
+              {isFetchingNextPage && (
+                <div className="flex justify-center py-4">
+                  <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
                 </div>
               )}
             </div>

@@ -33,6 +33,7 @@ import {
   Settings,
   Save,
   Loader2,
+  Plus,
 } from "lucide-react";
 import { ExportDropdown } from "@/components/shared/export-dropdown";
 import { exportToCSV, exportToPDF } from "@/lib/export";
@@ -92,6 +93,21 @@ export default function BillingOverviewPage() {
               Vue d&apos;ensemble des contrats, factures et paiements
             </p>
           </div>
+          <div className="flex items-center gap-3">
+          <Link
+            href="/admin/billing/contracts"
+            className="h-9 px-4 rounded-xl border border-border text-sm font-medium text-foreground hover:bg-muted transition-all active:scale-[0.98] flex items-center gap-2 shrink-0"
+          >
+            <FileText className="w-4 h-4" />
+            Nouveau contrat
+          </Link>
+          <Link
+            href="/admin/billing/invoices"
+            className="h-9 px-4 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-all active:scale-[0.98] flex items-center gap-2 shrink-0"
+          >
+            <Plus className="w-4 h-4" />
+            Nouvelle facture
+          </Link>
           <ExportDropdown
             disabled={isLoading}
             options={[
@@ -181,6 +197,7 @@ export default function BillingOverviewPage() {
               },
             ]}
           />
+          </div>
         </motion.div>
 
         {/* Stats cards */}

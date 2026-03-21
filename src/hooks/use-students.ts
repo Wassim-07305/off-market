@@ -27,17 +27,19 @@ export function getStudentDetail(
 interface UseStudentsOptions {
   search?: string;
   tag?: string;
+  flag?: string;
   limit?: number;
+  page?: number;
 }
 
 export function useStudents(options: UseStudentsOptions = {}) {
   const supabase = useSupabase();
   const queryClient = useQueryClient();
   const { user, isAdmin } = useAuth();
-  const { search, tag, limit = 50 } = options;
+  const { search, tag, flag, limit = 10, page = 0 } = options;
 
   const studentsQuery = useQuery({
-    queryKey: ["students", search, tag, limit, user?.id, isAdmin],
+    queryKey: ["students", search, tag, flag, limit, page, user?.id, isAdmin],
     enabled: !!user,
     staleTime: 5 * 60 * 1000,
     gcTime: 5 * 60 * 1000,
@@ -62,16 +64,30 @@ export function useStudents(options: UseStudentsOptions = {}) {
         if (clientIds.length === 0) return [];
       }
 
+      const from = page * limit;
+      const to = from + limit - 1;
+
       let query = supabase
         .from("profiles")
-        .select("*, student_details!student_details_profile_id_fkey(*)")
-        .eq("role", "client")
+        .select("*, student_details!student_details_profile_id_fkey(*)", { count: "exact" })
+        .in("role", ["client", "prospect"])
         .order("created_at", { ascending: false })
-        .limit(limit);
+        .range(from, to);
 
       // Filter by assigned clients for non-admin
       if (clientIds) {
         query = query.in("id", clientIds);
+      }
+
+      // Filter by flag — get matching profile_ids from student_details first
+      if (flag && flag !== "all") {
+        const { data: flagged } = await supabase
+          .from("student_details")
+          .select("profile_id")
+          .eq("flag", flag);
+        const flaggedIds = (flagged ?? []).map((f: { profile_id: string }) => f.profile_id);
+        if (flaggedIds.length === 0) return { results: [], totalCount: 0 };
+        query = query.in("id", flaggedIds);
       }
 
       if (search) {
@@ -80,7 +96,7 @@ export function useStudents(options: UseStudentsOptions = {}) {
         );
       }
 
-      const { data, error } = await query;
+      const { data, error, count } = await query;
       if (error) throw error;
 
       let results = data as StudentWithDetails[];
@@ -89,7 +105,7 @@ export function useStudents(options: UseStudentsOptions = {}) {
         results = results.filter((s) => getStudentDetail(s)?.tag === tag);
       }
 
-      return results;
+      return { results, totalCount: count ?? results.length };
     },
   });
 
@@ -262,7 +278,8 @@ export function useStudents(options: UseStudentsOptions = {}) {
   });
 
   return {
-    students: studentsQuery.data ?? [],
+    students: (studentsQuery.data?.results ?? studentsQuery.data ?? []) as StudentWithDetails[],
+    totalCount: (studentsQuery.data as { results: StudentWithDetails[]; totalCount: number } | undefined)?.totalCount ?? 0,
     isLoading: studentsQuery.isLoading,
     error: studentsQuery.error,
     updateStudentTag,

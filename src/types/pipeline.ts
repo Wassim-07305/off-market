@@ -6,7 +6,10 @@ export interface CrmContact {
   company: string | null;
   source: ContactSource | null;
   stage: PipelineStage;
+  closer_stage: CloserStage | null;
   assigned_to: string | null;
+  closer_id: string | null;
+  returned_by_closer: boolean;
   estimated_value: number;
   notes: string | null;
   tags: string[];
@@ -46,6 +49,12 @@ export type PipelineStage =
   | "proposition"
   | "closing"
   | "client"
+  | "perdu";
+
+export type CloserStage =
+  | "a_appeler"
+  | "en_negociation"
+  | "close"
   | "perdu";
 export type ContactSource =
   | "instagram"
@@ -93,6 +102,49 @@ export const PIPELINE_STAGES: {
   {
     value: "client",
     label: "Client",
+    color: "text-emerald-700 dark:text-emerald-400",
+    bg: "bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-900/40",
+    dotColor: "bg-emerald-500",
+  },
+  {
+    value: "perdu",
+    label: "Perdu",
+    color: "text-zinc-400 dark:text-zinc-500",
+    bg: "bg-zinc-50 dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800",
+    dotColor: "bg-zinc-300",
+  },
+];
+
+/** Setter sees: prospect → qualifié → proposition → closing (→ perdu) — NO "client" */
+export const SETTER_STAGES = PIPELINE_STAGES.filter(
+  (s) => s.value !== "client",
+);
+
+/** Closer pipeline stages */
+export const CLOSER_STAGES: {
+  value: CloserStage;
+  label: string;
+  color: string;
+  bg: string;
+  dotColor: string;
+}[] = [
+  {
+    value: "a_appeler",
+    label: "A appeler",
+    color: "text-blue-700 dark:text-blue-300",
+    bg: "bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-900/40",
+    dotColor: "bg-blue-500",
+  },
+  {
+    value: "en_negociation",
+    label: "En negociation",
+    color: "text-amber-700 dark:text-amber-300",
+    bg: "bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-900/40",
+    dotColor: "bg-amber-500",
+  },
+  {
+    value: "close",
+    label: "Close",
     color: "text-emerald-700 dark:text-emerald-400",
     bg: "bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-900/40",
     dotColor: "bg-emerald-500",

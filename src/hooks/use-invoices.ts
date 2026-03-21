@@ -176,6 +176,7 @@ export function useBillingStats() {
       const contracts = contractsRes.data as { status: string }[];
 
       const stats: BillingStats = {
+        // CA = only paid invoices (real money received)
         totalRevenue: invoices
           .filter((i) => i.status === "paid")
           .reduce((sum, i) => sum + Number(i.total), 0),

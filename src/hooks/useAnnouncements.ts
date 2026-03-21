@@ -1,13 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
+import { useSupabase } from "@/hooks/use-supabase";
 import { useAuth } from "@/hooks/use-auth";
-import { useRole } from "@/hooks/useRole";
 import type { Announcement } from "@/types/database";
 import { toast } from "sonner";
 
 export function useAnnouncements() {
-  const { user } = useAuth();
-  const { role } = useRole();
+  const { user, profile } = useAuth();
+  const supabase = useSupabase();
+  const role = profile?.role ?? "client";
 
   return useQuery({
     queryKey: ["announcements", user?.id, role],
@@ -26,32 +26,31 @@ export function useAnnouncements() {
       if (annError) throw annError;
 
       // Get user's dismissals
-      const { data: dismissals, error: disError } = await supabase
-        .from("announcement_dismissals")
-        .select("announcement_id")
-        .eq("user_id", user!.id);
-
-      if (disError) throw disError;
-
-      const dismissedIds = new Set(
-        dismissals?.map((d) => d.announcement_id) ?? [],
-      );
+      let dismissedIds = new Set<string>();
+      try {
+        const { data: dismissals } = await supabase
+          .from("announcement_dismissals")
+          .select("announcement_id")
+          .eq("user_id", user!.id);
+        dismissedIds = new Set(dismissals?.map((d) => d.announcement_id) ?? []);
+      } catch {
+        // Table might not exist
+      }
 
       // Filter by role and dismissals
       return (announcements as Announcement[]).filter((a) => {
-        // Check if dismissed
         if (dismissedIds.has(a.id)) return false;
-        // Check role targeting
         if (!a.target_roles || a.target_roles.length === 0) return true;
-        return role && a.target_roles.includes(role);
+        return a.target_roles.includes(role);
       });
     },
-    enabled: !!user?.id && !!role,
+    enabled: !!user?.id,
   });
 }
 
 export function useDismissAnnouncement() {
   const { user } = useAuth();
+  const supabase = useSupabase();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -73,6 +72,7 @@ export function useDismissAnnouncement() {
 export function useCreateAnnouncement() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const supabase = useSupabase();
 
   return useMutation({
     mutationFn: async (
@@ -99,6 +99,7 @@ export function useCreateAnnouncement() {
 
 export function useUpdateAnnouncement() {
   const queryClient = useQueryClient();
+  const supabase = useSupabase();
 
   return useMutation({
     mutationFn: async ({
@@ -124,6 +125,7 @@ export function useUpdateAnnouncement() {
 
 export function useDeleteAnnouncement() {
   const queryClient = useQueryClient();
+  const supabase = useSupabase();
 
   return useMutation({
     mutationFn: async (id: string) => {

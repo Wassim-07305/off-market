@@ -766,7 +766,7 @@ function CommunitySection({ prefix }: { prefix: string }) {
           Actualites
         </h3>
         <Link
-          href={`${prefix}/community`}
+          href={`${prefix}/feed`}
           className="text-xs text-[#AF0000] hover:text-[#DC2626] transition-colors font-medium"
         >
           Voir tout

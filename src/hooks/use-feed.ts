@@ -16,7 +16,7 @@ import type {
   FeedSortMode,
 } from "@/types/feed";
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 10;
 const MAX_THREAD_DEPTH = 3;
 
 export function useFeed(

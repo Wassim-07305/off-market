@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import type {
   CrmContact,
   PipelineStage,
+  CloserStage,
   CallNote,
   ContactInteraction,
   InteractionType,
@@ -16,13 +17,15 @@ import { DEFAULT_COMMISSION_RATES } from "@/types/billing";
 
 // ─── Pipeline Contacts ───────────────────────────────────────
 
-export function usePipelineContacts(stage?: PipelineStage) {
+export type PipelineMode = "manual" | "signup" | "all";
+
+export function usePipelineContacts(stage?: PipelineStage, mode?: PipelineMode) {
   const supabase = useSupabase();
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
   const contactsQuery = useQuery({
-    queryKey: ["pipeline-contacts", stage],
+    queryKey: ["pipeline-contacts", stage, mode],
     queryFn: async () => {
       let query = supabase
         .from("crm_contacts")
@@ -34,6 +37,13 @@ export function usePipelineContacts(stage?: PipelineStage) {
 
       if (stage) {
         query = query.eq("stage", stage);
+      }
+
+      // Filter by mode: manual leads vs signed-up prospects
+      if (mode === "manual") {
+        query = query.is("converted_profile_id", null);
+      } else if (mode === "signup") {
+        query = query.not("converted_profile_id", "is", null);
       }
 
       const { data, error } = await query;
@@ -53,14 +63,15 @@ export function usePipelineContacts(stage?: PipelineStage) {
       stage?: PipelineStage;
       estimated_value?: number;
       notes?: string;
+      converted_profile_id?: string;
     }) => {
       const { data, error } = await supabase
         .from("crm_contacts")
-        .insert({ ...contact, created_by: user!.id, assigned_to: user!.id })
+        .insert({ ...contact, created_by: user!.id, assigned_to: user!.id } as never)
         .select()
         .single();
       if (error) throw error;
-      return data as CrmContact;
+      return data as unknown as CrmContact;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["pipeline-contacts"] });
@@ -105,7 +116,7 @@ export function usePipelineContacts(stage?: PipelineStage) {
     }: Partial<CrmContact> & { id: string }) => {
       const { error } = await supabase
         .from("crm_contacts")
-        .update(updates)
+        .update(updates as never)
         .eq("id", id);
       if (error) throw error;
     },
@@ -127,11 +138,11 @@ export function usePipelineContacts(stage?: PipelineStage) {
       stage: PipelineStage;
       sort_order?: number;
     }) => {
-      const updates: Record<string, unknown> = { stage };
+      const updates: Record<string, unknown> = { stage, returned_by_closer: false };
       if (sort_order !== undefined) updates.sort_order = sort_order;
       const { error } = await supabase
         .from("crm_contacts")
-        .update(updates)
+        .update(updates as never)
         .eq("id", id);
       if (error) throw error;
       return { id, stage };
@@ -187,9 +198,9 @@ export function usePipelineContacts(stage?: PipelineStage) {
               .eq("sale_id", result.id),
           ]);
 
-          const contact = contactResult.data;
+          const contact = contactResult.data as { id: string; full_name: string; estimated_value: number; assigned_to: string | null; created_by: string | null } | null;
           if (!contact || !contact.estimated_value) return;
-          if (commissionResult.count && commissionResult.count > 0) return; // Already created
+          if (commissionResult.count && commissionResult.count > 0) return;
 
           const saleAmount = Number(contact.estimated_value);
           if (saleAmount <= 0) return;
@@ -202,18 +213,23 @@ export function usePipelineContacts(stage?: PipelineStage) {
             sale_amount: number;
             commission_rate: number;
             commission_amount: number;
+            percentage: number;
+            amount: number;
           }> = [];
 
           // Assigned user gets closer commission
           if (contact.assigned_to) {
             const rate = DEFAULT_COMMISSION_RATES.closer;
+            const commAmount = Math.round(saleAmount * rate * 100) / 100;
             commissionEntries.push({
               sale_id: contact.id,
               contractor_id: contact.assigned_to,
               contractor_role: "closer",
               sale_amount: saleAmount,
               commission_rate: rate,
-              commission_amount: Math.round(saleAmount * rate * 100) / 100,
+              commission_amount: commAmount,
+              percentage: rate * 100,
+              amount: commAmount,
             });
           }
 
@@ -223,20 +239,23 @@ export function usePipelineContacts(stage?: PipelineStage) {
             contact.created_by !== contact.assigned_to
           ) {
             const rate = DEFAULT_COMMISSION_RATES.setter;
+            const commAmount = Math.round(saleAmount * rate * 100) / 100;
             commissionEntries.push({
               sale_id: contact.id,
               contractor_id: contact.created_by,
               contractor_role: "setter",
               sale_amount: saleAmount,
               commission_rate: rate,
-              commission_amount: Math.round(saleAmount * rate * 100) / 100,
+              commission_amount: commAmount,
+              percentage: rate * 100,
+              amount: commAmount,
             });
           }
 
           if (commissionEntries.length > 0) {
             const { error: commError } = await supabase
               .from("commissions")
-              .insert(commissionEntries);
+              .insert(commissionEntries as never);
 
             if (commError) {
               console.error("Auto-commission creation error:", commError);
@@ -279,6 +298,312 @@ export function usePipelineContacts(stage?: PipelineStage) {
   };
 }
 
+// ─── Closer Pipeline ─────────────────────────────────────────
+
+export function useCloserPipeline(adminMode = false) {
+  const supabase = useSupabase();
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+
+  const contactsQuery = useQuery({
+    queryKey: ["closer-pipeline", adminMode ? "all" : user?.id],
+    queryFn: async () => {
+      let query = supabase
+        .from("crm_contacts")
+        .select(
+          "*, assigned_profile:profiles!crm_contacts_assigned_to_fkey(id, full_name)",
+        )
+        .not("closer_stage", "is", null);
+
+      // Non-admin: only see own contacts
+      if (!adminMode) {
+        query = query.eq("closer_id", user!.id);
+      }
+
+      const { data, error } = await query
+        .order("sort_order", { ascending: true })
+        .order("updated_at", { ascending: false });
+      if (error) throw error;
+      return data as CrmContact[];
+    },
+    enabled: !!user,
+  });
+
+  const moveCloserStage = useMutation({
+    mutationFn: async ({
+      id,
+      closer_stage,
+    }: {
+      id: string;
+      closer_stage: CloserStage;
+    }) => {
+      const { error } = await supabase
+        .from("crm_contacts")
+        .update({ closer_stage } as never)
+        .eq("id", id);
+      if (error) throw error;
+      return { id, closer_stage };
+    },
+    onMutate: async ({ id, closer_stage }) => {
+      await queryClient.cancelQueries({ queryKey: ["closer-pipeline"] });
+      const previous = queryClient.getQueriesData<CrmContact[]>({
+        queryKey: ["closer-pipeline"],
+      });
+      queryClient.setQueriesData<CrmContact[]>(
+        { queryKey: ["closer-pipeline"] },
+        (old) =>
+          old?.map((c) => (c.id === id ? { ...c, closer_stage } : c)),
+      );
+      return { previous };
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previous) {
+        for (const [key, data] of context.previous) {
+          queryClient.setQueryData(key, data);
+        }
+      }
+      toast.error("Erreur lors du deplacement");
+    },
+    onSuccess: async (result) => {
+      queryClient.invalidateQueries({ queryKey: ["closer-pipeline"] });
+
+      // Auto-create commissions when closer marks as "close"
+      if (result.closer_stage === "close") {
+        try {
+          const [contactResult, commResult] = await Promise.all([
+            supabase
+              .from("crm_contacts")
+              .select("id, full_name, estimated_value, assigned_to, created_by, closer_id")
+              .eq("id", result.id)
+              .single(),
+            supabase
+              .from("commissions")
+              .select("id", { count: "exact", head: true })
+              .eq("sale_id", result.id),
+          ]);
+
+          const contact = contactResult.data as { id: string; full_name: string; estimated_value: number; assigned_to: string | null; created_by: string | null; closer_id: string | null } | null;
+          if (!contact || !contact.estimated_value) return;
+          if (commResult.count && commResult.count > 0) return;
+
+          const saleAmount = Number(contact.estimated_value);
+          if (saleAmount <= 0) return;
+
+          const entries: Array<{
+            sale_id: string;
+            contractor_id: string;
+            contractor_role: CommissionRole;
+            sale_amount: number;
+            commission_rate: number;
+            commission_amount: number;
+            percentage: number;
+            amount: number;
+          }> = [];
+
+          // Closer commission (10%)
+          if (contact.closer_id) {
+            const rate = DEFAULT_COMMISSION_RATES.closer;
+            const commAmount = Math.round(saleAmount * rate * 100) / 100;
+            entries.push({
+              sale_id: contact.id,
+              contractor_id: contact.closer_id,
+              contractor_role: "closer",
+              sale_amount: saleAmount,
+              commission_rate: rate,
+              commission_amount: commAmount,
+              percentage: rate * 100,
+              amount: commAmount,
+            });
+          }
+
+          // Setter commission (5%) — created_by is the setter
+          if (contact.created_by && contact.created_by !== contact.closer_id) {
+            const rate = DEFAULT_COMMISSION_RATES.setter;
+            const commAmount = Math.round(saleAmount * rate * 100) / 100;
+            entries.push({
+              sale_id: contact.id,
+              contractor_id: contact.created_by,
+              contractor_role: "setter",
+              sale_amount: saleAmount,
+              commission_rate: rate,
+              commission_amount: commAmount,
+              percentage: rate * 100,
+              amount: commAmount,
+            });
+          }
+
+          if (entries.length > 0) {
+            const { error: commError } = await supabase
+              .from("commissions")
+              .insert(entries as never);
+            if (!commError) {
+              queryClient.invalidateQueries({ queryKey: ["commissions"] });
+              toast.success(
+                `${entries.length} commission(s) creee(s) automatiquement`,
+              );
+            }
+          }
+        } catch (err) {
+          console.error("Auto-commission error:", err);
+        }
+      }
+    },
+  });
+
+  return {
+    contacts: contactsQuery.data ?? [],
+    isLoading: contactsQuery.isLoading,
+    moveCloserStage,
+  };
+}
+
+// ─── Assign Contact to Closer ───────────────────────────────
+
+export function useAssignToCloser() {
+  const supabase = useSupabase();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      contactId,
+      closerId,
+    }: {
+      contactId: string;
+      closerId: string;
+    }) => {
+      const { error } = await supabase
+        .from("crm_contacts")
+        .update({
+          closer_id: closerId,
+          closer_stage: "a_appeler",
+          stage: "closing",
+        } as never)
+        .eq("id", contactId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["pipeline-contacts"] });
+      queryClient.invalidateQueries({ queryKey: ["closer-pipeline"] });
+      toast.success("Lead assigne au closer");
+    },
+    onError: () => toast.error("Erreur lors de l'assignation"),
+  });
+}
+
+// ─── Return contact from closer back to setter ──────────────
+
+export function useReturnToSetter() {
+  const supabase = useSupabase();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (contactId: string) => {
+      const { error } = await supabase
+        .from("crm_contacts")
+        .update({
+          closer_id: null,
+          closer_stage: null,
+          returned_by_closer: true,
+          stage: "proposition",
+        } as never)
+        .eq("id", contactId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["pipeline-contacts"] });
+      queryClient.invalidateQueries({ queryKey: ["closer-pipeline"] });
+      toast.success("Lead retourne au setter");
+    },
+    onError: () => toast.error("Erreur lors du retour"),
+  });
+}
+
+// ─── Claim unassigned prospect (setter takes ownership) ─────
+
+export function useClaimProspect() {
+  const supabase = useSupabase();
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+
+  return useMutation({
+    mutationFn: async (contactId: string) => {
+      const { error } = await supabase
+        .from("crm_contacts")
+        .update({ assigned_to: user!.id } as never)
+        .eq("id", contactId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["pipeline-contacts"] });
+      toast.success("Prospect pris en charge");
+    },
+    onError: () => toast.error("Erreur"),
+  });
+}
+
+// ─── Admin: Cancel a closed deal ────────────────────────────
+
+export function useCancelDeal() {
+  const supabase = useSupabase();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      contactId,
+      reason,
+    }: {
+      contactId: string;
+      reason: string;
+    }) => {
+      const { error } = await supabase
+        .from("crm_contacts")
+        .update({
+          closer_stage: "perdu",
+          lost_reason: reason,
+        } as never)
+        .eq("id", contactId);
+      if (error) throw error;
+
+      // Cancel related commissions
+      await supabase
+        .from("commissions")
+        .update({ status: "cancelled" } as never)
+        .eq("sale_id", contactId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["closer-pipeline"] });
+      queryClient.invalidateQueries({ queryKey: ["commissions"] });
+      toast.success("Deal annule");
+    },
+    onError: () => toast.error("Erreur lors de l'annulation"),
+  });
+}
+
+// ─── Available closers list ─────────────────────────────────
+
+export function useAvailableClosers() {
+  const supabase = useSupabase();
+  const { user } = useAuth();
+
+  return useQuery({
+    queryKey: ["available-closers"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("id, full_name, avatar_url, email")
+        .eq("role", "closer");
+      if (error) throw error;
+      return data as Array<{
+        id: string;
+        full_name: string;
+        avatar_url: string | null;
+        email: string;
+      }>;
+    },
+    enabled: !!user,
+  });
+}
+
 // ─── Update Contact Stage ────────────────────────────────────
 
 export function useUpdateContactStage() {
@@ -289,7 +614,7 @@ export function useUpdateContactStage() {
     mutationFn: async ({ id, stage }: { id: string; stage: PipelineStage }) => {
       const { error } = await supabase
         .from("crm_contacts")
-        .update({ stage })
+        .update({ stage } as never)
         .eq("id", id);
       if (error) throw error;
     },
@@ -350,7 +675,7 @@ export function useAddInteraction() {
           content: content || null,
           metadata: metadata || {},
           created_by: user!.id,
-        });
+        } as never);
       if (interactionError) throw interactionError;
 
       // Update last_interaction_at and increment interaction_count on the contact
@@ -360,13 +685,13 @@ export function useAddInteraction() {
         .eq("id", contact_id)
         .single();
 
+      const cnt = (currentContact as { interaction_count: number } | null)?.interaction_count ?? 0;
       const { error: contactUpdateError } = await supabase
         .from("crm_contacts")
         .update({
           last_interaction_at: new Date().toISOString(),
-          interaction_count:
-            ((currentContact?.interaction_count as number) ?? 0) + 1,
-        })
+          interaction_count: cnt + 1,
+        } as never)
         .eq("id", contact_id);
 
       if (contactUpdateError) throw contactUpdateError;
@@ -398,7 +723,7 @@ export function useUpdateLeadScore() {
     }) => {
       const { error } = await supabase
         .from("crm_contacts")
-        .update({ lead_score })
+        .update({ lead_score } as never)
         .eq("id", id);
       if (error) throw error;
     },
@@ -448,7 +773,7 @@ export function useCallNote(callId: string | null) {
 
       const { data, error } = await supabase
         .from("call_notes")
-        .upsert(payload, { onConflict: "call_id" })
+        .upsert(payload as never, { onConflict: "call_id" })
         .select()
         .single();
       if (error) throw error;
@@ -466,4 +791,39 @@ export function useCallNote(callId: string | null) {
     isLoading: noteQuery.isLoading,
     saveNote,
   };
+}
+
+// ─── Available Prospect Profiles (not yet in pipeline) ──────
+
+type ProspectProfile = { id: string; full_name: string; email: string; avatar_url: string | null };
+
+export function useAvailableProspectProfiles() {
+  const supabase = useSupabase();
+  const { user } = useAuth();
+
+  return useQuery({
+    queryKey: ["available-prospect-profiles"],
+    queryFn: async () => {
+      // 1. Get all prospect profiles with completed onboarding
+      const { data: prospects } = await supabase
+        .from("profiles")
+        .select("id, full_name, email, avatar_url")
+        .eq("role", "prospect")
+        .eq("onboarding_completed", true);
+
+      // 2. Get profile IDs already linked to crm_contacts
+      const { data: existing } = await supabase
+        .from("crm_contacts")
+        .select("converted_profile_id")
+        .not("converted_profile_id", "is", null);
+
+      const linkedIds = new Set(
+        (existing ?? []).map((c: { converted_profile_id: string | null }) => c.converted_profile_id),
+      );
+
+      // 3. Return only prospects not already in pipeline
+      return ((prospects ?? []) as ProspectProfile[]).filter((p) => !linkedIds.has(p.id));
+    },
+    enabled: !!user,
+  });
 }

@@ -13,8 +13,12 @@ import {
   ChevronLeft,
   ChevronRight,
   Sparkles,
+  Rss,
+  FolderOpen,
+  Lock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/use-auth";
 
 interface FeatureItem {
   icon: typeof LayoutDashboard;
@@ -22,9 +26,11 @@ interface FeatureItem {
   description: string;
   aiExplanation: string;
   color: string;
+  /** If true, shown as locked/coming-soon for prospects */
+  prospectLocked?: boolean;
 }
 
-const FEATURES: FeatureItem[] = [
+const CLIENT_FEATURES: FeatureItem[] = [
   {
     icon: LayoutDashboard,
     title: "Tableau de bord",
@@ -77,11 +83,70 @@ const FEATURES: FeatureItem[] = [
   },
 ];
 
+const PROSPECT_FEATURES: FeatureItem[] = [
+  {
+    icon: LayoutDashboard,
+    title: "Tableau de bord",
+    description:
+      "Decouvre ton espace personnel avec un apercu de la plateforme.",
+    aiExplanation:
+      "Le dashboard te donne une vue d'ensemble. En devenant client, tu auras acces a toutes les metriques et KPIs.",
+    color: "text-blue-400",
+  },
+  {
+    icon: GraduationCap,
+    title: "Formations",
+    description:
+      "Decouvre le catalogue de formations disponibles pour les clients.",
+    aiExplanation:
+      "Tu peux voir les formations disponibles. L'acces complet aux modules et lecons est reserve aux clients actifs.",
+    color: "text-purple-400",
+    prospectLocked: true,
+  },
+  {
+    icon: Rss,
+    title: "Feed & Communaute",
+    description: "Decouvre les echanges et victoires des membres du programme.",
+    aiExplanation:
+      "Le feed te permet de voir l'activite de la communaute. Tu peux consulter les posts et t'inspirer des succes des autres.",
+    color: "text-amber-400",
+  },
+  {
+    icon: FolderOpen,
+    title: "Ressources",
+    description: "Accede aux ressources et documents partages.",
+    aiExplanation:
+      "La bibliotheque de ressources te donne acces a des documents utiles pour te preparer.",
+    color: "text-cyan-400",
+  },
+  {
+    icon: MessageCircle,
+    title: "Messagerie & Coach",
+    description: "En devenant client, un coach dedie te sera attribue.",
+    aiExplanation:
+      "Les clients beneficient d'un coach personnel, d'une messagerie directe et de sessions de coaching. Tout ca t'attend !",
+    color: "text-emerald-400",
+    prospectLocked: true,
+  },
+  {
+    icon: BarChart3,
+    title: "Gamification & Suivi",
+    description: "XP, badges, streaks et journal — disponibles pour les clients.",
+    aiExplanation:
+      "Le systeme de gamification motive les clients avec des points d'experience, des badges et un classement communautaire.",
+    color: "text-rose-400",
+    prospectLocked: true,
+  },
+];
+
 interface FeatureTourStepProps {
   onNext: () => void;
 }
 
 export function FeatureTourStep({ onNext }: FeatureTourStepProps) {
+  const { profile } = useAuth();
+  const isProspect = profile?.role === "prospect";
+  const FEATURES = isProspect ? PROSPECT_FEATURES : CLIENT_FEATURES;
   const [currentFeature, setCurrentFeature] = useState(0);
   const [showAi, setShowAi] = useState(false);
   const feature = FEATURES[currentFeature];
@@ -127,13 +192,21 @@ export function FeatureTourStep({ onNext }: FeatureTourStepProps) {
         >
           {/* Feature header */}
           <div className="p-6 pb-4">
-            <div
-              className={cn(
-                "w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center mb-4",
-                feature.color,
+            <div className="flex items-center gap-3 mb-4">
+              <div
+                className={cn(
+                  "w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center",
+                  feature.color,
+                )}
+              >
+                <Icon className="w-6 h-6" />
+              </div>
+              {feature.prospectLocked && (
+                <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded-full bg-white/10 text-white/50">
+                  <Lock className="w-3 h-3" />
+                  Clients uniquement
+                </span>
               )}
-            >
-              <Icon className="w-6 h-6" />
             </div>
             <h3 className="text-xl font-bold text-white mb-2">
               {feature.title}

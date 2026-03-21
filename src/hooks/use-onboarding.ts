@@ -24,6 +24,12 @@ export const ROLE_ONBOARDING_STEPS = {
     "message_test",
     "completion",
   ] as const,
+  prospect: [
+    "welcome_video",
+    "about_you",
+    "feature_tour",
+    "completion",
+  ] as const,
   setter: ["welcome_video", "about_you", "sales_tools", "completion"] as const,
   closer: ["welcome_video", "about_you", "sales_tools", "completion"] as const,
 } as const;
@@ -127,68 +133,96 @@ export function useOnboarding() {
         .eq("id", user.id);
       if (error) throw error;
 
-      // Auto-action: create a welcome DM channel with the assigned coach
-      try {
-        // Check coach_assignments table
-        const { data: assignment } = await supabase
-          .from("coach_assignments")
-          .select("coach_id")
-          .eq("client_id", user.id)
-          .eq("status", "active")
-          .limit(1)
-          .maybeSingle();
+      // Auto-actions for clients only (not prospects — they have no coach assigned)
+      const onboardingRole = profile?.role ?? "client";
+      if (onboardingRole !== "prospect") {
+        // Auto-action: create a welcome DM channel with the assigned coach
+        try {
+          const { data: assignment } = await supabase
+            .from("coach_assignments")
+            .select("coach_id")
+            .eq("client_id", user.id)
+            .eq("status", "active")
+            .limit(1)
+            .maybeSingle();
 
-        const coachId = (assignment as { coach_id?: string } | null)?.coach_id;
-        if (coachId) {
-          // Check if DM channel already exists
-          const { data: existingChannels } = await supabase
-            .from("channels")
-            .select("id, channel_members!inner(profile_id)")
-            .eq("type", "dm");
-
-          const hasDm = (existingChannels ?? []).some((ch) => {
-            const members =
-              (ch.channel_members as Array<{ profile_id: string }>) ?? [];
-            return members.some((m) => m.profile_id === coachId);
-          });
-
-          if (!hasDm) {
-            const { data: newChannel } = await supabase
+          const coachId = (assignment as { coach_id?: string } | null)?.coach_id;
+          if (coachId) {
+            const { data: existingChannels } = await supabase
               .from("channels")
-              .insert({ name: "DM", type: "dm", created_by: user.id })
-              .select("id")
-              .single();
+              .select("id, channel_members!inner(profile_id)")
+              .eq("type", "dm");
 
-            if (newChannel) {
-              await supabase.from("channel_members").insert([
-                { channel_id: newChannel.id, profile_id: user.id },
-                { channel_id: newChannel.id, profile_id: coachId },
-              ]);
+            const hasDm = (existingChannels ?? []).some((ch) => {
+              const members =
+                (ch.channel_members as Array<{ profile_id: string }>) ?? [];
+              return members.some((m) => m.profile_id === coachId);
+            });
 
-              // Send automatic welcome message from the system
-              await supabase.from("messages").insert({
-                channel_id: newChannel.id,
-                sender_id: coachId,
-                content: `Bienvenue ! 🎉 Je suis ton coach attitré. N'hésite pas à me poser toutes tes questions ici.`,
-                content_type: "text",
-              });
+            if (!hasDm) {
+              const { data: newChannel } = await supabase
+                .from("channels")
+                .insert({ name: "DM", type: "dm", created_by: user.id })
+                .select("id")
+                .single();
+
+              if (newChannel) {
+                await supabase.from("channel_members").insert([
+                  { channel_id: newChannel.id, profile_id: user.id },
+                  { channel_id: newChannel.id, profile_id: coachId },
+                ]);
+
+                await supabase.from("messages").insert({
+                  channel_id: newChannel.id,
+                  sender_id: coachId,
+                  content: `Bienvenue ! 🎉 Je suis ton coach attitré. N'hésite pas à me poser toutes tes questions ici.`,
+                  content_type: "text",
+                });
+              }
             }
           }
+        } catch {
+          console.warn("Auto-DM creation skipped");
         }
-      } catch {
-        // Non-critical — onboarding completion should not fail because of DM creation
-        console.warn("Auto-DM creation skipped");
+
+        // Auto-action: generate contract for client
+        try {
+          await fetch("/api/contracts/auto-generate", { method: "POST" });
+        } catch {
+          console.warn("Auto-contract generation skipped");
+        }
       }
 
-      // Auto-action: generate contract for client
+      // Auto-action: award Newcomer badge
       try {
-        const role = profile?.role ?? "client";
-        if (role === "client" || role === "prospect") {
-          await fetch("/api/contracts/auto-generate", { method: "POST" });
+        const { data: newcomerBadge } = await supabase
+          .from("badges")
+          .select("id")
+          .eq("name", "Newcomer")
+          .maybeSingle();
+        if (newcomerBadge) {
+          await supabase.from("user_badges").upsert(
+            { profile_id: user.id, badge_id: newcomerBadge.id, earned_at: new Date().toISOString() },
+            { onConflict: "profile_id,badge_id", ignoreDuplicates: true },
+          );
         }
+        // Award onboarding XP
+        await supabase.rpc("award_xp", {
+          p_profile_id: user.id,
+          p_action: "complete_onboarding",
+          p_metadata: {},
+        }).catch(() => {});
       } catch {
-        // Non-critical — onboarding should not fail because of contract generation
-        console.warn("Auto-contract generation skipped");
+        console.warn("Badge/XP award skipped");
+      }
+
+      // Auto-action: add prospect to CRM pipeline
+      if (onboardingRole === "prospect") {
+        try {
+          await fetch("/api/onboarding/create-crm-contact", { method: "POST" });
+        } catch {
+          console.warn("Auto CRM contact creation skipped");
+        }
       }
 
       // Auto-action: notify admins of onboarding completion
@@ -219,6 +253,7 @@ export function useOnboarding() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["auth"] });
       queryClient.invalidateQueries({ queryKey: ["channels"] });
+      queryClient.invalidateQueries({ queryKey: ["pipeline-contacts"] });
     },
   });
 
@@ -302,7 +337,7 @@ export function useOnboardingProgress(userId?: string, role?: string) {
         .from("onboarding_progress")
         .select("*")
         .eq("user_id", targetId);
-      if (error) throw error;
+      if (error) return []; // Table might not exist
       return (data ?? []) as Array<{
         id: string;
         user_id: string;
@@ -311,6 +346,7 @@ export function useOnboardingProgress(userId?: string, role?: string) {
       }>;
     },
     enabled: !!targetId,
+    retry: false,
   });
 
   const completedKeys = new Set((stepsQuery.data ?? []).map((s) => s.step));
@@ -346,27 +382,18 @@ export function useCompleteStep() {
       if (!user) throw new Error("Not authenticated");
 
       // Check if already completed
-      const { data: existing } = await supabase
-        .from("onboarding_progress")
-        .select("id")
-        .eq("user_id", user.id)
-        .eq("step", stepKey)
-        .maybeSingle();
-
-      if (existing) return; // Already done
-
-      const { error } = await supabase.from("onboarding_progress").insert({
-        user_id: user.id,
-        step: stepKey,
-        completed_at: new Date().toISOString(),
-      });
-      if (error) throw error;
+      const { error } = await supabase.from("onboarding_progress").upsert(
+        {
+          user_id: user.id,
+          step: stepKey,
+          completed_at: new Date().toISOString(),
+        },
+        { onConflict: "user_id,step", ignoreDuplicates: true },
+      );
+      if (error) console.warn("[onboarding] Step save skipped:", error.message);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["onboarding-steps"] });
-    },
-    onError: () => {
-      toast.error("Erreur lors de la sauvegarde de l'etape");
     },
   });
 }
@@ -379,18 +406,23 @@ export function useCsmWelcomeVideo(coachId?: string) {
     queryKey: ["csm-welcome-video", coachId],
     queryFn: async () => {
       if (!coachId) return null;
-      const { data, error } = await supabase
-        .from("csm_welcome_videos" as never)
-        .select("*")
-        .eq("coach_id", coachId)
-        .eq("is_active", true)
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      if (error) throw error;
-      return (data ?? null) as CsmWelcomeVideo | null;
+      try {
+        const { data, error } = await supabase
+          .from("csm_welcome_videos" as never)
+          .select("*")
+          .eq("coach_id", coachId)
+          .eq("is_active", true)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        if (error) return null; // Table might not exist
+        return (data ?? null) as CsmWelcomeVideo | null;
+      } catch {
+        return null; // Table doesn't exist — not critical
+      }
     },
     enabled: !!coachId,
+    retry: false,
   });
 }
 
@@ -398,7 +430,7 @@ export function useCsmWelcomeVideo(coachId?: string) {
 export function useOnboardingForm() {
   const supabase = useSupabase();
   const queryClient = useQueryClient();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
 
   return useMutation({
     mutationFn: async (formData: {
@@ -409,51 +441,38 @@ export function useOnboardingForm() {
     }) => {
       if (!user) throw new Error("Not authenticated");
 
-      // Save profile data from the about_you form
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .update({
+      // Save ALL onboarding data via server API (bypasses RLS)
+      const saveRes = await fetch("/api/onboarding/save-profile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
           business_type: formData.business_type,
           current_revenue: formData.current_revenue,
           goals: formData.goals,
-          how_found: formData.how_found_alexia,
-        } as never)
-        .eq("id", user.id);
-      // Profile update is best-effort (columns may not exist yet)
-      if (profileError) {
-        console.warn("Profile update skipped:", profileError.message);
+          how_found_alexia: formData.how_found_alexia,
+        }),
+      });
+      if (!saveRes.ok) {
+        const err = await saveRes.json().catch(() => ({}));
+        console.error("[onboarding] Save profile failed:", err);
       }
 
-      // Mark the about_you step as completed
-      const { data: existing } = await supabase
-        .from("onboarding_progress")
-        .select("id")
-        .eq("user_id", user.id)
-        .eq("step", "about_you")
-        .maybeSingle();
-
-      if (!existing) {
-        const { error } = await supabase.from("onboarding_progress").insert({
-          user_id: user.id,
-          step: "about_you",
-          completed_at: new Date().toISOString(),
-        });
-        if (error) throw error;
-      }
-
-      // Auto-assign a CSM/coach via API (bypasses RLS)
-      try {
-        await fetch("/api/assign-coach", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            client_id: user.id,
-            business_type: formData.business_type,
-          }),
-        });
-      } catch {
-        // Non-critical — onboarding should not fail because of auto-assignment
-        console.warn("[onboarding] Auto-assign CSM skipped");
+      // Auto-assign a CSM/coach via API (bypasses RLS) — only for clients, not prospects
+      const currentRole = profile?.role ?? "client";
+      if (currentRole !== "prospect") {
+        try {
+          await fetch("/api/assign-coach", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              client_id: user.id,
+              business_type: formData.business_type,
+            }),
+          });
+        } catch {
+          // Non-critical — onboarding should not fail because of auto-assignment
+          console.warn("[onboarding] Auto-assign CSM skipped");
+        }
       }
     },
     onSuccess: () => {
@@ -461,7 +480,8 @@ export function useOnboardingForm() {
       queryClient.invalidateQueries({ queryKey: ["coach-assignments"] });
       toast.success("Informations enregistrees !");
     },
-    onError: () => {
+    onError: (err) => {
+      console.error("[onboarding] Form submit error:", err);
       toast.error("Erreur lors de l'enregistrement");
     },
   });
