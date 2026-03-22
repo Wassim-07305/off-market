@@ -209,12 +209,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     queryClient.clear();
     // Clear profile cache cookie
     document.cookie = "om_profile_cache=; path=/; max-age=0; SameSite=Lax";
+    // Clear all Supabase auth cookies to prevent middleware from redirecting back
+    document.cookie.split(";").forEach((c) => {
+      const name = c.trim().split("=")[0];
+      if (name.startsWith("sb-")) {
+        document.cookie = `${name}=; path=/; max-age=0; SameSite=Lax`;
+      }
+    });
     // Clear auth state
     setUser(null);
     setProfile(null);
     // Sign out without awaiting (can hang with SSR client)
     supabase.auth.signOut().catch(() => {});
-    // Redirect immediately
+    // Redirect immediately — cookies are already cleared so middleware won't bounce back
     window.location.replace("/login");
   }, [supabase, queryClient]);
 
