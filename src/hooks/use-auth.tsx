@@ -76,10 +76,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!cancelled) setProfile(data);
     };
 
-    // Step 1: Use getSession() for INSTANT auth from cookies (no network call)
-    // This resolves loading immediately so the page renders without waiting
+    // Safety timeout — Supabase client can hang during initialization
+    const timeout = setTimeout(() => {
+      if (!cancelled) setLoading(false);
+    }, 3000);
+
+    // Use getSession() for auth from cookies (faster than getUser which makes a network call)
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (cancelled) return;
+      clearTimeout(timeout);
       if (session?.user) {
         setUser(session.user);
         setLoading(false);
@@ -88,7 +93,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setLoading(false);
       }
     }).catch(() => {
-      if (!cancelled) setLoading(false);
+      if (!cancelled) {
+        clearTimeout(timeout);
+        setLoading(false);
+      }
     });
 
     // Step 2: Listen for auth state changes (token refresh, sign in/out)
