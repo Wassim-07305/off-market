@@ -109,16 +109,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (cancelled) return;
       setUser(session?.user ?? null);
-      if (session?.user) {
-        await fetchProfile(session.user.id);
-      } else {
-        setProfile(null);
-      }
-      // Resolve loading on INITIAL_SESSION — this fires before getUser() returns
-      // and gives us the session from cookies immediately
+      // Resolve loading on INITIAL_SESSION IMMEDIATELY — don't wait for profile
+      // The profile will fill in via a re-render when fetchProfile completes
       if (event === "INITIAL_SESSION") {
         clearTimeout(timeout);
         setLoading(false);
+      }
+      if (session?.user) {
+        fetchProfile(session.user.id); // don't await — let it fill in async
+      } else {
+        setProfile(null);
       }
     });
 
