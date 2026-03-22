@@ -81,7 +81,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!cancelled) setLoading(false);
     }, 5000);
 
-    supabase.auth.getUser().then(({ data: { user: authUser } }) => {
+    supabase.auth.getUser().then(({ data: { user: authUser }, error }) => {
+      if (error) console.error("[AuthProvider] getUser error:", error.message);
       if (cancelled) return;
       if (authUser) {
         setUser(authUser);
@@ -92,6 +93,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }
         });
       } else {
+        console.error("[AuthProvider] getUser returned null user — no session in browser cookies");
         clearTimeout(timeout);
         setLoading(false);
       }
@@ -104,13 +106,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (cancelled) return;
       setUser(session?.user ?? null);
       if (session?.user) {
         await fetchProfile(session.user.id);
       } else {
         setProfile(null);
+      }
+      // Resolve loading on INITIAL_SESSION — this fires before getUser() returns
+      // and gives us the session from cookies immediately
+      if (event === "INITIAL_SESSION") {
+        clearTimeout(timeout);
+        setLoading(false);
       }
     });
 
