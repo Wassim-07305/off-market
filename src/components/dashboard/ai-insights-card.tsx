@@ -41,22 +41,33 @@ const insightIconColors: Record<string, string> = {
 export function AIInsightsCard() {
   const supabase = useSupabase();
 
+  interface AiInsight {
+    id: string;
+    type: string;
+    title: string;
+    description: string | null;
+    is_dismissed: boolean;
+    created_at: string;
+  }
+
   const { data: insights } = useQuery({
     queryKey: ["ai-insights"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data, error } = await (supabase as any)
         .from("ai_insights")
         .select("*")
         .eq("is_dismissed", false)
         .order("created_at", { ascending: false })
         .limit(5);
       if (error) throw error;
-      return data;
+      return (data ?? []) as AiInsight[];
     },
   });
 
   const handleDismiss = async (id: string) => {
-    await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (supabase as any)
       .from("ai_insights")
       .update({ is_dismissed: true })
       .eq("id", id);

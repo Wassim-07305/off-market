@@ -1,6 +1,7 @@
 "use client";
 
-import { useCoachAlerts } from "@/hooks/use-coach-alerts";
+import { useCoachAlerts, useResolveAlert } from "@/hooks/use-coach-alerts";
+import type { CoachAlertWithClient } from "@/hooks/use-coach-alerts";
 import { ALERT_TYPE_CONFIG, ALERT_SEVERITY_CONFIG } from "@/types/coaching";
 import type { AlertSeverity, AlertType } from "@/types/coaching";
 import { cn, formatDate, getInitials } from "@/lib/utils";
@@ -23,7 +24,8 @@ export function CoachAlertsPanel({
   className,
   collapsed: initialCollapsed = false,
 }: CoachAlertsPanelProps) {
-  const { alerts, isLoading, resolveAlert } = useCoachAlerts(false);
+  const { data: alerts = [], isLoading } = useCoachAlerts();
+  const resolveAlert = useResolveAlert();
   const [collapsed, setCollapsed] = useState(initialCollapsed);
 
   const handleResolve = async (alertId: string) => {
@@ -55,12 +57,12 @@ export function CoachAlertsPanel({
 
   // Group by severity
   const criticalAlerts = alerts.filter(
-    (a) =>
+    (a: CoachAlertWithClient) =>
       (a.severity as AlertSeverity) === "critical" ||
       (a.severity as AlertSeverity) === "high",
   );
   const otherAlerts = alerts.filter(
-    (a) =>
+    (a: CoachAlertWithClient) =>
       (a.severity as AlertSeverity) !== "critical" &&
       (a.severity as AlertSeverity) !== "high",
   );
@@ -103,7 +105,7 @@ export function CoachAlertsPanel({
       {!collapsed && (
         <div className="px-4 pb-4 space-y-2">
           {/* Critical alerts first */}
-          {criticalAlerts.map((alert) => {
+          {criticalAlerts.map((alert: CoachAlertWithClient) => {
             const typeConfig = ALERT_TYPE_CONFIG[alert.alert_type as AlertType];
             const severityConfig =
               ALERT_SEVERITY_CONFIG[alert.severity as AlertSeverity];
@@ -154,7 +156,7 @@ export function CoachAlertsPanel({
           })}
 
           {/* Other alerts */}
-          {otherAlerts.map((alert) => {
+          {otherAlerts.map((alert: CoachAlertWithClient) => {
             const typeConfig = ALERT_TYPE_CONFIG[alert.alert_type as AlertType];
             const severityConfig =
               ALERT_SEVERITY_CONFIG[alert.severity as AlertSeverity];

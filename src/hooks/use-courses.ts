@@ -35,9 +35,9 @@ export function useCourses(status?: string) {
         query = query.eq("status", status);
       }
 
-      const { data, error } = await query;
+      const { data, error } = await query.returns<(Course & { modules: (Module & { lessons: Lesson[] })[] })[]>();
       if (error) throw error;
-      return data as (Course & {
+      return (data ?? []) as (Course & {
         modules: (Module & { lessons: Lesson[] })[];
       })[];
     },
@@ -55,9 +55,10 @@ export function useCourse(courseId: string) {
         .from("courses")
         .select("*, modules(*, lessons(*))")
         .eq("id", courseId)
+        .returns<(Course & { modules: (Module & { lessons: Lesson[] })[] })[]>()
         .single();
       if (error) throw error;
-      return data as Course & { modules: (Module & { lessons: Lesson[] })[] };
+      return data as unknown as Course & { modules: (Module & { lessons: Lesson[] })[] };
     },
     enabled: !!courseId,
   });
@@ -85,11 +86,11 @@ export function useCourseMutations() {
     }) => {
       const { data, error } = await supabase
         .from("courses")
-        .insert(course)
+        .insert(course as never)
         .select()
         .single();
       if (error) throw error;
-      return data as Course;
+      return data as unknown as Course;
     },
     onSuccess: invalidate,
     onError: () => {
@@ -104,12 +105,12 @@ export function useCourseMutations() {
     }: { id: string } & Partial<Course>) => {
       const { data, error } = await supabase
         .from("courses")
-        .update(updates)
+        .update(updates as never)
         .eq("id", id)
         .select()
         .single();
       if (error) throw error;
-      return data as Course;
+      return data as unknown as Course;
     },
     onSuccess: invalidate,
     onError: () => {
@@ -133,7 +134,7 @@ export function useCourseMutations() {
       for (let i = 0; i < orderedIds.length; i++) {
         const { error } = await supabase
           .from("courses")
-          .update({ sort_order: i })
+          .update({ sort_order: i } as never)
           .eq("id", orderedIds[i]);
         if (error) throw error;
       }
@@ -157,11 +158,11 @@ export function useCourseMutations() {
     }) => {
       const { data, error } = await supabase
         .from("modules")
-        .insert(mod)
+        .insert(mod as never)
         .select()
         .single();
       if (error) throw error;
-      return data as Module;
+      return data as unknown as Module;
     },
     onSuccess: invalidate,
     onError: () => {
@@ -176,7 +177,7 @@ export function useCourseMutations() {
     }: { id: string } & Partial<Module>) => {
       const { error } = await supabase
         .from("modules")
-        .update(updates)
+        .update(updates as never)
         .eq("id", id);
       if (error) throw error;
     },
@@ -209,7 +210,7 @@ export function useCourseMutations() {
       for (let i = 0; i < orderedIds.length; i++) {
         const { error } = await supabase
           .from("modules")
-          .update({ sort_order: i })
+          .update({ sort_order: i } as never)
           .eq("id", orderedIds[i]);
         if (error) throw error;
       }
@@ -236,11 +237,11 @@ export function useCourseMutations() {
     }) => {
       const { data, error } = await supabase
         .from("lessons")
-        .insert({ content_type: "video", ...lesson })
+        .insert({ content_type: "video", ...lesson } as never)
         .select()
         .single();
       if (error) throw error;
-      return data as Lesson;
+      return data as unknown as Lesson;
     },
     onSuccess: invalidate,
     onError: () => {
@@ -255,7 +256,7 @@ export function useCourseMutations() {
     }: { id: string } & Partial<Lesson>) => {
       const { error } = await supabase
         .from("lessons")
-        .update(updates)
+        .update(updates as never)
         .eq("id", id);
       if (error) throw error;
     },
@@ -288,7 +289,7 @@ export function useCourseMutations() {
       for (let i = 0; i < orderedIds.length; i++) {
         const { error } = await supabase
           .from("lessons")
-          .update({ sort_order: i })
+          .update({ sort_order: i } as never)
           .eq("id", orderedIds[i]);
         if (error) throw error;
       }
@@ -312,13 +313,14 @@ export function useCourseMutations() {
         .from("lessons")
         .select("attachments")
         .eq("id", lessonId)
+        .returns<{ attachments: LessonAttachment[] }[]>()
         .single();
       if (fetchError) throw fetchError;
 
       const current = (lesson?.attachments as LessonAttachment[]) ?? [];
       const { error } = await supabase
         .from("lessons")
-        .update({ attachments: [...current, attachment] })
+        .update({ attachments: [...current, attachment] } as never)
         .eq("id", lessonId);
       if (error) throw error;
     },
@@ -340,6 +342,7 @@ export function useCourseMutations() {
         .from("lessons")
         .select("attachments")
         .eq("id", lessonId)
+        .returns<{ attachments: LessonAttachment[] }[]>()
         .single();
       if (fetchError) throw fetchError;
 
@@ -347,7 +350,7 @@ export function useCourseMutations() {
       const updated = current.filter((a) => a.url !== attachmentUrl);
       const { error } = await supabase
         .from("lessons")
-        .update({ attachments: updated })
+        .update({ attachments: updated } as never)
         .eq("id", lessonId);
       if (error) throw error;
     },
@@ -390,9 +393,10 @@ export function useLessonProgress() {
       const { data, error } = await supabase
         .from("lesson_progress")
         .select("lesson_id, status, completed_at")
-        .eq("student_id", user!.id);
+        .eq("student_id", user!.id)
+        .returns<{ lesson_id: string; status: string; completed_at: string | null }[]>();
       if (error) throw error;
-      return data as {
+      return (data ?? []) as {
         lesson_id: string;
         status: string;
         completed_at: string | null;
@@ -418,7 +422,7 @@ export function useMarkLessonComplete() {
           status: "completed",
           completed_at: new Date().toISOString(),
           progress_percent: 100,
-        },
+        } as never,
         { onConflict: "lesson_id,student_id" },
       );
       if (error) throw error;

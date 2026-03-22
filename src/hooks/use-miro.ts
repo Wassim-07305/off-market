@@ -78,7 +78,7 @@ export function useCreateMiroBoard() {
     mutationFn: async (title?: string) => {
       const { data, error } = await supabase
         .from("miro_boards")
-        .insert({ title: title ?? "Nouveau tableau", created_by: user?.id })
+        .insert({ title: title ?? "Nouveau tableau", created_by: user?.id } as never)
         .select()
         .single();
 
@@ -103,7 +103,7 @@ export function useUpdateMiroBoard() {
     mutationFn: async ({ id, title }: { id: string; title: string }) => {
       const { data, error } = await supabase
         .from("miro_boards")
-        .update({ title, updated_at: new Date().toISOString() })
+        .update({ title, updated_at: new Date().toISOString() } as never)
         .eq("id", id)
         .select()
         .single();
@@ -179,7 +179,7 @@ export function useCreateMiroCard() {
     }) => {
       const { data, error } = await supabase
         .from("miro_cards")
-        .insert(card)
+        .insert(card as never)
         .select()
         .single();
 
@@ -219,13 +219,13 @@ export function useUpdateMiroCard() {
     }) => {
       const { data, error } = await supabase
         .from("miro_cards")
-        .update({ ...updates, updated_at: new Date().toISOString() })
+        .update({ ...updates, updated_at: new Date().toISOString() } as never)
         .eq("id", id)
         .select()
         .single();
 
       if (error) throw error;
-      return { ...data, boardId } as MiroCard & { boardId: string };
+      return { ...(data as MiroCard), boardId } as MiroCard & { boardId: string };
     },
     onMutate: async ({ id, boardId, ...updates }) => {
       // Optimistic update
@@ -329,7 +329,7 @@ export function useCreateMiroSection() {
     }) => {
       const { data, error } = await supabase
         .from("miro_sections")
-        .insert(section)
+        .insert(section as never)
         .select()
         .single();
 
@@ -366,13 +366,13 @@ export function useUpdateMiroSection() {
     }) => {
       const { data, error } = await supabase
         .from("miro_sections")
-        .update(updates)
+        .update(updates as never)
         .eq("id", id)
         .select()
         .single();
 
       if (error) throw error;
-      return { ...data, boardId } as MiroSection & { boardId: string };
+      return { ...(data as MiroSection), boardId } as MiroSection & { boardId: string };
     },
     onSuccess: (_data, vars) => {
       queryClient.invalidateQueries({
@@ -440,7 +440,7 @@ export function useCreateMiroConnection() {
     }) => {
       const { data, error } = await supabase
         .from("miro_connections")
-        .insert(connection)
+        .insert(connection as never)
         .select()
         .single();
 

@@ -1,22 +1,30 @@
+"use client";
+
 import Image from "next/image";
 import { useQuery } from "@tanstack/react-query";
 import { Trophy } from "lucide-react";
-import { supabase } from "@/lib/supabase";
-import { getInitials } from "@/lib/utils";
-import { cn } from "@/lib/utils";
+import { useSupabase } from "@/hooks/use-supabase";
+import { getInitials, cn } from "@/lib/utils";
 import { startOfMonth, format } from "date-fns";
 
 const rankColors = ["text-yellow-500", "text-slate-400", "text-amber-600"];
 const rankBgs = ["bg-yellow-50", "bg-slate-50", "bg-amber-50"];
 
 export function MiniLeaderboard() {
+  const supabase = useSupabase();
   const monthStart = format(startOfMonth(new Date()), "yyyy-MM-dd");
+
+  interface SetterActivity {
+    user_id: string;
+    messages_sent: number;
+  }
 
   const { data: leaderboard = [] } = useQuery({
     queryKey: ["leaderboard", monthStart],
     queryFn: async () => {
       // Get setter activities this month grouped by user
-      const { data: activities, error } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: activities, error } = await (supabase as any)
         .from("setter_activities")
         .select("user_id, messages_sent")
         .gte("date", monthStart);
@@ -25,7 +33,7 @@ export function MiniLeaderboard() {
 
       // Aggregate by user
       const userTotals: Record<string, number> = {};
-      for (const a of activities) {
+      for (const a of (activities ?? []) as SetterActivity[]) {
         userTotals[a.user_id] = (userTotals[a.user_id] ?? 0) + a.messages_sent;
       }
 
@@ -36,15 +44,17 @@ export function MiniLeaderboard() {
 
       if (sorted.length === 0) return [];
 
+      interface ProfileRow { id: string; full_name: string; avatar_url: string | null }
       const { data: profiles } = await supabase
         .from("profiles")
         .select("id, full_name, avatar_url")
         .in(
           "id",
           sorted.map(([id]) => id),
-        );
+        )
+        .returns<ProfileRow[]>();
 
-      const profileMap = new Map(profiles?.map((p) => [p.id, p]) ?? []);
+      const profileMap = new Map(profiles?.map((p: ProfileRow) => [p.id, p]) ?? []);
 
       return sorted.map(([userId, total]) => ({
         userId,

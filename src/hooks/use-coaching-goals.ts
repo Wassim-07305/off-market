@@ -47,7 +47,7 @@ export function useCoachingGoals(clientId?: string) {
       if (!user) throw new Error("Not authenticated");
       const { data, error } = await supabase
         .from("coaching_goals")
-        .insert({ ...goal, set_by: user.id })
+        .insert({ ...goal, set_by: user.id } as never)
         .select()
         .single();
       if (error) throw error;
@@ -68,7 +68,7 @@ export function useCoachingGoals(clientId?: string) {
     }: Partial<CoachingGoal> & { id: string }) => {
       const { error } = await supabase
         .from("coaching_goals")
-        .update(updates)
+        .update(updates as never)
         .eq("id", id);
       if (error) throw error;
     },
@@ -90,7 +90,7 @@ export function useCoachingGoals(clientId?: string) {
     }) => {
       const { error } = await supabase
         .from("coaching_goals")
-        .update({ current_value: currentValue })
+        .update({ current_value: currentValue } as never)
         .eq("id", id);
       if (error) throw error;
     },
@@ -111,21 +111,22 @@ export function useCoachingGoals(clientId?: string) {
       milestoneId: string;
     }) => {
       // Get current goal
-      const { data: goal, error: fetchError } = await supabase
+      const { data: goalData, error: fetchError } = await supabase
         .from("coaching_goals")
         .select("milestones")
         .eq("id", goalId)
         .single();
       if (fetchError) throw fetchError;
 
-      const milestones = (goal?.milestones as GoalMilestone[] | null) ?? [];
+      const goal = goalData as unknown as { milestones: GoalMilestone[] | null } | null;
+      const milestones = (goal?.milestones ?? []) as GoalMilestone[];
       const updated = milestones.map((m) =>
         m.id === milestoneId ? { ...m, completed: !m.completed } : m,
       );
 
       const { error } = await supabase
         .from("coaching_goals")
-        .update({ milestones: updated })
+        .update({ milestones: updated } as never)
         .eq("id", goalId);
       if (error) throw error;
     },
@@ -145,19 +146,20 @@ export function useCoachingGoals(clientId?: string) {
       goalId: string;
       milestone: GoalMilestone;
     }) => {
-      const { data: goal, error: fetchError } = await supabase
+      const { data: goalData, error: fetchError } = await supabase
         .from("coaching_goals")
         .select("milestones")
         .eq("id", goalId)
         .single();
       if (fetchError) throw fetchError;
 
-      const milestones = (goal?.milestones as GoalMilestone[] | null) ?? [];
+      const goal = goalData as unknown as { milestones: GoalMilestone[] | null } | null;
+      const milestones = (goal?.milestones ?? []) as GoalMilestone[];
       const updated = [...milestones, milestone];
 
       const { error } = await supabase
         .from("coaching_goals")
-        .update({ milestones: updated })
+        .update({ milestones: updated } as never)
         .eq("id", goalId);
       if (error) throw error;
     },

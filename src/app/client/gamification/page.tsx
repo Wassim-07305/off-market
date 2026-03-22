@@ -281,7 +281,7 @@ export default function GamificationPage() {
                       <Gift className="w-5 h-5 text-emerald-500" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground">{reward.name}</p>
+                      <p className="text-sm font-medium text-foreground">{reward.title}</p>
                       {reward.description && (
                         <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
                           {reward.description}
@@ -328,7 +328,7 @@ export default function GamificationPage() {
               </div>
             ) : (
               <div className="divide-y divide-border">
-                {leaderboard.map((entry, idx) => {
+                {leaderboard.map((entry: { profile_id: string; total_xp: number; rank: number; profile?: { full_name?: string; avatar_url?: string | null } }, idx: number) => {
                   const isMe = entry.profile_id === profile?.id;
                   const medalColors = ["text-amber-500", "text-gray-400", "text-amber-700"];
                   return (
@@ -391,19 +391,19 @@ export default function GamificationPage() {
                   <Gift className="w-4 h-4 text-emerald-500 shrink-0" />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-foreground truncate">
-                      {r.reward?.name ?? "Recompense"}
+                      {r.reward?.title ?? "Recompense"}
                     </p>
                     <p className="text-[10px] text-muted-foreground">
-                      {formatDate(r.created_at, "relative")}
+                      {formatDate(r.redeemed_at, "relative")}
                     </p>
                   </div>
                   <span className={cn(
                     "text-[10px] px-2 py-0.5 rounded-full font-medium",
-                    r.status === "approved" ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20" :
+                    r.status === "fulfilled" ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20" :
                     r.status === "pending" ? "bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20" :
                     "bg-red-500/10 text-red-700 dark:text-red-400 border border-red-500/20"
                   )}>
-                    {r.status === "approved" ? "Approuve" : r.status === "pending" ? "En attente" : "Refuse"}
+                    {r.status === "fulfilled" ? "Rempli" : r.status === "pending" ? "En attente" : "Annule"}
                   </span>
                 </div>
               ))

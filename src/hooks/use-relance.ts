@@ -13,29 +13,33 @@ import type {
   EnrollmentStatus,
 } from "@/types/relance";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnySupabase = any;
+
 // ─── Sequences ───────────────────────────────────────────
 
 export function useRelanceSequences() {
   const supabase = useSupabase();
+  const sb = supabase as AnySupabase;
   const { user } = useAuth();
 
   return useQuery({
     queryKey: ["relance-sequences"],
     queryFn: async () => {
       // Fetch sequences
-      const { data: sequences, error } = await supabase
+      const { data: sequences, error } = await sb
         .from("relance_sequences")
         .select("*")
         .order("created_at", { ascending: false });
       if (error) throw error;
 
       // Fetch step counts per sequence
-      const { data: steps } = await supabase
+      const { data: steps } = await sb
         .from("relance_steps")
         .select("sequence_id");
 
       // Fetch enrollment counts per sequence
-      const { data: enrollments } = await supabase
+      const { data: enrollments } = await sb
         .from("relance_enrollments")
         .select("sequence_id")
         .eq("status", "active");
@@ -43,10 +47,10 @@ export function useRelanceSequences() {
       const stepCounts = new Map<string, number>();
       const enrollCounts = new Map<string, number>();
 
-      steps?.forEach((s) => {
+      steps?.forEach((s: any) => {
         stepCounts.set(s.sequence_id, (stepCounts.get(s.sequence_id) ?? 0) + 1);
       });
-      enrollments?.forEach((e) => {
+      enrollments?.forEach((e: any) => {
         enrollCounts.set(
           e.sequence_id,
           (enrollCounts.get(e.sequence_id) ?? 0) + 1,
@@ -65,19 +69,20 @@ export function useRelanceSequences() {
 
 export function useRelanceSequence(id: string | null) {
   const supabase = useSupabase();
+  const sb = supabase as AnySupabase;
   const { user } = useAuth();
 
   return useQuery({
     queryKey: ["relance-sequence", id],
     queryFn: async () => {
-      const { data: sequence, error } = await supabase
+      const { data: sequence, error } = await sb
         .from("relance_sequences")
         .select("*")
         .eq("id", id!)
         .single();
       if (error) throw error;
 
-      const { data: steps, error: stepsError } = await supabase
+      const { data: steps, error: stepsError } = await sb
         .from("relance_steps")
         .select("*")
         .eq("sequence_id", id!)
@@ -95,6 +100,7 @@ export function useRelanceSequence(id: string | null) {
 
 export function useCreateSequence() {
   const supabase = useSupabase();
+  const sb = supabase as AnySupabase;
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
@@ -112,7 +118,7 @@ export function useCreateSequence() {
     }) => {
       const { steps, ...sequenceData } = data;
 
-      const { data: sequence, error } = await supabase
+      const { data: sequence, error } = await sb
         .from("relance_sequences")
         .insert({ ...sequenceData, created_by: user!.id })
         .select()
@@ -129,7 +135,7 @@ export function useCreateSequence() {
           content: step.content,
         }));
 
-        const { error: stepsError } = await supabase
+        const { error: stepsError } = await sb
           .from("relance_steps")
           .insert(stepsPayload);
         if (stepsError) throw stepsError;
@@ -147,6 +153,7 @@ export function useCreateSequence() {
 
 export function useUpdateSequence() {
   const supabase = useSupabase();
+  const sb = supabase as AnySupabase;
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -154,7 +161,7 @@ export function useUpdateSequence() {
       id,
       ...updates
     }: Partial<RelanceSequence> & { id: string }) => {
-      const { error } = await supabase
+      const { error } = await sb
         .from("relance_sequences")
         .update({ ...updates, updated_at: new Date().toISOString() })
         .eq("id", id);
@@ -173,11 +180,12 @@ export function useUpdateSequence() {
 
 export function useDeleteSequence() {
   const supabase = useSupabase();
+  const sb = supabase as AnySupabase;
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
+      const { error } = await sb
         .from("relance_sequences")
         .delete()
         .eq("id", id);
@@ -195,6 +203,7 @@ export function useDeleteSequence() {
 
 export function useAddStep() {
   const supabase = useSupabase();
+  const sb = supabase as AnySupabase;
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -207,7 +216,7 @@ export function useAddStep() {
       content: string;
     }) => {
       // Shift existing steps if inserting in the middle
-      const { data: existingSteps } = await supabase
+      const { data: existingSteps } = await sb
         .from("relance_steps")
         .select("id, step_order")
         .eq("sequence_id", data.sequence_id)
@@ -216,14 +225,14 @@ export function useAddStep() {
 
       if (existingSteps?.length) {
         for (const step of existingSteps) {
-          await supabase
+          await sb
             .from("relance_steps")
             .update({ step_order: step.step_order + 1 })
             .eq("id", step.id);
         }
       }
 
-      const { data: step, error } = await supabase
+      const { data: step, error } = await sb
         .from("relance_steps")
         .insert({
           sequence_id: data.sequence_id,
@@ -251,6 +260,7 @@ export function useAddStep() {
 
 export function useUpdateStep() {
   const supabase = useSupabase();
+  const sb = supabase as AnySupabase;
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -259,7 +269,7 @@ export function useUpdateStep() {
       sequence_id,
       ...updates
     }: Partial<RelanceStep> & { id: string; sequence_id: string }) => {
-      const { error } = await supabase
+      const { error } = await sb
         .from("relance_steps")
         .update(updates)
         .eq("id", id);
@@ -279,6 +289,7 @@ export function useUpdateStep() {
 
 export function useDeleteStep() {
   const supabase = useSupabase();
+  const sb = supabase as AnySupabase;
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -290,13 +301,13 @@ export function useDeleteStep() {
       sequence_id: string;
     }) => {
       // Get the step to know its order
-      const { data: step } = await supabase
+      const { data: step } = await sb
         .from("relance_steps")
         .select("step_order")
         .eq("id", id)
         .single();
 
-      const { error } = await supabase
+      const { error } = await sb
         .from("relance_steps")
         .delete()
         .eq("id", id);
@@ -304,7 +315,7 @@ export function useDeleteStep() {
 
       // Reorder remaining steps
       if (step) {
-        const { data: remaining } = await supabase
+        const { data: remaining } = await sb
           .from("relance_steps")
           .select("id, step_order")
           .eq("sequence_id", sequence_id)
@@ -313,7 +324,7 @@ export function useDeleteStep() {
 
         if (remaining?.length) {
           for (const s of remaining) {
-            await supabase
+            await sb
               .from("relance_steps")
               .update({ step_order: s.step_order - 1 })
               .eq("id", s.id);
@@ -338,6 +349,7 @@ export function useDeleteStep() {
 
 export function useEnrollContact() {
   const supabase = useSupabase();
+  const sb = supabase as AnySupabase;
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
@@ -350,7 +362,7 @@ export function useEnrollContact() {
       sequence_id: string;
     }) => {
       // Get the first step to calculate next_step_at
-      const { data: firstStep } = await supabase
+      const { data: firstStep } = await sb
         .from("relance_steps")
         .select("delay_days")
         .eq("sequence_id", sequence_id)
@@ -365,7 +377,7 @@ export function useEnrollContact() {
           ).toISOString()
         : null;
 
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from("relance_enrollments")
         .insert({
           contact_id,
@@ -401,11 +413,12 @@ export function useEnrollContact() {
 
 export function usePauseEnrollment() {
   const supabase = useSupabase();
+  const sb = supabase as AnySupabase;
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (enrollmentId: string) => {
-      const { error } = await supabase
+      const { error } = await sb
         .from("relance_enrollments")
         .update({ status: "paused" as EnrollmentStatus })
         .eq("id", enrollmentId);
@@ -422,11 +435,12 @@ export function usePauseEnrollment() {
 
 export function useResumeEnrollment() {
   const supabase = useSupabase();
+  const sb = supabase as AnySupabase;
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (enrollmentId: string) => {
-      const { error } = await supabase
+      const { error } = await sb
         .from("relance_enrollments")
         .update({ status: "active" as EnrollmentStatus })
         .eq("id", enrollmentId);
@@ -443,11 +457,12 @@ export function useResumeEnrollment() {
 
 export function useCancelEnrollment() {
   const supabase = useSupabase();
+  const sb = supabase as AnySupabase;
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (enrollmentId: string) => {
-      const { error } = await supabase
+      const { error } = await sb
         .from("relance_enrollments")
         .update({ status: "cancelled" as EnrollmentStatus })
         .eq("id", enrollmentId);
@@ -464,12 +479,13 @@ export function useCancelEnrollment() {
 
 export function useContactEnrollments(contactId: string | null) {
   const supabase = useSupabase();
+  const sb = supabase as AnySupabase;
   const { user } = useAuth();
 
   return useQuery({
     queryKey: ["contact-enrollments", contactId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from("relance_enrollments")
         .select("*, sequence:relance_sequences(*)")
         .eq("contact_id", contactId!)
@@ -483,12 +499,13 @@ export function useContactEnrollments(contactId: string | null) {
 
 export function useEnrollmentLogs(enrollmentId: string | null) {
   const supabase = useSupabase();
+  const sb = supabase as AnySupabase;
   const { user } = useAuth();
 
   return useQuery({
     queryKey: ["enrollment-logs", enrollmentId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from("relance_logs")
         .select("*, step:relance_steps(*)")
         .eq("enrollment_id", enrollmentId!)
@@ -504,6 +521,7 @@ export function useEnrollmentLogs(enrollmentId: string | null) {
 
 export function useRelanceStats() {
   const supabase = useSupabase();
+  const sb = supabase as AnySupabase;
   const { user } = useAuth();
 
   return useQuery({
@@ -515,19 +533,19 @@ export function useRelanceStats() {
         { count: totalOpened },
         { count: totalSequences },
       ] = await Promise.all([
-        supabase
+        sb
           .from("relance_enrollments")
           .select("id", { count: "exact", head: true })
           .eq("status", "active"),
-        supabase
+        sb
           .from("relance_logs")
           .select("id", { count: "exact", head: true })
           .eq("status", "sent"),
-        supabase
+        sb
           .from("relance_logs")
           .select("id", { count: "exact", head: true })
           .eq("status", "opened"),
-        supabase
+        sb
           .from("relance_sequences")
           .select("id", { count: "exact", head: true })
           .eq("is_active", true),

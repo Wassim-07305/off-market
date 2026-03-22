@@ -3,7 +3,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
-import { useMemo } from "react";
 import { toast } from "sonner";
 import type {
   CallCalendarWithRelations,
@@ -43,9 +42,9 @@ export function useCalls(weekStart?: Date) {
           .lte("date", toLocal(weekEnd));
       }
 
-      const { data, error } = await query;
+      const { data, error } = await query.returns<CallCalendarWithRelations[]>();
       if (error) throw error;
-      return data as CallCalendarWithRelations[];
+      return (data ?? []) as CallCalendarWithRelations[];
     },
     enabled: !!user,
   });
@@ -67,7 +66,7 @@ export function useCalls(weekStart?: Date) {
         .insert({
           ...call,
           assigned_to: user?.id,
-        })
+        } as never)
         .select()
         .single();
       if (error) throw error;
@@ -86,7 +85,7 @@ export function useCalls(weekStart?: Date) {
     }: { id: string } & Record<string, unknown>) => {
       const { error } = await supabase
         .from("call_calendar")
-        .update(updates)
+        .update(updates as never)
         .eq("id", id);
       if (error) throw error;
     },
@@ -131,7 +130,7 @@ export function useCalls(weekStart?: Date) {
         updates.actual_duration_seconds = actual_duration_seconds;
       const { error } = await supabase
         .from("call_calendar")
-        .update(updates)
+        .update(updates as never)
         .eq("id", id);
       if (error) throw error;
     },
@@ -160,7 +159,7 @@ export function useCalls(weekStart?: Date) {
           content: JSON.stringify(content),
           language: language ?? "fr-FR",
           duration_seconds,
-        })
+        } as never)
         .select()
         .single();
       if (error) throw error;
@@ -188,6 +187,7 @@ export function useCalls(weekStart?: Date) {
         .from("call_calendar")
         .select("date, time")
         .eq("id", id)
+        .returns<{ date: string; time: string }[]>()
         .single();
       if (fetchErr) throw fetchErr;
 
@@ -205,16 +205,16 @@ export function useCalls(weekStart?: Date) {
         .update({
           ...updatePayload,
           reschedule_reason: reason,
-          original_date: current.date,
-          original_time: current.time,
-        })
+          original_date: current?.date,
+          original_time: current?.time,
+        } as never)
         .eq("id", id);
 
       if (error && error.code === "PGRST204") {
         // Columns don't exist — update without them
         const { error: fallbackErr } = await supabase
           .from("call_calendar")
-          .update(updatePayload)
+          .update(updatePayload as never)
           .eq("id", id);
         if (fallbackErr) throw fallbackErr;
       } else if (error) {
@@ -231,7 +231,7 @@ export function useCalls(weekStart?: Date) {
     mutationFn: async ({ id, rating }: { id: string; rating: number }) => {
       const { error } = await supabase
         .from("call_calendar")
-        .update({ satisfaction_rating: rating })
+        .update({ satisfaction_rating: rating } as never)
         .eq("id", id);
       if (error) throw error;
     },
@@ -264,12 +264,22 @@ export function useCallNoteTemplates() {
         .from("call_note_templates")
         .select("*")
         .eq("is_active", true)
-        .order("title");
+        .order("title")
+        .returns<CallNoteTemplate[]>();
       if (error) throw error;
-      return data as CallNoteTemplate[];
+      return (data ?? []) as CallNoteTemplate[];
     },
   });
 }
+
+type CallMetricRow = {
+  status: string;
+  duration_minutes: number;
+  actual_duration_seconds: number | null;
+  satisfaction_rating: number | null;
+  call_type: string;
+  date: string;
+};
 
 export function useCallMetrics(dateRange?: { from: string; to: string }) {
   const supabase = useSupabase();
@@ -288,14 +298,15 @@ export function useCallMetrics(dateRange?: { from: string; to: string }) {
         query = query.gte("date", dateRange.from).lte("date", dateRange.to);
       }
 
-      const { data, error } = await query;
+      const { data, error } = await query.returns<CallMetricRow[]>();
       if (error) throw error;
 
-      const total = data.length;
-      const realise = data.filter((c) => c.status === "realise");
-      const noShow = data.filter((c) => c.status === "no_show");
-      const annule = data.filter((c) => c.status === "annule");
-      const reporte = data.filter((c) => c.status === "reporte");
+      const rows = data ?? [];
+      const total = rows.length;
+      const realise = rows.filter((c) => c.status === "realise");
+      const noShow = rows.filter((c) => c.status === "no_show");
+      const annule = rows.filter((c) => c.status === "annule");
+      const reporte = rows.filter((c) => c.status === "reporte");
 
       const completionRate =
         total > 0 ? Math.round((realise.length / total) * 100) : 0;
@@ -312,7 +323,7 @@ export function useCallMetrics(dateRange?: { from: string; to: string }) {
             )
           : 0;
 
-      const ratings = data
+      const ratings = rows
         .map((c) => c.satisfaction_rating)
         .filter((r): r is number => r !== null);
       const avgSatisfaction =
@@ -324,13 +335,13 @@ export function useCallMetrics(dateRange?: { from: string; to: string }) {
 
       // Calls by type
       const byType: Record<string, number> = {};
-      data.forEach((c) => {
+      rows.forEach((c) => {
         byType[c.call_type] = (byType[c.call_type] || 0) + 1;
       });
 
       // Calls by day of week (0=Mon..6=Sun)
       const byDay: number[] = [0, 0, 0, 0, 0, 0, 0];
-      data.forEach((c) => {
+      rows.forEach((c) => {
         const d = new Date(c.date);
         const day = d.getDay();
         byDay[day === 0 ? 6 : day - 1]++;
@@ -370,9 +381,10 @@ export function useCallById(callId: string | null) {
           "*, client:profiles!call_calendar_client_id_fkey(id, full_name, avatar_url), assigned_profile:profiles!call_calendar_assigned_to_fkey(id, full_name)",
         )
         .eq("id", callId!)
+        .returns<CallCalendarWithRelations[]>()
         .single();
       if (error) throw error;
-      return data as CallCalendarWithRelations;
+      return data as unknown as CallCalendarWithRelations;
     },
     enabled: !!user && !!callId,
   });

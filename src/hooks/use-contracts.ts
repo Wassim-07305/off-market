@@ -53,7 +53,7 @@ export function useContracts(options: UseContractsOptions = {}) {
     }) => {
       const { data, error } = await supabase
         .from("contracts")
-        .insert(contract)
+        .insert(contract as never)
         .select()
         .single();
       if (error) throw error;
@@ -74,7 +74,7 @@ export function useContracts(options: UseContractsOptions = {}) {
     }: Partial<Contract> & { id: string }) => {
       const { error } = await supabase
         .from("contracts")
-        .update(updates)
+        .update(updates as never)
         .eq("id", id);
       if (error) throw error;
     },
@@ -90,7 +90,7 @@ export function useContracts(options: UseContractsOptions = {}) {
     mutationFn: async (id: string) => {
       const { error } = await supabase
         .from("contracts")
-        .update({ status: "sent", sent_at: new Date().toISOString() })
+        .update({ status: "sent", sent_at: new Date().toISOString() } as never)
         .eq("id", id);
       if (error) throw error;
       return id;
@@ -156,7 +156,7 @@ export function useContracts(options: UseContractsOptions = {}) {
         .update({
           status: "cancelled",
           cancellation_reason: reason ?? null,
-        })
+        } as never)
         .eq("id", id);
       if (error) throw error;
     },
@@ -228,7 +228,7 @@ export function useContractTemplates() {
     }) => {
       const { data, error } = await supabase
         .from("contract_templates")
-        .insert(template)
+        .insert(template as never)
         .select()
         .single();
       if (error) throw error;
@@ -249,7 +249,7 @@ export function useContractTemplates() {
     }: Partial<ContractTemplate> & { id: string }) => {
       const { error } = await supabase
         .from("contract_templates")
-        .update(updates)
+        .update(updates as never)
         .eq("id", id);
       if (error) throw error;
     },

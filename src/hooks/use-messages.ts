@@ -101,7 +101,7 @@ export function useMessages(channelId: string | null) {
           reply_to: replyTo ?? null,
           scheduled_at: scheduledAt ?? null,
           is_urgent: isUrgent,
-        })
+        } as never)
         .select("id")
         .single();
       if (error) throw error;
@@ -133,6 +133,7 @@ export function useMessages(channelId: string | null) {
         is_pinned: false,
         is_edited: false,
         is_urgent: isUrgent,
+        is_ai_generated: false,
         reply_count: 0,
         scheduled_at: null,
         metadata: {},
@@ -147,7 +148,6 @@ export function useMessages(channelId: string | null) {
         },
         reactions: [],
         attachments: [],
-        reply_message: null,
       };
 
       queryClient.setQueryData<EnrichedMessage[]>(
@@ -183,7 +183,7 @@ export function useMessages(channelId: string | null) {
           content,
           is_edited: true,
           updated_at: new Date().toISOString(),
-        })
+        } as never)
         .eq("id", id);
       if (error) throw error;
     },
@@ -217,7 +217,7 @@ export function useMessages(channelId: string | null) {
     mutationFn: async (id: string) => {
       const { error } = await supabase
         .from("messages")
-        .update({ deleted_at: new Date().toISOString() })
+        .update({ deleted_at: new Date().toISOString() } as never)
         .eq("id", id);
       if (error) throw error;
     },
@@ -247,7 +247,7 @@ export function useMessages(channelId: string | null) {
     mutationFn: async ({ id, pinned }: { id: string; pinned: boolean }) => {
       const { error } = await supabase
         .from("messages")
-        .update({ is_pinned: !pinned })
+        .update({ is_pinned: !pinned } as never)
         .eq("id", id);
       if (error) throw error;
     },
@@ -293,18 +293,19 @@ export function useMessages(channelId: string | null) {
         .eq("message_id", messageId)
         .eq("profile_id", user.id)
         .eq("emoji", emoji)
+        .returns<{ id: string }[]>()
         .maybeSingle();
 
       if (existing) {
         const { error } = await supabase
           .from("message_reactions")
           .delete()
-          .eq("id", existing.id);
+          .eq("id", (existing as { id: string }).id);
         if (error) throw error;
       } else {
         const { error } = await supabase
           .from("message_reactions")
-          .insert({ message_id: messageId, profile_id: user.id, emoji });
+          .insert({ message_id: messageId, profile_id: user.id, emoji } as never);
         if (error) throw error;
       }
     },
@@ -378,7 +379,7 @@ export function useMessages(channelId: string | null) {
         file_url: fileUrl,
         file_type: fileType,
         file_size: fileSize,
-      });
+      } as never);
       if (error) throw error;
     },
     onSettled: () => {
@@ -390,7 +391,7 @@ export function useMessages(channelId: string | null) {
     if (!channelId || !user) return;
     const { error } = await supabase
       .from("channel_members")
-      .update({ last_read_at: new Date().toISOString() })
+      .update({ last_read_at: new Date().toISOString() } as never)
       .eq("channel_id", channelId)
       .eq("profile_id", user.id);
     if (!error) {

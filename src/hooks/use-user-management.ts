@@ -38,14 +38,14 @@ export function useUserManagement() {
       // Update profiles table
       const { error: profileError } = await supabase
         .from("profiles")
-        .update({ role: newRole } as any)
+        .update({ role: newRole } as never)
         .eq("id", userId);
       if (profileError) throw profileError;
 
       // Update user_roles table
       const { error: roleError } = await supabase
         .from("user_roles")
-        .update({ role: newRole } as any)
+        .update({ role: newRole } as never)
         .eq("user_id", userId);
       if (roleError) throw roleError;
 
@@ -58,7 +58,7 @@ export function useUserManagement() {
           entity_id: userId,
           details: { new_role: newRole },
           user_agent: navigator.userAgent,
-        } as any);
+        } as never);
       }
     },
     onSuccess: () => {
@@ -79,7 +79,7 @@ export function useUserManagement() {
           is_archived: true,
           archived_at: new Date().toISOString(),
           archived_by: user!.id,
-        } as any)
+        } as never)
         .eq("id", userId);
       if (error) throw error;
 
@@ -91,7 +91,7 @@ export function useUserManagement() {
         entity_id: userId,
         details: {},
         user_agent: navigator.userAgent,
-      } as any);
+      } as never);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["all-users"] });
@@ -111,7 +111,7 @@ export function useUserManagement() {
           is_archived: false,
           archived_at: null,
           archived_by: null,
-        } as any)
+        } as never)
         .eq("id", userId);
       if (error) throw error;
 
@@ -123,7 +123,7 @@ export function useUserManagement() {
         entity_id: userId,
         details: {},
         user_agent: navigator.userAgent,
-      } as any);
+      } as never);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["all-users"] });
@@ -147,7 +147,7 @@ export function useUserManagement() {
       if (reassignCoachId) {
         const { error: reassignError } = await supabase
           .from("student_details")
-          .update({ assigned_coach: reassignCoachId } as any)
+          .update({ assigned_coach: reassignCoachId } as never)
           .eq("assigned_coach", userId);
         if (reassignError) throw reassignError;
       }
@@ -159,7 +159,7 @@ export function useUserManagement() {
           is_archived: true,
           archived_at: new Date().toISOString(),
           archived_by: user!.id,
-        } as any)
+        } as never)
         .eq("id", userId);
       if (error) throw error;
 
@@ -173,7 +173,7 @@ export function useUserManagement() {
           reassign_coach_id: reassignCoachId ?? null,
         },
         user_agent: navigator.userAgent,
-      } as any);
+      } as never);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["all-users"] });

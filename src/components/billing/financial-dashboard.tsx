@@ -30,6 +30,26 @@ import {
   Activity,
 } from "lucide-react";
 
+interface FinancialDashboardData {
+  totalRevenue: number;
+  revenueGrowth: number;
+  mrr: number;
+  arr: number;
+  avgLTV: number;
+  retentionRate: number;
+  churnRate: number;
+  cashCollected: number;
+  cashInvoiced: number;
+  monthlyData: Array<{ label: string; invoiced: number; collected: number }>;
+  revenueByChannel: Array<{ channel: string; percentage: number; amount: number }>;
+  currentMonthRevenue: number;
+  lastMonthRevenue: number;
+  pendingAmount: number;
+  invoiceCount: number;
+  paidCount: number;
+  overdueCount: number;
+}
+
 const CHART_COLORS = [
   "#AF0000",
   "#10b981",
@@ -40,7 +60,8 @@ const CHART_COLORS = [
 ];
 
 export function FinancialDashboard() {
-  const { data, isLoading } = useFinancialDashboard();
+  const { data: rawData, isLoading } = useFinancialDashboard();
+  const data = rawData as FinancialDashboardData | undefined;
   const currency = useUserCurrency();
   const convert = useConvertCurrency();
 
@@ -245,8 +266,8 @@ export function FinancialDashboard() {
                     width={60}
                   />
                   <Tooltip
-                    formatter={(value: number, name: string) => [
-                      fmt(value),
+                    formatter={(value: unknown, name: unknown) => [
+                      fmt(Number(value)),
                       name === "invoiced" ? "Facture" : "Encaisse",
                     ]}
                     contentStyle={{
@@ -318,7 +339,7 @@ export function FinancialDashboard() {
                       paddingAngle={3}
                       dataKey="percentage"
                     >
-                      {data.revenueByChannel.map((_entry, index) => (
+                      {data.revenueByChannel.map((_entry: unknown, index: number) => (
                         <Cell
                           key={`cell-${index}`}
                           fill={CHART_COLORS[index % CHART_COLORS.length]}
@@ -329,7 +350,7 @@ export function FinancialDashboard() {
                 </ResponsiveContainer>
               </div>
               <div className="flex-1 space-y-2.5">
-                {data.revenueByChannel.map((channel, i) => (
+                {data.revenueByChannel.map((channel: { channel: string; percentage: number; amount: number }, i: number) => (
                   <div
                     key={channel.channel}
                     className="flex items-center justify-between"
@@ -395,7 +416,7 @@ export function FinancialDashboard() {
                   width={60}
                 />
                 <Tooltip
-                  formatter={(value: number) => [fmt(value), "Encaisse"]}
+                  formatter={(value: unknown) => [fmt(Number(value)), "Encaisse"]}
                   contentStyle={{
                     background: "hsl(var(--surface))",
                     border: "1px solid hsl(var(--border))",

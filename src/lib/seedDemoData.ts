@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { supabase } from "./supabase";
 
 const STORAGE_KEY = "demo_data_ids";

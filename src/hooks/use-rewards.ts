@@ -40,10 +40,10 @@ export function useRedeemReward() {
   return useMutation({
     mutationFn: async (rewardId: string) => {
       if (!user) throw new Error("Not authenticated");
-      const { data, error } = await supabase.rpc("redeem_reward", {
+      const { data, error } = await supabase.rpc("redeem_reward" as never, {
         p_user_id: user.id,
         p_reward_id: rewardId,
-      });
+      } as never);
       if (error) throw error;
       return data as string;
     },
@@ -108,7 +108,8 @@ export function useXpBalance() {
       const { data: txData, error: txError } = await supabase
         .from("xp_transactions")
         .select("xp_amount")
-        .eq("profile_id", user.id);
+        .eq("profile_id", user.id)
+        .returns<{ xp_amount: number }[]>();
       if (txError) throw txError;
       const totalEarned = (txData ?? []).reduce(
         (sum, t) => sum + t.xp_amount,
@@ -120,7 +121,8 @@ export function useXpBalance() {
         .from("reward_redemptions")
         .select("xp_spent, status")
         .eq("user_id", user.id)
-        .neq("status", "cancelled");
+        .neq("status", "cancelled")
+        .returns<{ xp_spent: number; status: string }[]>();
       if (rdError) throw rdError;
       const totalSpent = (rdData ?? []).reduce((sum, r) => sum + r.xp_spent, 0);
 
@@ -160,7 +162,7 @@ export function useManageRewards() {
       if (!user) throw new Error("Not authenticated");
       const { data, error } = await supabase
         .from("rewards")
-        .insert({ ...reward, created_by: user.id })
+        .insert({ ...reward, created_by: user.id } as never)
         .select()
         .single();
       if (error) throw error;
@@ -181,7 +183,7 @@ export function useManageRewards() {
     }: Partial<Reward> & { id: string }) => {
       const { error } = await supabase
         .from("rewards")
-        .update(updates)
+        .update(updates as never)
         .eq("id", id);
       if (error) throw error;
     },
@@ -203,7 +205,7 @@ export function useManageRewards() {
     }) => {
       const { error } = await supabase
         .from("rewards")
-        .update({ is_active })
+        .update({ is_active } as never)
         .eq("id", id);
       if (error) throw error;
     },
@@ -253,7 +255,7 @@ export function usePendingRedemptions() {
           status: "fulfilled",
           fulfilled_at: new Date().toISOString(),
           fulfilled_by: user.id,
-        })
+        } as never)
         .eq("id", redemptionId);
       if (error) throw error;
     },
@@ -269,7 +271,7 @@ export function usePendingRedemptions() {
     mutationFn: async (redemptionId: string) => {
       const { error } = await supabase
         .from("reward_redemptions")
-        .update({ status: "cancelled" })
+        .update({ status: "cancelled" } as never)
         .eq("id", redemptionId);
       if (error) throw error;
     },

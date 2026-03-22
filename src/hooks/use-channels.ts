@@ -8,8 +8,12 @@ import { toast } from "sonner";
 import type { Channel } from "@/types/database";
 import type { ChannelWithMeta } from "@/types/messaging";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnySupabase = any;
+
 export function useChannels() {
   const supabase = useSupabase();
+  const sb = supabase as AnySupabase;
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const [showArchived, setShowArchived] = useState(false);
@@ -21,7 +25,7 @@ export function useChannels() {
     retry: 1,
     queryFn: async () => {
       // Fetch channels where user is a member
-      let memberQuery = supabase
+      let memberQuery = sb
         .from("channels")
         .select(
           `*,
@@ -42,7 +46,7 @@ export function useChannels() {
         console.warn("[channels] member query:", memberErr.message);
 
       // Also fetch public channels (visible to everyone even without membership)
-      let publicQuery = supabase
+      let publicQuery = sb
         .from("channels")
         .select("*")
         .eq("type", "public");
@@ -59,10 +63,10 @@ export function useChannels() {
       if (pubErr) console.warn("[channels] public query:", pubErr.message);
 
       // Merge: member channels take priority, then add public channels not already included
-      const memberIds = new Set((memberChannels ?? []).map((c) => c.id));
+      const memberIds = new Set((memberChannels ?? []).map((c: any) => c.id));
       const publicOnly = (publicChannelsData ?? [])
-        .filter((c) => !memberIds.has(c.id))
-        .map((c) => ({
+        .filter((c: any) => !memberIds.has(c.id))
+        .map((c: any) => ({
           ...c,
           channel_members: [] as Array<{
             profile_id: string;
@@ -115,7 +119,7 @@ export function useChannels() {
         const lastRead = memberInfo?.last_read_at;
 
         // Count unread messages NOT sent by me
-        let totalQuery = supabase
+        let totalQuery = sb
           .from("messages")
           .select("*", { count: "exact", head: true })
           .eq("channel_id", ch.id)
@@ -128,7 +132,7 @@ export function useChannels() {
 
         const { count, error } = await totalQuery;
         if (!error) {
-          let urgentQuery = supabase
+          let urgentQuery = sb
             .from("messages")
             .select("*", { count: "exact", head: true })
             .eq("channel_id", ch.id)
@@ -166,7 +170,7 @@ export function useChannels() {
     queryKey: ["dm-partners", dmChannelIds],
     queryFn: async () => {
       if (!dmChannelIds.length || !user) return {};
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from("channel_members")
         .select("channel_id, profile:profiles(id, full_name, avatar_url, role)")
         .in("channel_id", dmChannelIds)
@@ -231,7 +235,7 @@ export function useChannels() {
   );
 
   useEffect(() => {
-    const channel = supabase
+    const channel = sb
       .channel("channels-changes")
       .on(
         "postgres_changes",
@@ -271,7 +275,7 @@ export function useChannels() {
       type: "public" | "private" | "dm";
       memberIds: string[];
     }) => {
-      const { data: channel, error } = await supabase
+      const { data: channel, error } = await sb
         .from("channels")
         .insert({ name, description, type, created_by: user?.id })
         .select()
@@ -291,7 +295,7 @@ export function useChannels() {
         });
       }
 
-      const { error: memberError } = await supabase
+      const { error: memberError } = await sb
         .from("channel_members")
         .insert(members);
       if (memberError) throw memberError;
@@ -308,24 +312,24 @@ export function useChannels() {
       if (!user) throw new Error("Not authenticated");
 
       // Check if DM already exists between these two users
-      const { data: existingChannels } = await supabase
+      const { data: existingChannels } = await sb
         .from("channel_members")
         .select("channel_id")
         .eq("profile_id", user.id);
 
-      const myChannelIds = (existingChannels ?? []).map((c) => c.channel_id);
+      const myChannelIds = (existingChannels ?? []).map((c: any) => c.channel_id);
 
       if (myChannelIds.length > 0) {
-        const { data: otherMemberships } = await supabase
+        const { data: otherMemberships } = await sb
           .from("channel_members")
           .select("channel_id")
           .eq("profile_id", otherUserId)
           .in("channel_id", myChannelIds);
 
-        const sharedIds = (otherMemberships ?? []).map((c) => c.channel_id);
+        const sharedIds = (otherMemberships ?? []).map((c: any) => c.channel_id);
 
         if (sharedIds.length > 0) {
-          const { data: existingDM } = await supabase
+          const { data: existingDM } = await sb
             .from("channels")
             .select("*")
             .eq("type", "dm")
@@ -338,12 +342,12 @@ export function useChannels() {
 
       // Fetch both profiles in parallel
       const [otherRes, myRes] = await Promise.all([
-        supabase
+        sb
           .from("profiles")
           .select("full_name")
           .eq("id", otherUserId)
           .single(),
-        supabase
+        sb
           .from("profiles")
           .select("full_name")
           .eq("id", user.id)
@@ -356,14 +360,14 @@ export function useChannels() {
 
       const dmName = `${myRes.data?.full_name ?? "Moi"} & ${otherRes.data.full_name}`;
 
-      const { data: channel, error } = await supabase
+      const { data: channel, error } = await sb
         .from("channels")
         .insert({ name: dmName, type: "dm", created_by: user.id })
         .select()
         .single();
       if (error) throw error;
 
-      const { error: membersError } = await supabase
+      const { error: membersError } = await sb
         .from("channel_members")
         .insert([
           { channel_id: channel.id, profile_id: user.id, role: "admin" },
@@ -372,7 +376,7 @@ export function useChannels() {
 
       if (membersError) {
         // Rollback: delete the channel if members insert failed
-        await supabase.from("channels").delete().eq("id", channel.id);
+        await sb.from("channels").delete().eq("id", channel.id);
         throw membersError;
       }
 
@@ -393,7 +397,7 @@ export function useChannels() {
   const muteChannel = useMutation({
     mutationFn: async (channelId: string) => {
       if (!user) throw new Error("Not authenticated");
-      const { error } = await supabase
+      const { error } = await sb
         .from("channel_members")
         .update({ notifications_muted: true })
         .eq("channel_id", channelId)
@@ -412,7 +416,7 @@ export function useChannels() {
   const unmuteChannel = useMutation({
     mutationFn: async (channelId: string) => {
       if (!user) throw new Error("Not authenticated");
-      const { error } = await supabase
+      const { error } = await sb
         .from("channel_members")
         .update({ notifications_muted: false })
         .eq("channel_id", channelId)
@@ -431,7 +435,7 @@ export function useChannels() {
   // Archive / unarchive channel
   const archiveChannel = useMutation({
     mutationFn: async (channelId: string) => {
-      const { error } = await supabase
+      const { error } = await sb
         .from("channels")
         .update({
           is_archived: true,
@@ -452,7 +456,7 @@ export function useChannels() {
 
   const unarchiveChannel = useMutation({
     mutationFn: async (channelId: string) => {
-      const { error } = await supabase
+      const { error } = await sb
         .from("channels")
         .update({
           is_archived: false,
@@ -479,7 +483,7 @@ export function useChannels() {
       channelId: string;
       pinned: boolean;
     }) => {
-      const { error } = await supabase
+      const { error } = await sb
         .from("channel_members")
         .update({ is_pinned: pinned })
         .eq("channel_id", channelId)
@@ -494,15 +498,15 @@ export function useChannels() {
   const deleteChannel = useMutation({
     mutationFn: async (channelId: string) => {
       // 1. Récupérer les IDs des messages du canal
-      const { data: msgs } = await supabase
+      const { data: msgs } = await sb
         .from("messages")
         .select("id")
         .eq("channel_id", channelId);
-      const messageIds = (msgs ?? []).map((m) => m.id);
+      const messageIds = (msgs ?? []).map((m: any) => m.id);
 
       // 2. Supprimer les fichiers du storage
       if (messageIds.length) {
-        const { data: attachments } = await supabase
+        const { data: attachments } = await sb
           .from("message_attachments")
           .select("file_url")
           .in("message_id", messageIds);
@@ -529,23 +533,23 @@ export function useChannels() {
         }
 
         // 3. Supprimer réactions et pièces jointes
-        await supabase
+        await sb
           .from("message_reactions")
           .delete()
           .in("message_id", messageIds);
-        await supabase
+        await sb
           .from("message_attachments")
           .delete()
           .in("message_id", messageIds);
       }
 
       // 4. Supprimer messages, membres, canal
-      await supabase.from("messages").delete().eq("channel_id", channelId);
-      await supabase
+      await sb.from("messages").delete().eq("channel_id", channelId);
+      await sb
         .from("channel_members")
         .delete()
         .eq("channel_id", channelId);
-      const { error } = await supabase
+      const { error } = await sb
         .from("channels")
         .delete()
         .eq("id", channelId);
@@ -598,11 +602,12 @@ interface ChannelMemberRow {
 
 export function useChannelMembers(channelId: string | null) {
   const supabase = useSupabase();
+  const sb2 = supabase as AnySupabase;
 
   return useQuery({
     queryKey: ["channel-members", channelId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await sb2
         .from("channel_members")
         .select("*, profile:profiles(id, full_name, avatar_url, role, email)")
         .eq("channel_id", channelId!);

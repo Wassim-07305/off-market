@@ -28,7 +28,8 @@ export function useRevenueChart() {
         .select("*")
         .eq("status", "close")
         .gte("updated_at", sixMonthsAgo.toISOString())
-        .order("updated_at", { ascending: true });
+        .order("updated_at", { ascending: true })
+        .returns<Array<Record<string, unknown> & { updated_at: string }>>();
 
       if (error) throw error;
 
@@ -61,7 +62,8 @@ export function useLeadsChart() {
         .from("leads")
         .select("created_at, status")
         .gte("created_at", threeMonthsAgo.toISOString())
-        .order("created_at", { ascending: true });
+        .order("created_at", { ascending: true })
+        .returns<Array<{ created_at: string; status: string }>>();
 
       if (error) throw error;
 
@@ -98,7 +100,8 @@ export function useSetterActivityChart() {
         .from("setter_activities")
         .select("date, messages_sent")
         .gte("date", twoWeeksAgo.toISOString().split("T")[0])
-        .order("date", { ascending: true });
+        .order("date", { ascending: true })
+        .returns<Array<{ date: string; messages_sent: number }>>();
 
       if (error) throw error;
 

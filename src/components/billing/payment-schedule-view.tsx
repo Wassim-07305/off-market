@@ -130,7 +130,7 @@ export function PaymentScheduleView() {
                   <div className="divide-y divide-border">
                     {installments.map((inst) => (
                       <div
-                        key={inst.number}
+                        key={inst.index}
                         className="flex items-center justify-between px-5 py-3 hover:bg-muted/30 transition-colors"
                       >
                         <div className="flex items-center gap-3">
@@ -143,7 +143,7 @@ export function PaymentScheduleView() {
                           )}
                           <div>
                             <p className="text-sm text-foreground">
-                              Echeance {inst.number}
+                              Echeance {inst.index}
                             </p>
                             <p className="text-xs text-muted-foreground">
                               {new Date(inst.due_date).toLocaleDateString(
@@ -173,13 +173,13 @@ export function PaymentScheduleView() {
                                 updateInstallmentStatus.mutate(
                                   {
                                     scheduleId: schedule.id,
-                                    installmentNumber: inst.number,
+                                    installmentIndex: inst.index,
                                     status: "paid",
                                   },
                                   {
                                     onSuccess: () =>
                                       toast.success(
-                                        `Echeance ${inst.number} marquee comme payee`,
+                                        `Echeance ${inst.index} marquee comme payee`,
                                       ),
                                   },
                                 )
@@ -278,12 +278,11 @@ function CreateScheduleModal({
       remaining -= amount;
 
       installments.push({
-        number: i,
+        index: i,
         amount,
         due_date: dueDate.toISOString().split("T")[0],
         status: "pending",
         paid_at: null,
-        invoice_id: null,
       });
     }
 
@@ -422,12 +421,12 @@ function CreateScheduleModal({
               <div className="space-y-1.5 max-h-48 overflow-y-auto">
                 {previewInstallments.map((inst) => (
                   <div
-                    key={inst.number}
+                    key={inst.index}
                     className="flex items-center justify-between py-1.5"
                   >
                     <div className="flex items-center gap-2">
                       <span className="w-5 h-5 rounded-full bg-muted flex items-center justify-center text-[10px] font-medium text-muted-foreground">
-                        {inst.number}
+                        {inst.index}
                       </span>
                       <span className="text-xs text-foreground">
                         {new Date(inst.due_date).toLocaleDateString("fr-FR", {

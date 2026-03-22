@@ -127,7 +127,7 @@ export function useCreateBookingPage() {
     ) => {
       const { data, error } = await supabase
         .from("booking_pages")
-        .insert(page)
+        .insert(page as never)
         .select()
         .single();
       if (error) throw error;
@@ -160,7 +160,7 @@ export function useUpdateBookingPage() {
     }: Partial<BookingPage> & { id: string }) => {
       const { data, error } = await supabase
         .from("booking_pages")
-        .update({ ...updates, updated_at: new Date().toISOString() })
+        .update({ ...updates, updated_at: new Date().toISOString() } as never)
         .eq("id", id)
         .select()
         .single();
@@ -239,7 +239,7 @@ export function useUpsertAvailability() {
 
       const { error } = await supabase
         .from("booking_availability")
-        .insert(slots);
+        .insert(slots as never);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -282,7 +282,7 @@ export function useAddBookingException() {
     }) => {
       const { error } = await supabase
         .from("booking_exceptions")
-        .insert({ ...exc, type: "blocked" });
+        .insert({ ...exc, type: "blocked" } as never);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -432,7 +432,7 @@ export function useCreateBooking() {
     }) => {
       const { data, error } = await supabase
         .from("bookings")
-        .insert({ ...booking, status: "confirmed" })
+        .insert({ ...booking, status: "confirmed" } as never)
         .select()
         .single();
       if (error) throw error;
@@ -455,7 +455,7 @@ export function useTrackPageView() {
     mutationFn: async (bookingPageId: string) => {
       await supabase
         .from("booking_page_views")
-        .insert({ booking_page_id: bookingPageId });
+        .insert({ booking_page_id: bookingPageId } as never);
     },
   });
 }
@@ -566,7 +566,7 @@ export function useUpdateBookingStatus() {
     mutationFn: async ({ id, status }: { id: string; status: string }) => {
       const { error } = await supabase
         .from("bookings")
-        .update({ status, updated_at: new Date().toISOString() })
+        .update({ status, updated_at: new Date().toISOString() } as never)
         .eq("id", id);
       if (error) throw error;
     },

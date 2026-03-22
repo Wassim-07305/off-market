@@ -38,9 +38,9 @@ export function useInvoices(options: UseInvoicesOptions = {}) {
       if (status) query = query.eq("status", status);
       if (clientId) query = query.eq("client_id", clientId);
 
-      const { data, error } = await query;
+      const { data, error } = await query.returns<Invoice[]>();
       if (error) throw error;
-      return data as Invoice[];
+      return (data ?? []) as Invoice[];
     },
   });
 
@@ -62,11 +62,11 @@ export function useInvoices(options: UseInvoicesOptions = {}) {
           ...invoice,
           invoice_number: "",
           tax_rate: invoice.tax_rate ?? 20,
-        }) // trigger generates number
+        } as never) // trigger generates number
         .select()
         .single();
       if (error) throw error;
-      return data as Invoice;
+      return data as unknown as Invoice;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["invoices"] });
@@ -84,7 +84,7 @@ export function useInvoices(options: UseInvoicesOptions = {}) {
     }: Partial<Invoice> & { id: string }) => {
       const { error } = await supabase
         .from("invoices")
-        .update(updates)
+        .update(updates as never)
         .eq("id", id);
       if (error) throw error;
     },
@@ -101,7 +101,7 @@ export function useInvoices(options: UseInvoicesOptions = {}) {
     mutationFn: async (id: string) => {
       const { error } = await supabase
         .from("invoices")
-        .update({ status: "paid", paid_at: new Date().toISOString() })
+        .update({ status: "paid", paid_at: new Date().toISOString() } as never)
         .eq("id", id);
       if (error) throw error;
     },
@@ -118,7 +118,7 @@ export function useInvoices(options: UseInvoicesOptions = {}) {
     mutationFn: async (id: string) => {
       const { error } = await supabase
         .from("invoices")
-        .update({ status: "sent" })
+        .update({ status: "sent" } as never)
         .eq("id", id);
       if (error) throw error;
     },
@@ -153,9 +153,10 @@ export function useInvoice(id: string) {
           "*, client:profiles!invoices_client_id_fkey(id, full_name, email, avatar_url), contract:contracts(id, title)",
         )
         .eq("id", id)
+        .returns<Invoice[]>()
         .single();
       if (error) throw error;
-      return data as Invoice;
+      return data as unknown as Invoice;
     },
     enabled: !!id,
   });
@@ -170,15 +171,15 @@ export function useBillingStats() {
     enabled: !!user,
     queryFn: async () => {
       const [invoicesRes, contractsRes] = await Promise.all([
-        supabase.from("invoices").select("status, total"),
-        supabase.from("contracts").select("status"),
+        supabase.from("invoices").select("status, total").returns<{ status: string; total: number }[]>(),
+        supabase.from("contracts").select("status").returns<{ status: string }[]>(),
       ]);
 
       if (invoicesRes.error) throw invoicesRes.error;
       if (contractsRes.error) throw contractsRes.error;
 
-      const invoices = invoicesRes.data as { status: string; total: number }[];
-      const contracts = contractsRes.data as { status: string }[];
+      const invoices = invoicesRes.data ?? [];
+      const contracts = contractsRes.data ?? [];
 
       const stats: BillingStats = {
         // CA = only paid invoices (real money received)
@@ -222,9 +223,9 @@ export function usePaymentSchedules(clientId?: string) {
 
       if (clientId) query = query.eq("client_id", clientId);
 
-      const { data, error } = await query;
+      const { data, error } = await query.returns<PaymentSchedule[]>();
       if (error) throw error;
-      return data as PaymentSchedule[];
+      return (data ?? []) as PaymentSchedule[];
     },
   });
 
@@ -239,11 +240,11 @@ export function usePaymentSchedules(clientId?: string) {
     }) => {
       const { data, error } = await supabase
         .from("payment_schedules")
-        .insert(schedule)
+        .insert(schedule as never)
         .select()
         .single();
       if (error) throw error;
-      return data as PaymentSchedule;
+      return data as unknown as PaymentSchedule;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["payment-schedules"] });
@@ -268,6 +269,7 @@ export function usePaymentSchedules(clientId?: string) {
         .from("payment_schedules")
         .select("installment_details")
         .eq("id", scheduleId)
+        .returns<{ installment_details: Array<Record<string, unknown>> }[]>()
         .single();
       if (fetchError) throw fetchError;
 
@@ -282,7 +284,7 @@ export function usePaymentSchedules(clientId?: string) {
 
       const { error } = await supabase
         .from("payment_schedules")
-        .update({ installment_details: details })
+        .update({ installment_details: details } as never)
         .eq("id", scheduleId);
       if (error) throw error;
     },
@@ -303,6 +305,8 @@ export function usePaymentSchedules(clientId?: string) {
 }
 
 // ─── Financial Dashboard ────────────────
+
+type InvoicePartial = { status: string; total: number; created_at?: string; paid_at?: string };
 
 export function useFinancialDashboard() {
   const supabase = useSupabase();
@@ -333,13 +337,15 @@ export function useFinancialDashboard() {
         supabase
           .from("invoices")
           .select("status, total, paid_at")
-          .gte("created_at", startOfMonth),
+          .gte("created_at", startOfMonth)
+          .returns<InvoicePartial[]>(),
         supabase
           .from("invoices")
           .select("status, total")
           .gte("created_at", startOfLastMonth)
-          .lte("created_at", endOfLastMonth),
-        supabase.from("invoices").select("status, total, created_at, paid_at"),
+          .lte("created_at", endOfLastMonth)
+          .returns<InvoicePartial[]>(),
+        supabase.from("invoices").select("status, total, created_at, paid_at").returns<InvoicePartial[]>(),
       ]);
 
       if (currentRes.error) throw currentRes.error;

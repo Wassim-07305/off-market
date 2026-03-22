@@ -144,6 +144,7 @@ export function useOnboarding() {
             .eq("client_id", user.id)
             .eq("status", "active")
             .limit(1)
+            .returns<{ coach_id: string }[]>()
             .maybeSingle();
 
           const coachId = (assignment as { coach_id?: string } | null)?.coach_id;
@@ -151,33 +152,34 @@ export function useOnboarding() {
             const { data: existingChannels } = await supabase
               .from("channels")
               .select("id, channel_members!inner(profile_id)")
-              .eq("type", "dm");
+              .eq("type", "dm")
+              .returns<Array<{ id: string; channel_members: Array<{ profile_id: string }> }>>();
 
             const hasDm = (existingChannels ?? []).some((ch) => {
-              const members =
-                (ch.channel_members as Array<{ profile_id: string }>) ?? [];
+              const members = ch.channel_members ?? [];
               return members.some((m) => m.profile_id === coachId);
             });
 
             if (!hasDm) {
               const { data: newChannel } = await supabase
                 .from("channels")
-                .insert({ name: "DM", type: "dm", created_by: user.id })
+                .insert({ name: "DM", type: "dm", created_by: user.id } as never)
                 .select("id")
+                .returns<{ id: string }[]>()
                 .single();
 
               if (newChannel) {
                 await supabase.from("channel_members").insert([
-                  { channel_id: newChannel.id, profile_id: user.id },
-                  { channel_id: newChannel.id, profile_id: coachId },
-                ]);
+                  { channel_id: (newChannel as { id: string }).id, profile_id: user.id },
+                  { channel_id: (newChannel as { id: string }).id, profile_id: coachId },
+                ] as never);
 
                 await supabase.from("messages").insert({
-                  channel_id: newChannel.id,
+                  channel_id: (newChannel as { id: string }).id,
                   sender_id: coachId,
                   content: `Bienvenue ! 🎉 Je suis ton coach attitré. N'hésite pas à me poser toutes tes questions ici.`,
                   content_type: "text",
-                });
+                } as never);
               }
             }
           }
@@ -199,19 +201,24 @@ export function useOnboarding() {
           .from("badges")
           .select("id")
           .eq("name", "Newcomer")
+          .returns<{ id: string }[]>()
           .maybeSingle();
         if (newcomerBadge) {
           await supabase.from("user_badges").upsert(
-            { profile_id: user.id, badge_id: newcomerBadge.id, earned_at: new Date().toISOString() },
+            { profile_id: user.id, badge_id: (newcomerBadge as { id: string }).id, earned_at: new Date().toISOString() } as never,
             { onConflict: "profile_id,badge_id", ignoreDuplicates: true },
           );
         }
         // Award onboarding XP
-        await supabase.rpc("award_xp", {
-          p_profile_id: user.id,
-          p_action: "complete_onboarding",
-          p_metadata: {},
-        }).catch(() => {});
+        try {
+          await supabase.rpc("award_xp" as never, {
+            p_profile_id: user.id,
+            p_action: "complete_onboarding",
+            p_metadata: {},
+          } as never);
+        } catch {
+          // XP award is non-critical
+        }
       } catch {
         console.warn("Badge/XP award skipped");
       }
@@ -230,7 +237,8 @@ export function useOnboarding() {
         const { data: admins } = await supabase
           .from("profiles")
           .select("id")
-          .eq("role", "admin");
+          .eq("role", "admin")
+          .returns<{ id: string }[]>();
 
         if (admins?.length) {
           const userName =
@@ -336,7 +344,8 @@ export function useOnboardingProgress(userId?: string, role?: string) {
       const { data, error } = await supabase
         .from("onboarding_progress")
         .select("*")
-        .eq("user_id", targetId);
+        .eq("user_id", targetId)
+        .returns<Array<{ id: string; user_id: string; step: string; completed_at: string | null }>>();
       if (error) return []; // Table might not exist
       return (data ?? []) as Array<{
         id: string;
@@ -387,7 +396,7 @@ export function useCompleteStep() {
           user_id: user.id,
           step: stepKey,
           completed_at: new Date().toISOString(),
-        },
+        } as never,
         { onConflict: "user_id,step", ignoreDuplicates: true },
       );
       if (error) console.warn("[onboarding] Step save skipped:", error.message);

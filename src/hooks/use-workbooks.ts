@@ -138,8 +138,8 @@ export function useSubmitWorkbook() {
       if (existing) {
         const { data, error } = await supabase
           .from("workbook_submissions")
-          .update(payload)
-          .eq("id", existing.id)
+          .update(payload as never)
+          .eq("id", (existing as any).id)
           .select()
           .single();
         if (error) throw error;
@@ -147,7 +147,7 @@ export function useSubmitWorkbook() {
       } else {
         const { data, error } = await supabase
           .from("workbook_submissions")
-          .insert(payload)
+          .insert(payload as never)
           .select()
           .single();
         if (error) throw error;
@@ -249,7 +249,7 @@ export function useReviewWorkbook() {
           status: "reviewed",
           reviewer_notes: reviewerNotes,
           reviewed_by: user?.id ?? null,
-        })
+        } as never)
         .eq("id", submissionId)
         .select()
         .single();
@@ -285,7 +285,7 @@ export function useWorkbookMutations() {
     }) => {
       const { data, error } = await supabase
         .from("workbooks")
-        .insert(workbook)
+        .insert(workbook as never)
         .select()
         .single();
       if (error) throw error;
@@ -307,7 +307,7 @@ export function useWorkbookMutations() {
     }: { id: string } & Partial<Workbook>) => {
       const { data, error } = await supabase
         .from("workbooks")
-        .update(updates)
+        .update(updates as never)
         .eq("id", id)
         .select()
         .single();
@@ -328,7 +328,7 @@ export function useWorkbookMutations() {
     mutationFn: async (id: string) => {
       const { error } = await supabase
         .from("workbooks")
-        .update({ is_active: false })
+        .update({ is_active: false } as never)
         .eq("id", id);
       if (error) throw error;
     },

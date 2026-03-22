@@ -4,6 +4,12 @@ import { useQuery } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
 
+type InvoiceRow = { total: number; status: string; created_at: string };
+type CourseRow = { id: string; title: string; status: string };
+type CheckinRow = { id: string; week_start: string; mood: number | null; revenue: number | null };
+type LessonRow = { id: string; course_id: string };
+type ProgressRow = { id: string; lesson_id: string; completed: boolean };
+
 export function useAnalytics() {
   const supabase = useSupabase();
   const { user } = useAuth();
@@ -24,21 +30,22 @@ export function useAnalytics() {
           .from("profiles")
           .select("id, created_at, role")
           .eq("role", "client"),
-        supabase.from("invoices").select("total, status, created_at"),
-        supabase.from("courses").select("id, title, status"),
+        supabase.from("invoices").select("total, status, created_at").returns<InvoiceRow[]>(),
+        supabase.from("courses").select("id, title, status").returns<CourseRow[]>(),
         supabase
           .from("weekly_checkins")
-          .select("id, week_start, mood, revenue"),
-        supabase.from("lessons").select("id, course_id"),
-        supabase.from("lesson_progress").select("id, lesson_id, completed"),
+          .select("id, week_start, mood, revenue")
+          .returns<CheckinRow[]>(),
+        supabase.from("lessons").select("id, course_id").returns<LessonRow[]>(),
+        supabase.from("lesson_progress").select("id, lesson_id, completed").returns<ProgressRow[]>(),
       ]);
 
       const clients = clientsRes.data ?? [];
-      const invoices = invoicesRes.data ?? [];
-      const courses = coursesRes.data ?? [];
-      const checkins = checkinsRes.data ?? [];
-      const lessons = lessonsRes.data ?? [];
-      const progress = progressRes.data ?? [];
+      const invoices = (invoicesRes.data ?? []) as InvoiceRow[];
+      const courses = (coursesRes.data ?? []) as CourseRow[];
+      const checkins = (checkinsRes.data ?? []) as CheckinRow[];
+      const lessons = (lessonsRes.data ?? []) as LessonRow[];
+      const progress = (progressRes.data ?? []) as ProgressRow[];
 
       // Revenue total
       const totalRevenue = invoices

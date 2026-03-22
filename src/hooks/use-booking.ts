@@ -43,7 +43,7 @@ export function useAvailabilitySlots(coachId?: string) {
     }) => {
       const { data, error } = await supabase
         .from("availability_slots")
-        .insert({ ...slot, coach_id: user!.id })
+        .insert({ ...slot, coach_id: user!.id } as never)
         .select()
         .single();
       if (error) throw error;
@@ -81,7 +81,7 @@ export function useAvailabilitySlots(coachId?: string) {
     }) => {
       const { error } = await supabase
         .from("availability_slots")
-        .update({ is_active })
+        .update({ is_active } as never)
         .eq("id", id);
       if (error) throw error;
     },
@@ -135,7 +135,7 @@ export function useAvailabilityOverrides(coachId?: string) {
           ...override,
           coach_id: user!.id,
           is_blocked: override.is_blocked ?? true,
-        },
+        } as never,
         { onConflict: "coach_id,override_date" },
       );
       if (error) throw error;
@@ -201,7 +201,8 @@ export function useBookableSlots(startDate: string, endDate: string) {
         .select("date, time, assigned_to, duration_minutes")
         .gte("date", startDate)
         .lte("date", endDate)
-        .in("status", ["planifie", "realise"]);
+        .in("status", ["planifie", "realise"])
+        .returns<Array<{ date: string; time: string; assigned_to: string; duration_minutes: number }>>();
       if (callsErr) throw callsErr;
 
       // Build blocked dates map: coachId -> Set<dateString>
@@ -308,7 +309,7 @@ export function useBookCall() {
           duration_minutes: slot.duration_minutes,
           call_type: "booking",
           status: "planifie",
-        })
+        } as never)
         .select()
         .single();
       if (error) throw error;

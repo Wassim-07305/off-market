@@ -1,7 +1,16 @@
 // Templates de formulaires pre-construits pour Off-Market
 // Utilises dans le form builder pour demarrer rapidement
 
-import type { FormField } from "@/types/database";
+export interface FormTemplateField {
+  label: string;
+  field_type: string;
+  required: boolean;
+  sort_order: number;
+  options: string[] | null;
+  placeholder: string | null;
+  validation: Record<string, unknown> | null;
+  conditional_logic: Record<string, unknown> | null;
+}
 
 export interface FormTemplate {
   id: string;
@@ -14,7 +23,7 @@ export interface FormTemplate {
     | "feedback"
     | "sondage";
   icon: string; // Lucide icon name
-  fields: Omit<FormField, "id" | "form_id" | "created_at">[];
+  fields: FormTemplateField[];
 }
 
 export const FORM_TEMPLATE_CATEGORIES = [

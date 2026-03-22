@@ -209,7 +209,7 @@ export function useSharedJournalEntries() {
         .order("created_at", { ascending: false })
         .limit(50);
       if (error) throw error;
-      return data;
+      return data as JournalEntry[];
     },
     enabled: !!user,
   });

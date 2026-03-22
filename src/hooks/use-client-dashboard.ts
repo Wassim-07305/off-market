@@ -74,17 +74,20 @@ export function useClientDashboard() {
           .eq("status", "scheduled")
           .gte("scheduled_at", now.toISOString())
           .order("scheduled_at", { ascending: true })
-          .limit(5),
+          .limit(5)
+          .returns<{ id: string; title: string; scheduled_at: string }[]>(),
         // Coaching goals
         supabase
           .from("coaching_goals")
           .select("id, status")
-          .eq("client_id", user!.id),
+          .eq("client_id", user!.id)
+          .returns<{ id: string; status: string }[]>(),
         // XP total
         supabase
           .from("xp_transactions")
           .select("xp_amount")
-          .eq("profile_id", user!.id),
+          .eq("profile_id", user!.id)
+          .returns<{ xp_amount: number }[]>(),
         // Leaderboard rank
         supabase
           .from("leaderboard")
@@ -126,7 +129,8 @@ export function useClientDashboard() {
             "payment_received",
           ])
           .order("created_at", { ascending: false })
-          .limit(5),
+          .limit(5)
+          .returns<{ activity_type: string; created_at: string; student: { full_name: string } | null }[]>(),
       ]);
 
       // Formation progress

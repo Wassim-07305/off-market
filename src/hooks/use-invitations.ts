@@ -85,6 +85,34 @@ export function useInvitations() {
     },
   });
 
+  const createBulkInvitations = useMutation({
+    mutationFn: async (invites: { email: string; full_name: string; role: string }[]) => {
+      const results: UserInvite[] = [];
+      for (const invite of invites) {
+        const { data, error } = await supabase
+          .from("user_invites")
+          .insert({
+            email: invite.email,
+            full_name: invite.full_name,
+            role: invite.role,
+            invited_by: user!.id,
+          })
+          .select()
+          .single();
+        if (error) throw error;
+        results.push(data as UserInvite);
+      }
+      return results;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["invitations"] });
+      toast.success("Invitations creees avec succes");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Erreur lors de l'import");
+    },
+  });
+
   const deleteInvitation = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase
@@ -107,6 +135,7 @@ export function useInvitations() {
     isLoading: invitationsQuery.isLoading,
     error: invitationsQuery.error,
     createInvitation,
+    createBulkInvitations,
     deleteInvitation,
   };
 }

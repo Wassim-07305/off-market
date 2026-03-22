@@ -53,11 +53,11 @@ export function createClient() {
         flowType: "pkce",
         // Disable navigator.locks — prevents getSession() from hanging
         // when the lock gets orphaned during HMR or page transitions
-        lock: async (
+        lock: async <R>(
           name: string,
           acquireTimeout: number,
-          fn: () => Promise<unknown>,
-        ) => {
+          fn: () => Promise<R>,
+        ): Promise<R> => {
           return await fn();
         },
       },

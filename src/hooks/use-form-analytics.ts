@@ -61,7 +61,8 @@ export function useFormAnalytics(formId: string) {
           "*, respondent:profiles!form_submissions_respondent_id_fkey(full_name, email)",
         )
         .eq("form_id", formId)
-        .order("submitted_at", { ascending: false });
+        .order("submitted_at", { ascending: false })
+        .returns<Array<{ id: string; submitted_at: string; answers: Record<string, unknown>; respondent: { full_name: string; email: string } | null }>>();
       if (subError) throw subError;
 
       const allSubs = submissions ?? [];

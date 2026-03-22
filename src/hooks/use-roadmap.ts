@@ -43,13 +43,14 @@ export function useClientRoadmap(clientId?: string) {
       const { data: milestones, error: milError } = await supabase
         .from("roadmap_milestones")
         .select("*")
-        .eq("roadmap_id", roadmap.id)
-        .order("order_index", { ascending: true });
+        .eq("roadmap_id", (roadmap as ClientRoadmap).id)
+        .order("order_index", { ascending: true })
+        .returns<RoadmapMilestone[]>();
 
       if (milError) throw milError;
 
       return {
-        ...roadmap,
+        ...(roadmap as ClientRoadmap),
         milestones: milestones ?? [],
       } as ClientRoadmap & { milestones: RoadmapMilestone[] };
     },
@@ -110,7 +111,7 @@ export function useCreateRoadmap() {
       // Deactivate current roadmaps for this client
       await supabase
         .from("client_roadmaps")
-        .update({ is_active: false })
+        .update({ is_active: false } as never)
         .eq("client_id", clientId)
         .eq("is_active", true);
 
@@ -124,7 +125,7 @@ export function useCreateRoadmap() {
           generated_from: generatedFrom,
           source_call_id: sourceCallId ?? null,
           created_by: user.id,
-        })
+        } as never)
         .select()
         .single();
 
@@ -132,7 +133,7 @@ export function useCreateRoadmap() {
 
       // Create milestones
       const milestonesData = milestones.map((m, i) => ({
-        roadmap_id: roadmap.id,
+        roadmap_id: (roadmap as ClientRoadmap).id,
         title: m.title,
         description: m.description ?? null,
         validation_criteria: m.validation_criteria ?? [],
@@ -141,7 +142,7 @@ export function useCreateRoadmap() {
 
       const { error: milError } = await supabase
         .from("roadmap_milestones")
-        .insert(milestonesData);
+        .insert(milestonesData as never);
 
       if (milError) throw milError;
 
@@ -201,7 +202,7 @@ export function useUpdateMilestone() {
     }: Partial<RoadmapMilestone> & { id: string }) => {
       const { error } = await supabase
         .from("roadmap_milestones")
-        .update(updates)
+        .update(updates as never)
         .eq("id", id);
       if (error) throw error;
     },
@@ -233,7 +234,7 @@ export function useCompleteMilestone() {
           completed_at: new Date().toISOString(),
           completed_by: user.id,
           notes: notes ?? null,
-        })
+        } as never)
         .eq("id", id);
       if (error) throw error;
     },
@@ -258,7 +259,7 @@ export function useDeactivateRoadmap() {
     mutationFn: async (roadmapId: string) => {
       const { error } = await supabase
         .from("client_roadmaps")
-        .update({ is_active: false })
+        .update({ is_active: false } as never)
         .eq("id", roadmapId);
       if (error) throw error;
     },

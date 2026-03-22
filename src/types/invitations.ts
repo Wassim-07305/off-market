@@ -19,6 +19,12 @@ export const ROLE_OPTIONS = [
   { value: "client", label: "Client" },
 ] as const;
 
+export interface CsvInviteRow {
+  nom: string;
+  email: string;
+  role: string;
+}
+
 export const AUDIT_ACTIONS = [
   { value: "user.login", label: "Connexion" },
   { value: "user.logout", label: "Deconnexion" },

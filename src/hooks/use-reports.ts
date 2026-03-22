@@ -18,6 +18,62 @@ import { PIPELINE_STAGES, CONTACT_SOURCES } from "@/types/pipeline";
 import { CALL_MOOD_CONFIG } from "@/types/pipeline";
 import { STUDENT_TAGS, ACTIVITY_TYPES } from "@/lib/constants";
 
+/* ─── Row types for untyped Supabase tables ─── */
+
+interface InvoiceRow {
+  total: number | null;
+  status: string;
+  created_at: string;
+  paid_at: string | null;
+  client_id?: string;
+}
+
+interface CallCalendarRow {
+  id: string;
+  date: string;
+  time: string;
+  duration_minutes: number | null;
+  call_type: string;
+  status: string;
+  actual_duration_seconds: number | null;
+}
+
+interface CallNoteRow {
+  client_mood: string | null;
+  outcome: string | null;
+  created_at: string;
+}
+
+interface CrmContactRow {
+  stage: string;
+  source: string | null;
+  estimated_value: number | null;
+  created_at: string;
+  updated_at: string;
+}
+
+interface StudentDetailRow {
+  profile_id: string;
+  tag: string | null;
+  health_score: number | null;
+  last_engagement_at: string | null;
+}
+
+interface StudentActivityRow {
+  activity_type: string;
+  created_at: string;
+}
+
+interface WeeklyCheckinRow {
+  mood: number | null;
+  created_at: string;
+}
+
+interface ProfileRow {
+  id: string;
+  created_at: string;
+}
+
 /* ─── Helpers ─── */
 
 const MONTH_LABELS = [
@@ -104,7 +160,7 @@ export function useFinancialReport(range: DateRange) {
       ]);
 
       if (invoicesRes.error) throw invoicesRes.error;
-      const rows = invoicesRes.data ?? [];
+      const rows = (invoicesRes.data ?? []) as unknown as InvoiceRow[];
       const activeClients = activeClientsRes.count ?? 0;
 
       // Status breakdown
@@ -245,8 +301,8 @@ export function useCallMetrics(range: DateRange) {
       ]);
 
       if (callsRes.error) throw callsRes.error;
-      const calls = callsRes.data ?? [];
-      const notes = notesRes.data ?? [];
+      const calls = (callsRes.data ?? []) as unknown as CallCalendarRow[];
+      const notes = (notesRes.data ?? []) as unknown as CallNoteRow[];
 
       const totalCalls = calls.length;
       const completedCalls = calls.filter((c) => c.status === "realise").length;
@@ -384,7 +440,7 @@ export function usePipelineReport() {
         .select("stage, source, estimated_value, created_at, updated_at");
 
       if (error) throw error;
-      const rows = contacts ?? [];
+      const rows = (contacts ?? []) as unknown as CrmContactRow[];
 
       const totalContacts = rows.length;
       const totalPipelineValue = rows
@@ -507,10 +563,10 @@ export function useEngagementReport(range: DateRange) {
         ]);
 
       if (profilesRes.error) throw profilesRes.error;
-      const profiles = profilesRes.data ?? [];
-      const details = detailsRes.data ?? [];
-      const activities = activitiesRes.data ?? [];
-      const checkins = checkinsRes.data ?? [];
+      const profiles = (profilesRes.data ?? []) as unknown as ProfileRow[];
+      const details = (detailsRes.data ?? []) as unknown as StudentDetailRow[];
+      const activities = (activitiesRes.data ?? []) as unknown as StudentActivityRow[];
+      const checkins = (checkinsRes.data ?? []) as unknown as WeeklyCheckinRow[];
 
       const totalClients = profiles.length;
 

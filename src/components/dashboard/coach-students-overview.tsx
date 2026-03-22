@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { useStudents } from "@/hooks/use-students";
+import { useStudents, getStudentDetail } from "@/hooks/use-students";
 import { getInitials, formatDate, cn } from "@/lib/utils";
 import {
   Search,
@@ -78,13 +78,13 @@ export function CoachStudentsOverview() {
 
     // Tag filter
     if (tagFilter !== "all") {
-      result = result.filter((s) => s.student_details?.[0]?.tag === tagFilter);
+      result = result.filter((s) => getStudentDetail(s)?.tag === tagFilter);
     }
 
     // Sort
     result.sort((a, b) => {
-      const aDetails = a.student_details?.[0];
-      const bDetails = b.student_details?.[0];
+      const aDetails = getStudentDetail(a);
+      const bDetails = getStudentDetail(b);
 
       if (sortField === "health_score") {
         return (aDetails?.health_score ?? 0) - (bDetails?.health_score ?? 0);
@@ -98,8 +98,8 @@ export function CoachStudentsOverview() {
     // Group by tag order (at_risk first)
     if (sortField === "health_score" && tagFilter === "all") {
       result.sort((a, b) => {
-        const aTag = (a.student_details?.[0]?.tag ?? "standard") as Tag;
-        const bTag = (b.student_details?.[0]?.tag ?? "standard") as Tag;
+        const aTag = (getStudentDetail(a)?.tag ?? "standard") as Tag;
+        const bTag = (getStudentDetail(b)?.tag ?? "standard") as Tag;
         return TAG_ORDER.indexOf(aTag) - TAG_ORDER.indexOf(bTag);
       });
     }
@@ -218,7 +218,7 @@ export function CoachStudentsOverview() {
           </div>
         ) : (
           filtered.map((student) => {
-            const details = student.student_details?.[0];
+            const details = getStudentDetail(student);
             const tag = (details?.tag ?? "standard") as Tag;
             const healthScore = details?.health_score ?? 0;
             const lastEngagement = details?.last_engagement_at;

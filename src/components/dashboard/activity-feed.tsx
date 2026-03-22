@@ -60,10 +60,20 @@ const activityDotColors: Record<string, string> = {
 export function ActivityFeed() {
   const supabase = useSupabase();
 
+  interface StudentActivity {
+    id: string;
+    student_id: string;
+    activity_type: string;
+    metadata: Record<string, unknown> | null;
+    created_at: string;
+    student: { full_name: string; avatar_url: string | null } | null;
+  }
+
   const { data: activities, isLoading } = useQuery({
     queryKey: ["recent-activities"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data, error } = await (supabase as any)
         .from("student_activities")
         .select(
           "*, student:profiles!student_activities_student_id_fkey(full_name, avatar_url)",
@@ -71,7 +81,7 @@ export function ActivityFeed() {
         .order("created_at", { ascending: false })
         .limit(15);
       if (error) throw error;
-      return data;
+      return (data ?? []) as StudentActivity[];
     },
   });
 

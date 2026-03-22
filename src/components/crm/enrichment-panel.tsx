@@ -23,7 +23,7 @@ import {
   Mail,
   Phone,
   CheckCircle,
-  Image,
+  Image as ImageIcon,
   Heart,
   MessageCircle,
   Video,
@@ -74,17 +74,16 @@ export function EnrichmentPanel({
 
   const enrichmentData = contact.enrichment_data || {};
   const enrichmentStatus = contact.enrichment_status;
-  const linkedin = enrichmentData.linkedin as
-    | Record<string, unknown>
-    | undefined;
-  const instagram = enrichmentData.instagram as
-    | Record<string, unknown>
-    | undefined;
-  const tiktok = enrichmentData.tiktok as Record<string, unknown> | undefined;
-  const facebook = enrichmentData.facebook as
-    | Record<string, unknown>
-    | undefined;
-  const website = enrichmentData.website as Record<string, unknown> | undefined;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const linkedin = enrichmentData.linkedin as Record<string, any> | undefined;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const instagram = enrichmentData.instagram as Record<string, any> | undefined;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const tiktok = enrichmentData.tiktok as Record<string, any> | undefined;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const facebook = enrichmentData.facebook as Record<string, any> | undefined;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const website = enrichmentData.website as Record<string, any> | undefined;
 
   const handleSaveUrls = () => {
     updateContact.mutate({
@@ -515,7 +514,7 @@ export function EnrichmentPanel({
                         <Briefcase className="w-3 h-3" />
                         Experience
                       </p>
-                      {(linkedin.experience as Array<Record<string, unknown>>)
+                      {(linkedin.experience as Array<Record<string, any>>)
                         .slice(0, 3)
                         .map((exp, i) => (
                           <div
@@ -654,7 +653,7 @@ export function EnrichmentPanel({
                   instagram.recentPosts.length > 0 && (
                     <div className="space-y-2 pt-2 border-t border-border">
                       <p className="text-xs font-semibold text-foreground flex items-center gap-1">
-                        <Image className="w-3 h-3" />
+                        <ImageIcon className="w-3 h-3" />
                         Posts recents
                       </p>
                       {(

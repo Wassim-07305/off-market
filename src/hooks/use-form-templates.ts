@@ -69,8 +69,8 @@ export function useCreateFormFromTemplate() {
       if (!user) throw new Error("Non authentifie");
 
       // Create the form
-      const { data: form, error: formError } = await supabase
-        .from("forms")
+      const { data: form, error: formError } = await (supabase
+        .from("forms") as any)
         .insert({
           title: title || template.name,
           description: template.description,
@@ -134,8 +134,8 @@ export function useSaveAsTemplate() {
     }) => {
       if (!user) throw new Error("Non authentifie");
 
-      const { data, error } = await supabase
-        .from("form_templates")
+      const { data, error } = await (supabase
+        .from("form_templates") as any)
         .insert({
           name,
           description,

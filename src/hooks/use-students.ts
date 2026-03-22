@@ -54,14 +54,15 @@ export function useStudents(options: UseStudentsOptions = {}) {
           .from("coach_assignments")
           .select("client_id")
           .eq("coach_id", user!.id)
-          .eq("status", "active");
+          .eq("status", "active")
+          .returns<{ client_id: string }[]>();
 
         clientIds = (assignments ?? []).map(
-          (a: { client_id: string }) => a.client_id,
+          (a) => a.client_id,
         );
 
         // No assignments → return empty
-        if (clientIds.length === 0) return [];
+        if (clientIds.length === 0) return { results: [] as StudentWithDetails[], totalCount: 0 };
       }
 
       const from = page * limit;
@@ -84,9 +85,10 @@ export function useStudents(options: UseStudentsOptions = {}) {
         const { data: flagged } = await supabase
           .from("student_details")
           .select("profile_id")
-          .eq("flag", flag);
-        const flaggedIds = (flagged ?? []).map((f: { profile_id: string }) => f.profile_id);
-        if (flaggedIds.length === 0) return { results: [], totalCount: 0 };
+          .eq("flag", flag)
+          .returns<{ profile_id: string }[]>();
+        const flaggedIds = (flagged ?? []).map((f) => f.profile_id);
+        if (flaggedIds.length === 0) return { results: [] as StudentWithDetails[], totalCount: 0 };
         query = query.in("id", flaggedIds);
       }
 
@@ -96,10 +98,10 @@ export function useStudents(options: UseStudentsOptions = {}) {
         );
       }
 
-      const { data, error, count } = await query;
+      const { data, error, count } = await query.returns<StudentWithDetails[]>();
       if (error) throw error;
 
-      let results = data as StudentWithDetails[];
+      let results = (data ?? []) as StudentWithDetails[];
 
       if (tag && tag !== "all") {
         results = results.filter((s) => getStudentDetail(s)?.tag === tag);
@@ -138,7 +140,7 @@ export function useStudents(options: UseStudentsOptions = {}) {
   const ensureStudentDetails = async (profileId: string) => {
     const { error } = await supabase
       .from("student_details")
-      .upsert({ profile_id: profileId }, { onConflict: "profile_id" })
+      .upsert({ profile_id: profileId } as never, { onConflict: "profile_id" })
       .select("id")
       .single();
     if (error) throw error;
@@ -155,7 +157,7 @@ export function useStudents(options: UseStudentsOptions = {}) {
       // Single upsert: creates row if missing, updates tag if exists
       const { error } = await supabase
         .from("student_details")
-        .upsert({ profile_id: profileId, tag }, { onConflict: "profile_id" });
+        .upsert({ profile_id: profileId, tag } as never, { onConflict: "profile_id" });
       if (error) throw error;
     },
     onSuccess: (_data, variables) => {
@@ -178,7 +180,7 @@ export function useStudents(options: UseStudentsOptions = {}) {
       const { error } = await supabase
         .from("student_details")
         .upsert(
-          { profile_id: profileId, ...updates },
+          { profile_id: profileId, ...updates } as never,
           { onConflict: "profile_id" },
         );
       if (error) throw error;
@@ -204,8 +206,9 @@ export function useStudents(options: UseStudentsOptions = {}) {
       // Upsert to ensure row exists, then read back old flag in one go
       const { data: upserted, error: upsertError } = await supabase
         .from("student_details")
-        .upsert({ profile_id: profileId }, { onConflict: "profile_id" })
+        .upsert({ profile_id: profileId } as never, { onConflict: "profile_id" })
         .select("flag")
+        .returns<{ flag: string }[]>()
         .single();
       if (upsertError) throw upsertError;
 
@@ -218,7 +221,7 @@ export function useStudents(options: UseStudentsOptions = {}) {
         count,
       } = await supabase
         .from("student_details")
-        .update({ flag })
+        .update({ flag } as never)
         .eq("profile_id", profileId)
         .select();
       console.log("[updateStudentFlag]", {
@@ -238,7 +241,7 @@ export function useStudents(options: UseStudentsOptions = {}) {
           new_flag: flag,
           reason: reason ?? null,
           changed_by: user.id,
-        });
+        } as never);
       }
     },
     onSuccess: (_data, variables) => {
@@ -264,7 +267,7 @@ export function useStudents(options: UseStudentsOptions = {}) {
       const { error } = await supabase
         .from("student_details")
         .upsert(
-          { profile_id: profileId, pipeline_stage: stage },
+          { profile_id: profileId, pipeline_stage: stage } as never,
           { onConflict: "profile_id" },
         );
       if (error) throw error;
@@ -278,8 +281,8 @@ export function useStudents(options: UseStudentsOptions = {}) {
   });
 
   return {
-    students: (studentsQuery.data?.results ?? studentsQuery.data ?? []) as StudentWithDetails[],
-    totalCount: (studentsQuery.data as { results: StudentWithDetails[]; totalCount: number } | undefined)?.totalCount ?? 0,
+    students: ((studentsQuery.data as { results?: StudentWithDetails[] } | undefined)?.results ?? []) as StudentWithDetails[],
+    totalCount: ((studentsQuery.data as { totalCount?: number } | undefined)?.totalCount ?? 0),
     isLoading: studentsQuery.isLoading,
     error: studentsQuery.error,
     updateStudentTag,
@@ -299,9 +302,10 @@ export function useStudent(id: string) {
         .from("profiles")
         .select("*, student_details!student_details_profile_id_fkey(*)")
         .eq("id", id)
+        .returns<StudentWithDetails[]>()
         .single();
       if (error) throw error;
-      return data as StudentWithDetails;
+      return data as unknown as StudentWithDetails;
     },
     enabled: !!id,
   });
@@ -340,9 +344,10 @@ export function useStudentNotes(studentId: string) {
         )
         .eq("student_id", studentId)
         .order("is_pinned", { ascending: false })
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .returns<Array<Record<string, unknown>>>();
       if (error) throw error;
-      return data;
+      return data ?? [];
     },
     enabled: !!studentId,
   });
@@ -359,7 +364,7 @@ export function useStudentNotes(studentId: string) {
         student_id: studentId,
         author_id: authorId,
         content,
-      });
+      } as never);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -379,7 +384,7 @@ export function useStudentNotes(studentId: string) {
     }) => {
       const { error } = await supabase
         .from("student_notes")
-        .update({ is_pinned: !isPinned })
+        .update({ is_pinned: !isPinned } as never)
         .eq("id", noteId);
       if (error) throw error;
     },
@@ -427,7 +432,7 @@ export function useStudentTasks(studentId: string) {
       const { error } = await supabase.from("student_tasks").insert({
         student_id: studentId,
         ...task,
-      });
+      } as never);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -449,7 +454,7 @@ export function useStudentTasks(studentId: string) {
       if (status === "done") updates.completed_at = new Date().toISOString();
       const { error } = await supabase
         .from("student_tasks")
-        .update(updates)
+        .update(updates as never)
         .eq("id", taskId);
       if (error) throw error;
     },
@@ -480,9 +485,18 @@ export function useStudentFlagHistory(studentId: string) {
           "*, author:profiles!student_flag_history_changed_by_fkey(full_name, avatar_url)",
         )
         .eq("student_id", studentId)
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .returns<Array<{
+          id: string;
+          student_id: string;
+          previous_flag: StudentFlag | null;
+          new_flag: StudentFlag;
+          reason: string | null;
+          created_at: string;
+          author: { full_name: string; avatar_url: string | null } | null;
+        }>>();
       if (error) throw error;
-      return data as Array<{
+      return (data ?? []) as Array<{
         id: string;
         student_id: string;
         previous_flag: StudentFlag | null;
