@@ -60,18 +60,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!cancelled) setProfile(data);
     };
 
+    // Timeout to prevent loading from hanging indefinitely (matches middleware timeout)
+    const timeout = setTimeout(() => {
+      if (!cancelled) setLoading(false);
+    }, 5000);
+
     supabase.auth.getUser().then(({ data: { user: authUser } }) => {
       if (cancelled) return;
       if (authUser) {
         setUser(authUser);
         fetchProfile(authUser.id).finally(() => {
-          if (!cancelled) setLoading(false);
+          if (!cancelled) {
+            clearTimeout(timeout);
+            setLoading(false);
+          }
         });
       } else {
+        clearTimeout(timeout);
         setLoading(false);
       }
     }).catch(() => {
-      if (!cancelled) setLoading(false);
+      if (!cancelled) {
+        clearTimeout(timeout);
+        setLoading(false);
+      }
     });
 
     const {
@@ -88,6 +100,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return () => {
       cancelled = true;
+      clearTimeout(timeout);
       subscription.unsubscribe();
     };
   }, [supabase]);

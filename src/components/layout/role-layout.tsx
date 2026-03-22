@@ -55,14 +55,18 @@ export function RoleLayout({ variant, children }: RoleLayoutProps) {
   }, [loading]);
 
   // If loading timed out and no user, redirect to login
+  // Only redirect if not already on an admin/role page (middleware already validated access)
   if (timedOut && loading && !user) {
     if (typeof window !== "undefined") {
+      // Clear stale cookies to break potential redirect loops
+      document.cookie = "om_profile_cache=; path=/; max-age=0; SameSite=Lax";
       window.location.replace("/login");
     }
     return null;
   }
 
   // Gate: don't render page content until auth is ready
+  // If timed out, render anyway — middleware already validated the session
   if (loading && !timedOut) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">

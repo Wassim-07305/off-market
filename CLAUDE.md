@@ -62,7 +62,7 @@ src/
     ui-store.ts    # Sidebar, theme, search, modals (persisted localStorage)
     chat-store.ts
     notification-store.ts
-  hooks/           # 90+ custom hooks, one per entity/feature (kebab-case)
+  hooks/           # 150+ custom hooks, one per entity/feature (kebab-case)
   lib/
     supabase/      # Client variants (client, server, admin, middleware)
     permissions.ts # Module -> AppRole[] matrix + canAccess()
@@ -137,7 +137,7 @@ Key env vars (see `.env.example` for the full list):
 - **Projet** : `srhpdgqqiuzdrlqaitdk`
 - DB access: `source .env.local && psql "$DATABASE_URL"`
 - RLS policies on all tables
-- 12 migrations in `supabase/migrations/`
+- 140 migrations in `supabase/migrations/`
 - Main tables: profiles, user_roles, clients, client_assignments, leads, call_calendar, closer_calls, financial_entries, payment_schedules, social_content, channels, messages, formations, module_items, gamification_entries, journal_entries, forms, form_submissions, contracts, coaching_sessions, notifications, announcements
 
 ### Next.js Config Notes
