@@ -37,6 +37,7 @@ import {
   PhoneCall,
   Presentation,
   Megaphone,
+  Settings,
   type LucideIcon,
 } from "lucide-react";
 
@@ -93,6 +94,7 @@ export const adminNavigation: NavItem[] = [
   },
   { name: "Annonces", href: "/admin/announcements", icon: Megaphone },
   { name: "Miro", href: "/admin/miro", icon: Presentation },
+  { name: "Reglages", href: "/admin/settings", icon: Settings },
 ];
 
 /** Coach / CSM */
@@ -206,8 +208,26 @@ export function getNavigationForRole(variant: RoleVariant): NavItem[] {
   }
 }
 
-/** Mobile nav shows max 5 items */
+/** Per-role mobile bottom bar: the 5 most important hrefs */
+const MOBILE_NAV_HREFS: Partial<Record<RoleVariant, string[]>> = {
+  admin: [
+    "/admin/dashboard",
+    "/admin/crm",
+    "/admin/messaging",
+    "/admin/school",
+    "/admin/billing",
+  ],
+};
+
+/** Mobile nav shows max 5 items, with per-role overrides */
 export function getMobileNavForRole(variant: RoleVariant): NavItem[] {
+  const overrides = MOBILE_NAV_HREFS[variant];
+  if (overrides) {
+    const allItems = getNavigationForRole(variant);
+    return overrides
+      .map((href) => allItems.find((item) => item.href === href))
+      .filter((item): item is NavItem => item !== undefined);
+  }
   return getNavigationForRole(variant).slice(0, 5);
 }
 

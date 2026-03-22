@@ -209,10 +209,10 @@ export default function PublicContractSignPage() {
   // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-8 h-8 text-indigo-500 animate-spin mx-auto mb-3" />
-          <p className="text-sm text-gray-500">Chargement du contrat...</p>
+          <Loader2 className="w-8 h-8 text-[#AF0000] animate-spin mx-auto mb-3" />
+          <p className="text-sm text-white/60">Chargement du contrat...</p>
         </div>
       </div>
     );
@@ -221,15 +221,15 @@ export default function PublicContractSignPage() {
   // Error state
   if (error && !contract) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-zinc-950 flex items-center justify-center px-4">
         <div className="text-center max-w-md">
-          <div className="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
+          <div className="w-14 h-14 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-4">
             <AlertTriangle className="w-7 h-7 text-red-500" />
           </div>
-          <h1 className="text-lg font-semibold text-gray-900 mb-2">
+          <h1 className="text-lg font-semibold text-white mb-2">
             Contrat introuvable
           </h1>
-          <p className="text-sm text-gray-500">{error}</p>
+          <p className="text-sm text-white/60">{error}</p>
         </div>
       </div>
     );
@@ -240,31 +240,31 @@ export default function PublicContractSignPage() {
   // Signed success state
   if (signed) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-zinc-950">
         <div className="max-w-2xl mx-auto px-4 py-12">
           {/* Header */}
           <div className="text-center mb-8">
-            <div className="w-16 h-16 rounded-full bg-emerald-50 flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center mx-auto mb-4">
               <CheckCircle className="w-8 h-8 text-emerald-500" />
             </div>
-            <h1 className="text-2xl font-semibold text-gray-900 mb-2">
+            <h1 className="text-2xl font-semibold text-white mb-2">
               Contrat signe !
             </h1>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-white/60">
               Merci, votre signature a bien ete enregistree
               {signedAt ? ` le ${formatDate(signedAt)}` : ""}.
             </p>
           </div>
 
           {/* Contract summary */}
-          <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-1">
+          <div className="bg-white/[0.04] border border-white/[0.08] rounded-xl p-6 mb-6">
+            <h2 className="text-lg font-medium text-white mb-1">
               {contract.title}
             </h2>
-            <p className="text-sm text-gray-500 mb-4">
+            <p className="text-sm text-white/60 mb-4">
               {contract.client?.full_name}
             </p>
-            <div className="bg-gray-50 rounded-lg p-4 text-sm text-gray-700 whitespace-pre-wrap max-h-64 overflow-y-auto">
+            <div className="bg-white/[0.04] border border-white/[0.08] rounded-lg p-4 text-sm text-white/60 whitespace-pre-wrap max-h-64 overflow-y-auto">
               {contract.content}
             </div>
           </div>
@@ -273,7 +273,7 @@ export default function PublicContractSignPage() {
           <div className="text-center">
             <a
               href={`/api/contracts/${contract.id}/pdf`}
-              className="inline-flex items-center gap-2 h-11 px-6 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors"
+              className="inline-flex items-center gap-2 h-11 px-6 bg-[#AF0000] text-white rounded-lg text-sm font-medium hover:bg-[#8B0000] transition-colors"
             >
               <Download className="w-4 h-4" />
               Telecharger le PDF
@@ -281,7 +281,7 @@ export default function PublicContractSignPage() {
           </div>
 
           {/* Footer */}
-          <p className="text-xs text-gray-400 text-center mt-8">
+          <p className="text-xs text-white/40 text-center mt-8">
             Off-Market — Plateforme de Coaching & Gestion Business
           </p>
         </div>
@@ -292,15 +292,15 @@ export default function PublicContractSignPage() {
   // Already cancelled
   if (contract.status === "cancelled") {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-zinc-950 flex items-center justify-center px-4">
         <div className="text-center max-w-md">
-          <div className="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
+          <div className="w-14 h-14 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-4">
             <AlertTriangle className="w-7 h-7 text-red-500" />
           </div>
-          <h1 className="text-lg font-semibold text-gray-900 mb-2">
+          <h1 className="text-lg font-semibold text-white mb-2">
             Contrat annule
           </h1>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-white/60">
             Ce contrat a ete annule et ne peut plus etre signe.
           </p>
         </div>
@@ -311,15 +311,15 @@ export default function PublicContractSignPage() {
   // Draft state (not yet sent)
   if (contract.status === "draft") {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-zinc-950 flex items-center justify-center px-4">
         <div className="text-center max-w-md">
-          <div className="w-14 h-14 rounded-full bg-amber-50 flex items-center justify-center mx-auto mb-4">
+          <div className="w-14 h-14 rounded-full bg-amber-500/10 flex items-center justify-center mx-auto mb-4">
             <FileText className="w-7 h-7 text-amber-500" />
           </div>
-          <h1 className="text-lg font-semibold text-gray-900 mb-2">
+          <h1 className="text-lg font-semibold text-white mb-2">
             Contrat en preparation
           </h1>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-white/60">
             Ce contrat n&apos;a pas encore ete envoye pour signature. Veuillez
             patienter.
           </p>
@@ -330,17 +330,17 @@ export default function PublicContractSignPage() {
 
   // Main signing page (status === "sent")
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-zinc-950">
       <div className="max-w-2xl mx-auto px-4 py-8 md:py-12">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center mx-auto mb-4">
-            <FileText className="w-6 h-6 text-indigo-600" />
+          <div className="w-12 h-12 rounded-xl bg-[#AF0000]/10 flex items-center justify-center mx-auto mb-4">
+            <FileText className="w-6 h-6 text-[#AF0000]" />
           </div>
-          <h1 className="text-xl font-semibold text-gray-900">
+          <h1 className="text-xl font-semibold text-white">
             {contract.title}
           </h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-white/60 mt-1">
             Prepare pour {contract.client?.full_name ?? "vous"} le{" "}
             {formatDate(contract.created_at)}
           </p>
@@ -348,26 +348,26 @@ export default function PublicContractSignPage() {
 
         {/* Error banner */}
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6 flex items-center gap-3">
+          <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 mb-6 flex items-center gap-3">
             <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0" />
-            <p className="text-sm text-red-700">{error}</p>
+            <p className="text-sm text-red-400">{error}</p>
           </div>
         )}
 
         {/* Contract content */}
-        <div className="bg-white border border-gray-200 rounded-xl p-6 md:p-8 mb-6">
-          <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">
+        <div className="bg-white/[0.04] border border-white/[0.08] rounded-xl p-6 md:p-8 mb-6">
+          <h2 className="text-sm font-medium text-white/60 uppercase tracking-wider mb-4">
             Contenu du contrat
           </h2>
-          <div className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
+          <div className="text-sm text-white/60 leading-relaxed whitespace-pre-wrap">
             {contract.content}
           </div>
         </div>
 
         {/* Expiry notice */}
         {contract.expires_at && (
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-6 text-center">
-            <p className="text-xs text-amber-700">
+          <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 mb-6 text-center">
+            <p className="text-xs text-amber-400">
               Ce contrat expire le {formatDate(contract.expires_at)}. Veuillez
               le signer avant cette date.
             </p>
@@ -375,22 +375,22 @@ export default function PublicContractSignPage() {
         )}
 
         {/* Signature section */}
-        <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6">
+        <div className="bg-white/[0.04] border border-white/[0.08] rounded-xl p-6 mb-6">
           <div className="flex items-center gap-2 mb-4">
-            <PenLine className="w-4 h-4 text-gray-700" />
-            <h2 className="text-sm font-medium text-gray-900">
+            <PenLine className="w-4 h-4 text-white/60" />
+            <h2 className="text-sm font-medium text-white">
               Signature electronique
             </h2>
           </div>
 
           {/* Mode tabs */}
-          <div className="flex gap-1 mb-4 p-1 bg-gray-100 rounded-lg">
+          <div className="flex gap-1 mb-4 p-1 bg-white/[0.04] border border-white/[0.08] rounded-lg">
             <button
               onClick={() => setSignatureMode("draw")}
               className={`flex-1 flex items-center justify-center gap-2 h-9 rounded-md text-sm font-medium transition-colors ${
                 signatureMode === "draw"
-                  ? "bg-white text-gray-900 shadow-sm"
-                  : "text-gray-500 hover:text-gray-700"
+                  ? "bg-white/[0.08] text-white shadow-sm"
+                  : "text-white/60 hover:text-white"
               }`}
             >
               <Paintbrush className="w-3.5 h-3.5" />
@@ -400,8 +400,8 @@ export default function PublicContractSignPage() {
               onClick={() => setSignatureMode("type")}
               className={`flex-1 flex items-center justify-center gap-2 h-9 rounded-md text-sm font-medium transition-colors ${
                 signatureMode === "type"
-                  ? "bg-white text-gray-900 shadow-sm"
-                  : "text-gray-500 hover:text-gray-700"
+                  ? "bg-white/[0.08] text-white shadow-sm"
+                  : "text-white/60 hover:text-white"
               }`}
             >
               <Type className="w-3.5 h-3.5" />
@@ -415,7 +415,7 @@ export default function PublicContractSignPage() {
               <div className="relative">
                 <canvas
                   ref={canvasRef}
-                  className="w-full h-48 bg-white border-2 border-dashed border-gray-300 rounded-xl cursor-crosshair touch-none"
+                  className="w-full h-48 bg-white border-2 border-dashed border-white/[0.08] rounded-xl cursor-crosshair touch-none"
                   onMouseDown={startDrawing}
                   onMouseMove={draw}
                   onMouseUp={stopDrawing}
@@ -450,12 +450,12 @@ export default function PublicContractSignPage() {
                 value={typedName}
                 onChange={(e) => setTypedName(e.target.value)}
                 placeholder="Tapez votre nom complet"
-                className="w-full h-12 px-4 bg-white border-2 border-gray-300 rounded-xl text-sm focus:outline-none focus:border-indigo-500 transition-colors"
+                className="w-full h-12 px-4 bg-white/[0.04] border-2 border-white/[0.08] rounded-xl text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-[#AF0000] transition-colors"
               />
               {typedName.trim() && (
-                <div className="h-24 bg-gray-50 border border-gray-200 rounded-xl flex items-center justify-center">
+                <div className="h-24 bg-white/[0.04] border border-white/[0.08] rounded-xl flex items-center justify-center">
                   <p
-                    className="text-3xl text-gray-900"
+                    className="text-3xl text-white"
                     style={{
                       fontFamily: "Georgia, 'Times New Roman', serif",
                       fontStyle: "italic",
@@ -469,7 +469,7 @@ export default function PublicContractSignPage() {
           )}
 
           {/* Legal text */}
-          <p className="text-xs text-gray-400 text-center mt-4">
+          <p className="text-xs text-white/40 text-center mt-4">
             En signant, vous acceptez les termes du contrat ci-dessus. Votre
             adresse IP et navigateur seront enregistres comme preuve.
           </p>
@@ -479,7 +479,7 @@ export default function PublicContractSignPage() {
         <button
           onClick={handleSign}
           disabled={!canSign || signing}
-          className="w-full h-12 bg-indigo-600 text-white rounded-xl text-sm font-semibold hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="w-full h-12 bg-[#AF0000] text-white rounded-xl text-sm font-semibold hover:bg-[#8B0000] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           {signing ? (
             <>
@@ -495,7 +495,7 @@ export default function PublicContractSignPage() {
         </button>
 
         {/* Footer */}
-        <p className="text-xs text-gray-400 text-center mt-6">
+        <p className="text-xs text-white/40 text-center mt-6">
           Off-Market — Plateforme de Coaching & Gestion Business
         </p>
       </div>

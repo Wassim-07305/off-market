@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useAuth } from "@/hooks/use-auth";
 import { useBrandingContext } from "@/components/providers/branding-provider";
 import { colorVariants } from "@/hooks/use-branding";
+import { translateSupabaseError } from "@/lib/supabase-errors";
 import { toast } from "sonner";
 import { Loader2, Eye, EyeOff } from "lucide-react";
 
@@ -12,7 +13,10 @@ export default function SignupPage() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [cguAccepted, setCguAccepted] = useState(false);
   const [loading, setLoading] = useState(false);
   const { signUp } = useAuth();
   const { branding } = useBrandingContext();
@@ -25,11 +29,15 @@ export default function SignupPage() {
       toast.error("Le mot de passe doit faire au moins 6 caracteres");
       return;
     }
+    if (password !== confirmPassword) {
+      toast.error("Les mots de passe ne correspondent pas");
+      return;
+    }
     setLoading(true);
     const { error } = await signUp(email, password, fullName);
     setLoading(false);
     if (error) {
-      toast.error(error.message);
+      toast.error(translateSupabaseError(error.message));
     } else {
       toast.success("Compte cree !");
       window.location.href = "/login";
@@ -41,8 +49,8 @@ export default function SignupPage() {
 
   return (
     <div className="animate-fade-in">
-      <div className="text-center mb-8 hidden lg:block">
-        <h1 className="text-2xl text-white mb-2 font-display font-bold tracking-tight">
+      <div className="text-center mb-8 block">
+        <h1 className="text-xl lg:text-2xl text-white mb-2 font-display font-bold tracking-tight">
           Inscription
         </h1>
         <p className="text-white/40 text-sm">Cree ton compte</p>
@@ -128,9 +136,73 @@ export default function SignupPage() {
             </div>
           </div>
 
+          <div>
+            <label
+              htmlFor="confirmPassword"
+              className="block text-[11px] font-medium text-white/50 uppercase tracking-wider mb-1.5"
+            >
+              Confirmer le mot de passe
+            </label>
+            <div className="relative">
+              <input
+                id="confirmPassword"
+                type={showConfirmPassword ? "text" : "password"}
+                autoComplete="new-password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Repetez le mot de passe"
+                required
+                minLength={6}
+                className={`${inputClass} pr-11`}
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors"
+                tabIndex={-1}
+              >
+                {showConfirmPassword ? (
+                  <EyeOff className="w-4 h-4" />
+                ) : (
+                  <Eye className="w-4 h-4" />
+                )}
+              </button>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-2 pt-2">
+            <input
+              id="cgu"
+              type="checkbox"
+              checked={cguAccepted}
+              onChange={(e) => setCguAccepted(e.target.checked)}
+              className="mt-0.5 h-4 w-4 rounded border-white/20 bg-white/[0.06] text-primary focus:ring-primary/40 cursor-pointer"
+            />
+            <label htmlFor="cgu" className="text-white/50 text-xs cursor-pointer">
+              J&apos;accepte les{" "}
+              <a
+                href="/cgv"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:text-primary-hover underline transition-colors"
+              >
+                CGV
+              </a>{" "}
+              et la{" "}
+              <a
+                href="/confidentialite"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:text-primary-hover underline transition-colors"
+              >
+                politique de confidentialite
+              </a>
+            </label>
+          </div>
+
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || !cguAccepted}
             className="w-full h-11 text-white font-medium rounded-xl transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm mt-6"
             style={{
               backgroundColor: primaryColor,

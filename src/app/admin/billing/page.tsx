@@ -83,7 +83,7 @@ export default function BillingOverviewPage() {
         <motion.div
           variants={fadeInUp}
           transition={defaultTransition}
-          className="flex items-start justify-between"
+          className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
         >
           <div>
             <h1 className="text-3xl font-[family-name:var(--font-heading)] font-bold text-foreground tracking-tight">
@@ -93,7 +93,7 @@ export default function BillingOverviewPage() {
               Vue d&apos;ensemble des contrats, factures et paiements
             </p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <Link
             href="/admin/billing/contracts"
             className="h-9 px-4 rounded-xl border border-border text-sm font-medium text-foreground hover:bg-muted transition-all active:scale-[0.98] flex items-center gap-2 shrink-0"

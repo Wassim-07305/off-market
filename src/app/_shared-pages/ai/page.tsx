@@ -103,7 +103,11 @@ export default function AIPage() {
   const [input, setInput] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
   const [conversationId, setConversationId] = useState<string | null>(null);
-  const [showSidebar, setShowSidebar] = useState(true);
+  const [showSidebar, setShowSidebar] = useState(false);
+
+  useEffect(() => {
+    if (window.innerWidth >= 1024) setShowSidebar(true);
+  }, []);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -225,13 +229,6 @@ export default function AIPage() {
     inputRef.current?.focus();
   };
 
-  // Auto-accept consent silently if not yet accepted
-  useEffect(() => {
-    if (!consentLoading && !hasConsent && !isAccepting) {
-      acceptConsent(["chat_analysis", "content_suggestions", "report_generation", "risk_scoring"]);
-    }
-  }, [consentLoading, hasConsent, isAccepting, acceptConsent]);
-
   const tabs: {
     id: AITab;
     label: string;
@@ -241,6 +238,16 @@ export default function AIPage() {
     { id: "chat", label: "Chat", icon: MessageSquare },
     { id: "config", label: "Configuration", icon: Settings, staffOnly: true },
   ];
+
+  // Show consent modal if user hasn't accepted yet
+  if (!consentLoading && !hasConsent) {
+    return (
+      <AiConsentModal
+        onAccept={(scopes) => acceptConsent(scopes)}
+        isAccepting={isAccepting}
+      />
+    );
+  }
 
   return (
     <div className="space-y-4">
@@ -270,24 +277,20 @@ export default function AIPage() {
       {/* Tab content */}
       {activeTab === "config" && isStaff ? (
         <div
-          className="grid grid-cols-1 lg:grid-cols-3 gap-4 overflow-y-auto pb-8"
-          style={{ maxHeight: "calc(100vh - 10rem)" }}
+          className="grid grid-cols-1 lg:grid-cols-3 gap-4 overflow-y-auto pb-8 max-h-none lg:max-h-[calc(100vh-10rem)]"
         >
           <div
-            className="bg-surface border border-border rounded-2xl p-5 overflow-y-auto"
-            style={{ maxHeight: "calc(100vh - 11rem)" }}
+            className="bg-surface border border-border rounded-2xl p-5 overflow-y-auto max-h-none lg:max-h-[calc(100vh-11rem)]"
           >
             <AlexiaKnowledgePanel />
           </div>
           <div
-            className="bg-surface border border-border rounded-2xl p-5 overflow-y-auto"
-            style={{ maxHeight: "calc(100vh - 11rem)" }}
+            className="bg-surface border border-border rounded-2xl p-5 overflow-y-auto max-h-none lg:max-h-[calc(100vh-11rem)]"
           >
             <AlexiaConfigPanel />
           </div>
           <div
-            className="bg-surface border border-border rounded-2xl p-5 overflow-y-auto"
-            style={{ maxHeight: "calc(100vh - 11rem)" }}
+            className="bg-surface border border-border rounded-2xl p-5 overflow-y-auto max-h-none lg:max-h-[calc(100vh-11rem)]"
           >
             <AlexiaMemoryPanel />
           </div>
@@ -302,7 +305,7 @@ export default function AIPage() {
         >
           {/* Sidebar */}
           {showSidebar && (
-            <div className="w-64 border-r border-border dark:border-border/50 flex flex-col shrink-0 bg-zinc-50/50 dark:bg-muted/20">
+            <div className="w-64 border-r border-border dark:border-border/50 flex flex-col shrink-0 bg-zinc-50/50 dark:bg-muted/20 lg:relative absolute z-20 inset-y-0 left-0">
               <div className="p-3 border-b border-border dark:border-border/50 flex items-center gap-2">
                 <button
                   onClick={startNewConversation}

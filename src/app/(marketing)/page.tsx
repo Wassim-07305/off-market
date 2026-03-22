@@ -22,6 +22,7 @@ import {
   Compass,
   Rocket,
   ChevronRight,
+  ChevronDown,
   Check,
   Quote,
   Flame,
@@ -135,52 +136,52 @@ const ACCENT_GLOW = "rgba(175, 0, 0, 0.12)";
 
 const navLinks = [
   { label: "L'accompagnement", href: "#features" },
-  { label: "Comment ca marche", href: "#how-it-works" },
+  { label: "Comment ça marche", href: "#how-it-works" },
   { label: "Pourquoi Off-Market", href: "#why" },
-  { label: "Temoignages", href: "#testimonials" },
+  { label: "Témoignages", href: "#testimonials" },
 ];
 
 const stats = [
   { value: 35, suffix: "+", label: "Freelances sortis du lot" },
-  { value: 10, suffix: "K", label: "CA mensuel vise" },
+  { value: 10, suffix: "K", label: "CA mensuel visé" },
   { value: 97, suffix: "%", label: "Taux de satisfaction" },
 ];
 
 const features = [
   {
     icon: GraduationCap,
-    title: "La methode, pas le blabla",
-    desc: "5 modules actionables : marche, offre, com, acquisition, conversion. Pas de theorie creuse — chaque lecon a un livrable concret.",
+    title: "La méthode, pas le blabla",
+    desc: "5 modules actionables : marché, offre, com, acquisition, conversion. Pas de théorie creuse — chaque leçon a un livrable concret.",
     gradient: "from-red-700/20 to-red-700/5",
   },
   {
     icon: Video,
     title: "Ton coach, pas un chatbot",
-    desc: "Appels video prives avec ton coach. Transcription auto, compte-rendu IA, plan d'action genere apres chaque session.",
+    desc: "Appels vidéo privés avec ton coach. Transcription auto, compte-rendu IA, plan d'action généré après chaque session.",
     gradient: "from-emerald-500/20 to-emerald-500/5",
   },
   {
     icon: MessageCircle,
-    title: "Un message, une reponse",
-    desc: "Messagerie directe avec ton coach. Systeme de priorite pour les urgences. Fini les messages qui se perdent dans Slack.",
+    title: "Un message, une réponse",
+    desc: "Messagerie directe avec ton coach. Système de priorité pour les urgences. Fini les messages qui se perdent dans Slack.",
     gradient: "from-blue-500/20 to-blue-500/5",
   },
   {
     icon: Users,
-    title: "Un cercle, pas un reseau",
-    desc: "35 freelances selectionnes qui avancent comme toi. Wins partages, challenges hebdo, lives exclusifs. On se tire vers le haut.",
+    title: "Un cercle, pas un réseau",
+    desc: "35 freelances sélectionnés qui avancent comme toi. Wins partagés, challenges hebdo, lives exclusifs. On se tire vers le haut.",
     gradient: "from-violet-500/20 to-violet-500/5",
   },
   {
     icon: Trophy,
     title: "Le jeu, pas la contrainte",
-    desc: "XP, badges, classement et defis entre membres. Tu progresses sans t'en rendre compte — et tu celebres chaque etape.",
+    desc: "XP, badges, classement et défis entre membres. Tu progresses sans t'en rendre compte — et tu célèbres chaque étape.",
     gradient: "from-rose-500/20 to-rose-500/5",
   },
   {
     icon: BarChart3,
     title: "Tes chiffres, en un clin d'oeil",
-    desc: "Dashboard personnel : CA, progression, roadmap, objectifs. Tu sais exactement ou tu en es et ce qu'il reste a faire.",
+    desc: "Dashboard personnel : CA, progression, roadmap, objectifs. Tu sais exactement où tu en es et ce qu'il reste à faire.",
     gradient: "from-cyan-500/20 to-cyan-500/5",
   },
 ];
@@ -190,19 +191,19 @@ const steps = [
     icon: UserPlus,
     number: "01",
     title: "Candidature & onboarding",
-    desc: "On valide que le programme est fait pour toi. Si c'est le cas, ton espace est pret en 5 min — coach assigne, formation ouverte, messagerie activee.",
+    desc: "On valide que le programme est fait pour toi. Si c'est le cas, ton espace est prêt en 5 min — coach assigné, formation ouverte, messagerie activée.",
   },
   {
     icon: Compass,
     number: "02",
     title: "Formation + coaching",
-    desc: "Tu avances module par module. Ton coach te challenge, corrige ton offre, et t'empeche de tourner en rond. Chaque semaine, tu progresses.",
+    desc: "Tu avances module par module. Ton coach te challenge, corrige ton offre, et t'empêche de tourner en rond. Chaque semaine, tu progresses.",
   },
   {
     icon: Rocket,
     number: "03",
-    title: "Resultats & scaling",
-    desc: "Tu signes tes premiers clients premium. Tu depasses les 10K. Et tu continues a scaler avec une communaute qui ne te lache pas.",
+    title: "Résultats & scaling",
+    desc: "Tu signes tes premiers clients premium. Tu dépasses les 10K. Et tu continues à scaler avec une communauté qui ne te lâche pas.",
   },
 ];
 
@@ -210,19 +211,19 @@ const valueProps = [
   {
     icon: Target,
     title: "Fini le patchwork d'outils",
-    desc: "Slack, Skool, Google Docs, YouSign, Fathom, WhatsApp... Tu remplaces tout ca par un seul espace. Tes clients voient du premium, pas du bricolage.",
+    desc: "Slack, Skool, Google Docs, YouSign, Fathom, WhatsApp... Tu remplaces tout ça par un seul espace. Tes clients voient du premium, pas du bricolage.",
     items: [
       "Formation + coaching + messagerie en un seul endroit",
-      "Contrats generes et signes en 2 clics",
-      "Impression pro des la premiere seconde",
+      "Contrats générés et signés en 2 clics",
+      "Impression pro dès la première seconde",
     ],
   },
   {
     icon: LineChart,
-    title: "Ton coach voit tout (meme quand tu decroches)",
-    desc: "Progression, engagement, resultats — ton coach a un dashboard en temps reel. Il sait exactement quand intervenir, sans que tu aies a demander.",
+    title: "Ton coach voit tout (même quand tu décroches)",
+    desc: "Progression, engagement, résultats — ton coach a un dashboard en temps réel. Il sait exactement quand intervenir, sans que tu aies à demander.",
     items: [
-      "Roadmap personnalisee generee par l'IA",
+      "Roadmap personnalisée générée par l'IA",
       "Alertes automatiques si tu stagnes",
       "Suivi de CA et objectifs en live",
     ],
@@ -230,11 +231,11 @@ const valueProps = [
   {
     icon: Flame,
     title: "35 freelances qui te tirent vers le haut",
-    desc: "C'est pas un groupe Facebook avec 10 000 inconnus. C'est un cercle serre de gens qui vivent la meme chose que toi. On celebre, on challenge, on avance.",
+    desc: "C'est pas un groupe Facebook avec 10 000 inconnus. C'est un cercle serré de gens qui vivent la même chose que toi. On célèbre, on challenge, on avance.",
     items: [
-      "Defis hebdo pour garder le momentum",
+      "Défis hebdo pour garder le momentum",
       "Classement et badges pour la motivation",
-      "Lives exclusifs et replays illimites",
+      "Lives exclusifs et replays illimités",
     ],
   },
 ];
@@ -245,7 +246,7 @@ const testimonials = [
     role: "Copywriter freelance",
     text: "Avant Off-Market, je galérais à 2K. En 3 mois, j'ai restructuré mon offre, trouvé mes premiers clients récurrents et je suis passée à 6K. Le suivi personnalisé change tout.",
     rating: 5,
-    metric: "De 2K a 6K en 3 mois",
+    metric: "De 2K à 6K en 3 mois",
   },
   {
     name: "Julien R.",
@@ -267,9 +268,9 @@ const footerSections = [
   {
     title: "Produit",
     links: [
-      { label: "Fonctionnalites", href: "#features" },
+      { label: "Fonctionnalités", href: "#features" },
       { label: "Pourquoi Off-Market", href: "#why" },
-      { label: "Temoignages", href: "#testimonials" },
+      { label: "Témoignages", href: "#testimonials" },
     ],
   },
   {
@@ -280,12 +281,46 @@ const footerSections = [
     ],
   },
   {
-    title: "Legal",
+    title: "Légal",
     links: [
       { label: "CGV", href: "/cgv" },
-      { label: "Mentions legales", href: "/mentions-legales" },
-      { label: "Confidentialite", href: "/confidentialite" },
+      { label: "Mentions légales", href: "/mentions-legales" },
+      { label: "Confidentialité", href: "/confidentialite" },
     ],
+  },
+];
+
+const faqItems = [
+  {
+    question: "C'est quoi Off-Market exactement ?",
+    answer:
+      "Off-Market est une plateforme tout-en-un qui combine coaching individuel, formations actionnables, communauté privée et outils de gestion (CRM, contrats, pipeline). Elle est conçue pour les freelances et coaches qui veulent structurer leur activité et dépasser les 10K\u20AC/mois.",
+  },
+  {
+    question: "Combien ça coûte ?",
+    answer:
+      "Le tarif est communiqué après validation de ta candidature. L'accompagnement est sur candidature uniquement.",
+  },
+  {
+    question: "Combien de temps dure l'accompagnement ?",
+    answer:
+      "L'accompagnement est continu. Tu progresses à ton rythme avec ton coach dédié.",
+  },
+  {
+    question: "C'est pour qui ?",
+    answer:
+      "Freelances, coaches et consultants qui veulent dépasser 10K\u20AC/mois.",
+  },
+  {
+    question: "Comment je postule ?",
+    answer:
+      "Clique sur \u00AB Postuler maintenant \u00BB et remplis le formulaire. Notre équipe te recontacte sous 48h.",
+  },
+  {
+    question:
+      "Quelle est la différence avec une formation en ligne classique ?",
+    answer:
+      "Off-Market combine coaching individuel, communauté, outils CRM et formations dans une seule plateforme. Ce n'est pas un cours que tu regardes seul dans ton coin — c'est un écosystème complet avec un coach dédié qui te suit au quotidien.",
   },
 ];
 
@@ -327,7 +362,7 @@ function DashboardMockup() {
           <div className="col-span-12 space-y-3 lg:col-span-10">
             {/* Stats */}
             <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
-              {["Eleves", "Progression", "Revenue", "Sessions"].map(
+              {["Élèves", "Progression", "Revenue", "Sessions"].map(
                 (label, i) => (
                   <div
                     key={label}
@@ -417,7 +452,9 @@ export default function LandingPage() {
   const howSection = useInView(0.1);
   const whySection = useInView(0.1);
   const testimonialsSection = useInView(0.1);
+  const faqSection = useInView(0.1);
   const ctaSection = useInView(0.2);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -581,12 +618,12 @@ export default function LandingPage() {
                     boxShadow: `0 0 8px ${ACCENT_GLOW}`,
                   }}
                 />
-                Accompagnement premium — places limitees
+                Accompagnement premium — places limitées
               </div>
 
               {/* Headline */}
               <h1 className="text-[2.5rem] font-bold leading-[1.1] tracking-tight text-gray-900 sm:text-[3.5rem] lg:text-[4rem]">
-                Sors du marche visible. <br className="hidden sm:block" />
+                Sors du marché visible. <br className="hidden sm:block" />
                 Deviens{" "}
                 <span className="relative inline-block whitespace-nowrap">
                   <span
@@ -595,7 +632,7 @@ export default function LandingPage() {
                       backgroundImage: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_LIGHT}, ${ACCENT})`,
                     }}
                   >
-                    le choix evident.
+                    le choix évident.
                   </span>
                   <span
                     className="absolute -bottom-1 left-0 h-px w-full"
@@ -609,8 +646,8 @@ export default function LandingPage() {
 
               {/* Subheadline */}
               <p className="mx-auto mt-6 max-w-xl text-[1.125rem] leading-relaxed text-gray-400 sm:text-lg">
-                L&apos;accompagnement qui t&apos;extrait du marche sature pour
-                atteindre 10K&euro;/mois. Formation, coaching prive, communaute
+                L&apos;accompagnement qui t&apos;extrait du marché saturé pour
+                atteindre 10K&euro;/mois. Formation, coaching privé, communauté
                 et outils business — dans un seul espace.
               </p>
 
@@ -634,7 +671,7 @@ export default function LandingPage() {
                     type="button"
                     className="h-12 rounded-xl border border-gray-300 bg-gray-50 px-7 text-[15px] font-medium text-gray-600 transition-all duration-200 hover:border-gray-400 hover:bg-gray-100 hover:text-gray-900"
                   >
-                    Comment ca marche
+                    Comment ça marche
                   </button>
                 </a>
               </div>
@@ -648,12 +685,12 @@ export default function LandingPage() {
                 <span className="h-3 w-px bg-gray-300" aria-hidden="true" />
                 <span className="flex items-center gap-1.5">
                   <Clock className="size-3.5" />
-                  Operationnel en 5 min
+                  Opérationnel en 5 min
                 </span>
                 <span className="h-3 w-px bg-gray-300" aria-hidden="true" />
                 <span className="flex items-center gap-1.5">
                   <Zap className="size-3.5" />
-                  Tout-en-un, zero outil externe
+                  Tout-en-un, zéro outil externe
                 </span>
               </div>
             </div>
@@ -674,7 +711,7 @@ export default function LandingPage() {
         >
           <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
             <p className="mb-10 text-center text-[13px] font-medium uppercase tracking-[0.15em] text-gray-400">
-              Ils ont quitte le marche sature
+              Ils ont quitté le marché saturé
             </p>
             <div className="grid grid-cols-1 gap-10 sm:grid-cols-3 sm:gap-8">
               {stats.map((stat, i) => (
@@ -734,8 +771,8 @@ export default function LandingPage() {
                 <span className="text-gray-400">ne feront jamais ensemble</span>
               </h2>
               <p className="mt-5 text-base leading-relaxed text-gray-500 sm:text-lg">
-                Un seul espace. Ton coach, ta formation, ta communaute, tes
-                contrats, tes stats. Zero outil externe, zero friction.
+                Un seul espace. Ton coach, ta formation, ta communauté, tes
+                contrats, tes stats. Zéro outil externe, zéro friction.
               </p>
             </FadeIn>
 
@@ -791,11 +828,11 @@ export default function LandingPage() {
                 Le parcours
               </p>
               <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-                De zero a <span className="text-gray-400">10K en 3 phases</span>
+                De zéro à <span className="text-gray-400">10K en 3 phases</span>
               </h2>
               <p className="mt-5 text-base leading-relaxed text-gray-500 sm:text-lg">
-                Pas de promesse magique. Un processus structure, un coach dedie,
-                et des resultats mesurables.
+                Pas de promesse magique. Un processus structuré, un coach dédié,
+                et des résultats mesurables.
               </p>
             </FadeIn>
 
@@ -853,7 +890,7 @@ export default function LandingPage() {
                 className="mb-4 text-[13px] font-semibold uppercase tracking-[0.15em]"
                 style={{ color: `${ACCENT}B3` }}
               >
-                La difference Off-Market
+                La différence Off-Market
               </p>
               <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
                 Pourquoi ceux qui rejoignent{" "}
@@ -861,7 +898,7 @@ export default function LandingPage() {
               </h2>
               <p className="mt-5 text-base leading-relaxed text-gray-500 sm:text-lg">
                 Ce n&apos;est pas un cours en ligne de plus. C&apos;est un
-                ecosysteme complet qui te prend par la main.
+                écosystème complet qui te prend par la main.
               </p>
             </FadeIn>
 
@@ -919,14 +956,14 @@ export default function LandingPage() {
                 className="mb-4 text-[13px] font-semibold uppercase tracking-[0.15em]"
                 style={{ color: `${ACCENT}B3` }}
               >
-                Temoignages
+                Témoignages
               </p>
               <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-                Ils etaient a ta place il y a 3 mois
+                Ils étaient à ta place il y a 3 mois
               </h2>
               <p className="mt-5 text-base leading-relaxed text-gray-500 sm:text-lg">
-                Des freelances comme toi qui ont decide de sortir du lot. Voila
-                ce qui a change pour eux.
+                Des freelances comme toi qui ont décidé de sortir du lot. Voilà
+                ce qui a changé pour eux.
               </p>
             </FadeIn>
 
@@ -979,7 +1016,76 @@ export default function LandingPage() {
         </section>
 
         {/* ============================================================== */}
-        {/*  7. CTA FINAL                                                   */}
+        {/*  7. FAQ                                                          */}
+        {/* ============================================================== */}
+        <section
+          id="faq"
+          ref={faqSection.ref}
+          className="scroll-mt-20 py-24 sm:py-32 lg:py-40"
+        >
+          <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+            <FadeIn
+              isInView={faqSection.isInView}
+              className="mx-auto max-w-2xl text-center"
+            >
+              <p
+                className="mb-4 text-[13px] font-semibold uppercase tracking-[0.15em]"
+                style={{ color: `${ACCENT}B3` }}
+              >
+                Questions fréquentes
+              </p>
+              <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+                Tout ce que tu veux savoir
+              </h2>
+              <p className="mt-5 text-base leading-relaxed text-gray-500 sm:text-lg">
+                Les réponses aux questions qu&apos;on nous pose le plus souvent.
+              </p>
+            </FadeIn>
+
+            <div className="mt-12 space-y-3 lg:mt-16">
+              {faqItems.map((item, i) => (
+                <div
+                  key={i}
+                  className={`overflow-hidden rounded-2xl border border-gray-200 bg-white transition-all duration-500 hover:border-gray-300 ${
+                    faqSection.isInView
+                      ? "opacity-100 translate-y-0"
+                      : "opacity-0 translate-y-8"
+                  }`}
+                  style={{ transitionDelay: `${i * 60}ms` }}
+                >
+                  <button
+                    type="button"
+                    className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left"
+                    onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                  >
+                    <span className="text-[15px] font-semibold text-gray-900">
+                      {item.question}
+                    </span>
+                    <ChevronDown
+                      className={`size-5 shrink-0 text-gray-400 transition-transform duration-300 ${
+                        openFaq === i ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
+                  <div
+                    className={`grid transition-all duration-300 ${
+                      openFaq === i ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+                    }`}
+                  >
+                    <div className="overflow-hidden">
+                      <p className="px-6 pb-5 text-[14px] leading-relaxed text-gray-500">
+                        {item.answer}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ============================================================== */}
+        {/*  8. CTA FINAL                                                   */}
         {/* ============================================================== */}
         <section
           ref={ctaSection.ref}
@@ -1002,13 +1108,13 @@ export default function LandingPage() {
               <Sparkles className="size-6 text-red-500/60" />
             </div>
             <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl lg:text-5xl">
-              Arrete de te battre sur
+              Arrête de te battre sur
               <br />
-              <span className="text-gray-400">un marche sature.</span>
+              <span className="text-gray-400">un marché saturé.</span>
             </h2>
             <p className="mx-auto mt-6 max-w-lg text-base leading-relaxed text-gray-500 sm:text-lg">
               Rejoins les freelances qui ont choisi de jouer dans une autre
-              categorie. La prochaine session demarre bientot.
+              catégorie. La prochaine session démarre bientôt.
             </p>
             <div className="mt-10 flex flex-col items-center gap-4">
               <Link href="/signup">
@@ -1053,8 +1159,8 @@ export default function LandingPage() {
                 </span>
               </Link>
               <p className="mt-4 max-w-[220px] text-[13px] leading-relaxed text-white/50">
-                Le programme qui sort les freelances du marche sature.
-                Formation, coaching et communaute — par Alexia Laneau.
+                Le programme qui sort les freelances du marché saturé.
+                Formation, coaching et communauté — par Alexia Laneau.
               </p>
             </div>
 
@@ -1080,7 +1186,7 @@ export default function LandingPage() {
           </div>
 
           <div className="mt-14 border-t border-white/[0.08] pt-8 text-center text-[12px] text-white/45">
-            &copy; {new Date().getFullYear()} Off-Market. Tous droits reserves.
+            &copy; {new Date().getFullYear()} Off-Market. Tous droits réservés.
           </div>
         </div>
       </footer>

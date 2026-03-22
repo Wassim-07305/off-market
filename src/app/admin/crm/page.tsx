@@ -334,7 +334,8 @@ function CoachMonitoringPanel() {
                     <p className="text-xs text-muted-foreground text-center py-4">Aucun client assigne</p>
                   ) : (
                     <div className="space-y-1">
-                      <div className="grid grid-cols-[1fr_80px_80px_80px_100px] gap-2 px-2 pb-1 text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+                      <div className="overflow-x-auto">
+                    <div className="grid grid-cols-[1fr_80px_80px_80px_100px] gap-2 px-2 pb-1 text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
                         <span>Client</span>
                         <span className="text-center">Sante</span>
                         <span className="text-center">Drapeau</span>
@@ -361,6 +362,7 @@ function CoachMonitoringPanel() {
                         </div>
                       ))}
                     </div>
+                    </div>
                   )}
                 </div>
               )}
@@ -380,6 +382,7 @@ export default function AdminCrmPage() {
   return (
     <div className="space-y-4">
       {/* Mode toggle */}
+      <div className="overflow-x-auto scrollbar-hide">
       <div className="flex items-center gap-1 bg-muted/50 rounded-xl p-1 w-fit">
         {MODES.map((m) => (
           <button
@@ -396,6 +399,7 @@ export default function AdminCrmPage() {
             {m.label}
           </button>
         ))}
+      </div>
       </div>
 
       {/* Content */}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { motion } from "framer-motion";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 import { cn } from "@/lib/utils";
@@ -98,6 +98,10 @@ export default function CalendarPage() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState<CalendarView>("month");
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
+
+  useEffect(() => {
+    if (window.innerWidth < 768 && view === "week") setView("day");
+  }, []);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(
@@ -277,6 +281,7 @@ export default function CalendarPage() {
                   view === v.key
                     ? "bg-[#AF0000] text-white"
                     : "bg-surface dark:bg-surface text-muted-foreground hover:text-foreground hover:bg-zinc-50 dark:hover:bg-muted",
+                  v.key === "week" && "hidden md:inline-flex",
                 )}
               >
                 <v.icon className="w-3.5 h-3.5" />

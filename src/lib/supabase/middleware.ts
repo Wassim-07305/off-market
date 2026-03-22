@@ -114,6 +114,7 @@ export async function updateSession(request: NextRequest) {
     pathname === "/" ||
     pathname.startsWith("/lead-magnet") ||
     pathname.startsWith("/f/") ||
+    pathname.startsWith("/book/") ||
     (pathname.startsWith("/contracts/") && pathname.endsWith("/sign")) ||
     (pathname.startsWith("/api/contracts/") &&
       (pathname.endsWith("/sign") ||

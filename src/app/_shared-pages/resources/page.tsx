@@ -509,7 +509,7 @@ export default function ResourcesPage() {
                               menuOpen === resource.id ? null : resource.id,
                             )
                           }
-                          className="h-8 w-8 rounded-lg hover:bg-muted flex items-center justify-center transition-colors opacity-0 group-hover:opacity-100"
+                          className="h-8 w-8 rounded-lg hover:bg-muted flex items-center justify-center transition-colors md:opacity-0 md:group-hover:opacity-100"
                         >
                           <MoreVertical className="w-4 h-4 text-muted-foreground" />
                         </button>

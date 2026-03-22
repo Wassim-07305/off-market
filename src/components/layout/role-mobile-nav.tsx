@@ -37,7 +37,9 @@ export function RoleMobileNav({ variant }: RoleMobileNavProps) {
         ? "Coach"
         : variant === "sales"
           ? "Sales"
-          : "Client";
+          : variant === "prospect"
+            ? "Prospect"
+            : "Client";
 
   return (
     <>

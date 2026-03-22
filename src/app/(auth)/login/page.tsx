@@ -247,8 +247,8 @@ function LoginContent() {
 
   return (
     <div className="animate-fade-in">
-      <div className="text-center mb-8 hidden lg:block">
-        <h1 className="text-2xl text-white mb-2 font-display font-bold tracking-tight">
+      <div className="text-center mb-8 block">
+        <h1 className="text-xl lg:text-2xl text-white mb-2 font-display font-bold tracking-tight">
           Connexion
         </h1>
         <p className="text-white/40 text-sm">Connecte-toi a ton espace</p>

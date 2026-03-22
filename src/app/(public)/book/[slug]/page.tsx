@@ -75,7 +75,7 @@ export default function PublicBookingPage() {
             Page introuvable
           </h1>
           <p className="text-zinc-400">
-            Cette page de reservation n&apos;existe pas ou n&apos;est plus
+            Cette page de réservation n&apos;existe pas ou n&apos;est plus
             active.
           </p>
         </div>
@@ -146,7 +146,10 @@ function BookingFlow({
     );
   };
 
-  const canProceedFromQualification = formData.name.trim().length > 0;
+  const requiredCustomFieldsFilled = (page?.qualification_fields ?? [])
+    .filter((f: any) => f.required)
+    .every((f: any) => (formData.custom?.[f.id] ?? "").toString().trim().length > 0);
+  const canProceedFromQualification = formData.name.trim().length > 0 && requiredCustomFieldsFilled;
 
   const steps: { key: Step; label: string }[] = [
     { key: "qualification", label: "Infos" },
@@ -294,7 +297,7 @@ function BookingFlow({
       {/* Footer */}
       <footer className="border-t border-white/[0.04] py-4 text-center">
         <p className="text-xs text-zinc-600">
-          Propulse par{" "}
+          Propulsé par{" "}
           <span className="text-zinc-400 font-medium">Off Market</span>
         </p>
       </footer>
@@ -333,7 +336,7 @@ function StepQualification({
       className="space-y-6"
     >
       <div>
-        <h2 className="text-xl font-bold text-white mb-1">Vos coordonnees</h2>
+        <h2 className="text-xl font-bold text-white mb-1">Vos coordonnées</h2>
         <p className="text-sm text-zinc-400">
           Remplissez vos informations pour prendre rendez-vous
         </p>
@@ -388,7 +391,7 @@ function StepQualification({
 
         <div>
           <label className="text-sm font-medium text-zinc-300 mb-1.5 block">
-            Telephone
+            Téléphone
           </label>
           <div className="relative">
             <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
@@ -449,7 +452,7 @@ function StepQualification({
                   } as React.CSSProperties
                 }
               >
-                <option value="">Selectionnez...</option>
+                <option value="">Sélectionnez...</option>
                 {field.options?.map((opt) => (
                   <option key={opt} value={opt}>
                     {opt}
@@ -552,7 +555,7 @@ function StepDate({
         <div>
           <h2 className="text-xl font-bold text-white">Choisissez une date</h2>
           <p className="text-sm text-zinc-400">
-            Selectionnez un jour dans le calendrier
+            Sélectionnez un jour dans le calendrier
           </p>
         </div>
       </div>
@@ -677,7 +680,7 @@ function StepSlot({
         </button>
         <div>
           <h2 className="text-xl font-bold text-white">
-            Choisissez un creneau
+            Choisissez un créneau
           </h2>
           <p className="text-sm text-zinc-400">
             {format(selectedDate, "EEEE d MMMM yyyy", { locale: fr })} &middot;{" "}
@@ -694,7 +697,7 @@ function StepSlot({
         <div className="text-center py-12">
           <Clock className="w-12 h-12 text-zinc-600 mx-auto mb-3" />
           <p className="text-sm text-zinc-400">
-            Aucun creneau disponible pour cette date
+            Aucun créneau disponible pour cette date
           </p>
           <button
             onClick={onBack}
@@ -774,7 +777,7 @@ function StepConfirm({
         <div>
           <h2 className="text-xl font-bold text-white">Confirmation</h2>
           <p className="text-sm text-zinc-400">
-            Verifiez les informations avant de confirmer
+            Vérifiez les informations avant de confirmer
           </p>
         </div>
       </div>
@@ -826,7 +829,7 @@ function StepConfirm({
         {isPending ? (
           <>
             <Loader2 className="w-4 h-4 animate-spin" />
-            Reservation en cours...
+            Réservation en cours...
           </>
         ) : (
           <>
@@ -867,10 +870,10 @@ function StepDone({
       </div>
 
       <h2 className="text-2xl font-bold text-white mb-2">
-        Rendez-vous confirme !
+        Rendez-vous confirmé !
       </h2>
       <p className="text-zinc-400 mb-6">
-        Merci {name.split(" ")[0]}, votre rendez-vous est bien enregistre.
+        Merci {name.split(" ")[0]}, votre rendez-vous est bien enregistré.
       </p>
 
       <div className="inline-block bg-zinc-900 border border-zinc-800 rounded-2xl px-6 py-4">
@@ -883,7 +886,7 @@ function StepDone({
       </div>
 
       <p className="text-xs text-zinc-500 mt-8">
-        Vous recevrez un email de confirmation avec les details du rendez-vous.
+        Vous recevrez un email de confirmation avec les détails du rendez-vous.
       </p>
     </motion.div>
   );
