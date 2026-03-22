@@ -3,7 +3,19 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
-import type { Replay } from "@/types/database";
+interface Replay {
+  id: string;
+  coach_id: string;
+  title: string;
+  description: string | null;
+  video_url: string;
+  thumbnail_url: string | null;
+  category: string | null;
+  duration_seconds: number | null;
+  recorded_at: string;
+  created_at: string;
+  coach?: any;
+}
 
 export function useReplays(filters?: {
   category?: string;
@@ -92,7 +104,7 @@ export function useReplayMutations() {
     }: { id: string } & Partial<Replay>) => {
       const { error } = await supabase
         .from("replays")
-        .update(updates as any)
+        .update(updates as never)
         .eq("id", id);
       if (error) throw error;
     },

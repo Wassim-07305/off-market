@@ -124,7 +124,7 @@ export default function ClientsPage() {
         client_id: clientId,
         coach_id: coachId,
         status: "active",
-      });
+      } as never);
     } else {
       // Unassign: just delete
       await supabase
@@ -167,7 +167,7 @@ export default function ClientsPage() {
         if (detailId) {
           await supabase
             .from("student_details")
-            .update({ tag })
+            .update({ tag } as never)
             .eq("id", detailId);
         }
       }

@@ -33,7 +33,7 @@ export function useLessonTimer(lessonId: string | undefined) {
         .eq("student_id", user.id)
         .maybeSingle();
 
-      const currentTime = existing?.time_spent ?? 0;
+      const currentTime = (existing as any)?.time_spent ?? 0;
       const newTime = currentTime + elapsedSeconds;
 
       await supabase.from("lesson_progress").upsert(
@@ -42,7 +42,7 @@ export function useLessonTimer(lessonId: string | undefined) {
           lesson_id: lessonId,
           time_spent: newTime,
           last_accessed_at: new Date().toISOString(),
-        },
+        } as never,
         { onConflict: "lesson_id,student_id" },
       );
 

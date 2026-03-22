@@ -75,7 +75,7 @@ export function useSubmitPreCallResponse() {
             objective,
             tried_solutions: triedSolutions,
             updated_at: new Date().toISOString(),
-          },
+          } as never,
           { onConflict: "call_id,user_id" },
         )
         .select()

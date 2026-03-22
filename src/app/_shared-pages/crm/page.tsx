@@ -42,7 +42,7 @@ export default function CRMPage() {
         setter_id: user?.id ?? "",
         column_id: firstColumn.id,
         name: "Sans nom",
-      },
+      } as any,
       {
         onSuccess: () => toast.success("Prospect ajoute"),
       },

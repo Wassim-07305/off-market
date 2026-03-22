@@ -314,9 +314,9 @@ function SimpleCallFormModal({
     supabase
       .from("profiles")
       .select("id, full_name")
-      .eq("role", "client")
+      .eq("role", "client" as any)
       .order("full_name")
-      .then(({ data }) => setClients(data ?? []));
+      .then(({ data }) => setClients((data as any) ?? []));
   }, [open, supabase]);
 
   useEffect(() => {
@@ -370,7 +370,7 @@ function SimpleCallFormModal({
           time,
           duration_minutes: duration,
           call_type: "one_on_one",
-        });
+        } as any);
         toast.success("Appel modifie");
       } else {
         await createCall.mutateAsync({
@@ -632,14 +632,14 @@ export default function CallsPage() {
     const date = now.toISOString().split("T")[0];
     const time = now.toTimeString().slice(0, 5);
     try {
-      const call = await createCall.mutateAsync({
+      const call = (await createCall.mutateAsync({
         title: `Appel instantane — ${now.toLocaleDateString("fr-FR")}`,
         date,
         time,
         duration_minutes: 60,
         call_type: "one_on_one",
         status: "planifie",
-      });
+      })) as any;
       if (call?.id) {
         const link = `${window.location.origin}${prefix}/calls/${call.id}`;
         setInstantCallId(call.id);

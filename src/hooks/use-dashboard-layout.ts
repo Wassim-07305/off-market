@@ -120,11 +120,11 @@ export function useDashboardLayout() {
     queryKey: [QUERY_KEY, user?.id],
     enabled: !!user,
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("dashboard_layouts")
         .select("widgets")
         .eq("user_id", user!.id)
-        .maybeSingle();
+        .maybeSingle() as { data: { widgets: unknown } | null; error: any };
 
       if (error) throw error;
 
@@ -158,7 +158,7 @@ export function useSaveDashboardLayout() {
         {
           user_id: user.id,
           widgets: widgets as unknown as Record<string, unknown>[],
-        },
+        } as never,
         { onConflict: "user_id" },
       );
 
@@ -183,10 +183,10 @@ export function useResetDashboardLayout() {
     mutationFn: async () => {
       if (!user) throw new Error("Non authentifie");
 
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from("dashboard_layouts")
         .delete()
-        .eq("user_id", user.id);
+        .eq("user_id", user.id) as { error: any };
 
       if (error) throw error;
     },

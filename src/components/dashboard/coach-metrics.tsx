@@ -66,7 +66,7 @@ export function CoachMetrics() {
         days.push({ date: dateStr, label: dayLabel, count: 0 });
       }
 
-      (data ?? []).forEach((row) => {
+      (data ?? []).forEach((row: any) => {
         const dateStr = row.created_at.split("T")[0];
         const day = days.find((d) => d.date === dateStr);
         if (day) day.count++;
@@ -87,7 +87,8 @@ export function CoachMetrics() {
     };
 
     students.forEach((s) => {
-      const tag = s.student_details?.[0]?.tag ?? "standard";
+      const details = s.student_details as any;
+      const tag = (Array.isArray(details) ? details[0]?.tag : details?.tag) ?? "standard";
       if (tag in counts) counts[tag]++;
     });
 

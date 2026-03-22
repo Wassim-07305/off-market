@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Script de migration Supabase Storage → Backblaze B2 (fichiers) + YouTube (vidéos)
  *

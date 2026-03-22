@@ -65,7 +65,7 @@ export function SetterProspectDrawer({
   // Sync form with lead
   useEffect(() => {
     if (lead) {
-      setName(lead.name);
+      setName(lead.name ?? "");
       setPhone(lead.phone ?? "");
       setEmail(lead.email ?? "");
       setInstagram(lead.instagram_handle ?? "");
@@ -76,7 +76,7 @@ export function SetterProspectDrawer({
       setContractedRevenue(lead.ca_contracte ?? 0);
       setCollectedRevenue(lead.ca_collecte ?? 0);
       setNotes(lead.notes ?? "");
-      setColumnId(lead.column_id);
+      setColumnId(lead.column_id ?? "");
     }
   }, [lead]);
 

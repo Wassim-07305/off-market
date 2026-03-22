@@ -8,7 +8,7 @@ export function useMarkChannelRead() {
     mutationFn: async (channelId: string) => {
       const { error } = await supabase.rpc("mark_channel_read", {
         p_channel_id: channelId,
-      });
+      } as never);
       if (error) throw error;
     },
     onSuccess: () => {

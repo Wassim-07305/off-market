@@ -47,7 +47,7 @@ export function useFeedReports(status?: ReportStatus) {
         .insert({
           ...report,
           reporter_id: user!.id,
-        })
+        } as never)
         .select()
         .single();
       if (error) throw error;
@@ -75,7 +75,7 @@ export function useFeedReports(status?: ReportStatus) {
           action_taken: action_taken ?? null,
           reviewed_by: user!.id,
           reviewed_at: new Date().toISOString(),
-        })
+        } as never)
         .eq("id", id);
       if (error) throw error;
     },
@@ -118,7 +118,7 @@ export function useFeedReports(status?: ReportStatus) {
           action_taken: "content_removed",
           reviewed_by: user!.id,
           reviewed_at: new Date().toISOString(),
-        })
+        } as never)
         .eq("id", reportId);
       if (error) throw error;
     },

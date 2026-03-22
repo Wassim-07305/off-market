@@ -112,7 +112,7 @@ export function ChannelSettingsModal({
           name: editName.trim(),
           description: editDescription.trim() || null,
           type: editType,
-        })
+        } as never)
         .eq("id", channel.id);
       if (error) throw error;
       queryClient.invalidateQueries({ queryKey: ["channels"] });
@@ -183,7 +183,7 @@ export function ChannelSettingsModal({
     try {
       const { error } = await supabase
         .from("channel_members")
-        .insert({ channel_id: channel.id, profile_id: profileId });
+        .insert({ channel_id: channel.id, profile_id: profileId } as never);
       if (error) throw error;
       queryClient.invalidateQueries({
         queryKey: ["channel-members", channel.id],

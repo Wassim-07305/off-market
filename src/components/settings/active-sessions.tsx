@@ -11,8 +11,17 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUserSessions } from "@/hooks/use-user-sessions";
-import type { UserSession } from "@/types/invitations";
 import type { LucideIcon } from "lucide-react";
+
+interface UserSession {
+  id: string;
+  user_id: string;
+  device_info: string;
+  ip_address?: string | null;
+  is_active: boolean;
+  last_active_at: string;
+  created_at: string;
+}
 
 function getDeviceIcon(deviceInfo: string | null): LucideIcon {
   if (!deviceInfo) return Globe;

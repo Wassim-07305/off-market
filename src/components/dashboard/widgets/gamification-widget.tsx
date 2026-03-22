@@ -28,7 +28,7 @@ function GamificationWidgetBase() {
 
       if (xpRes.error) throw xpRes.error;
 
-      const totalPoints = (xpRes.data ?? []).reduce(
+      const totalPoints = ((xpRes.data ?? []) as { xp_amount: number }[]).reduce(
         (sum, e) => sum + (e.xp_amount ?? 0),
         0,
       );

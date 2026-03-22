@@ -10,6 +10,7 @@ import {
   useStudentNotes,
   useStudentTasks,
   useStudents as useStudentsHook,
+  getStudentDetail,
 } from "@/hooks/use-students";
 import { useAuth } from "@/hooks/use-auth";
 import { useClientBriefing } from "@/hooks/use-client-briefing";
@@ -139,7 +140,7 @@ export default function StudentDetailPage({
     );
   }
 
-  const details = student.student_details?.[0];
+  const details = getStudentDetail(student);
   const score = details?.health_score ?? 0;
   const flag = details?.flag ?? ("green" as const);
   const pipelineStage = details?.pipeline_stage ?? ("onboarding" as const);

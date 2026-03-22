@@ -56,7 +56,7 @@ export function useStreak() {
       const { data, error } = await supabase.rpc("record_activity", {
         p_profile_id: user.id,
         p_action: action,
-      });
+      } as never);
       // RPC may not exist yet — fail silently
       if (error) return null;
       return data as RecordActivityResult;

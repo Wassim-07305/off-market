@@ -40,11 +40,11 @@ function useLessonChecklist(lessonId: string) {
     queryKey: ["lesson-checklist", lessonId],
     enabled: !!lessonId,
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("lessons")
         .select("content")
         .eq("id", lessonId)
-        .single();
+        .single() as { data: { content: unknown } | null; error: any };
       if (error) throw error;
       const content = data?.content as Record<string, unknown> | null;
       return ((content?.checklist as ChecklistItem[]) ?? []).sort(
@@ -58,12 +58,12 @@ function useLessonChecklist(lessonId: string) {
     queryKey: ["lesson-checklist-completions", lessonId, user?.id],
     enabled: !!user && !!lessonId,
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("lesson_progress")
         .select("id, checklist_completions")
         .eq("lesson_id", lessonId)
         .eq("student_id", user!.id)
-        .maybeSingle();
+        .maybeSingle() as { data: { id: string; checklist_completions: unknown } | null; error: any };
       if (error) throw error;
       return (
         (data?.checklist_completions as ChecklistCompletion[] | null) ?? []
@@ -114,7 +114,7 @@ export function ActionChecklist({ lessonId, className }: ActionChecklistProps) {
       }
 
       // Upsert into lesson_progress
-      const { error } = await supabase.from("lesson_progress").upsert(
+      const { error } = await (supabase as any).from("lesson_progress").upsert(
         {
           student_id: user.id,
           lesson_id: lessonId,
@@ -129,7 +129,7 @@ export function ActionChecklist({ lessonId, className }: ActionChecklistProps) {
             : {}),
         },
         { onConflict: "lesson_id,student_id" },
-      );
+      ) as { error: any };
       if (error) throw error;
     },
     onSuccess: () => {

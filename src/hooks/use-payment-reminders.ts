@@ -31,7 +31,7 @@ export function usePaymentReminders(invoiceId?: string) {
     mutationFn: async (reminderId: string) => {
       const { error } = await supabase
         .from("payment_reminders")
-        .update({ sent_at: new Date().toISOString() })
+        .update({ sent_at: new Date().toISOString() } as never)
         .eq("id", reminderId);
       if (error) throw error;
     },

@@ -89,7 +89,7 @@ export function useFormMutations() {
     }) => {
       const { data, error } = await supabase
         .from("forms")
-        .insert(form)
+        .insert(form as never)
         .select()
         .single();
       if (error) throw error;
@@ -102,7 +102,7 @@ export function useFormMutations() {
     mutationFn: async ({ id, ...updates }: { id: string } & Partial<Form>) => {
       const { error } = await supabase
         .from("forms")
-        .update(updates)
+        .update(updates as never)
         .eq("id", id);
       if (error) throw error;
     },
@@ -122,7 +122,7 @@ export function useFormMutations() {
         const { error } = await supabase
           .from("form_fields")
           .insert(
-            fields.map((f, i) => ({ ...f, form_id: formId, sort_order: i })),
+            fields.map((f, i) => ({ ...f, form_id: formId, sort_order: i })) as never,
           );
         if (error) throw error;
       }

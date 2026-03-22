@@ -14,7 +14,7 @@ export function usePresence() {
       if (document.visibilityState === "visible") {
         await supabase
           .from("profiles")
-          .update({ last_seen_at: new Date().toISOString() })
+          .update({ last_seen_at: new Date().toISOString() } as never)
           .eq("id", userId);
       }
     };

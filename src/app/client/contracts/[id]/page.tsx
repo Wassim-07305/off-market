@@ -81,7 +81,7 @@ export default function ClientContractDetailPage() {
           user_agent: navigator.userAgent,
           signer_address: signerAddress.trim(),
           signer_city: signerCity.trim(),
-        },
+        } as any,
         signatureImage,
       });
       toast.success("Contrat signe avec succes !");
@@ -110,7 +110,7 @@ export default function ClientContractDetailPage() {
           signer_name: signerName.trim(),
           signer_address: signerAddress.trim(),
           signer_city: signerCity.trim(),
-        },
+        } as any,
       });
       toast.success("Contrat signe avec succes !");
       setShowSignatureSection(false);

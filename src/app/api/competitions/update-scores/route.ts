@@ -106,7 +106,7 @@ export async function POST(request: Request) {
             .gte(metricConfig.dateColumn, comp.start_date)
             .lte(metricConfig.dateColumn, comp.end_date);
 
-          score = (data ?? []).reduce(
+          score = ((data ?? []) as unknown as Record<string, number>[]).reduce(
             (sum: number, row: Record<string, number>) =>
               sum + (Number(row[metricConfig.sumColumn!]) || 0),
             0,
@@ -119,7 +119,7 @@ export async function POST(request: Request) {
             .gte(metricConfig.dateColumn, comp.start_date)
             .lte(metricConfig.dateColumn, comp.end_date);
 
-          score = count ?? 0;
+          score = (count as number | null) ?? 0;
         }
 
         // Update participant score

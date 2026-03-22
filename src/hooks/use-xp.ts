@@ -95,7 +95,7 @@ export function useXp() {
       metadata?: Record<string, unknown>;
     }) => {
       if (!user) throw new Error("Not authenticated");
-      const { data, error } = await supabase.rpc("award_xp", {
+      const { data, error } = await (supabase as any).rpc("award_xp", {
         p_profile_id: user.id,
         p_action: action,
         p_metadata: metadata ?? {},
@@ -188,7 +188,7 @@ export function useXpConfig() {
       if (is_active !== undefined) updates.is_active = is_active;
       const { error } = await supabase
         .from("xp_config")
-        .update(updates)
+        .update(updates as never)
         .eq("id", id);
       if (error) throw error;
     },

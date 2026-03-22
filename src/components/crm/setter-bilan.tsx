@@ -60,7 +60,7 @@ function KpiCard({
 
 export function SetterBilan() {
   const { activities } = useSetterActivities();
-  const { stats } = useSetterStats();
+  const { data: stats } = useSetterStats();
   const createActivity = useCreateSetterActivity();
 
   // Form state
@@ -73,7 +73,14 @@ export function SetterBilan() {
 
   // Weekly stats (fallback if hook does not return them)
   const weeklyStats = useMemo(() => {
-    if (stats) return stats;
+    if (stats) {
+      return {
+        dms_week: stats.semaine.dms_sent,
+        relances_week: stats.semaine.followups_sent,
+        links_week: stats.semaine.links_sent,
+        calls_week: stats.semaine.calls_booked,
+      };
+    }
 
     const now = new Date();
     const weekStart = startOfWeek(now, { weekStartsOn: 1, locale: fr });
@@ -104,6 +111,7 @@ export function SetterBilan() {
         links_sent: links,
         calls_booked: calls,
         notes: notes || null,
+        client_id: null,
       },
       {
         onSuccess: () => {

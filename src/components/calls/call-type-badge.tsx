@@ -15,6 +15,8 @@ export function CallTypeBadge({ type, className }: CallTypeBadgeProps) {
     calendly: "Calendly",
     booking: "Booking",
     autre: "Autre",
+    one_on_one: "Appel",
+    live: "Live",
   };
 
   return (

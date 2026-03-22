@@ -163,7 +163,7 @@ export function AuditLogTable() {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
 
-  const { data: logs, isLoading } = useAuditLogs({
+  const { logs, isLoading } = useAuditLogs({
     action: actionFilter || undefined,
     from: dateFrom ? new Date(dateFrom).toISOString() : undefined,
     to: dateTo ? new Date(dateTo + "T23:59:59").toISOString() : undefined,
@@ -178,7 +178,7 @@ export function AuditLogTable() {
     if (!userFilter) return logs;
     const lower = userFilter.toLowerCase();
     return logs.filter(
-      (log) =>
+      (log: AuditLog) =>
         log.user?.full_name?.toLowerCase().includes(lower) ||
         log.user?.email?.toLowerCase().includes(lower),
     );

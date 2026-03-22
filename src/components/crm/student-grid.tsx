@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useRoutePrefix } from "@/hooks/use-route-prefix";
 import type { StudentWithDetails } from "@/hooks/use-students";
+import { getStudentDetail } from "@/hooks/use-students";
 import { cn, getInitials, formatCurrency, formatDate } from "@/lib/utils";
 import { FlagDot } from "./flag-indicator";
 import { EngagementTagBadge } from "./engagement-tag";
@@ -36,7 +37,7 @@ export function StudentGrid({
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
       {students.map((student) => {
-        const details = student.student_details?.[0];
+        const details = getStudentDetail(student);
         const flag = details?.flag ?? "green";
         const score = details?.health_score ?? 0;
         const isSelected = selectedIds.has(student.id);

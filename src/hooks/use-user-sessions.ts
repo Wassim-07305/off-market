@@ -4,7 +4,14 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
 import { toast } from "sonner";
-import type { UserSession } from "@/types/invitations";
+interface UserSession {
+  id: string;
+  user_id: string;
+  device_info: string;
+  is_active: boolean;
+  last_active_at: string;
+  created_at: string;
+}
 
 export function useUserSessions() {
   const supabase = useSupabase();
@@ -14,7 +21,7 @@ export function useUserSessions() {
   const sessionsQuery = useQuery({
     queryKey: ["user-sessions", user?.id],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("user_sessions")
         .select("*")
         .eq("user_id", user!.id)
@@ -27,9 +34,9 @@ export function useUserSessions() {
 
   const revokeSession = useMutation({
     mutationFn: async (sessionId: string) => {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from("user_sessions")
-        .update({ is_active: false } as any)
+        .update({ is_active: false })
         .eq("id", sessionId)
         .eq("user_id", user!.id);
       if (error) throw error;
@@ -47,11 +54,11 @@ export function useUserSessions() {
     mutationFn: async () => {
       if (!user) return;
       const deviceInfo = parseDeviceInfo(navigator.userAgent);
-      const { error } = await supabase.from("user_sessions").insert({
+      const { error } = await (supabase as any).from("user_sessions").insert({
         user_id: user.id,
         device_info: deviceInfo,
         is_active: true,
-      } as any);
+      });
       if (error) throw error;
     },
     onSuccess: () => {

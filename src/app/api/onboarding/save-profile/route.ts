@@ -76,8 +76,7 @@ export async function POST(request: Request) {
       },
       { onConflict: "user_id,step", ignoreDuplicates: true },
     )
-    .then(() => {})
-    .catch(() => {});
+    .then(() => {});
 
   return NextResponse.json({
     success: true,

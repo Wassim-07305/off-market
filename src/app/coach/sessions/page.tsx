@@ -253,7 +253,7 @@ function CreateSessionModal({
     title: string;
     session_type: SessionType;
     scheduled_at: string;
-    duration_minutes?: number;
+    duration_minutes: number;
   }) => void;
   isCreating: boolean;
 }) {

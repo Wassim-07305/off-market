@@ -8,7 +8,7 @@ import { CoachActivityFeed } from "@/components/dashboard/coach-activity-feed";
 import { CoachMetrics } from "@/components/dashboard/coach-metrics";
 import { RiskAnalysisPanel } from "@/components/dashboard/risk-analysis-panel";
 import { AiPeriodicReport } from "@/components/dashboard/ai-periodic-report";
-import { useStudents } from "@/hooks/use-students";
+import { useStudents, getStudentDetail } from "@/hooks/use-students";
 import { useCoachAlerts } from "@/hooks/use-coach-alerts";
 import { useSessions } from "@/hooks/use-sessions";
 import { useAuth } from "@/hooks/use-auth";
@@ -64,14 +64,14 @@ export default function CoachDashboardPage() {
   const stats = useMemo(() => {
     const totalStudents = students.length;
     const atRiskCount = students.filter(
-      (s) => s.student_details?.[0]?.tag === "at_risk",
+      (s) => getStudentDetail(s)?.tag === "at_risk",
     ).length;
     const upcomingSessions = upcoming.length;
     const avgHealth =
       totalStudents > 0
         ? Math.round(
             students.reduce(
-              (sum, s) => sum + (s.student_details?.[0]?.health_score ?? 0),
+              (sum, s) => sum + (getStudentDetail(s)?.health_score ?? 0),
               0,
             ) / totalStudents,
           )

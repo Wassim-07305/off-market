@@ -1,6 +1,6 @@
 "use client";
 
-import { useStudents } from "@/hooks/use-students";
+import { useStudents, getStudentDetail } from "@/hooks/use-students";
 import { getInitials } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 
@@ -15,8 +15,8 @@ export function TopStudents() {
   const { students, isLoading } = useStudents({ limit: 5 });
 
   const sorted = [...students].sort((a, b) => {
-    const aScore = a.student_details?.[0]?.health_score ?? 0;
-    const bScore = b.student_details?.[0]?.health_score ?? 0;
+    const aScore = getStudentDetail(a)?.health_score ?? 0;
+    const bScore = getStudentDetail(b)?.health_score ?? 0;
     return bScore - aScore;
   });
 
@@ -59,7 +59,7 @@ export function TopStudents() {
           </p>
         ) : (
           sorted.map((student, index) => {
-            const details = student.student_details?.[0];
+            const details = getStudentDetail(student);
             const score = details?.health_score ?? 0;
             const medal = index < 3 ? medals[index] : null;
 

@@ -43,7 +43,7 @@ export function usePreferences() {
       if (!data) {
         const { data: created, error: createErr } = await supabase
           .from("user_preferences")
-          .insert({ user_id: user!.id })
+          .insert({ user_id: user!.id } as never)
           .select()
           .single();
         if (createErr) throw createErr;
@@ -68,7 +68,7 @@ export function useUpdatePreferences() {
     ) => {
       const { data, error } = await supabase
         .from("user_preferences")
-        .update(updates)
+        .update(updates as never)
         .eq("user_id", user!.id)
         .select()
         .single();

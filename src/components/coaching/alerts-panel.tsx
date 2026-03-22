@@ -73,6 +73,8 @@ const ALERT_TYPE_LABELS: Record<AlertType, string> = {
   low_mood: "Moral bas",
   flag_change: "Changement de flag",
   session_missed: "Session manquee",
+  goal_at_risk: "Objectif a risque",
+  payment_overdue: "Paiement en retard",
 };
 
 // ── Component ──────────────────────────────────────────────────────────────
@@ -210,7 +212,7 @@ export function AlertsPanel() {
                       </span>
                     </div>
                     <p className="text-sm text-foreground font-medium">
-                      {alert.message}
+                      {alert.title}
                     </p>
                     <div className="flex items-center gap-2 mt-1">
                       {alert.client && (

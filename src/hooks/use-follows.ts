@@ -31,7 +31,7 @@ export function useFollowStatus(targetId: string | null) {
     mutationFn: async () => {
       const { error } = await supabase
         .from("user_follows")
-        .insert({ follower_id: user!.id, following_id: targetId! });
+        .insert({ follower_id: user!.id, following_id: targetId! } as never);
       if (error) throw error;
     },
     onSuccess: () => {

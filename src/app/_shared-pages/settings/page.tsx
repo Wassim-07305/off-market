@@ -217,7 +217,7 @@ export default function SettingsPage() {
       // Update profile in DB
       const { error: updateError } = await supabase
         .from("profiles")
-        .update({ avatar_url: newUrl } as Record<string, unknown>)
+        .update({ avatar_url: newUrl } as never)
         .eq("id", user.id);
 
       if (updateError) throw updateError;
@@ -245,7 +245,7 @@ export default function SettingsPage() {
           phone,
           bio,
           leaderboard_anonymous: leaderboardAnonymous,
-        } as Record<string, unknown>)
+        } as never)
         .eq("id", user.id);
       if (error) {
         toast.error("Erreur lors de la sauvegarde");

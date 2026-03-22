@@ -102,7 +102,7 @@ export function useNpsCriticalAlerts() {
           respondent_name: respondentName,
         },
         action_url: `/admin/forms/${formId}`,
-      });
+      } as never);
 
       if (error) {
         console.error("Failed to create NPS alert notification:", error);

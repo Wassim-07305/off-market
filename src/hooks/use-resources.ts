@@ -82,7 +82,7 @@ export function useUploadResource() {
           file_size: file.size,
           uploaded_by: user.id,
           visibility,
-        })
+        } as never)
         .select("*, uploader:profiles!uploaded_by(id, full_name, avatar_url)")
         .single();
       if (error) throw error;
@@ -114,7 +114,7 @@ export function useUpdateResource() {
     }) => {
       const { data, error } = await supabase
         .from("resources")
-        .update(updates)
+        .update(updates as never)
         .eq("id", id)
         .select()
         .single();
@@ -172,7 +172,7 @@ export function useTrackDownload() {
   return useMutation({
     mutationFn: async (id: string) => {
       await supabase
-        .rpc("increment_download_count", { resource_id: id })
+        .rpc("increment_download_count", { resource_id: id } as never)
         .throwOnError();
     },
     onSuccess: () => {

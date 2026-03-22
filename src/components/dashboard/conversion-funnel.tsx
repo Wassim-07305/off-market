@@ -28,7 +28,7 @@ function useFunnelData() {
       if (error) throw error;
 
       const counts: Record<string, number> = {};
-      for (const row of data ?? []) {
+      for (const row of (data ?? []) as { pipeline_stage: string | null }[]) {
         const stage = row.pipeline_stage ?? "prospect";
         counts[stage] = (counts[stage] ?? 0) + 1;
       }

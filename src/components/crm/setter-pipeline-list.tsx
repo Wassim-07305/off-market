@@ -40,7 +40,7 @@ export function SetterPipelineList() {
     let result = leads;
     if (search.trim()) {
       const q = search.toLowerCase();
-      result = result.filter((l) => l.name.toLowerCase().includes(q));
+      result = result.filter((l) => (l.name ?? "").toLowerCase().includes(q));
     }
     if (filterColumn) {
       result = result.filter((l) => l.column_id === filterColumn);
@@ -103,7 +103,7 @@ export function SetterPipelineList() {
             </thead>
             <tbody>
               {filteredLeads.map((lead) => {
-                const col = columnMap[lead.column_id];
+                const col = lead.column_id ? columnMap[lead.column_id] : undefined;
                 const overdue = isRelanceOverdue(lead.date_relance);
 
                 return (

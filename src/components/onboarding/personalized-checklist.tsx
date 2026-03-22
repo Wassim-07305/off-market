@@ -89,7 +89,7 @@ export function PersonalizedChecklist() {
           .eq("user_id", user!.id);
 
         if (!error && data && data.length > 0) {
-          const dbKeys = new Set(data.map((row) => row.step as string));
+          const dbKeys = new Set(data.map((row: any) => row.step as string));
           setCompleted(dbKeys);
           // Sync localStorage cache
           persistCompleted(user!.id, dbKeys);
@@ -150,7 +150,7 @@ export function PersonalizedChecklist() {
               user_id: user.id,
               step: key,
               completed_at: new Date().toISOString(),
-            })
+            } as never)
             .then(() => {});
         }
 

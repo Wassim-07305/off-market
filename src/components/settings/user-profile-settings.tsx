@@ -133,7 +133,7 @@ export function UserProfileSettings() {
 
     const { error: updateError } = await supabase
       .from("profiles")
-      .update({ avatar_url: newUrl } as any)
+      .update({ avatar_url: newUrl } as never)
       .eq("id", user.id);
 
     setUploading(false);
@@ -151,7 +151,7 @@ export function UserProfileSettings() {
 
     const { error } = await supabase
       .from("profiles")
-      .update({ full_name: fullName, phone, bio, timezone } as any)
+      .update({ full_name: fullName, phone, bio, timezone } as never)
       .eq("id", user.id);
 
     // Sauvegarder la langue en local

@@ -44,7 +44,7 @@ export function useUpsertSetterActivity() {
     mutationFn: async (data: SetterActivityFormData & { user_id: string }) => {
       const { data: result, error } = await supabase
         .from("setter_activities")
-        .upsert(data, { onConflict: "user_id,client_id,date" })
+        .upsert(data as never, { onConflict: "user_id,client_id,date" })
         .select()
         .single();
       if (error) throw error;

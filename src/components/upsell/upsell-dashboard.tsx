@@ -62,7 +62,8 @@ export function UpsellDashboard() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showFormModal, setShowFormModal] = useState(false);
 
-  const { opportunities, stats, isLoading } = useUpsellOpportunities();
+  const { opportunities: rawOpportunities, stats, isLoading } = useUpsellOpportunities();
+  const opportunities = rawOpportunities as unknown as UpsellOpportunity[];
   const updateUpsell = useUpdateUpsell();
 
   const filteredOpportunities = useMemo(() => {
@@ -308,7 +309,7 @@ export function UpsellDashboard() {
 
         {/* Stats Tab */}
         <TabsContent value="stats" activeValue={activeTab}>
-          <UpsellStats stats={stats} isLoading={isLoading} />
+          <UpsellStats stats={stats as any} isLoading={isLoading} />
         </TabsContent>
 
         {/* Alumni Tab */}

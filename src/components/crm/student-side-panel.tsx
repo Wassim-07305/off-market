@@ -137,7 +137,7 @@ export function StudentSidePanel({
           full_name: editForm.full_name,
           email: editForm.email,
           phone: editForm.phone || null,
-        })
+        } as never)
         .eq("id", student.id);
       if (profileError) throw profileError;
 
@@ -232,11 +232,11 @@ export function StudentSidePanel({
       if (!existing) {
         await supabase
           .from("student_details")
-          .insert({ profile_id: student.id, tag: newTag });
+          .insert({ profile_id: student.id, tag: newTag } as never);
       } else {
         await supabase
           .from("student_details")
-          .update({ tag: newTag })
+          .update({ tag: newTag } as never)
           .eq("profile_id", student.id);
       }
       toast.success("Tag mis a jour");

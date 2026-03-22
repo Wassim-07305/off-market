@@ -48,7 +48,7 @@ export function useSubmitQuiz() {
     }) => {
       const { data, error } = await supabase
         .from("quiz_attempts")
-        .insert({ ...attempt, student_id: user!.id })
+        .insert({ ...attempt, student_id: user!.id } as never)
         .select()
         .single();
       if (error) throw error;
@@ -145,7 +145,7 @@ export function useSubmitExercise() {
           student_id: user!.id,
           status: "submitted",
           attachments: submission.attachments ?? [],
-        })
+        } as never)
         .select()
         .single();
       if (error) throw error;
@@ -180,7 +180,7 @@ export function useReviewExercise() {
           grade: review.grade ?? null,
           reviewed_by: user!.id,
           reviewed_at: new Date().toISOString(),
-        })
+        } as never)
         .eq("id", review.id);
       if (error) throw error;
     },

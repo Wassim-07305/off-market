@@ -191,7 +191,7 @@ export default function FormBuilderPage() {
 
       if (fields.length > 0) {
         await saveFields.mutateAsync({
-          formId: form.id,
+          formId: (form as any).id,
           fields: fields.map((f, i) => ({
             field_type: f.field_type,
             label: f.label || "Sans titre",

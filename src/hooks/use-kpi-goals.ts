@@ -61,7 +61,7 @@ export function useCreateKpiGoal() {
     ) => {
       const { data, error } = await supabase
         .from("kpi_goals")
-        .insert({ ...goal, created_by: user!.id })
+        .insert({ ...goal, created_by: user!.id } as never)
         .select()
         .single();
       if (error) throw error;
@@ -86,7 +86,7 @@ export function useUpdateKpiGoal() {
     }: Partial<KpiGoal> & { id: string }) => {
       const { data, error } = await supabase
         .from("kpi_goals")
-        .update(updates)
+        .update(updates as never)
         .eq("id", id)
         .select()
         .single();

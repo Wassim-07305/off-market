@@ -22,7 +22,7 @@ export function useMarkAsRead() {
       const now = new Date().toISOString();
       const { error } = await supabase
         .from("notifications")
-        .update({ is_read: true, read_at: now })
+        .update({ is_read: true, read_at: now } as never)
         .eq("id", id);
       if (error) throw error;
     },
@@ -44,7 +44,7 @@ export function useMarkAllAsRead() {
       const now = new Date().toISOString();
       const { error } = await supabase
         .from("notifications")
-        .update({ is_read: true, read_at: now })
+        .update({ is_read: true, read_at: now } as never)
         .eq("recipient_id", userId)
         .eq("is_read", false);
       if (error) throw error;

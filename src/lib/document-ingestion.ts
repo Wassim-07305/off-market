@@ -4,7 +4,8 @@ export async function extractText(
 ): Promise<string> {
   if (fileType === "application/pdf" || fileType.includes("pdf")) {
     const pdf = await import("pdf-parse");
-    const data = await pdf.default(buffer);
+    const pdfParse = (pdf as any).default ?? pdf;
+    const data = await pdfParse(buffer);
     return data.text;
   }
   // For text files, just decode
