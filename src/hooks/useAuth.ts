@@ -9,7 +9,7 @@ async function fetchProfileAndRole(userId: string) {
     supabase.from("user_roles").select("role").eq("user_id", userId).single(),
   ]);
 
-  const profile = profileResult.data ?? null;
+  const profile = (profileResult.data as any) ?? null;
   // Si le champ onboarding_completed n'existe pas encore en DB, considérer comme complété
   if (profile && profile.onboarding_completed === undefined) {
     profile.onboarding_completed = true;
@@ -17,7 +17,7 @@ async function fetchProfileAndRole(userId: string) {
 
   return {
     profile,
-    role: (roleResult.data?.role as AppRole) ?? null,
+    role: ((roleResult.data as any)?.role as AppRole) ?? null,
   };
 }
 

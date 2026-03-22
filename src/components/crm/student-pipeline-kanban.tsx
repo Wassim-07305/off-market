@@ -29,7 +29,8 @@ function StudentCard({
   student: StudentWithDetails;
   isDragging?: boolean;
 }) {
-  const details = student.student_details?.[0];
+  const detailsRaw = student.student_details;
+  const details = Array.isArray(detailsRaw) ? detailsRaw[0] : detailsRaw;
   const flag = details?.flag ?? "green";
   const stageEnteredAt = details?.stage_entered_at;
 
@@ -171,7 +172,8 @@ function StageColumn({
       red: 0,
     };
     for (const s of students) {
-      const f = s.student_details?.[0]?.flag ?? "green";
+      const sd = s.student_details;
+      const f = (Array.isArray(sd) ? sd[0] : sd)?.flag ?? "green";
       counts[f] = (counts[f] ?? 0) + 1;
     }
     return counts;
@@ -288,8 +290,9 @@ export function StudentPipelineKanban() {
     const map = new Map<StudentPipelineStage, StudentWithDetails[]>();
     STUDENT_PIPELINE_STAGES.forEach((s) => map.set(s.value, []));
     students.forEach((student) => {
+      const sdRaw = student.student_details;
       const stage =
-        student.student_details?.[0]?.pipeline_stage ?? "onboarding";
+        (Array.isArray(sdRaw) ? sdRaw[0] : sdRaw)?.pipeline_stage ?? "onboarding";
       const list = map.get(stage);
       if (list) list.push(student);
     });
@@ -315,7 +318,8 @@ export function StudentPipelineKanban() {
     if (!STUDENT_PIPELINE_STAGES.some((s) => s.value === newStage)) return;
 
     const student = students.find((s) => s.id === studentId);
-    const currentStage = student?.student_details?.[0]?.pipeline_stage;
+    const sdVal = student?.student_details;
+    const currentStage = (Array.isArray(sdVal) ? sdVal[0] : sdVal)?.pipeline_stage;
     if (!student || currentStage === newStage) return;
 
     updateStudentPipelineStage.mutate({

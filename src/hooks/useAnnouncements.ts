@@ -28,11 +28,11 @@ export function useAnnouncements() {
       // Get user's dismissals
       let dismissedIds = new Set<string>();
       try {
-        const { data: dismissals } = await supabase
+        const { data: dismissals } = await (supabase as any)
           .from("announcement_dismissals")
           .select("announcement_id")
           .eq("user_id", user!.id);
-        dismissedIds = new Set(dismissals?.map((d) => d.announcement_id) ?? []);
+        dismissedIds = new Set((dismissals as any[])?.map((d: any) => d.announcement_id) ?? []);
       } catch {
         // Table might not exist
       }
@@ -57,7 +57,7 @@ export function useDismissAnnouncement() {
     mutationFn: async (announcementId: string) => {
       if (!user) throw new Error("Non authentifié");
 
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from("announcement_dismissals")
         .insert({ announcement_id: announcementId, user_id: user.id });
 
@@ -78,7 +78,7 @@ export function useCreateAnnouncement() {
     mutationFn: async (
       data: Omit<Announcement, "id" | "created_at" | "created_by">,
     ) => {
-      const { data: result, error } = await supabase
+      const { data: result, error } = await (supabase as any)
         .from("announcements")
         .insert({ ...data, created_by: user?.id })
         .select()
@@ -106,7 +106,7 @@ export function useUpdateAnnouncement() {
       id,
       ...data
     }: Partial<Announcement> & { id: string }) => {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from("announcements")
         .update(data)
         .eq("id", id);

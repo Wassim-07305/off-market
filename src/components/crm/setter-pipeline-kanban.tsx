@@ -268,8 +268,9 @@ export function SetterPipelineKanban() {
       map[col.id] = [];
     }
     for (const lead of leads) {
-      if (map[lead.column_id]) {
-        map[lead.column_id].push(lead);
+      const colId = lead.column_id;
+      if (colId && map[colId]) {
+        map[colId].push(lead);
       }
     }
     return map;
@@ -311,7 +312,7 @@ export function SetterPipelineKanban() {
       return;
     }
     createLead.mutate(
-      { name, column_id: columns[0].id },
+      { name, column_id: columns[0].id } as any,
       { onSuccess: () => toast.success("Prospect ajoute") },
     );
   }
@@ -330,7 +331,7 @@ export function SetterPipelineKanban() {
     const name = prompt("Nom du prospect :");
     if (name?.trim()) {
       createLead.mutate(
-        { name: name.trim(), column_id: columns[0].id },
+        { name: name.trim(), column_id: columns[0].id } as any,
         { onSuccess: () => toast.success("Prospect ajoute") },
       );
     }

@@ -9,6 +9,8 @@ export interface UserInvite {
   created_at: string;
   expires_at: string;
   accepted_at: string | null;
+  resent_count: number;
+  resent_at: string | null;
 }
 
 export const ROLE_OPTIONS = [

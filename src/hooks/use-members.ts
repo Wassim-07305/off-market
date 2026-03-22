@@ -72,7 +72,8 @@ export function useMembers() {
       const { data: profiles, error: profilesError } = await supabase
         .from("profiles")
         .select("id, full_name, avatar_url, role, bio, created_at")
-        .order("full_name", { ascending: true });
+        .order("full_name", { ascending: true })
+        .returns<Array<{ id: string; full_name: string; avatar_url: string | null; role: string; bio: string | null; created_at: string }>>();
 
       if (profilesError) throw profilesError;
 
@@ -80,8 +81,8 @@ export function useMembers() {
         id: p.id,
         full_name: p.full_name ?? "Utilisateur",
         avatar_url: p.avatar_url ?? null,
-        role: (p as Record<string, unknown>).role as string ?? "client",
-        bio: (p as Record<string, unknown>).bio as string | null ?? null,
+        role: p.role ?? "client",
+        bio: p.bio ?? null,
         created_at: p.created_at ?? new Date().toISOString(),
         total_xp: 0,
         badge_count: 0,

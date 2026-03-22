@@ -116,7 +116,7 @@ export function useFeed(
       media_urls?: string[];
     }) => {
       if (!user) throw new Error("Not authenticated");
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("feed_posts")
         .insert({ ...post, author_id: user.id })
         .select(
@@ -152,7 +152,7 @@ export function useFeed(
       postId: string;
       isPinned: boolean;
     }) => {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from("feed_posts")
         .update({ is_pinned: !isPinned })
         .eq("id", postId);
@@ -180,7 +180,7 @@ export function useFeed(
           .eq("profile_id", user.id);
         if (error) throw error;
       } else {
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from("feed_likes")
           .insert({ post_id: postId, profile_id: user.id });
         if (error) throw error;
@@ -291,7 +291,7 @@ export function useComments(postId: string) {
       parentId?: string;
     }) => {
       if (!user) throw new Error("Not authenticated");
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("feed_comments")
         .insert({
           post_id: postId,

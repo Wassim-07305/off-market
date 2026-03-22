@@ -21,7 +21,8 @@ function UpcomingCallsWidgetBase() {
         .gte("date", today)
         .order("date", { ascending: true })
         .order("time", { ascending: true })
-        .limit(5);
+        .limit(5)
+        .returns<Array<{ id: string; date: string; time: string | null; client: { full_name: string } | null }>>();
 
       if (error) throw error;
       return data;

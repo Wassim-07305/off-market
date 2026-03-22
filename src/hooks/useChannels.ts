@@ -23,7 +23,7 @@ export function useCreateChannel() {
       const { member_ids, ...channelData } = data;
 
       // Create channel
-      const { data: channel, error: channelError } = await supabase
+      const { data: channel, error: channelError } = await (supabase as any)
         .from("channels")
         .insert(channelData)
         .select()
@@ -31,11 +31,11 @@ export function useCreateChannel() {
       if (channelError) throw channelError;
 
       // Add members
-      const members = member_ids.map((userId) => ({
-        channel_id: channel.id,
+      const members = member_ids.map((userId: string) => ({
+        channel_id: (channel as any).id,
         user_id: userId,
       }));
-      const { error: membersError } = await supabase
+      const { error: membersError } = await (supabase as any)
         .from("channel_members")
         .insert(members);
       if (membersError) throw membersError;
@@ -57,7 +57,7 @@ export function useUpdateChannel() {
 
   return useMutation({
     mutationFn: async ({ id, ...data }: Partial<Channel> & { id: string }) => {
-      const { data: result, error } = await supabase
+      const { data: result, error } = await (supabase as any)
         .from("channels")
         .update(data)
         .eq("id", id)
@@ -105,7 +105,7 @@ export function useAddChannelMember() {
       channelId: string;
       userId: string;
     }) => {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from("channel_members")
         .insert({ channel_id: channelId, user_id: userId });
       if (error) throw error;

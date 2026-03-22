@@ -49,7 +49,7 @@ export function useCheckins(clientId?: string) {
       notes?: string;
     }) => {
       if (!user) throw new Error("Not authenticated");
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("weekly_checkins")
         .upsert(
           { ...checkin, client_id: user.id },
@@ -76,7 +76,7 @@ export function useCheckins(clientId?: string) {
       checkinId: string;
       feedback: string;
     }) => {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from("weekly_checkins")
         .update({ coach_feedback: feedback })
         .eq("id", checkinId);
@@ -286,7 +286,7 @@ export function useDailyCheckins(clientId?: string) {
               gratitude: checkin.gratitude,
             };
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("daily_checkins")
         .upsert(payload, { onConflict: "client_id,checkin_date,checkin_type" })
         .select()

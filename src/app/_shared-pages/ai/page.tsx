@@ -123,7 +123,8 @@ export default function AIPage() {
         .select("*")
         .eq("user_id", user?.id ?? "")
         .order("updated_at", { ascending: false })
-        .limit(30);
+        .limit(30)
+        .returns<Array<{ id: string; user_id: string; title: string | null; created_at: string; updated_at: string }>>();
       if (error) throw error;
       return data;
     },
@@ -143,7 +144,8 @@ export default function AIPage() {
           .from("ai_messages")
           .select("role, content")
           .eq("conversation_id", convId)
-          .order("created_at", { ascending: true });
+          .order("created_at", { ascending: true })
+          .returns<Array<{ role: string; content: string }>>();
         if (error) throw error;
         setMessages(
           (data ?? []).map((m) => ({
@@ -210,8 +212,8 @@ export default function AIPage() {
   const deleteConversation = async (convId: string, e: React.MouseEvent) => {
     e.stopPropagation();
     try {
-      await supabase.from("ai_messages").delete().eq("conversation_id", convId);
-      await supabase.from("ai_conversations").delete().eq("id", convId);
+      await (supabase as any).from("ai_messages").delete().eq("conversation_id", convId);
+      await (supabase as any).from("ai_conversations").delete().eq("id", convId);
       queryClient.invalidateQueries({ queryKey: ["ai-conversations"] });
       if (conversationId === convId) {
         setConversationId(null);

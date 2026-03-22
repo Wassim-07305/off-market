@@ -1,24 +1,24 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { POST_CATEGORY_CONFIG, type PostCategory } from "@/types/feed";
+import { POST_TYPE_CONFIG, type PostType } from "@/types/feed";
 
 const CATEGORIES: {
   label: string;
-  value: PostCategory | "all";
+  value: PostType | "all";
   emoji?: string;
 }[] = [
   { label: "Tous", value: "all" },
-  ...Object.entries(POST_CATEGORY_CONFIG).map(([value, config]) => ({
+  ...Object.entries(POST_TYPE_CONFIG).map(([value, config]) => ({
     label: config.label,
-    value: value as PostCategory,
+    value: value as PostType,
     emoji: config.emoji,
   })),
 ];
 
 interface CategoryFilterProps {
-  value: PostCategory | "all";
-  onChange: (value: PostCategory | "all") => void;
+  value: PostType | "all";
+  onChange: (value: PostType | "all") => void;
 }
 
 export function CategoryFilter({ value, onChange }: CategoryFilterProps) {

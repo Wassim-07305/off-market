@@ -53,7 +53,7 @@ export function useCreateConversation() {
       } = await supabase.auth.getUser();
       if (!user) throw new Error("Non authentifié");
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("ai_conversations")
         .insert({
           user_id: user.id,
@@ -86,7 +86,7 @@ export function useSendMessage() {
       content: string;
     }) => {
       // 1. Insérer le message utilisateur
-      const { data: userMessage, error: userError } = await supabase
+      const { data: userMessage, error: userError } = await (supabase as any)
         .from("ai_messages")
         .insert({
           conversation_id: conversationId,
@@ -108,19 +108,19 @@ export function useSendMessage() {
       if (existingMessages && existingMessages.length === 1) {
         const title =
           content.length > 50 ? content.slice(0, 50) + "..." : content;
-        await supabase
+        await (supabase as any)
           .from("ai_conversations")
           .update({ title, updated_at: new Date().toISOString() })
           .eq("id", conversationId);
       } else {
-        await supabase
+        await (supabase as any)
           .from("ai_conversations")
           .update({ updated_at: new Date().toISOString() })
           .eq("id", conversationId);
       }
 
       // 3. Insérer une réponse placeholder de l'assistant
-      const { data: assistantMessage, error: assistantError } = await supabase
+      const { data: assistantMessage, error: assistantError } = await (supabase as any)
         .from("ai_messages")
         .insert({
           conversation_id: conversationId,

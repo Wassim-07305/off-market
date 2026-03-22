@@ -88,7 +88,7 @@ export function useCreateTemplate() {
       shortcut?: string;
       is_shared?: boolean;
     }) => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("message_templates")
         .insert({
           title: template.title,
@@ -122,7 +122,7 @@ export function useUpdateTemplate() {
       id,
       ...updates
     }: Partial<MessageTemplate> & { id: string }) => {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from("message_templates")
         .update({ ...updates, updated_at: new Date().toISOString() })
         .eq("id", id);
@@ -167,20 +167,20 @@ export function useIncrementTemplateUsage() {
   return useMutation({
     mutationFn: async (id: string) => {
       // Use RPC for atomic increment
-      const { error } = await supabase.rpc("increment_template_usage", {
+      const { error } = await (supabase as any).rpc("increment_template_usage", {
         template_id: id,
       });
       // Fallback if RPC doesn't exist yet
       if (error) {
-        const { data: tmpl } = await supabase
+        const { data: tmpl } = await (supabase as any)
           .from("message_templates")
           .select("usage_count")
           .eq("id", id)
           .single();
         if (tmpl) {
-          await supabase
+          await (supabase as any)
             .from("message_templates")
-            .update({ usage_count: (tmpl.usage_count ?? 0) + 1 })
+            .update({ usage_count: ((tmpl as any).usage_count ?? 0) + 1 })
             .eq("id", id);
         }
       }

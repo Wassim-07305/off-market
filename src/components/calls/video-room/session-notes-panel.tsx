@@ -84,9 +84,10 @@ export function SessionNotesPanel({
         .maybeSingle();
 
       if (data) {
-        setNotes(data.content ?? "");
-        setActionItems(data.action_items ?? []);
-        setLastSaved(new Date(data.updated_at));
+        const d = data as any;
+        setNotes(d.content ?? "");
+        setActionItems(d.action_items ?? []);
+        setLastSaved(new Date(d.updated_at));
       }
     }
     if (user) loadNotes();
@@ -108,7 +109,7 @@ export function SessionNotesPanel({
       setIsSaving(true);
 
       try {
-        const { error } = await supabase.from("call_session_notes").upsert(
+        const { error } = await (supabase as any).from("call_session_notes").upsert(
           {
             call_id: callId,
             author_id: user.id,

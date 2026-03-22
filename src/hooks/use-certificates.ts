@@ -151,7 +151,7 @@ export function useCourseQuizAverage(courseId: string) {
       if (quizLessonIds.length === 0) return null;
 
       // Get best attempt per quiz
-      const { data: attempts, error: attErr } = await supabase
+      const { data: attempts, error: attErr } = await (supabase as any)
         .from("quiz_attempts")
         .select("lesson_id, score")
         .eq("student_id", user!.id)

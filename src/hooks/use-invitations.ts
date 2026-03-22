@@ -31,7 +31,7 @@ export function useInvitations() {
       role: string;
       specialties?: string[];
     }) => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("user_invites")
         .insert({
           email: invite.email,
@@ -60,7 +60,8 @@ export function useInvitations() {
           .from("profiles")
           .select("full_name")
           .eq("id", user!.id)
-          .single();
+          .single()
+          .then(r => ({ data: r.data as { full_name: string } | null }));
 
         await fetch("/api/email/send", {
           method: "POST",
@@ -89,7 +90,7 @@ export function useInvitations() {
     mutationFn: async (invites: { email: string; full_name: string; role: string }[]) => {
       const results: UserInvite[] = [];
       for (const invite of invites) {
-        const { data, error } = await supabase
+        const { data, error } = await (supabase as any)
           .from("user_invites")
           .insert({
             email: invite.email,
@@ -146,7 +147,7 @@ export function useValidateInviteCode(code: string | null) {
   return useQuery({
     queryKey: ["validate-invite", code],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("validate_invite_code", {
+      const { data, error } = await (supabase as any).rpc("validate_invite_code", {
         code: code!,
       });
       if (error) throw error;

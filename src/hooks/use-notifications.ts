@@ -76,7 +76,7 @@ export function useNotifications(options?: UseNotificationsOptions) {
 
   const markAsRead = useMutation({
     mutationFn: async (notificationId: string) => {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from("notifications")
         .update({ is_read: true, read_at: new Date().toISOString() })
         .eq("id", notificationId);
@@ -89,7 +89,7 @@ export function useNotifications(options?: UseNotificationsOptions) {
   const markAllAsRead = useMutation({
     mutationFn: async () => {
       if (!user) return;
-      let query = supabase
+      let query = (supabase as any)
         .from("notifications")
         .update({ is_read: true, read_at: new Date().toISOString() })
         .eq("recipient_id", user.id)
@@ -108,7 +108,7 @@ export function useNotifications(options?: UseNotificationsOptions) {
 
   const archiveNotification = useMutation({
     mutationFn: async (notificationId: string) => {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from("notifications")
         .update({ is_archived: true })
         .eq("id", notificationId);
@@ -121,7 +121,7 @@ export function useNotifications(options?: UseNotificationsOptions) {
   const archiveAllRead = useMutation({
     mutationFn: async () => {
       if (!user) return;
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from("notifications")
         .update({ is_archived: true })
         .eq("recipient_id", user.id)
