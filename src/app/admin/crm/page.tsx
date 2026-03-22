@@ -9,17 +9,28 @@ import { useSupabase } from "@/hooks/use-supabase";
 import { motion } from "framer-motion";
 import { staggerItem } from "@/lib/animations";
 
+const DynamicLoader = () => (
+  <div className="space-y-4 p-4">
+    <div className="h-8 w-48 bg-muted/50 animate-pulse rounded-xl" />
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {[...Array(4)].map((_, i) => (
+        <div key={i} className="h-32 bg-muted/50 animate-pulse rounded-2xl" />
+      ))}
+    </div>
+  </div>
+);
+
 const ClientsPage = dynamic(
   () => import("@/app/_shared-pages/clients/page"),
-  { ssr: false },
+  { ssr: false, loading: DynamicLoader },
 );
 const SetterPipelinePage = dynamic(
   () => import("@/app/sales/pipeline/page").then((m) => ({ default: m.SetterPipelineView })),
-  { ssr: false },
+  { ssr: false, loading: DynamicLoader },
 );
 const CloserPipelinePage = dynamic(
   () => import("@/app/sales/pipeline/page").then((m) => ({ default: m.CloserPipelineView })),
-  { ssr: false },
+  { ssr: false, loading: DynamicLoader },
 );
 
 type CrmMode = "clients" | "pipeline" | "closer-pipeline" | "coaches";

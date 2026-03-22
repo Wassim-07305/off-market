@@ -98,7 +98,11 @@ export default function MonitoringPage() {
 
   const handleRefresh = useCallback(async () => {
     try {
-      await queryClient.invalidateQueries({ queryKey: ["health-check"] });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["health-check"] }),
+        queryClient.invalidateQueries({ queryKey: ["usage-metrics"] }),
+        queryClient.invalidateQueries({ queryKey: ["audit-logs"] }),
+      ]);
       toast.success("Vérification effectuée");
     } catch {
       toast.error("Erreur lors de la vérification");

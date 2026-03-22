@@ -175,9 +175,6 @@ export default function IntegrationsPage() {
   const integrationsStatus = useIntegrationsStatus();
   const disconnectGoogle = useDisconnectGoogleCalendar();
 
-  // Stripe check: client-side env var
-  const isStripeConfigured = !!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
-
   return (
     <div className="mx-auto max-w-4xl space-y-8 p-6">
       {/* Header */}
@@ -239,14 +236,14 @@ export default function IntegrationsPage() {
           status={
             integrationsStatus.isLoading
               ? "loading"
-              : (integrationsStatus.data?.stripe || isStripeConfigured)
+              : integrationsStatus.data?.stripe
                 ? "configured"
                 : "not_configured"
           }
           statusLabel={
-            (integrationsStatus.data?.stripe || isStripeConfigured)
-              ? "Configure"
-              : "Non configure — Ajoutez STRIPE_SECRET_KEY"
+            integrationsStatus.data?.stripe
+              ? "Configuré"
+              : "Non configuré — Ajoutez STRIPE_SECRET_KEY"
           }
         />
 

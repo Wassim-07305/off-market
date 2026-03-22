@@ -139,6 +139,7 @@ const navLinks = [
   { label: "Comment ça marche", href: "#how-it-works" },
   { label: "Pourquoi Off-Market", href: "#why" },
   { label: "Témoignages", href: "#testimonials" },
+  { label: "FAQ", href: "#faq" },
 ];
 
 const stats = [
@@ -276,7 +277,7 @@ const footerSections = [
   {
     title: "Ressources",
     links: [
-      { label: "Documentation", href: "/documentation" },
+      { label: "Documentation", href: "/admin/api-docs" },
       { label: "Contact", href: "mailto:hello@offmarket.fr" },
     ],
   },
