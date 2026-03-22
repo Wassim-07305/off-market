@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { RoleSidebar } from "@/components/layout/role-sidebar";
 import { Header } from "@/components/layout/header";
@@ -42,13 +42,28 @@ function PageSkeleton() {
 
 export function RoleLayout({ variant, children }: RoleLayoutProps) {
   const { sidebarCollapsed } = useUIStore();
-  const { loading } = useAuth();
+  const { loading, user } = useAuth();
   const tour = useGuidedTour(variant);
   const pathname = usePathname();
+  const [timedOut, setTimedOut] = useState(false);
+
+  // Safety: if loading takes more than 6 seconds, stop waiting
+  useEffect(() => {
+    if (!loading) return;
+    const timer = setTimeout(() => setTimedOut(true), 6000);
+    return () => clearTimeout(timer);
+  }, [loading]);
+
+  // If loading timed out and no user, redirect to login
+  if (timedOut && loading && !user) {
+    if (typeof window !== "undefined") {
+      window.location.replace("/login");
+    }
+    return null;
+  }
 
   // Gate: don't render page content until auth is ready
-  // This prevents hooks from firing queries before the Supabase client has a valid session
-  if (loading) {
+  if (loading && !timedOut) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="w-5 h-5 text-muted-foreground animate-spin" />
