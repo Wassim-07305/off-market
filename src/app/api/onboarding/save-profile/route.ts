@@ -3,6 +3,13 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 const REVENUE_MAP: Record<string, number> = {
+  // Keys matching frontend REVENUE_RANGES values (about-you-step.tsx)
+  "0-1k": 500,
+  "1k-3k": 2000,
+  "3k-5k": 4000,
+  "5k-10k": 7500,
+  "10k+": 15000,
+  // Legacy keys (keep for backwards compatibility with existing data)
   "0-1000": 500,
   "1000-3000": 2000,
   "3000-5000": 4000,

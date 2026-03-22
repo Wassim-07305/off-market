@@ -38,6 +38,7 @@ function RegisterContent() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const isValid = invite?.valid === true;
@@ -93,24 +94,32 @@ function RegisterContent() {
   const inputClass =
     "w-full h-11 px-4 bg-white/[0.06] border border-white/[0.08] rounded-xl text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/40 transition-all text-sm backdrop-blur-sm";
 
-  // Pas de code d'invitation
+  // Pas de code d'invitation — rediriger vers l'inscription libre
   if (!code) {
     return (
       <div className="animate-fade-in text-center">
         <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-4">
           <AlertCircle className="w-8 h-8 text-red-400" />
         </div>
-        <h1 className="text-xl font-bold text-white mb-2">Lien invalide</h1>
+        <h1 className="text-xl font-bold text-white mb-2">Invitation requise</h1>
         <p className="text-white/40 text-sm mb-6">
-          Aucun code d&apos;invitation trouve. Vous avez besoin d&apos;une
-          invitation pour creer un compte.
+          Cette page necessite un code d&apos;invitation. Pour creer un compte
+          librement, utilisez la page d&apos;inscription.
         </p>
-        <Link
-          href="/login"
-          className="text-primary hover:text-primary-hover font-medium text-sm transition-colors"
-        >
-          Retour a la connexion
-        </Link>
+        <div className="flex flex-col items-center gap-3">
+          <Link
+            href="/signup"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-primary to-red-500 text-white text-sm font-medium transition-all hover:scale-105"
+          >
+            Creer un compte
+          </Link>
+          <Link
+            href="/login"
+            className="text-primary hover:text-primary-hover font-medium text-sm transition-colors"
+          >
+            Deja un compte ? Se connecter
+          </Link>
+        </div>
       </div>
     );
   }
@@ -215,15 +224,29 @@ function RegisterContent() {
             <label className="block text-[11px] font-medium text-white/50 uppercase tracking-wider mb-1.5">
               Confirmer le mot de passe
             </label>
-            <input
-              type={showPassword ? "text" : "password"}
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Repetez le mot de passe"
-              required
-              minLength={6}
-              className={inputClass}
-            />
+            <div className="relative">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Repetez le mot de passe"
+                required
+                minLength={6}
+                className={`${inputClass} pr-11`}
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors"
+                tabIndex={-1}
+              >
+                {showConfirmPassword ? (
+                  <EyeOff className="w-4 h-4" />
+                ) : (
+                  <Eye className="w-4 h-4" />
+                )}
+              </button>
+            </div>
           </div>
 
           <button

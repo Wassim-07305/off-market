@@ -38,10 +38,11 @@ export default defineConfig({
     },
   ],
 
-  webServer: {
-    command: "npm run dev",
-    url: "http://localhost:3000",
-    timeout: 120_000,
-    reuseExistingServer: !process.env.CI,
-  },
+  /* webServer disabled — reuse running dev server on port 3000 */
+  // webServer: {
+  //   command: "npm run dev",
+  //   url: "http://localhost:3000",
+  //   timeout: 120_000,
+  //   reuseExistingServer: true,
+  // },
 });

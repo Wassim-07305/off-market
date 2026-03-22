@@ -39,10 +39,15 @@ export async function POST() {
 
     if (existing) {
       // Link existing contact to this profile
-      await admin
+      const { error: updateError } = await admin
         .from("crm_contacts")
         .update({ converted_profile_id: user.id })
         .eq("id", existing.id);
+
+      if (updateError) {
+        console.error("[onboarding] CRM contact link error:", updateError.message);
+        return NextResponse.json({ error: updateError.message }, { status: 500 });
+      }
 
       return NextResponse.json({ success: true, action: "linked", id: existing.id });
     }

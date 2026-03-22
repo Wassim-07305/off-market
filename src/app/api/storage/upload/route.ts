@@ -52,11 +52,18 @@ export async function POST(request: Request) {
 
     if (B2_CONFIGURED) {
       // Upload vers B2 (stockage principal)
-      const { uploadToB2 } = await import("@/lib/b2");
-      await uploadToB2(sanitizedPath, buffer, file.type || "application/octet-stream");
-      const url = `/api/storage/proxy?key=${encodeURIComponent(sanitizedPath)}`;
-      return NextResponse.json({ url });
-    } else {
+      try {
+        const { uploadToB2 } = await import("@/lib/b2");
+        await uploadToB2(sanitizedPath, buffer, file.type || "application/octet-stream");
+        const url = `/api/storage/proxy?key=${encodeURIComponent(sanitizedPath)}`;
+        return NextResponse.json({ url });
+      } catch (b2Err) {
+        console.error("[storage/upload] B2 upload failed, falling back to Supabase:", b2Err instanceof Error ? b2Err.message : b2Err);
+        // Fall through to Supabase Storage fallback
+      }
+    }
+
+    {
       // Fallback : Supabase Storage
       const admin = createAdminClient();
 

@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { Share2, Lock, Loader2 } from "lucide-react";
-import { useJournal } from "@/hooks/use-journal";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useSupabase } from "@/hooks/use-supabase";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 interface ShareToggleProps {
@@ -11,14 +13,34 @@ interface ShareToggleProps {
 }
 
 export function ShareToggle({ entryId, initialShared }: ShareToggleProps) {
-  const { toggleShare } = useJournal();
+  const supabase = useSupabase();
+  const queryClient = useQueryClient();
   const [shared, setShared] = useState(initialShared);
+
+  const toggleShare = useMutation({
+    mutationFn: async ({ id, newShared }: { id: string; newShared: boolean }) => {
+      const { error } = await supabase
+        .from("journal_entries")
+        .update({ shared_with_coach: newShared } as never)
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["journal"] });
+      toast.success(
+        variables.newShared ? "Entree partagee avec ton coach" : "Partage annule",
+      );
+    },
+    onError: () => {
+      toast.error("Erreur lors du partage");
+    },
+  });
 
   const handleToggle = () => {
     const newValue = !shared;
     setShared(newValue);
     toggleShare.mutate(
-      { id: entryId, shared: newValue },
+      { id: entryId, newShared: newValue },
       {
         onError: () => {
           // Revert on error

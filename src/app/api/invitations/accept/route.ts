@@ -1,15 +1,44 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { headers } from "next/headers";
 
 export async function POST(request: Request) {
   try {
+    // ─── CSRF / Origin check ─────────────────────────────────
+    const headersList = await headers();
+    const origin = headersList.get("origin");
+    const referer = headersList.get("referer");
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+    const allowedOrigin = new URL(appUrl).origin;
+
+    const requestOrigin = origin ?? (referer ? new URL(referer).origin : null);
+    if (!requestOrigin || requestOrigin !== allowedOrigin) {
+      return NextResponse.json(
+        { error: "Forbidden: invalid origin" },
+        { status: 403 },
+      );
+    }
+
     const { invite_code, email, apply_role } = await request.json();
 
     if (!invite_code && !email) {
       return NextResponse.json(
         { error: "Missing invite_code or email" },
         { status: 400 },
+      );
+    }
+
+    // ─── Auth check: require authenticated user for role application ──
+    const supabaseAuth = await createClient();
+    const {
+      data: { user: authUser },
+    } = await supabaseAuth.auth.getUser();
+
+    if (apply_role && !authUser) {
+      return NextResponse.json(
+        { error: "Authentication required to apply role" },
+        { status: 401 },
       );
     }
 
@@ -47,22 +76,14 @@ export async function POST(request: Request) {
 
     // 3. Apply role to the user's profile
     if (apply_role) {
-      // Try to get the authenticated user first
+      // Use the authenticated user if their email matches, otherwise find by email
       let targetUserId: string | null = null;
 
-      try {
-        const supabase = await createClient();
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        if (user && user.email === invite.email) {
-          targetUserId = user.id;
-        }
-      } catch {
-        // Not authenticated — find user by email via admin
+      if (authUser && authUser.email === invite.email) {
+        targetUserId = authUser.id;
       }
 
-      // If not authenticated, find user by email
+      // If not matched, find user by email
       if (!targetUserId) {
         const { data: profile } = await admin
           .from("profiles")

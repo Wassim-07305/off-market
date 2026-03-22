@@ -3,8 +3,39 @@ import { createClient } from "@/lib/supabase/server";
 
 // ─── PDF Helpers ─────────────────────────────────────────
 
+// Common emoji-to-text mapping for journal/gamification context
+const EMOJI_MAP: Record<string, string> = {
+  "\u{1F62B}": "[Tres mal]",
+  "\u{1F615}": "[Pas top]",
+  "\u{1F610}": "[Neutre]",
+  "\u{1F60A}": "[Bien]",
+  "\u{1F929}": "[Excellent]",
+  "\u{1F525}": "[Feu]",
+  "\u{2B50}": "[Etoile]",
+  "\u{1F3C6}": "[Trophee]",
+  "\u{1F389}": "[Fete]",
+  "\u{2705}": "[OK]",
+  "\u{274C}": "[X]",
+  "\u{1F4AA}": "[Force]",
+  "\u{1F64F}": "[Merci]",
+  "\u{1FA9E}": "[Miroir]",
+  "\u{1F3AF}": "[Cible]",
+  "\u{1F4CB}": "[Liste]",
+  "\u{1F680}": "[Fusee]",
+  "\u{2764}": "[Coeur]",
+  "\u{1F44D}": "[Pouce]",
+  "\u{1F31F}": "[Brillant]",
+  "\u{1F4D6}": "[Livre]",
+};
+
 function escapePDF(str: string) {
-  return str
+  // Replace known emojis with text equivalents before stripping
+  let result = str;
+  for (const [emoji, text] of Object.entries(EMOJI_MAP)) {
+    result = result.replaceAll(emoji, text);
+  }
+
+  return result
     .replace(/\\/g, "\\\\")
     .replace(/\(/g, "\\(")
     .replace(/\)/g, "\\)")

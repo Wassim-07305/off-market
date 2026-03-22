@@ -239,9 +239,12 @@ export default function OnboardingPage() {
       // Supprime le cache middleware pour forcer un re-fetch du profil
       document.cookie = "om_profile_cache=; path=/; max-age=0; SameSite=Lax";
 
+      // Attendre que la DB soit à jour avant de rediriger
+      // pour éviter que le middleware redirige vers /onboarding
+      const targetRoute = getDefaultRouteForRole(role);
       setTimeout(() => {
-        window.location.href = getDefaultRouteForRole(role);
-      }, 2500);
+        window.location.replace(targetRoute);
+      }, 1500);
     } catch {
       toast.error("Erreur lors de la finalisation");
     }

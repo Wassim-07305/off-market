@@ -264,9 +264,9 @@ export async function POST(request: Request) {
         .limit(5),
       // 5. Flag history
       supabase
-        .from("flag_history")
-        .select("old_flag, new_flag, reason, created_at")
-        .eq("profile_id", clientId)
+        .from("client_flag_history")
+        .select("previous_flag, new_flag, reason, created_at")
+        .eq("client_id", clientId)
         .order("created_at", { ascending: false })
         .limit(10),
       // 6. Student notes
@@ -424,7 +424,7 @@ export async function POST(request: Request) {
     if (flagHistory.length > 0) {
       userPrompt += `\n## Historique des drapeaux\n`;
       for (const fh of flagHistory) {
-        userPrompt += `- ${fh.created_at?.split("T")[0]} : ${fh.old_flag} -> ${fh.new_flag}${fh.reason ? ` (${fh.reason})` : ""}\n`;
+        userPrompt += `- ${fh.created_at?.split("T")[0]} : ${fh.previous_flag} -> ${fh.new_flag}${fh.reason ? ` (${fh.reason})` : ""}\n`;
       }
     }
 

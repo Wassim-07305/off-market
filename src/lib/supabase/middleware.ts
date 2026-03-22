@@ -88,9 +88,14 @@ export async function updateSession(request: NextRequest) {
   // getUser() is required to refresh the session token — cannot skip.
   // It uses the local JWT and only hits the network to refresh expired tokens,
   // so it is fast in the happy path (no network call needed when token is valid).
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  let user = null;
+  try {
+    const { data } = await supabase.auth.getUser();
+    user = data.user;
+  } catch {
+    // AuthApiError (invalid/expired refresh token) — clear stale session
+    // and let the redirect-to-login logic below handle it gracefully.
+  }
 
   const pathname = request.nextUrl.pathname;
 

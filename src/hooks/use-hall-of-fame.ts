@@ -36,6 +36,8 @@ interface HallOfFameEnrichedRow {
   bio: string | null;
   total_xp: number;
   badge_count: number;
+  monthly_revenue: number | null;
+  niche: string | null;
 }
 
 export function useHallOfFame() {
@@ -67,9 +69,9 @@ export function useHallOfFame() {
       return data.map((entry) => ({
         id: entry.id,
         profile_id: entry.profile_id,
-        monthly_revenue: 0,
+        monthly_revenue: entry.monthly_revenue ?? 0,
         testimony: entry.description,
-        niche: null,
+        niche: entry.niche ?? null,
         achievement_date: entry.featured_at ?? entry.created_at,
         is_visible: true,
         created_at: entry.created_at,
