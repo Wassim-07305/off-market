@@ -22,23 +22,18 @@ export default function ResetPasswordPage() {
   const [loading, setLoading] = useState(false);
   const [ready, setReady] = useState(false);
 
-  // Attendre que Supabase recupere la session depuis le hash fragment
+  // La session est déjà établie par le callback serveur
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event) => {
-        if (event === "PASSWORD_RECOVERY") {
-          setReady(true);
-        }
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) {
+        setReady(true);
+      } else {
+        // Pas de session — rediriger vers forgot-password
+        toast.error("Lien expiré ou invalide. Demande un nouveau lien.");
+        router.push("/forgot-password");
       }
-    );
-
-    // Aussi verifier si on a deja une session (redirect depuis callback)
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) setReady(true);
     });
-
-    return () => subscription.unsubscribe();
-  }, [supabase]);
+  }, [supabase, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
