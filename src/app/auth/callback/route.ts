@@ -21,10 +21,10 @@ export async function GET(request: Request) {
           return NextResponse.redirect(`${origin}/reset-password`);
         }
 
-        // For OAuth/SSO logins: check if user has a profile (new user detection)
+        // Fetch profile to determine role and onboarding status
         const { data: profile } = await supabase
           .from("profiles")
-          .select("id")
+          .select("id, role, onboarding_completed")
           .eq("id", user.id)
           .single();
 
@@ -32,9 +32,26 @@ export async function GET(request: Request) {
           // New user from SSO — redirect to onboarding
           return NextResponse.redirect(`${origin}/onboarding`);
         }
+
+        // If onboarding not completed, go to onboarding
+        if (!profile.onboarding_completed) {
+          return NextResponse.redirect(`${origin}/onboarding`);
+        }
+
+        // Redirect to the correct dashboard based on role
+        const rolePrefixes: Record<string, string> = {
+          admin: "/admin/dashboard",
+          coach: "/coach/dashboard",
+          client: "/client/dashboard",
+          prospect: "/client/dashboard",
+          setter: "/sales/dashboard",
+          closer: "/sales/dashboard",
+        };
+        const destination = rolePrefixes[profile.role ?? "client"] ?? "/client/dashboard";
+        return NextResponse.redirect(`${origin}${destination}`);
       }
 
-      return NextResponse.redirect(`${origin}${next}`);
+      return NextResponse.redirect(`${origin}/login`);
     }
   }
 
