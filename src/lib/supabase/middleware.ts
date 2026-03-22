@@ -85,16 +85,26 @@ export async function updateSession(request: NextRequest) {
     },
   );
 
-  // getUser() is required to refresh the session token — cannot skip.
-  // It uses the local JWT and only hits the network to refresh expired tokens,
-  // so it is fast in the happy path (no network call needed when token is valid).
+  // getUser() refreshes the session token. Add a timeout to prevent
+  // infinite hangs when cookies are in a bad state.
   let user = null;
   try {
-    const { data } = await supabase.auth.getUser();
+    const timeoutPromise = new Promise<{ data: { user: null } }>((resolve) =>
+      setTimeout(() => resolve({ data: { user: null } }), 4000)
+    );
+    const { data } = await Promise.race([
+      supabase.auth.getUser(),
+      timeoutPromise,
+    ]);
     user = data.user;
   } catch {
-    // AuthApiError (invalid/expired refresh token) — clear stale session
-    // and let the redirect-to-login logic below handle it gracefully.
+    // AuthApiError (invalid/expired refresh token) — treat as logged out.
+    // Clear all supabase cookies to prevent stuck sessions.
+    request.cookies.getAll().forEach(({ name }) => {
+      if (name.startsWith("sb-")) {
+        supabaseResponse.cookies.delete(name);
+      }
+    });
   }
 
   const pathname = request.nextUrl.pathname;
@@ -128,11 +138,16 @@ export async function updateSession(request: NextRequest) {
 
   // Not logged in → redirect to login (except auth, API & public pages)
   if (!user && !isAuthPage && !isApiRoute && !isPublicPage) {
-    // Clear stale profile cache on logout
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     const redirectResp = NextResponse.redirect(url);
+    // Clear ALL auth-related cookies to prevent stuck sessions
     redirectResp.cookies.delete(PROFILE_CACHE_COOKIE);
+    request.cookies.getAll().forEach(({ name }) => {
+      if (name.startsWith("sb-")) {
+        redirectResp.cookies.delete(name);
+      }
+    });
     return redirectResp;
   }
 
