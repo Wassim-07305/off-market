@@ -45,9 +45,40 @@ export function useInvitations() {
       if (error) throw error;
       return data as UserInvite;
     },
-    onSuccess: () => {
+    onSuccess: async (data) => {
       queryClient.invalidateQueries({ queryKey: ["invitations"] });
       toast.success("Invitation creee avec succes");
+
+      // Envoyer l'email d'invitation (silencieux en cas d'echec)
+      try {
+        const appUrl =
+          process.env.NEXT_PUBLIC_APP_URL ?? window.location.origin;
+        const inviteUrl = `${appUrl}/signup?invite=${data.invite_code}`;
+
+        // Get inviter name from profile
+        const { data: inviterProfile } = await supabase
+          .from("profiles")
+          .select("full_name")
+          .eq("id", user!.id)
+          .single();
+
+        await fetch("/api/email/send", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            to: data.email,
+            template: "invitation",
+            data: {
+              name: data.full_name,
+              inviterName: inviterProfile?.full_name ?? "Off-Market",
+              role: data.role,
+              inviteUrl,
+            },
+          }),
+        });
+      } catch {
+        // Echec silencieux — l'invitation est quand meme creee
+      }
     },
     onError: (error: Error) => {
       toast.error(error.message || "Erreur lors de la creation");

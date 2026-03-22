@@ -19,6 +19,11 @@ function getRateLimitConfig(pathname: string): RateLimitConfig | null {
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // ── Stripe webhooks: skip auth & rate limiting (called by Stripe) ─
+  if (pathname === "/api/stripe/webhooks") {
+    return NextResponse.next();
+  }
+
   // ── Rate limiting for API routes ──────────────────────────────────
   const rlConfig = getRateLimitConfig(pathname);
 

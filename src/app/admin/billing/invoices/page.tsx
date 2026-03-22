@@ -489,6 +489,7 @@ function CreateInvoiceModal({
     client_id: string;
     amount: number;
     tax: number;
+    tax_rate?: number;
     total: number;
     due_date?: string;
     notes?: string;
@@ -549,6 +550,7 @@ function CreateInvoiceModal({
       client_id: clientId,
       amount: Math.round(amountAfterDiscount * 100) / 100,
       tax: Math.round(taxNum * 100) / 100,
+      tax_rate: parseFloat(taxRate) || 0,
       total: Math.round(totalNum * 100) / 100,
       due_date: dueDate || undefined,
       notes: notes || undefined,

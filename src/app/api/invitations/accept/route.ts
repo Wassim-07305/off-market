@@ -109,6 +109,72 @@ export async function POST(request: Request) {
           },
           { onConflict: "id" },
         );
+
+        // ─── Auto-provisioning for clients ──────────────────────
+        if (invite.role === "client") {
+          try {
+            // Find the least loaded coach (fewest active assignments)
+            const { data: coaches } = await admin
+              .from("profiles")
+              .select("id, full_name")
+              .eq("role", "coach");
+
+            if (coaches && coaches.length > 0) {
+              // Count active assignments per coach
+              const { data: assignments } = await admin
+                .from("coach_assignments")
+                .select("coach_id")
+                .eq("status", "active");
+
+              const assignmentCounts: Record<string, number> = {};
+              for (const a of assignments ?? []) {
+                assignmentCounts[a.coach_id] = (assignmentCounts[a.coach_id] ?? 0) + 1;
+              }
+
+              // Pick the coach with fewest clients
+              let leastLoadedCoach = coaches[0];
+              let minCount = assignmentCounts[coaches[0].id] ?? 0;
+              for (const coach of coaches) {
+                const count = assignmentCounts[coach.id] ?? 0;
+                if (count < minCount) {
+                  minCount = count;
+                  leastLoadedCoach = coach;
+                }
+              }
+
+              // Create coach assignment
+              await admin.from("coach_assignments").insert({
+                coach_id: leastLoadedCoach.id,
+                client_id: targetUserId,
+                status: "active",
+                assigned_by: leastLoadedCoach.id,
+                assigned_at: new Date().toISOString(),
+              });
+
+              // Create CRM contact for the new client
+              await admin.from("crm_contacts").insert({
+                full_name: invite.full_name,
+                email: invite.email,
+                source: "invitation",
+                status: "client",
+                assigned_to: leastLoadedCoach.id,
+                profile_id: targetUserId,
+              });
+
+              // Notify the assigned coach
+              await admin.from("notifications").insert({
+                user_id: leastLoadedCoach.id,
+                title: "Nouveau client assigne",
+                message: `Nouveau client assigne : ${invite.full_name}`,
+                type: "info",
+                link: `/coach/clients`,
+              });
+            }
+          } catch (provisioningError) {
+            // Log but don't fail the invitation acceptance
+            console.error("[AcceptInvite] Auto-provisioning error:", provisioningError);
+          }
+        }
       }
     }
 

@@ -94,6 +94,7 @@ export const adminNavigation: NavItem[] = [
   },
   { name: "Annonces", href: "/admin/announcements", icon: Megaphone },
   { name: "Miro", href: "/admin/miro", icon: Presentation },
+  { name: "Documentation API", href: "/admin/api-docs", icon: BookOpen },
   { name: "Reglages", href: "/admin/settings", icon: Settings },
 ];
 

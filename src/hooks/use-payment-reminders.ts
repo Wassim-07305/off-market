@@ -70,7 +70,11 @@ export const REMINDER_LABELS: Record<
   "j+3": { label: "3 jours de retard", severity: "text-orange-500" },
   "j+7": { label: "7 jours de retard", severity: "text-red-500" },
   "j+14": {
-    label: "14 jours de retard — relance finale",
+    label: "14 jours de retard",
     severity: "text-red-600",
+  },
+  "j+21": {
+    label: "21 jours de retard — relance finale",
+    severity: "text-red-700",
   },
 };

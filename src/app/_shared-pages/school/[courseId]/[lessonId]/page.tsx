@@ -22,6 +22,7 @@ import { ExerciseReview } from "@/components/school/exercise-review";
 import { QuizExerciseStats } from "@/components/school/quiz-exercise-stats";
 import { EmbedViewer } from "@/components/school/embed-viewer";
 import { useAuth } from "@/hooks/use-auth";
+import { useLessonTimer, formatTimeSpent } from "@/hooks/use-lesson-timer";
 import {
   ArrowLeft,
   ChevronLeft,
@@ -34,6 +35,7 @@ import {
   Headphones,
   File,
   ExternalLink,
+  Clock,
 } from "lucide-react";
 
 // ---------------------------------------------------------------------------
@@ -122,6 +124,9 @@ export default function LessonPage({
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const [autoCompleted, setAutoCompleted] = useState(false);
+
+  // Track time spent on this lesson
+  useLessonTimer(lessonId);
 
   const { data: lesson, isLoading } = useQuery({
     queryKey: ["lesson", lessonId],

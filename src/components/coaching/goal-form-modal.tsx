@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Target } from "lucide-react";
+import { Target, Info } from "lucide-react";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -18,9 +18,21 @@ const goalSchema = z.object({
   target_value: z.string().optional(),
   unit: z.string().optional(),
   deadline: z.string().optional(),
+  difficulty: z.string().optional(),
+  coach_notes: z.string().optional(),
 });
 
 type GoalFormData = z.infer<typeof goalSchema>;
+
+// ─── Difficulty labels ──────────────────────────────────────
+
+const DIFFICULTY_LABELS: Record<number, { label: string; color: string }> = {
+  1: { label: "Tres facile", color: "bg-emerald-500" },
+  2: { label: "Facile", color: "bg-green-500" },
+  3: { label: "Moyen", color: "bg-amber-500" },
+  4: { label: "Difficile", color: "bg-orange-500" },
+  5: { label: "Tres difficile", color: "bg-red-500" },
+};
 
 // ─── Unit presets ────────────────────────────────────────────
 
@@ -43,6 +55,8 @@ export interface GoalFormSubmitData {
   target_value?: number;
   unit?: string;
   deadline?: string;
+  difficulty?: number;
+  coach_notes?: string;
 }
 
 interface GoalFormModalProps {
@@ -84,10 +98,13 @@ export function GoalFormModal({
       target_value: "",
       unit: "",
       deadline: "",
+      difficulty: "",
+      coach_notes: "",
     },
   });
 
   const selectedUnit = watch("unit");
+  const selectedDifficulty = watch("difficulty");
 
   useEffect(() => {
     if (open) {
@@ -99,6 +116,8 @@ export function GoalFormModal({
             editGoal.target_value != null ? String(editGoal.target_value) : "",
           unit: editGoal.unit ?? "",
           deadline: editGoal.deadline?.split("T")[0] ?? "",
+          difficulty: editGoal.difficulty != null ? String(editGoal.difficulty) : "",
+          coach_notes: editGoal.coach_notes ?? "",
         });
       } else {
         reset({
@@ -107,6 +126,8 @@ export function GoalFormModal({
           target_value: "",
           unit: "",
           deadline: "",
+          difficulty: "",
+          coach_notes: "",
         });
       }
     }
@@ -119,6 +140,8 @@ export function GoalFormModal({
       target_value: data.target_value ? Number(data.target_value) : undefined,
       unit: data.unit,
       deadline: data.deadline,
+      difficulty: data.difficulty ? Number(data.difficulty) : undefined,
+      coach_notes: data.coach_notes || undefined,
     };
     await onSubmit(parsed);
     onClose();
@@ -213,9 +236,65 @@ export function GoalFormModal({
           ))}
         </div>
 
-        {/* Deadline */}
+        {/* ─── SMART Section ─── */}
+        <div className="border-t border-border/50 pt-4 mt-2">
+          <div className="flex items-center gap-2 mb-3">
+            <Info className="w-3.5 h-3.5 text-primary" />
+            <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+              Criteres SMART
+            </span>
+          </div>
+
+          {/* Atteignable - Difficulty slider */}
+          <div className="mb-4">
+            <label className={labelClass}>
+              Difficulte (Atteignable)
+            </label>
+            <div className="flex items-center gap-2">
+              {[1, 2, 3, 4, 5].map((level) => {
+                const config = DIFFICULTY_LABELS[level];
+                const isSelected = Number(selectedDifficulty) === level;
+                return (
+                  <button
+                    key={level}
+                    type="button"
+                    onClick={() => setValue("difficulty", String(level))}
+                    className={cn(
+                      "flex-1 h-9 rounded-xl text-xs font-medium border transition-all duration-150 flex items-center justify-center gap-1",
+                      isSelected
+                        ? `${config.color} text-white border-transparent shadow-sm`
+                        : "bg-zinc-50 dark:bg-muted text-muted-foreground border-border/40 hover:border-border",
+                    )}
+                  >
+                    {level}
+                  </button>
+                );
+              })}
+            </div>
+            {selectedDifficulty && DIFFICULTY_LABELS[Number(selectedDifficulty)] && (
+              <p className="text-[11px] text-muted-foreground mt-1">
+                {DIFFICULTY_LABELS[Number(selectedDifficulty)].label}
+              </p>
+            )}
+          </div>
+
+          {/* Realiste - Coach notes */}
+          <div className="mb-4">
+            <label className={labelClass}>
+              Notes du coach (Realiste)
+            </label>
+            <textarea
+              {...register("coach_notes")}
+              placeholder="Pourquoi cet objectif est realiste pour ce client..."
+              rows={2}
+              className={cn(inputClass, "h-auto py-2.5 resize-none")}
+            />
+          </div>
+        </div>
+
+        {/* Deadline (Temporel) */}
         <div>
-          <label className={labelClass}>Echeance</label>
+          <label className={labelClass}>Echeance (Temporel)</label>
           <input
             type="date"
             {...register("deadline")}

@@ -9,7 +9,7 @@ import {
   defaultTransition,
 } from "@/lib/animations";
 import { useCoachingGoals } from "@/hooks/use-coaching-goals";
-import type { CoachingGoal, GoalStatus } from "@/types/coaching";
+import type { CoachingGoal, GoalStatus, GoalMilestone } from "@/types/coaching";
 import { cn } from "@/lib/utils";
 import {
   Target,
@@ -75,7 +75,7 @@ const STATUS_CONFIG: Record<
 };
 
 export default function GoalsPage() {
-  const { goals, isLoading, updateProgress, updateGoal } = useCoachingGoals();
+  const { goals, isLoading, updateProgress, updateGoal, toggleMilestone, addMilestone } = useCoachingGoals();
   const [activeTab, setActiveTab] = useState<"active" | "all">("active");
 
   const active = goals.filter((g) => g.status === "active");
@@ -293,6 +293,19 @@ export default function GoalsPage() {
                     onUpdateStatus={(status) =>
                       updateGoal.mutate({ id: goal.id, status })
                     }
+                    onToggleMilestone={(milestoneId) =>
+                      toggleMilestone.mutate({ goalId: goal.id, milestoneId })
+                    }
+                    onAddMilestone={(title) =>
+                      addMilestone.mutate({
+                        goalId: goal.id,
+                        milestone: {
+                          id: crypto.randomUUID(),
+                          title,
+                          completed: false,
+                        },
+                      })
+                    }
                   />
                 ))}
               </div>
@@ -318,6 +331,19 @@ export default function GoalsPage() {
                     }
                     onUpdateStatus={(status) =>
                       updateGoal.mutate({ id: goal.id, status })
+                    }
+                    onToggleMilestone={(milestoneId) =>
+                      toggleMilestone.mutate({ goalId: goal.id, milestoneId })
+                    }
+                    onAddMilestone={(title) =>
+                      addMilestone.mutate({
+                        goalId: goal.id,
+                        milestone: {
+                          id: crypto.randomUUID(),
+                          title,
+                          completed: false,
+                        },
+                      })
                     }
                   />
                 ))}
@@ -441,13 +467,18 @@ function GoalCard({
   goal,
   onUpdateProgress,
   onUpdateStatus,
+  onToggleMilestone,
+  onAddMilestone,
 }: {
   goal: CoachingGoal;
   onUpdateProgress: (value: number) => void;
   onUpdateStatus: (status: GoalStatus) => void;
+  onToggleMilestone?: (milestoneId: string) => void;
+  onAddMilestone?: (title: string) => void;
 }) {
   const [expanded, setExpanded] = useState(false);
   const [inputValue, setInputValue] = useState("");
+  const [newMilestoneTitle, setNewMilestoneTitle] = useState("");
 
   const progress = goal.target_value
     ? Math.min(
@@ -633,6 +664,130 @@ function GoalCard({
                     <TrendingUp className="w-3.5 h-3.5" />
                     Mettre a jour
                   </button>
+                </div>
+              )}
+
+              {/* SMART info */}
+              {goal.difficulty != null && (
+                <div className="flex items-center gap-2 text-xs">
+                  <span className="text-muted-foreground">Difficulte :</span>
+                  <div className="flex items-center gap-0.5">
+                    {[1, 2, 3, 4, 5].map((level) => (
+                      <div
+                        key={level}
+                        className={cn(
+                          "w-4 h-2 rounded-full",
+                          level <= (goal.difficulty ?? 0)
+                            ? level <= 2
+                              ? "bg-emerald-500"
+                              : level <= 3
+                                ? "bg-amber-500"
+                                : "bg-red-500"
+                            : "bg-zinc-200 dark:bg-zinc-700",
+                        )}
+                      />
+                    ))}
+                  </div>
+                  <span className="text-muted-foreground font-medium">
+                    {goal.difficulty}/5
+                  </span>
+                </div>
+              )}
+
+              {goal.coach_notes && (
+                <div className="text-xs text-muted-foreground bg-muted/50 rounded-lg px-3 py-2 italic">
+                  <span className="font-medium not-italic">Note du coach : </span>
+                  {goal.coach_notes}
+                </div>
+              )}
+
+              {/* Milestones / Sub-goals */}
+              {((goal.milestones && goal.milestones.length > 0) || onAddMilestone) && (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                      Jalons
+                    </span>
+                    {goal.milestones && goal.milestones.length > 0 && (
+                      <span className="text-[10px] text-muted-foreground">
+                        {goal.milestones.filter((m) => m.completed).length}/
+                        {goal.milestones.length}
+                      </span>
+                    )}
+                  </div>
+
+                  {goal.milestones?.map((milestone) => (
+                    <button
+                      key={milestone.id}
+                      onClick={(ev) => {
+                        ev.stopPropagation();
+                        onToggleMilestone?.(milestone.id);
+                      }}
+                      className="w-full flex items-center gap-2.5 p-2 rounded-lg hover:bg-muted/40 transition-colors text-left group"
+                    >
+                      <div
+                        className={cn(
+                          "w-4 h-4 rounded border-2 flex items-center justify-center shrink-0 transition-all",
+                          milestone.completed
+                            ? "bg-primary border-primary"
+                            : "border-zinc-300 dark:border-zinc-600 group-hover:border-primary/50",
+                        )}
+                      >
+                        {milestone.completed && (
+                          <CheckCircle className="w-3 h-3 text-white" />
+                        )}
+                      </div>
+                      <span
+                        className={cn(
+                          "text-sm flex-1",
+                          milestone.completed
+                            ? "line-through text-muted-foreground"
+                            : "text-foreground",
+                        )}
+                      >
+                        {milestone.title}
+                      </span>
+                      {milestone.due_date && (
+                        <span className="text-[10px] text-muted-foreground shrink-0">
+                          {formatDate(milestone.due_date)}
+                        </span>
+                      )}
+                    </button>
+                  ))}
+
+                  {/* Add milestone */}
+                  {onAddMilestone && (
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        placeholder="Ajouter un jalon..."
+                        value={newMilestoneTitle}
+                        onChange={(e) => setNewMilestoneTitle(e.target.value)}
+                        className="h-8 flex-1 px-3 bg-muted rounded-lg text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" && newMilestoneTitle.trim()) {
+                            e.stopPropagation();
+                            onAddMilestone(newMilestoneTitle.trim());
+                            setNewMilestoneTitle("");
+                          }
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (newMilestoneTitle.trim()) {
+                            onAddMilestone(newMilestoneTitle.trim());
+                            setNewMilestoneTitle("");
+                          }
+                        }}
+                        disabled={!newMilestoneTitle.trim()}
+                        className="h-8 px-2.5 rounded-lg text-xs font-medium text-primary hover:bg-primary/10 transition-colors disabled:opacity-50"
+                      >
+                        + Ajouter
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
 

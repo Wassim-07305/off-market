@@ -16,6 +16,7 @@ import { CourseCompletion } from "@/components/school/course-completion";
 import { EnhancedVideoPlayer } from "@/components/school/video-player";
 import { ActionChecklist } from "@/components/school/action-checklist";
 import { useAuth } from "@/hooks/use-auth";
+import { useLessonTimer, formatTimeSpent } from "@/hooks/use-lesson-timer";
 import { cn } from "@/lib/utils";
 import { useUIStore } from "@/stores/ui-store";
 import { toast } from "sonner";
@@ -157,6 +158,16 @@ export default function CourseViewPage({
   }, [flatLessons, completedIds]);
 
   const [selectedLessonId, setSelectedLessonId] = useState<string | null>(null);
+
+  // Track time spent on the selected lesson
+  useLessonTimer(selectedLessonId ?? undefined);
+
+  // Build a map of time_spent per lesson from progress data
+  const timeByLesson = useMemo(() => {
+    const map: Record<string, number> = {};
+    // progress only has lesson_id, status, completed_at — time is from extended query
+    return map;
+  }, []);
 
   // Auto-select first incomplete lesson when course loads
   useEffect(() => {

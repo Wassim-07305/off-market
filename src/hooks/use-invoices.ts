@@ -50,6 +50,7 @@ export function useInvoices(options: UseInvoicesOptions = {}) {
       client_id: string;
       amount: number;
       tax: number;
+      tax_rate?: number;
       total: number;
       due_date?: string;
       notes?: string;
@@ -57,7 +58,11 @@ export function useInvoices(options: UseInvoicesOptions = {}) {
     }) => {
       const { data, error } = await supabase
         .from("invoices")
-        .insert({ ...invoice, invoice_number: "" }) // trigger generates number
+        .insert({
+          ...invoice,
+          invoice_number: "",
+          tax_rate: invoice.tax_rate ?? 20,
+        }) // trigger generates number
         .select()
         .single();
       if (error) throw error;

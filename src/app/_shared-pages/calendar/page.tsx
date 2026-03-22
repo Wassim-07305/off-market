@@ -178,6 +178,15 @@ export default function CalendarPage() {
     }
   };
 
+  const handleDayDoubleClick = (day: Date) => {
+    // Double-click on a day in month view → switch to day view
+    if (view === "month") {
+      setCurrentDate(new Date(day));
+      setView("day");
+      setSelectedDay(null);
+    }
+  };
+
   const handleEventClick = (event: CalendarEvent) => {
     setSelectedEvent(event);
     setShowDetailModal(true);
@@ -370,6 +379,7 @@ export default function CalendarPage() {
             selectedDay={selectedDay}
             eventsByDate={eventsByDate}
             onDayClick={handleDayClick}
+            onDayDoubleClick={handleDayDoubleClick}
             onEventClick={handleEventClick}
             onCreateClick={canCreate ? handleCreateClick : undefined}
           />
@@ -487,6 +497,7 @@ function MonthView({
   selectedDay,
   eventsByDate,
   onDayClick,
+  onDayDoubleClick,
   onEventClick,
   onCreateClick,
 }: {
@@ -496,6 +507,7 @@ function MonthView({
   selectedDay: Date | null;
   eventsByDate: Record<string, CalendarEvent[]>;
   onDayClick: (d: Date) => void;
+  onDayDoubleClick?: (d: Date) => void;
   onEventClick: (e: CalendarEvent) => void;
   onCreateClick?: (d: Date) => void;
 }) {
@@ -531,7 +543,7 @@ function MonthView({
             <button
               key={i}
               onClick={() => onDayClick(day)}
-              onDoubleClick={() => onCreateClick?.(day)}
+              onDoubleClick={() => onDayDoubleClick?.(day) ?? onCreateClick?.(day)}
               className={cn(
                 "relative min-h-[80px] sm:min-h-[100px] p-1.5 border-b border-r border-zinc-100/80 dark:border-border/15 text-left transition-all duration-200 group",
                 !isCurrentMonth && "bg-zinc-50/50 dark:bg-muted/20",
@@ -713,16 +725,28 @@ function DayView({
   onEventClick: (e: CalendarEvent) => void;
   onCreateClick?: () => void;
 }) {
-  // Group events by hour
-  const eventsByHour = useMemo(() => {
-    const map: Record<number, CalendarEvent[]> = {};
-    for (const e of events) {
-      const hour = new Date(e.start).getHours();
-      if (!map[hour]) map[hour] = [];
-      map[hour].push(e);
+  const HOUR_HEIGHT = 64; // px per hour slot
+  const START_HOUR = HOURS[0]; // 7
+  const isToday = isSameDay(day, new Date());
+
+  // Current time indicator position
+  const [nowOffset, setNowOffset] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!isToday) {
+      setNowOffset(null);
+      return;
     }
-    return map;
-  }, [events]);
+    const update = () => {
+      const now = new Date();
+      const hours = now.getHours() + now.getMinutes() / 60;
+      const offset = (hours - START_HOUR) * HOUR_HEIGHT;
+      setNowOffset(offset);
+    };
+    update();
+    const interval = setInterval(update, 60_000); // update every minute
+    return () => clearInterval(interval);
+  }, [isToday, START_HOUR, HOUR_HEIGHT]);
 
   const formatTime = (iso: string) => {
     const d = new Date(iso);
@@ -732,84 +756,116 @@ function DayView({
     });
   };
 
-  const isCurrentHour = (hour: number) => {
-    const now = new Date();
-    return isSameDay(day, now) && now.getHours() === hour;
-  };
+  // Calculate event position and height
+  const positionedEvents = useMemo(() => {
+    return events.map((e) => {
+      const start = new Date(e.start);
+      const startHours = start.getHours() + start.getMinutes() / 60;
+      const top = (startHours - START_HOUR) * HOUR_HEIGHT;
+
+      let durationHours = 1; // default 1h
+      if (e.end) {
+        const end = new Date(e.end);
+        durationHours =
+          (end.getTime() - start.getTime()) / (1000 * 60 * 60);
+        if (durationHours < 0.25) durationHours = 0.25; // min 15min display
+      }
+      const height = durationHours * HOUR_HEIGHT;
+
+      return { event: e, top, height };
+    });
+  }, [events, START_HOUR, HOUR_HEIGHT]);
 
   return (
     <div
       className="bg-surface dark:bg-surface border border-border dark:border-border/50 rounded-2xl overflow-hidden"
       style={{
-        boxShadow: "0 1px 3px rgb(0 0 0 / 0.04), 0 8px 20px rgb(0 0 0 / 0.02)",
+        boxShadow:
+          "0 1px 3px rgb(0 0 0 / 0.04), 0 8px 20px rgb(0 0 0 / 0.02)",
       }}
     >
-      {/* Hours grid */}
-      <div className="divide-y divide-zinc-100/80 dark:divide-border/15">
-        {HOURS.map((hour) => {
-          const hourEvents = eventsByHour[hour] ?? [];
-          const isCurrent = isCurrentHour(hour);
-          return (
-            <div
-              key={hour}
-              className={cn(
-                "flex min-h-[60px]",
-                isCurrent && "bg-[#AF0000]/[0.02]",
-              )}
-            >
-              {/* Time label */}
-              <div className="w-16 shrink-0 flex items-start justify-end pr-3 pt-1.5">
-                <span
-                  className={cn(
-                    "text-xs font-mono font-medium",
-                    isCurrent
-                      ? "text-[#AF0000] font-bold"
-                      : "text-muted-foreground/50",
-                  )}
-                >
-                  {String(hour).padStart(2, "0")}:00
-                </span>
-              </div>
-
-              {/* Event area */}
-              <div
-                className={cn(
-                  "flex-1 border-l p-1.5 space-y-1.5",
-                  isCurrent
-                    ? "border-[#AF0000]/30"
-                    : "border-zinc-100 dark:border-border/20",
-                )}
-              >
-                {hourEvents.map((e) => (
-                  <button
-                    key={e.id}
-                    onClick={() => onEventClick(e)}
-                    className="w-full flex items-center gap-2 p-2.5 rounded-xl text-left transition-all duration-200 hover:shadow-sm hover:-translate-y-px group"
-                    style={{
-                      backgroundColor: `${e.color}10`,
-                      borderLeft: `3px solid ${e.color}`,
-                    }}
-                  >
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-foreground truncate group-hover:text-[#AF0000] transition-colors">
-                        {e.title}
-                      </p>
-                      <p className="text-xs text-muted-foreground/60 mt-0.5">
-                        {formatTime(e.start)}
-                        {e.end && ` — ${formatTime(e.end)}`}
-                        {" · "}
-                        {EVENT_TYPE_LABELS[e.type]}
-                      </p>
-                    </div>
-                  </button>
-                ))}
-              </div>
+      {/* Time grid */}
+      <div className="relative" style={{ height: HOURS.length * HOUR_HEIGHT }}>
+        {/* Hour lines + labels */}
+        {HOURS.map((hour, i) => (
+          <div
+            key={hour}
+            className="absolute left-0 right-0 flex"
+            style={{ top: i * HOUR_HEIGHT, height: HOUR_HEIGHT }}
+          >
+            {/* Time label */}
+            <div className="w-16 shrink-0 flex items-start justify-end pr-3 pt-1">
+              <span className="text-xs font-mono font-medium text-muted-foreground/50">
+                {String(hour).padStart(2, "0")}:00
+              </span>
             </div>
-          );
-        })}
+
+            {/* Row with border + create button */}
+            <div
+              className="flex-1 border-l border-t border-zinc-100 dark:border-border/20 relative group cursor-pointer"
+              onDoubleClick={() => {
+                if (onCreateClick) onCreateClick();
+              }}
+            >
+              {onCreateClick && (
+                <button
+                  onClick={(ev) => {
+                    ev.stopPropagation();
+                    onCreateClick();
+                  }}
+                  className="absolute right-2 top-1 w-5 h-5 rounded-full flex items-center justify-center text-muted-foreground/0 group-hover:text-muted-foreground/50 hover:!text-[#AF0000] hover:!bg-[#AF0000]/10 transition-all duration-200"
+                >
+                  <Plus className="w-3 h-3" />
+                </button>
+              )}
+            </div>
+          </div>
+        ))}
+
+        {/* Positioned events */}
+        <div className="absolute left-16 right-0" style={{ top: 0, bottom: 0 }}>
+          {positionedEvents.map(({ event: e, top, height }) => (
+            <button
+              key={e.id}
+              onClick={() => onEventClick(e)}
+              className="absolute left-1.5 right-2 rounded-xl text-left transition-all duration-200 hover:shadow-md hover:-translate-y-px group overflow-hidden z-10"
+              style={{
+                top: Math.max(top, 0),
+                height: Math.max(height, 24),
+                backgroundColor: `${e.color}15`,
+                borderLeft: `3px solid ${e.color}`,
+              }}
+            >
+              <div className="p-2 h-full flex flex-col justify-center">
+                <p className="text-sm font-semibold text-foreground truncate group-hover:text-[#AF0000] transition-colors">
+                  {e.title}
+                </p>
+                {height >= 40 && (
+                  <p className="text-xs text-muted-foreground/60 mt-0.5">
+                    {formatTime(e.start)}
+                    {e.end && ` — ${formatTime(e.end)}`}
+                    {" · "}
+                    {EVENT_TYPE_LABELS[e.type]}
+                  </p>
+                )}
+              </div>
+            </button>
+          ))}
+        </div>
+
+        {/* Now line (red) */}
+        {nowOffset !== null && nowOffset >= 0 && nowOffset <= HOURS.length * HOUR_HEIGHT && (
+          <div
+            className="absolute left-14 right-0 z-20 pointer-events-none flex items-center"
+            style={{ top: nowOffset }}
+          >
+            <div className="w-2.5 h-2.5 rounded-full bg-[#AF0000] -ml-1.5 shadow-sm shadow-[#AF0000]/30" />
+            <div className="flex-1 h-[2px] bg-[#AF0000]/70" />
+          </div>
+        )}
       </div>
 
-      {/* Empty state / create */}
+      {/* Empty state */}
       {events.length === 0 && (
         <div className="p-10 text-center border-t border-zinc-100 dark:border-border/20">
           <div className="w-14 h-14 rounded-2xl bg-zinc-100 dark:bg-muted flex items-center justify-center mx-auto mb-4">

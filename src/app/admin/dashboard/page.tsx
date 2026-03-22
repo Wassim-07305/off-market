@@ -21,6 +21,7 @@ import { PeriodComparison } from "@/components/dashboard/period-comparison";
 import { LTVRanking } from "@/components/dashboard/ltv-ranking";
 import { AiPeriodicReport } from "@/components/dashboard/ai-periodic-report";
 import Link from "next/link";
+import { ExportDropdown } from "@/components/shared/export-dropdown";
 import { formatCurrency, cn } from "@/lib/utils";
 import {
   DollarSign,
@@ -38,6 +39,8 @@ import {
   PieChart as PieChartIcon,
   Crown,
   ArrowRight,
+  FileText,
+  Table,
 } from "lucide-react";
 import {
   AreaChart,
@@ -234,15 +237,35 @@ export default function AdminDashboardPage() {
   return (
     <div className="space-y-4">
       {/* ─── Header ─── */}
-      <div className="space-y-1">
-        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-          <span className="bg-gradient-to-r from-foreground via-foreground/90 to-foreground/70 bg-clip-text text-transparent">
-            {getGreeting()}, {firstName}
-          </span>
-        </h1>
-        <p className="text-sm text-muted-foreground/70">
-          Vue d&apos;ensemble de la plateforme
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div className="space-y-1">
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+            <span className="bg-gradient-to-r from-foreground via-foreground/90 to-foreground/70 bg-clip-text text-transparent">
+              {getGreeting()}, {firstName}
+            </span>
+          </h1>
+          <p className="text-sm text-muted-foreground/70">
+            Vue d&apos;ensemble de la plateforme
+          </p>
+        </div>
+        <ExportDropdown
+          options={[
+            {
+              label: "Rapport PDF",
+              icon: FileText,
+              onClick: () => {
+                window.open("/api/admin/dashboard-export?format=pdf", "_blank");
+              },
+            },
+            {
+              label: "Export CSV",
+              icon: Table,
+              onClick: () => {
+                window.open("/api/admin/dashboard-export?format=csv", "_blank");
+              },
+            },
+          ]}
+        />
       </div>
 
       {/* ─── System alerts banner ─── */}

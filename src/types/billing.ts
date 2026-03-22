@@ -98,6 +98,7 @@ export interface Invoice {
   client_id: string;
   amount: number;
   tax: number;
+  tax_rate: number;
   total: number;
   status: InvoiceStatus;
   due_date: string | null;
@@ -227,7 +228,7 @@ export interface PaymentReminder {
   created_at: string;
 }
 
-export type ReminderType = "j-3" | "j0" | "j+3" | "j+7" | "j+14";
+export type ReminderType = "j-3" | "j0" | "j+3" | "j+7" | "j+14" | "j+21";
 
 // ─── ONBOARDING ─────────────────────────
 export const ONBOARDING_STEPS = [

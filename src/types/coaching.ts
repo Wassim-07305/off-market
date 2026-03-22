@@ -131,6 +131,13 @@ export const JOURNAL_TEMPLATES: Record<
 };
 
 // ─── COACHING GOALS ───────────────────
+export interface GoalMilestone {
+  id: string;
+  title: string;
+  completed: boolean;
+  due_date?: string | null;
+}
+
 export interface CoachingGoal {
   id: string;
   client_id: string;
@@ -142,6 +149,10 @@ export interface CoachingGoal {
   unit: string | null;
   deadline: string | null;
   status: GoalStatus;
+  // SMART fields
+  difficulty?: number | null; // 1-5 (Atteignable)
+  coach_notes?: string | null; // Realiste - notes du coach
+  milestones?: GoalMilestone[] | null; // Sub-goals / milestones (JSONB)
   created_at: string;
   updated_at: string;
   // Joined

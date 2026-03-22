@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
 import { toast } from "sonner";
-import type { CoachingGoal, GoalStatus } from "@/types/coaching";
+import type { CoachingGoal, GoalStatus, GoalMilestone } from "@/types/coaching";
 
 export function useCoachingGoals(clientId?: string) {
   const supabase = useSupabase();
@@ -40,6 +40,9 @@ export function useCoachingGoals(clientId?: string) {
       target_value?: number;
       unit?: string;
       deadline?: string;
+      difficulty?: number;
+      coach_notes?: string;
+      milestones?: GoalMilestone[];
     }) => {
       if (!user) throw new Error("Not authenticated");
       const { data, error } = await supabase
@@ -99,6 +102,74 @@ export function useCoachingGoals(clientId?: string) {
     },
   });
 
+  const toggleMilestone = useMutation({
+    mutationFn: async ({
+      goalId,
+      milestoneId,
+    }: {
+      goalId: string;
+      milestoneId: string;
+    }) => {
+      // Get current goal
+      const { data: goal, error: fetchError } = await supabase
+        .from("coaching_goals")
+        .select("milestones")
+        .eq("id", goalId)
+        .single();
+      if (fetchError) throw fetchError;
+
+      const milestones = (goal?.milestones as GoalMilestone[] | null) ?? [];
+      const updated = milestones.map((m) =>
+        m.id === milestoneId ? { ...m, completed: !m.completed } : m,
+      );
+
+      const { error } = await supabase
+        .from("coaching_goals")
+        .update({ milestones: updated })
+        .eq("id", goalId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["coaching-goals"] });
+    },
+    onError: () => {
+      toast.error("Erreur lors de la mise a jour du jalon");
+    },
+  });
+
+  const addMilestone = useMutation({
+    mutationFn: async ({
+      goalId,
+      milestone,
+    }: {
+      goalId: string;
+      milestone: GoalMilestone;
+    }) => {
+      const { data: goal, error: fetchError } = await supabase
+        .from("coaching_goals")
+        .select("milestones")
+        .eq("id", goalId)
+        .single();
+      if (fetchError) throw fetchError;
+
+      const milestones = (goal?.milestones as GoalMilestone[] | null) ?? [];
+      const updated = [...milestones, milestone];
+
+      const { error } = await supabase
+        .from("coaching_goals")
+        .update({ milestones: updated })
+        .eq("id", goalId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["coaching-goals"] });
+      toast.success("Jalon ajoute");
+    },
+    onError: () => {
+      toast.error("Erreur lors de l'ajout du jalon");
+    },
+  });
+
   return {
     goals: goalsQuery.data ?? [],
     activeGoals: (goalsQuery.data ?? []).filter((g) => g.status === "active"),
@@ -106,5 +177,7 @@ export function useCoachingGoals(clientId?: string) {
     createGoal,
     updateGoal,
     updateProgress,
+    toggleMilestone,
+    addMilestone,
   };
 }

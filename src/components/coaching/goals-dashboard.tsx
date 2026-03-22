@@ -75,6 +75,8 @@ export function GoalsDashboard({ clientId }: GoalsDashboardProps) {
         target_value: data.target_value,
         unit: data.unit,
         deadline: data.deadline || undefined,
+        difficulty: data.difficulty,
+        coach_notes: data.coach_notes,
       });
       toast.success("Objectif cree avec succes");
     } catch {
@@ -92,6 +94,8 @@ export function GoalsDashboard({ clientId }: GoalsDashboardProps) {
         target_value: data.target_value ?? null,
         unit: data.unit ?? null,
         deadline: data.deadline || null,
+        difficulty: data.difficulty ?? null,
+        coach_notes: data.coach_notes ?? null,
       });
       toast.success("Objectif modifie");
       setEditingGoal(null);
