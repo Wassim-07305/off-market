@@ -76,47 +76,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!cancelled) setProfile(data);
     };
 
-    // Timeout to prevent loading from hanging indefinitely (matches middleware timeout)
-    const timeout = setTimeout(() => {
-      if (!cancelled) setLoading(false);
-    }, 5000);
-
-    supabase.auth.getUser().then(({ data: { user: authUser }, error }) => {
-      if (error) console.error("[AuthProvider] getUser error:", error.message);
+    // Step 1: Use getSession() for INSTANT auth from cookies (no network call)
+    // This resolves loading immediately so the page renders without waiting
+    supabase.auth.getSession().then(({ data: { session } }) => {
       if (cancelled) return;
-      if (authUser) {
-        setUser(authUser);
-        fetchProfile(authUser.id).finally(() => {
-          if (!cancelled) {
-            clearTimeout(timeout);
-            setLoading(false);
-          }
-        });
+      if (session?.user) {
+        setUser(session.user);
+        setLoading(false);
+        fetchProfile(session.user.id); // async, fills in after render
       } else {
-        console.error("[AuthProvider] getUser returned null user — no session in browser cookies");
-        clearTimeout(timeout);
         setLoading(false);
       }
     }).catch(() => {
-      if (!cancelled) {
-        clearTimeout(timeout);
-        setLoading(false);
-      }
+      if (!cancelled) setLoading(false);
     });
 
+    // Step 2: Listen for auth state changes (token refresh, sign in/out)
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (cancelled) return;
+      if (event === "INITIAL_SESSION") return; // already handled by getSession above
       setUser(session?.user ?? null);
-      // Resolve loading on INITIAL_SESSION IMMEDIATELY — don't wait for profile
-      // The profile will fill in via a re-render when fetchProfile completes
-      if (event === "INITIAL_SESSION") {
-        clearTimeout(timeout);
-        setLoading(false);
-      }
       if (session?.user) {
-        fetchProfile(session.user.id); // don't await — let it fill in async
+        fetchProfile(session.user.id);
       } else {
         setProfile(null);
       }
