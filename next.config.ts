@@ -9,11 +9,11 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  // compiler: {
-  //   removeConsole: {
-  //     exclude: ["error"],
-  //   },
-  // },
+  compiler: {
+    removeConsole: {
+      exclude: ["error"],
+    },
+  },
   poweredByHeader: false,
   reactCompiler: true,
   experimental: {
