@@ -63,17 +63,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const init = async () => {
       try {
         const {
-          data: { session },
-        } = await supabase.auth.getSession();
+          data: { user: authUser },
+        } = await supabase.auth.getUser();
 
         if (cancelled) return;
 
-        if (session?.user) {
-          setUser(session.user);
-          await fetchProfile(session.user.id);
+        if (authUser) {
+          setUser(authUser);
+          await fetchProfile(authUser.id);
         }
       } catch {
-        // Ignore init errors
+        // Ignore init errors — user is not authenticated
       } finally {
         if (!cancelled) setLoading(false);
       }
