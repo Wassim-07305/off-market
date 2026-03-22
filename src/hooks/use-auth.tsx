@@ -57,10 +57,24 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [loading, setLoading] = useState(true);
+interface AuthProviderProps {
+  children: ReactNode;
+  /** When provided (from server layout), auth bootstraps instantly with no loading flash */
+  initialUser?: User | null;
+  initialProfile?: Profile | null;
+}
+
+export function AuthProvider({
+  children,
+  initialUser,
+  initialProfile,
+}: AuthProviderProps) {
+  const hasServerData = initialUser !== undefined;
+  const [user, setUser] = useState<User | null>(initialUser ?? null);
+  const [profile, setProfile] = useState<Profile | null>(
+    initialProfile ?? null,
+  );
+  const [loading, setLoading] = useState(!hasServerData);
   const supabase = useSupabase();
   const queryClient = useQueryClient();
 
@@ -76,26 +90,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!cancelled) setProfile(data);
     };
 
-    // Safety timeout — Supabase client can hang during initialization
-    const timeout = setTimeout(() => {
-      if (!cancelled) setLoading(false);
-    }, 3000);
+    // Safety timeout — only needed when no server bootstrap data
+    const timeout = hasServerData
+      ? null
+      : setTimeout(() => {
+          if (!cancelled) setLoading(false);
+        }, 3000);
 
     // Use getSession() for auth from cookies (faster than getUser which makes a network call)
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (cancelled) return;
-      clearTimeout(timeout);
+      if (timeout) clearTimeout(timeout);
       if (session?.user) {
         setUser(session.user);
-        setLoading(false);
+        if (!hasServerData) setLoading(false);
         fetchProfile(session.user.id); // async, fills in after render
       } else {
-        setLoading(false);
+        if (!hasServerData) setLoading(false);
       }
     }).catch(() => {
       if (!cancelled) {
-        clearTimeout(timeout);
-        setLoading(false);
+        if (timeout) clearTimeout(timeout);
+        if (!hasServerData) setLoading(false);
       }
     });
 
@@ -115,9 +131,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return () => {
       cancelled = true;
-      clearTimeout(timeout);
+      if (timeout) clearTimeout(timeout);
       subscription.unsubscribe();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [supabase]);
 
   // Realtime: listen to changes on the user's own profile row (role, name, etc.)

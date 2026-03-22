@@ -13,8 +13,20 @@ import { BrandingProvider } from "@/components/providers/branding-provider";
 import { IncomingCallToast } from "@/components/calls/video-room/incoming-call-toast";
 import { RgpdConsentBanner } from "@/components/shared/rgpd-consent-banner";
 import { LazyMotion, domAnimation } from "framer-motion";
+import type { User } from "@supabase/supabase-js";
+import type { Profile } from "@/types/database";
 
-export function Providers({ children }: { children: React.ReactNode }) {
+interface ProvidersProps {
+  children: React.ReactNode;
+  initialUser?: User | null;
+  initialProfile?: Profile | null;
+}
+
+export function Providers({
+  children,
+  initialUser,
+  initialProfile,
+}: ProvidersProps) {
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -40,7 +52,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       >
         <LazyMotion features={domAnimation}>
           <BrandingProvider>
-            <AuthProvider>
+            <AuthProvider initialUser={initialUser} initialProfile={initialProfile}>
               <WalkthroughProvider>
                 {children}
                 <IncomingCallToast />

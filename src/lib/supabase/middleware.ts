@@ -85,18 +85,14 @@ export async function updateSession(request: NextRequest) {
     },
   );
 
-  // getUser() refreshes the session token. Add a timeout to prevent
-  // infinite hangs when cookies are in a bad state.
+  // getSession() reads from cookies locally — no network call, much faster than getUser().
+  // The Supabase SSR client handles token refresh via cookie manipulation.
   let user = null;
   try {
-    const timeoutPromise = new Promise<{ data: { user: null } }>((resolve) =>
-      setTimeout(() => resolve({ data: { user: null } }), 5000)
-    );
-    const { data } = await Promise.race([
-      supabase.auth.getUser(),
-      timeoutPromise,
-    ]);
-    user = data.user;
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    user = session?.user ?? null;
   } catch {
     // AuthApiError (invalid/expired refresh token) — treat as logged out.
     // Clear all supabase cookies to prevent stuck sessions.
