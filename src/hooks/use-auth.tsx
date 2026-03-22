@@ -62,9 +62,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const init = async () => {
       try {
-        const {
-          data: { user: authUser },
-        } = await supabase.auth.getUser();
+        // Race getUser against a timeout to prevent infinite loading
+        const timeoutPromise = new Promise<{ data: { user: null } }>((resolve) =>
+          setTimeout(() => resolve({ data: { user: null } }), 5000)
+        );
+
+        const { data: { user: authUser } } = await Promise.race([
+          supabase.auth.getUser(),
+          timeoutPromise,
+        ]);
 
         if (cancelled) return;
 
