@@ -60,32 +60,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!cancelled) setProfile(data);
     };
 
-    const init = async () => {
-      try {
-        // Race getUser against a timeout to prevent infinite loading
-        const timeoutPromise = new Promise<{ data: { user: null } }>((resolve) =>
-          setTimeout(() => resolve({ data: { user: null } }), 5000)
-        );
-
-        const { data: { user: authUser } } = await Promise.race([
-          supabase.auth.getUser(),
-          timeoutPromise,
-        ]);
-
-        if (cancelled) return;
-
-        if (authUser) {
-          setUser(authUser);
-          await fetchProfile(authUser.id);
-        }
-      } catch {
-        // Ignore init errors — user is not authenticated
-      } finally {
-        if (!cancelled) setLoading(false);
+    supabase.auth.getUser().then(({ data: { user: authUser } }) => {
+      if (cancelled) return;
+      if (authUser) {
+        setUser(authUser);
+        fetchProfile(authUser.id).finally(() => {
+          if (!cancelled) setLoading(false);
+        });
+      } else {
+        setLoading(false);
       }
-    };
-
-    init();
+    }).catch(() => {
+      if (!cancelled) setLoading(false);
+    });
 
     const {
       data: { subscription },
