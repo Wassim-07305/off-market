@@ -16,22 +16,9 @@ export async function GET(request: Request) {
       } = await supabase.auth.getUser();
 
       if (user) {
-        // If this is a password recovery flow, redirect to settings page
+        // If this is a password recovery flow, redirect to reset password page
         if (type === "recovery") {
-          const { data: profile } = await supabase
-            .from("profiles")
-            .select("role")
-            .eq("id", user.id)
-            .single();
-          const rolePrefix =
-            profile?.role === "admin"
-              ? "/admin"
-              : profile?.role === "coach"
-                ? "/coach"
-                : "/client";
-          return NextResponse.redirect(
-            `${origin}${rolePrefix}/settings?tab=security`,
-          );
+          return NextResponse.redirect(`${origin}/reset-password`);
         }
 
         // For OAuth/SSO logins: check if user has a profile (new user detection)
