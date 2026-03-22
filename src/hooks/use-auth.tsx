@@ -199,18 +199,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [supabase]);
 
   const signOut = useCallback(async () => {
-    try {
-      // Clear all React Query caches
-      queryClient.clear();
-      // Clear profile cache cookie
-      document.cookie = "om_profile_cache=; path=/; max-age=0; SameSite=Lax";
-      // Clear auth state
-      setUser(null);
-      setProfile(null);
-      await supabase.auth.signOut();
-    } catch {
-      // Ignore signOut errors
-    }
+    // Clear all React Query caches
+    queryClient.clear();
+    // Clear profile cache cookie
+    document.cookie = "om_profile_cache=; path=/; max-age=0; SameSite=Lax";
+    // Clear auth state
+    setUser(null);
+    setProfile(null);
+    // Sign out without awaiting (can hang with SSR client)
+    supabase.auth.signOut().catch(() => {});
+    // Redirect immediately
     window.location.replace("/login");
   }, [supabase, queryClient]);
 
