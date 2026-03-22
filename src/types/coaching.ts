@@ -46,6 +46,30 @@ export const MOOD_CONFIG: Record<
   5: { label: "Excellent", emoji: "🤩", color: "text-green-500" },
 };
 
+// ─── DAILY CHECK-INS ─────────────────
+export type DailyCheckinType = "morning" | "evening";
+
+export interface DailyCheckin {
+  id: string;
+  client_id: string;
+  checkin_date: string;
+  checkin_type: DailyCheckinType;
+  // Morning fields
+  energy: Energy | null;
+  mood: Mood | null;
+  goal_today: string | null;
+  priority: string | null;
+  // Evening fields
+  wins: string | null;
+  learnings: string | null;
+  challenges: string | null;
+  gratitude: string | null;
+  created_at: string;
+  updated_at: string;
+  // Joined
+  client?: { id: string; full_name: string; avatar_url: string | null };
+}
+
 // ─── JOURNAL ENTRIES ──────────────────
 export interface JournalAttachment {
   url: string;

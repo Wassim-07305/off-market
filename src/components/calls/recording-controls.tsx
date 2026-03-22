@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import {
   Circle,
   Square,
@@ -8,9 +8,11 @@ import {
   Download,
   RotateCcw,
   Loader2,
+  FileAudio,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCallRecording } from "@/hooks/use-call-recording";
+import { useServerTranscription } from "@/hooks/use-server-transcription";
 
 interface RecordingControlsProps {
   callId: string;
@@ -29,6 +31,18 @@ export function RecordingControls({ callId, stream }: RecordingControlsProps) {
     downloadRecording,
     resetRecording,
   } = useCallRecording(callId);
+
+  const { transcribe, isTranscribing, transcriptionResult } =
+    useServerTranscription();
+  const [showTranscriptionResult, setShowTranscriptionResult] = useState(false);
+
+  const handleTranscribe = useCallback(() => {
+    if (!recordingBlob) return;
+    transcribe.mutate(
+      { blob: recordingBlob, callId },
+      { onSuccess: () => setShowTranscriptionResult(true) },
+    );
+  }, [recordingBlob, callId, transcribe]);
 
   const handleStart = useCallback(() => {
     if (!stream) return;
@@ -87,9 +101,9 @@ export function RecordingControls({ callId, stream }: RecordingControlsProps) {
     );
   }
 
-  // Recording stopped, blob available: show save/download/reset actions
+  // Recording stopped, blob available: show save/download/reset/transcribe actions
   return (
-    <div className="flex items-center gap-2">
+    <div className="relative flex items-center gap-2">
       <div className="flex items-center gap-1.5 bg-surface/10 backdrop-blur-sm rounded-full px-3 py-1.5">
         <span className="text-[11px] font-medium text-zinc-300 whitespace-nowrap">
           Enregistrement pret
@@ -117,6 +131,31 @@ export function RecordingControls({ callId, stream }: RecordingControlsProps) {
         )}
       </button>
 
+      {/* Transcribe server-side */}
+      <button
+        onClick={handleTranscribe}
+        disabled={isTranscribing || !!transcriptionResult}
+        title={
+          transcriptionResult
+            ? "Transcription effectuee"
+            : "Transcrire l'enregistrement (Whisper)"
+        }
+        className={cn(
+          "w-10 h-10 rounded-full flex items-center justify-center transition-all active:scale-90",
+          transcriptionResult
+            ? "bg-blue-600/20 text-blue-300 opacity-70"
+            : "bg-blue-600/20 text-blue-400 hover:bg-blue-600/30",
+          "disabled:pointer-events-none",
+          isTranscribing && "opacity-50",
+        )}
+      >
+        {isTranscribing ? (
+          <Loader2 className="w-4 h-4 animate-spin" />
+        ) : (
+          <FileAudio className="w-4 h-4" />
+        )}
+      </button>
+
       {/* Download locally */}
       <button
         onClick={downloadRecording}
@@ -140,6 +179,32 @@ export function RecordingControls({ callId, stream }: RecordingControlsProps) {
       >
         <RotateCcw className="w-4 h-4" />
       </button>
+
+      {/* Transcription result popup */}
+      {showTranscriptionResult && transcriptionResult && (
+        <div className="absolute bottom-full mb-2 left-0 right-0 mx-auto w-80 bg-zinc-900 border border-white/10 rounded-xl p-3 shadow-2xl z-50">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-semibold text-white flex items-center gap-1.5">
+              <FileAudio className="w-3.5 h-3.5 text-blue-400" />
+              Transcription Whisper
+            </span>
+            <button
+              onClick={() => setShowTranscriptionResult(false)}
+              className="text-zinc-500 hover:text-white text-xs px-1.5 py-0.5 rounded hover:bg-zinc-800 transition-colors"
+            >
+              Fermer
+            </button>
+          </div>
+          <p className="text-xs text-zinc-300 max-h-32 overflow-y-auto leading-relaxed whitespace-pre-wrap">
+            {transcriptionResult.text}
+          </p>
+          {transcriptionResult.duration && (
+            <p className="text-[10px] text-zinc-600 mt-2">
+              Duree audio : {Math.round(transcriptionResult.duration)}s
+            </p>
+          )}
+        </div>
+      )}
     </div>
   );
 }

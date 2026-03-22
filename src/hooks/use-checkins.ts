@@ -5,7 +5,7 @@ import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
 import { useMemo } from "react";
 import { toast } from "sonner";
-import type { WeeklyCheckin, Mood, Energy } from "@/types/coaching";
+import type { WeeklyCheckin, DailyCheckin, DailyCheckinType, Mood, Energy } from "@/types/coaching";
 
 export function useCheckins(clientId?: string) {
   const supabase = useSupabase();
@@ -187,6 +187,179 @@ export function useAllCheckins() {
         .limit(100);
       if (error) throw error;
       return data as WeeklyCheckin[];
+    },
+  });
+
+  return {
+    checkins: query.data ?? [],
+    isLoading: query.isLoading,
+  };
+}
+
+// ─── Daily Check-ins (Morning & Evening) ─────────────────
+export function useDailyCheckins(clientId?: string) {
+  const supabase = useSupabase();
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+
+  const effectiveClientId = clientId ?? user?.id;
+  const today = new Date().toISOString().split("T")[0];
+
+  // Fetch today's daily checkins
+  const todayQuery = useQuery({
+    queryKey: ["daily-checkins", "today", effectiveClientId, today],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("daily_checkins")
+        .select("*")
+        .eq("client_id", effectiveClientId!)
+        .eq("checkin_date", today);
+      if (error) throw error;
+      return data as DailyCheckin[];
+    },
+    enabled: !!effectiveClientId,
+  });
+
+  // Fetch recent daily checkins (last 30 days)
+  const recentQuery = useQuery({
+    queryKey: ["daily-checkins", "recent", effectiveClientId],
+    queryFn: async () => {
+      const cutoff = new Date();
+      cutoff.setDate(cutoff.getDate() - 30);
+      const { data, error } = await supabase
+        .from("daily_checkins")
+        .select("*")
+        .eq("client_id", effectiveClientId!)
+        .gte("checkin_date", cutoff.toISOString().split("T")[0])
+        .order("checkin_date", { ascending: false });
+      if (error) throw error;
+      return data as DailyCheckin[];
+    },
+    enabled: !!effectiveClientId,
+  });
+
+  const todayCheckins = todayQuery.data ?? [];
+  const morningDone = todayCheckins.find((c) => c.checkin_type === "morning") ?? null;
+  const eveningDone = todayCheckins.find((c) => c.checkin_type === "evening") ?? null;
+
+  // Create daily checkin mutation
+  const createDailyCheckin = useMutation({
+    mutationFn: async (
+      checkin:
+        | {
+            type: "morning";
+            energy: Energy;
+            mood: Mood;
+            goal_today: string;
+            priority: string;
+          }
+        | {
+            type: "evening";
+            wins: string;
+            learnings: string;
+            challenges: string;
+            gratitude: string;
+          },
+    ) => {
+      if (!user) throw new Error("Not authenticated");
+
+      const base = {
+        client_id: user.id,
+        checkin_date: today,
+        checkin_type: checkin.type as DailyCheckinType,
+      };
+
+      const payload =
+        checkin.type === "morning"
+          ? {
+              ...base,
+              energy: checkin.energy,
+              mood: checkin.mood,
+              goal_today: checkin.goal_today,
+              priority: checkin.priority,
+            }
+          : {
+              ...base,
+              wins: checkin.wins,
+              learnings: checkin.learnings,
+              challenges: checkin.challenges,
+              gratitude: checkin.gratitude,
+            };
+
+      const { data, error } = await supabase
+        .from("daily_checkins")
+        .upsert(payload, { onConflict: "client_id,checkin_date,checkin_type" })
+        .select()
+        .single();
+      if (error) throw error;
+      return data as DailyCheckin;
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["daily-checkins"] });
+      toast.success(
+        variables.type === "morning"
+          ? "Check-in matinal enregistre !"
+          : "Check-in du soir enregistre !",
+      );
+    },
+    onError: () => {
+      toast.error("Erreur lors de la soumission du check-in");
+    },
+  });
+
+  // Compute daily streak
+  const dailyStreak = useMemo(() => {
+    const recent = recentQuery.data ?? [];
+    if (recent.length === 0) return 0;
+
+    // Group by date
+    const dates = new Set(recent.map((c) => c.checkin_date));
+    const sortedDates = [...dates].sort((a, b) => b.localeCompare(a));
+
+    let streak = 0;
+    const now = new Date();
+    for (let i = 0; i < sortedDates.length; i++) {
+      const expected = new Date(now);
+      expected.setDate(expected.getDate() - i);
+      const expectedStr = expected.toISOString().split("T")[0];
+      if (sortedDates.includes(expectedStr)) {
+        streak++;
+      } else {
+        break;
+      }
+    }
+    return streak;
+  }, [recentQuery.data]);
+
+  return {
+    todayCheckins,
+    morningDone,
+    eveningDone,
+    recentCheckins: recentQuery.data ?? [],
+    isLoading: todayQuery.isLoading,
+    createDailyCheckin,
+    dailyStreak,
+  };
+}
+
+// All daily checkins for coach view
+export function useAllDailyCheckins() {
+  const supabase = useSupabase();
+  const { user } = useAuth();
+
+  const query = useQuery({
+    queryKey: ["all-daily-checkins"],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("daily_checkins")
+        .select(
+          "*, client:profiles!daily_checkins_client_id_fkey(id, full_name, avatar_url)",
+        )
+        .order("created_at", { ascending: false })
+        .limit(200);
+      if (error) throw error;
+      return data as DailyCheckin[];
     },
   });
 

@@ -6,8 +6,10 @@ import { useAuth } from "@/hooks/use-auth";
 import { useBrandingContext } from "@/components/providers/branding-provider";
 import { colorVariants } from "@/hooks/use-branding";
 import { translateSupabaseError } from "@/lib/supabase-errors";
+import { trackEvent } from "@/lib/analytics";
 import { toast } from "sonner";
 import { Loader2, Eye, EyeOff } from "lucide-react";
+import { SSOButtons } from "@/components/auth/sso-buttons";
 
 export default function SignupPage() {
   const [fullName, setFullName] = useState("");
@@ -39,6 +41,7 @@ export default function SignupPage() {
     if (error) {
       toast.error(translateSupabaseError(error.message));
     } else {
+      trackEvent("signup");
       toast.success("Compte cree !");
       window.location.href = "/login";
     }
@@ -213,6 +216,9 @@ export default function SignupPage() {
             Creer mon compte
           </button>
         </form>
+
+        {/* SSO Google & Microsoft */}
+        <SSOButtons />
       </div>
 
       <p className="text-center text-white/30 text-sm mt-6">

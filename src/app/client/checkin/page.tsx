@@ -35,6 +35,7 @@ import {
   Check,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { DailyCheckinCard } from "@/components/coaching/daily-checkin-card";
 
 function getMonday(date: Date): string {
   const d = new Date(date);
@@ -222,7 +223,12 @@ export default function CheckinPage() {
         />
       </motion.div>
 
-      {/* Form or success */}
+      {/* Daily check-in (morning / evening) */}
+      <motion.div variants={staggerItem}>
+        <DailyCheckinCard />
+      </motion.div>
+
+      {/* Weekly form or success */}
       {hasThisWeek ? (
         <motion.div
           variants={staggerItem}

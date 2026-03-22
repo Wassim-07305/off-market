@@ -112,6 +112,7 @@ export async function updateSession(request: NextRequest) {
   // Public pages/routes that don't require auth
   const isPublicPage =
     pathname === "/" ||
+    pathname === "/api/health" ||
     pathname.startsWith("/lead-magnet") ||
     pathname.startsWith("/f/") ||
     pathname.startsWith("/book/") ||

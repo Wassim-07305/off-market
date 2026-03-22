@@ -7,8 +7,10 @@ import { useAuth } from "@/hooks/use-auth";
 import { useSupabase } from "@/hooks/use-supabase";
 import { useBrandingContext } from "@/components/providers/branding-provider";
 import { colorVariants } from "@/hooks/use-branding";
+import { trackEvent } from "@/lib/analytics";
 import { toast } from "sonner";
 import { Loader2, Eye, EyeOff, ShieldCheck } from "lucide-react";
+import { SSOButtons } from "@/components/auth/sso-buttons";
 
 export default function LoginPage() {
   return (
@@ -92,6 +94,7 @@ function LoginContent() {
       }
     }
 
+    trackEvent("login");
     setLoading(false);
     router.push("/");
     router.refresh();
@@ -342,6 +345,9 @@ function LoginContent() {
             Se connecter
           </button>
         </form>
+
+        {/* SSO Google & Microsoft */}
+        <SSOButtons />
       </div>
 
       <p className="text-center text-white/30 text-sm mt-6">

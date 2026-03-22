@@ -24,6 +24,11 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // ── Health check: public, skip auth (still rate-limited) ──
+  if (pathname === "/api/health") {
+    return NextResponse.next();
+  }
+
   // ── Rate limiting for API routes ──────────────────────────────────
   const rlConfig = getRateLimitConfig(pathname);
 

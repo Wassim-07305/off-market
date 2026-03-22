@@ -38,6 +38,8 @@ import {
   Presentation,
   Megaphone,
   Settings,
+  Plug,
+  Activity,
   type LucideIcon,
 } from "lucide-react";
 
@@ -94,6 +96,8 @@ export const adminNavigation: NavItem[] = [
   },
   { name: "Annonces", href: "/admin/announcements", icon: Megaphone },
   { name: "Miro", href: "/admin/miro", icon: Presentation },
+  { name: "Integrations", href: "/admin/integrations", icon: Plug },
+  { name: "Monitoring", href: "/admin/monitoring", icon: Activity },
   { name: "Documentation API", href: "/admin/api-docs", icon: BookOpen },
   { name: "Reglages", href: "/admin/settings", icon: Settings },
 ];

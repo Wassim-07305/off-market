@@ -11,13 +11,13 @@ export async function GET(request: Request) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
-      // If this is a password recovery flow, redirect to settings page
-      if (type === "recovery") {
-        // Get user role to build the correct path
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        if (user) {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (user) {
+        // If this is a password recovery flow, redirect to settings page
+        if (type === "recovery") {
           const { data: profile } = await supabase
             .from("profiles")
             .select("role")
@@ -33,7 +33,20 @@ export async function GET(request: Request) {
             `${origin}${rolePrefix}/settings?tab=security`,
           );
         }
+
+        // For OAuth/SSO logins: check if user has a profile (new user detection)
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("id")
+          .eq("id", user.id)
+          .single();
+
+        if (!profile) {
+          // New user from SSO — redirect to onboarding
+          return NextResponse.redirect(`${origin}/onboarding`);
+        }
       }
+
       return NextResponse.redirect(`${origin}${next}`);
     }
   }
