@@ -2,8 +2,7 @@ import { useState, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Database, Trash2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { useRole } from "@/hooks/useRole";
-import { useAuthStore } from "@/stores/auth-store";
+import { useAuth } from "@/hooks/use-auth";
 import {
   seedDemoData,
   clearDemoData,
@@ -11,8 +10,7 @@ import {
 } from "@/lib/seedDemoData";
 
 export function DemoDataButton() {
-  const { isAdmin } = useRole();
-  const user = useAuthStore((s) => s.user);
+  const { user, isAdmin } = useAuth();
   const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
   const [seeded, setSeeded] = useState(isDemoDataSeeded);

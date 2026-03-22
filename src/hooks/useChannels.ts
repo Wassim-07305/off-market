@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
 import type { Channel, ChannelWithDetails } from "@/types/database";
+
+const supabase = createClient();
 import type { ChannelFormData } from "@/types/forms";
 import { toast } from "sonner";
 

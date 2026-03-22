@@ -24,16 +24,29 @@ export default function ResetPasswordPage() {
 
   // La session est déjà établie par le callback serveur
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (user) {
-        setReady(true);
-      } else {
-        // Pas de session — rediriger vers forgot-password
+    const timeout = setTimeout(() => {
+      if (!ready) {
         toast.error("Lien expiré ou invalide. Demande un nouveau lien.");
         router.push("/forgot-password");
       }
+    }, 5000);
+
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      clearTimeout(timeout);
+      if (user) {
+        setReady(true);
+      } else {
+        toast.error("Lien expiré ou invalide. Demande un nouveau lien.");
+        router.push("/forgot-password");
+      }
+    }).catch(() => {
+      clearTimeout(timeout);
+      toast.error("Erreur de vérification. Demande un nouveau lien.");
+      router.push("/forgot-password");
     });
-  }, [supabase, router]);
+
+    return () => clearTimeout(timeout);
+  }, [supabase, router, ready]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

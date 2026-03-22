@@ -1,6 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
 import type { DashboardStats } from "@/types/database";
+
+const supabase = createClient();
 
 export function useDashboardStats() {
   return useQuery({

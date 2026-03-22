@@ -13,6 +13,22 @@ import { useQueryClient } from "@tanstack/react-query";
 import type { Profile } from "@/types/database";
 import type { User, AuthError } from "@supabase/supabase-js";
 
+/**
+ * Clear all auth-related cookies from the browser.
+ * Used before redirects to prevent middleware from seeing stale sessions.
+ */
+function clearAuthCookies() {
+  // Clear profile cache
+  document.cookie = "om_profile_cache=; path=/; max-age=0; SameSite=Lax";
+  // Clear all Supabase session cookies
+  document.cookie.split(";").forEach((c) => {
+    const name = c.trim().split("=")[0];
+    if (name && name.startsWith("sb-")) {
+      document.cookie = `${name}=; path=/; max-age=0; SameSite=Lax`;
+    }
+  });
+}
+
 interface AuthContextValue {
   user: User | null;
   profile: Profile | null;
@@ -136,9 +152,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             };
             const target =
               ROLE_DASHBOARDS[newProfile.role] ?? "/client/dashboard";
-            // Clear middleware cache cookie, then redirect
-            document.cookie =
-              "om_profile_cache=; path=/; max-age=0; SameSite=Lax";
+            clearAuthCookies();
             window.location.replace(target);
           }
         },
@@ -152,8 +166,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = useCallback(
     async (email: string, password: string) => {
-      // Clear stale profile cache cookie (role from previous user)
-      document.cookie = "om_profile_cache=; path=/; max-age=0; SameSite=Lax";
+      clearAuthCookies();
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -207,15 +220,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signOut = useCallback(async () => {
     // Clear all React Query caches
     queryClient.clear();
-    // Clear profile cache cookie
-    document.cookie = "om_profile_cache=; path=/; max-age=0; SameSite=Lax";
-    // Clear all Supabase auth cookies to prevent middleware from redirecting back
-    document.cookie.split(";").forEach((c) => {
-      const name = c.trim().split("=")[0];
-      if (name.startsWith("sb-")) {
-        document.cookie = `${name}=; path=/; max-age=0; SameSite=Lax`;
-      }
-    });
+    // Clear all auth cookies to prevent middleware from redirecting back
+    clearAuthCookies();
     // Clear auth state
     setUser(null);
     setProfile(null);

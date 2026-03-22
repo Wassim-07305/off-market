@@ -1,11 +1,13 @@
 import { useEffect } from "react";
-import { supabase } from "@/lib/supabase";
-import { useAuthStore } from "@/stores/auth-store";
+import { useSupabase } from "./use-supabase";
+import { useAuth } from "./use-auth";
 
 const UPDATE_INTERVAL = 5 * 60 * 1000; // 5 minutes
 
 export function usePresence() {
-  const userId = useAuthStore((s) => s.user?.id);
+  const { user } = useAuth();
+  const supabase = useSupabase();
+  const userId = user?.id;
 
   useEffect(() => {
     if (!userId) return;
@@ -37,5 +39,5 @@ export function usePresence() {
       clearInterval(interval);
       document.removeEventListener("visibilitychange", handleVisibility);
     };
-  }, [userId]);
+  }, [userId, supabase]);
 }

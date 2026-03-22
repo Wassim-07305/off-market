@@ -1,10 +1,11 @@
-import { useAuthStore } from "@/stores/auth-store";
+import { useAuth } from "@/hooks/use-auth";
 import { canAccess } from "@/lib/permissions";
 import type { AppRole } from "@/types/database";
 import type { Module } from "@/lib/permissions";
 
 export function useRole() {
-  const role = useAuthStore((state) => state.role);
+  const { profile } = useAuth();
+  const role = (profile?.role as AppRole) ?? null;
 
   function hasRole(target: AppRole): boolean {
     return role === target;

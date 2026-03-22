@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { supabase } from "@/lib/supabase";
-import { useAuthStore } from "@/stores/auth-store";
+import { useSupabase } from "./use-supabase";
+import { useAuth } from "./use-auth";
 
 const TYPING_TIMEOUT = 3000; // 3 secondes sans frappe = plus en train d'écrire
 const BROADCAST_THROTTLE = 2000; // max 1 broadcast toutes les 2 secondes
@@ -11,8 +11,9 @@ interface TypingUser {
 }
 
 export function useTypingIndicator(channelId: string | undefined) {
-  const userId = useAuthStore((s) => s.user?.id);
-  const profile = useAuthStore((s) => s.profile);
+  const { user, profile } = useAuth();
+  const supabase = useSupabase();
+  const userId = user?.id;
   const [typingUsers, setTypingUsers] = useState<TypingUser[]>([]);
   const lastBroadcast = useRef(0);
   const timeoutsRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(
@@ -63,7 +64,7 @@ export function useTypingIndicator(channelId: string | undefined) {
       timeoutsRef.current.clear();
       setTypingUsers([]);
     };
-  }, [channelId, userId]);
+  }, [channelId, userId, supabase]);
 
   // Envoyer un event de typing (throttled)
   const sendTyping = useCallback(() => {
@@ -81,7 +82,7 @@ export function useTypingIndicator(channelId: string | undefined) {
         fullName: profile.full_name,
       },
     });
-  }, [channelId, userId, profile]);
+  }, [channelId, userId, profile, supabase]);
 
   return { typingUsers, sendTyping };
 }

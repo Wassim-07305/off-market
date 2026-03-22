@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
 import type { SetterActivity } from "@/types/database";
+
+const supabase = createClient();
 import type { SetterActivityFormData } from "@/types/forms";
 import { toast } from "sonner";
 

@@ -18,7 +18,9 @@ export async function GET(request: Request) {
       if (user) {
         // If this is a password recovery flow, redirect to reset password page
         if (type === "recovery") {
-          return NextResponse.redirect(`${origin}/reset-password`);
+          const response = NextResponse.redirect(`${origin}/reset-password`);
+          response.cookies.delete("om_profile_cache");
+          return response;
         }
 
         const admin = createAdminClient();
@@ -47,10 +49,12 @@ export async function GET(request: Request) {
             onboarding_completed: false,
           }, { onConflict: "id" });
 
-          return NextResponse.redirect(`${origin}/onboarding`);
+          const response = NextResponse.redirect(`${origin}/onboarding`);
+          response.cookies.delete("om_profile_cache");
+          return response;
         }
 
-        // If profile exists but role is missing/wrong, ensure it's set
+        // If profile exists but role is missing, ensure it's set
         if (!profile.role) {
           await admin
             .from("profiles")
@@ -59,7 +63,7 @@ export async function GET(request: Request) {
           profile = { ...profile, role: "client" };
         }
 
-        // Clear middleware cache to force re-fetch
+        // Clear middleware cache to force re-fetch with fresh role
         const response = NextResponse.redirect(
           profile.onboarding_completed
             ? `${origin}${getRoleDashboard(profile.role)}`

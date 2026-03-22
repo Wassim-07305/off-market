@@ -22,10 +22,10 @@ const DEFAULT_ROUTES: Record<string, string> = {
 /**
  * Cookie name used to cache role + onboarding status.
  * Avoids a DB roundtrip on every middleware invocation.
- * TTL: 5 minutes — short enough that role changes propagate quickly.
+ * TTL: 1 minute — short enough that role changes propagate quickly.
  */
 const PROFILE_CACHE_COOKIE = "om_profile_cache";
-const CACHE_TTL_MS = 60 * 1000; // 1 minute — fast role propagation on account switch
+const CACHE_TTL_MS = 60 * 1000; // 1 minute
 
 interface ProfileCache {
   role: string;
@@ -90,7 +90,7 @@ export async function updateSession(request: NextRequest) {
   let user = null;
   try {
     const timeoutPromise = new Promise<{ data: { user: null } }>((resolve) =>
-      setTimeout(() => resolve({ data: { user: null } }), 4000)
+      setTimeout(() => resolve({ data: { user: null } }), 5000)
     );
     const { data } = await Promise.race([
       supabase.auth.getUser(),

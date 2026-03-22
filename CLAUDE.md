@@ -156,5 +156,6 @@ Key env vars (see `.env.example` for the full list):
 - Toast notifications via Sonner: `toast.success()` / `toast.error()`
 - Icons: `lucide-react` exclusively
 - `cn()` helper from `lib/utils.ts` (clsx + tailwind-merge)
-- Hook files: kebab-case (`use-feature-name.ts`), some legacy camelCase (`useAuth.ts`)
-- Supabase client: always import from `@/lib/supabase/client` (browser) or `@/lib/supabase/server` (server) — never from the root `lib/supabase.ts` which is legacy
+- Hook files: kebab-case (`use-feature-name.ts`), some legacy camelCase (`useChannels.ts`)
+- Supabase client: always import from `@/lib/supabase/client` (browser) or `@/lib/supabase/server` (server)
+- Auth: always use `useAuth()` from `@/hooks/use-auth` (React Context) — never Zustand stores for auth state

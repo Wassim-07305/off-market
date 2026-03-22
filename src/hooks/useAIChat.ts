@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
 import type { AIConversation, AIMessage } from "@/types/database";
+
+const supabase = createClient();
 import { toast } from "sonner";
 
 export function useConversations() {

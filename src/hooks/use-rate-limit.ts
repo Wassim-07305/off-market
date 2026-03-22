@@ -3,8 +3,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import { toast } from "sonner";
-import { supabase } from "@/lib/supabase";
-import { useAuthStore } from "@/stores/auth-store";
+import { useSupabase } from "./use-supabase";
+import { useAuth } from "./use-auth";
 import type { RateLimitAction } from "@/lib/rate-limiter";
 import { formatResetTime } from "@/lib/rate-limiter";
 
@@ -21,7 +21,8 @@ interface RateLimitStatusResult {
  * Shows toast warning when approaching limit (< 5 remaining).
  */
 export function useRateLimitStatus(action: RateLimitAction) {
-  const user = useAuthStore((s) => s.user);
+  const { user } = useAuth();
+  const supabase = useSupabase();
   const hasWarnedRef = useRef(false);
 
   const query = useQuery<RateLimitStatusResult>({
