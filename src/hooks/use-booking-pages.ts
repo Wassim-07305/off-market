@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
+import { useAuth } from "./use-auth";
 import { toast } from "sonner";
 
 // ─── Types ──────────────────────────────────────────────────
@@ -80,9 +81,11 @@ export interface BookingKPIs {
 
 export function useBookingPages() {
   const supabase = useSupabase();
+  const { user } = useAuth();
 
   return useQuery({
     queryKey: ["booking-pages"],
+    enabled: !!user,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("booking_pages")

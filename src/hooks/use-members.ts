@@ -41,7 +41,6 @@ export function useMembers() {
   const membersQuery = useQuery({
     queryKey: ["members-directory"],
     enabled: !!user,
-    retry: false,
     staleTime: 60_000,
     queryFn: async () => {
       // Try the view first, fall back to direct profiles query if view doesn't exist

@@ -26,7 +26,6 @@ export function useInvoices(options: UseInvoicesOptions = {}) {
   const invoicesQuery = useQuery({
     queryKey: ["invoices", status, clientId, limit],
     enabled: !!user,
-    retry: false,
     staleTime: 30_000,
     queryFn: async () => {
       let query = supabase

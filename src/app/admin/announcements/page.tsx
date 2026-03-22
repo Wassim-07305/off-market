@@ -9,6 +9,7 @@ import {
   useDeleteAnnouncement,
 } from "@/hooks/useAnnouncements";
 import { useSupabase } from "@/hooks/use-supabase";
+import { useAuth } from "@/hooks/use-auth";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { cn, formatDate } from "@/lib/utils";
 import {
@@ -44,6 +45,7 @@ const ROLES = [
 
 export default function AdminAnnouncementsPage() {
   const supabase = useSupabase();
+  const { user } = useAuth();
   const queryClient = useQueryClient();
   const createAnnouncement = useCreateAnnouncement();
   const updateAnnouncement = useUpdateAnnouncement();
@@ -63,6 +65,7 @@ export default function AdminAnnouncementsPage() {
   // Fetch ALL announcements (not just active)
   const { data: announcements, isLoading } = useQuery({
     queryKey: ["admin-announcements"],
+    enabled: !!user,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("announcements")

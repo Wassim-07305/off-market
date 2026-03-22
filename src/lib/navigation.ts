@@ -63,7 +63,7 @@ export const adminNavigation: NavItem[] = [
   { name: "Personnes", href: "/admin/personnes", icon: Users },
   { name: "Appels & Lives", href: "/admin/calls", icon: Phone },
   { name: "Messagerie", href: "/admin/messaging", icon: MessageSquare },
-  { name: "Finances", href: "/admin/analytics", icon: BarChart3 },
+  { name: "Finances", href: "/admin/billing", icon: BarChart3 },
 
   // ── Contenu ──
   {
@@ -76,6 +76,7 @@ export const adminNavigation: NavItem[] = [
   { name: "Ressources", href: "/admin/resources", icon: FolderOpen },
   { name: "AlexIA", href: "/admin/ai", icon: Bot },
   { name: "Formulaires", href: "/admin/forms", icon: FileText },
+  { name: "Communaute", href: "/admin/community", icon: Users },
 
   // ── Business ──
   {
@@ -99,6 +100,7 @@ export const adminNavigation: NavItem[] = [
   { name: "Integrations", href: "/admin/integrations", icon: Plug },
   { name: "Monitoring", href: "/admin/monitoring", icon: Activity },
   { name: "Documentation API", href: "/admin/api-docs", icon: BookOpen },
+  { name: "Utilisateurs", href: "/admin/users", icon: UserCog },
   { name: "Reglages", href: "/admin/settings", icon: Settings },
 ];
 

@@ -25,7 +25,6 @@ export function useContracts(options: UseContractsOptions = {}) {
   const contractsQuery = useQuery({
     queryKey: ["contracts", status, clientId, limit],
     enabled: !!user,
-    retry: false,
     staleTime: 30_000,
     queryFn: async () => {
       let query = supabase
