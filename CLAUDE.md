@@ -4,125 +4,157 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Off-Market est un CRM/plateforme de gestion pour agences de coaching et consultants (UI en francais). C'est une SPA/PWA React avec un backend Supabase, destinee aux freelances et coaches ciblant 10k+ EUR/mois. Plateforme multi-roles avec un systeme complet de gestion clients, pipeline commercial, formations, messagerie temps reel, gamification et suivi coaching.
+Off-Market est un CRM/plateforme de gestion pour agences de coaching et consultants (UI en français). Destinée aux freelances et coaches ciblant 10k+ EUR/mois. Plateforme multi-rôles avec gestion clients, pipeline commercial, formations (LMS), messagerie temps réel, gamification et suivi coaching.
 
 ## Commands
 
-- `npm run dev` — Start Vite dev server with HMR
-- `npm run build` — TypeScript check + Vite production build (`tsc -b && vite build`)
-- `npm run lint` — ESLint across the project
-- `npm run preview` — Preview production build locally
+- `npm run dev` — Start Next.js dev server
+- `npm run build` — Next.js production build
+- `npm run start` — Start production server
+- `npm run lint` — ESLint
+- `npx playwright test` — Run Playwright e2e tests
 
 ## Architecture
 
 ### Tech Stack
 
-React 19 + TypeScript 5.9 + Vite 7 + Tailwind CSS 4 + Supabase (PostgreSQL + Auth + RLS). State: Zustand (4 stores) + TanStack React Query (server state). Forms: React Hook Form + Zod. Charts: Recharts. Tables: TanStack React Table. DnD: @dnd-kit. PWA: vite-plugin-pwa. Deployed on Vercel.
+**Next.js 16** (App Router) + React 19 + TypeScript 5 + Tailwind CSS 4 + Supabase (PostgreSQL + Auth + RLS). State: Zustand 5 (client stores) + TanStack React Query 5 (server state). Forms: React Hook Form + Zod 4. Charts: Recharts. Tables: TanStack React Table. DnD: @dnd-kit. Rich text: Tiptap. Animations: Framer Motion. Email: Resend. AI: OpenRouter + Gemini. Deployed on Vercel.
+
+### Route Groups (App Router)
+
+```
+src/app/
+  (auth)/          # login, register, forgot-password, signup
+  (marketing)/     # landing page
+  (onboarding)/    # onboarding flow
+  (public)/        # public routes: book/, contracts/, lead-magnet/
+  admin/           # admin-only pages (full access)
+  coach/           # coach pages
+  client/          # client pages
+  sales/           # closer/setter pages (pipeline, calls, commissions)
+  _shared-pages/   # shared pages across roles
+  api/             # API routes (AI, admin, auth, cron, webhooks, etc.)
+  f/               # form public embed routes
+```
+
+Each role group has its own `layout.tsx` with sidebar/navigation.
+
+### Supabase Clients
+
+Three distinct clients in `src/lib/supabase/`:
+- `client.ts` — Browser client (`"use client"`), cookie-based session storage
+- `server.ts` — Server Component client (`await cookies()` from `next/headers`)
+- `admin.ts` — Service role client (bypasses RLS, server-only)
+- `middleware.ts` — Session refresh in Next.js middleware
+
+Always use the appropriate client: server client in Server Components/Route Handlers, browser client in Client Components.
 
 ### Directory Layout
 
 ```
 src/
-  App.tsx            # All routes defined here (React Router 6, 36 lazy-loaded pages)
+  app/             # Next.js App Router pages and API routes
   types/
-    database.ts      # 15+ interfaces (Profile, Client, Lead, CallCalendar, etc.)
-    forms.ts         # Zod schemas for all forms
+    database.ts    # Core interfaces + AppRole type
+    forms.ts       # Zod schemas for all forms
   stores/
-    auth-store.ts    # Session, user, profile, role state
-    ui-store.ts      # Sidebar, theme, search, modals (persisted localStorage)
-    chat-store.ts    # Chat state
+    auth-store.ts  # Session, user, profile, role state
+    ui-store.ts    # Sidebar, theme, search, modals (persisted localStorage)
+    chat-store.ts
     notification-store.ts
-  hooks/             # ~41 custom hooks, one per entity/feature
-    useAuth.ts, useClients.ts, useLeads.ts, useCloserCalls.ts, useCallCalendar.ts,
-    useCoaching.ts, useContracts.ts, useFinances.ts, useForms.ts, useJournal.ts,
-    useGamification.ts, useMessages.ts, useInstagram.ts, useAnnouncements.ts,
-    useNotifications.ts, useDashboardStats.ts, useRole.ts, ...
+  hooks/           # 90+ custom hooks, one per entity/feature (kebab-case)
   lib/
-    supabase.ts      # Supabase client initialization
-    permissions.ts   # Module -> AppRole matrix (27 modules, 3 roles)
-    constants.ts     # 80+ constants (role labels, lead statuses, colors, etc.)
-    utils.ts         # cn(), formatCurrency(EUR), formatDate(fr), formatRelativeDate()
-    csv.ts           # CSV import/export via PapaParse
+    supabase/      # Client variants (client, server, admin, middleware)
+    permissions.ts # Module -> AppRole[] matrix + canAccess()
+    constants.ts   # Role labels, lead statuses, colors, etc.
+    utils.ts       # cn(), formatCurrency(EUR), formatDate(fr), formatRelativeDate()
+    gemini.ts      # Google Gemini AI integration
+    openrouter.ts  # OpenRouter AI integration
+    rate-limit.ts  # In-memory rate limiting for API routes
+    csv.ts         # CSV import/export via PapaParse
+    pdf.ts         # PDF generation helpers
   components/
-    ui/              # 26 shadcn-style components (button, card, modal, data-table, etc.)
-    layout/          # Layout, Sidebar, Header, CommandPalette, MobileBottomNav
-    auth/            # RouteGuard (auth redirect), RoleGuard (permission check)
-    [feature]/       # 26 feature directories (clients/, leads/, calls/, finances/, etc.)
-  pages/             # 37 route page components
-supabase/
-  migrations/        # 12 SQL migrations
+    ui/            # shadcn-style primitives (Radix UI-based)
+    providers/     # React providers (Providers wrapper, BrandingProvider)
+    layout/        # Sidebar, Header, CommandPalette, MobileBottomNav
+    [feature]/     # Feature-specific components
+  middleware.ts    # Auth session + rate limiting (all routes except static)
 ```
 
 ### Key Patterns
 
-**Data hooks**: Each entity has a hook in `src/hooks/` that wraps React Query. Queries use `useQuery` with `queryKey` arrays; mutations use `useMutation` with `queryClient.invalidateQueries` on success and `toast.error`/`toast.success` (Sonner) for feedback.
+**Server vs Client Components**: Default to Server Components. Add `"use client"` only when needed (interactivity, hooks, browser APIs). API Route Handlers in `src/app/api/` use the server Supabase client.
+
+**Data hooks**: Each entity has a hook in `src/hooks/` wrapping React Query. Queries use `useQuery`; mutations use `useMutation` + `queryClient.invalidateQueries` on success + `toast.success`/`toast.error` (Sonner) for feedback.
 
 **Form modals**: Pattern is `[Entity]FormModal.tsx` using React Hook Form + `zodResolver` + Zod schema from `types/forms.ts`. The modal receives `open`, `onClose`, and optionally an entity ID for edit mode.
 
-**Permissions**: `lib/permissions.ts` defines a `Module -> AppRole[]` matrix (27 modules). `RouteGuard` handles auth redirects. `RoleGuard` wraps routes to enforce module-level access. Trois roles : `admin`, `coach`, `prospect`.
+**Permissions**: `lib/permissions.ts` defines a `Module -> AppRole[]` matrix. `canAccess(role, module)` is the main check. Route-level access is enforced per-layout with server-side role verification.
 
-**Code splitting**: Toutes les pages sont lazy-loaded via `React.lazy()` + `Suspense` + `PageLoader` skeleton.
+**Middleware**: `src/middleware.ts` runs on all non-static routes. Handles session refresh via `updateSession()` and rate limiting for `/api/*` routes (different presets for `/api/ai/`, `/api/v1/`, generic API).
 
-**Real-time**: Supabase subscriptions pour messages et notifications.
+**Real-time**: Supabase subscriptions for messages, notifications, presence, and typing indicators.
 
-**Responsive**: Mobile-first Tailwind + `MobileBottomNav` pour les petits ecrans. `CommandPalette` (Cmd+K) pour la navigation globale.
+**Responsive**: Mobile-first Tailwind + `MobileBottomNav` for small screens. `CommandPalette` (Cmd+K) for global navigation.
 
-### Roles et permissions
+### Roles & Permissions
 
-| Role             | Description     | Acces                                                 |
-| ---------------- | --------------- | ----------------------------------------------------- |
-| `admin` (Alexia) | Full access     | Tous les modules, gestion users, finances, analytics  |
-| `coach`          | Gestion clients | CRM, pipeline, formations, calls, messaging, coaching |
-| `prospect`       | Acces limite    | Dashboard, journal, formations, messaging, communaute |
+Six roles: `admin`, `coach`, `client`, `prospect`, `setter`, `closer`
+
+| Role       | Access                                                         |
+| ---------- | -------------------------------------------------------------- |
+| `admin`    | Everything — finances, analytics, users, billing, audit        |
+| `coach`    | CRM, clients, sessions, content, calendar, messaging           |
+| `client`   | Dashboard, school, journal, gamification, messaging, contracts |
+| `prospect` | Dashboard, school, journal, gamification, messaging            |
+| `setter`   | Pipeline, activité, messaging, contracts, resources            |
+| `closer`   | Pipeline, closer-calls, activité, messaging, contracts         |
 
 ### Path Alias
 
-`@/*` maps to `src/*` (configured in both `tsconfig.app.json` and `vite.config.ts`). Always use `@/` imports.
+`@/*` maps to `src/*` (configured in `tsconfig.json`). Always use `@/` imports.
 
 ### Environment Variables
 
-Prefixed with `VITE_` (accessed via `import.meta.env.VITE_*`). Defined in `.env.local`:
+Key env vars (see `.env.example` for the full list):
 
-- `VITE_SUPABASE_URL` — Supabase project URL
-- `VITE_SUPABASE_ANON_KEY` — Supabase anonymous key
+| Variable | Description |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon key |
+| `SUPABASE_SERVICE_ROLE_KEY` | Service role key (server-only, bypasses RLS) |
+| `NEXT_PUBLIC_APP_URL` | App base URL |
+| `OPENROUTER_API_KEY` | AI completions via OpenRouter |
+| `RESEND_API_KEY` | Transactional email |
+| `GOOGLE_CLIENT_ID/SECRET` | Google Calendar OAuth |
+| `CRON_SECRET` | Auth header for cron job API routes |
+| `B2_*` | Backblaze B2 file storage |
+| `STRIPE_*` | Stripe billing |
+| `UNIPILE_*` | Unified messaging (LinkedIn, etc.) |
 
 ### Supabase
 
 - **Projet** : `srhpdgqqiuzdrlqaitdk`
-- Acces DB : `source .env.local && psql "$DATABASE_URL"` (ou API REST via anon key)
-- Client initialized in `lib/supabase.ts`
-- RLS policies sur toutes les tables
-- 12 migrations dans `supabase/migrations/`
-- Tables principales : profiles, user_roles, clients, client_assignments, leads, call_calendar, closer_calls, financial_entries, payment_schedules, social_content, channels, messages, formations, module_items, gamification_entries, journal_entries, forms, form_submissions, contracts, coaching_sessions, notifications, announcements
-- Real-time subscriptions pour messages et notifications
+- DB access: `source .env.local && psql "$DATABASE_URL"`
+- RLS policies on all tables
+- 12 migrations in `supabase/migrations/`
+- Main tables: profiles, user_roles, clients, client_assignments, leads, call_calendar, closer_calls, financial_entries, payment_schedules, social_content, channels, messages, formations, module_items, gamification_entries, journal_entries, forms, form_submissions, contracts, coaching_sessions, notifications, announcements
 
-### Modules fonctionnels
+### Next.js Config Notes
 
-1. **CRM** — Clients, leads (7 statuses : premier_message -> close), calendrier d'appels
-2. **Ventes** — Closer calls, suivi commissions, revenue tracking
-3. **Finances** — Revenus, couts, echeanciers de paiement (admin only)
-4. **Formations (LMS)** — Modules de formation avec suivi progression
-5. **Messagerie** — Channels + DMs temps reel via Supabase subscriptions
-6. **Formulaires** — Form builder dynamique + submissions
-7. **Gamification** — Points, badges, streaks, progression
-8. **Journal/Rituels** — Check-ins quotidiens, suivi d'habitudes
-9. **Coaching** — Sessions, notes, suivi
-10. **Contrats** — Templates + gestion signatures
-11. **Contenu** — Instagram scheduling, social media
-12. **Communaute** — Feed d'activite, annonces
-13. **Analytics** — KPIs, graphiques Recharts, metriques de performance
-14. **Assistant IA** — Auto-reponses, analyse clients
-15. **Onboarding** — Flow d'onboarding personnalise
+- `typescript.ignoreBuildErrors: true` — pre-existing TS errors from Vite→Next.js migration; TODO: fix via `supabase gen types`
+- `eslint.ignoreDuringBuilds: true` — same reason
+- React Compiler enabled (`babel-plugin-react-compiler`)
+- `compiler.removeConsole` — removes all `console.*` except `console.error` in production
 
 ## Conventions
 
-- All UI text is in French
-- Dates formatted with `date-fns` using `fr` locale via helpers in `lib/utils.ts`
-- Currency formatted as EUR (fr-FR) via `formatCurrency()` in `lib/utils.ts`
-- TypeScript strict mode with `noUnusedLocals` and `noUnusedParameters`
+- All UI text in French
+- Dates: `date-fns` with `fr` locale via helpers in `lib/utils.ts`
+- Currency: EUR via `formatCurrency()` in `lib/utils.ts`
+- TypeScript strict mode
 - Toast notifications via Sonner: `toast.success()` / `toast.error()`
-- Icons from `lucide-react` exclusively
-- `cn()` helper from `lib/utils.ts` (clsx + tailwind-merge) for conditional classes
-- React Query for all server state
-- shadcn/ui for all UI primitives (26 components)
-- PWA via vite-plugin-pwa
+- Icons: `lucide-react` exclusively
+- `cn()` helper from `lib/utils.ts` (clsx + tailwind-merge)
+- Hook files: kebab-case (`use-feature-name.ts`), some legacy camelCase (`useAuth.ts`)
+- Supabase client: always import from `@/lib/supabase/client` (browser) or `@/lib/supabase/server` (server) — never from the root `lib/supabase.ts` which is legacy

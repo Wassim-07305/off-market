@@ -37,6 +37,14 @@ export async function POST(request: Request) {
     activeConvId = newConv?.id ?? null;
   }
 
+  // Check AI keys upfront
+  if (!process.env.GROQ_API_KEY && !process.env.OPENROUTER_API_KEY) {
+    return NextResponse.json(
+      { error: "L'IA n'est pas configuree. Ajoutez GROQ_API_KEY ou OPENROUTER_API_KEY dans les variables d'environnement." },
+      { status: 503 },
+    );
+  }
+
   try {
     // 1. Get user profile
     const { data: userProfile } = await admin

@@ -882,7 +882,7 @@ function JournalComposer({
       content: content.trim(),
       mood: mood ?? undefined,
       tags: tags.length > 0 ? tags : undefined,
-      is_private: isPrivate,
+      is_private: !sharedWithCoach,
       template: template ?? undefined,
       shared_with_coach: sharedWithCoach,
       prompt_id: promptData?.id,
@@ -996,17 +996,6 @@ function JournalComposer({
 
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div className="flex items-center gap-3">
-          <button
-            onClick={() => setIsPrivate(!isPrivate)}
-            className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
-          >
-            {isPrivate ? (
-              <Lock className="w-3.5 h-3.5" />
-            ) : (
-              <Globe className="w-3.5 h-3.5" />
-            )}
-            {isPrivate ? "Prive" : "Visible par le coach"}
-          </button>
           <ShareToggleInline
             value={sharedWithCoach}
             onChange={setSharedWithCoach}

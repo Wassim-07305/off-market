@@ -41,28 +41,53 @@ export function useMembers() {
   const membersQuery = useQuery({
     queryKey: ["members-directory"],
     enabled: !!user,
+    retry: false,
+    staleTime: 60_000,
     queryFn: async () => {
-      // Single query via the member_stats view (replaces 3 separate queries + client-side aggregation)
+      // Try the view first, fall back to direct profiles query if view doesn't exist
       const { data, error } = await supabase
         .from("member_stats")
         .select("*")
         .order("full_name", { ascending: true })
         .returns<MemberStatsRow[]>();
 
-      if (error) throw error;
+      if (!error) {
+        return (data ?? []).map((row) => ({
+          id: row.id,
+          full_name: row.full_name,
+          avatar_url: row.avatar_url,
+          role: row.role,
+          bio: row.bio,
+          created_at: row.created_at,
+          total_xp: row.total_xp ?? 0,
+          badge_count: row.badge_count ?? 0,
+          level: row.level ?? 1,
+          level_name: row.level_name ?? "Debutant",
+          level_icon: row.level_icon ?? "🌱",
+        })) satisfies MemberEntry[];
+      }
 
-      return (data ?? []).map((row) => ({
-        id: row.id,
-        full_name: row.full_name,
-        avatar_url: row.avatar_url,
-        role: row.role,
-        bio: row.bio,
-        created_at: row.created_at,
-        total_xp: row.total_xp ?? 0,
-        badge_count: row.badge_count ?? 0,
-        level: row.level ?? 1,
-        level_name: row.level_name ?? "Debutant",
-        level_icon: row.level_icon ?? "🌱",
+      // Fallback: direct profiles query if view doesn't exist
+      console.warn("[useMembers] member_stats view unavailable, using fallback:", error.message);
+      const { data: profiles, error: profilesError } = await supabase
+        .from("profiles")
+        .select("id, full_name, avatar_url, role, bio, created_at")
+        .order("full_name", { ascending: true });
+
+      if (profilesError) throw profilesError;
+
+      return (profiles ?? []).map((p) => ({
+        id: p.id,
+        full_name: p.full_name ?? "Utilisateur",
+        avatar_url: p.avatar_url ?? null,
+        role: (p as Record<string, unknown>).role as string ?? "client",
+        bio: (p as Record<string, unknown>).bio as string | null ?? null,
+        created_at: p.created_at ?? new Date().toISOString(),
+        total_xp: 0,
+        badge_count: 0,
+        level: 1,
+        level_name: "Debutant",
+        level_icon: "🌱",
       })) satisfies MemberEntry[];
     },
   });
@@ -70,5 +95,6 @@ export function useMembers() {
   return {
     members: membersQuery.data ?? [],
     isLoading: membersQuery.isLoading,
+    error: membersQuery.error,
   };
 }

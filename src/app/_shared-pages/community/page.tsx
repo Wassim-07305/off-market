@@ -35,7 +35,7 @@ type SortBy = "name" | "level" | "xp" | "recent";
 type ViewMode = "grid" | "list";
 
 export default function CommunityPage() {
-  const { members, isLoading } = useMembers();
+  const { members, isLoading, error } = useMembers();
   const { user } = useAuth();
   const prefix = useRoutePrefix();
   const [search, setSearch] = useState("");
@@ -182,7 +182,12 @@ export default function CommunityPage() {
       </motion.div>
 
       {/* Members */}
-      {isLoading ? (
+      {error ? (
+        <motion.div variants={staggerItem} className="bg-surface rounded-2xl p-12 text-center border border-border">
+          <Users className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
+          <p className="text-sm text-muted-foreground">Impossible de charger les membres. Veuillez reessayer.</p>
+        </motion.div>
+      ) : isLoading ? (
         <div
           className={cn(
             "gap-3",

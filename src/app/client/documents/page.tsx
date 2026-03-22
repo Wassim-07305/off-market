@@ -77,10 +77,10 @@ export default function ClientDocumentsPage() {
   const searchParams = useSearchParams();
   const [tab, setTab] = useState<Tab>("contrats");
 
-  const { contracts, isLoading: contractsLoading } = useContracts({
+  const { contracts, isLoading: contractsLoading, error: contractsError } = useContracts({
     clientId: user?.id,
   });
-  const { invoices, isLoading: invoicesLoading } = useInvoices({
+  const { invoices, isLoading: invoicesLoading, error: invoicesError } = useInvoices({
     clientId: user?.id,
   });
 
@@ -129,6 +129,12 @@ export default function ClientDocumentsPage() {
           Vos contrats et factures au meme endroit
         </p>
       </motion.div>
+
+      {(contractsError || invoicesError) && (
+        <p className="text-sm text-muted-foreground text-center py-8">
+          Impossible de charger vos documents. Veuillez reessayer.
+        </p>
+      )}
 
       {/* Tabs */}
       <motion.div variants={fadeInUp} transition={defaultTransition}>

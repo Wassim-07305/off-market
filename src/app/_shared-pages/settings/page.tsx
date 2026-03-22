@@ -237,17 +237,27 @@ export default function SettingsPage() {
   const handleSave = async () => {
     if (!user) return;
     setSaving(true);
-    const { error } = await supabase
-      .from("profiles")
-      .update({ full_name: fullName, phone, bio } as Record<string, unknown>)
-      .eq("id", user.id);
-    setSaving(false);
-    if (error) {
-      toast.error("Erreur lors de la sauvegarde");
-    } else {
-      queryClient.invalidateQueries({ queryKey: ["profile"] });
-      queryClient.invalidateQueries({ queryKey: ["auth"] });
-      toast.success("Profil mis a jour");
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .update({
+          full_name: fullName,
+          phone,
+          bio,
+          leaderboard_anonymous: leaderboardAnonymous,
+        } as Record<string, unknown>)
+        .eq("id", user.id);
+      if (error) {
+        toast.error("Erreur lors de la sauvegarde");
+      } else {
+        queryClient.invalidateQueries({ queryKey: ["profile"] });
+        queryClient.invalidateQueries({ queryKey: ["auth"] });
+        toast.success("Profil mis a jour");
+      }
+    } catch {
+      toast.error("Erreur reseau lors de la sauvegarde");
+    } finally {
+      setSaving(false);
     }
   };
 
