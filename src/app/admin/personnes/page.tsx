@@ -10,6 +10,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Users, UserCog, Send, AlertTriangle, RefreshCw } from "lucide-react";
 import dynamic from "next/dynamic";
+import { logError } from "@/lib/error-logger";
 
 class TabErrorBoundary extends Component<
   { children: ReactNode; name: string },
@@ -22,6 +23,18 @@ class TabErrorBoundary extends Component<
 
   static getDerivedStateFromError(error: Error) {
     return { hasError: true, error: error.message };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    logError({
+      message: `[${this.props.name}] ${error.message}`,
+      stack: error.stack ?? null,
+      component_stack: errorInfo.componentStack ?? null,
+      page: "/admin/personnes",
+      source: "error-boundary",
+      severity: "error",
+      metadata: { section: this.props.name },
+    });
   }
 
   render() {
