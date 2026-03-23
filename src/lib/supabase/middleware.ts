@@ -147,8 +147,9 @@ export async function updateSession(request: NextRequest) {
     return redirectResp;
   }
 
-  // Logged in on auth page → redirect to role dashboard
-  if (user && isAuthPage && !pathname.startsWith("/auth/callback")) {
+  // Logged in on auth page → redirect to role dashboard (unless MFA pending)
+  const mfaPending = request.nextUrl.searchParams.get("mfa") === "required";
+  if (user && isAuthPage && !pathname.startsWith("/auth/callback") && !mfaPending) {
     // Check cache first to avoid DB query
     const cached = readProfileCache(request);
     let role: string;
@@ -179,6 +180,24 @@ export async function updateSession(request: NextRequest) {
       { path: "/", sameSite: "lax", httpOnly: false, maxAge: 300 },
     );
     return redirectResp;
+  }
+
+  // ── 2FA enforcement: if user has MFA enabled but session is aal1, force re-login ──
+  if (user && !isAuthPage && !isApiRoute && !isPublicPage) {
+    try {
+      const { data: aalData } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+      if (aalData && aalData.currentLevel === "aal1" && aalData.nextLevel === "aal2") {
+        // User has 2FA enabled but hasn't completed the TOTP challenge
+        const url = request.nextUrl.clone();
+        url.pathname = "/login";
+        url.searchParams.set("mfa", "required");
+        const redirectResp = NextResponse.redirect(url);
+        redirectResp.cookies.delete(PROFILE_CACHE_COOKIE);
+        return redirectResp;
+      }
+    } catch {
+      // Silently ignore — MFA check failed, continue without blocking
+    }
   }
 
   // Role-based route protection + onboarding enforcement

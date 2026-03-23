@@ -48,6 +48,23 @@ function LoginContent() {
     }
   }, [needs2FA]);
 
+  // If redirected with ?mfa=required, auto-detect and show 2FA screen
+  useEffect(() => {
+    if (searchParams.get("mfa") === "required" && !needs2FA) {
+      (async () => {
+        const { data: aalData } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+        if (aalData?.currentLevel === "aal1" && aalData?.nextLevel === "aal2") {
+          const { data: factorsData } = await supabase.auth.mfa.listFactors();
+          const verifiedFactor = factorsData?.totp?.find((f) => f.status === "verified");
+          if (verifiedFactor) {
+            setMfaFactorId(verifiedFactor.id);
+            setNeeds2FA(true);
+          }
+        }
+      })();
+    }
+  }, [searchParams, supabase, needs2FA]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
