@@ -52,10 +52,19 @@ export async function GET(
     if (client) clientName = client.full_name ?? client.email ?? "Client";
   }
 
-  // Parse line items
-  const lineItems = Array.isArray(invoice.line_items)
+  // Parse line items — fallback to invoice title/description if empty
+  let lineItems = Array.isArray(invoice.line_items)
     ? (invoice.line_items as { description: string; quantity: number; unit_price: number; total: number }[])
     : [];
+
+  if (lineItems.length === 0) {
+    lineItems = [{
+      description: invoice.title || invoice.description || "Prestation de service",
+      quantity: 1,
+      unit_price: Number(invoice.amount ?? invoice.total ?? 0),
+      total: Number(invoice.total ?? 0),
+    }];
+  }
 
   const formatEUR = (n: number) =>
     new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(n);

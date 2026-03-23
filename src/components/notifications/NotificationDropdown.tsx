@@ -1,4 +1,5 @@
 import { useRef, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { CheckCheck, Bell } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useNotificationStore } from "@/stores/notification-store";
@@ -19,11 +20,13 @@ export function NotificationDropdown({
   onClose,
 }: NotificationDropdownProps) {
   const { user } = useAuth();
+  const router = useRouter();
   const { notifications, unreadCount, markAsRead, markAllAsRead } =
     useNotificationStore();
   const markAsReadMutation = useMarkAsRead();
   const markAllAsReadMutation = useMarkAllAsRead();
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const setOpen = (_v: boolean) => { if (!_v) onClose(); };
 
   const handleClickOutside = useCallback(
     (e: MouseEvent) => {
@@ -59,6 +62,11 @@ export function NotificationDropdown({
     if (!notification.is_read) {
       markAsRead(notification.id);
       markAsReadMutation.mutate(notification.id);
+    }
+    // Navigate to action_url if present
+    if (notification.action_url) {
+      router.push(notification.action_url);
+      setOpen(false);
     }
   };
 

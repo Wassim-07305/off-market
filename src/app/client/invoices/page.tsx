@@ -16,7 +16,10 @@ import {
   Clock,
   AlertTriangle,
   Download,
+  CreditCard,
+  Loader2,
 } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 function formatEUR(amount: number) {
@@ -38,6 +41,26 @@ function formatDate(date: string | null) {
 export default function ClientInvoicesPage() {
   const { user } = useAuth();
   const { invoices, isLoading } = useInvoices({ clientId: user?.id });
+  const [payingId, setPayingId] = useState<string | null>(null);
+
+  const handlePay = async (invoiceId: string) => {
+    setPayingId(invoiceId);
+    try {
+      const res = await fetch("/api/stripe/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ invoice_id: invoiceId }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Erreur Stripe");
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erreur lors du paiement");
+      setPayingId(null);
+    }
+  };
   const searchParams = useSearchParams();
 
   const paid = invoices.filter((i) => i.status === "paid");
@@ -158,6 +181,18 @@ export default function ClientInvoicesPage() {
                         : "En attente"}
                     </span>
                   </div>
+                  <button
+                    onClick={() => handlePay(invoice.id)}
+                    disabled={payingId === invoice.id}
+                    className="h-9 px-4 rounded-xl bg-gradient-to-r from-[#AF0000] to-[#DC2626] text-white text-xs font-semibold hover:opacity-90 disabled:opacity-50 flex items-center gap-1.5 shrink-0 transition-all"
+                  >
+                    {payingId === invoice.id ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <CreditCard className="w-3.5 h-3.5" />
+                    )}
+                    Payer
+                  </button>
                 </div>
               </div>
             ))}
