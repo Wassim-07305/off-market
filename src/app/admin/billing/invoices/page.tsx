@@ -71,20 +71,13 @@ export default function InvoicesPage() {
 
   const handleDownloadPDF = async (
     invoiceId: string,
-    invoiceNumber: string,
+    _invoiceNumber: string,
   ) => {
     try {
-      const res = await fetch(`/api/invoices/${invoiceId}/pdf`);
-      if (!res.ok) throw new Error("Erreur");
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${invoiceNumber}.pdf`;
-      a.click();
-      URL.revokeObjectURL(url);
+      // Ouvre la facture HTML dans un nouvel onglet (impression via Ctrl+P)
+      window.open(`/api/invoices/${invoiceId}/pdf`, "_blank");
     } catch {
-      toast.error("Impossible de telecharger la facture");
+      toast.error("Impossible d'ouvrir la facture");
     }
   };
 
