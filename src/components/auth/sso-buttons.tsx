@@ -100,19 +100,6 @@ export function SSOButtons() {
           Continuer avec Google
         </button>
 
-        <button
-          type="button"
-          onClick={() => handleOAuthLogin("azure")}
-          disabled={loadingProvider !== null}
-          className="w-full h-11 bg-white border border-gray-200 rounded-xl text-gray-700 font-medium text-sm flex items-center justify-center gap-3 hover:bg-gray-100 transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {loadingProvider === "azure" ? (
-            <Loader2 className="w-4 h-4 animate-spin text-gray-500" />
-          ) : (
-            <MicrosoftIcon />
-          )}
-          Continuer avec Microsoft
-        </button>
       </div>
     </div>
   );
