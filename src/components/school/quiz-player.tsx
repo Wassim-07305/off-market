@@ -422,13 +422,16 @@ export function QuizPlayer({ lessonId, config, onComplete }: QuizPlayerProps) {
         {currentQuestion.type === "multiple_choice" &&
           currentQuestion.options && (
             <div className="space-y-2">
-              {currentQuestion.options.map((option, i) => (
+              {currentQuestion.options
+                .map((option, i) => ({ option, originalIndex: i }))
+                .filter(({ option }) => option.trim() !== "")
+                .map(({ option, originalIndex }, displayIndex) => (
                 <button
-                  key={i}
-                  onClick={() => selectAnswer(currentQuestion.id, i)}
+                  key={originalIndex}
+                  onClick={() => selectAnswer(currentQuestion.id, originalIndex)}
                   className={cn(
                     "w-full text-left p-3.5 rounded-xl border text-sm transition-all",
-                    answers.get(currentQuestion.id) === i
+                    answers.get(currentQuestion.id) === originalIndex
                       ? "bg-primary/10 border-primary text-foreground ring-1 ring-primary/30"
                       : "bg-surface border-border text-foreground hover:border-primary/50 hover:bg-muted/30",
                   )}
@@ -436,12 +439,12 @@ export function QuizPlayer({ lessonId, config, onComplete }: QuizPlayerProps) {
                   <span
                     className={cn(
                       "inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold mr-3 transition-colors",
-                      answers.get(currentQuestion.id) === i
+                      answers.get(currentQuestion.id) === originalIndex
                         ? "bg-primary text-white"
                         : "bg-muted text-muted-foreground",
                     )}
                   >
-                    {String.fromCharCode(65 + i)}
+                    {String.fromCharCode(65 + displayIndex)}
                   </span>
                   {option}
                 </button>
