@@ -20,10 +20,6 @@ const DynamicLoader = () => (
   </div>
 );
 
-const ClientsPage = dynamic(
-  () => import("@/app/_shared-pages/clients/page"),
-  { ssr: false, loading: DynamicLoader },
-);
 const SetterPipelinePage = dynamic(
   () => import("@/app/sales/pipeline/page").then((m) => ({ default: m.SetterPipelineView })),
   { ssr: false, loading: DynamicLoader },
@@ -33,10 +29,9 @@ const CloserPipelinePage = dynamic(
   { ssr: false, loading: DynamicLoader },
 );
 
-type CrmMode = "clients" | "pipeline" | "closer-pipeline" | "coaches";
+type CrmMode = "pipeline" | "closer-pipeline" | "coaches";
 
 const MODES: { key: CrmMode; label: string; icon: typeof Users }[] = [
-  { key: "clients", label: "Clients", icon: Users },
   { key: "coaches", label: "Suivi Coaches", icon: GraduationCap },
   { key: "pipeline", label: "Pipeline Setter", icon: Megaphone },
   { key: "closer-pipeline", label: "Pipeline Closer", icon: PhoneCall },
@@ -388,7 +383,7 @@ function CoachMonitoringPanel() {
 // ─── Main Page ───────────────────────────────────────────────
 
 export default function AdminCrmPage() {
-  const [mode, setMode] = useState<CrmMode>("clients");
+  const [mode, setMode] = useState<CrmMode>("coaches");
 
   return (
     <div className="space-y-4">
@@ -414,9 +409,7 @@ export default function AdminCrmPage() {
       </div>
 
       {/* Content */}
-      {mode === "clients" ? (
-        <ClientsPage />
-      ) : mode === "coaches" ? (
+      {mode === "coaches" ? (
         <CoachMonitoringPanel />
       ) : mode === "closer-pipeline" ? (
         <CloserPipelinePage />
