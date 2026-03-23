@@ -751,6 +751,41 @@ function LessonEditorPanel({
         </div>
       </div>
 
+      {/* Content type selector */}
+      <div
+        className="bg-surface rounded-2xl border border-border p-4"
+        style={{ boxShadow: "var(--shadow-card)" }}
+      >
+        <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+          Type de contenu
+        </p>
+        <div className="flex flex-wrap gap-2">
+          {(
+            [
+              { value: "video", label: "Video", icon: Video },
+              { value: "text", label: "Texte", icon: FileText },
+              { value: "quiz", label: "Quiz", icon: HelpCircle },
+              { value: "audio", label: "Audio", icon: Headphones },
+              { value: "embed", label: "Embed", icon: ExternalLink },
+            ] as const
+          ).map((t) => (
+            <button
+              key={t.value}
+              onClick={() => setContentType(t.value)}
+              className={cn(
+                "h-9 px-4 rounded-xl text-sm font-medium border transition-all flex items-center gap-2",
+                contentType === t.value
+                  ? "bg-primary text-white border-primary"
+                  : "text-muted-foreground border-border hover:border-primary/30 hover:text-foreground",
+              )}
+            >
+              <t.icon className="w-3.5 h-3.5" />
+              {t.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Video + Pieces jointes side by side */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Video management */}

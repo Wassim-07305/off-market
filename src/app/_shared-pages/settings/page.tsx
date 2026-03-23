@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useAuth } from "@/hooks/use-auth";
 import { useSupabase } from "@/hooks/use-supabase";
 import { useQueryClient } from "@tanstack/react-query";
@@ -666,6 +667,27 @@ export default function SettingsPage() {
         {/* Integrations (admin only) */}
         {isAdmin && <IntegrationSettings />}
 
+        {/* Audit Log link (admin only) */}
+        {isAdmin && (
+          <Link
+            href="/admin/audit-log"
+            className="flex items-center justify-between bg-surface rounded-2xl border border-border p-6 transition-all duration-200 hover:shadow-md hover:shadow-zinc-200/50 group"
+          >
+            <div className="flex items-center gap-3">
+              <div className="size-7 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center">
+                <Shield className="w-3.5 h-3.5 text-white" />
+              </div>
+              <div>
+                <h2 className="text-sm font-semibold text-foreground">Audit Log</h2>
+                <p className="text-xs text-muted-foreground">
+                  Consulter l&apos;historique des actions sur la plateforme
+                </p>
+              </div>
+            </div>
+            <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+          </Link>
+        )}
+
         {/* Security */}
         <div className="bg-surface rounded-2xl border border-border p-6 space-y-4 transition-all duration-200 hover:shadow-md hover:shadow-zinc-200/50">
           <div className="flex items-center gap-2 mb-2">
@@ -763,6 +785,106 @@ export default function SettingsPage() {
               {changingPassword ? "Mise à jour..." : "Changer le mot de passe"}
             </button>
           </div>
+        </div>
+
+        {/* 2FA */}
+        <div className="bg-surface rounded-2xl border border-border p-6 space-y-4 transition-all duration-200 hover:shadow-md hover:shadow-zinc-200/50">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="size-7 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center">
+              <ShieldCheck className="w-3.5 h-3.5 text-white" />
+            </div>
+            <h2 className="text-sm font-semibold text-foreground">
+              Authentification a deux facteurs (2FA)
+            </h2>
+          </div>
+
+          {twoFA.isEnabled ? (
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+                  <ShieldCheck className="w-4 h-4 text-emerald-500" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-foreground">2FA active</p>
+                  <p className="text-xs text-muted-foreground">
+                    Ton compte est protege par l&apos;authentification TOTP
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => twoFA.disable()}
+                className="h-9 px-4 rounded-xl border border-border text-sm text-muted-foreground hover:text-error hover:border-error/30 transition-colors"
+              >
+                Desactiver
+              </button>
+            </div>
+          ) : twoFA.enrolling ? (
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Scanne ce QR code avec ton application d&apos;authentification (Google Authenticator, Authy, etc.)
+              </p>
+              {twoFA.qrCode && (
+                <div className="flex justify-center">
+                  <img src={twoFA.qrCode} alt="QR Code 2FA" className="w-48 h-48 rounded-xl border border-border" />
+                </div>
+              )}
+              {twoFA.secret && (
+                <div className="text-center">
+                  <p className="text-[11px] text-muted-foreground mb-1">Ou entre ce code manuellement :</p>
+                  <code className="text-xs font-mono bg-muted px-3 py-1.5 rounded-lg select-all">{twoFA.secret}</code>
+                </div>
+              )}
+              <div className="flex items-center gap-3">
+                <input
+                  type="text"
+                  value={totpCode}
+                  onChange={(e) => setTotpCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                  placeholder="Code a 6 chiffres"
+                  className="flex-1 h-10 px-4 bg-muted/50 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 text-center font-mono tracking-widest"
+                  maxLength={6}
+                />
+                <button
+                  onClick={async () => {
+                    setVerifying2FA(true);
+                    try {
+                      await twoFA.verifyEnroll(totpCode);
+                      setTotpCode("");
+                      toast.success("2FA activee avec succes");
+                    } catch {
+                      toast.error("Code invalide");
+                    } finally {
+                      setVerifying2FA(false);
+                    }
+                  }}
+                  disabled={totpCode.length !== 6 || verifying2FA}
+                  className="h-10 px-4 rounded-xl bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-700 transition-all disabled:opacity-50 flex items-center gap-2"
+                >
+                  {verifying2FA ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ShieldCheck className="w-3.5 h-3.5" />}
+                  Verifier
+                </button>
+              </div>
+              <button
+                onClick={() => twoFA.cancelEnroll()}
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Annuler
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-muted-foreground">
+                Ajoute une couche de securite supplementaire avec un code TOTP.
+              </p>
+              <button
+                onClick={() => twoFA.startEnroll()}
+                disabled={twoFA.loading}
+                className="h-9 px-4 rounded-xl bg-gradient-to-r from-[#AF0000] to-[#DC2626] text-white text-sm font-medium hover:opacity-90 transition-all active:scale-[0.98] shadow-sm shadow-[#AF0000]/20 flex items-center gap-2 shrink-0"
+              >
+                {twoFA.loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Smartphone className="w-3.5 h-3.5" />}
+                Activer la 2FA
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Google Agenda */}

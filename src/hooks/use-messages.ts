@@ -6,6 +6,7 @@ import { useAuth } from "./use-auth";
 import { useEffect, useCallback, useRef } from "react";
 import type { EnrichedMessage } from "@/types/messaging";
 import { playUrgentSound } from "@/lib/sounds";
+import { containsAlexiaMention } from "@/components/messaging/alexia-mention";
 
 export function useMessages(channelId: string | null) {
   const supabase = useSupabase();
@@ -184,6 +185,36 @@ export function useMessages(channelId: string | null) {
         );
       }
       scrollLockRef.current = false;
+    },
+    onSuccess: async (_data, variables) => {
+      // Auto-respond when @Alexia is mentioned
+      if (channelId && containsAlexiaMention(variables.content)) {
+        try {
+          const res = await fetch("/api/ai/alexia/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              message: variables.content.replace(/@alexia\b/gi, "").trim(),
+              channelId,
+            }),
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.response) {
+              await supabase.from("messages").insert({
+                channel_id: channelId,
+                sender_id: null,
+                content: data.response,
+                content_type: "text",
+                is_ai_generated: true,
+                metadata: { bot: "alexia" },
+              } as never);
+            }
+          }
+        } catch {
+          // Silently ignore AI errors
+        }
+      }
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["messages", channelId] });

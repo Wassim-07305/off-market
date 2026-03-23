@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 import { PageTransition } from "@/components/ui/page-transition";
@@ -342,11 +342,15 @@ function ContactDetailDrawer({
   const [newContent, setNewContent] = useState("");
   const [localScore, setLocalScore] = useState(contact.lead_score ?? 0);
   const [localStage, setLocalStage] = useState<PipelineStage>(contact.stage);
+  const scoreTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
 
   const handleScoreChange = useCallback(
     (score: number) => {
       setLocalScore(score);
-      updateLeadScore.mutate({ id: contact.id, lead_score: score });
+      if (scoreTimerRef.current) clearTimeout(scoreTimerRef.current);
+      scoreTimerRef.current = setTimeout(() => {
+        updateLeadScore.mutate({ id: contact.id, lead_score: score });
+      }, 400);
     },
     [contact.id, updateLeadScore],
   );
@@ -459,7 +463,7 @@ function ContactDetailDrawer({
                 max={100}
                 value={localScore}
                 onChange={(e) => handleScoreChange(Number(e.target.value))}
-                className="w-full h-1.5 bg-muted rounded-full appearance-none cursor-pointer accent-primary"
+                className="w-full h-2 bg-border dark:bg-zinc-600 rounded-full appearance-none cursor-pointer accent-primary [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:shadow-md"
               />
             </div>
           </div>
@@ -978,6 +982,7 @@ function CloserDetailDrawer({
   const [finalPrice, setFinalPrice] = useState(
     Number(contact.estimated_value ?? 0),
   );
+  const closerScoreTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
 
   const wasClosedBefore = contact.closer_stage === "close";
 
@@ -1014,7 +1019,10 @@ function CloserDetailDrawer({
   const handleScoreChange = useCallback(
     (score: number) => {
       setLocalScore(score);
-      updateLeadScore.mutate({ id: contact.id, lead_score: score });
+      if (closerScoreTimerRef.current) clearTimeout(closerScoreTimerRef.current);
+      closerScoreTimerRef.current = setTimeout(() => {
+        updateLeadScore.mutate({ id: contact.id, lead_score: score });
+      }, 400);
     },
     [contact.id, updateLeadScore],
   );
@@ -1085,7 +1093,7 @@ function CloserDetailDrawer({
               max={100}
               value={localScore}
               onChange={(e) => handleScoreChange(Number(e.target.value))}
-              className="w-full h-1.5 bg-muted rounded-full appearance-none cursor-pointer accent-primary"
+              className="w-full h-2 bg-border dark:bg-zinc-600 rounded-full appearance-none cursor-pointer accent-primary [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:shadow-md"
             />
           </div>
 

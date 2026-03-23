@@ -32,7 +32,11 @@ export function useXp() {
       if (error) throw error;
       const transactions = data as XpTransaction[];
       const total = transactions.reduce((sum, t) => sum + t.xp_amount, 0);
-      return { transactions, total };
+      // XP gagné uniquement (sans déductions de récompenses) — pour le calcul de niveau
+      const totalEarned = transactions
+        .filter((t) => t.xp_amount > 0)
+        .reduce((sum, t) => sum + t.xp_amount, 0);
+      return { transactions, total, totalEarned };
     },
     enabled: !!user,
   });
@@ -118,14 +122,16 @@ export function useXp() {
   // Compute summary
   const levels = levelsQuery.data ?? [];
   const totalXp = xpQuery.data?.total ?? 0;
+  // Le niveau est basé sur le XP total gagné (jamais de perte de niveau)
+  const totalEarned = xpQuery.data?.totalEarned ?? 0;
   const currentLevel =
-    [...levels].reverse().find((l) => totalXp >= l.min_xp) ?? levels[0];
-  const nextLevel = levels.find((l) => l.min_xp > totalXp) ?? null;
+    [...levels].reverse().find((l) => totalEarned >= l.min_xp) ?? levels[0];
+  const nextLevel = levels.find((l) => l.min_xp > totalEarned) ?? null;
   const progressToNext =
     nextLevel && currentLevel
       ? Math.min(
           Math.round(
-            ((totalXp - currentLevel.min_xp) /
+            ((totalEarned - currentLevel.min_xp) /
               (nextLevel.min_xp - currentLevel.min_xp)) *
               100,
           ),

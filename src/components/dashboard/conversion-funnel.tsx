@@ -27,15 +27,18 @@ function useFunnelData() {
         .select("pipeline_stage");
       if (error) throw error;
 
-      const counts: Record<string, number> = {};
+      // Compter les contacts par stage actuel
+      const rawCounts: Record<string, number> = {};
       for (const row of (data ?? []) as { pipeline_stage: string | null }[]) {
         const stage = row.pipeline_stage ?? "prospect";
-        counts[stage] = (counts[stage] ?? 0) + 1;
+        rawCounts[stage] = (rawCounts[stage] ?? 0) + 1;
       }
 
-      return STAGES.map((s) => ({
+      // Cumulatif : chaque stage inclut tous les contacts à ce stage ou au-delà
+      // Un contact en "closing" est forcément passé par "prospect", "qualifié", "proposition"
+      return STAGES.map((s, i) => ({
         ...s,
-        count: counts[s.key] ?? 0,
+        count: STAGES.slice(i).reduce((sum, st) => sum + (rawCounts[st.key] ?? 0), 0),
       }));
     },
   });

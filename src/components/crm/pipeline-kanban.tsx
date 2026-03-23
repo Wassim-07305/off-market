@@ -5,8 +5,10 @@ import {
   DndContext,
   DragOverlay,
   PointerSensor,
+  TouchSensor,
   useSensor,
   useSensors,
+  closestCorners,
   type DragEndEvent,
   type DragStartEvent,
   useDraggable,
@@ -207,10 +209,10 @@ function DraggableContact({
   return (
     <div
       ref={setNodeRef}
-      style={style}
+      style={{ ...style, touchAction: "none" }}
       {...listeners}
       {...attributes}
-      className={cn(isDragging && "opacity-30")}
+      className={cn("cursor-grab active:cursor-grabbing", isDragging && "opacity-30")}
     >
       <ContactCard contact={contact} onDelete={onDelete} onEnrich={onEnrich} />
     </div>
@@ -257,7 +259,7 @@ function StageColumn({
           <span className="text-xs font-bold text-foreground uppercase tracking-wider">
             {stage.label}
           </span>
-          <span className="text-[10px] text-muted-foreground font-mono tabular-nums bg-muted px-1.5 py-0.5 rounded-md">
+          <span className="text-[10px] text-foreground font-mono font-semibold tabular-nums bg-muted border border-border px-1.5 py-0.5 rounded-md">
             {contacts.length}
           </span>
         </div>
@@ -625,7 +627,8 @@ export function PipelineKanban() {
     : null;
 
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 5 } }),
   );
 
   // Group contacts by stage
@@ -771,6 +774,7 @@ export function PipelineKanban() {
       {/* Kanban board */}
       <DndContext
         sensors={sensors}
+        collisionDetection={closestCorners}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >

@@ -5,7 +5,7 @@ import CallsPage from "@/app/_shared-pages/calls/page";
 
 export default function Page() {
   return (
-    <RoleGuard module="closer-calls">
+    <RoleGuard module="calendrier">
       <CallsPage />
     </RoleGuard>
   );

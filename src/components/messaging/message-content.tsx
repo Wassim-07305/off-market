@@ -207,7 +207,7 @@ function TextContent({ content }: { content: string }) {
 
 function renderRichText(text: string): React.ReactNode[] {
   const pattern =
-    /(@(?:tous|channel|coachs|[\w\s]+?))(?=[\s,.]|$)|(\*\*(.+?)\*\*)|(__(.+?)__)|(_(.+?)_)|(~~(.+?)~~)|(`(.+?)`)|(\[(.+?)\]\((.+?)\))|(https?:\/\/[^\s<>"{}|\\^`[\]]+)|(#urgent\b)/g;
+    /(@(?:tous|channel|coachs|[A-Za-zÀ-ÿ\w]+(?:\s[A-Za-zÀ-ÿ\w]+)*))(?=[\s,.]|$)|(\*\*(.+?)\*\*)|(__(.+?)__)|(_(.+?)_)|(~~(.+?)~~)|(`(.+?)`)|(\[(.+?)\]\((.+?)\))|(https?:\/\/[^\s<>"{}|\\^`[\]]+)|(#urgent\b)/g;
 
   const parts: React.ReactNode[] = [];
   let lastIdx = 0;

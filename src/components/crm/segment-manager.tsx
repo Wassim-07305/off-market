@@ -387,7 +387,7 @@ export function SegmentManager({
 
         {/* Dropdown panel */}
         {open && (
-          <div className="absolute top-full mt-2 left-0 bg-surface border border-border rounded-xl shadow-lg z-50 w-72 overflow-hidden">
+          <div className="absolute top-full mt-2 right-0 bg-surface border border-border rounded-xl shadow-lg z-50 w-72 overflow-hidden">
             {isLoading ? (
               <div className="p-6 flex items-center justify-center">
                 <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />

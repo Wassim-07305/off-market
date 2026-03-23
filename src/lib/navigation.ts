@@ -106,6 +106,7 @@ export const adminNavigation: NavItem[] = [
   { name: "Monitoring", href: "/admin/monitoring", icon: Activity },
   { name: "Documentation API", href: "/admin/api-docs", icon: BookOpen },
   { name: "Utilisateurs", href: "/admin/users", icon: UserCog },
+  { name: "Audit Log", href: "/admin/audit-log", icon: FileText },
   { name: "Reglages", href: "/admin/settings", icon: Settings },
 ];
 
@@ -161,9 +162,14 @@ export const clientNavigation: NavItem[] = [
   { name: "Formation", href: "/client/school", icon: GraduationCap },
   { name: "Suivi", href: "/client/suivi", icon: ClipboardCheck },
   { name: "Progression", href: "/client/gamification", icon: Trophy },
+  { name: "Defis", href: "/client/challenges", icon: Target },
+  { name: "Certificats", href: "/client/certificates", icon: Award },
+  { name: "Hall of Fame", href: "/client/hall-of-fame", icon: Crown },
 
   // ── Business ──
   { name: "Documents", href: "/client/documents", icon: FileSignature, section: "Business" },
+  { name: "Calendrier", href: "/client/calendar", icon: Calendar },
+  { name: "Appels", href: "/client/calls", icon: Phone },
   { name: "Reserver", href: "/client/booking", icon: CalendarCheck },
 
   // ── Communaute ──

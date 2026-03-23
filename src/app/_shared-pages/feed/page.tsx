@@ -8,6 +8,7 @@ import { useFeed } from "@/hooks/use-feed";
 import { useAuth } from "@/hooks/use-auth";
 import { POST_TYPE_CONFIG } from "@/types/feed";
 import type { FeedPost, PostType, FeedSortMode } from "@/types/feed";
+import { Confetti } from "@/components/feed/confetti";
 import {
   Heart,
   MessageCircle,
@@ -99,6 +100,7 @@ export default function FeedPage() {
   } = useFeed(feedPostType, sortMode);
 
   const isStaff = profile?.role === "admin" || profile?.role === "coach";
+  const [showConfetti, setShowConfetti] = useState(false);
 
   // Infinite scroll observer
   const loadMoreRef = useRef<HTMLDivElement>(null);
@@ -148,10 +150,12 @@ export default function FeedPage() {
         <div className="space-y-6">
           {/* Composer */}
           <motion.div variants={staggerItem}>
+            <Confetti active={showConfetti} onComplete={() => setShowConfetti(false)} />
             <PostComposer
-              onSubmit={(content, postType) =>
-                createPost.mutate({ content, post_type: postType })
-              }
+              onSubmit={(content, postType) => {
+                createPost.mutate({ content, post_type: postType });
+                if (postType === "victory") setShowConfetti(true);
+              }}
               isSubmitting={createPost.isPending}
             />
           </motion.div>

@@ -191,13 +191,30 @@ function generateJournalPDF(
 
     // Attachments
     if (entry.attachments && entry.attachments.length > 0) {
-      contentLines.push(`Pieces jointes (${entry.attachments.length}) :`);
-      for (const att of entry.attachments) {
-        const name = escapePDF(att.name || "fichier");
-        const url = escapePDF(att.url || "");
-        contentLines.push(`  - ${name} (${att.type || "fichier"}) : ${url}`);
+      const images = entry.attachments.filter((att: { type?: string }) =>
+        ["image", "photo"].includes(att.type || ""),
+      );
+      const files = entry.attachments.filter((att: { type?: string }) =>
+        !["image", "photo"].includes(att.type || ""),
+      );
+      if (images.length > 0) {
+        contentLines.push(`Images (${images.length}) — consultez les liens pour voir les images :`);
+        for (const att of images) {
+          const name = escapePDF(att.name || "image");
+          const url = escapePDF(att.url || "");
+          contentLines.push(`  [IMG] ${name} : ${url}`);
+        }
+        contentLines.push("");
       }
-      contentLines.push("");
+      if (files.length > 0) {
+        contentLines.push(`Pieces jointes (${files.length}) :`);
+        for (const att of files) {
+          const name = escapePDF(att.name || "fichier");
+          const url = escapePDF(att.url || "");
+          contentLines.push(`  - ${name} (${att.type || "fichier"}) : ${url}`);
+        }
+        contentLines.push("");
+      }
     }
 
     contentLines.push("");

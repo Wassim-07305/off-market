@@ -43,7 +43,7 @@ const PERMISSIONS: Record<Module, AppRole[]> = {
   formations: ["admin", "coach", "client", "prospect"],
   eleves: ["admin", "coach"],
   pipeline: ["admin", "setter", "closer"],
-  calendrier: ["admin", "coach"],
+  calendrier: ["admin", "coach", "client", "prospect"],
   activité: ["admin", "setter", "closer"],
   finances: ["admin"],
   users: ["admin"],

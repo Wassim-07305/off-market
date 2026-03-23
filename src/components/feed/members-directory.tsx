@@ -6,6 +6,8 @@ import { staggerContainer, staggerItem } from "@/lib/animations";
 import { useMembers, type MemberEntry } from "@/hooks/use-members";
 import { useAuth } from "@/hooks/use-auth";
 import { useRoutePrefix } from "@/hooks/use-route-prefix";
+import { useChannels } from "@/hooks/use-channels";
+import { useRouter } from "next/navigation";
 import { cn, getInitials } from "@/lib/utils";
 import Link from "next/link";
 import Image from "next/image";
@@ -35,10 +37,23 @@ export function MembersDirectory() {
   const { members, isLoading } = useMembers();
   const { user } = useAuth();
   const prefix = useRoutePrefix();
+  const router = useRouter();
+  const { createDMChannel } = useChannels();
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState<SortBy>("level");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [roleFilter, setRoleFilter] = useState<string>("all");
+
+  const handleSendMessage = async (memberId: string) => {
+    try {
+      const channel = await createDMChannel.mutateAsync(memberId);
+      if (channel?.id) {
+        router.push(`${prefix}/messaging/${channel.id}`);
+      }
+    } catch {
+      // Error handled by the hook (toast)
+    }
+  };
 
   // Available roles for filtering
   const roles = useMemo(() => {
@@ -213,6 +228,7 @@ export function MembersDirectory() {
               prefix={prefix}
               isSelf={member.id === user?.id}
               index={i}
+              onSendMessage={handleSendMessage}
             />
           ))}
         </motion.div>
@@ -229,6 +245,7 @@ export function MembersDirectory() {
               prefix={prefix}
               isSelf={member.id === user?.id}
               index={i}
+              onSendMessage={handleSendMessage}
             />
           ))}
         </motion.div>
@@ -243,11 +260,13 @@ function MemberGridCard({
   prefix,
   isSelf,
   index,
+  onSendMessage,
 }: {
   member: MemberEntry;
   prefix: string;
   isSelf: boolean;
   index: number;
+  onSendMessage: (memberId: string) => void;
 }) {
   const role = ROLE_LABELS[member.role] ?? ROLE_LABELS.client;
 
@@ -327,13 +346,13 @@ function MemberGridCard({
 
         {/* Message button */}
         {!isSelf && (
-          <Link
-            href={`${prefix}/messaging`}
+          <button
+            onClick={() => onSendMessage(member.id)}
             className="mt-3 w-full h-7 flex items-center justify-center gap-1.5 bg-muted/50 hover:bg-muted rounded-lg text-[10px] font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
             <MessageSquare className="w-3 h-3" />
             Envoyer un message
-          </Link>
+          </button>
         )}
       </div>
     </motion.div>
@@ -346,11 +365,13 @@ function MemberListRow({
   prefix,
   isSelf,
   index,
+  onSendMessage,
 }: {
   member: MemberEntry;
   prefix: string;
   isSelf: boolean;
   index: number;
+  onSendMessage: (memberId: string) => void;
 }) {
   const role = ROLE_LABELS[member.role] ?? ROLE_LABELS.client;
 
@@ -432,13 +453,13 @@ function MemberListRow({
 
       {/* Message button */}
       {!isSelf && (
-        <Link
-          href={`${prefix}/messaging`}
+        <button
+          onClick={() => onSendMessage(member.id)}
           className="h-8 px-3 flex items-center gap-1.5 bg-muted/50 hover:bg-muted rounded-lg text-xs text-muted-foreground hover:text-foreground transition-colors shrink-0"
         >
           <MessageSquare className="w-3.5 h-3.5" />
           Message
-        </Link>
+        </button>
       )}
     </motion.div>
   );

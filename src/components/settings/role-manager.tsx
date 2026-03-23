@@ -435,17 +435,16 @@ export function RoleManager() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+        <div className="flex items-center gap-3 min-w-0 flex-1">
+          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
             <Shield className="w-5 h-5 text-primary" />
           </div>
-          <div>
+          <div className="min-w-0">
             <h2 className="text-lg font-bold text-foreground">
               Gestion des roles
             </h2>
-            <p className="text-sm text-muted-foreground">
-              Cree et gere les roles personnalises avec des permissions
-              granulaires
+            <p className="text-sm text-muted-foreground truncate">
+              Cree et gere les roles avec des permissions granulaires
             </p>
           </div>
         </div>
@@ -454,9 +453,9 @@ export function RoleManager() {
             setEditRole(null);
             setShowForm(true);
           }}
-          className="h-10 px-4 rounded-xl bg-[#DC2626] text-white text-sm font-medium hover:bg-[#DC2626]/90 transition-all active:scale-[0.98] flex items-center gap-2"
+          className="h-10 px-4 rounded-xl bg-[#DC2626] text-white text-sm font-medium hover:bg-[#DC2626]/90 transition-all active:scale-[0.98] flex items-center gap-2 whitespace-nowrap shrink-0"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-4 h-4 shrink-0" />
           Creer un role
         </button>
       </div>
