@@ -80,10 +80,15 @@ export const adminNavigation: NavItem[] = [
 
   // ── Business ──
   {
+    name: "Calendrier",
+    href: "/admin/calendar",
+    icon: Calendar,
+    section: "Business",
+  },
+  {
     name: "Booking",
     href: "/admin/booking",
     icon: CalendarCheck,
-    section: "Business",
   },
   { name: "Appels Closing", href: "/admin/closer-calls", icon: PhoneCall },
   { name: "Facturation", href: "/admin/billing", icon: CreditCard },
