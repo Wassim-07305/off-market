@@ -522,6 +522,8 @@ function LessonEditorPanel({
   };
 
   const handleSave = () => {
+    // Pour les quiz, ne pas écraser le content (le quiz builder a son propre bouton)
+    const isQuiz = contentType === "quiz";
     const updates: Partial<Lesson> = {
       title,
       description: description || null,
@@ -533,14 +535,18 @@ function LessonEditorPanel({
       content_html: contentHtml || null,
       embed_url: contentType === "embed" ? embedUrl || null : null,
       embed_type: contentType === "embed" ? embedType : null,
-      content: {
-        ...(videoUrl ? { url: videoUrl, video_url: videoUrl } : {}),
-        ...(audioUrl ? { audio_url: audioUrl } : {}),
-        ...(contentHtml ? { html: contentHtml } : {}),
-        ...(contentType === "embed" && embedUrl
-          ? { embed_url: embedUrl, embed_type: embedType }
-          : {}),
-      },
+      ...(isQuiz
+        ? {}
+        : {
+            content: {
+              ...(videoUrl ? { url: videoUrl, video_url: videoUrl } : {}),
+              ...(audioUrl ? { audio_url: audioUrl } : {}),
+              ...(contentHtml ? { html: contentHtml } : {}),
+              ...(contentType === "embed" && embedUrl
+                ? { embed_url: embedUrl, embed_type: embedType }
+                : {}),
+            },
+          }),
     };
     onSave(updates);
   };

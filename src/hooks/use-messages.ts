@@ -203,8 +203,8 @@ export function useMessages(channelId: string | null) {
             if (data.response) {
               await supabase.from("messages").insert({
                 channel_id: channelId,
-                sender_id: null,
-                content: data.response,
+                sender_id: user!.id,
+                content: `🤖 **AlexIA** :\n${data.response}`,
                 content_type: "text",
                 is_ai_generated: true,
                 metadata: { bot: "alexia" },
