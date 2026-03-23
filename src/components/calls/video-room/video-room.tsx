@@ -15,6 +15,7 @@ import { TranscriptPanel } from "./transcript-panel";
 import { CallChatPanel } from "./call-chat-panel";
 import { SessionNotesPanel } from "./session-notes-panel";
 import { CallEndedSummary } from "./call-ended-summary";
+import { RecordingControls } from "@/components/calls/recording-controls";
 import {
   Loader2,
   Mic,
@@ -642,7 +643,7 @@ export function VideoRoom({ callId }: VideoRoomProps) {
           localName={myName}
         />
 
-        {/* Controls */}
+        {/* Recording controls + Call controls */}
         <CallControls
           onToggleMic={toggleMic}
           onToggleCamera={toggleCamera}
@@ -659,6 +660,9 @@ export function VideoRoom({ callId }: VideoRoomProps) {
           showNotes={showNotes}
           showPreCallResponses={showPreCallResponses}
           isTranscriptionSupported={isTranscriptionSupported}
+          recordingSlot={
+            <RecordingControls callId={callId} stream={localStream} />
+          }
         />
       </div>
 

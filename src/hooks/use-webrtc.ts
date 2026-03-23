@@ -574,6 +574,34 @@ export function useWebRTC({ callId, onError }: UseWebRTCOptions) {
     }
   }, []);
 
+  // Stop screen share — defined before startScreenShare so it can be referenced in deps
+  const stopScreenShare = useCallback(async () => {
+    if (!pcRef.current) return;
+    screenStreamRef.current?.getTracks().forEach((t) => t.stop());
+    screenStreamRef.current = null;
+
+    // Restore camera track if available
+    const cameraTrack = localStreamRef.current
+      ?.getTracks()
+      .find((t) => t.kind === "video");
+
+    const sender = pcRef.current
+      .getSenders()
+      .find((s) => s.track?.kind === "video");
+
+    if (sender && cameraTrack) {
+      // Had a camera: restore the original camera track
+      await sender.replaceTrack(cameraTrack);
+    } else if (sender && !cameraTrack) {
+      // Audio-only: remove the screen share sender entirely
+      pcRef.current.removeTrack(sender);
+    }
+
+    // Restore local camera stream display (or null for audio-only)
+    setLocalStream(localStreamRef.current);
+    useCallStore.getState().setScreenSharing(false);
+  }, []);
+
   // Screen share with error feedback
   const startScreenShare = useCallback(async () => {
     if (!pcRef.current) return;
@@ -584,12 +612,15 @@ export function useWebRTC({ callId, onError }: UseWebRTCOptions) {
       screenStreamRef.current = screenStream;
       const screenTrack = screenStream.getVideoTracks()[0];
 
-      // Replace video track in peer connection
+      // Replace video track in peer connection, or add it if no video sender exists (audio-only)
       const sender = pcRef.current
         .getSenders()
         .find((s) => s.track?.kind === "video");
       if (sender) {
         await sender.replaceTrack(screenTrack);
+      } else {
+        // Audio-only fallback: add the screen track as a new sender (triggers renegotiation)
+        pcRef.current.addTrack(screenTrack, screenStream);
       }
 
       // Show screen locally (replace local stream display)
@@ -607,30 +638,7 @@ export function useWebRTC({ callId, onError }: UseWebRTCOptions) {
         "Le partage d'ecran a echoue. Verifiez les permissions de votre navigateur.",
       );
     }
-  }, [reportError]);
-
-  const stopScreenShare = useCallback(async () => {
-    if (!pcRef.current || !localStreamRef.current) return;
-    screenStreamRef.current?.getTracks().forEach((t) => t.stop());
-    screenStreamRef.current = null;
-
-    // Restore camera track
-    const cameraTrack = localStreamRef.current
-      .getTracks()
-      .find((t) => t.kind === "video");
-    if (cameraTrack) {
-      const sender = pcRef.current
-        .getSenders()
-        .find((s) => s.track?.kind === "video");
-      if (sender) {
-        await sender.replaceTrack(cameraTrack);
-      }
-    }
-
-    // Restore local camera stream display
-    setLocalStream(localStreamRef.current);
-    useCallStore.getState().setScreenSharing(false);
-  }, []);
+  }, [reportError, stopScreenShare]);
 
   // Broadcast transcript entry to peer
   const broadcastTranscript = useCallback(

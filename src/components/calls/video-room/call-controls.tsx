@@ -30,6 +30,7 @@ interface CallControlsProps {
   showChat?: boolean;
   showPreCallResponses?: boolean;
   isTranscriptionSupported: boolean;
+  recordingSlot?: React.ReactNode;
 }
 
 export function CallControls({
@@ -46,12 +47,16 @@ export function CallControls({
   showChat,
   showPreCallResponses,
   isTranscriptionSupported,
+  recordingSlot,
 }: CallControlsProps) {
   const { isMicOn, isCameraOn, isScreenSharing, isTranscribing } =
     useCallStore();
 
   return (
     <div className="flex items-center justify-center gap-2 py-4 px-4 bg-zinc-950/50 backdrop-blur-md">
+      {/* Recording */}
+      {recordingSlot}
+
       {/* Mic */}
       <ControlButton
         onClick={onToggleMic}
