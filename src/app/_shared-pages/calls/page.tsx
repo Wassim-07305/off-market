@@ -27,6 +27,7 @@ import {
   X,
 } from "lucide-react";
 import { DropdownMenu, DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { SmsReminderButton } from "@/components/calls/sms-reminder-button";
 import { format, parseISO, isToday } from "date-fns";
 import { fr } from "date-fns/locale";
 import { toast } from "sonner";
@@ -902,6 +903,19 @@ export default function CallsPage() {
                     />
                     {badge.label}
                   </span>
+
+                  {/* SMS Reminder */}
+                  {call.status === "planifie" && (
+                    <div onClick={(e) => e.stopPropagation()}>
+                      <SmsReminderButton
+                        relatedType="call"
+                        relatedId={call.id}
+                        clientName={call.client?.full_name}
+                        eventDate={call.date}
+                        eventTime={call.time}
+                      />
+                    </div>
+                  )}
 
                   {/* Action */}
                   {joinable ? (
