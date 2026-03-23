@@ -14,20 +14,55 @@ const client =
   accountSid && authToken ? Twilio(accountSid, authToken) : null;
 
 /**
+ * Normalise un numéro de téléphone au format international E.164.
+ * Exemples :
+ *   "0784288684"     → "+33784288684"
+ *   "07 84 28 86 84" → "+33784288684"
+ *   "+33784288684"   → "+33784288684"
+ *   "33784288684"    → "+33784288684"
+ *   "+1 (507) 417-2073" → "+15074172073"
+ */
+export function normalizePhone(phone: string): string {
+  // Supprime tout sauf les chiffres et le +
+  let cleaned = phone.replace(/[^\d+]/g, "");
+
+  // Si commence par 0 → numéro français, remplace par +33
+  if (cleaned.startsWith("0") && !cleaned.startsWith("00")) {
+    cleaned = "+33" + cleaned.slice(1);
+  }
+
+  // Si commence par 00 → remplace par +
+  if (cleaned.startsWith("00")) {
+    cleaned = "+" + cleaned.slice(2);
+  }
+
+  // Si pas de + et commence par un indicatif pays (33, 1, 44...)
+  if (!cleaned.startsWith("+")) {
+    cleaned = "+" + cleaned;
+  }
+
+  return cleaned;
+}
+
+/**
  * Envoie un SMS via Twilio.
- * Retourne le SID du message ou null en cas d'erreur.
+ * Normalise automatiquement le numéro au format E.164.
  */
 export async function sendSms(
   to: string,
   body: string,
 ): Promise<{ success: boolean; sid?: string; error?: string }> {
   if (!client || !fromNumber) {
-    return { success: false, error: "Twilio non configure" };
+    return { success: false, error: "Twilio non configuré" };
   }
 
   try {
-    // Normalise le numéro (ajoute + si absent)
-    const normalizedTo = to.startsWith("+") ? to : `+${to}`;
+    const normalizedTo = normalizePhone(to);
+
+    // Validation basique
+    if (normalizedTo.length < 10 || normalizedTo.length > 16) {
+      return { success: false, error: `Numéro invalide: ${normalizedTo}` };
+    }
 
     const message = await client.messages.create({
       body,

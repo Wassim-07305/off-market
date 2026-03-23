@@ -74,12 +74,22 @@ export function useCreateSmsReminder() {
       related_type?: "call" | "coaching" | "payment";
       related_id?: string;
     }) => {
-      if (!user) throw new Error("Non authentifie");
+      if (!user) throw new Error("Non authentifié");
+
+      // Normalise le numéro au format international
+      let phone = reminder.recipient_phone.replace(/[^\d+]/g, "");
+      if (phone.startsWith("0") && !phone.startsWith("00")) {
+        phone = "+33" + phone.slice(1);
+      } else if (phone.startsWith("00")) {
+        phone = "+" + phone.slice(2);
+      } else if (!phone.startsWith("+")) {
+        phone = "+" + phone;
+      }
 
       const { data, error } = await smsTable(supabase)
         .insert({
           user_id: user.id,
-          recipient_phone: reminder.recipient_phone,
+          recipient_phone: phone,
           message: reminder.message,
           scheduled_at: reminder.scheduled_at,
           related_type: reminder.related_type ?? null,
