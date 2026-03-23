@@ -18,14 +18,7 @@ export async function POST(request: Request) {
     !!cronSecret && authHeader === `Bearer ${cronSecret}`;
 
   if (!isAuthorizedCron) {
-    // Check if caller is admin via service role
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-    if (!supabaseUrl || !anonKey) {
-      return NextResponse.json({ error: "Config manquante" }, { status: 500 });
-    }
-
+    // Any authenticated user can trigger push (messages, etc.)
     const { createClient: createServerClient } =
       await import("@/lib/supabase/server");
     const supabase = await createServerClient();
@@ -35,16 +28,6 @@ export async function POST(request: Request) {
 
     if (!user) {
       return NextResponse.json({ error: "Non autorise" }, { status: 401 });
-    }
-
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", user.id)
-      .single();
-
-    if (!profile || !["admin", "coach"].includes(profile.role)) {
-      return NextResponse.json({ error: "Acces refuse" }, { status: 403 });
     }
   }
 
