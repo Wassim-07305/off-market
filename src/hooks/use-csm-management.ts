@@ -97,17 +97,17 @@ export function useCoachesWithStats() {
           }
         }
 
-        // Build enriched assignments
-        assignments = rawAssignments.map(
-          (a: { coach_id: string; client_id: string }) => ({
+        // Build enriched assignments — filter out assignments where client profile was deleted
+        assignments = rawAssignments
+          .map((a: { coach_id: string; client_id: string }) => ({
             ...a,
             coach:
               (coaches ?? []).find(
                 (c: { id: string }) => c.id === a.coach_id,
               ) ?? null,
             client: clientMap.get(a.client_id) ?? null,
-          }),
-        );
+          }))
+          .filter((a: { client: unknown }) => a.client !== null);
       } catch (e) {
         console.warn("[CSM] assignments fetch failed:", e);
       }
