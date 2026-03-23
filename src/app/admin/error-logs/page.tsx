@@ -184,31 +184,78 @@ export default function ErrorLogsPage() {
       return;
     }
 
-    // Group by page
-    const byPage = new Map<string, ErrorLog[]>();
+    // Dedup: group identical errors (same message + page)
+    const dedupKey = (e: ErrorLog) => `${e.message}::${e.page}`;
+    const dedupMap = new Map<string, { error: ErrorLog; count: number }>();
     for (const e of unresolved) {
-      const page = e.page || "Inconnue";
+      const key = dedupKey(e);
+      const existing = dedupMap.get(key);
+      if (existing) {
+        existing.count++;
+        // Keep the most recent one
+        if (e.created_at > existing.error.created_at) existing.error = e;
+      } else {
+        dedupMap.set(key, { error: e, count: 1 });
+      }
+    }
+    const deduped = Array.from(dedupMap.values());
+
+    // Group by page
+    const byPage = new Map<string, typeof deduped>();
+    for (const d of deduped) {
+      const page = d.error.page || "Inconnue";
       const list = byPage.get(page) ?? [];
-      list.push(e);
+      list.push(d);
       byPage.set(page, list);
     }
 
-    let md = `# Error Report\n\n`;
-    md += `> Genere le ${new Date().toLocaleString("fr-FR")} — ${unresolved.length} erreur(s) non resolue(s)\n\n`;
+    // Count by severity
+    const criticals = deduped.filter((d) => d.error.severity === "critical").length;
+    const errs = deduped.filter((d) => d.error.severity === "error").length;
+    const warnings = deduped.filter((d) => d.error.severity === "warning").length;
 
-    for (const [page, errs] of byPage) {
-      md += `## Page: \`${page}\`\n\n`;
-      for (const e of errs) {
-        md += `### ${e.source.toUpperCase()} | ${e.severity} | ${new Date(e.created_at).toLocaleString("fr-FR")}\n\n`;
+    let md = `# Error Report\n\n`;
+    md += `> Genere le ${new Date().toLocaleString("fr-FR")}\n\n`;
+    md += `## Résumé\n\n`;
+    md += `| Metrique | Valeur |\n|---|---|\n`;
+    md += `| Erreurs uniques | ${deduped.length} |\n`;
+    md += `| Total (avec doublons) | ${unresolved.length} |\n`;
+    md += `| Critiques | ${criticals} |\n`;
+    md += `| Erreurs | ${errs} |\n`;
+    md += `| Warnings | ${warnings} |\n`;
+    md += `| Pages touchées | ${byPage.size} |\n\n`;
+
+    // Quick fix list
+    md += `## Liste rapide\n\n`;
+    for (const d of deduped) {
+      const e = d.error;
+      const countStr = d.count > 1 ? ` (x${d.count})` : "";
+      md += `- **${e.severity.toUpperCase()}** \`${e.page ?? "?"}\` — ${e.message.slice(0, 120)}${countStr}\n`;
+    }
+    md += `\n`;
+
+    // Detailed errors
+    md += `## Détails\n\n`;
+    for (const [page, items] of byPage) {
+      md += `### Page: \`${page}\`\n\n`;
+      for (const { error: e, count } of items) {
+        const countStr = count > 1 ? ` (x${count})` : "";
+        md += `#### ${e.source.toUpperCase()} | ${e.severity}${countStr}\n\n`;
         md += `**Message:** \`${e.message}\`\n\n`;
         if (e.route && e.route !== e.page) md += `**Route:** \`${e.route}\`\n\n`;
         if (e.user_email) md += `**User:** ${e.user_email} (${e.user_role ?? "?"})\n\n`;
         if (e.viewport) md += `**Viewport:** ${e.viewport}\n\n`;
+
+        // Extract probable file from stack trace
         if (e.stack) {
-          md += `**Stack trace:**\n\`\`\`\n${e.stack}\n\`\`\`\n\n`;
+          const srcMatch = e.stack.match(/at\s+\w+\s+\(?(src\/[^:)]+)/);
+          if (srcMatch) {
+            md += `**Fichier probable:** \`${srcMatch[1]}\`\n\n`;
+          }
+          md += `<details><summary>Stack trace</summary>\n\n\`\`\`\n${e.stack}\n\`\`\`\n</details>\n\n`;
         }
         if (e.component_stack) {
-          md += `**Component stack:**\n\`\`\`\n${e.component_stack}\n\`\`\`\n\n`;
+          md += `<details><summary>Component stack</summary>\n\n\`\`\`\n${e.component_stack}\n\`\`\`\n</details>\n\n`;
         }
         if (e.metadata && Object.keys(e.metadata).length > 0) {
           md += `**Metadata:**\n\`\`\`json\n${JSON.stringify(e.metadata, null, 2)}\n\`\`\`\n\n`;
@@ -224,7 +271,7 @@ export default function ErrorLogsPage() {
     a.download = `error-report-${new Date().toISOString().split("T")[0]}.md`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success(`${unresolved.length} erreur(s) exportee(s)`);
+    toast.success(`${deduped.length} erreur(s) unique(s) exportee(s)`);
   };
 
   return (
