@@ -1,10 +1,23 @@
 "use client";
 
-import { useState, useMemo, useCallback, useRef } from "react";
+import { useState, useMemo, useCallback, useRef, type CSSProperties } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 import { PageTransition } from "@/components/ui/page-transition";
 import { HeroMetric } from "@/components/dashboard/hero-metric";
+import {
+  DndContext,
+  DragOverlay,
+  PointerSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+  closestCorners,
+  type DragEndEvent,
+  type DragStartEvent,
+  useDraggable,
+  useDroppable,
+} from "@dnd-kit/core";
 import {
   usePipelineContacts,
   useCloserPipeline,
@@ -258,6 +271,36 @@ function ContactCard({
 
 // ─── Stage Column ────────────────────────────────────────────
 
+function DraggableContactCard({
+  contact,
+  onClick,
+  isCloserView,
+}: {
+  contact: CrmContact;
+  onClick: () => void;
+  isCloserView?: boolean;
+}) {
+  const { attributes, listeners, setNodeRef, transform, isDragging } =
+    useDraggable({ id: contact.id });
+
+  const style: CSSProperties = {
+    ...(transform ? { transform: `translate(${transform.x}px, ${transform.y}px)` } : {}),
+    touchAction: "none",
+    opacity: isDragging ? 0.3 : 1,
+    cursor: "grab",
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} {...listeners} {...attributes}>
+      <ContactCard
+        contact={contact}
+        onClick={onClick}
+        isCloserView={isCloserView}
+      />
+    </div>
+  );
+}
+
 function StageColumn({
   stage,
   contacts,
@@ -269,13 +312,14 @@ function StageColumn({
   onCardClick: (contact: CrmContact) => void;
   isCloserView?: boolean;
 }) {
+  const { setNodeRef, isOver } = useDroppable({ id: stage.value });
   const total = contacts.reduce(
     (sum, c) => sum + Number(c.estimated_value ?? 0),
     0,
   );
 
   return (
-    <div className="flex flex-col min-w-[260px] w-[260px] shrink-0">
+    <div ref={setNodeRef} className="flex flex-col min-w-[260px] w-[260px] shrink-0">
       <div className="rounded-md px-3 py-2 mb-2 border border-border bg-surface">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -287,13 +331,7 @@ function StageColumn({
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <span
-              className={cn(
-                "text-[10px] font-mono font-semibold min-w-[1rem] text-center px-1.5 py-0.5 rounded-md",
-                stage.bg,
-                stage.color,
-              )}
-            >
+            <span className="text-[10px] font-mono font-semibold min-w-[1rem] text-center px-1.5 py-0.5 rounded-md bg-foreground/10 text-foreground border border-border">
               {contacts.length}
             </span>
             {total > 0 && (
@@ -304,9 +342,12 @@ function StageColumn({
           </div>
         </div>
       </div>
-      <div className="flex-1 space-y-2 min-h-[100px]">
+      <div className={cn(
+        "flex-1 space-y-2 min-h-[100px] rounded-lg p-1 -m-1 transition-all duration-200",
+        isOver && "bg-primary/5 ring-1 ring-inset ring-primary/20",
+      )}>
         {contacts.map((contact) => (
-          <ContactCard
+          <DraggableContactCard
             key={contact.id}
             contact={contact}
             onClick={() => onCardClick(contact)}
@@ -1361,13 +1402,37 @@ export default function SalesPipelinePage() {
 
 export function SetterPipelineView() {
   const [tab, setTab] = useState<PipelineMode>("manual");
-  const { contacts, isLoading, createContact } =
+  const { contacts, isLoading, createContact, moveContact } =
     usePipelineContacts(undefined, tab);
   const [search, setSearch] = useState("");
   const [showAdd, setShowAdd] = useState(false);
   const [showAddProspect, setShowAddProspect] = useState(false);
   const [selectedContact, setSelectedContact] = useState<CrmContact | null>(null);
   const [assignCloserFor, setAssignCloserFor] = useState<CrmContact | null>(null);
+  const [activeId, setActiveId] = useState<string | null>(null);
+
+  const dndSensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 5 } }),
+  );
+
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveId(String(event.active.id));
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    setActiveId(null);
+    if (!over) return;
+    const contactId = String(active.id);
+    const newStage = String(over.id) as PipelineStage;
+    if (!SETTER_KANBAN_STAGES.some((s) => s.value === newStage)) return;
+    const contact = contacts.find((c) => c.id === contactId);
+    if (!contact || contact.stage === newStage) return;
+    moveContact.mutate({ id: contactId, stage: newStage });
+  };
+
+  const activeContact = activeId ? contacts.find((c) => c.id === activeId) ?? null : null;
 
   const freshSelectedContact = useMemo(() => {
     if (!selectedContact) return null;
@@ -1515,16 +1580,30 @@ export function SetterPipelineView() {
             ))}
           </div>
         ) : (
-          <div className="flex gap-4 overflow-x-auto pb-4">
-            {SETTER_KANBAN_STAGES.map((stage) => (
-              <StageColumn
-                key={stage.value}
-                stage={stage}
-                contacts={contactsByStage.get(stage.value) ?? []}
-                onCardClick={(contact) => setSelectedContact(contact)}
-              />
-            ))}
-          </div>
+          <DndContext
+            sensors={dndSensors}
+            collisionDetection={closestCorners}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+          >
+            <div className="flex gap-4 overflow-x-auto pb-4">
+              {SETTER_KANBAN_STAGES.map((stage) => (
+                <StageColumn
+                  key={stage.value}
+                  stage={stage}
+                  contacts={contactsByStage.get(stage.value) ?? []}
+                  onCardClick={(contact) => setSelectedContact(contact)}
+                />
+              ))}
+            </div>
+            <DragOverlay>
+              {activeContact ? (
+                <div className="w-[240px] opacity-90">
+                  <ContactCard contact={activeContact} onClick={() => {}} />
+                </div>
+              ) : null}
+            </DragOverlay>
+          </DndContext>
         )}
       </motion.div>
 
