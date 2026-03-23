@@ -5,8 +5,8 @@
       "schedule": "0 9 * * *"
     },
     {
-      "path": "/api/sms/process",
-      "schedule": "0 8 * * *"
+      "path": "/api/cron/send-sms",
+      "schedule": "*/5 * * * *"
     },
     {
       "path": "/api/contracts/renew",
