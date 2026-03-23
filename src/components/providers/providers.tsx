@@ -12,6 +12,7 @@ import { WalkthroughProvider } from "@/components/onboarding/walkthrough-provide
 import { BrandingProvider } from "@/components/providers/branding-provider";
 import { IncomingCallToast } from "@/components/calls/video-room/incoming-call-toast";
 import { RgpdConsentBanner } from "@/components/shared/rgpd-consent-banner";
+import { GamificationProvider } from "@/components/providers/gamification-provider";
 import { LazyMotion, domAnimation } from "framer-motion";
 import type { User } from "@supabase/supabase-js";
 import type { Profile } from "@/types/database";
@@ -55,6 +56,7 @@ export function Providers({
             <AuthProvider initialUser={initialUser} initialProfile={initialProfile}>
               <WalkthroughProvider>
                 {children}
+                <GamificationProvider />
                 <IncomingCallToast />
                 <RgpdConsentBanner />
               </WalkthroughProvider>
