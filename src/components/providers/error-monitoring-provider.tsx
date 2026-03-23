@@ -77,10 +77,33 @@ class GlobalErrorBoundary extends Component<
 
 function WindowErrorListeners() {
   useEffect(() => {
+    // ── Noise filter: skip errors that are not from our app ──
+    const isNoise = (msg: string, filename?: string): boolean => {
+      // Browser extensions injecting code
+      if (msg.includes("Invalid or unexpected token")) return true;
+      if (msg.includes("appendChild")) return true;
+      // Chrome extensions / third-party scripts
+      if (filename?.includes("chrome-extension://")) return true;
+      if (filename?.includes("moz-extension://")) return true;
+      if (filename?.includes("safari-extension://")) return true;
+      // Common browser noise
+      if (msg.includes("ResizeObserver")) return true;
+      if (msg.includes("Script error.") && !filename) return true;
+      if (msg.includes("Load failed")) return true;
+      if (msg.includes("NetworkError")) return true;
+      if (msg.includes("Failed to fetch") && !filename?.includes("/api/")) return true;
+      // Hydration warnings (not actionable in production)
+      if (msg.includes("Hydration")) return true;
+      if (msg.includes("Text content does not match")) return true;
+      // Cancel / abort
+      if (msg.includes("AbortError") || msg.includes("aborted")) return true;
+      if (msg.includes("cancelled")) return true;
+      return false;
+    };
+
     // Catch unhandled JS errors
     const handleError = (event: ErrorEvent) => {
-      // Ignore ResizeObserver errors (benign browser noise)
-      if (event.message?.includes("ResizeObserver")) return;
+      if (isNoise(event.message ?? "", event.filename)) return;
 
       logError({
         message: event.message || "Unhandled error",
@@ -110,8 +133,7 @@ function WindowErrorListeners() {
             ? reason
             : "Unhandled promise rejection";
 
-      // Ignore abort errors (user navigated away)
-      if (message.includes("AbortError") || message.includes("aborted")) return;
+      if (isNoise(message)) return;
 
       logError({
         message,
