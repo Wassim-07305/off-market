@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { notifyInvoicePaid } from "@/lib/slack";
 import type Stripe from "stripe";
 
 // Disable Next.js body parsing — Stripe needs the raw body for signature verification
@@ -71,6 +72,24 @@ export async function POST(request: NextRequest) {
               "[Stripe Webhook] Erreur mise à jour facture:",
               error.message,
             );
+          } else {
+            // Notification Slack
+            const { data: invoice } = await supabase
+              .from("invoices")
+              .select("invoice_number, total, client:profiles!invoices_client_id_fkey(full_name)")
+              .eq("id", invoiceId)
+              .single();
+
+            if (invoice) {
+              const clientName = Array.isArray(invoice.client)
+                ? invoice.client[0]?.full_name
+                : (invoice.client as { full_name: string } | null)?.full_name;
+              notifyInvoicePaid(
+                invoice.invoice_number || invoiceId,
+                Number(invoice.total) || 0,
+                clientName || "Inconnu",
+              ).catch(() => {});
+            }
           }
         }
         break;

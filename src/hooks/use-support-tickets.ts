@@ -56,29 +56,21 @@ export function useCreateTicket() {
 
   return useMutation({
     mutationFn: async (data: CreateTicketData) => {
-      if (!user) throw new Error("Non authentifie");
+      if (!user) throw new Error("Non authentifié");
 
-      const { data: ticket, error } = await supabase
-        .from("support_tickets")
-        .insert({
-          user_id: user.id,
-          title: data.title,
-          description: data.description,
-          category: data.category,
-          priority: data.priority,
-          page_url: data.page_url ?? null,
-          user_agent:
-            typeof navigator !== "undefined" ? navigator.userAgent : null,
-        })
-        .select()
-        .single();
+      const res = await fetch("/api/support/tickets", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
 
-      if (error) throw error;
-      return ticket as SupportTicket;
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Erreur");
+      return json as SupportTicket;
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["support-tickets"] });
-      toast.success("Ticket envoye avec succes");
+      toast.success("Ticket envoyé avec succès");
     },
     onError: () => {
       toast.error("Erreur lors de l'envoi du ticket");

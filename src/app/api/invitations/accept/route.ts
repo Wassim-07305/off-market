@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { notifyNewClient } from "@/lib/slack";
 import { headers } from "next/headers";
 
 export async function POST(request: Request) {
@@ -177,6 +178,12 @@ export async function POST(request: Request) {
         }
       }
     }
+
+    // Notification Slack (fire-and-forget)
+    notifyNewClient(
+      invite.full_name || "Inconnu",
+      invite.email || "",
+    ).catch(() => {});
 
     return NextResponse.json({ success: true, role: invite.role });
   } catch (err) {
