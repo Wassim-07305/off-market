@@ -219,15 +219,15 @@ export function AiSlashCommands({
     el?.scrollIntoView({ block: "nearest" });
   }, [activeIndex]);
 
-  // Click outside
+  // Click outside — ignore clicks inside the chat input container (parent with relative class)
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(e.target as Node)
-      ) {
-        onClose();
-      }
+      if (!containerRef.current) return;
+      if (containerRef.current.contains(e.target as Node)) return;
+      // Don't close when clicking inside the parent chat input area (the relative container)
+      const parentRelative = containerRef.current.parentElement;
+      if (parentRelative && parentRelative.contains(e.target as Node)) return;
+      onClose();
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);

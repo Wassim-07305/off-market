@@ -14,12 +14,13 @@ export function useBadges() {
     queryKey: ["badges"],
     enabled: !!user,
     staleTime: 30 * 60 * 1000, // 30 min — catalogue de badges, rarement modifie
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       const { data, error } = await supabase
         .from("badges")
         .select("*")
         .eq("is_active", true)
-        .order("category", { ascending: true });
+        .order("category", { ascending: true })
+        .abortSignal(signal);
       if (error) throw error;
       return data as Badge[];
     },
@@ -29,13 +30,14 @@ export function useBadges() {
   const userBadgesQuery = useQuery({
     queryKey: ["user-badges", user?.id],
     staleTime: 5 * 60 * 1000, // 5 min — badges gagnes, mis a jour par mutations
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       if (!user) return [];
       const { data, error } = await supabase
         .from("user_badges")
         .select("*, badge:badges(*)")
         .eq("profile_id", user.id)
-        .order("earned_at", { ascending: false });
+        .order("earned_at", { ascending: false })
+        .abortSignal(signal);
       if (error) throw error;
       return data as UserBadge[];
     },
@@ -51,5 +53,6 @@ export function useBadges() {
     earnedBadges,
     earnedBadgeIds,
     isLoading: allBadgesQuery.isLoading || userBadgesQuery.isLoading,
+    error: allBadgesQuery.error || userBadgesQuery.error,
   };
 }

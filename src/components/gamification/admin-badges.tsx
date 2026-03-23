@@ -241,7 +241,7 @@ export function AdminBadges() {
                   : "bg-muted text-muted-foreground hover:text-foreground",
               )}
             >
-              {CATEGORY_CONFIG[cat.value].emoji} {cat.label}
+              {CATEGORY_CONFIG[cat.value]?.emoji ?? "🏷️"} {cat.label}
             </button>
           ))}
         </div>
@@ -267,14 +267,14 @@ export function AdminBadges() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {filteredBadges.map((badge) => {
-              const rarityConfig = RARITY_CONFIG[badge.rarity];
-              const categoryConfig = CATEGORY_CONFIG[badge.category];
+              const rarityConfig = RARITY_CONFIG[badge.rarity] ?? { label: badge.rarity, color: "text-zinc-500", bg: "bg-zinc-500/10" };
+              const categoryConfig = CATEGORY_CONFIG[badge.category] ?? { label: badge.category, emoji: "🏷️" };
               const condition = badge.condition as {
                 action?: string;
                 count?: number;
               };
-              const borderColor = RARITY_BORDER_COLORS[badge.rarity];
-              const bgTint = RARITY_BG_TINTS[badge.rarity];
+              const borderColor = RARITY_BORDER_COLORS[badge.rarity] ?? "border-gray-300 dark:border-gray-600";
+              const bgTint = RARITY_BG_TINTS[badge.rarity] ?? "bg-gray-50 dark:bg-gray-500/5";
 
               return (
                 <div

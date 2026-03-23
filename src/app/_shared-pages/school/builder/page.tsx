@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCourseMutations } from "@/hooks/use-courses";
 import { toast } from "sonner";
-import { ArrowLeft, Plus, Save, GripVertical, Trash2 } from "lucide-react";
+import { ArrowLeft, Plus, Save, GripVertical, Trash2, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRoutePrefix } from "@/hooks/use-route-prefix";
 
@@ -14,6 +14,7 @@ export default function CourseBuilderPage() {
   const prefix = useRoutePrefix();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [saving, setSaving] = useState(false);
   const [modules, setModules] = useState<
     Array<{
       id: string;
@@ -64,38 +65,45 @@ export default function CourseBuilderPage() {
       return;
     }
 
-    const course = await createCourse.mutateAsync({
-      title,
-      description,
-      status: "draft",
-    });
-
-    for (let i = 0; i < modules.length; i++) {
-      const mod = modules[i];
-      if (!mod.title.trim()) continue;
-      const savedModule = await createModule.mutateAsync({
-        course_id: course.id,
-        title: mod.title,
-        sort_order: i,
+    setSaving(true);
+    try {
+      const course = await createCourse.mutateAsync({
+        title,
+        description,
+        status: "draft",
       });
 
-      for (let j = 0; j < mod.lessons.length; j++) {
-        const lesson = mod.lessons[j];
-        if (!lesson.title.trim()) continue;
-        await createLesson.mutateAsync({
-          module_id: savedModule.id,
-          title: lesson.title,
-          content_type: lesson.type,
-          sort_order: j,
-          content: lesson.videoUrl
-            ? { url: lesson.videoUrl, video_url: lesson.videoUrl }
-            : undefined,
+      for (let i = 0; i < modules.length; i++) {
+        const mod = modules[i];
+        if (!mod.title.trim()) continue;
+        const savedModule = await createModule.mutateAsync({
+          course_id: course.id,
+          title: mod.title,
+          sort_order: i,
         });
-      }
-    }
 
-    toast.success("Cours cree");
-    router.push(`${prefix}/school`);
+        for (let j = 0; j < mod.lessons.length; j++) {
+          const lesson = mod.lessons[j];
+          if (!lesson.title.trim()) continue;
+          await createLesson.mutateAsync({
+            module_id: savedModule.id,
+            title: lesson.title,
+            content_type: lesson.type,
+            sort_order: j,
+            content: lesson.videoUrl
+              ? { url: lesson.videoUrl, video_url: lesson.videoUrl }
+              : undefined,
+          });
+        }
+      }
+
+      toast.success("Cours cree");
+      router.push(`${prefix}/school`);
+    } catch {
+      toast.error("Erreur lors de la sauvegarde");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const inputClass =
@@ -113,11 +121,11 @@ export default function CourseBuilderPage() {
         </Link>
         <button
           onClick={handleSave}
-          disabled={createCourse.isPending}
+          disabled={saving}
           className="h-9 px-4 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-2"
         >
-          <Save className="w-4 h-4" />
-          Sauvegarder
+          {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+          {saving ? "Enregistrement..." : "Sauvegarder"}
         </button>
       </div>
 

@@ -259,7 +259,7 @@ export default function AdminStudentDetailPage({
               isPending={updateStudentFlag.isPending}
             />
             <Link
-              href={`${prefix}/messaging`}
+              href={`${prefix}/messaging?dm=${id}`}
               className="h-9 px-3 rounded-[10px] border border-border text-sm flex items-center gap-2 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
             >
               <MessageSquare className="w-4 h-4" />
@@ -517,12 +517,12 @@ export default function AdminStudentDetailPage({
                   </p>
                 </div>
 
-                {(details?.revenue_objective ?? 0) > 0 && (
-                  <div className="space-y-2">
-                    <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-                      <DollarSign className="w-4 h-4 text-emerald-500" />
-                      Progression vers l&apos;objectif
-                    </h3>
+                <div className="space-y-2">
+                  <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                    <DollarSign className="w-4 h-4 text-emerald-500" />
+                    Progression vers l&apos;objectif
+                  </h3>
+                  {(details?.revenue_objective ?? 0) > 0 ? (
                     <div className="p-4 rounded-lg bg-muted/50 border border-border">
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-xs text-muted-foreground">
@@ -549,8 +549,17 @@ export default function AdminStudentDetailPage({
                         %
                       </p>
                     </div>
-                  </div>
-                )}
+                  ) : (
+                    <div className="p-4 rounded-lg bg-muted/50 border border-border text-center">
+                      <div className="w-full h-2.5 bg-muted rounded-full overflow-hidden mb-2">
+                        <div className="h-full rounded-full bg-muted-foreground/20" style={{ width: "0%" }} />
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Aucun objectif de CA defini. Renseignez l&apos;objectif CA ci-dessus pour suivre la progression.
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>

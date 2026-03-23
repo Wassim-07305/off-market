@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/use-auth";
 import { useChannelMembers } from "@/hooks/use-channels";
 import dynamic from "next/dynamic";
 const EmojiPicker = dynamic(
@@ -148,6 +149,7 @@ export function ChatInput({
   droppedFile,
   onClearDroppedFile,
 }: ChatInputProps) {
+  const { user, profile } = useAuth();
   const [message, setMessage] = useState("");
   const [showEmoji, setShowEmoji] = useState(false);
   const [showGif, setShowGif] = useState(false);
@@ -416,25 +418,39 @@ export function ChatInput({
     editor.commands.focus("end");
   };
 
+  const replaceTemplateVariables = useCallback(
+    (content: string): string => {
+      const fullName = profile?.full_name ?? user?.user_metadata?.full_name ?? "";
+      const firstName = fullName.split(" ")[0] ?? "";
+      return content
+        .replace(/\{\{nom\}\}/gi, fullName)
+        .replace(/\{\{prenom\}\}/gi, firstName)
+        .replace(/\{\{canal\}\}/gi, channelName)
+        .replace(/\{\{date\}\}/gi, new Date().toLocaleDateString("fr-FR"));
+    },
+    [profile, user, channelName],
+  );
+
   const handleTemplateSelect = useCallback(
     (content: string) => {
       if (!editor) return;
+      const replaced = replaceTemplateVariables(content);
       if (templateShortcutQuery !== null) {
         // Remplacer le /shortcut avec le contenu du template
         const text = editor.getText();
         const before = text.slice(0, templateSlashStartPos);
         const cursorTextPos = text.length;
         const after = text.slice(cursorTextPos);
-        editor.commands.setContent(`<p>${before}${content}${after}</p>`);
+        editor.commands.setContent(`<p>${before}${replaced}${after}</p>`);
       } else {
         // Inserer a la position du curseur
-        editor.chain().focus().insertContent(content).run();
+        editor.chain().focus().insertContent(replaced).run();
       }
       setTemplateShortcutQuery(null);
       setShowTemplatePicker(false);
       editor.commands.focus();
     },
-    [editor, templateShortcutQuery, templateSlashStartPos],
+    [editor, templateShortcutQuery, templateSlashStartPos, replaceTemplateVariables],
   );
 
   return (

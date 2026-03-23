@@ -212,7 +212,7 @@ export default function IntegrationsPage() {
               : {
                   label: "Connecter",
                   onClick: () => {
-                    window.location.href = "/api/google-calendar/connect";
+                    window.open("/api/google-calendar/connect", "_blank", "noopener,noreferrer");
                   },
                 }
           }

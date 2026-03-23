@@ -86,15 +86,26 @@ export function BookmarksPanel({
                     {formatMessageTime(msg.created_at)}
                   </span>
                 </div>
-                <p className="text-xs text-foreground/80 line-clamp-2">
-                  {msg.content_type === "image"
-                    ? "Image"
-                    : msg.content_type === "audio"
+                {msg.content_type === "image" ? (
+                  msg.attachments?.[0]?.file_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={msg.attachments[0].file_url}
+                      alt="Image"
+                      className="w-full max-h-20 rounded-md object-cover mt-1"
+                    />
+                  ) : (
+                    <p className="text-xs text-foreground/80">Image</p>
+                  )
+                ) : (
+                  <p className="text-xs text-foreground/80 line-clamp-2">
+                    {msg.content_type === "audio"
                       ? "Message vocal"
                       : msg.content_type === "file"
                         ? "Fichier"
                         : msg.content.slice(0, 150)}
-                </p>
+                  </p>
+                )}
               </div>
 
               <button

@@ -370,11 +370,17 @@ const WAVEFORM_BARS = Array.from(
   (_, i) => Math.max(Math.sin(i * 0.6 + 1) * 0.5 + 0.5, 0.15) * 100,
 );
 
+function parseDurationFromContent(content: string): number {
+  const match = content.match(/\((\d+)s\)/);
+  return match ? parseInt(match[1], 10) : 0;
+}
+
 function AudioContent({ message }: { message: EnrichedMessage }) {
   const url = message.attachments?.[0]?.file_url ?? message.content;
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [duration, setDuration] = useState(0);
+  const fallbackDuration = parseDurationFromContent(message.content);
+  const [duration, setDuration] = useState(fallbackDuration);
   const [currentTime, setCurrentTime] = useState(0);
   const audioRef = useRef<HTMLAudioElement>(null);
   const rafRef = useRef<number>(0);

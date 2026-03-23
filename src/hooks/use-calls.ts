@@ -18,14 +18,16 @@ export function useCalls(weekStart?: Date) {
 
   const callsQuery = useQuery({
     queryKey: ["calls", weekStart?.toISOString()],
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       let query = supabase
         .from("call_calendar")
         .select(
           "*, client:profiles!call_calendar_client_id_fkey(id, full_name, avatar_url), assigned_profile:profiles!call_calendar_assigned_to_fkey(id, full_name)",
         )
-        .order("date", { ascending: true })
-        .order("time", { ascending: true });
+        .order("date", { ascending: false })
+        .order("time", { ascending: true })
+        .limit(200)
+        .abortSignal(signal);
 
       if (weekStart) {
         const weekEnd = new Date(weekStart);
@@ -244,6 +246,7 @@ export function useCalls(weekStart?: Date) {
   return {
     calls: callsQuery.data ?? [],
     isLoading: callsQuery.isLoading,
+    error: callsQuery.error,
     createCall,
     updateCall,
     deleteCall,

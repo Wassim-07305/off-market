@@ -3,7 +3,7 @@
 import { use, useState } from "react";
 import Link from "next/link";
 import { useRoutePrefix } from "@/hooks/use-route-prefix";
-import { useForm, useFormSubmissions } from "@/hooks/use-forms";
+import { useForm, useFormSubmissions, useFormMutations } from "@/hooks/use-forms";
 import { getInitials, formatDate, cn } from "@/lib/utils";
 import { copyLink } from "@/lib/clipboard";
 import {
@@ -23,7 +23,11 @@ import {
   User,
   Calendar,
   Hash,
+  BarChart2,
+  ToggleLeft,
+  ToggleRight,
 } from "lucide-react";
+import { toast } from "sonner";
 import { ExportDropdown } from "@/components/shared/export-dropdown";
 import { exportToCSV, exportTableToPDF } from "@/lib/export";
 import { motion, AnimatePresence } from "framer-motion";
@@ -39,8 +43,9 @@ export default function FormResponsesPage({
   const { data: submissions, isLoading: subsLoading } =
     useFormSubmissions(formId);
   const prefix = useRoutePrefix();
+  const { updateForm } = useFormMutations();
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<"table" | "cards">("table");
+  const [viewMode, setViewMode] = useState<"table" | "cards" | "analytics">("table");
 
   const getPublicUrl = () => {
     if (typeof window !== "undefined") {
@@ -204,16 +209,32 @@ export default function FormResponsesPage({
               <h1 className="text-xl font-semibold text-foreground">
                 {form.title}
               </h1>
-              <span
+              <button
+                onClick={async () => {
+                  const newStatus = form.status === "active" ? "closed" : "active";
+                  try {
+                    await updateForm.mutateAsync({ id: form.id, status: newStatus });
+                    toast.success(newStatus === "active" ? "Formulaire active" : "Formulaire ferme");
+                  } catch {
+                    toast.error("Erreur lors du changement de statut");
+                  }
+                }}
+                disabled={updateForm.isPending}
                 className={cn(
-                  "text-xs font-medium px-2.5 py-1 rounded-full",
+                  "text-xs font-medium px-2.5 py-1 rounded-full inline-flex items-center gap-1.5 transition-colors cursor-pointer hover:opacity-80",
                   form.status === "active"
                     ? "bg-success/10 text-success"
                     : "bg-zinc-200 text-zinc-600",
                 )}
+                title={form.status === "active" ? "Cliquer pour fermer" : "Cliquer pour activer"}
               >
+                {form.status === "active" ? (
+                  <ToggleRight className="w-3.5 h-3.5" />
+                ) : (
+                  <ToggleLeft className="w-3.5 h-3.5" />
+                )}
                 {form.status === "active" ? "Actif" : "Ferme"}
-              </span>
+              </button>
             </div>
             {form.description && (
               <p className="text-sm text-muted-foreground mt-1">
@@ -298,6 +319,18 @@ export default function FormResponsesPage({
           >
             <FileText className="w-3.5 h-3.5" />
             Fiches
+          </button>
+          <button
+            onClick={() => setViewMode("analytics")}
+            className={cn(
+              "h-8 px-3 rounded-md text-xs font-medium transition-all flex items-center gap-1.5",
+              viewMode === "analytics"
+                ? "bg-surface text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            <BarChart2 className="w-3.5 h-3.5" />
+            Analytiques
           </button>
         </div>
       )}
@@ -417,6 +450,122 @@ export default function FormResponsesPage({
                 })}
               </tbody>
             </table>
+          </div>
+        ) : viewMode === "analytics" ? (
+          /* Analytics view */
+          <div className="p-6 space-y-6">
+            <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+              <BarChart2 className="w-4 h-4 text-primary" />
+              Statistiques des reponses
+            </h3>
+            <div className="grid grid-cols-3 gap-4 mb-4">
+              <div className="bg-muted/50 rounded-lg p-4 text-center">
+                <p className="text-2xl font-bold text-foreground">{submissions.length}</p>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Reponses totales</p>
+              </div>
+              <div className="bg-muted/50 rounded-lg p-4 text-center">
+                <p className="text-2xl font-bold text-foreground">{questionFields.length}</p>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Questions</p>
+              </div>
+              <div className="bg-muted/50 rounded-lg p-4 text-center">
+                <p className="text-2xl font-bold text-foreground">
+                  {submissions.length > 0
+                    ? Math.round(
+                        (submissions.filter((s) => {
+                          const a = s.answers as Record<string, unknown>;
+                          return questionFields.every((f) => a[f.id] !== undefined && a[f.id] !== "" && a[f.id] !== null);
+                        }).length / submissions.length) * 100
+                      )
+                    : 0}%
+                </p>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Taux de completion</p>
+              </div>
+            </div>
+            {questionFields.map((field) => {
+              const answers = submissions
+                .map((s) => {
+                  const a = s.answers as Record<string, unknown>;
+                  return a[field.id];
+                })
+                .filter((v) => v !== undefined && v !== null && v !== "");
+              const total = answers.length;
+              const isChoice = ["single_select", "multi_select", "dropdown", "likert"].includes(field.field_type);
+              const isNumeric = ["rating", "nps", "scale", "number"].includes(field.field_type);
+
+              return (
+                <div key={field.id} className="bg-muted/30 rounded-xl p-4 border border-border/50">
+                  <div className="flex items-center justify-between mb-3">
+                    <p className="text-sm font-medium text-foreground">{field.label}</p>
+                    <span className="text-[10px] text-muted-foreground">{total}/{submissions.length} reponses</span>
+                  </div>
+                  {isNumeric && total > 0 ? (
+                    <div className="space-y-2">
+                      {(() => {
+                        const nums = answers.map((v) => Number(v)).filter((n) => !isNaN(n));
+                        const avg = nums.reduce((a, b) => a + b, 0) / nums.length;
+                        const min = Math.min(...nums);
+                        const max = Math.max(...nums);
+                        return (
+                          <div className="grid grid-cols-3 gap-3">
+                            <div className="text-center">
+                              <p className="text-lg font-bold text-foreground">{avg.toFixed(1)}</p>
+                              <p className="text-[10px] text-muted-foreground">Moyenne</p>
+                            </div>
+                            <div className="text-center">
+                              <p className="text-lg font-bold text-foreground">{min}</p>
+                              <p className="text-[10px] text-muted-foreground">Min</p>
+                            </div>
+                            <div className="text-center">
+                              <p className="text-lg font-bold text-foreground">{max}</p>
+                              <p className="text-[10px] text-muted-foreground">Max</p>
+                            </div>
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  ) : isChoice && total > 0 ? (
+                    <div className="space-y-1.5">
+                      {(() => {
+                        const counts: Record<string, number> = {};
+                        for (const v of answers) {
+                          const vals = field.field_type === "multi_select" ? String(v).split(",") : [String(v)];
+                          for (const val of vals) {
+                            counts[val] = (counts[val] ?? 0) + 1;
+                          }
+                        }
+                        const totalResponses = field.field_type === "multi_select"
+                          ? Object.values(counts).reduce((a, b) => a + b, 0)
+                          : total;
+                        return Object.entries(counts)
+                          .sort(([, a], [, b]) => b - a)
+                          .map(([value, count]) => {
+                            const opt = field.options?.find((o) => o.value === value);
+                            const pct = Math.round((count / totalResponses) * 100);
+                            return (
+                              <div key={value} className="space-y-0.5">
+                                <div className="flex items-center justify-between text-xs">
+                                  <span className="text-foreground">{opt?.label ?? value}</span>
+                                  <span className="text-muted-foreground">{count} ({pct}%)</span>
+                                </div>
+                                <div className="h-2 bg-muted rounded-full overflow-hidden">
+                                  <div
+                                    className="h-full rounded-full bg-gradient-to-r from-primary to-red-400 transition-all"
+                                    style={{ width: `${pct}%` }}
+                                  />
+                                </div>
+                              </div>
+                            );
+                          });
+                      })()}
+                    </div>
+                  ) : (
+                    <p className="text-xs text-muted-foreground">
+                      {total} reponse{total !== 1 ? "s" : ""} texte
+                    </p>
+                  )}
+                </div>
+              );
+            })}
           </div>
         ) : (
           /* Card view */

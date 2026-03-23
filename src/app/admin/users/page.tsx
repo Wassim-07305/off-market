@@ -38,7 +38,7 @@ export default function UsersPage() {
   const [editingRoleId, setEditingRoleId] = useState<string | null>(null);
   const [showOffboardingWizard, setShowOffboardingWizard] = useState(false);
 
-  const { users, isLoading, changeUserRole, archiveUser, restoreUser } =
+  const { users, isLoading, error: usersError, changeUserRole, archiveUser, restoreUser } =
     useUserManagement();
 
   const filtered = useMemo(() => {
@@ -251,7 +251,14 @@ export default function UsersPage() {
       )}
 
       {/* Table */}
-      {isLoading ? (
+      {usersError ? (
+        <div className="text-center py-16 border border-dashed border-border rounded-2xl">
+          <Users className="w-10 h-10 text-muted-foreground/40 mx-auto mb-3" />
+          <p className="text-sm text-muted-foreground">
+            Impossible de charger les utilisateurs. Veuillez reessayer.
+          </p>
+        </div>
+      ) : isLoading ? (
         <div className="text-center py-12 text-muted-foreground text-sm">
           Chargement...
         </div>

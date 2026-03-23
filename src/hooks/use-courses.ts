@@ -46,6 +46,7 @@ export function useCourses(status?: string) {
 
 export function useCourse(courseId: string) {
   const supabase = useSupabase();
+  const { user } = useAuth();
 
   return useQuery({
     queryKey: ["course", courseId],
@@ -60,7 +61,7 @@ export function useCourse(courseId: string) {
       if (error) throw error;
       return data as unknown as Course & { modules: (Module & { lessons: Lesson[] })[] };
     },
-    enabled: !!courseId,
+    enabled: !!courseId && !!user,
   });
 }
 

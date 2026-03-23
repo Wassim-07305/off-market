@@ -52,37 +52,37 @@ import { RoleManager } from "@/components/settings/role-manager";
 
 const NOTIFICATION_TOGGLES = [
   {
-    key: "notification_messages",
+    key: "notify_messages",
     label: "Messages",
     description: "Nouveaux messages et mentions",
   },
   {
-    key: "notification_community",
+    key: "notify_feed",
     label: "Communaute",
     description: "Activite sur le fil d'actualite",
   },
   {
-    key: "notification_calls",
+    key: "notify_calls",
     label: "Appels",
     description: "Rappels et confirmations d'appels",
   },
   {
-    key: "notification_badges",
+    key: "notify_badges",
     label: "Badges & XP",
     description: "Badges debloques et niveaux atteints",
   },
   {
-    key: "notification_coaching",
+    key: "notify_checkins",
     label: "Coaching",
     description: "Sessions et suivi coaching",
   },
   {
-    key: "notification_formations",
+    key: "notify_forms",
     label: "Formations",
     description: "Nouveaux modules et progressions",
   },
   {
-    key: "notification_system",
+    key: "notify_goals",
     label: "Systeme",
     description: "Alertes et notifications systeme",
   },
@@ -215,16 +215,18 @@ export default function SettingsPage() {
       const newUrl = url + "?t=" + Date.now();
 
       // Update profile in DB
-      const { error: updateError } = await supabase
+      const { data: updated, error: updateError } = await supabase
         .from("profiles")
         .update({ avatar_url: newUrl } as never)
-        .eq("id", user.id);
+        .eq("id", user.id)
+        .select()
+        .single();
 
       if (updateError) throw updateError;
+      if (!updated) throw new Error("Profile update returned no data");
 
       setAvatarUrl(newUrl);
       queryClient.invalidateQueries({ queryKey: ["profile"] });
-      queryClient.invalidateQueries({ queryKey: ["auth"] });
       toast.success("Photo de profil mise a jour");
     } catch (err) {
       console.error("[avatar upload]", err);
@@ -238,7 +240,7 @@ export default function SettingsPage() {
     if (!user) return;
     setSaving(true);
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from("profiles")
         .update({
           full_name: fullName,
@@ -246,12 +248,13 @@ export default function SettingsPage() {
           bio,
           leaderboard_anonymous: leaderboardAnonymous,
         } as never)
-        .eq("id", user.id);
-      if (error) {
+        .eq("id", user.id)
+        .select()
+        .single();
+      if (error || !data) {
         toast.error("Erreur lors de la sauvegarde");
       } else {
         queryClient.invalidateQueries({ queryKey: ["profile"] });
-        queryClient.invalidateQueries({ queryKey: ["auth"] });
         toast.success("Profil mis a jour");
       }
     } catch {
@@ -413,6 +416,7 @@ export default function SettingsPage() {
                 </div>
               )}
               <button
+                type="button"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={uploading}
                 className="absolute inset-0 rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer"
@@ -485,6 +489,7 @@ export default function SettingsPage() {
           </div>
 
           <button
+            type="button"
             onClick={handleSave}
             disabled={saving}
             className="h-10 px-4 rounded-xl bg-gradient-to-r from-[#AF0000] to-[#DC2626] text-white text-sm font-medium hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-50 shadow-sm shadow-[#AF0000]/20 flex items-center gap-2"
@@ -514,9 +519,9 @@ export default function SettingsPage() {
                 ? (preferences[item.key as keyof typeof preferences] as boolean)
                 : true;
               return (
-                <label
+                <div
                   key={item.key}
-                  className="flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-muted/50 transition-colors cursor-pointer"
+                  className="flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-muted/50 transition-colors"
                 >
                   <div>
                     <p className="text-sm font-medium text-foreground">
@@ -527,11 +532,12 @@ export default function SettingsPage() {
                     </p>
                   </div>
                   <button
+                    type="button"
                     role="switch"
                     aria-checked={checked}
                     onClick={() => handleToggleNotification(item.key, !checked)}
                     className={cn(
-                      "relative w-10 h-6 rounded-full transition-colors shrink-0",
+                      "relative w-10 h-6 rounded-full transition-colors shrink-0 cursor-pointer",
                       checked ? "bg-[#AF0000]" : "bg-muted-foreground/30",
                     )}
                   >
@@ -542,7 +548,7 @@ export default function SettingsPage() {
                       )}
                     />
                   </button>
-                </label>
+                </div>
               );
             })}
           </div>

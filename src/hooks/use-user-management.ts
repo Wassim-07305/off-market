@@ -13,11 +13,12 @@ export function useUserManagement() {
 
   const allUsersQuery = useQuery({
     queryKey: ["all-users"],
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       const { data, error } = await supabase
         .from("profiles")
         .select("*")
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .abortSignal(signal);
       if (error) throw error;
       return data as (Profile & {
         is_archived?: boolean;
@@ -188,6 +189,7 @@ export function useUserManagement() {
   return {
     users: allUsersQuery.data ?? [],
     isLoading: allUsersQuery.isLoading,
+    error: allUsersQuery.error,
     changeUserRole,
     archiveUser,
     restoreUser,

@@ -21,13 +21,14 @@ export function useXp() {
   const xpQuery = useQuery({
     queryKey: ["xp", user?.id],
     staleTime: 5 * 60 * 1000, // 5 min — gamification, mis a jour par mutations
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       if (!user) return { transactions: [], total: 0 };
       const { data, error } = await supabase
         .from("xp_transactions")
         .select("*")
         .eq("profile_id", user.id)
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .abortSignal(signal);
       if (error) throw error;
       const transactions = data as XpTransaction[];
       const total = transactions.reduce((sum, t) => sum + t.xp_amount, 0);
@@ -41,11 +42,12 @@ export function useXp() {
     queryKey: ["level-config"],
     enabled: !!user,
     staleTime: Infinity, // Config de niveaux — ne change jamais en cours de session
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       const { data, error } = await supabase
         .from("level_config")
         .select("*")
-        .order("min_xp", { ascending: true });
+        .order("min_xp", { ascending: true })
+        .abortSignal(signal);
       if (error) throw error;
       return data as LevelConfig[];
     },
@@ -150,6 +152,7 @@ export function useXp() {
     summary,
     transactions: xpQuery.data?.transactions ?? [],
     isLoading: xpQuery.isLoading || levelsQuery.isLoading,
+    error: xpQuery.error || levelsQuery.error,
     awardXp,
   };
 }

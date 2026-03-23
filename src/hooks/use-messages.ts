@@ -25,7 +25,8 @@ export function useMessages(channelId: string | null) {
           `*,
           sender:profiles!messages_sender_id_fkey(id, full_name, avatar_url, role),
           reactions:message_reactions(id, emoji, profile_id),
-          attachments:message_attachments(id, file_name, file_url, file_type, file_size)`,
+          attachments:message_attachments(id, file_name, file_url, file_type, file_size),
+          reply_message:messages!reply_to(id, content, content_type, sender:profiles!messages_sender_id_fkey(full_name))`,
         )
         .eq("channel_id", channelId)
         .is("deleted_at", null)
@@ -122,6 +123,22 @@ export function useMessages(channelId: string | null) {
         channelId,
       ]);
 
+      // Build optimistic reply_message from existing messages if replying
+      let replyMessage: EnrichedMessage["reply_message"] = undefined;
+      if (replyTo && previousMessages) {
+        const original = previousMessages.find((m) => m.id === replyTo);
+        if (original) {
+          replyMessage = {
+            id: original.id,
+            content: original.content,
+            content_type: original.content_type,
+            sender: original.sender
+              ? { full_name: original.sender.full_name }
+              : null,
+          };
+        }
+      }
+
       // Create optimistic message
       const optimisticMsg: EnrichedMessage = {
         id: `optimistic-${Date.now()}`,
@@ -148,6 +165,7 @@ export function useMessages(channelId: string | null) {
         },
         reactions: [],
         attachments: [],
+        reply_message: replyMessage,
       };
 
       queryClient.setQueryData<EnrichedMessage[]>(

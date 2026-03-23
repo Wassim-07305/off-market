@@ -42,7 +42,8 @@ export function useFeed(
       // Apply sort order
       switch (sortMode) {
         case "trending":
-          query = query.order("trending_score", { ascending: false });
+          // trending_score column may not exist; fetch by recency and sort client-side
+          query = query.order("created_at", { ascending: false });
           break;
         case "most_liked":
           query = query.order("likes_count", { ascending: false });
@@ -66,6 +67,7 @@ export function useFeed(
       if (error) throw error;
 
       // Fetch user's likes to mark is_liked
+      let posts: FeedPost[];
       if (user && data.length > 0) {
         const postIds = data.map((p: FeedPost) => p.id);
         const { data: likes } = await supabase
@@ -77,13 +79,20 @@ export function useFeed(
         const likedSet = new Set(
           (likes ?? []).map((l: { post_id: string }) => l.post_id),
         );
-        return data.map((p: FeedPost) => ({
+        posts = data.map((p: FeedPost) => ({
           ...p,
           is_liked: likedSet.has(p.id),
         })) as FeedPost[];
+      } else {
+        posts = data as FeedPost[];
       }
 
-      return data as FeedPost[];
+      // Client-side trending sort (DB column may not exist)
+      if (sortMode === "trending") {
+        posts.sort((a, b) => computeTrendingScore(b) - computeTrendingScore(a));
+      }
+
+      return posts;
     },
     getNextPageParam: (lastPage) => {
       if (lastPage.length < PAGE_SIZE) return undefined;

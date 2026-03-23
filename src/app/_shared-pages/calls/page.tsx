@@ -552,7 +552,7 @@ export default function CallsPage() {
   const [instantCallId, setInstantCallId] = useState<string | null>(null);
 
   const prefix = useRoutePrefix();
-  const { calls, isLoading, createCall } = useCalls();
+  const { calls, isLoading, error: callsError, createCall } = useCalls();
 
   /* ─── Filtrage ─── */
   const filteredCalls = useMemo(() => {
@@ -807,7 +807,12 @@ export default function CallsPage() {
               "0 1px 3px rgb(0 0 0 / 0.04), 0 8px 20px rgb(0 0 0 / 0.02)",
           }}
         >
-          {isLoading ? (
+          {callsError ? (
+            <div className="p-12 text-center">
+              <Phone className="w-8 h-8 text-muted-foreground/30 mx-auto mb-3" />
+              <p className="text-sm text-muted-foreground">Impossible de charger les appels. Veuillez reessayer.</p>
+            </div>
+          ) : isLoading ? (
             <div className="p-4 space-y-3">
               {Array.from({ length: 5 }).map((_, i) => (
                 <div

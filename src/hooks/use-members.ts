@@ -42,12 +42,13 @@ export function useMembers() {
     queryKey: ["members-directory"],
     enabled: !!user,
     staleTime: 60_000,
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       // Try the view first, fall back to direct profiles query if view doesn't exist
       const { data, error } = await supabase
         .from("member_stats")
         .select("*")
         .order("full_name", { ascending: true })
+        .abortSignal(signal)
         .returns<MemberStatsRow[]>();
 
       if (!error) {
@@ -67,11 +68,12 @@ export function useMembers() {
       }
 
       // Fallback: direct profiles query if view doesn't exist
-      console.warn("[useMembers] member_stats view unavailable, using fallback:", error.message);
+      console.error("[useMembers] member_stats view unavailable, using fallback:", error.message);
       const { data: profiles, error: profilesError } = await supabase
         .from("profiles")
         .select("id, full_name, avatar_url, role, bio, created_at")
         .order("full_name", { ascending: true })
+        .abortSignal(signal)
         .returns<Array<{ id: string; full_name: string; avatar_url: string | null; role: string; bio: string | null; created_at: string }>>();
 
       if (profilesError) throw profilesError;

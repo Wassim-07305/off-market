@@ -16,12 +16,13 @@ export function useStreak() {
 
   const streakQuery = useQuery({
     queryKey: ["streak", user?.id],
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       if (!user) return null;
       const { data, error } = await supabase
         .from("streaks")
         .select("*")
         .eq("profile_id", user.id)
+        .abortSignal(signal)
         .maybeSingle();
       if (error) throw error;
       return data as Streak | null;
@@ -32,7 +33,7 @@ export function useStreak() {
 
   const activityQuery = useQuery({
     queryKey: ["daily-activity", user?.id],
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       if (!user) return [];
       // Get last 30 days of activity
       const thirtyDaysAgo = new Date();
@@ -42,7 +43,8 @@ export function useStreak() {
         .select("*")
         .eq("profile_id", user.id)
         .gte("activity_date", thirtyDaysAgo.toISOString().split("T")[0])
-        .order("activity_date", { ascending: false });
+        .order("activity_date", { ascending: false })
+        .abortSignal(signal);
       if (error) throw error;
       return data as DailyActivity[];
     },
@@ -71,6 +73,7 @@ export function useStreak() {
     streak: streakQuery.data,
     recentActivity: activityQuery.data ?? [],
     isLoading: streakQuery.isLoading,
+    error: streakQuery.error,
     recordActivity,
   };
 }

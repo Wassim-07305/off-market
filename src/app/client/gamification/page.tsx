@@ -6,7 +6,7 @@ import { staggerItem } from "@/lib/animations";
 import { useXp } from "@/hooks/use-xp";
 import { useStreak } from "@/hooks/use-streaks";
 import { useBadges } from "@/hooks/use-badges";
-import { useRewards, useRedeemReward, useMyRedemptions } from "@/hooks/use-rewards";
+import { useRewards, useRedeemReward, useMyRedemptions, useXpBalance } from "@/hooks/use-rewards";
 import { useAuth } from "@/hooks/use-auth";
 import { useSupabase } from "@/hooks/use-supabase";
 import { useQuery } from "@tanstack/react-query";
@@ -26,16 +26,17 @@ import {
 
 export default function GamificationPage() {
   const { profile } = useAuth();
-  const { summary: xpSummary, isLoading: xpLoading } = useXp();
+  const { summary: xpSummary, isLoading: xpLoading, error: xpError } = useXp();
   const totalXp = xpSummary.totalXp;
   const currentLevel = xpSummary.level;
   const nextLevel = xpSummary.nextLevel;
   const progressPercent = xpSummary.progressToNext;
-  const { streak, isLoading: streakLoading } = useStreak();
-  const { allBadges, earnedBadges, earnedBadgeIds, isLoading: badgesLoading } = useBadges();
+  const { streak, isLoading: streakLoading, error: streakError } = useStreak();
+  const { allBadges, earnedBadges, earnedBadgeIds, isLoading: badgesLoading, error: badgesError } = useBadges();
   const { rewards, isLoading: rewardsLoading } = useRewards();
   const redeemReward = useRedeemReward();
   const { redemptions, isLoading: redemptionsLoading } = useMyRedemptions();
+  const { balance: xpBalance } = useXpBalance();
 
   const supabase = useSupabase();
   const [activeTab, setActiveTab] = useState<"badges" | "rewards" | "history" | "leaderboard">("badges");
@@ -71,6 +72,18 @@ export default function GamificationPage() {
   });
 
   const isLoading = xpLoading || streakLoading || badgesLoading;
+  const hasError = xpError || streakError || badgesError;
+
+  if (hasError) {
+    return (
+      <div className="space-y-6 max-w-4xl mx-auto">
+        <div className="bg-surface border border-border rounded-2xl p-12 text-center">
+          <Trophy className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
+          <p className="text-sm text-muted-foreground">Impossible de charger les donnees de gamification. Veuillez reessayer.</p>
+        </div>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -165,12 +178,17 @@ export default function GamificationPage() {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.15 }}
-        className="grid grid-cols-3 gap-3"
+        className="grid grid-cols-2 sm:grid-cols-4 gap-3"
       >
         <div className="bg-surface border border-border rounded-xl p-4 text-center">
           <Zap className="w-5 h-5 text-amber-500 mx-auto mb-1" />
           <p className="text-lg font-bold text-foreground">{totalXp}</p>
           <p className="text-[10px] text-muted-foreground">XP Total</p>
+        </div>
+        <div className="bg-surface border border-border rounded-xl p-4 text-center">
+          <Zap className="w-5 h-5 text-emerald-500 mx-auto mb-1" />
+          <p className="text-lg font-bold text-foreground">{xpBalance}</p>
+          <p className="text-[10px] text-muted-foreground">XP Disponible</p>
         </div>
         <div className="bg-surface border border-border rounded-xl p-4 text-center">
           <Trophy className="w-5 h-5 text-primary mx-auto mb-1" />
@@ -270,7 +288,7 @@ export default function GamificationPage() {
               </div>
             ) : (
               rewards.map((reward) => {
-                const canAfford = totalXp >= reward.cost_xp;
+                const canAfford = xpBalance >= reward.cost_xp;
                 const outOfStock = (reward.stock ?? Infinity) <= 0;
                 return (
                   <div

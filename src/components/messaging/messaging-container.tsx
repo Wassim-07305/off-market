@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useCallback, useState } from "react";
+import { useEffect, useCallback, useState, useRef } from "react";
+import { useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { useChannels } from "@/hooks/use-channels";
 import { useMessages } from "@/hooks/use-messages";
@@ -19,6 +20,8 @@ type InboxMode = "internal" | "external";
 
 export default function MessagingContainer() {
   const [inboxMode, setInboxMode] = useState<InboxMode>("internal");
+  const searchParams = useSearchParams();
+  const dmTargetHandled = useRef(false);
   const { user, isStaff } = useAuth();
   const queryClient = useQueryClient();
   const {
@@ -87,6 +90,27 @@ export default function MessagingContainer() {
       markAsRead();
     }
   }, [activeChannelId, markAsRead]);
+
+  // Open DM from ?dm=userId query param (e.g. from contact detail page)
+  useEffect(() => {
+    const dmUserId = searchParams.get("dm");
+    if (!dmUserId || !user || channelsLoading || dmTargetHandled.current) return;
+    dmTargetHandled.current = true;
+
+    // Check if there's already a DM channel with this user
+    const existingDm = dmChannels.find(
+      (ch) => (ch as { dmPartner?: { id: string } }).dmPartner?.id === dmUserId,
+    );
+
+    if (existingDm) {
+      setActiveChannelId(existingDm.id);
+    } else {
+      // Create a new DM channel
+      createDMChannel.mutateAsync(dmUserId).then((ch) => {
+        if (ch) setActiveChannelId(ch.id);
+      });
+    }
+  }, [searchParams, user, channelsLoading, dmChannels, setActiveChannelId, createDMChannel]);
 
   const handleSelectChannel = useCallback(
     (id: string) => {

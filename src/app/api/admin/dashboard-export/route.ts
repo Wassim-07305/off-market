@@ -388,10 +388,10 @@ export async function GET(req: NextRequest) {
     const { data: roles } = await supabase
       .from("user_roles")
       .select("role")
-      .eq("user_id", user.id)
-      .single();
+      .eq("user_id", user.id);
 
-    if (!roles || roles.role !== "admin") {
+    const userRoles = roles?.map((r) => r.role) ?? [];
+    if (!userRoles.includes("admin")) {
       return NextResponse.json({ error: "Acces reserve aux administrateurs" }, { status: 403 });
     }
 

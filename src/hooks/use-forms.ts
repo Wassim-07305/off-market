@@ -105,8 +105,12 @@ export function useFormMutations() {
         .update(updates as never)
         .eq("id", id);
       if (error) throw error;
+      return id;
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["forms"] }),
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["forms"] });
+      queryClient.invalidateQueries({ queryKey: ["form", variables.id] });
+    },
   });
 
   const saveFields = useMutation({

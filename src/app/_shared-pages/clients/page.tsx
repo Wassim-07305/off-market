@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import {
   Search,
   Download,
+  Upload,
   Plus,
   ChevronRight,
   Tag,
@@ -27,6 +28,7 @@ import {
   CheckSquare,
 } from "lucide-react";
 import { AddClientModal } from "@/components/crm/add-client-modal";
+import { CsvImportModal } from "@/components/crm/csv-import-modal";
 import { PageTransition } from "@/components/ui/page-transition";
 import { HeroMetric } from "@/components/dashboard/hero-metric";
 import dynamic from "next/dynamic";
@@ -44,6 +46,7 @@ export default function ClientsPage() {
   const [search, setSearch] = useState("");
   const [activeTag, setActiveTag] = useState("all");
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
   const [selectedStudentId, setSelectedStudentId] = useState<string | null>(
     null,
   );
@@ -249,6 +252,13 @@ export default function ClientsPage() {
           </div>
           <div className="flex items-center gap-2">
             <button
+              onClick={() => setShowImportModal(true)}
+              className="h-8 px-3 rounded-lg border border-border text-[13px] text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-all duration-200 flex items-center gap-1.5"
+            >
+              <Upload className="w-3.5 h-3.5" />
+              Import CSV
+            </button>
+            <button
               onClick={handleExportCSV}
               className="h-8 px-3 rounded-lg border border-border text-[13px] text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-all duration-200 flex items-center gap-1.5"
             >
@@ -303,7 +313,7 @@ export default function ClientsPage() {
               className="w-full h-9 pl-9 pr-4 bg-muted/50 rounded-lg text-sm text-foreground placeholder:text-muted-foreground/60 border-0 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all duration-200"
             />
           </div>
-          <div className="flex items-center gap-1 overflow-x-auto pb-1">
+          <div className="flex items-center gap-1 flex-wrap pb-1">
             {[
               { value: "all", label: "Tous", dot: "" },
               { value: "green", label: "En bonne voie", dot: "bg-emerald-500" },
@@ -614,6 +624,11 @@ export default function ClientsPage() {
         <AddClientModal
           open={showAddModal}
           onClose={() => setShowAddModal(false)}
+        />
+
+        <CsvImportModal
+          open={showImportModal}
+          onClose={() => setShowImportModal(false)}
         />
 
         <AnimatePresence>
