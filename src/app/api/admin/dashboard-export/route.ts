@@ -385,13 +385,13 @@ export async function GET(req: NextRequest) {
     }
 
     // Check admin role
-    const { data: roles } = await supabase
-      .from("user_roles")
+    const { data: profile } = await supabase
+      .from("profiles")
       .select("role")
-      .eq("user_id", user.id);
+      .eq("id", user.id)
+      .single();
 
-    const userRoles = roles?.map((r) => r.role) ?? [];
-    if (!userRoles.includes("admin")) {
+    if (profile?.role !== "admin") {
       return NextResponse.json({ error: "Acces reserve aux administrateurs" }, { status: 403 });
     }
 

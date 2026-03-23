@@ -134,7 +134,7 @@ export function useCloserCalls() {
       const { data, error } = await supabase
         .from("closer_calls")
         .select(
-          "*, client:profiles!closer_calls_client_id_fkey(id, full_name, avatar_url), closer:profiles!closer_calls_closer_id_fkey(id, full_name, avatar_url), setter:profiles!closer_calls_setter_id_fkey(id, full_name, avatar_url)",
+          "*, client:profiles!closer_calls_contact_id_fkey(id, full_name, avatar_url), closer:profiles!closer_calls_closer_id_fkey(id, full_name, avatar_url), setter:profiles!closer_calls_setter_id_fkey(id, full_name, avatar_url)",
         )
         .order("date", { ascending: false });
       if (error) throw error;

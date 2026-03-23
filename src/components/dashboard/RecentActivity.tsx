@@ -13,7 +13,7 @@ const typeConfig: Record<string, { icon: typeof Activity; color: string }> = {
 
 export function RecentActivity() {
   const { notifications } = useNotificationStore();
-  const recentItems = notifications.slice(0, 8);
+  const recentItems = (notifications ?? []).slice(0, 8);
 
   return (
     <div className="rounded-2xl border border-border/40 bg-surface p-5">
