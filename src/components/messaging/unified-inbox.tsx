@@ -380,7 +380,7 @@ export function UnifiedInbox() {
         {selectedChatId && selectedChat ? (
           <>
             {/* Chat header */}
-            <div className="h-14 border-b border-border/40 flex items-center px-4 gap-3">
+            <div className="h-12 sm:h-14 border-b border-border/40 flex items-center px-3 sm:px-4 gap-2 sm:gap-3 shrink-0">
               {/* Mobile back button */}
               <button
                 onClick={() => setMobileChatOpen(false)}
@@ -395,7 +395,7 @@ export function UnifiedInbox() {
                 const headerAvatar = mainAttendee?.profile_picture;
                 if (headerAvatar) {
                   return (
-                    <div className="w-9 h-9 rounded-full bg-muted flex items-center justify-center shrink-0 overflow-hidden">
+                    <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-muted flex items-center justify-center shrink-0 overflow-hidden">
                       <Image
                         src={headerAvatar}
                         alt=""
@@ -410,8 +410,8 @@ export function UnifiedInbox() {
                 if (selectedAccount) {
                   const Icon = getPlatformIcon(selectedAccount.type);
                   return (
-                    <div className={cn("w-9 h-9 rounded-full flex items-center justify-center shrink-0", getPlatformBg(selectedAccount.type))}>
-                      <Icon className={cn("w-4 h-4", getPlatformColor(selectedAccount.type))} />
+                    <div className={cn("w-7 h-7 sm:w-9 sm:h-9 rounded-full flex items-center justify-center shrink-0", getPlatformBg(selectedAccount.type))}>
+                      <Icon className={cn("w-3.5 h-3.5 sm:w-4 sm:h-4", getPlatformColor(selectedAccount.type))} />
                     </div>
                   );
                 }
@@ -444,7 +444,7 @@ export function UnifiedInbox() {
             </div>
 
             {/* Messages area */}
-            <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
+            <div className="flex-1 overflow-y-auto px-2.5 sm:px-4 py-3 sm:py-4 space-y-2 sm:space-y-3">
               {messagesLoading ? (
                 <div className="flex items-center justify-center py-8">
                   <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
@@ -483,14 +483,14 @@ export function UnifiedInbox() {
                     >
                       {/* Avatar */}
                       {!isSelf && (
-                        <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center shrink-0 overflow-hidden">
+                        <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-muted flex items-center justify-center shrink-0 overflow-hidden">
                           {avatar ? (
                             <Image
                               src={avatar}
                               alt=""
                               width={32}
                               height={32}
-                              className="w-8 h-8 rounded-full object-cover"
+                              className="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover"
                               unoptimized
                             />
                           ) : (
@@ -502,7 +502,7 @@ export function UnifiedInbox() {
                       {/* Bubble */}
                       <div
                         className={cn(
-                          "max-w-[70%] rounded-lg px-3.5 py-2",
+                          "max-w-[80%] sm:max-w-[70%] rounded-lg px-2.5 py-1.5 sm:px-3.5 sm:py-2",
                           isSelf
                             ? "bg-primary text-primary-foreground rounded-tr-sm"
                             : "bg-surface text-foreground rounded-tl-sm",
@@ -535,15 +535,15 @@ export function UnifiedInbox() {
             </div>
 
             {/* Message input */}
-            <div className="border-t border-border/40 px-4 py-3">
-              <div className="flex items-end gap-2">
+            <div className="border-t border-border/40 px-2.5 sm:px-4 py-2 sm:py-3 shrink-0">
+              <div className="flex items-end gap-1.5 sm:gap-2">
                 <textarea
                   value={messageInput}
                   onChange={(e) => setMessageInput(e.target.value)}
                   onKeyDown={handleKeyDown}
                   placeholder="Ecrire un message..."
                   rows={1}
-                  className="flex-1 resize-none bg-muted/50 border border-border/60 rounded-xl px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary min-h-[40px] max-h-[120px]"
+                  className="flex-1 resize-none bg-muted/50 border border-border/60 rounded-xl px-3 py-2 sm:px-3.5 sm:py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary min-h-[36px] sm:min-h-[40px] max-h-[100px] sm:max-h-[120px]"
                   style={{
                     height: "auto",
                     overflow: messageInput.includes("\n") ? "auto" : "hidden",
@@ -554,7 +554,7 @@ export function UnifiedInbox() {
                   disabled={!messageInput.trim() || sendMessage.isPending}
                   loading={sendMessage.isPending}
                   size="sm"
-                  className="rounded-xl h-10 w-10 p-0"
+                  className="rounded-xl h-9 w-9 sm:h-10 sm:w-10 p-0"
                   icon={<Send className="w-4 h-4" />}
                 />
               </div>
