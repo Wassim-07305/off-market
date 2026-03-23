@@ -52,7 +52,45 @@ export async function GET(request: NextRequest) {
     }
 
     const data = await res.json();
-    return NextResponse.json(data);
+    const chats = (data.items ?? data ?? []) as {
+      id: string;
+      name?: string;
+      [key: string]: unknown;
+    }[];
+
+    // Enrich: fetch attendees for each chat in parallel to get real names
+    const enriched = await Promise.all(
+      chats.map(async (chat) => {
+        try {
+          const attUrl = `${UNIPILE_BASE}/api/v1/chats/${encodeURIComponent(chat.id)}/attendees`;
+          const attRes = await fetch(attUrl, {
+            headers: { "X-API-KEY": apiKey },
+          });
+          if (!attRes.ok) return chat;
+          const attData = await attRes.json();
+          const attendees = (attData.items ?? attData ?? []) as {
+            id: string;
+            display_name?: string;
+            name?: string;
+            is_self?: boolean;
+          }[];
+
+          // Find the other person (not self)
+          const other = attendees.find((a) => !a.is_self);
+          const otherName = other?.display_name ?? other?.name;
+
+          return {
+            ...chat,
+            name: chat.name || otherName || "Conversation",
+            _attendee_id: other?.id ?? null,
+          };
+        } catch {
+          return chat;
+        }
+      }),
+    );
+
+    return NextResponse.json({ items: enriched });
   } catch (error) {
     console.error("Unipile chats error:", error);
     return NextResponse.json(

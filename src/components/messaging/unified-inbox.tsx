@@ -278,6 +278,9 @@ export function UnifiedInbox() {
             filteredChats.map((chat: UnipileChat) => {
               const isActive = chat.id === selectedChatId;
               const chatDisplayName = chat.name || "Conversation";
+              const chatAvatarUrl = chat._attendee_id
+                ? `/api/unipile/attendee-picture/${chat._attendee_id}`
+                : null;
               return (
                 <button
                   key={chat.id}
@@ -294,9 +297,20 @@ export function UnifiedInbox() {
                 >
                   {/* Avatar */}
                   <div className="w-9 h-9 rounded-full bg-muted flex items-center justify-center shrink-0 overflow-hidden">
-                    <span className="text-xs font-medium text-muted-foreground">
-                      {getInitials(chatDisplayName)}
-                    </span>
+                    {chatAvatarUrl ? (
+                      <Image
+                        src={chatAvatarUrl}
+                        alt=""
+                        width={36}
+                        height={36}
+                        className="w-full h-full object-cover"
+                        unoptimized
+                      />
+                    ) : (
+                      <span className="text-xs font-medium text-muted-foreground">
+                        {getInitials(chatDisplayName)}
+                      </span>
+                    )}
                   </div>
 
                   {/* Content */}
