@@ -18,7 +18,6 @@ import { AiSlashCommands, isAiSlashCommand } from "./ai-slash-commands";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
-import Underline from "@tiptap/extension-underline";
 import { Extension } from "@tiptap/core";
 import {
   Send,
@@ -247,7 +246,6 @@ export function ChatInput({
       Placeholder.configure({
         placeholder: `Message ${channelName}...`,
       }),
-      Underline,
       EnterToSend,
     ],
     editorProps: {
