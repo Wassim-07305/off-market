@@ -329,11 +329,12 @@ function ClientRow({
   onReassign,
   onUnassign,
 }: {
-  client: Profile;
+  client: Profile | null;
   details?: StudentDetail;
   onReassign?: (clientId: string, clientName: string) => void;
   onUnassign?: (clientId: string) => void;
 }) {
+  if (!client) return null;
   const flag = details?.flag ?? "green";
   const flagColors: Record<string, string> = {
     green: "bg-emerald-500",

@@ -178,7 +178,7 @@ export function useCoachesWithStats() {
           };
           coachMap.set(a.coach_id, entry);
         }
-        entry.clients.push(a.client);
+        if (a.client) entry.clients.push(a.client);
       }
 
       // 5. Compute metrics
