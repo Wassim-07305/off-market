@@ -187,6 +187,37 @@ export function useMessages(channelId: string | null) {
       scrollLockRef.current = false;
     },
     onSuccess: async (_data, variables) => {
+      // Send push notifications to other channel members
+      if (channelId && user) {
+        try {
+          const { data: members } = await supabase
+            .from("channel_members" as never)
+            .select("user_id" as never)
+            .eq("channel_id" as never, channelId as never)
+            .neq("user_id" as never, user.id as never);
+          const recipientIds = (members ?? []).map((m: { user_id: string }) => m.user_id);
+          if (recipientIds.length > 0) {
+            const senderName = user.user_metadata?.full_name ?? "Quelqu'un";
+            const preview = variables.content.length > 80
+              ? variables.content.slice(0, 80) + "..."
+              : variables.content;
+            fetch("/api/notifications/push", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                userIds: recipientIds,
+                title: `${senderName}`,
+                body: preview,
+                url: `/admin/messaging`,
+                tag: `msg-${channelId}`,
+              }),
+            }).catch(() => {});
+          }
+        } catch {
+          // Push notification is best-effort, never block
+        }
+      }
+
       // Auto-respond when @Alexia is mentioned
       if (channelId && containsAlexiaMention(variables.content)) {
         try {

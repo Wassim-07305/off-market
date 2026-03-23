@@ -91,11 +91,9 @@ export function usePushNotifications() {
           {
             user_id: user.id,
             endpoint: sub.endpoint,
-            keys: {
-              p256dh: sub.keys?.p256dh ?? "",
-              auth: sub.keys?.auth ?? "",
-              user_agent: navigator.userAgent,
-            },
+            p256dh: sub.keys?.p256dh ?? "",
+            auth: sub.keys?.auth ?? "",
+            user_agent: navigator.userAgent,
           } as never,
           { onConflict: "user_id,endpoint" as never },
         );
