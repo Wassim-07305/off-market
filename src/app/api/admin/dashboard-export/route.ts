@@ -60,28 +60,26 @@ async function fetchDashboardKPIs(): Promise<DashboardKPIs> {
   const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString();
   const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59).toISOString();
 
-  // Revenue this month
-  const { data: revenueThisMonthData } = await supabase
-    .from("financial_entries")
-    .select("amount")
-    .eq("type", "revenue")
-    .gte("date", startOfMonth);
+  // Revenue this month (from invoices)
+  const { data: invoicesThisMonth } = await supabase
+    .from("invoices")
+    .select("total, status")
+    .gte("created_at", startOfMonth);
 
-  const revenueThisMonth = (revenueThisMonthData ?? []).reduce(
-    (sum, r) => sum + (r.amount ?? 0),
+  const revenueThisMonth = (invoicesThisMonth ?? []).reduce(
+    (sum, r) => sum + (Number(r.total) || 0),
     0,
   );
 
   // Revenue last month
-  const { data: revenueLastMonthData } = await supabase
-    .from("financial_entries")
-    .select("amount")
-    .eq("type", "revenue")
-    .gte("date", startOfLastMonth)
-    .lte("date", endOfLastMonth);
+  const { data: invoicesLastMonth } = await supabase
+    .from("invoices")
+    .select("total")
+    .gte("created_at", startOfLastMonth)
+    .lte("created_at", endOfLastMonth);
 
-  const revenueLastMonth = (revenueLastMonthData ?? []).reduce(
-    (sum, r) => sum + (r.amount ?? 0),
+  const revenueLastMonth = (invoicesLastMonth ?? []).reduce(
+    (sum, r) => sum + (Number(r.total) || 0),
     0,
   );
 
@@ -90,38 +88,46 @@ async function fetchDashboardKPIs(): Promise<DashboardKPIs> {
       ? Math.round(((revenueThisMonth - revenueLastMonth) / revenueLastMonth) * 100)
       : 0;
 
-  // Cash collected (paid invoices this month)
+  // Cash collected (paid invoices)
   const { data: paidInvoices } = await supabase
-    .from("financial_entries")
-    .select("amount")
-    .eq("type", "revenue")
-    .eq("is_paid", true)
-    .gte("date", startOfMonth);
+    .from("invoices")
+    .select("total")
+    .eq("status", "paid");
 
   const cashCollected = (paidInvoices ?? []).reduce(
-    (sum, r) => sum + (r.amount ?? 0),
+    (sum, r) => sum + (Number(r.total) || 0),
     0,
   );
 
-  // Cash invoiced (all invoices this month)
-  const cashInvoiced = revenueThisMonth;
+  // Cash invoiced (all non-draft invoices)
+  const { data: allInvoices } = await supabase
+    .from("invoices")
+    .select("total")
+    .neq("status", "draft");
 
-  // Students
+  const cashInvoiced = (allInvoices ?? []).reduce(
+    (sum, r) => sum + (Number(r.total) || 0),
+    0,
+  );
+
+  // Students (from profiles with role client/prospect)
   const { count: totalStudents } = await supabase
-    .from("clients")
+    .from("profiles")
     .select("id", { count: "exact", head: true })
-    .eq("stage", "active");
+    .in("role", ["client", "prospect"]);
 
   const { count: newStudentsThisMonth } = await supabase
-    .from("clients")
+    .from("profiles")
     .select("id", { count: "exact", head: true })
+    .in("role", ["client", "prospect"])
     .gte("created_at", startOfMonth);
 
+  // Churned = clients with flag "churned" in client_flags
   const { count: churnedStudents } = await supabase
-    .from("clients")
+    .from("client_flags")
     .select("id", { count: "exact", head: true })
-    .eq("status", "churned")
-    .gte("updated_at", startOfMonth);
+    .eq("flag", "churned")
+    .gte("created_at", startOfMonth);
 
   const total = totalStudents ?? 0;
   const churned = churnedStudents ?? 0;
@@ -272,13 +278,8 @@ ET
 0.95 0.95 0.96 rg
 50 ${y - 2} 495 -18 re f
 0 0 0 rg
-BT
-/F1 9 Tf
-60 ${y} Td
-(Metrique) Tj
-350 ${y} Td
-(Valeur) Tj
-ET
+BT /F1 9 Tf 60 ${y} Td (Metrique) Tj ET
+BT /F1 9 Tf 380 ${y} Td (Valeur) Tj ET
 `;
   y -= 25;
 
@@ -294,14 +295,8 @@ ET
 `;
     }
     stream += `
-BT
-/F2 9 Tf
-60 ${y - 4} Td
-(${escapePDF(m.label)}) Tj
-/F1 9 Tf
-350 ${y - 4} Td
-(${escapePDF(m.value)}) Tj
-ET
+BT /F2 9 Tf 60 ${y - 4} Td (${escapePDF(m.label)}) Tj ET
+BT /F1 9 Tf 380 ${y - 4} Td (${escapePDF(m.value)}) Tj ET
 `;
     y -= 20;
   }
