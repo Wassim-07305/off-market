@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
     // ── Fetch invoice ────────────────────────────
     const { data: invoice, error: invoiceError } = await supabase
       .from("invoices")
-      .select("*, client:profiles(id, full_name, email)")
+      .select("*, client:profiles!invoices_client_id_fkey(id, full_name, email)")
       .eq("id", invoiceId)
       .single();
 

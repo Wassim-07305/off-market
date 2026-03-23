@@ -43,11 +43,52 @@ export async function callOpenRouter(
     });
   }
 
+  // ── Anthropic direct (si ANTHROPIC_API_KEY) ──────────────────────
+  if (process.env.ANTHROPIC_API_KEY) {
+    const allMessages = options.messages.map((m) => ({
+      role: m.role,
+      content: m.content,
+    }));
+
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "x-api-key": process.env.ANTHROPIC_API_KEY,
+        "anthropic-version": "2023-06-01",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: options.maxTokens ?? 4096,
+        system: options.system ?? undefined,
+        messages: allMessages,
+        temperature: options.temperature,
+      }),
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      console.error("[Anthropic] API error:", res.status, errorData);
+      throw new Error(
+        `Anthropic API error: ${res.status} — ${JSON.stringify(errorData)}`,
+      );
+    }
+
+    const data = await res.json();
+    const text = data.content?.[0]?.text ?? "";
+    const usage = {
+      input_tokens: data.usage?.input_tokens ?? 0,
+      output_tokens: data.usage?.output_tokens ?? 0,
+    };
+
+    return { text, usage };
+  }
+
   // ── Fallback : OpenRouter ─────────────────────────────────────────
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
     throw new Error(
-      "Aucune clé IA configurée. Ajoutez GROQ_API_KEY ou OPENROUTER_API_KEY dans votre .env.local",
+      "Aucune clé IA configurée. Ajoutez GROQ_API_KEY, ANTHROPIC_API_KEY ou OPENROUTER_API_KEY dans votre .env.local",
     );
   }
 

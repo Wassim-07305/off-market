@@ -29,7 +29,7 @@ export function useContracts(options: UseContractsOptions = {}) {
     queryFn: async () => {
       let query = supabase
         .from("contracts")
-        .select("*, client:profiles(id, full_name, email, avatar_url)")
+        .select("*, client:profiles!contracts_client_id_fkey(id, full_name, email, avatar_url)")
         .order("created_at", { ascending: false })
         .limit(limit);
 

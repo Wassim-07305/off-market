@@ -30,7 +30,7 @@ export function useInvoices(options: UseInvoicesOptions = {}) {
     queryFn: async () => {
       let query = supabase
         .from("invoices")
-        .select("*, client:profiles(id, full_name, email, avatar_url), contract:contracts(id, title)")
+        .select("*, client:profiles!invoices_client_id_fkey(id, full_name, email, avatar_url), contract:contracts(id, title)")
         .order("created_at", { ascending: false })
         .limit(limit);
 
