@@ -31,7 +31,6 @@ export async function GET(request: NextRequest) {
     .from("google_calendar_tokens")
     .select("*")
     .eq("user_id", user.id)
-    .eq("is_active", true)
     .single();
 
   if (tokenError || !tokenRow) {
@@ -45,8 +44,8 @@ export async function GET(request: NextRequest) {
   oauth2Client.setCredentials({
     access_token: tokenRow.access_token,
     refresh_token: tokenRow.refresh_token,
-    expiry_date: tokenRow.token_expiry
-      ? new Date(tokenRow.token_expiry).getTime()
+    expiry_date: tokenRow.expires_at
+      ? new Date(tokenRow.expires_at).getTime()
       : undefined,
   });
 
@@ -57,9 +56,9 @@ export async function GET(request: NextRequest) {
       .from("google_calendar_tokens")
       .update({
         access_token: newTokens.access_token ?? tokenRow.access_token,
-        token_expiry: newTokens.expiry_date
+        expires_at: newTokens.expiry_date
           ? new Date(newTokens.expiry_date).toISOString()
-          : tokenRow.token_expiry,
+          : tokenRow.expires_at,
         ...(newTokens.refresh_token
           ? { refresh_token: newTokens.refresh_token }
           : {}),
@@ -104,7 +103,7 @@ export async function GET(request: NextRequest) {
       const admin = createAdminClient();
       await admin
         .from("google_calendar_tokens")
-        .update({ is_active: false })
+        .delete()
         .eq("user_id", user.id);
       return NextResponse.json(
         { error: "Token Google revoque. Veuillez reconnecter." },
