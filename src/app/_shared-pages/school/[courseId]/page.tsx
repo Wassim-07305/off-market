@@ -604,6 +604,30 @@ export default function CourseViewPage({
                 </div>
               </div>
 
+              {/* Quiz */}
+              {selectedLesson.content_type === "quiz" &&
+                (selectedLesson.content as unknown as QuizConfig)?.questions && (
+                  <div className="mt-6">
+                    <QuizPlayer
+                      lessonId={selectedLesson.id}
+                      config={selectedLesson.content as unknown as QuizConfig}
+                      onComplete={(passed) => {
+                        if (passed) {
+                          markComplete.mutate(selectedLesson.id);
+                          toast.success("Quiz reussi ! Leçon marquee comme terminee.");
+                        }
+                      }}
+                    />
+                  </div>
+                )}
+
+              {/* Quiz/Exercise stats (staff only) */}
+              {isStaff && selectedLesson.content_type === "quiz" && (
+                <div className="mt-4">
+                  <QuizExerciseStats lessonId={selectedLesson.id} />
+                </div>
+              )}
+
               {/* HTML content — admin-authored, stored in DB */}
               {htmlContent && (
                 <div
