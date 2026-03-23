@@ -49,6 +49,7 @@ import { useAiConsent } from "@/hooks/use-ai-consent";
 import { BrandingSettings } from "@/components/settings/branding-settings";
 import { ApiSettings } from "@/components/settings/api-settings";
 import { RoleManager } from "@/components/settings/role-manager";
+import { IntegrationSettings } from "@/components/settings/integration-settings";
 
 const NOTIFICATION_TOGGLES = [
   {
@@ -661,6 +662,9 @@ export default function SettingsPage() {
             <RoleManager />
           </div>
         )}
+
+        {/* Integrations (admin only) */}
+        {isAdmin && <IntegrationSettings />}
 
         {/* Security */}
         <div className="bg-surface rounded-2xl border border-border p-6 space-y-4 transition-all duration-200 hover:shadow-md hover:shadow-zinc-200/50">
