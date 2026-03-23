@@ -192,10 +192,10 @@ export function useMessages(channelId: string | null) {
         try {
           const { data: members } = await supabase
             .from("channel_members" as never)
-            .select("user_id" as never)
+            .select("profile_id" as never)
             .eq("channel_id" as never, channelId as never)
-            .neq("user_id" as never, user.id as never);
-          const recipientIds = (members ?? []).map((m: { user_id: string }) => m.user_id);
+            .neq("profile_id" as never, user.id as never);
+          const recipientIds = (members ?? []).map((m: { profile_id: string }) => m.profile_id);
           if (recipientIds.length > 0) {
             const senderName = user.user_metadata?.full_name ?? "Quelqu'un";
             const preview = variables.content.length > 80
