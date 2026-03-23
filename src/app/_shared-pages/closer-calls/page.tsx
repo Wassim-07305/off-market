@@ -368,7 +368,7 @@ function CloserCallFormModal({
 
   useEffect(() => {
     if (editCall) {
-      setClientId(editCall.client_id);
+      setClientId(editCall.contact_id ?? editCall.client_id ?? "");
       setCloserId(editCall.closer_id ?? "");
       setSetterId(editCall.setter_id ?? "");
       setDate(editCall.date);

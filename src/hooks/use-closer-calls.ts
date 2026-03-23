@@ -94,7 +94,8 @@ async function generateCommission(
 
 export interface CloserCall {
   id: string;
-  client_id: string;
+  contact_id: string;
+  client_id?: string;
   lead_id: string | null;
   closer_id: string | null;
   setter_id: string | null;
@@ -134,11 +135,11 @@ export function useCloserCalls() {
       const { data, error } = await supabase
         .from("closer_calls")
         .select(
-          "*, client:profiles!closer_calls_contact_id_fkey(id, full_name, avatar_url), closer:profiles!closer_calls_closer_id_fkey(id, full_name, avatar_url), setter:profiles!closer_calls_setter_id_fkey(id, full_name, avatar_url)",
+          "id, contact_id, closer_id, setter_id, lead_id, date, status, revenue, nombre_paiements, link, debrief, notes, created_at, client:profiles!closer_calls_contact_id_fkey(id, full_name, avatar_url), closer:profiles!closer_calls_closer_id_fkey(id, full_name, avatar_url), setter:profiles!closer_calls_setter_id_fkey(id, full_name, avatar_url)",
         )
         .order("date", { ascending: false });
       if (error) throw error;
-      return data as CloserCall[];
+      return data as unknown as CloserCall[];
     },
     enabled: !!user,
   });
@@ -157,10 +158,12 @@ export function useCloserCalls() {
       debrief?: string | null;
       notes?: string | null;
     }) => {
+      const { client_id, ...rest } = call;
       const payload = {
-        ...call,
+        ...rest,
+        contact_id: client_id ?? null,
         closer_id: call.closer_id ?? user?.id,
-        status: call.status ?? "non_close",
+        status: call.status ?? "pending",
         revenue: call.revenue ?? 0,
         nombre_paiements: call.nombre_paiements ?? 0,
       };
