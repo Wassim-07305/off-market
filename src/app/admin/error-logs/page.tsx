@@ -24,6 +24,7 @@ import {
   CheckSquare,
   Square,
   Archive,
+  FileDown,
 } from "lucide-react";
 
 interface ErrorLog {
@@ -176,6 +177,56 @@ export default function ErrorLogsPage() {
 
   const unresolvedCount = errors.filter((e) => !e.resolved).length;
 
+  const exportMarkdown = () => {
+    const unresolved = errors.filter((e) => !e.resolved);
+    if (unresolved.length === 0) {
+      toast.success("Aucune erreur non resolue a exporter");
+      return;
+    }
+
+    // Group by page
+    const byPage = new Map<string, ErrorLog[]>();
+    for (const e of unresolved) {
+      const page = e.page || "Inconnue";
+      const list = byPage.get(page) ?? [];
+      list.push(e);
+      byPage.set(page, list);
+    }
+
+    let md = `# Error Report\n\n`;
+    md += `> Genere le ${new Date().toLocaleString("fr-FR")} — ${unresolved.length} erreur(s) non resolue(s)\n\n`;
+
+    for (const [page, errs] of byPage) {
+      md += `## Page: \`${page}\`\n\n`;
+      for (const e of errs) {
+        md += `### ${e.source.toUpperCase()} | ${e.severity} | ${new Date(e.created_at).toLocaleString("fr-FR")}\n\n`;
+        md += `**Message:** \`${e.message}\`\n\n`;
+        if (e.route && e.route !== e.page) md += `**Route:** \`${e.route}\`\n\n`;
+        if (e.user_email) md += `**User:** ${e.user_email} (${e.user_role ?? "?"})\n\n`;
+        if (e.viewport) md += `**Viewport:** ${e.viewport}\n\n`;
+        if (e.stack) {
+          md += `**Stack trace:**\n\`\`\`\n${e.stack}\n\`\`\`\n\n`;
+        }
+        if (e.component_stack) {
+          md += `**Component stack:**\n\`\`\`\n${e.component_stack}\n\`\`\`\n\n`;
+        }
+        if (e.metadata && Object.keys(e.metadata).length > 0) {
+          md += `**Metadata:**\n\`\`\`json\n${JSON.stringify(e.metadata, null, 2)}\n\`\`\`\n\n`;
+        }
+        md += `---\n\n`;
+      }
+    }
+
+    const blob = new Blob([md], { type: "text/markdown" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `error-report-${new Date().toISOString().split("T")[0]}.md`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success(`${unresolved.length} erreur(s) exportee(s)`);
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -191,6 +242,13 @@ export default function ErrorLogsPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <button
+            onClick={exportMarkdown}
+            className="h-9 px-3 rounded-lg border border-border text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all flex items-center gap-1.5"
+          >
+            <FileDown className="w-3.5 h-3.5" />
+            Exporter .md
+          </button>
           <button
             onClick={() => refetch()}
             className="h-9 px-3 rounded-lg border border-border text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all flex items-center gap-1.5"
