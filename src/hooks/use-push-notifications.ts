@@ -5,6 +5,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
 import { toast } from "sonner";
+import { logError } from "@/lib/error-logger";
 
 const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? "";
 
@@ -106,12 +107,26 @@ export function usePushNotifications() {
       queryClient.invalidateQueries({ queryKey: ["push-subscription"] });
     },
     onError: (err: Error) => {
+      logError({
+        message: `[Push Subscribe] ${err.message}`,
+        stack: err.stack ?? null,
+        source: "manual",
+        severity: "error",
+        page: window.location.pathname,
+        metadata: {
+          vapidKeyPresent: !!VAPID_PUBLIC_KEY,
+          isSupported,
+          permission,
+          errorDetails: String(err),
+        },
+      });
+
       if (err.message === "Permission refusee") {
         toast.error(
           "Tu as refuse les notifications. Active-les dans les paramètres de ton navigateur.",
         );
       } else {
-        toast.error("Erreur lors de l'activation des notifications push");
+        toast.error(`Erreur push: ${err.message}`);
       }
     },
   });
