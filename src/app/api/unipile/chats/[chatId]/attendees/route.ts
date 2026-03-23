@@ -49,7 +49,15 @@ export async function GET(
     }
 
     const data = await res.json();
-    return NextResponse.json(data);
+
+    // Enrich attendees with proxy picture URLs
+    const items = (data.items ?? data ?? []) as { id: string; [key: string]: unknown }[];
+    const enriched = items.map((attendee) => ({
+      ...attendee,
+      profile_picture: `/api/unipile/attendee-picture/${attendee.id}`,
+    }));
+
+    return NextResponse.json({ items: enriched });
   } catch (error) {
     console.error("Unipile attendees error:", error);
     return NextResponse.json(
