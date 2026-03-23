@@ -12,7 +12,7 @@ export async function GET(
     const { data: contract, error } = await admin
       .from("contracts")
       .select(
-        "id, title, content, status, signed_at, expires_at, created_at, signature_data, signature_image, client_id",
+        "id, title, content, status, signed_at, end_date, created_at, signature_data, signature_image, client_id",
       )
       .eq("id", id)
       .single();

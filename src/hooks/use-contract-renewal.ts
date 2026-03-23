@@ -22,7 +22,7 @@ export function useContractRenewalStatus(contractId: string) {
       const { data, error } = await supabase
         .from("contracts")
         .select(
-          "id, auto_renew, renewal_period_months, renewal_notice_days, renewal_status, renewed_from_id, end_date, start_date",
+          "id, auto_renew, renewal_status, end_date",
         )
         .eq("id", contractId)
         .single();
@@ -31,13 +31,9 @@ export function useContractRenewalStatus(contractId: string) {
         Contract,
         | "id"
         | "auto_renew"
-        | "renewal_period_months"
-        | "renewal_notice_days"
         | "renewal_status"
-        | "renewed_from_id"
         | "end_date"
-        | "start_date"
-      >;
+      > & { renewal_period_months?: number; renewal_notice_days?: number; renewed_from_id?: string; start_date?: string };
     },
   });
 }
