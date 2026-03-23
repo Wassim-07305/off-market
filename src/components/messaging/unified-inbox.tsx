@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import Image from "next/image";
 import { cn, getInitials } from "@/lib/utils";
 import {
@@ -147,7 +147,21 @@ export function UnifiedInbox() {
   );
 
   // Get attendee map for display names in messages
-  const attendeeMap = new Map((attendees ?? []).map((a) => [a.id, a]));
+  // Index by both Unipile id and provider_id since sender_id can be either
+  const attendeeMap = useMemo(() => {
+    const map = new Map<string, (typeof attendees extends (infer T)[] | undefined ? T : never)>();
+    for (const a of attendees ?? []) {
+      map.set(a.id, a);
+      if (a.provider_id) map.set(a.provider_id, a);
+    }
+    return map;
+  }, [attendees]);
+
+  // Fallback: the other person in this chat
+  const otherAttendee = useMemo(
+    () => (attendees ?? []).find((a) => !a.is_self),
+    [attendees],
+  );
 
   const handleSend = useCallback(async () => {
     if (!messageInput.trim() || !selectedChatId) return;
@@ -448,12 +462,16 @@ export function UnifiedInbox() {
                   const attendee = msg.sender_id
                     ? attendeeMap.get(msg.sender_id)
                     : undefined;
+                  // Fallback chain: message sender → matched attendee → other attendee in chat → "Inconnu"
                   const displayName =
                     msg.sender?.display_name ??
                     attendee?.display_name ??
+                    (!isSelf ? otherAttendee?.display_name : undefined) ??
                     "Inconnu";
                   const avatar =
-                    msg.sender?.profile_picture ?? attendee?.profile_picture;
+                    msg.sender?.profile_picture ??
+                    attendee?.profile_picture ??
+                    (!isSelf ? otherAttendee?.profile_picture : undefined);
 
                   return (
                     <div
