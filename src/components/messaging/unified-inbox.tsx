@@ -542,12 +542,8 @@ export function UnifiedInbox() {
                   onChange={(e) => setMessageInput(e.target.value)}
                   onKeyDown={handleKeyDown}
                   placeholder="Ecrire un message..."
-                  rows={1}
-                  className="flex-1 resize-none bg-muted/50 border border-border/60 rounded-xl px-3 py-2 sm:px-3.5 sm:py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary min-h-[36px] sm:min-h-[40px] max-h-[100px] sm:max-h-[120px]"
-                  style={{
-                    height: "auto",
-                    overflow: messageInput.includes("\n") ? "auto" : "hidden",
-                  }}
+                  rows={3}
+                  className="flex-1 resize-none bg-muted/50 border border-border/60 rounded-xl px-3 py-2.5 sm:px-3.5 sm:py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary min-h-[72px] max-h-[150px]"
                 />
                 <Button
                   onClick={handleSend}

@@ -201,17 +201,30 @@ export function useMessages(channelId: string | null) {
             const preview = variables.content.length > 80
               ? variables.content.slice(0, 80) + "..."
               : variables.content;
-            fetch("/api/notifications/push", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                userIds: recipientIds,
-                title: `${senderName}`,
-                body: preview,
-                url: `/admin/messaging`,
-                tag: `msg-${channelId}`,
-              }),
-            }).catch(() => {});
+            try {
+              const pushRes = await fetch("/api/notifications/push", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  userIds: recipientIds,
+                  title: `${senderName}`,
+                  body: preview,
+                  url: `/admin/messaging`,
+                  tag: `msg-${channelId}`,
+                }),
+              });
+              if (!pushRes.ok) {
+                const pushBody = await pushRes.text().catch(() => "");
+                console.error("[Push] Failed:", pushRes.status, pushBody);
+              } else {
+                const pushResult = await pushRes.json().catch(() => ({}));
+                console.log("[Push] Sent:", pushResult);
+              }
+            } catch (pushErr) {
+              console.error("[Push] Fetch error:", pushErr);
+            }
+          } else {
+            console.log("[Push] No other members in channel", channelId);
           }
         } catch {
           // Push notification is best-effort, never block
