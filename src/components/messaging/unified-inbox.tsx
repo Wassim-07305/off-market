@@ -536,23 +536,25 @@ export function UnifiedInbox() {
 
             {/* Message input */}
             <div className="border-t border-border/40 px-2.5 sm:px-4 py-2 sm:py-3 shrink-0">
-              <div className="flex items-end gap-1.5 sm:gap-2">
-                <textarea
-                  value={messageInput}
-                  onChange={(e) => setMessageInput(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  placeholder="Ecrire un message..."
-                  rows={3}
-                  className="flex-1 resize-none bg-muted/50 border border-border/60 rounded-xl px-3 py-2.5 sm:px-3.5 sm:py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary min-h-[72px] max-h-[150px]"
-                />
+              <textarea
+                value={messageInput}
+                onChange={(e) => setMessageInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Ecrire un message..."
+                rows={3}
+                className="w-full resize-none bg-muted/50 border border-border/60 rounded-xl px-3 py-2.5 sm:px-3.5 sm:py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary min-h-[72px] max-h-[150px]"
+              />
+              <div className="flex items-center justify-end mt-1.5">
                 <Button
                   onClick={handleSend}
                   disabled={!messageInput.trim() || sendMessage.isPending}
                   loading={sendMessage.isPending}
                   size="sm"
-                  className="rounded-xl h-9 w-9 sm:h-10 sm:w-10 p-0"
+                  className="rounded-xl h-9 px-4 sm:h-10 sm:px-5"
                   icon={<Send className="w-4 h-4" />}
-                />
+                >
+                  <span className="hidden sm:inline ml-1">Envoyer</span>
+                </Button>
               </div>
             </div>
           </>

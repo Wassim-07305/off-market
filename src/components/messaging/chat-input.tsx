@@ -592,11 +592,11 @@ export function ChatInput({
           </div>
 
           {/* TipTap editor + action buttons */}
-          <div className="flex items-end gap-2 px-4 pb-3 relative">
-            <div className="flex-1 py-1">
+          <div className="px-4 pb-3 relative">
+            <div className="py-1">
               <EditorContent editor={editor} />
             </div>
-            <div className="flex items-center gap-0.5 shrink-0 relative">
+            <div className="flex items-center gap-0.5 mt-1.5 flex-wrap relative">
               <input
                 ref={fileInputRef}
                 type="file"
@@ -759,7 +759,7 @@ export function ChatInput({
                   isSending
                 }
                 className={cn(
-                  "w-8 h-8 rounded-xl flex items-center justify-center text-white transition-all duration-200 active:scale-90 disabled:opacity-25 disabled:pointer-events-none disabled:scale-100 shrink-0 shadow-sm",
+                  "w-8 h-8 rounded-xl flex items-center justify-center text-white transition-all duration-200 active:scale-90 disabled:opacity-25 disabled:pointer-events-none disabled:scale-100 shrink-0 shadow-sm ml-auto",
                   isUrgent
                     ? "bg-red-500 hover:bg-red-600 shadow-red-500/25"
                     : scheduledAt
