@@ -1,6 +1,6 @@
 // ─── SHARED CALENDAR TYPES ───────────────
 
-export type CalendarEventType = "session" | "call" | "event";
+export type CalendarEventType = "session" | "call" | "event" | "google";
 
 export interface CalendarEvent {
   id: string;
@@ -37,10 +37,12 @@ export const EVENT_COLORS: Record<CalendarEventType, string> = {
   session: "#3B82F6", // blue
   call: "#10B981", // green
   event: "#8B5CF6", // purple
+  google: "#4285F4", // google blue
 };
 
 export const EVENT_TYPE_LABELS: Record<CalendarEventType, string> = {
   session: "Session",
   call: "Appel",
   event: "Événement",
+  google: "Google Agenda",
 };

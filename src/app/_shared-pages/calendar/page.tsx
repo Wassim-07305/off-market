@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 import { cn } from "@/lib/utils";
 import { useCalendarEvents } from "@/hooks/use-calendar-events";
+import { useGoogleCalendarEvents } from "@/hooks/use-google-calendar";
 import { useAuth } from "@/hooks/use-auth";
 import { CreateEventModal } from "@/components/calendar/create-event-modal";
 import { EventDetailModal } from "@/components/calendar/event-detail-modal";
@@ -140,7 +141,10 @@ export default function CalendarPage() {
 
   const { events, isLoading } = useCalendarEvents(rangeStart, rangeEnd);
 
-  // Group events by date key
+  // Fetch Google Calendar events
+  const { data: googleEvents } = useGoogleCalendarEvents(rangeStart);
+
+  // Group events by date key (merge Off-Market + Google Calendar)
   const eventsByDate = useMemo(() => {
     const map: Record<string, CalendarEvent[]> = {};
     for (const e of events) {
@@ -148,8 +152,24 @@ export default function CalendarPage() {
       if (!map[key]) map[key] = [];
       map[key].push(e);
     }
+    // Merge Google Calendar events
+    if (googleEvents) {
+      for (const ge of googleEvents) {
+        const key = toDateKey(new Date(ge.start));
+        if (!map[key]) map[key] = [];
+        map[key].push({
+          id: `google-${ge.id}`,
+          title: `📅 ${ge.title}`,
+          start: ge.start,
+          end: ge.end,
+          type: "google",
+          color: "#4285F4",
+          description: ge.description ?? undefined,
+        });
+      }
+    }
     return map;
-  }, [events]);
+  }, [events, googleEvents]);
 
   // Navigation
   const navigate = (direction: number) => {
