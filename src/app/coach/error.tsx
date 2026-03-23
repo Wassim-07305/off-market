@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { AlertTriangle, RotateCcw, LayoutDashboard } from "lucide-react";
 import Link from "next/link";
+import { logError } from "@/lib/error-logger";
 
 export default function CoachError({
   error,
@@ -13,6 +14,13 @@ export default function CoachError({
 }) {
   useEffect(() => {
     console.error("[Off-Market][Coach] Erreur:", error);
+    logError({
+      message: error.message,
+      stack: error.stack ?? null,
+      source: "error-boundary",
+      severity: "critical",
+      metadata: { digest: error.digest, context: "coach-error-boundary" },
+    });
   }, [error]);
 
   return (

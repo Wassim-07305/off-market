@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Component, type ReactNode } from "react";
 import { motion } from "framer-motion";
 import {
   staggerContainer,
@@ -8,8 +8,48 @@ import {
   defaultTransition,
 } from "@/lib/animations";
 import { cn } from "@/lib/utils";
-import { Users, UserCog, Send } from "lucide-react";
+import { Users, UserCog, Send, AlertTriangle, RefreshCw } from "lucide-react";
 import dynamic from "next/dynamic";
+
+class TabErrorBoundary extends Component<
+  { children: ReactNode; name: string },
+  { hasError: boolean; error: string | null }
+> {
+  constructor(props: { children: ReactNode; name: string }) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error: error.message };
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <div className="w-12 h-12 rounded-2xl bg-red-500/10 flex items-center justify-center mb-4">
+            <AlertTriangle className="w-6 h-6 text-red-500" />
+          </div>
+          <h3 className="text-lg font-semibold text-foreground mb-1">
+            Erreur de chargement
+          </h3>
+          <p className="text-sm text-muted-foreground mb-4 max-w-sm">
+            Impossible de charger la section {this.props.name}. Veuillez reessayer.
+          </p>
+          <button
+            onClick={() => this.setState({ hasError: false, error: null })}
+            className="h-9 px-4 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-all flex items-center gap-2"
+          >
+            <RefreshCw className="w-4 h-4" />
+            Reessayer
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 const ClientsContent = dynamic(
   () => import("@/app/_shared-pages/clients/page"),
@@ -88,9 +128,21 @@ export default function PersonnesPage() {
 
       {/* Content */}
       <div>
-        {tab === "clients" && <ClientsContent />}
-        {tab === "équipe" && <EquipeContent />}
-        {tab === "invitations" && <InvitationsContent />}
+        {tab === "clients" && (
+          <TabErrorBoundary name="Clients">
+            <ClientsContent />
+          </TabErrorBoundary>
+        )}
+        {tab === "équipe" && (
+          <TabErrorBoundary name="Equipe">
+            <EquipeContent />
+          </TabErrorBoundary>
+        )}
+        {tab === "invitations" && (
+          <TabErrorBoundary name="Invitations">
+            <InvitationsContent />
+          </TabErrorBoundary>
+        )}
       </div>
     </motion.div>
   );

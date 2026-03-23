@@ -13,6 +13,7 @@ import { BrandingProvider } from "@/components/providers/branding-provider";
 import { IncomingCallToast } from "@/components/calls/video-room/incoming-call-toast";
 import { RgpdConsentBanner } from "@/components/shared/rgpd-consent-banner";
 import { GamificationProvider } from "@/components/providers/gamification-provider";
+import { ErrorMonitoringProvider } from "@/components/providers/error-monitoring-provider";
 import { LazyMotion, domAnimation } from "framer-motion";
 import type { User } from "@supabase/supabase-js";
 import type { Profile } from "@/types/database";
@@ -45,25 +46,27 @@ export function Providers({
   );
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider
-        attribute="class"
-        defaultTheme="light"
-        enableSystem={false}
-      >
-        <LazyMotion features={domAnimation}>
-          <BrandingProvider>
-            <AuthProvider initialUser={initialUser} initialProfile={initialProfile}>
-              <WalkthroughProvider>
-                {children}
-                <GamificationProvider />
-                <IncomingCallToast />
-                <RgpdConsentBanner />
-              </WalkthroughProvider>
-            </AuthProvider>
-          </BrandingProvider>
-        </LazyMotion>
-      </ThemeProvider>
-    </QueryClientProvider>
+    <ErrorMonitoringProvider>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem={false}
+        >
+          <LazyMotion features={domAnimation}>
+            <BrandingProvider>
+              <AuthProvider initialUser={initialUser} initialProfile={initialProfile}>
+                <WalkthroughProvider>
+                  {children}
+                  <GamificationProvider />
+                  <IncomingCallToast />
+                  <RgpdConsentBanner />
+                </WalkthroughProvider>
+              </AuthProvider>
+            </BrandingProvider>
+          </LazyMotion>
+        </ThemeProvider>
+      </QueryClientProvider>
+    </ErrorMonitoringProvider>
   );
 }

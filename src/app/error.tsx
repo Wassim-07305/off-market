@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { AlertTriangle, RotateCcw, Home } from "lucide-react";
 import Link from "next/link";
+import { logError } from "@/lib/error-logger";
 
 export default function GlobalError({
   error,
@@ -13,6 +14,13 @@ export default function GlobalError({
 }) {
   useEffect(() => {
     console.error("[Off-Market] Erreur globale:", error);
+    logError({
+      message: error.message,
+      stack: error.stack ?? null,
+      source: "error-boundary",
+      severity: "critical",
+      metadata: { digest: error.digest, context: "global-error-boundary" },
+    });
   }, [error]);
 
   return (

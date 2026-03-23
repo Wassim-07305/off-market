@@ -152,16 +152,6 @@ export function CallEndedSummary({
             </div>
           )}
 
-          {transcriptEntries.length > 0 && (
-            <button
-              onClick={onDownloadTranscript}
-              className="w-full h-11 rounded-xl bg-zinc-800 text-white text-sm font-medium hover:bg-zinc-700 transition-all flex items-center justify-center gap-2 border border-white/5"
-            >
-              <Download className="w-4 h-4" />
-              Telecharger la transcription
-            </button>
-          )}
-
           {transcriptEntries.length > 0 && !showSummary && (
             <div className="bg-zinc-900/60 border border-white/5 rounded-xl p-3 max-h-40 overflow-y-auto text-left">
               {transcriptEntries.slice(-5).map((entry, i) => (

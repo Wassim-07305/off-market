@@ -933,8 +933,10 @@ export function CloserPipelineView() {
                   const result = await res.json();
                   if (result.contractId) {
                     toast.success("Deal close ! Contrat envoye au prospect.");
+                  } else if (!result.profileId) {
+                    toast.success("Deal close ! Prospect non inscrit — contrat a envoyer manuellement.");
                   } else {
-                    toast.success(`Deal close ! ${result.contractError ?? "Contrat non genere."}`);
+                    toast.success("Deal close ! Contrat non genere automatiquement.");
                   }
                   queryClient.invalidateQueries({ queryKey: ["closer-pipeline"] });
                   queryClient.invalidateQueries({ queryKey: ["commissions"] });

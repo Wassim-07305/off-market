@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { AlertTriangle, RotateCcw, LayoutDashboard } from "lucide-react";
 import Link from "next/link";
+import { logError } from "@/lib/error-logger";
 
 export default function AdminError({
   error,
@@ -13,6 +14,13 @@ export default function AdminError({
 }) {
   useEffect(() => {
     console.error("[Off-Market][Admin] Erreur:", error);
+    logError({
+      message: error.message,
+      stack: error.stack ?? null,
+      source: "error-boundary",
+      severity: "critical",
+      metadata: { digest: error.digest, context: "admin-error-boundary" },
+    });
   }, [error]);
 
   return (

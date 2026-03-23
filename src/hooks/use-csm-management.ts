@@ -50,7 +50,10 @@ export function useCoachesWithStats() {
         .in("role", ["coach", "admin"])
         .order("full_name");
 
-      if (cErr) throw cErr;
+      if (cErr) {
+        console.error("[CSM] coaches fetch error:", cErr.message);
+        return { coaches: [], unassignedClients: [], overview: { totalCoaches: 0, totalAssigned: 0, totalUnassigned: 0, sessionsThisWeek: 0, averageSatisfaction: 0 } };
+      }
 
       // 2. Fetch all active assignments — simple flat query, then enrich
       let assignments: unknown[] = [];
@@ -229,14 +232,29 @@ export function useCoachesWithStats() {
         ),
       );
 
-      let unassignedQuery = supabase
-        .from("profiles")
-        .select("*, student_details(*)")
-        .eq("role", "client")
-        .order("full_name");
+      let allClients: unknown[] | null = null;
+      try {
+        const { data: ucData, error: ucErr } = await supabase
+          .from("profiles")
+          .select("*, student_details(*)")
+          .eq("role", "client")
+          .order("full_name");
 
-      const { data: allClients, error: ucErr } = await unassignedQuery;
-      if (ucErr) console.warn("[CSM] unassigned query:", ucErr.message);
+        if (ucErr) {
+          // Fallback without student_details join
+          console.warn("[CSM] unassigned query with join failed:", ucErr.message);
+          const { data: ucFallback } = await supabase
+            .from("profiles")
+            .select("*")
+            .eq("role", "client")
+            .order("full_name");
+          allClients = (ucFallback ?? []).map((p: unknown) => ({ ...(p as Record<string, unknown>), student_details: [] }));
+        } else {
+          allClients = ucData;
+        }
+      } catch (e) {
+        console.warn("[CSM] unassigned clients fetch failed:", e);
+      }
 
       const unassigned = (
         (allClients ?? []) as (Profile & {
