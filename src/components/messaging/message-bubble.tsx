@@ -188,7 +188,7 @@ export function MessageBubble({
               {message.reply_message.sender?.full_name ?? "Inconnu"}
             </span>
             <span className="text-[11px] text-muted-foreground/70 truncate">
-              {message.reply_message.content.slice(0, 80)}
+              {message.reply_message.content?.slice(0, 80) ?? "Message supprime"}
             </span>
           </div>
         )}

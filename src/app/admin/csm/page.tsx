@@ -76,18 +76,18 @@ export default function AdminCsmPage() {
     const q = search.toLowerCase();
     return coaches.filter(
       (c) =>
-        c.coach.full_name.toLowerCase().includes(q) ||
-        c.coach.email.toLowerCase().includes(q),
+        (c.coach?.full_name ?? "").toLowerCase().includes(q) ||
+        (c.coach?.email ?? "").toLowerCase().includes(q),
     );
   }, [coaches, search]);
 
   // Performance chart data
   const performanceData = useMemo(() => {
-    return coaches.map((c) => ({
+    return coaches.filter((c) => c.coach).map((c) => ({
       name:
-        c.coach.full_name.length > 12
-          ? c.coach.full_name.slice(0, 12) + "..."
-          : c.coach.full_name,
+        (c.coach.full_name ?? "").length > 12
+          ? (c.coach.full_name ?? "").slice(0, 12) + "..."
+          : c.coach.full_name ?? "?",
       clients: c.clientCount,
       revenue: c.totalRevenue,
       sessions: c.sessionsThisMonth,

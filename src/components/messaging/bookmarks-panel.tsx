@@ -103,7 +103,7 @@ export function BookmarksPanel({
                       ? "Message vocal"
                       : msg.content_type === "file"
                         ? "Fichier"
-                        : msg.content.slice(0, 150)}
+                        : (msg.content?.slice(0, 150) ?? "...")}
                   </p>
                 )}
               </div>

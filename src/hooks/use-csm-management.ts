@@ -165,8 +165,9 @@ export function useCoachesWithStats() {
       for (const a of (assignments ?? []) as {
         coach_id: string;
         client: Profile & { student_details: StudentDetail[] };
-        coach: Profile;
+        coach: Profile | null;
       }[]) {
+        if (!a.coach) continue; // Skip assignments with deleted coach
         let entry = coachMap.get(a.coach_id);
         if (!entry) {
           entry = {

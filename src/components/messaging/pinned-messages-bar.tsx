@@ -122,7 +122,7 @@ export function PinnedMessagesBar({
                   </span>
                 </div>
                 <p className="text-xs text-foreground/80 truncate">
-                  {pin.content.slice(0, 100)}
+                  {pin.content?.slice(0, 100) ?? "..."}
                 </p>
               </div>
               {onUnpin && (
