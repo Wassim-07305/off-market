@@ -40,11 +40,9 @@ export async function GET(request: NextRequest) {
         user_id: state,
         access_token: tokens.access_token!,
         refresh_token: tokens.refresh_token ?? null,
-        token_expiry: tokens.expiry_date
+        expires_at: tokens.expiry_date
           ? new Date(tokens.expiry_date).toISOString()
           : null,
-        google_email: googleEmail,
-        is_active: true,
       },
       { onConflict: "user_id" },
     );
