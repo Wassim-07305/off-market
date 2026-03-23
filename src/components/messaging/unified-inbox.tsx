@@ -277,6 +277,9 @@ export function UnifiedInbox() {
           ) : (
             filteredChats.map((chat: UnipileChat) => {
               const isActive = chat.id === selectedChatId;
+              const otherAttendee = chat.attendees?.find((a) => !a.display_name?.includes("(You)"));
+              const avatarUrl = otherAttendee?.profile_picture;
+              const chatDisplayName = chat.name || otherAttendee?.display_name || "Conversation";
               return (
                 <button
                   key={chat.id}
@@ -293,9 +296,20 @@ export function UnifiedInbox() {
                 >
                   {/* Avatar */}
                   <div className="w-9 h-9 rounded-full bg-muted flex items-center justify-center shrink-0 overflow-hidden">
-                    <span className="text-xs font-medium text-muted-foreground">
-                      {getInitials(chat.name || "?")}
-                    </span>
+                    {avatarUrl ? (
+                      <Image
+                        src={avatarUrl}
+                        alt=""
+                        width={36}
+                        height={36}
+                        className="w-full h-full object-cover"
+                        unoptimized
+                      />
+                    ) : (
+                      <span className="text-xs font-medium text-muted-foreground">
+                        {getInitials(chatDisplayName)}
+                      </span>
+                    )}
                   </div>
 
                   {/* Content */}
@@ -307,7 +321,7 @@ export function UnifiedInbox() {
                           isActive ? "text-primary" : "text-foreground",
                         )}
                       >
-                        {chat.name || "Conversation"}
+                        {chatDisplayName}
                       </span>
                       <span className="text-[10px] text-muted-foreground/60 shrink-0">
                         {formatTimestamp(chat.timestamp)}
@@ -360,31 +374,38 @@ export function UnifiedInbox() {
                 <ChevronLeft className="w-5 h-5" />
               </button>
 
-              {/* Platform icon */}
-              {selectedAccount && (
-                <div
-                  className={cn(
-                    "w-8 h-8 rounded-full flex items-center justify-center shrink-0",
-                    getPlatformBg(selectedAccount.type),
-                  )}
-                >
-                  {(() => {
-                    const Icon = getPlatformIcon(selectedAccount.type);
-                    return (
-                      <Icon
-                        className={cn(
-                          "w-4 h-4",
-                          getPlatformColor(selectedAccount.type),
-                        )}
+              {/* Contact avatar or platform icon */}
+              {(() => {
+                const mainAttendee = attendees?.find((a) => !a.is_self);
+                const headerAvatar = mainAttendee?.profile_picture;
+                if (headerAvatar) {
+                  return (
+                    <div className="w-9 h-9 rounded-full bg-muted flex items-center justify-center shrink-0 overflow-hidden">
+                      <Image
+                        src={headerAvatar}
+                        alt=""
+                        width={36}
+                        height={36}
+                        className="w-full h-full object-cover"
+                        unoptimized
                       />
-                    );
-                  })()}
-                </div>
-              )}
+                    </div>
+                  );
+                }
+                if (selectedAccount) {
+                  const Icon = getPlatformIcon(selectedAccount.type);
+                  return (
+                    <div className={cn("w-9 h-9 rounded-full flex items-center justify-center shrink-0", getPlatformBg(selectedAccount.type))}>
+                      <Icon className={cn("w-4 h-4", getPlatformColor(selectedAccount.type))} />
+                    </div>
+                  );
+                }
+                return null;
+              })()}
 
               <div className="flex-1 min-w-0">
                 <h3 className="text-sm font-semibold text-foreground truncate">
-                  {selectedChat.name || "Conversation"}
+                  {selectedChat.name || attendees?.find((a) => !a.is_self)?.display_name || "Conversation"}
                 </h3>
                 {/* Show attendee info */}
                 {attendees && attendees.length > 0 && (
@@ -451,6 +472,7 @@ export function UnifiedInbox() {
                               width={32}
                               height={32}
                               className="w-8 h-8 rounded-full object-cover"
+                              unoptimized
                             />
                           ) : (
                             <User className="w-4 h-4 text-muted-foreground" />

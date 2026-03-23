@@ -13,6 +13,13 @@ export interface UnipileAccount {
   created_at: string;
 }
 
+export interface UnipiileChatAttendee {
+  id: string;
+  display_name?: string;
+  profile_picture?: string;
+  profile_url?: string;
+}
+
 export interface UnipileChat {
   id: string;
   account_id: string;
@@ -21,6 +28,7 @@ export interface UnipileChat {
   last_message_text?: string;
   unread_count?: number;
   attendees_count?: number;
+  attendees?: UnipiileChatAttendee[];
   provider?: string;
 }
 
