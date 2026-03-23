@@ -49,7 +49,7 @@ export default function ClientInvoicesPage() {
       const res = await fetch("/api/stripe/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ invoice_id: invoiceId }),
+        body: JSON.stringify({ invoiceId }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Erreur Stripe");
