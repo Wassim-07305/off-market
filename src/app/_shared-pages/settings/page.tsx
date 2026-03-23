@@ -52,49 +52,49 @@ import { RoleManager } from "@/components/settings/role-manager";
 
 const NOTIFICATION_TOGGLES = [
   {
-    key: "notify_messages",
+    key: "notification_messages",
     label: "Messages",
     description: "Nouveaux messages et mentions",
   },
   {
-    key: "notify_feed",
+    key: "notification_community",
     label: "Communaute",
     description: "Activite sur le fil d'actualite",
   },
   {
-    key: "notify_calls",
+    key: "notification_calls",
     label: "Appels",
     description: "Rappels et confirmations d'appels",
   },
   {
-    key: "notify_badges",
+    key: "notification_badges",
     label: "Badges & XP",
     description: "Badges debloques et niveaux atteints",
   },
   {
-    key: "notify_checkins",
+    key: "notification_coaching",
     label: "Coaching",
     description: "Sessions et suivi coaching",
   },
   {
-    key: "notify_forms",
+    key: "notification_formations",
     label: "Formations",
     description: "Nouveaux modules et progressions",
   },
   {
-    key: "notify_goals",
+    key: "notification_system",
     label: "Systeme",
     description: "Alertes et notifications systeme",
   },
   {
-    key: "notify_reports",
-    label: "Signalements",
-    description: "Signalements de contenu",
+    key: "notification_challenges",
+    label: "Challenges",
+    description: "Defis et challenges",
   },
   {
-    key: "notify_certificates",
-    label: "Certificats",
-    description: "Certificats obtenus",
+    key: "notification_digest",
+    label: "Digest email",
+    description: "Resume periodique par email",
   },
 ] as const;
 
