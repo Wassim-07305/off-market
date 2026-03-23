@@ -197,6 +197,12 @@ export default function PublicContractSignPage() {
         return;
       }
 
+      // Refresh contract to get the stored signature_image
+      const refreshRes = await fetch(`/api/contracts/${id}/public`);
+      if (refreshRes.ok) {
+        const refreshed = await refreshRes.json();
+        setContract(refreshed as Contract);
+      }
       setSigned(true);
       setSignedAt(data.signed_at);
     } catch {
@@ -269,14 +275,37 @@ export default function PublicContractSignPage() {
             </div>
           </div>
 
+          {/* Signature image */}
+          {contract.signature_image && (
+            <div className="bg-white/[0.04] border border-white/[0.08] rounded-xl p-6 mb-6">
+              <h3 className="text-sm font-medium text-white/60 uppercase tracking-wider mb-3">
+                Signature
+              </h3>
+              <div className="bg-white rounded-xl p-4 flex items-center justify-center">
+                <img
+                  src={contract.signature_image}
+                  alt="Signature"
+                  className="max-h-32 object-contain"
+                />
+              </div>
+              {signedAt && (
+                <p className="text-xs text-white/40 text-center mt-2">
+                  Signé le {formatDate(signedAt)}
+                </p>
+              )}
+            </div>
+          )}
+
           {/* Download button */}
           <div className="text-center">
             <a
               href={`/api/contracts/${contract.id}/pdf`}
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center gap-2 h-11 px-6 bg-[#AF0000] text-white rounded-lg text-sm font-medium hover:bg-[#8B0000] transition-colors"
             >
               <Download className="w-4 h-4" />
-              Telecharger le PDF
+              Télécharger le PDF
             </a>
           </div>
 
@@ -365,10 +394,10 @@ export default function PublicContractSignPage() {
         </div>
 
         {/* Expiry notice */}
-        {contract.expires_at && (
+        {contract.end_date && (
           <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 mb-6 text-center">
             <p className="text-xs text-amber-400">
-              Ce contrat expire le {formatDate(contract.expires_at)}. Veuillez
+              Ce contrat expire le {formatDate(contract.end_date)}. Veuillez
               le signer avant cette date.
             </p>
           </div>
