@@ -79,8 +79,8 @@ export async function POST(request: Request) {
 
       await supabase
         .from("client_assignments")
-        .update({ coach_id: transferToId } as never)
-        .eq("coach_id", userId)
+        .update({ user_id: transferToId } as never)
+        .eq("user_id", userId)
         .eq("status", "active");
     }
 
@@ -151,7 +151,7 @@ export async function POST(request: Request) {
       action: "user.offboard_complete",
       entity_type: "profile",
       entity_id: userId,
-      details: {
+      metadata: {
         request_id: requestId,
         transfer_to: transferToId,
         data_actions: actions,

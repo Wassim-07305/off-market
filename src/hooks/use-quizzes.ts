@@ -176,7 +176,7 @@ export function useReviewExercise() {
         .from("exercise_submissions")
         .update({
           status: review.status,
-          coach_feedback: review.coach_feedback ?? null,
+          feedback: review.coach_feedback ?? null,
           grade: review.grade ?? null,
           reviewed_by: user!.id,
           reviewed_at: new Date().toISOString(),

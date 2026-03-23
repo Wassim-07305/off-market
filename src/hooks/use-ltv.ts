@@ -45,7 +45,7 @@ export function useLTVRanking(limit = 20) {
         )
         .eq("status", "paid");
 
-      const invoices = (data ?? []) as InvoiceWithClient[];
+      const invoices = (data ?? []) as unknown as InvoiceWithClient[];
       if (!invoices.length) return [];
 
       // Group by client

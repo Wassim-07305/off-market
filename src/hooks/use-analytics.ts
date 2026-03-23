@@ -37,7 +37,7 @@ export function useAnalytics() {
           .select("id, week_start, mood, revenue")
           .returns<CheckinRow[]>(),
         supabase.from("lessons").select("id, course_id").returns<LessonRow[]>(),
-        supabase.from("lesson_progress").select("id, lesson_id, completed").returns<ProgressRow[]>(),
+        supabase.from("lesson_progress").select("id, lesson_id, completed_at").returns<ProgressRow[]>(),
       ]);
 
       const clients = clientsRes.data ?? [];

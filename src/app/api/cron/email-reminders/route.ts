@@ -37,10 +37,10 @@ export async function GET(request: NextRequest) {
       const { data: upcomingCalls } = await admin
         .from("call_calendar")
         .select(
-          "id, scheduled_at, client_id, coach_id, profiles!call_calendar_client_id_fkey(full_name, email), coach:profiles!call_calendar_coach_id_fkey(full_name)",
+          "id, date, time, client_id, assigned_to, profiles!call_calendar_client_id_fkey(full_name, email), coach:profiles!call_calendar_assigned_to_fkey(full_name)",
         )
-        .gte("scheduled_at", now.toISOString())
-        .lte("scheduled_at", in24h.toISOString())
+        .gte("date", now.toISOString().split("T")[0])
+        .lte("date", in24h.toISOString().split("T")[0])
         .eq("status", "scheduled");
 
       let callsSent = 0;
@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
 
           if (!clientProfile?.email) continue;
 
-          const scheduledDate = new Date(call.scheduled_at);
+          const scheduledDate = new Date(`${call.date}T${call.time || "00:00"}`);
           const dateStr = scheduledDate.toLocaleDateString("fr-FR", {
             weekday: "long",
             day: "numeric",

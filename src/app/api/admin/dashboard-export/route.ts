@@ -95,7 +95,7 @@ async function fetchDashboardKPIs(): Promise<DashboardKPIs> {
     .from("financial_entries")
     .select("amount")
     .eq("type", "revenue")
-    .eq("status", "paid")
+    .eq("is_paid", true)
     .gte("date", startOfMonth);
 
   const cashCollected = (paidInvoices ?? []).reduce(
@@ -110,7 +110,7 @@ async function fetchDashboardKPIs(): Promise<DashboardKPIs> {
   const { count: totalStudents } = await supabase
     .from("clients")
     .select("id", { count: "exact", head: true })
-    .eq("status", "active");
+    .eq("stage", "active");
 
   const { count: newStudentsThisMonth } = await supabase
     .from("clients")

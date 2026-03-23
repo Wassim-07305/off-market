@@ -22,12 +22,12 @@ export async function GET(request: Request) {
   let query = supabase
     .from("financial_entries")
     .select(
-      "id, label, amount, type, status, date, client_id, created_at, updated_at",
+      "id, label, amount, type, is_paid, date, client_id, created_at, updated_at",
       { count: "exact" },
     )
     .eq("type", "revenue");
 
-  if (status) query = query.eq("status", status);
+  if (status) query = query.eq("is_paid", status === "paid");
   if (from) query = query.gte("date", from);
   if (to) query = query.lte("date", to);
 

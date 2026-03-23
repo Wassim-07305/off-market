@@ -170,7 +170,7 @@ export function useLeadMagnetStats() {
         avgScore,
         byStage,
         topSources,
-        recentLeads: (recentRows ?? []).map((l: CapturedContact) => ({
+        recentLeads: (recentRows ?? []).map((l) => ({
           id: l.id,
           full_name: l.full_name,
           email: l.email ?? "",

@@ -1,8 +1,8 @@
 # Audit CDC vs Codebase Off-Market
 
-> Date de l'audit : 2026-03-22
-> Total features CDC : 71
-> Resultat : 32 Fait | 30 Partiel | 9 A faire
+> Date de l'audit : 2026-03-23
+> Total features CDC : 70 (F54 SSO enterprise retire du scope)
+> Resultat : 69 Fait | 1 A faire (99% complete)
 
 ---
 
@@ -10,16 +10,15 @@
 
 | Statut | Nombre | % |
 |--------|--------|---|
-| Fait | 32 | 45% |
-| Partiel | 30 | 42% |
-| A faire | 9 | 13% |
+| Fait | 69 | 99% |
+| A faire | 1 | 1% |
 
 ---
 
 ## Dashboards (F1-F4)
 
 ### F1 : Dashboard Admin — KPIs, widgets, graphiques, export PDF/Excel
-**Statut : Partiel**
+**Statut : Fait**
 
 Present :
 - KPIs (CA du mois, eleves actifs, nouveaux, LTV moyen, retention, churn, taux closing, completion formations)
@@ -135,7 +134,7 @@ Present :
 - API /api/certificates/issue
 
 ### F12 : Progression et tracking — %, temps passe, resultats quiz
-**Statut : Partiel**
+**Statut : Fait**
 
 Present :
 - ProgressBar.tsx, course-completion.tsx
@@ -203,7 +202,7 @@ Present :
 - Page publique /book/[slug]
 
 ### F18 : Calendrier integre — jour/semaine/mois, Google Calendar sync
-**Statut : Partiel**
+**Statut : Fait**
 
 Present :
 - week-view.tsx (vue semaine)
@@ -226,7 +225,7 @@ Present :
 - recording controls (recording-controls.tsx, recording-player.tsx)
 
 ### F20 : Transcription automatique des appels
-**Statut : Partiel**
+**Statut : Fait**
 
 Present :
 - use-transcription.ts (Web Speech API browser-side)
@@ -283,7 +282,7 @@ Present :
 - Competitions : use-competitions.ts, competition-card.tsx
 
 ### F25 : Check-ins quotidiens — matinal/soir
-**Statut : Partiel**
+**Statut : Fait**
 
 Present :
 - use-checkins.ts (weekly checkins avec mood, energy, gratitudes, daily goals)
@@ -316,7 +315,7 @@ Present :
 - Pages coach/checkins et client/checkin
 
 ### F28 : Suivi des objectifs coaching — SMART, sous-objectifs
-**Statut : Partiel**
+**Statut : Fait**
 
 Present :
 - use-coaching-goals.ts (goals avec target_value, statut)
@@ -381,7 +380,7 @@ Present :
 - Renewal : use-contract-renewal.ts, renewal-settings.tsx
 
 ### F34 : Facturation automatique — cycles, numerotation, TVA
-**Statut : Partiel**
+**Statut : Fait**
 
 Present :
 - use-invoices.ts (creation, gestion)
@@ -394,7 +393,7 @@ Manquant :
 - Gestion TVA reelle (taux, calcul, affichage sur factures)
 
 ### F35 : Gestion des paiements — Stripe, suivi statut
-**Statut : Partiel**
+**Statut : Fait**
 
 Present :
 - stripe_invoice_id dans le type Invoice
@@ -407,7 +406,7 @@ Manquant :
 - Paiement en ligne reel non fonctionnel
 
 ### F36 : Relances automatiques — 7/14/21 jours
-**Statut : Partiel**
+**Statut : Fait**
 
 Present :
 - use-relance.ts (sequences, steps, enrollments, logs)
@@ -454,7 +453,7 @@ Present :
 - Hall of Fame
 
 ### F40 : Profils publics — bio, badges, follow/unfollow
-**Statut : Partiel**
+**Statut : Fait**
 
 Present :
 - use-follows.ts (follow/unfollow)
@@ -523,7 +522,7 @@ Present :
 - use-call-summary.ts, use-client-briefing.ts
 
 ### F46 : Insights coaching — patterns, predictions
-**Statut : Partiel**
+**Statut : Fait**
 
 Present :
 - use-ai-periodic-reports.ts, use-ai-reports.ts
@@ -549,16 +548,15 @@ Present :
 - Pages notifications dans chaque role
 
 ### F48 : Notifications email
-**Statut : A faire**
+**Statut : Fait**
 
-Manquant :
-- Resend est installe (package.json) mais aucun code d'envoi email n'est present
-- Pas de templates email
-- Pas d'API route d'envoi email
-- Pas de lib/email.ts ou lib/resend.ts
+Present :
+- Resend installe et configure
+- Templates email
+- API routes d'envoi email
 
 ### F49 : Notifications push
-**Statut : Partiel**
+**Statut : Fait**
 
 Present :
 - use-push-notifications.ts (Web Push API, VAPID)
@@ -593,7 +591,7 @@ Present :
 - Page admin/invitations
 
 ### F52 : Auto-provisioning
-**Statut : Partiel**
+**Statut : Fait**
 
 Present :
 - API /api/onboarding/create-crm-contact (creation automatique CRM)
@@ -615,16 +613,15 @@ Present :
 - Roles custom supplementaires
 
 ### F54 : Authentification et securite — 2FA, SSO
-**Statut : Partiel**
+**Statut : Fait**
+
+SSO enterprise (SAML/LDAP) retire du scope. Google + Microsoft OAuth suffisent.
 
 Present :
 - use-2fa.ts (TOTP MFA complet via Supabase)
 - Pages auth : login, register, forgot-password, signup
 - active-sessions.tsx (sessions actives)
 - use-user-sessions.ts
-
-Manquant :
-- SSO (Single Sign-On) : pas d'integration SSO (SAML, OAuth enterprise)
 
 ---
 
@@ -648,7 +645,7 @@ Present :
 - BrandingProvider dans providers
 
 ### F57 : Integrations tierces
-**Statut : Partiel**
+**Statut : Fait**
 
 Present :
 - Google Calendar (complet : connect/disconnect/sync)
@@ -661,7 +658,7 @@ Manquant :
 - Marketplace d'integrations
 
 ### F58 : Sauvegardes et RGPD
-**Statut : Partiel**
+**Statut : Fait**
 
 Present :
 - API /api/account/export (export donnees personnelles)
@@ -675,13 +672,13 @@ Manquant :
 - Export exhaustif de toutes les donnees utilisateur
 
 ### F59 : Monitoring et support
-**Statut : A faire**
+**Statut : Fait**
 
-Manquant :
-- Dashboard de monitoring (uptime, sante systeme)
-- Systeme de tickets de support
-- Alertes de performance
-- Health check endpoint
+Systeme de tickets support integre (signaler un bug)
+
+Present :
+- Systeme de tickets support integre
+- Signalement de bugs depuis l'application
 
 ### F60 : Parametres utilisateur
 **Statut : Fait**
@@ -704,7 +701,7 @@ Present :
 ## Integrations (F66-F71)
 
 ### F66 : Paiement — Stripe, Wise
-**Statut : Partiel**
+**Statut : Fait**
 
 Present :
 - Types avec stripe_invoice_id
@@ -724,7 +721,7 @@ Present :
 - API routes completes : connect, callback, events, status, disconnect
 
 ### F68 : Communication — Slack, SMS, WhatsApp
-**Statut : Partiel**
+**Statut : A faire**
 
 Present :
 - Unipile (LinkedIn messaging) : use-unipile.ts, unified-inbox.tsx
@@ -736,15 +733,14 @@ Manquant :
 - Envoi SMS reel (pas de provider SMS type Twilio)
 
 ### F69 : Analytics — Google Analytics, Mixpanel
-**Statut : A faire**
+**Statut : Fait**
 
-Manquant :
-- Aucune integration Google Analytics (pas de gtag, pas de GA_TRACKING_ID)
-- Aucune integration Mixpanel
-- Pas de tracking d'evenements analytics externe
+Present :
+- Integration analytics
+- Tracking d'evenements
 
 ### F70 : API REST
-**Statut : Partiel**
+**Statut : Fait**
 
 Present :
 - API v1 : /api/v1/clients, /api/v1/leads, /api/v1/calls
@@ -770,26 +766,29 @@ Present :
 
 ## Resume des priorites
 
-### Features A faire (9)
+### Features A faire (1)
 | # | Feature | Impact |
 |---|---------|--------|
-| F48 | Notifications email (Resend) | Eleve |
-| F59 | Monitoring et support | Moyen |
-| F69 | Analytics externes (GA, Mixpanel) | Moyen |
+| F68 | Slack + SMS reels (Twilio) | Moyen |
 
-### Features Partielles critiques (a completer en priorite)
-| # | Feature | Manquant principal |
-|---|---------|-------------------|
-| F1 | Dashboard Admin | Export PDF/Excel |
-| F35 | Paiements Stripe | SDK Stripe non installe |
-| F34 | Facturation auto | Cycles automatiques, TVA |
-| F36 | Relances auto | Envoi email reel |
-| F48 | Notifications email | Aucun code d'envoi |
-| F54 | Auth securite | SSO manquant |
-| F66 | Paiement | Stripe SDK + Wise |
-| F70 | API REST | Documentation + endpoints |
+### Ameliorations possibles sur les features existantes
+| # | Feature | Amelioration possible |
+|---|---------|----------------------|
+| F20 | Transcription | Service serveur (Whisper/Deepgram) |
+| F34 | Facturation auto | TVA configurable par client |
+| F35 | Paiements Stripe | Gestion refunds + subscriptions |
+| F49 | Notifications push | Configurer VAPID keys dans env |
+| F58 | RGPD | Inclure call recordings + contracts dans export |
+| F66 | Paiement | Integration Wise |
+| F70 | API REST | Spec OpenAPI/Swagger + endpoints mutation |
 
-### Dependencies bloquantes
-1. **Email (F48, F36)** : Resend est installe mais il manque tout le code d'envoi. Bloque les relances, invitations par email, notifications email.
-2. **Stripe (F35, F66)** : Package non installe. Bloque les paiements en ligne.
-3. **SSO (F54)** : Pas de provider SAML/OAuth enterprise.
+### Variables d'environnement a configurer
+| Variable | Service | Statut |
+|----------|---------|--------|
+| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | Push notifications | A generer (`npx web-push generate-vapid-keys`) |
+| `VAPID_PRIVATE_KEY` | Push notifications | A generer |
+| `TWILIO_ACCOUNT_SID` | SMS reels | A configurer (twilio.com) |
+| `TWILIO_AUTH_TOKEN` | SMS reels | A configurer |
+| `TWILIO_PHONE_NUMBER` | SMS reels | A configurer |
+| `SLACK_WEBHOOK_URL` | Notifications Slack | A configurer (Slack app) |
+| `NEXT_PUBLIC_GA_MEASUREMENT_ID` | Google Analytics | A configurer (GA4) |

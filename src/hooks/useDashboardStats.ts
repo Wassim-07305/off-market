@@ -28,7 +28,7 @@ export function useRevenueChart() {
       const { data, error } = await supabase
         .from("leads")
         .select("*")
-        .eq("status", "close")
+        .eq("stage", "close")
         .gte("updated_at", sixMonthsAgo.toISOString())
         .order("updated_at", { ascending: true })
         .returns<Array<Record<string, unknown> & { updated_at: string }>>();

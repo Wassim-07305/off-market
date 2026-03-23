@@ -1,6 +1,8 @@
 "use client";
 
-import { Bell, User, LogOut, Menu, Moon, Sun, Search } from "lucide-react";
+import { Bell, User, LogOut, Menu, Moon, Sun, Search, Bug } from "lucide-react";
+import { useState } from "react";
+import { BugReportModal } from "@/components/layout/bug-report-modal";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useAuth } from "@/hooks/use-auth";
@@ -25,8 +27,11 @@ export function Header() {
   const prefix = useRoutePrefix();
   const { theme, setTheme } = useTheme();
   const router = useRouter();
+  const [bugReportOpen, setBugReportOpen] = useState(false);
 
   return (
+    <>
+    <BugReportModal open={bugReportOpen} onClose={() => setBugReportOpen(false)} />
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border/40 bg-background/80 px-4 backdrop-blur-sm md:px-6">
       {/* Left: Hamburger (mobile) + Breadcrumb */}
       <div className="flex items-center gap-2">
@@ -114,6 +119,12 @@ export function Header() {
           >
             Mon profil
           </DropdownMenuItem>
+          <DropdownMenuItem
+            icon={<Bug className="h-4 w-4" />}
+            onClick={() => setBugReportOpen(true)}
+          >
+            Signaler un bug
+          </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
             icon={<LogOut className="h-4 w-4" />}
@@ -125,5 +136,6 @@ export function Header() {
         </DropdownMenu>
       </div>
     </header>
+    </>
   );
 }

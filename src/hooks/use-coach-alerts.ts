@@ -172,21 +172,21 @@ export function useGenerateAlerts() {
         supabase as any
       )
         .from("profiles")
-        .select("id, full_name, last_sign_in_at")
+        .select("id, full_name, last_seen_at")
         .eq("role", "client");
       if (profilesErr) throw profilesErr;
       const clients = (clientProfiles ?? []) as Array<{
         id: string;
         full_name: string;
-        last_sign_in_at: string | null;
+        last_seen_at: string | null;
       }>;
 
       const now = new Date();
 
       for (const client of clients) {
         // ── inactive_7d / inactive_14d ───────────────────────────────
-        if (client.last_sign_in_at) {
-          const lastLogin = new Date(client.last_sign_in_at);
+        if (client.last_seen_at) {
+          const lastLogin = new Date(client.last_seen_at);
           const daysSince = Math.floor(
             (now.getTime() - lastLogin.getTime()) / (1000 * 60 * 60 * 24),
           );

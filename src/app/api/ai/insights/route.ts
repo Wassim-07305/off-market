@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
     ] = await Promise.all([
       supabase
         .from("weekly_checkins")
-        .select("user_id, mood, energy, goals_progress, blockers, wins, created_at")
+        .select("user_id, mood, energy, goals_progress, blocker, win, created_at")
         .in("user_id", targetIds)
         .gte("created_at", since)
         .order("created_at", { ascending: false })

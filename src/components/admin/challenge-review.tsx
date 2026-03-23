@@ -44,7 +44,7 @@ export function ChallengeReview({ challengeId }: ChallengeReviewProps) {
         .select(
           "*, user:profiles!challenge_entries_user_id_fkey(id, full_name, avatar_url, email)",
         )
-        .order("submitted_at", { ascending: false });
+        .order("created_at", { ascending: false });
 
       if (challengeId) {
         query = query.eq("challenge_id", challengeId);

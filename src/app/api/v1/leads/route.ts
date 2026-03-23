@@ -22,11 +22,11 @@ export async function GET(request: Request) {
   let query = supabase
     .from("leads")
     .select(
-      "id, full_name, email, phone, source, status, assigned_to, created_at, updated_at",
+      "id, full_name, email, phone, source, stage, assigned_to, created_at, updated_at",
       { count: "exact" },
     );
 
-  if (status) query = query.eq("status", status);
+  if (status) query = query.eq("stage", status);
   if (search) {
     const sanitized = search.replace(
       /[%,.()\[\]{}|\\\/'"`;:!@#$^&*+=<>?~]/g,

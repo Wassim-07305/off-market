@@ -145,7 +145,7 @@ export async function POST(request: Request) {
       const { data: existingNoCheckin } = await supabase
         .from("coach_alerts")
         .select("client_id")
-        .eq("type", "no_checkin")
+        .eq("alert_type", "no_checkin")
         .gte("created_at", threeDaysAgo);
 
       const alreadyAlerted = new Set(

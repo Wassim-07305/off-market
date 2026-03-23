@@ -156,18 +156,18 @@ export async function POST(request: Request) {
                 full_name: invite.full_name,
                 email: invite.email,
                 source: "invitation",
-                status: "client",
+                stage: "client",
                 assigned_to: leastLoadedCoach.id,
-                profile_id: targetUserId,
+                converted_profile_id: targetUserId,
               });
 
               // Notify the assigned coach
               await admin.from("notifications").insert({
-                user_id: leastLoadedCoach.id,
+                recipient_id: leastLoadedCoach.id,
                 title: "Nouveau client assigne",
-                message: `Nouveau client assigne : ${invite.full_name}`,
+                body: `Nouveau client assigne : ${invite.full_name}`,
                 type: "info",
-                link: `/coach/clients`,
+                action_url: `/coach/clients`,
               });
             }
           } catch (provisioningError) {

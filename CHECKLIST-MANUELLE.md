@@ -16,177 +16,177 @@ Pour chaque item, teste manuellement et coche :
 
 ## 1. Landing Page (`/`)
 
-- [ ] Hero visible avec titre "Sors du marche visible"
-- [ ] 2 CTA : "Postuler maintenant" et "Comment ca marche"
-- [ ] 3 trust pills (Shield, Clock, Zap)
-- [ ] 3 stats animees (35+, 10K, 97%)
-- [ ] 6 cartes features
-- [ ] 3 etapes "Comment ca marche"
-- [ ] 3 cartes "Pourquoi Off-Market"
-- [ ] 3 temoignages avec etoiles
-- [ ] **FAQ accordeon** (6 questions, cliquer chaque question, une seule ouverte a la fois)
-- [ ] CTA final "Postuler maintenant" → redirige vers `/signup`
-- [ ] Footer : 3 colonnes, liens fonctionnels
-- [ ] Lien "CGV" → `/cgv` (page charge sans login)
-- [ ] Lien "Mentions legales" → `/mentions-legales`
-- [ ] Lien "Confidentialite" → `/confidentialite`
-- [ ] Lien "FAQ" dans la navbar scrolle vers la section FAQ
-- [ ] **Mobile 375px** : menu hamburger, sections empilees, CTA visible
+- [ ok] Hero visible avec titre "Sors du marche visible"
+- [ ok] 2 CTA : "Postuler maintenant" et "Comment ca marche"
+- [ ok] 3 trust pills (Shield, Clock, Zap)
+- [ok ] 3 stats animees (35+, 10K, 97%)
+- [ok ] 6 cartes features
+- [ ok] 3 etapes "Comment ca marche"
+- [ ok] 3 cartes "Pourquoi Off-Market"
+- [ ok] 3 temoignages avec etoiles
+- [ok ] **FAQ accordeon** (6 questions, cliquer chaque question, une seule ouverte a la fois)
+- [ok ] CTA final "Postuler maintenant" → redirige vers `/signup`
+- [ok ] Footer : 3 colonnes, liens fonctionnels
+- [ ok] Lien "CGV" → `/cgv` (page charge sans login)
+- [ ok] Lien "Mentions legales" → `/mentions-legales`
+- [ok ] Lien "Confidentialite" → `/confidentialite`
+- [ ok] Lien "FAQ" dans la navbar scrolle vers la section FAQ
+- [ok ] **Mobile 375px** : menu hamburger, sections empilees, CTA visible
 
 ---
 
 ## 2. Auth — Login (`/login`)
 
-- [ ] Formulaire email + mot de passe
-- [ ] Toggle oeil pour voir/cacher le mot de passe
-- [ ] Lien "Oublie ?" → `/forgot-password`
-- [ ] **Bouton "Continuer avec Google"** visible (fond blanc, logo Google)
-- [ ] **Bouton "Continuer avec Microsoft"** visible (fond blanc, logo Microsoft)
-- [ ] Connexion avec bon email/mdp → redirige vers dashboard du role
-- [ ] Connexion avec mauvais mdp → toast "Email ou mot de passe incorrect"
-- [ ] Formulaire vide → validation native du navigateur
-- [ ] **Titre "Connexion" visible sur mobile**
-- [ ] Lien "S'inscrire" → `/signup`
+- [ ok] Formulaire email + mot de passe
+- [ok] Toggle oeil pour voir/cacher le mot de passe
+- [ ok] Lien "Oublie ?" → `/forgot-password`
+- [ok ] **Bouton "Continuer avec Google"** visible (fond blanc, logo Google)
+- [] **Bouton "Continuer avec Microsoft"** visible (fond blanc, logo Microsoft) on le fait pas celui la du coup vérifier a ce qu'il ne soit plus présent
+- [ ok] Connexion avec bon email/mdp → redirige vers dashboard du role
+- [ ok] Connexion avec mauvais mdp → toast "Email ou mot de passe incorrect"
+- [ok ] Formulaire vide → validation native du navigateur
+- [ ok] **Titre "Connexion" visible sur mobile**
+- [ ok] Lien "S'inscrire" → `/signup`
 
 ---
 
 ## 3. Auth — Signup (`/signup`)
 
-- [ ] 4 champs : Nom complet, Email, Mot de passe, **Confirmer le mot de passe**
-- [ ] Toggle oeil independant sur chaque champ mot de passe
-- [ ] **Case CGU** : "J'accepte les CGV et la politique de confidentialite"
-- [ ] Liens CGV et confidentialite s'ouvrent dans un nouvel onglet
-- [ ] **Bouton desactive** si CGU pas cochee
-- [ ] Mot de passe < 6 chars → toast erreur
-- [ ] Mots de passe differents → toast "Les mots de passe ne correspondent pas"
-- [ ] **Erreurs Supabase en francais** (pas en anglais)
-- [ ] **Boutons SSO Google/Microsoft** visibles
-- [ ] **Titre "Inscription" visible sur mobile**
+- [ ok] 4 champs : Nom complet, Email, Mot de passe, **Confirmer le mot de passe**
+- [ ok] Toggle oeil independant sur chaque champ mot de passe
+- [ ok] **Case CGU** : "J'accepte les CGV et la politique de confidentialite"
+- [ ok] Liens CGV et confidentialite s'ouvrent dans un nouvel onglet
+- [ ok] **Bouton desactive** si CGU pas cochee
+- [ ok] Mot de passe < 6 chars → toast erreur
+- [ ok] Mots de passe differents → toast "Les mots de passe ne correspondent pas"
+- [ ok] **Erreurs Supabase en francais** (pas en anglais)
+- [ ok] **Boutons SSO Google/Microsoft** visibles mais ne marche pas
+- [ ok] **Titre "Inscription" visible sur mobile**
 
 ---
 
 ## 4. Auth — Register (`/register`)
 
-- [ ] Sans `?code=` : message "Invitation requise" + lien vers `/signup`
-- [ ] Avec code invalide : message "Invitation invalide"
-- [ ] Avec code valide : formulaire 2 champs (mdp + confirmation)
-- [ ] Toggle oeil independant par champ
+- [ok ] Sans `?code=` : message "Invitation requise" + lien vers `/signup`
+- [ok ] Avec code invalide : message "Invitation invalide"
+- [ ok] Avec code valide : formulaire 2 champs (mdp + confirmation)
+- [ok ] Toggle oeil independant par champ
 
 ---
 
 ## 5. Auth — Forgot Password (`/forgot-password`)
 
-- [ ] Champ email + bouton "Envoyer le lien"
-- [ ] Apres envoi : message "Email envoye" (meme si email n'existe pas = securise)
-- [ ] Lien retour vers login
+- [ ok] Champ email + bouton "Envoyer le lien"
+- [ok ] Apres envoi : message "Email envoye" (meme si email n'existe pas = securise)
+- [ok ] Lien retour vers login
 
 ---
 
 ## 6. Onboarding (`/onboarding`)
 
-- [ ] Redirection auto apres premiere connexion si `onboarding_completed = false`
-- [ ] Barre de progression en haut
-- [ ] Etape 1 : Video de bienvenue + bouton "C'est parti"
-- [ ] Etape 2 : "Parle-nous de toi" (niche, revenus, objectifs, source)
-- [ ] Validation des champs requis
-- [ ] Navigation precedent/suivant
-- [ ] Etape finale : confettis + badge "Newcomer"
-- [ ] Bouton "Acceder a mon espace" → redirige vers dashboard
+- [ok ] Redirection auto apres premiere connexion si `onboarding_completed = false`
+- [ok ] Barre de progression en haut
+- [ok ] Etape 1 : Video de bienvenue + bouton "C'est parti"
+- [ok ] Etape 2 : "Parle-nous de toi" (niche, revenus, objectifs, source)
+- [ ok] Validation des champs requis
+- [ ok] Navigation precedent/suivant
+- [ ok] Etape finale : confettis + badge "Newcomer"
+- [ ok] Bouton "Acceder a mon espace" → redirige vers dashboard
 
 ---
 
 ## 7. Dashboard Admin (`/admin/dashboard`)
 
-- [ ] Message de salutation personnalise (Bonjour/Bon apres-midi + prenom)
-- [ ] 4 KPI cartes (CA du mois, Eleves actifs, Nouveaux, LTV moyen)
-- [ ] 4 cartes Row 2 (Retention, Churn, Taux closing, Completion formations)
-- [ ] Graphique "Evolution CA" (AreaChart)
-- [ ] Donut "CA par canal"
-- [ ] Heatmap d'activite
-- [ ] Leaderboard coaches
-- [ ] Activity feed
-- [ ] **Bouton Export** (Rapport PDF + Export CSV)
-- [ ] Banniere d'alertes systeme (si eleves a risque)
+- [ok ] Message de salutation personnalise (Bonjour/Bon apres-midi + prenom)
+- ok[ ] 4 KPI cartes (CA du mois, Eleves actifs, Nouveaux, LTV moyen)
+- [ok ] 4 cartes Row 2 (Retention, Churn, Taux closing, Completion formations)
+- [ok ] Graphique "Evolution CA" (AreaChart)
+- [ok ] Donut "CA par canal"
+- [ok ] Heatmap d'activite
+- [ok ] Leaderboard coaches
+- [ok ] Activity feed
+- [ ] **Bouton Export** (Rapport PDF + Export CSV) il me retorune sa {"error":"Acces reserve aux administrateurs"}
+- [ ok] Banniere d'alertes systeme (si eleves a risque)
 
 ---
 
 ## 8. CRM (`/admin/crm`)
 
-- [ ] 4 onglets : Clients, Suivi Coaches, Pipeline Setter, Pipeline Closer
-- [ ] **Mode Clients** : liste avec recherche, filtres par tag/flag
-- [ ] Pastilles de flag colorees (vert/orange/rouge, animation ping sur rouge)
-- [ ] Clic sur client → fiche detail avec 7 onglets
-- [ ] **Mode Suivi Coaches** : 4 KPI + liste coaches extensible
-- [ ] **Mode Pipeline Setter** : kanban avec colonnes, drag-and-drop
-- [ ] Bouton "Nouveau prospect" → cree une carte
-- [ ] **Mode Pipeline Closer** : kanban closer
-- [ ] **Import CSV** : bouton importer → modal 4 etapes (fichier, colonnes, apercu, import)
-- [ ] **Skeleton de chargement** visible quand on switch entre modes
-- [ ] **Mobile** : onglets scrollables horizontalement
+- [ ok] 4 onglets : Clients, Suivi Coaches, Pipeline Setter, Pipeline Closer
+- [ ] **Mode Clients** : liste avec recherche, filtres par tag/flag le filtre par segments s'affiche mal
+- [ok ] Pastilles de flag colorees (vert/orange/rouge, animation ping sur rouge)
+- [ok ] Clic sur client → fiche detail avec 7 onglets
+- [ok ] **Mode Suivi Coaches** : 4 KPI + liste coaches extensible
+- [ ok] **Mode Pipeline Setter** : kanban avec colonnes, drag-and-drop
+- [ok ] Bouton "Nouveau prospect" → cree une carte
+- [ ok] **Mode Pipeline Closer** : kanban closer
+- [ ] **Import CSV** : bouton importer → modal 4 etapes (fichier, colonnes, apercu, import) je vois pas ou il est
+- [ok ] **Skeleton de chargement** visible quand on switch entre modes
+- [ ok] **Mobile** : onglets scrollables horizontalement
 
 ---
 
 ## 9. Fiche Contact Detail (`/admin/crm/[id]`)
 
-- [ ] Header : avatar, nom, flag, tag engagement, email, telephone
-- [ ] 5 cartes stats : Score sante, Engagement, Revenus, Inscription, Derniere activite
-- [ ] **Onglet Apercu** : objectifs, programme, notes, progression pipeline
-- [ ] **Onglet Business** : niche, CA actuel, objectif, LTV, barre progression
-- [ ] **Onglet Timeline** : activites chronologiques
-- [ ] **Onglet Notes** : ajout note (Entree), epinglage, affichage
-- [ ] **Onglet Taches** : creation tache, completion (cercle vert + barre)
-- [ ] **Onglet Drapeaux** : changement de flag + historique
-- [ ] **Changement de flag** : selector → confirmation → toast
-
+- [ ok] Header : avatar, nom, flag, tag engagement, email, telephone
+- [ ] 5 cartes stats : Score sante, Engagement, Revenus, Inscription, Derniere activite je vois pa inscription et derniere activite et quand je clique sur messaging sa ne m'ouvre pas la conversation avec la personne en question
+- [ok ] **Onglet Apercu** : objectifs, programme, notes, progression pipeline
+- [ ] **Onglet Business** : niche, CA actuel, objectif, LTV, barre progression ya pas de barre de progression
+- [ ok] **Onglet Timeline** : activites chronologiques
+- [ ok] **Onglet Notes** : ajout note (Entree), epinglage, affichage
+- [ ok] **Onglet Taches** : creation tache, completion (cercle vert + barre)
+- [ok ] **Onglet Drapeaux** : changement de flag + historique
+- [ ok] **Changement de flag** : selector → confirmation → toast
+B
 ---
 
 ## 10. Messagerie (`/admin/messaging`)
 
-- [ ] Sidebar canaux (publics # / prives verrou)
-- [ ] Section DMs avec recherche
-- [ ] Badges non-lu (compteur rouge)
-- [ ] Clic canal → charge les messages
-- [ ] **Envoi message** : taper + Entree
-- [ ] **Formatage** : gras, italique, listes (boutons dans la barre)
-- [ ] **Shift+Entree** = nouvelle ligne (pas envoyer)
-- [ ] **Fichier joint** : bouton paperclip → upload + apercu
-- [ ] **Message vocal** : bouton micro → enregistrement → envoi
-- [ ] **Reactions** : bouton smile → 6 emojis rapides
-- [ ] **Reponse** : bouton repondre → banniere citation
-- [ ] **Fils (threads)** : bouton fil → panneau lateral
-- [ ] **Epinglage** : bouton pin → barre des epingles en haut
-- [ ] **Signets** : bouton bookmark → panneau signets
-- [ ] **Recherche** : bouton loupe → filtre messages
-- [ ] **Message urgent** : bouton alerte → fond rouge + badge URGENT
-- [ ] **Templates** : bouton Zap → picker + gestion templates
-- [ ] **@mention** : taper @ → autocomplete
-- [ ] **Commandes IA** : taper /help → panneau commandes
-- [ ] **Creation canal** : bouton + → modal (nom, description, public/prive, membres)
-- [ ] **Parametres canal** : modal avec Sourdine, Epingler, Archiver, Membres
+- [ ok] Sidebar canaux (publics # / prives verrou)
+- [ok ] Section DMs avec recherche
+- [] Badges non-lu (compteur rouge) c'est ok mais il y a un canal qui reste a 3 je ne sai spas pourquoi
+- [ ok] Clic canal → charge les messages
+- [ok ] **Envoi message** : taper + Entree
+- [ok ] **Formatage** : gras, italique, listes (boutons dans la barre)
+- [ok ] **Shift+Entree** = nouvelle ligne (pas envoyer)
+- [ok ] **Fichier joint** : bouton paperclip → upload + apercu
+- [] **Message vocal** : bouton micro → enregistrement → envoi ok mais je vois les message vocal qui dure tous 0 secondes
+- [ok ] **Reactions** : bouton smile → 6 emojis rapides
+- [ ] **Reponse** : bouton repondre → banniere citation ok mais quand je clique pour répondre a un message quand jenvoie le message rien ne montre que j'ai répondu a ce message je ne peux pas cliquer rapidement pour le retrouver
+- [ ] **Fils (threads)** : bouton fil → panneau lateral vu que réponse ne marche pas sa ne marche pas en soit
+- [ ok] **Epinglage** : bouton pin → barre des epingles en haut
+- [ ] **Signets** : bouton bookmark → panneau signets ok mais par contre les images affiche juste Image
+- [ ok] **Recherche** : bouton loupe → filtre messages
+- [ ok] **Message urgent** : bouton alerte → fond rouge + badge URGENT
+- [ ] **Templates** : bouton Zap → picker + gestion templates ok pour le template qui se place par contre le systeme ou on peut mettre {{nom}} par exemple ne amrche pas il affiche {{nom}} dans le message
+- [ok] **@mention** : taper @ → autocomplete
+- [ ] **Commandes IA** : taper /help → panneau commandes n'affiche rien
+- [ok] **Creation canal** : bouton + → modal (nom, description, public/prive, membres)
+- [ok] **Parametres canal** : modal avec Sourdine, Epingler, Archiver, Membres
 
 ---
 
 ## 11. Formations / LMS (`/admin/school`)
 
-- [ ] Liste des formations avec filtres (Toutes, En cours, Terminees, Non commencees)
-- [ ] Barre de recherche
-- [ ] Lien "Gerer les formations" → `/admin/school/admin`
-- [ ] **Creation formation** : bouton + modal (titre, description)
-- [ ] **Publier/Depublier** : toggle statut
-- [ ] **Builder de cours** : modules + lecons, drag-and-drop
-- [ ] **Types de lecons** : Texte, Video, Quiz, Exercice, PDF
-- [ ] **Quiz builder** : 3 types (choix multiple, vrai/faux, reponse libre)
-- [ ] **Prerequis** : configurer un cours requis avant un autre
-- [ ] **Vue client** : progression, lecons verrouillees sequentiellement
-- [ ] **Marquer lecon terminee** → barre progression augmente
-- [ ] **Certificat** : genere a 100% de completion
-- [ ] **Tracking temps** : le temps passe par lecon est enregistre
+- [ok] Liste des formations avec filtres (Toutes, En cours, Terminees, Non commencees)
+- [ok] Barre de recherche
+- [ok] Lien "Gerer les formations" → `/admin/school/admin`
+- [ok] **Creation formation** : bouton + modal (titre, description)
+- [ ok] **Publier/Depublier** : toggle statut
+- [] **Builder de cours** : modules + lecons, drag-and-drop je n'arrive pas a créer un cours sa charge a l'infini quand je clique sur enregistrer
+- [ ] **Types de lecons** : Texte, Video, Quiz, Exercice, PDF il y a pas sa
+- [ ] **Quiz builder** : 3 types (choix multiple, vrai/faux, reponse libre) je le vois pas en tout cas
+- [ ] **Prerequis** : configurer un cours requis avant un autre je vois pas
+- [ ] **Vue client** : progression, lecons verrouillees sequentiellement je n'arrive pas a voir la page d'une formation sa charge en boucle
+- [ ] **Marquer lecon terminee** → barre progression augmente je vois pas
+- [ ] **Certificat** : genere a 100% de completion je vois pas
+- [ ] **Tracking temps** : le temps passe par lecon est enregistre je vois pas
 
 ---
 
 ## 12. Appels & Calendrier (`/admin/calls`)
-
-- [ ] 2 onglets : Appels et Lives
+je vois rien sa charge a l'infini
+- [] 2 onglets : Appels et Lives sa charge a l'infini le panel
 - [ ] **Appel instantane** : dropdown → "Appel instantane" → lien genere
 - [ ] **Planifier appel** : modal (client, date, heure, duree)
 - [ ] **Nouveau live** : modal (titre, date, duree)
@@ -202,7 +202,7 @@ Pour chaque item, teste manuellement et coche :
 ---
 
 ## 13. Gamification (`/client/gamification`)
-
+charge a linfini
 - [ ] Carte Niveau avec barre XP et progression
 - [ ] Carte Streak (flamme coloree si actif, grise sinon)
 - [ ] 3 mini-cartes stats (XP Total, Badges gagnes, Recompenses)
@@ -256,28 +256,28 @@ Pour chaque item, teste manuellement et coche :
 
 ## 17. Formulaires (`/admin/forms`)
 
-- [ ] Liste des formulaires avec filtres (Tous, Actifs, Fermes)
-- [ ] **Nouveau formulaire** : galerie de templates → builder
-- [ ] **Builder** : palette de champs a gauche, canvas central, drag-and-drop
-- [ ] Types de champs : texte, email, choix unique/multiple, NPS, rating, scale, date, fichier, heading
-- [ ] **Logique conditionnelle** : bouton GitBranch → config "si... alors..."
-- [ ] **Apercu** : bouton oeil
-- [ ] **Formulaire public** (`/f/[formId]`) : style Typeform, question par question
-- [ ] Navigation Suivant/Precedent, barre de progression
-- [ ] Toggle dark/light
-- [ ] **Analytics** : vue tableau + vue fiches, export CSV/Markdown
+- [ ok] Liste des formulaires avec filtres (Tous, Actifs, Fermes)
+- [ok ] **Nouveau formulaire** : galerie de templates → builder
+- [ ok] **Builder** : palette de champs a gauche, canvas central, drag-and-drop
+- [ ok] Types de champs : texte, email, choix unique/multiple, NPS, rating, scale, date, fichier, heading
+- [ok ] **Logique conditionnelle** : bouton GitBranch → config "si... alors..."
+- [ ok] **Apercu** : bouton oeil
+- [ ok] **Formulaire public** (`/f/[formId]`) : style Typeform, question par question
+- [ok ] Navigation Suivant/Precedent, barre de progression
+- [ ok] Toggle dark/light
+- [ ] **Analytics** : vue tableau + vue fiches, export CSV/Markdown je ne vois pas + je ne peux pas mettre les formulaire en publique
 
 ---
 
-## 18. Contrats & Facturation (`/admin/billing`)
+## 18. Contrats & Facturation (`/admin/billing`) a revoir
 
-- [ ] HeroMetric "Revenus du mois"
-- [ ] 4 cartes stats (Encaisses, En attente, En retard, Contrats signes)
+- [ok ] HeroMetric "Revenus du mois"
+- [ ok] 4 cartes stats (Encaisses, En attente, En retard, Contrats signes)
 - [ ] Graphique Cash Flow
 - [ ] Panneaux "Derniers contrats" et "Dernieres factures"
 - [ ] **Export** : Rapport PDF + Factures CSV
 
-### Contrats (`/admin/billing/contracts`)
+### Contrats (`/admin/billing/contracts`) a revoir
 - [ ] Liste avec filtres (Tous, Brouillons, Envoyes, Signes, Annules)
 - [ ] Recherche
 - [ ] **Nouveau contrat** : modal (template optionnel, client, titre, contenu)
@@ -287,7 +287,7 @@ Pour chaque item, teste manuellement et coche :
 - [ ] **Signature publique** (`/contracts/[id]/sign`) : mode dessin + mode taper, theme dark
 - [ ] **PDF contrat** : bouton telecharger
 
-### Factures (`/admin/billing/invoices`)
+### Factures (`/admin/billing/invoices`) a revoir
 - [ ] 4 KPI + 8 onglets de statut
 - [ ] **Nouvelle facture** : lignes de facturation, quantite × prix, TVA (20%), remise
 - [ ] Calcul auto : HT, TVA, TTC
@@ -296,14 +296,14 @@ Pour chaque item, teste manuellement et coche :
 - [ ] **Bouton Payer** (Stripe) si configure
 - [ ] **Echeanciers** : onglet Echeanciers
 
-### Commissions (`/sales/commissions`)
+### Commissions (`/sales/commissions`) sa nexiste pas
 - [ ] 4 KPI : Total gagne, A recevoir, Deja paye, Nb ventes
 - [ ] Sections "A recevoir" et "Historique"
 
 ---
 
 ## 19. Communaute / Feed (`/admin/feed`)
-
+charge longtemps a revoir
 - [ ] Composeur de post (texte + type)
 - [ ] Types : Victoire (WinComposer structure), Question, Experience, General
 - [ ] Filtres : Tout, Annonces, Victoires, Questions, Experiences, General
@@ -317,7 +317,7 @@ Pour chaque item, teste manuellement et coche :
 ---
 
 ## 20. Annonces (`/admin/announcements`)
-
+charge longtemps a revoir
 - [ ] Bouton "Nouvelle annonce"
 - [ ] 5 types : Info (bleu), Succes (vert), Attention (ambre), Urgent (rouge), Mise a jour (violet)
 - [ ] Ciblage par role (multi-select)
@@ -327,7 +327,7 @@ Pour chaque item, teste manuellement et coche :
 ---
 
 ## 21. Communaute / Membres (`/admin/community`)
-
+n'est pas présent dans la sidebar + charge a l'infini
 - [ ] Repertoire des membres avec avatar, nom, XP, badges
 - [ ] Recherche par nom
 - [ ] Filtre par role
@@ -384,18 +384,18 @@ Pour chaque item, teste manuellement et coche :
 
 ## 25. Parametres (`/admin/settings`)
 
-- [ ] **Profil** : nom, telephone, bio, avatar upload
-- [ ] **Theme** : Clair, Sombre, Systeme
-- [ ] **Mot de passe** : ancien + nouveau + confirmation
-- [ ] **Notifications** : 9 toggles + digest email
-- [ ] **Branding** (admin) : nom app, couleurs, police, border-radius, logo, favicon
-- [ ] **API Keys** (admin) : creation, copie (visible une seule fois), revocation
-- [ ] **Webhooks** (admin) : creation, toggle activation, suppression
-- [ ] **Accessible depuis la nav sidebar** (pas de doublon)
+- [ ] **Profil** : nom, telephone, bio, avatar upload on peut pas sauvegarder et mettre une photo
+- [ ok] **Theme** : Clair, Sombre, Systeme
+- [ ] **Mot de passe** : ancien + nouveau + confirmation comment faire si connecter via google ?
+- [ ] **Notifications** : 9 toggles + digest email ne fait rien quand je clique
+- [ ] **Branding** (admin) : nom app, couleurs, police, border-radius, logo, favicon je vois pas
+- [ ] **API Keys** (admin) : creation, copie (visible une seule fois), revocation je vois pas
+- [ ] **Webhooks** (admin) : creation, toggle activation, suppression je vois pas
+- [ok] **Accessible depuis la nav sidebar** (pas de doublon) 
 
 ---
 
-## 26. Invitations (`/admin/invitations`)
+## 26. Invitations (`/admin/invitations`) c'est ok mais c'est dans https://off-market-amber.vercel.app/admin/personnes
 
 - [ ] Liste avec filtres (all, pending, accepted, expired)
 - [ ] **Nouvelle invitation** : email + role → toast succes
@@ -405,7 +405,7 @@ Pour chaque item, teste manuellement et coche :
 
 ---
 
-## 27. Gestion Utilisateurs (`/admin/users`)
+## 27. Gestion Utilisateurs (`/admin/users`) ne se trouve pas dans la sidebar charge a l'infini
 
 - [ ] Tableau avec filtres (Actifs, Archives, Tous)
 - [ ] Recherche par nom/email
@@ -420,32 +420,34 @@ Pour chaque item, teste manuellement et coche :
 ## 28. Nouvelles Pages Admin
 
 ### Integrations (`/admin/integrations`)
-- [ ] 6 cartes : Google Calendar, Stripe, Resend, Unipile, OpenRouter, Miro
-- [ ] Badge "Configure" (vert) / "Non configure" (gris) pour chaque service
-- [ ] Bouton "Connecter" pour Google Calendar
+- [ ok] 6 cartes : Google Calendar, Stripe, Resend, Unipile, OpenRouter, Miro
+- [ok ] Badge "Configure" (vert) / "Non configure" (gris) pour chaque service
+- [ ] Bouton "Connecter" pour Google Calendar Vous ne pouvez pas vous connecter, car cette appli a envoyé une demande non valide. Vous pouvez réessayer plus tard ou contacter le développeur à propos de ce problème. En savoir plus sur cette erreur
+Si vous avez développé cette appli, consultez les détails de l'erreur.
+Erreur 400 : redirect_uri_mismatch quand j'essaie de me connecter
 
-### Monitoring (`/admin/monitoring`)
-- [ ] Statut systeme : badge vert/orange/rouge + latence DB
-- [ ] Metriques d'usage : utilisateurs actifs, messages, appels, formulaires
-- [ ] Logs recents
-- [ ] Bouton "Verifier maintenant" → rafraichit tout
+### Monitoring (`/admin/monitoring`) sa marche vraiment ?
+- [ok ] Statut systeme : badge vert/orange/rouge + latence DB
+- [ ok] Metriques d'usage : utilisateurs actifs, messages, appels, formulaires
+- [ok ] Logs recents
+- [ok ] Bouton "Verifier maintenant" → rafraichit tout
 
 ### Documentation API (`/admin/api-docs`)
-- [ ] Liste des 6 endpoints documentes
-- [ ] Sections : Authentification, Rate Limiting, Pagination
-- [ ] Exemples de reponse JSON
+- [ ] Liste des 6 endpoints documentes juste il y a un texte jaune sur du jaune on voit mal mais sinon c'es tok
+- [ok] Sections : Authentification, Rate Limiting, Pagination
+- [ ok] Exemples de reponse JSON
 
 ---
 
 ## 29. Pages Legales (SANS connexion)
 
-- [ ] `/cgv` : charge sans redirection vers login, contenu visible
-- [ ] `/mentions-legales` : charge sans redirection
-- [ ] `/confidentialite` : charge sans redirection
+- [ok] `/cgv` : charge sans redirection vers login, contenu visible
+- [ ok] `/mentions-legales` : charge sans redirection
+- [ ok] `/confidentialite` : charge sans redirection
 
 ---
 
-## 30. Profil Public (`/profile/[id]`)
+## 30. Profil Public (`/profile/[id]`) check de ton coté
 
 - [ ] Accessible sans connexion
 - [ ] Affiche : avatar, nom, bio, XP, niveau, badges, formations
@@ -455,12 +457,12 @@ Pour chaque item, teste manuellement et coche :
 
 ## 31. Health Check (`/api/health`)
 
-- [ ] Retourne JSON : `{ status: "ok", checks: { database: { status, latency_ms } } }`
-- [ ] Accessible sans authentification
+- [ ] Retourne JSON : `{ status: "ok", checks: { database: { status, latency_ms } } }` check de ton coté
+- [ ] Accessible sans authentification check de ton coté
 
 ---
 
-## 32. Navigation Admin
+## 32. Navigation Admin check de ton coté
 
 - [ ] **Sidebar** : 4 sections (Pilotage, Contenu, Business, Administration)
 - [ ] **Items** : Dashboard, CRM, Personnes, Appels, Messagerie, Finances, Formation, Feed, Ressources, AlexIA, Formulaires, Booking, Appels Closing, Facturation, Gamification, Annonces, Miro, Integrations, Monitoring, Documentation API, Reglages
@@ -471,7 +473,7 @@ Pour chaque item, teste manuellement et coche :
 
 ---
 
-## 33. Responsive (375px)
+## 33. Responsive (375px) check de ton coté
 
 - [ ] Landing : menu burger, FAQ, CTA, footer
 - [ ] Login/Signup : titres visibles, boutons SSO
@@ -484,7 +486,7 @@ Pour chaque item, teste manuellement et coche :
 
 ---
 
-## 34. Securite
+## 34. Securite check de ton coté
 
 - [ ] Pages protegees redirigent vers `/login` sans auth
 - [ ] Client ne peut pas acceder a `/admin/*`

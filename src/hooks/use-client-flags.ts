@@ -167,7 +167,7 @@ export function useSetClientFlag() {
         if (recipientIds.size === 0) return;
 
         const notifications = Array.from(recipientIds).map((recipientId) => ({
-          user_id: recipientId,
+          recipient_id: recipientId,
           type: "flag_change",
           title,
           body,

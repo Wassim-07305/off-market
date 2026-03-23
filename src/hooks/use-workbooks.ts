@@ -184,10 +184,10 @@ export function useSubmitWorkbook() {
 
           if (adminIds.length > 0) {
             const notifications = adminIds.map((adminId) => ({
-              user_id: adminId,
+              recipient_id: adminId,
               type: "workbook_completed",
               title: "Workbook complete",
-              message: `Le client ${clientName} a complete le workbook ${workbookTitle}`,
+              body: `Le client ${clientName} a complete le workbook ${workbookTitle}`,
               data: {
                 workbook_id: workbookId,
                 submission_id: submission.id,

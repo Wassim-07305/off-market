@@ -91,7 +91,7 @@ export function useUsageMetrics() {
       const { count: formSubmissionsThisWeek } = await supabase
         .from("form_submissions")
         .select("id", { count: "exact", head: true })
-        .gte("created_at", weekStart);
+        .gte("submitted_at", weekStart);
 
       return {
         activeUsers24h: activeUsers24h ?? 0,

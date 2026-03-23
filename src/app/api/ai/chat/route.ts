@@ -55,10 +55,10 @@ async function buildContext(
         .limit(10),
       supabase
         .from("profiles")
-        .select("id, full_name, last_active_at")
+        .select("id, full_name, last_seen_at")
         .eq("role", "prospect")
         .lt(
-          "last_active_at",
+          "last_seen_at",
           new Date(Date.now() - 14 * 86400000).toISOString(),
         )
         .limit(20),
@@ -80,9 +80,9 @@ async function buildContext(
     if (atRiskClients && atRiskClients.length > 0) {
       context += `\n### Clients inactifs depuis 14+ jours\n`;
       for (const c of atRiskClients) {
-        const daysAgo = c.last_active_at
+        const daysAgo = c.last_seen_at
           ? Math.round(
-              (Date.now() - new Date(c.last_active_at).getTime()) / 86400000,
+              (Date.now() - new Date(c.last_seen_at).getTime()) / 86400000,
             )
           : "?";
         context += `- ${c.full_name} — inactif depuis ${daysAgo} jours\n`;

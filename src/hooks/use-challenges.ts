@@ -117,7 +117,7 @@ export function useChallenges() {
         .from("challenge_entries")
         .insert({
           challenge_id: challengeId,
-          profile_id: user.id,
+          user_id: user.id,
           content,
           proof_url: proofUrl ?? null,
         })
@@ -152,7 +152,7 @@ export function useChallenges() {
       const { error } = await (supabase as any)
         .from("challenge_entries")
         .update({
-          review_status: status,
+          status: status,
           review_note: note ?? null,
           reviewed_by: user.id,
         })
