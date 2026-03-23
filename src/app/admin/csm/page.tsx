@@ -141,7 +141,7 @@ export default function AdminCsmPage() {
     }
     if (successes > 0) {
       toast.success(
-        `${successes} client${successes > 1 ? "s" : ""} assigne${successes > 1 ? "s" : ""} avec succes`,
+        `${successes} client${successes > 1 ? "s" : ""} assigne${successes > 1 ? "s" : ""} avec succès`,
       );
     }
   };
@@ -222,7 +222,7 @@ export default function AdminCsmPage() {
                 ) : (
                   <Square className="w-3.5 h-3.5" />
                 )}
-                Tout selectionner
+                Tout sélectionner
               </button>
               <button
                 onClick={handleAutoAssignAll}

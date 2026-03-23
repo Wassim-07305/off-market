@@ -110,7 +110,7 @@ export function useSetClientFlag() {
       queryClient.invalidateQueries({
         queryKey: ["client-flag-history", variables.clientId],
       });
-      toast.success("Drapeau mis a jour");
+      toast.success("Drapeau mis à jour");
 
       // ── Auto-notifications on flag change ──────────────────────
       if (!result || result.oldFlag === result.newFlag) return;
@@ -186,7 +186,7 @@ export function useSetClientFlag() {
       }
     },
     onError: () => {
-      toast.error("Erreur lors de la mise a jour du drapeau");
+      toast.error("Erreur lors de la mise à jour du drapeau");
     },
   });
 }

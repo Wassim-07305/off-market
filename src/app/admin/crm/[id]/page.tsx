@@ -95,7 +95,7 @@ export default function AdminStudentDetailPage({
   if (!student) {
     return (
       <div className="text-center py-16">
-        <p className="text-muted-foreground">Eleve non trouve</p>
+        <p className="text-muted-foreground">Élève non trouvé</p>
         <Link
           href={`${prefix}/crm`}
           className="text-primary text-sm mt-2 inline-block"
@@ -149,11 +149,11 @@ export default function AdminStudentDetailPage({
       profileId: student.id,
       tag: newTag,
     });
-    toast.success("Tag mis a jour");
+    toast.success("Tag mis à jour");
   };
 
   const tabs: { key: TabType; label: string; icon: typeof FileText }[] = [
-    { key: "overview", label: "Apercu", icon: User },
+    { key: "overview", label: "Aperçu", icon: User },
     { key: "business", label: "Business", icon: Briefcase },
     { key: "timeline", label: "Timeline", icon: History },
     { key: "notes", label: "Notes", icon: FileText },
@@ -321,7 +321,7 @@ export default function AdminStudentDetailPage({
         </div>
         <div className="bg-surface border border-border rounded-xl p-4 text-center">
           <p className="text-xs text-muted-foreground mb-1">
-            Derniere activite
+            Dernière activité
           </p>
           <p className="text-sm font-medium text-foreground mt-1">
             {details?.last_engagement_at
@@ -569,7 +569,7 @@ export default function AdminStudentDetailPage({
           <div className="space-y-4">
             {!activities || activities.length === 0 ? (
               <p className="text-sm text-muted-foreground text-center py-8">
-                Aucune activite
+                Aucune activité
               </p>
             ) : (
               <div className="relative pl-6">

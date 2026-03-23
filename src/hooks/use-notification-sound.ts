@@ -10,7 +10,7 @@ import {
 } from "@/lib/notification-sounds";
 
 /**
- * Determine si une notification est urgente en se basant sur son type et sa categorie.
+ * Determine si une notification est urgente en se basant sur son type et sa catégorie.
  */
 export function isUrgentNotification(type: string, category?: string): boolean {
   return getSoundTypeForNotification(type, category) === "urgent";
@@ -87,9 +87,9 @@ export function useNotificationSound() {
   return {
     /** Joue le son correspondant au type donne */
     playSound,
-    /** Joue le son adapte a un type/categorie de notification */
+    /** Joue le son adapte a un type/catégorie de notification */
     playSoundForNotification,
-    /** Joue un apercu d'un type de son (ignore DND) */
+    /** Joue un aperçu d'un type de son (ignore DND) */
     preview,
     /** Active/desactive le son globalement */
     setSoundEnabled,

@@ -147,7 +147,7 @@ export default function FormRespondPage({
   if (!form) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
-        <p className="text-muted-foreground">Formulaire non trouve</p>
+        <p className="text-muted-foreground">Formulaire non trouvé</p>
       </div>
     );
   }
@@ -177,7 +177,7 @@ export default function FormRespondPage({
           <h1 className="text-3xl font-bold text-foreground mb-3">Merci !</h1>
           <p className="text-lg text-muted-foreground">
             {form.thank_you_message ||
-              "Ta reponse a ete enregistree avec succes."}
+              "Ta réponse a ete enregistree avec succès."}
           </p>
           <Link
             href={`${prefix}/forms`}
@@ -355,7 +355,7 @@ function TypeformField({
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder={field.placeholder ?? "Ecris ta reponse ici..."}
+        placeholder={field.placeholder ?? "Ecris ta réponse ici..."}
         className="w-full text-lg sm:text-xl bg-transparent border-b-2 border-border focus:border-primary pb-3 outline-none placeholder:text-muted-foreground/30 text-foreground transition-colors"
       />
     );
@@ -371,7 +371,7 @@ function TypeformField({
           }}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          placeholder={field.placeholder ?? "Ecris ta reponse ici..."}
+          placeholder={field.placeholder ?? "Ecris ta réponse ici..."}
           rows={5}
           className="w-full text-lg bg-transparent border-b-2 border-border focus:border-primary pb-3 outline-none placeholder:text-muted-foreground/30 text-foreground transition-colors resize-none"
         />
@@ -562,7 +562,7 @@ function TypeformField({
           <span className="text-base">
             {value
               ? (options.find((o) => o.value === value)?.label ?? value)
-              : "Selectionner..."}
+              : "Sélectionner..."}
           </span>
           <ChevronDown
             className={cn(
@@ -806,7 +806,7 @@ function TypeformField({
       type="text"
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      placeholder="Reponse..."
+      placeholder="Réponse..."
       className="w-full text-lg bg-transparent border-b-2 border-border focus:border-primary pb-3 outline-none text-foreground"
     />
   );

@@ -47,7 +47,7 @@ export function useInvitations() {
     },
     onSuccess: async (data) => {
       queryClient.invalidateQueries({ queryKey: ["invitations"] });
-      toast.success("Invitation creee avec succes");
+      toast.success("Invitation creee avec succès");
 
       // Envoyer l'email d'invitation (silencieux en cas d'echec)
       try {
@@ -107,7 +107,7 @@ export function useInvitations() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["invitations"] });
-      toast.success("Invitations creees avec succes");
+      toast.success("Invitations creees avec succès");
     },
     onError: (error: Error) => {
       toast.error(error.message || "Erreur lors de l'import");

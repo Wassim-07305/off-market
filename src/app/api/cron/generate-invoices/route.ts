@@ -3,8 +3,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 
 /**
  * Cron endpoint pour la generation automatique de factures.
- * Cherche les contrats signes avec un echeancier de paiement actif
- * et genere les factures dues automatiquement.
+ * Cherche les contrats signes avec un échéancier de paiement actif
+ * et généré les factures dues automatiquement.
  *
  * Vercel Cron : GET /api/cron/generate-invoices
  * Header: Authorization: Bearer <CRON_SECRET>
@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
     const now = new Date();
     const todayISO = now.toISOString().split("T")[0]; // YYYY-MM-DD
 
-    // ── 1. Chercher les contrats signes avec echeancier ────────
+    // ── 1. Chercher les contrats signes avec échéancier ────────
     const { data: schedules, error: schedulesError } = await supabase
       .from("payment_schedules")
       .select(
@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
     if (schedulesError) {
       console.error("[generate-invoices] Erreur schedules:", schedulesError);
       return NextResponse.json(
-        { error: "Erreur lors de la lecture des echeanciers" },
+        { error: "Erreur lors de la lecture des échéanciers" },
         { status: 500 },
       );
     }
@@ -92,7 +92,7 @@ export async function GET(request: NextRequest) {
           .insert({
             contract_id: contract.id,
             client_id: contract.client_id,
-            invoice_number: "", // Le trigger DB genere le numero
+            invoice_number: "", // Le trigger DB généré le numéro
             amount: subtotal,
             tax,
             tax_rate: 20,
@@ -135,7 +135,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // ── 2. Chercher aussi les contrats signes SANS echeancier ──
+    // ── 2. Chercher aussi les contrats signes SANS échéancier ──
     // mais avec un montant et une date de fin (facturation unique a la signature)
     // On ne genere une facture que si aucune n'existe encore pour ce contrat
     const { data: contractsWithoutSchedule } = await supabase
@@ -146,7 +146,7 @@ export async function GET(request: NextRequest) {
       .gt("amount", 0);
 
     for (const contract of contractsWithoutSchedule ?? []) {
-      // Verifier s'il a un echeancier
+      // Verifier s'il a un échéancier
       const { data: hasSchedule } = await supabase
         .from("payment_schedules")
         .select("id")
@@ -205,7 +205,7 @@ export async function GET(request: NextRequest) {
 
       if (insertError) {
         errors.push(
-          `Contrat sans echeancier ${contract.id}: ${insertError.message}`,
+          `Contrat sans échéancier ${contract.id}: ${insertError.message}`,
         );
         continue;
       }

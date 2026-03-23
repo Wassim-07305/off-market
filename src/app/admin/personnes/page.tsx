@@ -25,7 +25,7 @@ const InvitationsContent = dynamic(
   { ssr: false },
 );
 
-type Tab = "clients" | "equipe" | "invitations";
+type Tab = "clients" | "équipe" | "invitations";
 
 export default function PersonnesPage() {
   const [tab, setTab] = useState<Tab>("clients");
@@ -40,7 +40,7 @@ export default function PersonnesPage() {
           Personnes
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Gerez vos clients, votre equipe et les invitations
+          Gerez vos clients, votre équipe et les invitations
         </p>
       </motion.div>
 
@@ -60,16 +60,16 @@ export default function PersonnesPage() {
             Clients
           </button>
           <button
-            onClick={() => setTab("equipe")}
+            onClick={() => setTab("équipe")}
             className={cn(
               "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all",
-              tab === "equipe"
+              tab === "équipe"
                 ? "bg-surface text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground",
             )}
           >
             <UserCog className="w-4 h-4" />
-            Equipe
+            Équipe
           </button>
           <button
             onClick={() => setTab("invitations")}
@@ -89,7 +89,7 @@ export default function PersonnesPage() {
       {/* Content */}
       <div>
         {tab === "clients" && <ClientsContent />}
-        {tab === "equipe" && <EquipeContent />}
+        {tab === "équipe" && <EquipeContent />}
         {tab === "invitations" && <InvitationsContent />}
       </div>
     </motion.div>

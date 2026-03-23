@@ -171,7 +171,7 @@ export default function FormsPage() {
                   <div className="flex items-center gap-3 mt-3.5 text-xs text-muted-foreground">
                     <span className="flex items-center gap-1.5 bg-muted/50 px-2 py-0.5 rounded-md">
                       <BarChart2 className="w-3.5 h-3.5" />
-                      {responseCount} reponse{responseCount !== 1 ? "s" : ""}
+                      {responseCount} réponse{responseCount !== 1 ? "s" : ""}
                     </span>
                     <span className="flex items-center gap-1.5">
                       <Calendar className="w-3.5 h-3.5" />

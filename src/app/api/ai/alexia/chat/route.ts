@@ -178,7 +178,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("[AlexIA Chat] Error:", error);
     return NextResponse.json(
-      { error: "Erreur lors de la generation de la reponse" },
+      { error: "Erreur lors de la generation de la réponse" },
       { status: 500 },
     );
   }
@@ -247,9 +247,9 @@ async function fetchPlatformData(
 - **CA ce mois** : ${ca} EUR
 - **Charges ce mois** : ${charges} EUR
 - **Marge** : ${ca - charges} EUR
-- **${atRisk.length} eleves a risque** (flag rouge/orange ou tag at_risk)
+- **${atRisk.length} eleves à risque** (flag rouge/orange ou tag at_risk)
 - **Derniers inscrits** : ${recent.map((r) => r.full_name).join(", ") || "Aucun"}
-- **Score sante moyen des eleves a risque** : ${atRisk.length > 0 ? Math.round(atRisk.reduce((s, a) => s + (a.health_score ?? 0), 0) / atRisk.length) : "N/A"}%`);
+- **Score sante moyen des eleves à risque** : ${atRisk.length > 0 ? Math.round(atRisk.reduce((s, a) => s + (a.health_score ?? 0), 0) / atRisk.length) : "N/A"}%`);
     }
 
     if (role === "coach") {
@@ -312,16 +312,16 @@ async function fetchPlatformData(
 ${students
   .map((s) => {
     const d = detailMap.get(s.id);
-    return `- **${s.full_name}** : sante ${d?.health_score ?? "?"}%, etape ${d?.pipeline_stage ?? "?"}, tag ${d?.tag ?? "standard"}, flag ${d?.flag ?? "vert"}${d?.goals ? `, objectif: "${d.goals}"` : ""}${d?.niche ? `, niche: ${d.niche}` : ""}`;
+    return `- **${s.full_name}** : sante ${d?.health_score ?? "?"}%, étape ${d?.pipeline_stage ?? "?"}, tag ${d?.tag ?? "standard"}, flag ${d?.flag ?? "vert"}${d?.goals ? `, objectif: "${d.goals}"` : ""}${d?.niche ? `, niche: ${d.niche}` : ""}`;
   })
   .join("\n")}
 
-- **${atRisk.length} a risque** sur ${students.length}
+- **${atRisk.length} à risque** sur ${students.length}
 - **${sessions.length} sessions** ce mois
 - **Sante moyenne** : ${students.length > 0 ? Math.round(details.reduce((s, d) => s + (d.health_score ?? 0), 0) / details.length) : 0}%`);
       } else {
         sections.push(
-          "## Tes eleves\nAucun eleve assigne actuellement.",
+          "## Tes eleves\nAucun élève assigne actuellement.",
         );
       }
     }
@@ -397,12 +397,12 @@ ${Object.entries(byStage)
 
       sections.push(`## Ton profil
 - **Score sante** : ${d?.health_score ?? 50}%
-- **Etape** : ${d?.pipeline_stage ?? "onboarding"}
+- **Étape** : ${d?.pipeline_stage ?? "onboarding"}
 - **Niche** : ${d?.niche ?? "Non definie"}
 - **Objectifs** : ${d?.goals ?? "Non definis"}
 - **Revenus actuels** : ${d?.current_revenue ?? 0} EUR/mois
 - **Objectif revenus** : ${d?.revenue_objective ?? "Non defini"}
-- **Lecons completees** : ${completedLessons}
+- **Leçons completees** : ${completedLessons}
 - **Coach** : ${coachId !== userId ? "Assigne" : "Non assigne"}
 ${
   journal.length > 0
@@ -444,19 +444,19 @@ function buildSystemPrompt({
   config: { system_instructions?: string; tone?: string } | null;
 }) {
   const roleDescriptions: Record<string, string> = {
-    admin: `Tu es ${aiName}, l'assistant IA de la plateforme Off Market. Tu aides ${userName} (admin) a piloter son business de coaching. Tu as acces aux donnees reelles de la plateforme ci-dessous. Base TOUTES tes reponses sur ces donnees concretes.`,
+    admin: `Tu es ${aiName}, l'assistant IA de la plateforme Off Market. Tu aides ${userName} (admin) a piloter son business de coaching. Tu as acces aux donnees reelles de la plateforme ci-dessous. Base TOUTES tes réponses sur ces donnees concretes.`,
     coach: `Tu es ${aiName}, l'assistant IA de ${userName} (coach). Tu l'aides a gerer ses eleves, preparer ses sessions, et analyser la progression de son portefeuille. Tu as acces aux donnees reelles de ses eleves ci-dessous.`,
     setter: `Tu es ${aiName}, l'assistant IA de ${userName} (setter). Tu l'aides a qualifier ses prospects, rediger des messages d'approche, et optimiser son pipeline. Tu as acces a son pipeline reel ci-dessous.`,
     closer: `Tu es ${aiName}, l'assistant IA de ${userName} (closer). Tu l'aides a preparer ses appels de closing, traiter les objections, et ameliorer son taux de conversion. Tu as acces a son pipeline reel ci-dessous.`,
     client: `Tu es ${aiName}, l'assistant personnel de ${userName}. Tu l'accompagnes dans son parcours de coaching avec ${coachName}. Tu as acces a son profil et sa progression ci-dessous.`,
-    prospect: `Tu es ${aiName}, l'assistant personnel de ${userName}. Tu l'aides a definir ses objectifs et a demarrer son parcours. Tu as acces a son profil ci-dessous.`,
+    prospect: `Tu es ${aiName}, l'assistant personnel de ${userName}. Tu l'aides a definir ses objectifs et a démarrer son parcours. Tu as acces a son profil ci-dessous.`,
   };
 
   return `${roleDescriptions[role] ?? roleDescriptions.client}
 
 REGLES ABSOLUES:
 - Reponds en francais, tutoie l'utilisateur
-- Base tes reponses sur les DONNEES REELLES fournies ci-dessous, pas sur des generalites
+- Base tes réponses sur les DONNEES REELLES fournies ci-dessous, pas sur des generalites
 - Cite des noms, chiffres et faits concrets issus des donnees
 - Si tu n'as pas assez de donnees pour repondre, dis-le et suggere ce qu'il faudrait verifier
 - Sois concis et actionnable

@@ -173,7 +173,7 @@ function AddRitualForm({ onClose }: { onClose: () => void }) {
         options={frequencyOptions}
         value={frequency}
         onChange={setFrequency}
-        label="Frequence"
+        label="Fréquence"
       />
 
       <Button

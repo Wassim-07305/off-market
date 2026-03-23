@@ -103,7 +103,7 @@ export default function GamificationPage() {
           Ma progression
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Ton niveau, tes badges et tes recompenses
+          Ton niveau, tes badges et tes récompenses
         </p>
       </motion.div>
 
@@ -198,7 +198,7 @@ export default function GamificationPage() {
         <div className="bg-surface border border-border rounded-xl p-4 text-center">
           <Gift className="w-5 h-5 text-emerald-500 mx-auto mb-1" />
           <p className="text-lg font-bold text-foreground">{redemptions?.length ?? 0}</p>
-          <p className="text-[10px] text-muted-foreground">Recompenses</p>
+          <p className="text-[10px] text-muted-foreground">Récompenses</p>
         </div>
       </motion.div>
 
@@ -211,7 +211,7 @@ export default function GamificationPage() {
         <div className="flex items-center gap-1 bg-muted/50 rounded-xl p-1 w-fit mb-4">
           {([
             { key: "badges" as const, label: "Badges", icon: Trophy },
-            { key: "rewards" as const, label: "Recompenses", icon: Gift },
+            { key: "rewards" as const, label: "Récompenses", icon: Gift },
             { key: "leaderboard" as const, label: "Classement", icon: Crown },
             { key: "history" as const, label: "Historique", icon: Clock },
           ]).map((tab) => (
@@ -284,7 +284,7 @@ export default function GamificationPage() {
             ) : rewards.length === 0 ? (
               <div className="col-span-full py-8 text-center">
                 <Gift className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
-                <p className="text-sm text-muted-foreground">Aucune recompense disponible</p>
+                <p className="text-sm text-muted-foreground">Aucune récompense disponible</p>
               </div>
             ) : (
               rewards.map((reward) => {
@@ -409,7 +409,7 @@ export default function GamificationPage() {
                   <Gift className="w-4 h-4 text-emerald-500 shrink-0" />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-foreground truncate">
-                      {r.reward?.title ?? "Recompense"}
+                      {r.reward?.title ?? "Récompense"}
                     </p>
                     <p className="text-[10px] text-muted-foreground">
                       {formatDate(r.redeemed_at, "relative")}

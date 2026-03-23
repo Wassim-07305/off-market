@@ -106,7 +106,7 @@ export function CallsTab({ range }: CallsTabProps) {
             {data.callsByMonth.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-muted-foreground">
                 <Phone className="w-8 h-8 mb-2 opacity-20" />
-                <p className="text-sm">Aucun appel sur cette periode</p>
+                <p className="text-sm">Aucun appel sur cette période</p>
               </div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
@@ -276,7 +276,7 @@ export function CallsTab({ range }: CallsTabProps) {
           style={{ boxShadow: "var(--shadow-card)" }}
         >
           <h3 className="text-[13px] font-semibold text-foreground mb-4">
-            Resultats des appels
+            Résultats des appels
           </h3>
           <div className="space-y-3">
             {data.outcomeDistribution.map((o) => {

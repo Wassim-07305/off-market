@@ -141,7 +141,7 @@ export async function POST(req: NextRequest) {
     .single();
 
   if (contactErr || !contact) {
-    return NextResponse.json({ error: "Contact non trouve" }, { status: 404 });
+    return NextResponse.json({ error: "Contact non trouvé" }, { status: 404 });
   }
 
   // Mark as pending
@@ -287,7 +287,7 @@ export async function POST(req: NextRequest) {
             likes: page.likes || page.likesCount,
             followers: page.followers || page.followersCount,
             rating: page.rating || page.overallStarRating,
-            categories: page.categories || page.category,
+            catégories: page.catégories || page.category,
             address: page.address,
             isAdRunning: page.isAdRunning ?? page.adLibrary?.isActive ?? null,
             scraped_at: new Date().toISOString(),

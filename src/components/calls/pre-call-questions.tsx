@@ -69,7 +69,7 @@ export function PreCallQuestions({
             Preparation confirmee
           </h3>
           <p className="text-sm text-zinc-400 mt-1">
-            Vos reponses ont ete enregistrees pour cet appel
+            Vos réponses ont ete enregistrees pour cet appel
           </p>
         </div>
 
@@ -137,7 +137,7 @@ export function PreCallQuestions({
           <p className="text-xs text-zinc-400 mt-0.5">
             Repondez a ces 2 questions pour que votre coach puisse preparer la
             seance. Vous ne pourrez pas rejoindre l&apos;appel tant que les
-            reponses ne sont pas envoyees.
+            réponses ne sont pas envoyees.
           </p>
           {callTitle && (
             <p className="text-xs text-zinc-500 mt-1">{callTitle}</p>
@@ -150,11 +150,11 @@ export function PreCallQuestions({
         <div className="bg-zinc-900/80 rounded-2xl border border-white/5 p-5 space-y-2">
           <label className="flex items-center gap-2 text-sm font-medium text-white">
             <Target className="w-4 h-4 text-amber-500" />
-            Quel est l&apos;objectif de cet appel / quel probleme veux-tu
+            Quel est l&apos;objectif de cet appel / quel problème veux-tu
             resoudre ?<span className="text-red-400">*</span>
           </label>
           <p className="text-[11px] text-zinc-500">
-            Quel probleme voulez-vous resoudre ou quel sujet souhaitez-vous
+            Quel problème voulez-vous resoudre ou quel sujet souhaitez-vous
             aborder ?
           </p>
           <textarea
@@ -193,7 +193,7 @@ export function PreCallQuestions({
           </label>
           <p className="text-[11px] text-zinc-500">
             Quelles solutions ou actions avez-vous tentees pour resoudre ce
-            probleme ?
+            problème ?
           </p>
           <textarea
             value={triedSolutions}
@@ -241,7 +241,7 @@ export function PreCallQuestions({
           ) : (
             <>
               <Send className="w-4 h-4" />
-              Envoyer mes reponses
+              Envoyer mes réponses
             </>
           )}
         </button>
@@ -288,7 +288,7 @@ export function PreCallResponsesView({
       <div className={cn("bg-zinc-800/30 rounded-xl p-4", className)}>
         <p className="text-xs text-zinc-500 italic flex items-center gap-1.5">
           <ClipboardList className="w-3.5 h-3.5" />
-          Aucune reponse pre-appel soumise
+          Aucune réponse pre-appel soumise
         </p>
       </div>
     );
@@ -303,7 +303,7 @@ export function PreCallResponsesView({
         >
           <h4 className="text-xs font-semibold text-amber-400 flex items-center gap-1.5">
             <ClipboardList className="w-3.5 h-3.5" />
-            Reponses pre-appel du client
+            Réponses pre-appel du client
           </h4>
 
           <div>

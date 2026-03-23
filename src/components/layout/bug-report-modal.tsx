@@ -6,7 +6,7 @@ import { Modal } from "@/components/ui/modal";
 import { useCreateTicket } from "@/hooks/use-support-tickets";
 import { cn } from "@/lib/utils";
 
-const categories = [
+const catégories = [
   { value: "bug" as const, label: "Bug", icon: Bug, color: "text-red-400" },
   {
     value: "feature" as const,
@@ -76,8 +76,8 @@ export function BugReportModal({ open, onClose }: BugReportModalProps) {
     <Modal
       open={open}
       onClose={onClose}
-      title="Signaler un probleme"
-      description="Decrivez le probleme rencontre et nous le traiterons rapidement."
+      title="Signaler un problème"
+      description="Decrivez le problème rencontre et nous le traiterons rapidement."
       size="lg"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -87,7 +87,7 @@ export function BugReportModal({ open, onClose }: BugReportModalProps) {
             Type
           </label>
           <div className="grid grid-cols-4 gap-2">
-            {categories.map((cat) => (
+            {catégories.map((cat) => (
               <button
                 key={cat.value}
                 type="button"
@@ -119,7 +119,7 @@ export function BugReportModal({ open, onClose }: BugReportModalProps) {
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="Resume du probleme..."
+            placeholder="Resume du problème..."
             required
             className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
           />
@@ -137,7 +137,7 @@ export function BugReportModal({ open, onClose }: BugReportModalProps) {
             id="ticket-desc"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="Decrivez les etapes pour reproduire le probleme, ce que vous attendiez, et ce qui s'est passe..."
+            placeholder="Decrivez les étapes pour reproduire le problème, ce que vous attendiez, et ce qui s'est passe..."
             required
             rows={4}
             className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary resize-none"

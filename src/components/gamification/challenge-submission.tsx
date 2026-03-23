@@ -16,7 +16,7 @@ import { METRIC_TYPES } from "@/types/upsell";
 import { cn } from "@/lib/utils";
 
 const challengeEntrySchema = z.object({
-  metric_type: z.string().min(1, "Selectionnez un type de metrique"),
+  metric_type: z.string().min(1, "Sélectionnez un type de metrique"),
   metric_value: z.coerce.number().min(0, "La valeur doit etre positive"),
   proof_url: z.string().url().optional().or(z.literal("")),
 });
@@ -101,7 +101,7 @@ export function ChallengeSubmission({
       <CardHeader>
         <CardTitle className="text-base flex items-center gap-2">
           <Send className="h-4 w-4 text-primary" />
-          Soumettre mes resultats
+          Soumettre mes résultats
         </CardTitle>
         {challengeTitle && (
           <p className="text-sm text-muted-foreground">{challengeTitle}</p>
@@ -119,7 +119,7 @@ export function ChallengeSubmission({
               {...form.register("metric_type")}
               className="w-full mt-1 rounded-xl border border-border px-3 py-2 text-sm bg-surface"
             >
-              <option value="">Selectionnez...</option>
+              <option value="">Sélectionnez...</option>
               {METRIC_TYPES.map((m) => (
                 <option key={m.value} value={m.value}>
                   {m.label}

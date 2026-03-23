@@ -73,7 +73,7 @@ export function CallDocumentPanel({ callId }: CallDocumentPanelProps) {
       {generateFusion.isPending && (
         <div className="bg-indigo-500/5 border border-indigo-500/20 rounded-xl p-3">
           <p className="text-xs text-indigo-600 dark:text-indigo-400">
-            L'IA fusionne la transcription, les reponses workbook et les
+            L'IA fusionne la transcription, les réponses workbook et les
             questions pre-appel pour generer un document complet. Cela peut
             prendre 15-30 secondes.
           </p>
@@ -213,7 +213,7 @@ export function CallDocumentPanel({ callId }: CallDocumentPanelProps) {
 
       {!hasDocs && !generateFusion.isPending && (
         <p className="text-xs text-muted-foreground text-center py-2">
-          Aucun document genere pour cet appel. Cliquez sur le bouton ci-dessus
+          Aucun document généré pour cet appel. Cliquez sur le bouton ci-dessus
           pour lancer la generation.
         </p>
       )}

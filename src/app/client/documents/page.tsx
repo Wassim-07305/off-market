@@ -90,7 +90,7 @@ export default function ClientDocumentsPage() {
     const invoiceNumber = searchParams.get("invoice");
     if (payment === "success") {
       toast.success(
-        `Paiement de la facture ${invoiceNumber ?? ""} effectue avec succes !`,
+        `Paiement de la facture ${invoiceNumber ?? ""} effectue avec succès !`,
       );
       setTab("factures");
       window.history.replaceState({}, "", "/client/documents");

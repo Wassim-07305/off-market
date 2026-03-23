@@ -90,13 +90,13 @@ export function UpsellDashboard() {
       await updateUpsell.mutateAsync({ id, status: newStatus });
       toast.success(
         newStatus === "proposed"
-          ? "Offre proposee avec succes"
+          ? "Offre proposee avec succès"
           : newStatus === "accepted"
             ? "Upsell accepte !"
-            : "Statut mis a jour",
+            : "Statut mis à jour",
       );
     } catch {
-      toast.error("Erreur lors de la mise a jour");
+      toast.error("Erreur lors de la mise à jour");
     }
   };
 
@@ -204,7 +204,7 @@ export function UpsellDashboard() {
                 <EmptyState
                   icon={<Target className="w-6 h-6" />}
                   title="Aucune opportunite"
-                  description="Les opportunites d'upsell apparaitront ici lorsqu'un eleve atteindra un palier."
+                  description="Les opportunites d'upsell apparaitront ici lorsqu'un élève atteindra un palier."
                   action={
                     <Button
                       size="sm"
@@ -239,7 +239,7 @@ export function UpsellDashboard() {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <input
                   type="text"
-                  placeholder="Rechercher un eleve ou une offre..."
+                  placeholder="Rechercher un élève ou une offre..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full h-9 pl-9 pr-3 bg-muted/50 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-shadow"
@@ -279,8 +279,8 @@ export function UpsellDashboard() {
                 title="Aucune opportunite trouvee"
                 description={
                   searchQuery || filterStatus !== "all"
-                    ? "Modifiez vos filtres pour voir plus de resultats."
-                    : "Creez votre premiere opportunite d'upsell."
+                    ? "Modifiez vos filtres pour voir plus de résultats."
+                    : "Creez votre première opportunite d'upsell."
                 }
                 action={
                   <Button
@@ -373,7 +373,7 @@ function OpportunityRow({
 }) {
   const config = STATUS_CONFIG[opportunity.status];
   const studentName =
-    (opportunity.student as any)?.profile?.full_name ?? "Eleve inconnu";
+    (opportunity.student as any)?.profile?.full_name ?? "Élève inconnu";
 
   return (
     <div className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-colors border border-transparent hover:border-border/50">

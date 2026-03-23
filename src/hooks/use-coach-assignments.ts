@@ -259,7 +259,7 @@ export function useAssignClient() {
         .eq("profile_id", clientId);
     },
     onSuccess: () => {
-      toast.success("Client assigne avec succes");
+      toast.success("Client assigne avec succès");
       queryClient.invalidateQueries({ queryKey: ["coach-assignments"] });
       queryClient.invalidateQueries({ queryKey: ["unassigned-clients"] });
       queryClient.invalidateQueries({ queryKey: ["students"] });

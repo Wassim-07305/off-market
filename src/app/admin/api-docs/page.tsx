@@ -16,8 +16,8 @@ const ENDPOINTS: EndpointDoc[] = [
     path: "/api/v1/clients",
     description: "Liste des clients avec pagination et filtres.",
     params: [
-      { name: "page", type: "number", required: false, description: "Numero de page (defaut: 1)" },
-      { name: "limit", type: "number", required: false, description: "Resultats par page (defaut: 50, max: 100)" },
+      { name: "page", type: "number", required: false, description: "Numéro de page (defaut: 1)" },
+      { name: "limit", type: "number", required: false, description: "Résultats par page (defaut: 50, max: 100)" },
       { name: "search", type: "string", required: false, description: "Recherche par nom ou email" },
       { name: "tag", type: "string", required: false, description: "Filtrer par tag client" },
     ],
@@ -47,8 +47,8 @@ const ENDPOINTS: EndpointDoc[] = [
     path: "/api/v1/leads",
     description: "Liste des leads avec pagination et filtres.",
     params: [
-      { name: "page", type: "number", required: false, description: "Numero de page (defaut: 1)" },
-      { name: "limit", type: "number", required: false, description: "Resultats par page (defaut: 50, max: 100)" },
+      { name: "page", type: "number", required: false, description: "Numéro de page (defaut: 1)" },
+      { name: "limit", type: "number", required: false, description: "Résultats par page (defaut: 50, max: 100)" },
       { name: "status", type: "string", required: false, description: "Filtrer par statut (premier_message, qualifie, rdv_pris, etc.)" },
       { name: "search", type: "string", required: false, description: "Recherche par nom ou email" },
     ],
@@ -79,8 +79,8 @@ const ENDPOINTS: EndpointDoc[] = [
     path: "/api/v1/calls",
     description: "Liste des appels planifies avec pagination et filtres.",
     params: [
-      { name: "page", type: "number", required: false, description: "Numero de page (defaut: 1)" },
-      { name: "limit", type: "number", required: false, description: "Resultats par page (defaut: 50, max: 100)" },
+      { name: "page", type: "number", required: false, description: "Numéro de page (defaut: 1)" },
+      { name: "limit", type: "number", required: false, description: "Résultats par page (defaut: 50, max: 100)" },
       { name: "status", type: "string", required: false, description: "Filtrer par statut" },
       { name: "from", type: "string", required: false, description: "Date de debut (YYYY-MM-DD)" },
       { name: "to", type: "string", required: false, description: "Date de fin (YYYY-MM-DD)" },
@@ -113,8 +113,8 @@ const ENDPOINTS: EndpointDoc[] = [
     path: "/api/v1/invoices",
     description: "Liste des factures (entrees financieres de type revenue) avec filtres.",
     params: [
-      { name: "page", type: "number", required: false, description: "Numero de page (defaut: 1)" },
-      { name: "limit", type: "number", required: false, description: "Resultats par page (defaut: 20, max: 100)" },
+      { name: "page", type: "number", required: false, description: "Numéro de page (defaut: 1)" },
+      { name: "limit", type: "number", required: false, description: "Résultats par page (defaut: 20, max: 100)" },
       { name: "status", type: "string", required: false, description: "Filtrer par statut (paid, pending, overdue)" },
       { name: "from", type: "string", required: false, description: "Date de debut (YYYY-MM-DD)" },
       { name: "to", type: "string", required: false, description: "Date de fin (YYYY-MM-DD)" },
@@ -146,8 +146,8 @@ const ENDPOINTS: EndpointDoc[] = [
     path: "/api/v1/contracts",
     description: "Liste des contrats avec filtres par statut et client.",
     params: [
-      { name: "page", type: "number", required: false, description: "Numero de page (defaut: 1)" },
-      { name: "limit", type: "number", required: false, description: "Resultats par page (defaut: 20, max: 100)" },
+      { name: "page", type: "number", required: false, description: "Numéro de page (defaut: 1)" },
+      { name: "limit", type: "number", required: false, description: "Résultats par page (defaut: 20, max: 100)" },
       { name: "status", type: "string", required: false, description: "Filtrer par statut (draft, sent, signed, expired)" },
       { name: "client_id", type: "string", required: false, description: "Filtrer par ID client" },
     ],
@@ -179,8 +179,8 @@ const ENDPOINTS: EndpointDoc[] = [
     path: "/api/v1/formations",
     description: "Liste des formations avec filtres.",
     params: [
-      { name: "page", type: "number", required: false, description: "Numero de page (defaut: 1)" },
-      { name: "limit", type: "number", required: false, description: "Resultats par page (defaut: 20, max: 100)" },
+      { name: "page", type: "number", required: false, description: "Numéro de page (defaut: 1)" },
+      { name: "limit", type: "number", required: false, description: "Résultats par page (defaut: 20, max: 100)" },
       { name: "status", type: "string", required: false, description: "Filtrer par statut (draft, published, archived)" },
       { name: "search", type: "string", required: false, description: "Recherche par titre" },
     ],
@@ -329,7 +329,7 @@ export default function ApiDocsPage() {
           </p>
           <CodeBlock>{`GET /api/v1/clients?page=2&limit=20
 
-// Reponse inclut un objet pagination :
+// Réponse inclut un objet pagination :
 {
   "pagination": {
     "page": 2,
@@ -369,7 +369,7 @@ export default function ApiDocsPage() {
             {ep.params && ep.params.length > 0 && (
               <div>
                 <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/60 mb-3">
-                  Parametres
+                  Paramètres
                 </h4>
                 <div className="border border-border rounded-xl overflow-hidden">
                   <table className="w-full text-sm">
@@ -405,7 +405,7 @@ export default function ApiDocsPage() {
             {/* Example response */}
             <div>
               <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/60 mb-3">
-                Exemple de reponse
+                Exemple de réponse
               </h4>
               <CodeBlock>{ep.exampleResponse}</CodeBlock>
             </div>
@@ -426,7 +426,7 @@ export default function ApiDocsPage() {
             <tbody className="divide-y divide-border text-xs">
               <tr className="hover:bg-muted/20 transition-colors">
                 <td className="px-4 py-2.5 font-mono text-foreground">400</td>
-                <td className="px-4 py-2.5 text-muted-foreground">Requete invalide (parametres manquants ou incorrects)</td>
+                <td className="px-4 py-2.5 text-muted-foreground">Requete invalide (paramètres manquants ou incorrects)</td>
               </tr>
               <tr className="hover:bg-muted/20 transition-colors">
                 <td className="px-4 py-2.5 font-mono text-foreground">401</td>

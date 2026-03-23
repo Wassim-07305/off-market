@@ -87,7 +87,7 @@ export function useCreateBadge() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-badges"] });
       queryClient.invalidateQueries({ queryKey: ["badges"] });
-      toast.success("Badge cree avec succes");
+      toast.success("Badge créé avec succès");
     },
     onError: () => {
       toast.error("Erreur lors de la creation du badge");
@@ -111,10 +111,10 @@ export function useUpdateBadge() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-badges"] });
       queryClient.invalidateQueries({ queryKey: ["badges"] });
-      toast.success("Badge mis a jour");
+      toast.success("Badge mis à jour");
     },
     onError: () => {
-      toast.error("Erreur lors de la mise a jour du badge");
+      toast.error("Erreur lors de la mise à jour du badge");
     },
   });
 }

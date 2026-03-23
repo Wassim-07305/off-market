@@ -193,7 +193,7 @@ export default function IntegrationsPage() {
           icon={Calendar}
           iconClassName="h-5 w-5 text-blue-600"
           name="Google Calendar"
-          description="Synchronisez vos appels et evenements"
+          description="Synchronisez vos appels et événements"
           status={
             googleCalendar.isLoading
               ? "loading"

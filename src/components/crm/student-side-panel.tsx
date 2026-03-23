@@ -206,7 +206,7 @@ export function StudentSidePanel({
       },
       {
         onSuccess: () => {
-          toast.success("Drapeau mis a jour");
+          toast.success("Drapeau mis à jour");
           queryClient.invalidateQueries({ queryKey: ["student", student.id] });
           queryClient.invalidateQueries({ queryKey: ["students"] });
         },
@@ -239,15 +239,15 @@ export function StudentSidePanel({
           .update({ tag: newTag } as never)
           .eq("profile_id", student.id);
       }
-      toast.success("Tag mis a jour");
+      toast.success("Tag mis à jour");
     } catch {
       setSelectedTag(oldTag);
-      toast.error("Erreur lors de la mise a jour du tag");
+      toast.error("Erreur lors de la mise à jour du tag");
     }
   };
 
   const tabs: { key: TabType; label: string; icon: typeof FileText }[] = [
-    { key: "overview", label: "Apercu", icon: User },
+    { key: "overview", label: "Aperçu", icon: User },
     { key: "business", label: "Business", icon: Briefcase },
     { key: "timeline", label: "Timeline", icon: History },
     { key: "notes", label: "Notes", icon: FileText },
@@ -279,7 +279,7 @@ export function StudentSidePanel({
         <div className="sticky top-0 bg-background/95 backdrop-blur-sm border-b border-border z-10 px-6 py-4">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-foreground">
-              Fiche eleve
+              Fiche élève
             </h2>
             <div className="flex items-center gap-1.5">
               {!isLoading &&
@@ -337,7 +337,7 @@ export function StudentSidePanel({
             </div>
           ) : !student ? (
             <p className="text-sm text-muted-foreground text-center py-8">
-              Eleve non trouve
+              Élève non trouvé
             </p>
           ) : (
             <>
@@ -619,7 +619,7 @@ export function StudentSidePanel({
                           }
                           rows={2}
                           className="w-full px-2.5 py-1.5 bg-muted border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
-                          placeholder="Objectifs de l'eleve..."
+                          placeholder="Objectifs de l'élève..."
                         />
                       ) : (
                         <p className="text-sm text-muted-foreground">
@@ -899,7 +899,7 @@ export function StudentSidePanel({
                   <div className="space-y-3">
                     {!activities || activities.length === 0 ? (
                       <p className="text-sm text-muted-foreground text-center py-6">
-                        Aucune activite
+                        Aucune activité
                       </p>
                     ) : (
                       <div className="relative pl-5">

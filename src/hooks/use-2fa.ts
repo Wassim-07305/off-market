@@ -84,7 +84,7 @@ export function use2FA() {
           return false;
         }
 
-        toast.success("2FA active avec succes !");
+        toast.success("2FA active avec succès !");
         setQrCode(null);
         setSecret(null);
         setFactorId(null);

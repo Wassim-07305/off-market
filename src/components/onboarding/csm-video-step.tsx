@@ -110,7 +110,7 @@ export function CsmVideoStep({
           Ton coach sera bientot assigne
         </h3>
         <p className="text-white/50 max-w-md mb-8">
-          L&apos;equipe Off Market te contactera sous 24h pour te presenter ton
+          L&apos;équipe Off Market te contactera sous 24h pour te presenter ton
           coach personnalise.
         </p>
         <button
@@ -260,7 +260,7 @@ export function CsmVideoStep({
               <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center gap-3 z-10">
                 <CheckCircle className="w-10 h-10 text-emerald-400" />
                 <p className="text-sm font-medium text-white">
-                  Video terminee !
+                  Video terminée !
                 </p>
                 <button
                   onClick={() => {

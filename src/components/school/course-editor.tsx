@@ -263,7 +263,7 @@ function SortableModuleItem({
           {mod.title}
         </button>
         <span className="text-[11px] text-muted-foreground shrink-0 tabular-nums bg-muted px-2 py-0.5 rounded-full font-medium">
-          {lessons.length} lecon{lessons.length !== 1 ? "s" : ""}
+          {lessons.length} leçon{lessons.length !== 1 ? "s" : ""}
         </span>
         <button
           onClick={onEdit}
@@ -307,7 +307,7 @@ function SortableModuleItem({
             className="w-[calc(100%-1rem)] mx-2 mt-1 flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium text-muted-foreground hover:text-primary hover:bg-primary/5 rounded-lg border border-dashed border-border/50 hover:border-primary/30 transition-all"
           >
             <Plus className="w-3.5 h-3.5" />
-            Ajouter une lecon
+            Ajouter une leçon
           </button>
         </div>
       )}
@@ -702,7 +702,7 @@ function LessonEditorPanel({
           ) : (
             <iframe
               src={videoEmbed.src}
-              title="Apercu video"
+              title="Aperçu video"
               className="w-full aspect-video border-0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
@@ -718,7 +718,7 @@ function LessonEditorPanel({
             <div className="flex items-center gap-2">
               <span className="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full bg-muted text-muted-foreground shrink-0">
                 <FileText className="w-3 h-3" />
-                Lecon
+                Leçon
               </span>
               {moduleTitle && (
                 <span className="text-xs text-muted-foreground truncate">
@@ -730,7 +730,7 @@ function LessonEditorPanel({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               className="w-full text-xl font-display font-semibold text-foreground bg-transparent placeholder:text-muted-foreground focus:outline-none border-b border-transparent hover:border-border focus:border-primary/30 transition-colors pb-1"
-              placeholder="Titre de la lecon"
+              placeholder="Titre de la leçon"
             />
             <textarea
               value={description}
@@ -964,7 +964,7 @@ function LessonEditorPanel({
             value={contentHtml}
             onChange={(e) => setContentHtml(e.target.value)}
             rows={10}
-            placeholder="Contenu de la lecon (HTML supporte)"
+            placeholder="Contenu de la leçon (HTML supporte)"
             className="w-full px-4 py-3 bg-muted/50 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 resize-y transition-shadow font-mono"
           />
         </div>
@@ -1049,7 +1049,7 @@ function LessonEditorPanel({
               <div className="aspect-video relative">
                 <iframe
                   src={embedUrl}
-                  title="Apercu embed"
+                  title="Aperçu embed"
                   className="w-full h-full border-0"
                   sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
                 />
@@ -1098,7 +1098,7 @@ function ModuleEditorPanel({
           {mod.title}
         </h2>
         <p className="text-sm text-muted-foreground mt-1">
-          {mod.lessons?.length ?? 0} lecon
+          {mod.lessons?.length ?? 0} leçon
           {(mod.lessons?.length ?? 0) > 1 ? "s" : ""}
         </p>
       </div>
@@ -1263,7 +1263,7 @@ export function CourseEditor({ course, routePrefix }: CourseEditorProps) {
           </span>
           <span className="flex items-center gap-1.5 bg-muted/50 px-2 py-1 rounded-md">
             <Play className="w-3.5 h-3.5" />
-            {totalLessons} lecon{totalLessons !== 1 ? "s" : ""}
+            {totalLessons} leçon{totalLessons !== 1 ? "s" : ""}
           </span>
         </div>
         <button
@@ -1271,7 +1271,7 @@ export function CourseEditor({ course, routePrefix }: CourseEditorProps) {
           className="mt-3 w-full h-9 rounded-xl text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all flex items-center justify-center gap-2 border border-border"
         >
           <Settings className="w-3.5 h-3.5" />
-          Parametres du cours
+          Paramètres du cours
         </button>
       </div>
 
@@ -1305,7 +1305,7 @@ export function CourseEditor({ course, routePrefix }: CourseEditorProps) {
                 onDelete={() => {
                   if (
                     confirm(
-                      `Supprimer le module "${mod.title}" et toutes ses lecons ?`,
+                      `Supprimer le module "${mod.title}" et toutes ses leçons ?`,
                     )
                   ) {
                     mutations.deleteModule.mutate(mod.id, {
@@ -1330,10 +1330,10 @@ export function CourseEditor({ course, routePrefix }: CourseEditorProps) {
                   setSidebarOpen(false);
                 }}
                 onDeleteLesson={(id) => {
-                  if (confirm("Supprimer cette lecon ?")) {
+                  if (confirm("Supprimer cette leçon ?")) {
                     mutations.deleteLesson.mutate(id, {
                       onSuccess: () => {
-                        toast.success("Lecon supprimee");
+                        toast.success("Leçon supprimee");
                         if (selectedLessonId === id) setSelectedLessonId(null);
                       },
                       onError: () => toast.error("Erreur"),
@@ -1423,7 +1423,7 @@ export function CourseEditor({ course, routePrefix }: CourseEditorProps) {
               mutations.updateLesson.mutate(
                 { id: selectedLesson.id, ...updates },
                 {
-                  onSuccess: () => toast.success("Lecon mise a jour"),
+                  onSuccess: () => toast.success("Leçon mise à jour"),
                   onError: () => toast.error("Erreur lors de la sauvegarde"),
                 },
               );
@@ -1456,7 +1456,7 @@ export function CourseEditor({ course, routePrefix }: CourseEditorProps) {
               mutations.updateModule.mutate(
                 { id: selectedModule.id, ...updates },
                 {
-                  onSuccess: () => toast.success("Module mis a jour"),
+                  onSuccess: () => toast.success("Module mis à jour"),
                   onError: () => toast.error("Erreur lors de la sauvegarde"),
                 },
               );
@@ -1468,10 +1468,10 @@ export function CourseEditor({ course, routePrefix }: CourseEditorProps) {
               <FileText className="w-8 h-8 text-muted-foreground" />
             </div>
             <h3 className="text-lg font-display font-semibold text-foreground mb-1">
-              Selectionnez un element
+              Sélectionnez un element
             </h3>
             <p className="text-sm text-muted-foreground max-w-xs">
-              Cliquez sur un module ou une lecon dans le panneau de gauche pour
+              Cliquez sur un module ou une leçon dans le panneau de gauche pour
               modifier son contenu.
             </p>
           </div>
@@ -1489,7 +1489,7 @@ export function CourseEditor({ course, routePrefix }: CourseEditorProps) {
             { id: course.id, ...data },
             {
               onSuccess: () => {
-                toast.success("Cours mis a jour");
+                toast.success("Cours mis à jour");
                 setShowCourseDialog(false);
               },
               onError: () => toast.error("Erreur"),
@@ -1517,7 +1517,7 @@ export function CourseEditor({ course, routePrefix }: CourseEditorProps) {
               { id: editingModule.id, ...data },
               {
                 onSuccess: () => {
-                  toast.success("Module mis a jour");
+                  toast.success("Module mis à jour");
                   setShowModuleDialog(false);
                   setEditingModule(null);
                 },
@@ -1538,7 +1538,7 @@ export function CourseEditor({ course, routePrefix }: CourseEditorProps) {
               },
               {
                 onSuccess: (newModule) => {
-                  toast.success("Module cree");
+                  toast.success("Module créé");
                   setShowModuleDialog(false);
                   setExpandedModules(
                     (prev) => new Set([...prev, newModule.id]),
@@ -1574,7 +1574,7 @@ export function CourseEditor({ course, routePrefix }: CourseEditorProps) {
             },
             {
               onSuccess: (newLesson) => {
-                toast.success("Lecon creee");
+                toast.success("Leçon creee");
                 setShowLessonDialog(false);
                 setAddLessonModuleId(null);
                 setSelectedLessonId(newLesson.id);

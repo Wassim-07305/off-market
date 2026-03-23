@@ -32,10 +32,10 @@ interface ContractWizardProps {
 }
 
 const STEPS = [
-  { id: 0, label: "Modele", icon: FileText },
+  { id: 0, label: "Modèle", icon: FileText },
   { id: 1, label: "Client", icon: User },
   { id: 2, label: "Variables", icon: Settings },
-  { id: 3, label: "Apercu", icon: Eye },
+  { id: 3, label: "Aperçu", icon: Eye },
 ] as const;
 
 export function ContractWizard({
@@ -189,7 +189,7 @@ export function ContractWizard({
           {step === 0 && (
             <div className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                Choisissez un modele existant ou commencez un contrat vierge
+                Choisissez un modèle existant ou commencez un contrat vierge
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -281,7 +281,7 @@ export function ContractWizard({
           {step === 1 && (
             <div className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                Selectionnez le client pour ce contrat
+                Sélectionnez le client pour ce contrat
               </p>
               <input
                 type="text"
@@ -338,7 +338,7 @@ export function ContractWizard({
               {selectedTemplate && selectedTemplate.variables.length > 0 ? (
                 <>
                   <p className="text-sm text-muted-foreground">
-                    Remplissez les variables du modele
+                    Remplissez les variables du modèle
                   </p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {selectedTemplate.variables.map((v: TemplateVariable) => (
@@ -376,7 +376,7 @@ export function ContractWizard({
               ) : (
                 <div className="space-y-4">
                   <p className="text-sm text-muted-foreground">
-                    Parametres additionnels
+                    Paramètres additionnels
                   </p>
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-1.5">
@@ -419,7 +419,7 @@ export function ContractWizard({
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <p className="text-sm text-muted-foreground">
-                  Apercu du contrat avant envoi
+                  Aperçu du contrat avant envoi
                 </p>
                 <span className="text-xs text-muted-foreground">
                   Client : {selectedClient?.full_name}

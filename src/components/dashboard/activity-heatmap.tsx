@@ -135,7 +135,7 @@ export function ActivityHeatmap() {
             >
               <div className="bg-popover border border-border rounded-lg px-2.5 py-1.5 text-xs shadow-xl">
                 <span className="font-medium text-foreground">
-                  {tooltip.count} activite{tooltip.count !== 1 ? "s" : ""}
+                  {tooltip.count} activité{tooltip.count !== 1 ? "s" : ""}
                 </span>
                 <span className="text-muted-foreground ml-1.5">
                   {DAY_LABELS[tooltip.day]}{" "}

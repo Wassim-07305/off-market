@@ -382,7 +382,7 @@ function SimpleCallFormModal({
           call_type: "one_on_one",
           status: "planifie",
         });
-        toast.success("Appel cree");
+        toast.success("Appel créé");
       }
       onClose();
     } catch {
@@ -457,7 +457,7 @@ function SimpleCallFormModal({
               onChange={(e) => setClientId(e.target.value)}
               className={selectClass}
             >
-              <option value="">Selectionner un client</option>
+              <option value="">Sélectionner un client</option>
               {clients.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.full_name}

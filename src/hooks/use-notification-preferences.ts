@@ -91,7 +91,7 @@ export function useUpdateNotificationPreferences() {
       toast.success("Preferences mises a jour");
     },
     onError: () => {
-      toast.error("Erreur lors de la mise a jour des preferences");
+      toast.error("Erreur lors de la mise à jour des preferences");
     },
   });
 }

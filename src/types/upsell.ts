@@ -27,8 +27,8 @@ export const UPSELL_TRIGGER_TYPE_CONFIG: Record<
       "Declenche quand le client atteint un CA defini (ex: 7000 EUR)",
   },
   milestone_completion: {
-    label: "Etape atteinte",
-    description: "Declenche quand le client complete une etape cle",
+    label: "Étape atteinte",
+    description: "Declenche quand le client complete une étape cle",
   },
   time_based: {
     label: "Base sur le temps",

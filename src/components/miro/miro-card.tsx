@@ -364,7 +364,7 @@ export function MiroCardComponent({
       onDoubleClick={handleDoubleClick}
       onContextMenu={handleContextMenu}
     >
-      {/* Badge numero */}
+      {/* Badge numéro */}
       <div
         style={{
           position: "absolute",

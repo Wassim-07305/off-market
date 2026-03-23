@@ -46,7 +46,7 @@ export function useServerTranscription() {
       return response.json();
     },
     onSuccess: () => {
-      toast.success("Transcription terminee avec succes");
+      toast.success("Transcription terminée avec succès");
     },
     onError: (error: Error) => {
       toast.error(error.message || "Erreur lors de la transcription");

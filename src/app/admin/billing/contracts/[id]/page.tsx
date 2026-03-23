@@ -138,7 +138,7 @@ export default function ContractDetailPage() {
 
   // Build timeline events
   const timeline = [
-    { date: contract.created_at, label: "Contrat cree", icon: FileText },
+    { date: contract.created_at, label: "Contrat créé", icon: FileText },
     ...(contract.sent_at
       ? [{ date: contract.sent_at, label: "Envoye au client", icon: Send }]
       : []),

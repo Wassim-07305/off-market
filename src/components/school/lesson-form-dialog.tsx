@@ -49,7 +49,7 @@ export function LessonFormDialog({
       >
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-display font-bold text-foreground">
-            Nouvelle lecon
+            Nouvelle leçon
           </h2>
           <button
             onClick={onClose}
@@ -67,7 +67,7 @@ export function LessonFormDialog({
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Nom de la lecon"
+              placeholder="Nom de la leçon"
               className={inputClass}
               required
               autoFocus

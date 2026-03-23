@@ -66,7 +66,7 @@ export async function GET(request: NextRequest) {
 
     if (overdueError) {
       console.error(
-        "[payment-reminders] Erreur mise a jour overdue:",
+        "[payment-reminders] Erreur mise à jour overdue:",
         overdueError,
       );
     }
@@ -287,7 +287,7 @@ function buildReminderEmail(params: {
 
         <p style="margin:24px 0 0;color:#6B7280;font-size:13px;">
           Cordialement,<br/>
-          L'equipe Off-Market
+          L'équipe Off-Market
         </p>
       </div>
     </div>

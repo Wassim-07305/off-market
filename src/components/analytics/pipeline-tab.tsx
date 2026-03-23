@@ -69,7 +69,7 @@ export function PipelineTab() {
   const handleExport = () => {
     exportToCSV(
       "pipeline.csv",
-      ["Etape", "Contacts", "Valeur (EUR)"],
+      ["Étape", "Contacts", "Valeur (EUR)"],
       data.contactsByStage.map((s) => [
         s.label,
         String(s.count),
@@ -112,7 +112,7 @@ export function PipelineTab() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h3 className="text-[13px] font-semibold text-foreground">
-              Pipeline par etape
+              Pipeline par étape
             </h3>
             <p className="text-xs text-muted-foreground mt-0.5">
               Repartition des contacts dans le pipeline

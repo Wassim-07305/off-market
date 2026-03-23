@@ -70,7 +70,7 @@ export function welcomeEmail(
     subject: "Bienvenue sur Off-Market !",
     html: layout(`
       <h2 style="margin:0 0 16px;color:${PRIMARY};font-size:20px;">Bienvenue, ${name} !</h2>
-      <p style="margin:0 0 12px;">Votre compte Off-Market a ete cree avec succes. Vous pouvez desormais acceder a votre espace personnel.</p>
+      <p style="margin:0 0 12px;">Votre compte Off-Market a ete créé avec succès. Vous pouvez desormais acceder a votre espace personnel.</p>
       <p style="margin:0 0 8px;">Voici ce que vous pouvez faire :</p>
       <ul style="margin:0 0 16px;padding-left:20px;color:${TEXT_LIGHT};">
         <li>Gerer vos clients et votre pipeline</li>
@@ -161,7 +161,7 @@ export function invoiceEmail(
       <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 20px;background-color:#fafafa;border-radius:8px;width:100%;">
         <tr>
           <td style="padding:16px;">
-            <p style="margin:0 0 4px;font-size:13px;color:${TEXT_LIGHT};">Numero</p>
+            <p style="margin:0 0 4px;font-size:13px;color:${TEXT_LIGHT};">Numéro</p>
             <p style="margin:0 0 12px;font-size:15px;font-weight:600;">#${invoiceNumber}</p>
             <p style="margin:0 0 4px;font-size:13px;color:${TEXT_LIGHT};">Montant</p>
             <p style="margin:0 0 12px;font-size:15px;font-weight:600;">${amount}</p>
@@ -207,7 +207,7 @@ export function checkinReminderEmail(
         <li>Definir vos objectifs pour la semaine prochaine</li>
         <li>Partager vos reflexions dans votre journal</li>
       </ul>
-      <p style="margin:0;color:${TEXT_LIGHT};font-size:13px;">Votre progression compte — ne sautez pas cette etape !</p>
+      <p style="margin:0;color:${TEXT_LIGHT};font-size:13px;">Votre progression compte — ne sautez pas cette étape !</p>
     `),
   };
 }
@@ -248,10 +248,10 @@ export function digestEmail(
     .join("");
 
   return {
-    subject: "Votre resume hebdomadaire Off-Market",
+    subject: "Votre résumé hebdomadaire Off-Market",
     html: layout(`
-      <h2 style="margin:0 0 16px;color:${PRIMARY};font-size:20px;">Resume de la semaine</h2>
-      <p style="margin:0 0 20px;">Bonjour ${name}, voici votre resume hebdomadaire :</p>
+      <h2 style="margin:0 0 16px;color:${PRIMARY};font-size:20px;">Résumé de la semaine</h2>
+      <p style="margin:0 0 20px;">Bonjour ${name}, voici votre résumé hebdomadaire :</p>
       <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;">
         ${itemsHtml}
       </table>

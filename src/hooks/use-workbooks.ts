@@ -215,7 +215,7 @@ export function useSubmitWorkbook() {
         queryKey: ["workbook-submission", variables.workbookId],
       });
       if (variables.status === "submitted") {
-        toast.success("Workbook soumis avec succes");
+        toast.success("Workbook soumis avec succès");
       } else {
         toast.success("Brouillon enregistre");
       }
@@ -293,7 +293,7 @@ export function useWorkbookMutations() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["workbooks"] });
-      toast.success("Workbook cree");
+      toast.success("Workbook créé");
     },
     onError: (error: Error) => {
       toast.error(error.message || "Erreur lors de la creation");
@@ -317,10 +317,10 @@ export function useWorkbookMutations() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["workbooks"] });
       queryClient.invalidateQueries({ queryKey: ["workbook"] });
-      toast.success("Workbook mis a jour");
+      toast.success("Workbook mis à jour");
     },
     onError: (error: Error) => {
-      toast.error(error.message || "Erreur lors de la mise a jour");
+      toast.error(error.message || "Erreur lors de la mise à jour");
     },
   });
 

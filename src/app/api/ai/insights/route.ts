@@ -6,7 +6,7 @@ const INSIGHTS_SYSTEM_PROMPT = `Tu es l'assistant IA de la plateforme Off Market
 Tu generes des insights detailles sur la progression d'un client ou d'un groupe de clients.
 
 Regles strictes :
-- Reponses en francais, tu tutoies.
+- Réponses en francais, tu tutoies.
 - Pas d'emojis.
 - Reponds UNIQUEMENT en JSON valide, sans markdown ni commentaires.
 - Structure exacte attendue :
@@ -239,7 +239,7 @@ export async function POST(request: NextRequest) {
       }
     });
     const regularityPercent = Math.round((activeDays.size / daysBack) * 100);
-    context += `\n### Regularite : ${activeDays.size}/${daysBack} jours avec activite (${regularityPercent}%)\n`;
+    context += `\n### Regularite : ${activeDays.size}/${daysBack} jours avec activité (${regularityPercent}%)\n`;
 
     // Call AI
     const result = await callOpenRouter({

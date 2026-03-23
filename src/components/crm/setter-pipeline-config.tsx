@@ -232,7 +232,7 @@ export function SetterPipelineConfig({
   function handleUpdate(id: string, name: string, color: string) {
     updateColumn.mutate(
       { id, name, color },
-      { onSuccess: () => toast.success("Colonne mise a jour") },
+      { onSuccess: () => toast.success("Colonne mise à jour") },
     );
   }
 

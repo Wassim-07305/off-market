@@ -61,7 +61,7 @@ export default function FormResponsesPage({
   if (!form) {
     return (
       <p className="text-center text-muted-foreground py-16">
-        Formulaire non trouve
+        Formulaire non trouvé
       </p>
     );
   }
@@ -93,13 +93,13 @@ export default function FormResponsesPage({
   });
 
   const handleExportCSV = () => {
-    exportToCSV(exportRows, exportColumns, `${form.title} - Reponses`);
+    exportToCSV(exportRows, exportColumns, `${form.title} - Réponses`);
   };
 
   const handleExportPDF = () => {
     exportTableToPDF({
-      title: `${form.title} — Reponses`,
-      subtitle: `${exportRows.length} reponse(s)`,
+      title: `${form.title} — Réponses`,
+      subtitle: `${exportRows.length} réponse(s)`,
       columns: exportColumns,
       rows: exportRows,
     });
@@ -107,8 +107,8 @@ export default function FormResponsesPage({
 
   const handleExportMarkdown = () => {
     const subs = submissions ?? [];
-    let md = `# ${form.title} — Reponses\n\n`;
-    md += `> ${subs.length} reponse(s) — Exporte le ${new Date().toLocaleDateString("fr-FR")}\n\n---\n\n`;
+    let md = `# ${form.title} — Réponses\n\n`;
+    md += `> ${subs.length} réponse(s) — Exporte le ${new Date().toLocaleDateString("fr-FR")}\n\n---\n\n`;
 
     for (let i = 0; i < subs.length; i++) {
       const sub = subs[i];
@@ -122,7 +122,7 @@ export default function FormResponsesPage({
         minute: "2-digit",
       });
 
-      md += `## Reponse ${i + 1} — ${name}\n\n`;
+      md += `## Réponse ${i + 1} — ${name}\n\n`;
       md += `*Soumis le ${date}*\n\n`;
 
       for (const f of questionFields) {
@@ -152,7 +152,7 @@ export default function FormResponsesPage({
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `${form.title} - Reponses.md`;
+    a.download = `${form.title} - Réponses.md`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -248,7 +248,7 @@ export default function FormResponsesPage({
                 {submissions?.length ?? 0}
               </p>
               <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                Reponses
+                Réponses
               </p>
             </div>
             <div className="bg-muted/50 rounded-lg px-4 py-2">
@@ -346,7 +346,7 @@ export default function FormResponsesPage({
         ) : !submissions || submissions.length === 0 ? (
           <div className="p-12 text-center text-sm text-muted-foreground">
             <FileText className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
-            <p>Aucune reponse pour le moment</p>
+            <p>Aucune réponse pour le moment</p>
             <Link
               href={`${prefix}/forms/${formId}/respond`}
               className="inline-flex items-center gap-1.5 text-primary text-xs mt-3 hover:underline"
@@ -456,12 +456,12 @@ export default function FormResponsesPage({
           <div className="p-6 space-y-6">
             <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
               <BarChart2 className="w-4 h-4 text-primary" />
-              Statistiques des reponses
+              Statistiques des réponses
             </h3>
             <div className="grid grid-cols-3 gap-4 mb-4">
               <div className="bg-muted/50 rounded-lg p-4 text-center">
                 <p className="text-2xl font-bold text-foreground">{submissions.length}</p>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Reponses totales</p>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Réponses totales</p>
               </div>
               <div className="bg-muted/50 rounded-lg p-4 text-center">
                 <p className="text-2xl font-bold text-foreground">{questionFields.length}</p>
@@ -496,7 +496,7 @@ export default function FormResponsesPage({
                 <div key={field.id} className="bg-muted/30 rounded-xl p-4 border border-border/50">
                   <div className="flex items-center justify-between mb-3">
                     <p className="text-sm font-medium text-foreground">{field.label}</p>
-                    <span className="text-[10px] text-muted-foreground">{total}/{submissions.length} reponses</span>
+                    <span className="text-[10px] text-muted-foreground">{total}/{submissions.length} réponses</span>
                   </div>
                   {isNumeric && total > 0 ? (
                     <div className="space-y-2">
@@ -560,7 +560,7 @@ export default function FormResponsesPage({
                     </div>
                   ) : (
                     <p className="text-xs text-muted-foreground">
-                      {total} reponse{total !== 1 ? "s" : ""} texte
+                      {total} réponse{total !== 1 ? "s" : ""} texte
                     </p>
                   )}
                 </div>
@@ -819,7 +819,7 @@ function SubmissionDetail({
                 </span>
                 <span className="flex items-center gap-1">
                   <Hash className="w-3 h-3" />
-                  {fields.filter((f) => answers[f.id]).length} reponses
+                  {fields.filter((f) => answers[f.id]).length} réponses
                 </span>
               </div>
             </div>

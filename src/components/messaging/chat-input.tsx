@@ -585,7 +585,7 @@ export function ChatInput({
             />
             <FormatBtn
               icon={ListOrdered}
-              title="Liste numerotee"
+              title="Liste numérotee"
               active={editor?.isActive("orderedList") ?? false}
               onClick={() => editor?.chain().focus().toggleOrderedList().run()}
             />
@@ -642,7 +642,7 @@ export function ChatInput({
                     ? "text-primary bg-primary/10"
                     : "text-muted-foreground hover:text-foreground",
                 )}
-                title="Templates / Reponses rapides"
+                title="Templates / Réponses rapides"
               >
                 <Zap className="w-4 h-4" />
               </button>

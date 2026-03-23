@@ -112,7 +112,7 @@ export async function GET(request: NextRequest) {
     }
     console.error("Google Calendar events fetch error:", err);
     return NextResponse.json(
-      { error: "Erreur lors de la recuperation des evenements" },
+      { error: "Erreur lors de la recuperation des événements" },
       { status: 500 },
     );
   }

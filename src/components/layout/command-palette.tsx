@@ -60,7 +60,7 @@ const pageDefinitions = [
     section: "Navigation",
   },
   {
-    name: "Equipe CSM",
+    name: "Équipe CSM",
     path: "/csm",
     icon: UserCog,
     section: "Navigation",
@@ -178,7 +178,7 @@ export function CommandPalette() {
           <div className="max-h-80 overflow-y-auto p-2">
             {filteredPages.length === 0 ? (
               <div className="py-8 text-center text-sm text-muted-foreground">
-                Aucun resultat
+                Aucun résultat
               </div>
             ) : (
               <>

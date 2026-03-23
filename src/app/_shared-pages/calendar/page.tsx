@@ -283,8 +283,8 @@ export default function CalendarPage() {
             </span>
           </h1>
           <p className="text-sm text-muted-foreground/70 mt-1">
-            {events.length} evenement{events.length !== 1 ? "s" : ""} sur la
-            periode
+            {events.length} événement{events.length !== 1 ? "s" : ""} sur la
+            période
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -454,7 +454,7 @@ export default function CalendarPage() {
           </div>
           {selectedDayEvents.length === 0 ? (
             <p className="text-xs text-muted-foreground/60 py-4 text-center">
-              Aucun evenement ce jour
+              Aucun événement ce jour
             </p>
           ) : (
             <div className="space-y-2">
@@ -892,7 +892,7 @@ function DayView({
             <CalendarIcon className="w-6 h-6 text-muted-foreground/40" />
           </div>
           <p className="text-sm font-medium text-muted-foreground mb-1">
-            Aucun evenement ce jour
+            Aucun événement ce jour
           </p>
           <p className="text-xs text-muted-foreground/60 mb-4">
             Double-cliquez sur un creneau pour en creer un
@@ -903,7 +903,7 @@ function DayView({
               className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#AF0000] hover:text-[#DC2626] transition-colors"
             >
               <Plus className="w-4 h-4" />
-              Creer un evenement
+              Creer un événement
             </button>
           )}
         </div>

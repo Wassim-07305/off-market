@@ -175,7 +175,7 @@ function generateCSV(kpis: DashboardKPIs): string {
     `Evolution CA (%),${kpis.revenueChange}`,
     `Cash encaisse,${kpis.cashCollected}`,
     `Cash facture,${kpis.cashInvoiced}`,
-    `Eleves actifs,${kpis.totalStudents}`,
+    `Élèves actifs,${kpis.totalStudents}`,
     `Nouveaux ce mois,${kpis.newStudentsThisMonth}`,
     `Taux retention (%),${kpis.retentionRate}`,
     `Taux churn (%),${kpis.churnRate}`,
@@ -195,7 +195,7 @@ function generateDashboardPDF(kpis: DashboardKPIs): Buffer {
     { label: "Evolution CA", value: `${kpis.revenueChange > 0 ? "+" : ""}${kpis.revenueChange}%` },
     { label: "Cash encaisse", value: `${kpis.cashCollected.toLocaleString("fr-FR")} EUR` },
     { label: "Cash facture", value: `${kpis.cashInvoiced.toLocaleString("fr-FR")} EUR` },
-    { label: "Eleves actifs", value: `${kpis.totalStudents}` },
+    { label: "Élèves actifs", value: `${kpis.totalStudents}` },
     { label: "Nouveaux ce mois", value: `${kpis.newStudentsThisMonth}` },
     { label: "Taux retention", value: `${kpis.retentionRate}%` },
     { label: "Taux churn", value: `${kpis.churnRate}%` },
@@ -231,7 +231,7 @@ BT
 (Rapport Dashboard Admin) Tj
 /F2 10 Tf
 0 -18 Td
-(Genere le ${escapePDF(dateGenerated)}) Tj
+(Généré le ${escapePDF(dateGenerated)}) Tj
 ET
 `;
 
@@ -309,7 +309,7 @@ BT
 50 35 Td
 (Off-Market - Rapport Dashboard Admin - Page 1/1) Tj
 0 -10 Td
-(Document genere le ${escapePDF(dateGenerated)}) Tj
+(Document généré le ${escapePDF(dateGenerated)}) Tj
 ET
 `;
 

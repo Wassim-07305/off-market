@@ -233,7 +233,7 @@ export function useCreateCommunity() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["communities"] });
-      toast.success("Communaute creee avec succes !");
+      toast.success("Communaute creee avec succès !");
     },
     onError: () => {
       toast.error("Erreur lors de la creation de la communaute");
@@ -271,10 +271,10 @@ export function useUpdateCommunity() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["communities"] });
       queryClient.invalidateQueries({ queryKey: ["community"] });
-      toast.success("Communaute mise a jour");
+      toast.success("Communaute mise à jour");
     },
     onError: () => {
-      toast.error("Erreur lors de la mise a jour");
+      toast.error("Erreur lors de la mise à jour");
     },
   });
 }

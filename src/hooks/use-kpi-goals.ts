@@ -69,7 +69,7 @@ export function useCreateKpiGoal() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["kpi-goals"] });
-      toast.success("Objectif cree");
+      toast.success("Objectif créé");
     },
     onError: () => toast.error("Erreur lors de la creation"),
   });
@@ -96,7 +96,7 @@ export function useUpdateKpiGoal() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["kpi-goals"] });
     },
-    onError: () => toast.error("Erreur lors de la mise a jour"),
+    onError: () => toast.error("Erreur lors de la mise à jour"),
   });
 }
 

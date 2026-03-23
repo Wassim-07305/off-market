@@ -220,7 +220,7 @@ function StageColumn({
         ))}
         {students.length === 0 && (
           <div className="flex items-center justify-center h-20 text-[11px] text-muted-foreground border border-dashed border-border/60 rounded-xl">
-            Aucun eleve
+            Aucun élève
           </div>
         )}
       </div>

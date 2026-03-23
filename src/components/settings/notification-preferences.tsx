@@ -149,21 +149,21 @@ export function NotificationPreferences() {
   const handleToggleMainPref = (prefKey: string, value: boolean) => {
     updatePreferences.mutate(
       { [prefKey]: value },
-      { onError: () => toast.error("Erreur lors de la mise a jour") },
+      { onError: () => toast.error("Erreur lors de la mise à jour") },
     );
   };
 
   const handleDigestChange = (value: string) => {
     updatePreferences.mutate(
       { email_digest: value as "none" | "daily" | "weekly" },
-      { onError: () => toast.error("Erreur lors de la mise a jour") },
+      { onError: () => toast.error("Erreur lors de la mise à jour") },
     );
   };
 
   const handleMarketingToggle = (value: boolean) => {
     updatePreferences.mutate(
       { email_marketing: value },
-      { onError: () => toast.error("Erreur lors de la mise a jour") },
+      { onError: () => toast.error("Erreur lors de la mise à jour") },
     );
   };
 
@@ -340,7 +340,7 @@ export function NotificationPreferences() {
                 </p>
                 <p className="text-xs text-muted-foreground">
                   {push.permission === "denied"
-                    ? "Bloquees dans les parametres du navigateur"
+                    ? "Bloquees dans les paramètres du navigateur"
                     : "Recois des alertes meme quand le site est ferme"}
                 </p>
               </div>
@@ -417,10 +417,10 @@ export function NotificationPreferences() {
 
         <div>
           <p className="text-sm font-medium text-foreground mb-2">
-            Resume par email
+            Résumé par email
           </p>
           <p className="text-xs text-muted-foreground mb-3">
-            Recois un resume de ton activite par email.
+            Recois un résumé de ton activité par email.
           </p>
           <div className="flex gap-2">
             {DIGEST_OPTIONS.map((opt) => (

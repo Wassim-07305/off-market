@@ -116,7 +116,7 @@ export function AssignmentSubmission({
 
   const handleSubmit = async () => {
     if (!content.trim()) {
-      toast.error("Veuillez saisir votre reponse");
+      toast.error("Veuillez saisir votre réponse");
       return;
     }
 
@@ -126,7 +126,7 @@ export function AssignmentSubmission({
         content,
         attachments,
       });
-      toast.success("Exercice soumis avec succes !");
+      toast.success("Exercice soumis avec succès !");
       setContent("");
       setAttachments([]);
       onComplete?.();
@@ -164,7 +164,7 @@ export function AssignmentSubmission({
         <div className="bg-surface border border-border rounded-xl overflow-hidden">
           <div className="flex items-center justify-between p-4 border-b border-border/50">
             <h4 className="text-sm font-semibold text-foreground">
-              Derniere soumission
+              Dernière soumission
             </h4>
             {(() => {
               const cfg = STATUS_CONFIG[latestSubmission.status];
@@ -246,7 +246,7 @@ export function AssignmentSubmission({
             ) : (
               <>
                 <Send className="w-4 h-4 text-primary" />
-                Votre reponse
+                Votre réponse
               </>
             )}
           </h4>
@@ -255,7 +255,7 @@ export function AssignmentSubmission({
             value={content}
             onChange={(e) => setContent(e.target.value)}
             rows={6}
-            placeholder="Redigez votre reponse ici..."
+            placeholder="Redigez votre réponse ici..."
             className="w-full px-4 py-3 bg-muted/50 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none transition-shadow"
           />
 

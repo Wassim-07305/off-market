@@ -110,7 +110,7 @@ export function usePushNotifications() {
     onError: (err: Error) => {
       if (err.message === "Permission refusee") {
         toast.error(
-          "Tu as refuse les notifications. Active-les dans les parametres de ton navigateur.",
+          "Tu as refuse les notifications. Active-les dans les paramètres de ton navigateur.",
         );
       } else {
         toast.error("Erreur lors de l'activation des notifications push");

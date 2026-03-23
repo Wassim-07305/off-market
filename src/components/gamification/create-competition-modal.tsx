@@ -50,7 +50,7 @@ const TYPE_OPTIONS: {
   label: string;
   icon: typeof Users;
 }[] = [
-  { value: "team_vs_team", label: "Equipe vs Equipe", icon: Users },
+  { value: "team_vs_team", label: "Équipe vs Équipe", icon: Users },
   { value: "free_for_all", label: "Tous contre tous", icon: Swords },
 ];
 
@@ -116,7 +116,7 @@ export function CreateCompetitionModal({
       open={open}
       onClose={onClose}
       title="Nouvelle competition"
-      description="Creez une competition pour engager vos equipes"
+      description="Creez une competition pour engager vos équipes"
       size="lg"
     >
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
@@ -263,11 +263,11 @@ export function CreateCompetitionModal({
         <div>
           <label className="block text-sm font-medium text-foreground mb-1.5">
             <Gift className="w-3.5 h-3.5 inline mr-1" />
-            Recompense
+            Récompense
           </label>
           <input
             {...register("prize_description")}
-            placeholder="Ex : Session coaching offerte pour l'equipe gagnante"
+            placeholder="Ex : Session coaching offerte pour l'équipe gagnante"
             className={cn(
               "w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm",
               "placeholder:text-muted-foreground",
@@ -282,7 +282,7 @@ export function CreateCompetitionModal({
           onClick={() => setShowPreview(!showPreview)}
           className="text-xs text-[#DC2626] font-medium hover:underline cursor-pointer"
         >
-          {showPreview ? "Masquer l'apercu" : "Voir l'apercu"}
+          {showPreview ? "Masquer l'aperçu" : "Voir l'aperçu"}
         </button>
 
         {/* Preview */}
@@ -308,7 +308,7 @@ export function CreateCompetitionModal({
               </Badge>
               <Badge className="bg-muted text-muted-foreground text-[10px]">
                 {watchedValues.type === "team_vs_team"
-                  ? "Equipes"
+                  ? "Équipes"
                   : "Individuel"}
               </Badge>
             </div>

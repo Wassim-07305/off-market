@@ -32,7 +32,7 @@ export function AlexiaMemoryPanel() {
         </h2>
         <p className="text-sm text-muted-foreground mt-1">
           AlexIA memorise les informations cles de chaque client pour
-          personnaliser ses reponses.
+          personnaliser ses réponses.
         </p>
       </div>
 

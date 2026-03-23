@@ -82,8 +82,8 @@ const EMPTY_FORM: BadgeFormData = {
 };
 
 const CONDITION_ACTIONS = [
-  { value: "lessons_completed", label: "Lecons terminees" },
-  { value: "courses_completed", label: "Formations terminees" },
+  { value: "lessons_completed", label: "Leçons terminées" },
+  { value: "courses_completed", label: "Formations terminées" },
   { value: "messages_sent", label: "Messages envoyes" },
   { value: "journal_entries", label: "Entrees de journal" },
   { value: "coaching_sessions", label: "Sessions de coaching" },
@@ -260,8 +260,8 @@ export function AdminBadges() {
             <Award className="w-8 h-8 text-muted-foreground/40 mx-auto mb-2" />
             <p className="text-sm text-muted-foreground">
               {filterCategory === "all"
-                ? "Aucun badge cree"
-                : "Aucun badge dans cette categorie"}
+                ? "Aucun badge créé"
+                : "Aucun badge dans cette catégorie"}
             </p>
           </div>
         ) : (
@@ -500,7 +500,7 @@ export function AdminBadges() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-1.5">
-                    Categorie
+                    Catégorie
                   </label>
                   <select
                     value={form.category}
@@ -546,7 +546,7 @@ export function AdminBadges() {
               {/* XP Reward */}
               <div>
                 <label className="block text-sm font-medium text-foreground mb-1.5">
-                  Recompense XP *
+                  Récompense XP *
                 </label>
                 <input
                   type="number"

@@ -108,7 +108,7 @@ export function AdminBrandingSettings() {
 
     setSettings((prev) => ({ ...prev, logo_url: newUrl }));
     setUploading(false);
-    toast.success("Logo mis a jour");
+    toast.success("Logo mis à jour");
   };
 
   const handleRemoveLogo = () => {
@@ -128,7 +128,7 @@ export function AdminBrandingSettings() {
     try {
       // Sauvegarde locale pour l'instant (remplacer par app_settings table plus tard)
       localStorage.setItem("off-market-branding", JSON.stringify(settings));
-      toast.success("Parametres de branding sauvegardes");
+      toast.success("Paramètres de branding sauvegardes");
     } catch {
       toast.error("Erreur lors de la sauvegarde");
     } finally {
@@ -303,7 +303,7 @@ export function AdminBrandingSettings() {
           </div>
         </div>
 
-        {/* Apercu couleurs */}
+        {/* Aperçu couleurs */}
         <div className="flex gap-3 mt-2">
           <div
             className="h-10 flex-1 rounded-xl flex items-center justify-center text-white text-xs font-medium"

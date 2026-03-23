@@ -1,5 +1,5 @@
 // Templates de formulaires pre-construits pour Off-Market
-// Utilises dans le form builder pour demarrer rapidement
+// Utilises dans le form builder pour démarrer rapidement
 
 export interface FormTemplateField {
   label: string;
@@ -130,7 +130,7 @@ export const FORM_TEMPLATES: FormTemplate[] = [
     icon: "UserPlus",
     fields: [
       {
-        label: "Quel est votre domaine d'activite ?",
+        label: "Quel est votre domaine d'activité ?",
         field_type: "text",
         required: true,
         sort_order: 0,
@@ -260,7 +260,7 @@ export const FORM_TEMPLATES: FormTemplate[] = [
     icon: "GraduationCap",
     fields: [
       {
-        label: "Quel module venez-vous de terminer ?",
+        label: "Quel module venez-vous de terminér ?",
         field_type: "text",
         required: true,
         sort_order: 0,
@@ -320,7 +320,7 @@ export const FORM_TEMPLATES: FormTemplate[] = [
     fields: [
       {
         label:
-          "Quel est l'objectif de cet appel ? Quel probleme voulez-vous resoudre ?",
+          "Quel est l'objectif de cet appel ? Quel problème voulez-vous resoudre ?",
         field_type: "textarea",
         required: true,
         sort_order: 0,
@@ -392,7 +392,7 @@ export const FORM_TEMPLATES: FormTemplate[] = [
         options: [
           "Manque de temps",
           "Manque de clarte",
-          "Problemes techniques",
+          "Problèmes techniques",
           "Manque de motivation",
           "Pas d'obstacle",
           "Autre",
@@ -416,7 +416,7 @@ export const FORM_TEMPLATES: FormTemplate[] = [
   {
     id: "exit-interview",
     name: "Entretien de sortie",
-    description: "Comprenez pourquoi un eleve quitte le programme",
+    description: "Comprenez pourquoi un élève quitte le programme",
     category: "feedback",
     icon: "LogOut",
     fields: [
@@ -427,8 +427,8 @@ export const FORM_TEMPLATES: FormTemplate[] = [
         sort_order: 0,
         options: [
           "Objectifs atteints",
-          "Manque de resultats",
-          "Probleme financier",
+          "Manque de résultats",
+          "Problème financier",
           "Manque de temps",
           "Insatisfaction du coaching",
           "Changement de projet",

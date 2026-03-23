@@ -66,13 +66,13 @@ export function ReportExportButton({
   <div class="header">
     <h1>${title}</h1>
     <div class="meta">
-      <span>Periode : ${period}</span>
-      <span>Genere le ${new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}</span>
+      <span>Période : ${period}</span>
+      <span>Généré le ${new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}</span>
     </div>
   </div>
   ${sectionHtml}
   <div class="footer">
-    Off Market — Rapport genere automatiquement
+    Off Market — Rapport généré automatiquement
   </div>
   <script>
     window.onload = function() { window.print(); };

@@ -53,11 +53,11 @@ export function useReplays(filters?: {
   });
 }
 
-export function useReplayCategories() {
+export function useReplayCatégories() {
   const supabase = useSupabase();
 
   return useQuery({
-    queryKey: ["replay-categories"],
+    queryKey: ["replay-catégories"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("replays")
@@ -65,12 +65,12 @@ export function useReplayCategories() {
         .not("category", "is", null);
       if (error) throw error;
 
-      const categories = [
+      const catégories = [
         ...new Set(
           ((data as any[]) ?? []).map((r: any) => r.category).filter(Boolean),
         ),
       ] as string[];
-      return categories.sort();
+      return catégories.sort();
     },
   });
 }
@@ -81,7 +81,7 @@ export function useReplayMutations() {
 
   const invalidate = () => {
     queryClient.invalidateQueries({ queryKey: ["replays"] });
-    queryClient.invalidateQueries({ queryKey: ["replay-categories"] });
+    queryClient.invalidateQueries({ queryKey: ["replay-catégories"] });
   };
 
   const createReplay = useMutation({

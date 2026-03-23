@@ -6,7 +6,7 @@ const SYSTEM_PROMPT = `Tu es un assistant specialise dans la generation de docum
 
 Tu recois les donnees suivantes :
 - La transcription d'un appel de coaching
-- Les reponses du client aux workbooks (questionnaires pre-remplis par module)
+- Les réponses du client aux workbooks (questionnaires pre-remplis par module)
 - Les questions pre-appel du client
 - Les informations sur l'appel (client, coach, date, type)
 
@@ -14,9 +14,9 @@ Tu dois generer un document de fusion complet en francais qui synthetise toutes 
 
 Structure du document :
 
-1. **Profil et situation du client** — Resume du contexte client base sur les reponses workbook et les questions pre-appel
+1. **Profil et situation du client** — Resume du contexte client base sur les réponses workbook et les questions pre-appel
 2. **Synthese de l'appel** — Les points essentiels discutes pendant l'appel (5-8 points cles)
-3. **Analyse croisee** — Mise en perspective des reponses workbook avec ce qui a ete dit en appel (coherences, ecarts, evolutions)
+3. **Analyse croisee** — Mise en perspective des réponses workbook avec ce qui a ete dit en appel (coherences, ecarts, evolutions)
 4. **Diagnostics** — Problematiques identifiees, blocages, opportunites
 5. **Plan d'action personnalise** — Actions concretes avec priorite (haute/moyenne/basse), responsable et deadline suggeree
 6. **Metriques et indicateurs** — KPIs a suivre pour mesurer la progression
@@ -147,7 +147,7 @@ export async function POST(request: Request) {
     }
 
     // Build prompt
-    let userPrompt = `Genere le document de fusion pour l'appel suivant :\n\n`;
+    let userPrompt = `Généré le document de fusion pour l'appel suivant :\n\n`;
     userPrompt += `## Informations de l'appel\n`;
     userPrompt += `- **Titre** : ${call.title}\n`;
     userPrompt += `- **Date** : ${call.date}\n`;
@@ -164,7 +164,7 @@ export async function POST(request: Request) {
 
     // Workbook answers
     if (workbookSubmissions.length > 0) {
-      userPrompt += `\n## Reponses aux workbooks\n`;
+      userPrompt += `\n## Réponses aux workbooks\n`;
       for (const sub of workbookSubmissions) {
         const wb = sub.workbook;
         if (!wb) continue;
@@ -219,7 +219,7 @@ export async function POST(request: Request) {
       userPrompt += `\n## Notes de session\n${sessionNotes.content}\n`;
     }
 
-    userPrompt += `\n---\nGenere le document en deux formats : d'abord le HTML complet (entre les balises <html_output> et </html_output>), puis le Markdown (entre <markdown_output> et </markdown_output>).`;
+    userPrompt += `\n---\nGénéré le document en deux formats : d'abord le HTML complet (entre les balises <html_output> et </html_output>), puis le Markdown (entre <markdown_output> et </markdown_output>).`;
 
     // Call AI
     const startTime = Date.now();

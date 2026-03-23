@@ -172,9 +172,9 @@ export function useUpdateSequence() {
       queryClient.invalidateQueries({
         queryKey: ["relance-sequence", variables.id],
       });
-      toast.success("Sequence mise a jour");
+      toast.success("Sequence mise à jour");
     },
-    onError: () => toast.error("Erreur lors de la mise a jour"),
+    onError: () => toast.error("Erreur lors de la mise à jour"),
   });
 }
 
@@ -252,9 +252,9 @@ export function useAddStep() {
         queryKey: ["relance-sequence", variables.sequence_id],
       });
       queryClient.invalidateQueries({ queryKey: ["relance-sequences"] });
-      toast.success("Etape ajoutee");
+      toast.success("Étape ajoutee");
     },
-    onError: () => toast.error("Erreur lors de l'ajout de l'etape"),
+    onError: () => toast.error("Erreur lors de l'ajout de l'étape"),
   });
 }
 
@@ -281,9 +281,9 @@ export function useUpdateStep() {
         queryKey: ["relance-sequence", result.sequence_id],
       });
       queryClient.invalidateQueries({ queryKey: ["relance-sequences"] });
-      toast.success("Etape mise a jour");
+      toast.success("Étape mise à jour");
     },
-    onError: () => toast.error("Erreur lors de la mise a jour de l'etape"),
+    onError: () => toast.error("Erreur lors de la mise à jour de l'étape"),
   });
 }
 
@@ -339,9 +339,9 @@ export function useDeleteStep() {
         queryKey: ["relance-sequence", result.sequence_id],
       });
       queryClient.invalidateQueries({ queryKey: ["relance-sequences"] });
-      toast.success("Etape supprimee");
+      toast.success("Étape supprimee");
     },
-    onError: () => toast.error("Erreur lors de la suppression de l'etape"),
+    onError: () => toast.error("Erreur lors de la suppression de l'étape"),
   });
 }
 

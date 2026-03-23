@@ -131,7 +131,7 @@ export function Header() {
             destructive
             onClick={signOut}
           >
-            Deconnexion
+            Déconnexion
           </DropdownMenuItem>
         </DropdownMenu>
       </div>

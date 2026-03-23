@@ -76,7 +76,7 @@ function ReplyInput({
           value={value}
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSubmit()}
-          placeholder="Ecrire une reponse..."
+          placeholder="Ecrire une réponse..."
           className="flex-1 h-8 px-3 bg-muted/50 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-shadow"
         />
         <button
@@ -222,8 +222,8 @@ function ThreadedComment({
                 <ChevronRight className="w-3 h-3" />
               )}
               {repliesExpanded
-                ? "Masquer les reponses"
-                : `Voir ${replyCount} reponse${replyCount > 1 ? "s" : ""}`}
+                ? "Masquer les réponses"
+                : `Voir ${replyCount} réponse${replyCount > 1 ? "s" : ""}`}
             </button>
           )}
 

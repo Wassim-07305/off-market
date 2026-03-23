@@ -173,9 +173,9 @@ export function useUpdateBookingPage() {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["booking-pages"] });
       queryClient.invalidateQueries({ queryKey: ["booking-page", data.slug] });
-      toast.success("Page mise a jour");
+      toast.success("Page mise à jour");
     },
-    onError: () => toast.error("Erreur lors de la mise a jour"),
+    onError: () => toast.error("Erreur lors de la mise à jour"),
   });
 }
 
@@ -326,7 +326,7 @@ export function useAvailableSlots(
   return useQuery({
     queryKey: ["available-slots", pageId, date],
     queryFn: async () => {
-      // 1. Recuperer la page pour les parametres
+      // 1. Recuperer la page pour les paramètres
       const { data: page, error: pageErr } = await supabase
         .from("booking_pages")
         .select("*")
@@ -576,7 +576,7 @@ export function useUpdateBookingStatus() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["bookings"] });
       queryClient.invalidateQueries({ queryKey: ["booking-kpis"] });
-      toast.success("Statut mis a jour");
+      toast.success("Statut mis à jour");
     },
     onError: () => toast.error("Erreur"),
   });

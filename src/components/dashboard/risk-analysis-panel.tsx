@@ -98,7 +98,7 @@ export function RiskAnalysisPanel() {
               eleves
             </p>
             <p className="text-[11px] text-muted-foreground/70 mt-1">
-              Basee sur l&apos;activite, les check-ins, le CA et la progression
+              Basee sur l&apos;activité, les check-ins, le CA et la progression
             </p>
           </div>
         )}
@@ -303,7 +303,7 @@ function RiskStudentRow({
             href={`${prefix}/students/${result.profile_id}`}
             className="text-[11px] text-primary hover:underline"
           >
-            Voir le profil eleve →
+            Voir le profil élève →
           </Link>
         </div>
       )}

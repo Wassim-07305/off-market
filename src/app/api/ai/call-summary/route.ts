@@ -17,7 +17,7 @@ Tu dois generer un document de synthese structure en francais avec les sections 
 3. **Points cles abordes** — Les sujets principaux discutes pendant l'appel (liste a puces)
 4. **Diagnostics et observations** — Analyse des problematiques identifiees
 5. **Recommandations et plan d'action** — Actions concretes a mettre en place, avec responsable et deadline si possible
-6. **Prochaines etapes** — Ce qui doit se passer avant le prochain appel
+6. **Prochaines étapes** — Ce qui doit se passer avant le prochain appel
 7. **Indicateurs de suivi** — Metriques ou signaux a surveiller
 
 Regles :
@@ -201,7 +201,7 @@ export async function POST(request: Request) {
         userPrompt += `**Humeur client :** ${callNotes.client_mood}\n`;
       if (callNotes.outcome) userPrompt += `**Issue :** ${callNotes.outcome}\n`;
       if (callNotes.next_steps)
-        userPrompt += `**Prochaines etapes :** ${callNotes.next_steps}\n`;
+        userPrompt += `**Prochaines étapes :** ${callNotes.next_steps}\n`;
       if (callNotes.action_items && Array.isArray(callNotes.action_items)) {
         const items = callNotes.action_items as Array<{
           title: string;

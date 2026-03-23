@@ -171,7 +171,7 @@ export function CallFormModal({
           link: link || undefined,
           notes: notes || undefined,
         });
-        toast.success("Appel cree");
+        toast.success("Appel créé");
       }
       onClose();
     } catch {

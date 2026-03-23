@@ -173,7 +173,7 @@ export function WalkthroughProvider({
               <div className="p-4">
                 {/* Step counter */}
                 <p className="text-[10px] font-medium text-primary uppercase tracking-wider mb-1">
-                  Etape {currentIndex + 1}/{steps.length}
+                  Étape {currentIndex + 1}/{steps.length}
                 </p>
 
                 <h4 className="text-sm font-semibold text-foreground mb-1">

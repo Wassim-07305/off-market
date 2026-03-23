@@ -119,7 +119,7 @@ export function useProcessOffboarding() {
       queryClient.invalidateQueries({ queryKey: ["offboarding-requests"] });
       queryClient.invalidateQueries({ queryKey: ["all-users"] });
       queryClient.invalidateQueries({ queryKey: ["students"] });
-      toast.success("Offboarding traite avec succes");
+      toast.success("Offboarding traite avec succès");
     },
     onError: (error: Error) => {
       toast.error(

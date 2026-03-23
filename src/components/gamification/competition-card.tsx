@@ -109,7 +109,7 @@ export function CompetitionCard({
                 ) : (
                   <Swords className="w-3 h-3 mr-1" />
                 )}
-                {competition.type === "team_vs_team" ? "Equipes" : "Individuel"}
+                {competition.type === "team_vs_team" ? "Équipes" : "Individuel"}
               </Badge>
             </div>
             <h3 className="font-semibold text-foreground text-base leading-tight group-hover:text-[#DC2626] transition-colors">

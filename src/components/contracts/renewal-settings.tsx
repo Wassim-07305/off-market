@@ -205,7 +205,7 @@ export function RenewalSettings({
           {/* Period */}
           <div>
             <label className="block text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
-              Periode de renouvellement
+              Période de renouvellement
             </label>
             <div className="flex gap-1.5">
               {PERIOD_OPTIONS.map((opt) => (

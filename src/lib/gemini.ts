@@ -53,7 +53,7 @@ export async function generateMemoryUpdate(
   existingMemory: string,
   conversation: string,
 ): Promise<string> {
-  const prompt = `Tu es un assistant qui gere la memoire client. Voici la memoire existante de ce client:\n\n${existingMemory || "(Aucune memoire)"}\n\nVoici le dernier echange:\n${conversation}\n\nMets a jour la memoire en ajoutant les nouvelles informations apprises (objectifs, problemes, preferences, conseils donnes). Garde un format concis (max 500 mots). Retourne UNIQUEMENT le texte de la memoire mise a jour, rien d'autre.`;
+  const prompt = `Tu es un assistant qui gere la memoire client. Voici la memoire existante de ce client:\n\n${existingMemory || "(Aucune memoire)"}\n\nVoici le dernier echange:\n${conversation}\n\nMets a jour la memoire en ajoutant les nouvelles informations apprises (objectifs, problèmes, preferences, conseils donnes). Garde un format concis (max 500 mots). Retourne UNIQUEMENT le texte de la memoire mise à jour, rien d'autre.`;
 
   const result = await callOpenRouter({
     model: MEMORY_MODEL,

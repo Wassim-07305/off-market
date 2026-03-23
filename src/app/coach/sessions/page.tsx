@@ -301,7 +301,7 @@ function CreateSessionModal({
               onChange={(e) => setClientId(e.target.value)}
               className="w-full h-10 px-3 bg-surface border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
             >
-              <option value="">Selectionner un client</option>
+              <option value="">Sélectionner un client</option>
               {clients.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.full_name}

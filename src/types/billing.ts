@@ -239,7 +239,7 @@ export const ONBOARDING_STEPS = [
   { step: 4, label: "Objectifs", description: "Definir vos objectifs" },
   { step: 5, label: "Check-in", description: "Premier bilan de la semaine" },
   { step: 6, label: "Formation", description: "Acces a la formation" },
-  { step: 7, label: "Termine", description: "Pret a demarrer" },
+  { step: 7, label: "Termine", description: "Pret a démarrer" },
 ] as const;
 
 export type OnboardingStep = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;

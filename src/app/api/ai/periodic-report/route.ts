@@ -5,7 +5,7 @@ import { callOpenRouter } from "@/lib/openrouter";
 const REPORT_SYSTEM_PROMPT = `Tu es l'assistant IA de la plateforme Off Market. Tu generes un rapport periodique de coaching.
 
 Regles strictes :
-- Reponses en francais, tu tutoies.
+- Réponses en francais, tu tutoies.
 - Pas d'emojis.
 - Utilise le format Markdown : titres (##), listes (-), **gras**.
 - Sois concis et actionnable. Maximum 400 mots.
@@ -15,21 +15,21 @@ Regles strictes :
 const PERFORMANCE_SYSTEM_PROMPT = `Tu es l'assistant IA de la plateforme Off Market. Tu generes un rapport de performance mensuel.
 
 Regles strictes :
-- Reponses en francais, tu tutoies.
+- Réponses en francais, tu tutoies.
 - Pas d'emojis.
 - Utilise le format Markdown : titres (##), listes (-), **gras**.
 - Sois concis et actionnable. Maximum 500 mots.
 - Structure : Synthese du mois, Revenus et conversions, Engagement clients, Axes d'amelioration.
 - Base ton analyse uniquement sur les donnees fournies.`;
 
-const RISK_SYSTEM_PROMPT = `Tu es l'assistant IA de la plateforme Off Market. Tu identifies les clients a risque.
+const RISK_SYSTEM_PROMPT = `Tu es l'assistant IA de la plateforme Off Market. Tu identifies les clients à risque.
 
 Regles strictes :
-- Reponses en francais, tu tutoies.
+- Réponses en francais, tu tutoies.
 - Pas d'emojis.
 - Utilise le format Markdown : titres (##), listes (-), **gras**.
 - Sois concis. Maximum 400 mots.
-- Structure : Nombre de clients a risque, Liste detaillee (nom + raisons), Actions recommandees.
+- Structure : Nombre de clients à risque, Liste detaillee (nom + raisons), Actions recommandees.
 - Base ton analyse uniquement sur les donnees fournies.`;
 
 type ReportType = "weekly_coaching" | "monthly_performance" | "client_risk";
@@ -501,8 +501,8 @@ async function generateRiskReport(
   const atRisk = students ?? [];
   const inactive = inactiveStudents ?? [];
 
-  let context = `## Clients a risque\n\n`;
-  context += `### Clients tagges a risque (${atRisk.length})\n`;
+  let context = `## Clients à risque\n\n`;
+  context += `### Clients tagges à risque (${atRisk.length})\n`;
   atRisk.forEach((s: Record<string, unknown>) => {
     const profiles = s.profiles as Record<string, unknown> | null;
     const name = profiles?.full_name ?? "Inconnu";

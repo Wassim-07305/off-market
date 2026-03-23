@@ -32,7 +32,7 @@ interface OffboardingWizardProps {
 }
 
 const STEPS = [
-  { title: "Utilisateur", description: "Selectionner et motif" },
+  { title: "Utilisateur", description: "Sélectionner et motif" },
   { title: "Transfert", description: "Choisir le destinataire" },
   { title: "Donnees", description: "Actions sur les donnees" },
   { title: "Confirmation", description: "Verifier et confirmer" },
@@ -232,7 +232,7 @@ export function OffboardingWizard({
                   onChange={(e) => setSelectedUserId(e.target.value)}
                   className="w-full h-10 px-4 bg-muted border border-border rounded-[10px] text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
                 >
-                  <option value="">Selectionner un utilisateur</option>
+                  <option value="">Sélectionner un utilisateur</option>
                   {activeUsers.map((u) => (
                     <option key={u.id} value={u.id}>
                       {u.full_name} — {u.email} ({u.role})

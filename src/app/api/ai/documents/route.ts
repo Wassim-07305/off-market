@@ -176,7 +176,7 @@ export async function POST(request: Request) {
         .single();
 
       if (updateError) {
-        console.error("Erreur mise a jour document:", updateError);
+        console.error("Erreur mise à jour document:", updateError);
       }
 
       return NextResponse.json({ document: updatedDoc ?? doc });

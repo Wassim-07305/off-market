@@ -36,7 +36,7 @@ export function PaymentScheduleView() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-lg font-semibold text-foreground">
-            Echeanciers de paiement
+            Échéanciers de paiement
           </h2>
           <p className="text-xs text-muted-foreground mt-0.5">
             Suivi des paiements en plusieurs fois
@@ -51,7 +51,7 @@ export function PaymentScheduleView() {
             className="h-9 px-3 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors flex items-center gap-1.5"
           >
             <Plus className="w-4 h-4" />
-            Nouvel echeancier
+            Nouvel échéancier
           </button>
         </div>
       </div>
@@ -66,7 +66,7 @@ export function PaymentScheduleView() {
         <div className="bg-surface border border-border rounded-xl p-12 text-center">
           <Calendar className="w-10 h-10 text-muted-foreground/40 mx-auto mb-3" />
           <p className="text-sm text-muted-foreground">
-            Aucun echeancier de paiement
+            Aucun échéancier de paiement
           </p>
         </div>
       ) : (
@@ -207,7 +207,7 @@ export function PaymentScheduleView() {
             createSchedule.mutate(data, {
               onSuccess: () => {
                 setShowCreateModal(false);
-                toast.success("Echeancier cree");
+                toast.success("Échéancier cree");
               },
             });
           }}
@@ -308,7 +308,7 @@ function CreateScheduleModal({
       <div className="bg-surface border border-border rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto m-4">
         <div className="flex items-center justify-between p-6 border-b border-border">
           <h2 className="text-lg font-semibold text-foreground">
-            Nouvel echeancier
+            Nouvel échéancier
           </h2>
           <button
             onClick={onClose}
@@ -328,7 +328,7 @@ function CreateScheduleModal({
               onChange={(e) => setClientId(e.target.value)}
               className="w-full h-10 px-3 bg-surface border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
             >
-              <option value="">Selectionner un client</option>
+              <option value="">Sélectionner un client</option>
               {clients.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.full_name}
@@ -372,7 +372,7 @@ function CreateScheduleModal({
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-sm font-medium text-foreground mb-1.5">
-                Frequence
+                Fréquence
               </label>
               <select
                 value={frequency}
@@ -412,7 +412,7 @@ function CreateScheduleModal({
               <div className="flex items-center justify-between">
                 <p className="text-sm font-medium text-foreground flex items-center gap-2">
                   <CreditCard className="w-4 h-4 text-muted-foreground" />
-                  Apercu des echeances
+                  Aperçu des echeances
                 </p>
                 <p className="text-sm text-muted-foreground">
                   {fmt(perInstallment)} / echeance
@@ -458,7 +458,7 @@ function CreateScheduleModal({
             disabled={!clientId || totalAmountNum <= 0 || isPending}
             className="h-10 px-4 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
           >
-            {isPending ? "Creation..." : "Creer l'echeancier"}
+            {isPending ? "Creation..." : "Creer l'échéancier"}
           </button>
         </div>
       </div>

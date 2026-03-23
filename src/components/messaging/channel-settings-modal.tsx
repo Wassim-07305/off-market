@@ -116,9 +116,9 @@ export function ChannelSettingsModal({
         .eq("id", channel.id);
       if (error) throw error;
       queryClient.invalidateQueries({ queryKey: ["channels"] });
-      toast.success("Canal mis a jour");
+      toast.success("Canal mis à jour");
     } catch {
-      toast.error("Erreur lors de la mise a jour");
+      toast.error("Erreur lors de la mise à jour");
     } finally {
       setIsSaving(false);
     }
@@ -481,7 +481,7 @@ export function ChannelSettingsModal({
                   ) : (
                     <p className="text-xs text-muted-foreground text-center py-2">
                       {memberSearch
-                        ? "Aucun resultat"
+                        ? "Aucun résultat"
                         : "Tous les membres sont deja dans ce canal"}
                     </p>
                   )}

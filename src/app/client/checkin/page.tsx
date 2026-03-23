@@ -397,7 +397,7 @@ export default function CheckinPage() {
                           <Minus className="w-3 h-3" />
                         )}
                         {Math.abs(trends.revenueDiff).toLocaleString("fr-FR")}{" "}
-                        EUR vs semaine derniere
+                        EUR vs semaine dernière
                       </div>
                     )}
                   </div>
@@ -430,7 +430,7 @@ export default function CheckinPage() {
                         ) : (
                           <Minus className="w-3 h-3" />
                         )}
-                        {Math.abs(trends.prospectionDiff)} vs semaine derniere
+                        {Math.abs(trends.prospectionDiff)} vs semaine dernière
                       </div>
                     )}
                   </div>

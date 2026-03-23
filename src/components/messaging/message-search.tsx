@@ -101,14 +101,14 @@ export function MessageSearch({
             <button
               onClick={() => handleNavigate("prev")}
               className="w-6 h-6 rounded flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-              title="Resultat precedent"
+              title="Résultat precedent"
             >
               <ChevronUp className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => handleNavigate("next")}
               className="w-6 h-6 rounded flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-              title="Resultat suivant"
+              title="Résultat suivant"
             >
               <ChevronDown className="w-3.5 h-3.5" />
             </button>
@@ -116,7 +116,7 @@ export function MessageSearch({
         )}
         {searchQuery && results.length === 0 && (
           <span className="text-xs text-muted-foreground shrink-0">
-            Aucun resultat
+            Aucun résultat
           </span>
         )}
         <button
@@ -174,7 +174,7 @@ export function MessageSearch({
           ))}
           {results.length > 20 && (
             <p className="text-xs text-muted-foreground text-center py-2">
-              +{results.length - 20} autres resultats
+              +{results.length - 20} autres résultats
             </p>
           )}
         </div>

@@ -208,7 +208,7 @@ export default function PublicProfilePage({
     return (
       <div className="text-center py-20">
         <Users className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" />
-        <p className="text-sm text-muted-foreground">Profil non trouve</p>
+        <p className="text-sm text-muted-foreground">Profil non trouvé</p>
       </div>
     );
   }
@@ -536,7 +536,7 @@ export default function PublicProfilePage({
           <motion.div variants={staggerItem} className="text-center py-8">
             <Star className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
             <p className="text-sm text-muted-foreground">
-              Pas encore d&apos;activite
+              Pas encore d&apos;activité
             </p>
           </motion.div>
         )}

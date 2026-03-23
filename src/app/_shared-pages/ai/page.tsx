@@ -33,7 +33,7 @@ import { AiResponseBadge } from "@/components/ai/ai-response-badge";
 const SUGGESTIONS_BY_ROLE: Record<string, string[]> = {
   admin: [
     "Fais un rapport de performance de la semaine",
-    "Quels eleves sont a risque d'abandon ?",
+    "Quels eleves sont à risque d'abandon ?",
     "Donne-moi une vue d'ensemble du revenu ce mois-ci",
     "Quels clients n'ont pas eu de session ce mois ?",
     "Redige un message de relance pour les eleves inactifs",
@@ -65,7 +65,7 @@ const SUGGESTIONS_BY_ROLE: Record<string, string[]> = {
   ],
   client: [
     "Aide-moi a definir mes objectifs pour ce mois",
-    "Je suis bloque sur un probleme, aide-moi a le resoudre",
+    "Je suis bloque sur un problème, aide-moi a le resoudre",
     "Comment rester motive quand ca devient difficile ?",
     "Fais le bilan de ma progression",
     "Donne-moi un plan d'action pour cette semaine",
@@ -182,7 +182,7 @@ export default function AIPage() {
       }
 
       const data = await res.json();
-      const response = data.response ?? "Erreur de reponse";
+      const response = data.response ?? "Erreur de réponse";
 
       // Sync conversation ID if it was created server-side
       if (data.conversation_id && !conversationId) {
@@ -399,7 +399,7 @@ export default function AIPage() {
                     </span>
                   </h1>
                   <p className="text-sm text-muted-foreground/70 mb-8">
-                    Pose-moi une question sur tes eleves, ton business ou ta
+                    Pose-moi une question sur tes élèves, ton business ou ta
                     strategie.
                   </p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">

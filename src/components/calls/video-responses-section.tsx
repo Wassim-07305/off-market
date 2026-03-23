@@ -36,7 +36,7 @@ export function VideoResponsesSection({
           className="flex items-center gap-2 text-sm font-semibold text-foreground hover:text-primary transition-colors"
         >
           <Video className="w-4 h-4" />
-          Reponses video
+          Réponses video
           {unviewedCount > 0 && (
             <span className="text-[10px] font-bold text-white bg-[#DC2626] px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
               {unviewedCount}
@@ -115,13 +115,13 @@ export function VideoResponsesSection({
                 <Video className="w-5 h-5 text-muted-foreground" />
               </div>
               <p className="text-sm text-muted-foreground">
-                Aucune reponse video pour le moment
+                Aucune réponse vidéo pour le moment
               </p>
               <button
                 onClick={() => setShowRecorder(true)}
                 className="mt-3 h-8 px-3 rounded-lg text-xs font-medium text-primary hover:bg-primary/5 transition-colors"
               >
-                Envoyer la premiere video
+                Envoyer la première video
               </button>
             </div>
           )}

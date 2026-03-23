@@ -96,7 +96,7 @@ export function CallNotesForm({ callId }: CallNotesFormProps) {
         <div>
           <label className="block text-xs font-medium text-foreground mb-1.5 flex items-center gap-1.5">
             <LayoutTemplate className="w-3.5 h-3.5" />
-            Utiliser un modele
+            Utiliser un modèle
           </label>
           <div className="flex flex-wrap gap-1.5">
             {templates.map((tpl) => (
@@ -124,7 +124,7 @@ export function CallNotesForm({ callId }: CallNotesFormProps) {
       {/* Summary */}
       <div>
         <label className="block text-xs font-medium text-foreground mb-1">
-          Resume de l&apos;appel
+          Résumé de l&apos;appel
         </label>
         <textarea
           value={summary}
@@ -169,7 +169,7 @@ export function CallNotesForm({ callId }: CallNotesFormProps) {
       {/* Outcome */}
       <div>
         <label className="block text-xs font-medium text-foreground mb-1.5">
-          Resultat
+          Résultat
         </label>
         <div className="flex flex-wrap gap-1.5">
           {(
@@ -197,7 +197,7 @@ export function CallNotesForm({ callId }: CallNotesFormProps) {
       {/* Next steps */}
       <div>
         <label className="block text-xs font-medium text-foreground mb-1">
-          Prochaines etapes
+          Prochaines étapes
         </label>
         <textarea
           value={nextSteps}
@@ -211,7 +211,7 @@ export function CallNotesForm({ callId }: CallNotesFormProps) {
       {/* Action items */}
       <div>
         <label className="block text-xs font-medium text-foreground mb-1.5">
-          Actions a faire
+          Actions à faire
         </label>
         <div className="space-y-1.5">
           {actionItems.map((item, i) => (

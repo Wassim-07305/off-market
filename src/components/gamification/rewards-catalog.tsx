@@ -89,7 +89,7 @@ export function RewardsCatalog() {
                 Solde XP disponible
               </p>
               <p className="text-xs text-muted-foreground">
-                Echange tes XP contre des recompenses
+                Echange tes XP contre des récompenses
               </p>
             </div>
           </div>
@@ -138,7 +138,7 @@ export function RewardsCatalog() {
         <div className="bg-gradient-to-br from-muted/30 to-muted/10 border border-dashed border-border rounded-2xl p-12 text-center">
           <Gift className="w-10 h-10 text-muted-foreground/40 mx-auto mb-3" />
           <p className="text-sm text-muted-foreground">
-            Aucune recompense disponible pour le moment
+            Aucune récompense disponible pour le moment
           </p>
         </div>
       ) : (

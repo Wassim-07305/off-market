@@ -237,7 +237,7 @@ export async function POST(request: Request) {
           if (daysSinceCompletion >= 14) {
             penalty += WEIGHTS.course_stall;
             riskFactors.push(
-              `Aucune lecon terminee depuis ${daysSinceCompletion} jours`,
+              `Aucune leçon terminée depuis ${daysSinceCompletion} jours`,
             );
           } else if (daysSinceCompletion >= 7) {
             penalty += WEIGHTS.course_stall * 0.4;
@@ -249,7 +249,7 @@ export async function POST(request: Request) {
             .eq("student_id", student.id);
           if (count === 0) {
             penalty += WEIGHTS.course_stall * 0.6;
-            riskFactors.push("Aucune lecon commencee");
+            riskFactors.push("Aucune leçon commencee");
           }
         }
       } catch {

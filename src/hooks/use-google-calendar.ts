@@ -57,7 +57,7 @@ export function useDisconnectGoogleCalendar() {
       toast.success("Google Agenda deconnecte");
     },
     onError: () => {
-      toast.error("Erreur lors de la deconnexion");
+      toast.error("Erreur lors de la déconnexion");
     },
   });
 }

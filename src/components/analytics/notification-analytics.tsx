@@ -158,7 +158,7 @@ export function NotificationAnalytics() {
             </ResponsiveContainer>
           ) : (
             <div className="flex items-center justify-center h-[280px] text-sm text-muted-foreground">
-              Aucune donnee pour cette periode
+              Aucune donnee pour cette période
             </div>
           )}
         </div>
@@ -226,7 +226,7 @@ export function NotificationAnalytics() {
             </ResponsiveContainer>
           ) : (
             <div className="flex items-center justify-center h-[280px] text-sm text-muted-foreground">
-              Aucune donnee pour cette periode
+              Aucune donnee pour cette période
             </div>
           )}
         </div>
@@ -312,7 +312,7 @@ export function NotificationAnalytics() {
                       colSpan={4}
                       className="text-center py-8 text-muted-foreground"
                     >
-                      Aucune donnee pour cette periode
+                      Aucune donnee pour cette période
                     </td>
                   </tr>
                 )}

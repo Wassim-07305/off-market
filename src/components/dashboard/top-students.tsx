@@ -55,7 +55,7 @@ export function TopStudents() {
       <div className="space-y-3">
         {sorted.length === 0 ? (
           <p className="text-sm text-muted-foreground text-center py-4">
-            Aucun eleve
+            Aucun élève
           </p>
         ) : (
           sorted.map((student, index) => {

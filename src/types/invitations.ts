@@ -29,7 +29,7 @@ export interface CsvInviteRow {
 
 export const AUDIT_ACTIONS = [
   { value: "user.login", label: "Connexion" },
-  { value: "user.logout", label: "Deconnexion" },
+  { value: "user.logout", label: "Déconnexion" },
   { value: "user.create", label: "Creation utilisateur" },
   { value: "user.update", label: "Modification utilisateur" },
   { value: "user.delete", label: "Suppression utilisateur" },
@@ -45,7 +45,7 @@ export const AUDIT_ACTIONS = [
   { value: "invoice.paid", label: "Paiement facture" },
   { value: "invoice.refund", label: "Remboursement" },
   { value: "formation.create", label: "Creation formation" },
-  { value: "settings.update", label: "Modification parametres" },
+  { value: "settings.update", label: "Modification paramètres" },
   { value: "api_key.create", label: "Creation cle API" },
   { value: "api_key.revoke", label: "Revocation cle API" },
   { value: "data.export", label: "Export de donnees" },

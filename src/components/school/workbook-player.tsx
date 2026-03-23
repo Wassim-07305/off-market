@@ -345,7 +345,7 @@ function FieldRenderer({
             disabled={readOnly}
             className={cn(baseInputClass, "max-w-[400px]")}
           >
-            <option value="">Selectionner...</option>
+            <option value="">Sélectionner...</option>
             {field.options.map((opt) => (
               <option key={opt.value} value={opt.value}>
                 {opt.label}

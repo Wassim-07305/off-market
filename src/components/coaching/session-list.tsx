@@ -186,7 +186,7 @@ export function SessionList() {
             Aucune session trouvee
           </p>
           <p className="text-xs text-muted-foreground mt-1">
-            Creez votre premiere session de coaching
+            Creez votre première session de coaching
           </p>
           <button
             onClick={handleOpenCreate}

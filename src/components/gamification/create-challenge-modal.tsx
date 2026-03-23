@@ -62,7 +62,7 @@ export function CreateChallengeModal({
 
       if (error) throw error;
 
-      toast.success("Defi cree avec succes !");
+      toast.success("Defi créé avec succès !");
       queryClient.invalidateQueries({ queryKey: ["challenges"] });
       resetForm();
       onClose();
@@ -128,7 +128,7 @@ export function CreateChallengeModal({
         </div>
 
         <Input
-          label="Recompense XP"
+          label="Récompense XP"
           type="number"
           min="10"
           max="10000"
@@ -141,7 +141,7 @@ export function CreateChallengeModal({
         {/* Preview */}
         <div className="bg-muted/30 rounded-xl p-3 border border-border/50">
           <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-            Apercu
+            Aperçu
           </p>
           <div className="flex items-center gap-3">
             <span className="text-xl">

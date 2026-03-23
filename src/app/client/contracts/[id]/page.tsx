@@ -84,7 +84,7 @@ export default function ClientContractDetailPage() {
         } as any,
         signatureImage,
       });
-      toast.success("Contrat signe avec succes !");
+      toast.success("Contrat signe avec succès !");
       setShowSignatureSection(false);
     } catch {
       toast.error("Erreur lors de la signature");
@@ -112,7 +112,7 @@ export default function ClientContractDetailPage() {
           signer_city: signerCity.trim(),
         } as any,
       });
-      toast.success("Contrat signe avec succes !");
+      toast.success("Contrat signe avec succès !");
       setShowSignatureSection(false);
     } catch {
       toast.error("Erreur lors de la signature");

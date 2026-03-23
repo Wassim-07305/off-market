@@ -138,10 +138,10 @@ export function UserProfileSettings() {
 
     setUploading(false);
     if (updateError) {
-      toast.error("Erreur lors de la mise a jour");
+      toast.error("Erreur lors de la mise à jour");
     } else {
       setAvatarUrl(newUrl);
-      toast.success("Photo de profil mise a jour");
+      toast.success("Photo de profil mise à jour");
     }
   };
 
@@ -159,7 +159,7 @@ export function UserProfileSettings() {
 
     setSaving(false);
     if (error) toast.error("Erreur lors de la sauvegarde");
-    else toast.success("Profil mis a jour");
+    else toast.success("Profil mis à jour");
   };
 
   const handleChangePassword = async () => {
@@ -194,7 +194,7 @@ export function UserProfileSettings() {
         password: newPassword,
       });
       if (error) throw error;
-      toast.success("Mot de passe mis a jour");
+      toast.success("Mot de passe mis à jour");
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
@@ -375,14 +375,14 @@ export function UserProfileSettings() {
         </Button>
       </div>
 
-      {/* Securite */}
+      {/* Sécurité */}
       <div
         className="bg-surface rounded-2xl p-6 space-y-4"
         style={{ boxShadow: "var(--shadow-card)" }}
       >
         <div className="flex items-center gap-2 mb-2">
           <Lock className="w-4 h-4 text-muted-foreground" />
-          <h2 className="text-sm font-semibold text-foreground">Securite</h2>
+          <h2 className="text-sm font-semibold text-foreground">Sécurité</h2>
         </div>
 
         <div className="space-y-3">
@@ -467,7 +467,7 @@ export function UserProfileSettings() {
             loading={changingPassword}
             icon={<Lock className="w-3.5 h-3.5" />}
           >
-            {changingPassword ? "Mise a jour..." : "Changer le mot de passe"}
+            {changingPassword ? "Mise à jour..." : "Changer le mot de passe"}
           </Button>
         </div>
       </div>

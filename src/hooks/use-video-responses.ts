@@ -112,7 +112,7 @@ export function useSendVideoResponse() {
         ],
       });
       queryClient.invalidateQueries({ queryKey: ["video-responses-unviewed"] });
-      toast.success("Reponse video envoyee");
+      toast.success("Réponse vidéo envoyee");
     },
     onError: () => {
       toast.error("Erreur lors de l'envoi de la video");

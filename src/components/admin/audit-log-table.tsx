@@ -256,7 +256,7 @@ export function AuditLogTable() {
         {/* Date range */}
         <div>
           <label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-1 block">
-            Periode
+            Période
           </label>
           <div className="flex items-center gap-1.5">
             <input
@@ -354,7 +354,7 @@ export function AuditLogTable() {
           <div className="flex items-center justify-between px-3 py-2.5 border-t border-border bg-muted/20">
             <span className="text-[11px] text-muted-foreground">
               Page {table.getState().pagination.pageIndex + 1} sur{" "}
-              {table.getPageCount()} ({filteredLogs.length} resultats)
+              {table.getPageCount()} ({filteredLogs.length} résultats)
             </span>
             <div className="flex items-center gap-1">
               <button

@@ -49,7 +49,7 @@ export function EngagementChart() {
         ) : !hasData ? (
           <div className="h-full flex flex-col items-center justify-center text-muted-foreground">
             <Activity className="w-8 h-8 mb-2 opacity-20" />
-            <p className="text-sm">Aucune activite cette semaine</p>
+            <p className="text-sm">Aucune activité cette semaine</p>
             <p className="text-xs mt-1 text-muted-foreground/60">
               L&apos;engagement de tes clients apparaitra ici
             </p>

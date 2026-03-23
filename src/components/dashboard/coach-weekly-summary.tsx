@@ -138,7 +138,7 @@ export function CoachWeeklySummary() {
     >
       <h3 className="text-[13px] font-semibold text-foreground flex items-center gap-2 mb-4">
         <CalendarCheck className="w-4 h-4 text-muted-foreground" />
-        Resume hebdomadaire
+        Résumé hebdomadaire
       </h3>
 
       {isLoading ? (
@@ -164,14 +164,14 @@ export function CoachWeeklySummary() {
           />
           <SummaryMetric
             icon={CalendarCheck}
-            label="Sessions a venir"
+            label="Sessions à venir"
             value={data?.sessionsScheduled ?? 0}
             color="text-violet-500"
             bgColor="bg-violet-500/10"
           />
           <SummaryMetric
             icon={Users}
-            label="Eleves actifs"
+            label="Élèves actifs"
             value={data?.activeStudents ?? 0}
             color="text-emerald-500"
             bgColor="bg-emerald-500/10"
@@ -198,7 +198,7 @@ export function CoachWeeklySummary() {
           />
           <SummaryMetric
             icon={BookOpen}
-            label="Lecons terminees"
+            label="Leçons terminées"
             value={data?.formCompletions ?? 0}
             color="text-pink-500"
             bgColor="bg-pink-500/10"

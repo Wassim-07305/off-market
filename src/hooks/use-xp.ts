@@ -20,7 +20,7 @@ export function useXp() {
   // Fetch all XP for current user
   const xpQuery = useQuery({
     queryKey: ["xp", user?.id],
-    staleTime: 5 * 60 * 1000, // 5 min — gamification, mis a jour par mutations
+    staleTime: 5 * 60 * 1000, // 5 min — gamification, mis à jour par mutations
     queryFn: async ({ signal }) => {
       if (!user) return { transactions: [], total: 0 };
       const { data, error } = await supabase
@@ -56,7 +56,7 @@ export function useXp() {
   // Fetch user badges
   const badgesQuery = useQuery({
     queryKey: ["user-badges", user?.id],
-    staleTime: 5 * 60 * 1000, // 5 min — badges mis a jour par mutations XP
+    staleTime: 5 * 60 * 1000, // 5 min — badges mis à jour par mutations XP
     queryFn: async () => {
       if (!user) return [];
       const { data, error } = await supabase
@@ -73,7 +73,7 @@ export function useXp() {
   // Fetch rank from leaderboard view
   const rankQuery = useQuery({
     queryKey: ["my-rank", user?.id],
-    staleTime: 5 * 60 * 1000, // 5 min — rang mis a jour par mutations XP
+    staleTime: 5 * 60 * 1000, // 5 min — rang mis à jour par mutations XP
     queryFn: async () => {
       if (!user) return 0;
       const { data, error } = await supabase

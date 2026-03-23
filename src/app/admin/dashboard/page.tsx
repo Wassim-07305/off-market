@@ -336,7 +336,7 @@ export default function AdminDashboardPage() {
               />
             </Link>
             <StatCard
-              title="Eleves actifs"
+              title="Élèves actifs"
               value={studentsQuery.data?.totalStudents ?? 0}
               icon={Users}
               iconBg="bg-blue-500/10"
@@ -762,7 +762,7 @@ export default function AdminDashboardPage() {
                       {coach.avgHealth > 0 && ` · ${coach.avgHealth}% sante`}
                       {coach.sessionsMonth > 0 && ` · ${coach.sessionsMonth} sessions`}
                       {coach.atRisk > 0 && (
-                        <span className="text-red-500"> · {coach.atRisk} a risque</span>
+                        <span className="text-red-500"> · {coach.atRisk} à risque</span>
                       )}
                     </p>
                   </div>

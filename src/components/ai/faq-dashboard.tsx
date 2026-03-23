@@ -143,7 +143,7 @@ export function FAQDashboard() {
         <StatCard
           icon={AlertCircle}
           iconColor="text-amber-500"
-          label="Sans reponse"
+          label="Sans réponse"
           value={unanswered}
         />
         <StatCard
@@ -210,7 +210,7 @@ export function FAQDashboard() {
           <div className="flex items-center gap-2 mb-3">
             <AlertCircle className="w-4 h-4 text-amber-500" />
             <h3 className="text-sm font-semibold text-foreground">
-              Questions sans reponse
+              Questions sans réponse
             </h3>
           </div>
           <div

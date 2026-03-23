@@ -78,7 +78,7 @@ export function GoalsDashboard({ clientId }: GoalsDashboardProps) {
         difficulty: data.difficulty,
         coach_notes: data.coach_notes,
       });
-      toast.success("Objectif cree avec succes");
+      toast.success("Objectif créé avec succès");
     } catch {
       // Error handled by hook
     }
@@ -108,7 +108,7 @@ export function GoalsDashboard({ clientId }: GoalsDashboardProps) {
     updateProgress.mutate(
       { id, currentValue: value },
       {
-        onSuccess: () => toast.success("Progression mise a jour"),
+        onSuccess: () => toast.success("Progression mise à jour"),
       },
     );
   };
@@ -248,7 +248,7 @@ export function GoalsDashboard({ clientId }: GoalsDashboardProps) {
       {filteredGoals.length === 0 ? (
         <div className="text-center py-12">
           <p className="text-sm text-muted-foreground">
-            Aucun objectif dans cette categorie
+            Aucun objectif dans cette catégorie
           </p>
         </div>
       ) : (

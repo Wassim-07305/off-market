@@ -38,7 +38,7 @@ export function RedemptionHistory() {
           Aucun echange effectue pour le moment
         </p>
         <p className="text-xs text-muted-foreground mt-1">
-          Echange tes XP contre des recompenses dans le catalogue
+          Echange tes XP contre des récompenses dans le catalogue
         </p>
       </div>
     );
@@ -77,7 +77,7 @@ export function RedemptionHistory() {
             {/* Details */}
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-foreground truncate">
-                {reward?.title ?? "Recompense supprimee"}
+                {reward?.title ?? "Récompense supprimee"}
               </p>
               <div className="flex items-center gap-2 mt-0.5">
                 {typeConfig && (

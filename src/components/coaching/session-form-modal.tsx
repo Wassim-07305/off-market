@@ -229,7 +229,7 @@ export function SessionFormModal({
               required
               className={selectClass}
             >
-              <option value="">Selectionner un client</option>
+              <option value="">Sélectionner un client</option>
               {clients.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.full_name}

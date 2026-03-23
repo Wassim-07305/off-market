@@ -453,7 +453,7 @@ export function BrandingSettings() {
       {/* Live Preview */}
       <div className="border border-border rounded-xl p-4 space-y-3">
         <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-          Apercu
+          Aperçu
         </span>
         <div className="flex items-center gap-3">
           <div

@@ -24,7 +24,7 @@ const SCOPE_OPTIONS: {
   {
     value: "risk_scoring",
     label: "Detection des risques",
-    description: "Identifie les eleves a risque de decrochage",
+    description: "Identifie les eleves à risque de decrochage",
   },
   {
     value: "report_generation",
@@ -40,7 +40,7 @@ const SCOPE_OPTIONS: {
 
 /**
  * Modal de consentement IA avec selection granulaire des scopes.
- * Affichee avant la premiere utilisation de l'assistant IA.
+ * Affichee avant la première utilisation de l'assistant IA.
  */
 export function AiConsentModal({
   onAccept,

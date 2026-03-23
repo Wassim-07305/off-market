@@ -53,10 +53,10 @@ export function CertificateCard({ certificate }: { certificate: Certificate }) {
           <div class="body">
             <p>Ce certificat est decerne a</p>
             <div class="name">${escapeHtml(certificate.student_name)}</div>
-            <p>pour avoir complete avec succes la formation</p>
+            <p>pour avoir complete avec succès la formation</p>
             <div class="course">${escapeHtml(certificate.course_title)}</div>
             <p style="margin-top: 20px; font-size: 14px;">
-              ${certificate.total_modules} module${certificate.total_modules > 1 ? "s" : ""} · ${certificate.total_lessons} lecon${certificate.total_lessons > 1 ? "s" : ""}
+              ${certificate.total_modules} module${certificate.total_modules > 1 ? "s" : ""} · ${certificate.total_lessons} leçon${certificate.total_lessons > 1 ? "s" : ""}
               ${certificate.quiz_average ? ` · Moyenne quiz : ${certificate.quiz_average}%` : ""}
             </p>
           </div>
@@ -66,7 +66,7 @@ export function CertificateCard({ certificate }: { certificate: Certificate }) {
               <div class="value">${date}</div>
             </div>
             <div class="col">
-              <div class="label">Numero</div>
+              <div class="label">Numéro</div>
               <div class="value">${certificate.certificate_number}</div>
             </div>
           </div>
@@ -98,7 +98,7 @@ export function CertificateCard({ certificate }: { certificate: Certificate }) {
           <p className="text-xs text-muted-foreground mt-0.5">
             {certificate.total_modules} module
             {certificate.total_modules > 1 ? "s" : ""} ·{" "}
-            {certificate.total_lessons} lecon
+            {certificate.total_lessons} leçon
             {certificate.total_lessons > 1 ? "s" : ""}
             {certificate.quiz_average != null &&
               ` · Quiz ${certificate.quiz_average}%`}

@@ -125,7 +125,7 @@ export const closerCallSchema = z.object({
   lead_id: z.string().uuid().optional().nullable(),
   closer_id: z.string().uuid().optional().nullable(),
   date: z.string().min(1, "La date est requise"),
-  status: z.enum(["closé", "non_closé"]).default("non_closé"),
+  status: z.enum(["close", "non_close"]).default("non_close"),
   revenue: z.coerce.number().min(0).default(0),
   nombre_paiements: z.coerce.number().int().min(0).default(1),
   link: z.string().url().optional().or(z.literal("")),

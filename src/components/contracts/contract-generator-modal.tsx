@@ -97,10 +97,10 @@ export function ContractGeneratorModal({
   }
 
   const stepLabels: Record<Step, string> = {
-    template: "Modele",
+    template: "Modèle",
     info: "Informations",
     variables: "Variables",
-    preview: "Apercu",
+    preview: "Aperçu",
   };
 
   const steps: Step[] = ["template", "info", "variables", "preview"];
@@ -159,9 +159,9 @@ export function ContractGeneratorModal({
           ) : templates.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               <FileSignature className="mx-auto h-10 w-10 mb-3 opacity-30" />
-              <p>Aucun modele de contrat disponible.</p>
+              <p>Aucun modèle de contrat disponible.</p>
               <p className="text-xs mt-1">
-                Creez d&apos;abord un modele dans la section Contrats.
+                Creez d&apos;abord un modèle dans la section Contrats.
               </p>
             </div>
           ) : (
@@ -247,7 +247,7 @@ export function ContractGeneratorModal({
               Retour
             </Button>
             <Button onClick={generatePreview}>
-              Apercu
+              Aperçu
               <ChevronRight className="h-4 w-4 ml-1" />
             </Button>
           </div>

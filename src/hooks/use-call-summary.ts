@@ -58,7 +58,7 @@ export function useCallSummary(callId: string | null) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["call-summary", callId] });
-      toast.success("Synthese generee avec succes");
+      toast.success("Synthese generee avec succès");
     },
     onError: (error: Error) => {
       toast.error(error.message || "Erreur lors de la generation");

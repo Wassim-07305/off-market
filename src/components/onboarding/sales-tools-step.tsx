@@ -29,7 +29,7 @@ const SETTER_FEATURES: SalesFeature[] = [
     title: "Pipeline",
     description: "Gere tes leads du premier contact au closing.",
     aiExplanation:
-      "Le pipeline Kanban te donne une vue claire de chaque lead a chaque etape. Tu peux deplacer les leads, ajouter des notes et ne rien laisser passer.",
+      "Le pipeline Kanban te donne une vue claire de chaque lead a chaque étape. Tu peux deplacer les leads, ajouter des notes et ne rien laisser passer.",
     color: "text-blue-400",
   },
   {
@@ -37,15 +37,15 @@ const SETTER_FEATURES: SalesFeature[] = [
     title: "Appels",
     description: "Planifie tes appels de qualification.",
     aiExplanation:
-      "Le calendrier d'appels te permet de planifier tes calls de qualification, d'enregistrer les resultats et de suivre ton taux de conversion.",
+      "Le calendrier d'appels te permet de planifier tes calls de qualification, d'enregistrer les résultats et de suivre ton taux de conversion.",
     color: "text-emerald-400",
   },
   {
     icon: Activity,
     title: "Activite",
-    description: "Suis ton activite quotidienne et tes performances.",
+    description: "Suis ton activité quotidienne et tes performances.",
     aiExplanation:
-      "Le tableau d'activite te montre tes stats en temps reel : nombre de contacts, appels passes, leads qualifies. Tu vois exactement ou tu en es.",
+      "Le tableau d'activité te montre tes stats en temps reel : nombre de contacts, appels passes, leads qualifies. Tu vois exactement ou tu en es.",
     color: "text-amber-400",
   },
 ];

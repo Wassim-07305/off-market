@@ -88,10 +88,10 @@ export function useSubmitPreCallResponse() {
       queryClient.invalidateQueries({
         queryKey: ["pre-call-responses", variables.callId],
       });
-      toast.success("Reponses enregistrees");
+      toast.success("Réponses enregistrées");
     },
     onError: () => {
-      toast.error("Erreur lors de l'enregistrement des reponses");
+      toast.error("Erreur lors de l'enregistrement des réponses");
     },
   });
 }

@@ -130,7 +130,7 @@ export function LessonChecklist({ lessonId, className }: LessonChecklistProps) {
         queryKey: ["lesson-action-completions", lessonId],
       });
     },
-    onError: () => toast.error("Erreur lors de la mise a jour"),
+    onError: () => toast.error("Erreur lors de la mise à jour"),
   });
 
   if (items.length === 0) return null;

@@ -109,7 +109,7 @@ export function RelanceSequencesView() {
             Sequences de relance
           </h2>
           <p className="text-sm text-muted-foreground">
-            Automatisez vos follow-ups pour chaque etape du pipeline
+            Automatisez vos follow-ups pour chaque étape du pipeline
           </p>
         </div>
         <Button
@@ -139,7 +139,7 @@ export function RelanceSequencesView() {
             Aucune sequence
           </h3>
           <p className="text-sm text-muted-foreground max-w-sm mb-6">
-            Creez votre premiere sequence de relance pour automatiser le suivi
+            Creez votre première sequence de relance pour automatiser le suivi
             de vos prospects et maximiser vos conversions.
           </p>
           <Button
@@ -199,7 +199,7 @@ export function RelanceSequencesView() {
                   </span>
                   <span className="text-xs text-muted-foreground flex items-center gap-1">
                     <Clock className="h-3 w-3" />
-                    {seq.step_count} etape
+                    {seq.step_count} étape
                     {(seq.step_count ?? 0) !== 1 ? "s" : ""}
                   </span>
                   <span className="text-xs text-muted-foreground flex items-center gap-1">
@@ -239,7 +239,7 @@ export function RelanceSequencesView() {
         size="sm"
       >
         <p className="text-sm text-muted-foreground mb-4">
-          Cette action supprimera la sequence et toutes ses etapes. Les
+          Cette action supprimera la sequence et toutes ses étapes. Les
           inscriptions en cours seront annulees.
         </p>
         <div className="flex justify-end gap-2">

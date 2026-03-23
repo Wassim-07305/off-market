@@ -318,7 +318,7 @@ export function useBookCall() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["bookable-slots"] });
       queryClient.invalidateQueries({ queryKey: ["calls"] });
-      toast.success("Appel reserve avec succes !");
+      toast.success("Appel reserve avec succès !");
     },
     onError: () => toast.error("Erreur lors de la reservation"),
   });

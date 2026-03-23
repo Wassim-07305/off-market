@@ -155,7 +155,7 @@ export function useCreateRoadmap() {
       queryClient.invalidateQueries({
         queryKey: ["client-roadmaps", variables.clientId],
       });
-      toast.success("Roadmap creee avec succes");
+      toast.success("Roadmap creee avec succès");
     },
     onError: () => {
       toast.error("Erreur lors de la creation de la roadmap");
@@ -211,7 +211,7 @@ export function useUpdateMilestone() {
       queryClient.invalidateQueries({ queryKey: ["client-roadmaps"] });
     },
     onError: () => {
-      toast.error("Erreur lors de la mise a jour du jalon");
+      toast.error("Erreur lors de la mise à jour du jalon");
     },
   });
 }

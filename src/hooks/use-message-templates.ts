@@ -105,7 +105,7 @@ export function useCreateTemplate() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["message-templates"] });
-      toast.success("Template cree avec succes");
+      toast.success("Template créé avec succès");
     },
     onError: () => toast.error("Erreur lors de la creation du template"),
   });
@@ -130,9 +130,9 @@ export function useUpdateTemplate() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["message-templates"] });
-      toast.success("Template mis a jour");
+      toast.success("Template mis à jour");
     },
-    onError: () => toast.error("Erreur lors de la mise a jour"),
+    onError: () => toast.error("Erreur lors de la mise à jour"),
   });
 }
 

@@ -113,10 +113,10 @@ export function useUpdateSegment() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["saved-segments"] });
-      toast.success("Segment mis a jour");
+      toast.success("Segment mis à jour");
     },
     onError: () => {
-      toast.error("Erreur lors de la mise a jour");
+      toast.error("Erreur lors de la mise à jour");
     },
   });
 }

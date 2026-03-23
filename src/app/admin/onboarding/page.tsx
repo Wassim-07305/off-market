@@ -56,7 +56,7 @@ export default function OnboardingListPage() {
           <div className="bg-surface border border-border rounded-xl p-8 text-center">
             <CheckCircle className="w-8 h-8 text-emerald-500 mx-auto mb-2" />
             <p className="text-sm text-muted-foreground">
-              Tous les clients ont termine leur onboarding
+              Tous les clients ont terminé leur onboarding
             </p>
           </div>
         ) : (
@@ -104,7 +104,7 @@ export default function OnboardingListPage() {
       {complete.length > 0 && (
         <motion.div variants={fadeInUp} transition={defaultTransition}>
           <h2 className="text-sm font-semibold text-foreground mb-3">
-            Termines ({complete.length})
+            Terminés ({complete.length})
           </h2>
           <div className="space-y-2">
             {complete.map((client) => (

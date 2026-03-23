@@ -233,7 +233,7 @@ export function RelanceEnrollmentBadge({
                 {firstActive.sequence?.name ?? "Sequence de relance"}
               </p>
               <p>
-                Etape {firstActive.current_step}/{totalSteps}
+                Étape {firstActive.current_step}/{totalSteps}
               </p>
               {nextStepLabel && <p>Relance {nextStepLabel.toLowerCase()}</p>}
             </div>
@@ -316,7 +316,7 @@ export function RelanceEnrollmentBadge({
           </p>
           <div className="flex items-center gap-2 mt-0.5">
             <span className="text-[10px] text-muted-foreground">
-              Etape {firstActive.current_step}/{totalSteps}
+              Étape {firstActive.current_step}/{totalSteps}
             </span>
             {nextStepLabel && (
               <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
@@ -485,7 +485,7 @@ function EnrollContactModal({
                   </p>
                   <div className="flex items-center gap-2 mt-0.5">
                     <span className="text-[11px] text-muted-foreground">
-                      {seq.step_count} etape
+                      {seq.step_count} étape
                       {(seq.step_count ?? 0) !== 1 ? "s" : ""}
                     </span>
                     {seq.description && (

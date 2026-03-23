@@ -61,9 +61,9 @@ function formatShortDate(date: string) {
 
 // ─── XP ACTION LABELS ─────────────────
 const ACTION_LABELS: Record<string, string> = {
-  complete_lesson: "Lecon terminee",
-  complete_module: "Module termine",
-  complete_course: "Cours termine",
+  complete_lesson: "Leçon terminée",
+  complete_module: "Module terminé",
+  complete_course: "Cours terminé",
   weekly_checkin: "Check-in hebdo",
   daily_journal: "Journal du jour",
   achieve_goal: "Objectif atteint",
@@ -717,7 +717,7 @@ export default function ClientProgressPage() {
 
             <div className="space-y-2 text-sm">
               <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">Categorie</span>
+                <span className="text-muted-foreground">Catégorie</span>
                 <span className="text-foreground">
                   {CATEGORY_CONFIG[selectedBadge.category].emoji}{" "}
                   {CATEGORY_CONFIG[selectedBadge.category].label}
@@ -725,7 +725,7 @@ export default function ClientProgressPage() {
               </div>
               {selectedBadge.xp_reward > 0 && (
                 <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Recompense</span>
+                  <span className="text-muted-foreground">Récompense</span>
                   <span className="text-emerald-500 font-medium">
                     +{selectedBadge.xp_reward} XP
                   </span>

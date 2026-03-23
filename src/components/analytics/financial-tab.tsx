@@ -114,7 +114,7 @@ export function FinancialTab({ range }: FinancialTabProps) {
           title="Revenus total"
           value={fmt(data.totalRevenue)}
           change={data.revenueTrend}
-          changeLabel="vs periode"
+          changeLabel="vs période"
           icon={DollarSign}
         />
         <StatCard title="MRR" value={fmt(data.mrr)} icon={TrendingUp} />

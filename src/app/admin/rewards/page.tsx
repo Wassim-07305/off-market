@@ -25,10 +25,10 @@ export default function AdminRewardsPage() {
           </div>
           <div>
             <h1 className="text-3xl font-bold text-foreground tracking-tight">
-              Gestion des recompenses
+              Gestion des récompenses
             </h1>
             <p className="text-sm text-muted-foreground mt-0.5">
-              Cree et gere le catalogue de recompenses, traite les echanges en
+              Cree et gere le catalogue de récompenses, traite les echanges en
               attente
             </p>
           </div>

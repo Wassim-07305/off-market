@@ -181,7 +181,7 @@ export function useClientDashboard() {
         } | null;
         const actionLabels: Record<string, string> = {
           milestone_reached: "a atteint un jalon",
-          module_completed: "a termine un module",
+          module_completed: "a terminé un module",
           payment_received: "a recu un paiement",
         };
         return {

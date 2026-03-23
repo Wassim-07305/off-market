@@ -127,10 +127,10 @@ export default function TemplatesPage() {
       >
         <div>
           <h1 className="text-3xl font-semibold text-foreground">
-            Modeles de contrats
+            Modèles de contrats
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Creez des modeles reutilisables avec des variables dynamiques
+            Creez des modèles reutilisables avec des variables dynamiques
           </p>
         </div>
         <button
@@ -138,7 +138,7 @@ export default function TemplatesPage() {
           className="h-10 px-4 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors flex items-center gap-2"
         >
           <Plus className="w-4 h-4" />
-          Nouveau modele
+          Nouveau modèle
         </button>
       </motion.div>
 
@@ -153,12 +153,12 @@ export default function TemplatesPage() {
         ) : templates.length === 0 ? (
           <div className="bg-surface border border-border rounded-xl p-12 text-center">
             <FileText className="w-10 h-10 text-muted-foreground/40 mx-auto mb-3" />
-            <p className="text-sm text-muted-foreground">Aucun modele cree</p>
+            <p className="text-sm text-muted-foreground">Aucun modèle créé</p>
             <button
               onClick={() => openEditor()}
               className="mt-4 text-sm text-primary hover:underline"
             >
-              Creer votre premier modele
+              Creer votre premier modèle
             </button>
           </div>
         ) : (
@@ -242,7 +242,7 @@ export default function TemplatesPage() {
           <div className="bg-surface border border-border rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto m-4">
             <div className="flex items-center justify-between p-6 border-b border-border">
               <h2 className="text-lg font-semibold text-foreground">
-                {editingId ? "Modifier le modele" : "Nouveau modele"}
+                {editingId ? "Modifier le modèle" : "Nouveau modèle"}
               </h2>
               <button
                 onClick={resetForm}
@@ -256,7 +256,7 @@ export default function TemplatesPage() {
               {/* Title */}
               <div>
                 <label className="block text-sm font-medium text-foreground mb-1.5">
-                  Nom du modele
+                  Nom du modèle
                 </label>
                 <input
                   type="text"
@@ -337,7 +337,7 @@ export default function TemplatesPage() {
               {/* Content */}
               <div>
                 <label className="block text-sm font-medium text-foreground mb-1.5">
-                  Contenu du modele
+                  Contenu du modèle
                 </label>
                 <textarea
                   value={content}
@@ -370,7 +370,7 @@ export default function TemplatesPage() {
                   ? "Enregistrement..."
                   : editingId
                     ? "Mettre a jour"
-                    : "Creer le modele"}
+                    : "Creer le modèle"}
               </button>
             </div>
           </div>

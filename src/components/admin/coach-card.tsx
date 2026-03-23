@@ -260,7 +260,7 @@ export function CoachCard({
           {atRiskClients > 0 && (
             <span className="flex items-center gap-1 text-red-600 font-medium">
               <AlertTriangle className="w-3.5 h-3.5" />
-              {atRiskClients} a risque
+              {atRiskClients} à risque
             </span>
           )}
         </div>

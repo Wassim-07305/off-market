@@ -119,11 +119,11 @@ export function exportToPDF(config: {
     <h1>${escapeHtml(config.title)}</h1>
     <div class="meta">
       ${config.subtitle ? `<span>${escapeHtml(config.subtitle)}</span>` : ""}
-      <span>Genere le ${new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}</span>
+      <span>Généré le ${new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}</span>
     </div>
   </div>
   ${sectionHtml}
-  <div class="footer">Off Market — Rapport genere automatiquement</div>
+  <div class="footer">Off Market — Rapport généré automatiquement</div>
   <script>window.onload = function() { window.print(); };</script>
 </body>
 </html>`;
@@ -180,7 +180,7 @@ export function exportTableToPDF(config: {
     <h1>${escapeHtml(config.title)}</h1>
     <div class="meta">
       ${config.subtitle ? `<span>${escapeHtml(config.subtitle)}</span>` : ""}
-      <span>Genere le ${new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}</span>
+      <span>Généré le ${new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}</span>
     </div>
   </div>
   <p class="count">${config.rows.length} ligne(s)</p>
@@ -188,7 +188,7 @@ export function exportTableToPDF(config: {
     <thead><tr>${thHtml}</tr></thead>
     <tbody>${bodyHtml}</tbody>
   </table>
-  <div class="footer">Off Market — Rapport genere automatiquement</div>
+  <div class="footer">Off Market — Rapport généré automatiquement</div>
   <script>window.onload = function() { window.print(); };</script>
 </body>
 </html>`;

@@ -152,7 +152,7 @@ export function useLeaderboardPrivacy() {
         queryKey: ["leaderboard-privacy", user?.id],
       });
       queryClient.invalidateQueries({ queryKey: ["leaderboard"] });
-      toast.success("Nouvel alias genere");
+      toast.success("Nouvel alias généré");
     },
     onError: () => {
       toast.error("Erreur lors de la generation de l'alias");

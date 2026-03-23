@@ -48,7 +48,7 @@ const DRIP_OPTIONS: {
   {
     value: "after_module",
     label: "Apres completion d'un module",
-    description: "Se debloque quand un autre module est termine",
+    description: "Se debloque quand un autre module est terminé",
     icon: Layers,
   },
   {
@@ -161,7 +161,7 @@ export function DripSettings({
           />
           <p className="text-xs text-muted-foreground mt-1">
             Le module sera accessible {dripDays} jour{dripDays > 1 ? "s" : ""}{" "}
-            apres l'inscription de l'eleve
+            apres l'inscription de l'élève
           </p>
         </div>
       )}
@@ -177,7 +177,7 @@ export function DripSettings({
               onChange={(e) => setDripAfterModuleId(e.target.value)}
               className="w-full h-9 px-3 bg-muted/50 border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
             >
-              <option value="">Selectionner un module...</option>
+              <option value="">Sélectionner un module...</option>
               {otherModules
                 .sort((a, b) => a.sort_order - b.sort_order)
                 .map((m) => (

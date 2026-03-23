@@ -28,7 +28,7 @@ export function StudentGrid({
     return (
       <div className="text-center py-16">
         <p className="text-sm text-muted-foreground">
-          Aucun eleve pour le moment
+          Aucun élève pour le moment
         </p>
       </div>
     );

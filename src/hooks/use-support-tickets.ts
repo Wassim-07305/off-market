@@ -96,7 +96,7 @@ export function useUpdateTicket() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["support-tickets"] });
-      toast.success("Ticket mis a jour");
+      toast.success("Ticket mis à jour");
     },
   });
 }

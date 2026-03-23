@@ -1280,7 +1280,7 @@ export async function seedDemoData(adminUserId: string): Promise<string> {
         lead_id: ids.leadIds[i % ids.leadIds.length],
         closer_id: i % 2 === 0 ? adminUserId : sarahId,
         date: monthsAgo(monthOffset),
-        status: isClosed ? "closé" : "non_closé",
+        status: isClosed ? "close" : "non_close",
         revenue: isClosed ? 2000 + i * 500 : 0,
         nombre_paiements: isClosed ? 1 + (i % 4) : 0,
         link: i % 3 === 0 ? "https://meet.google.com/demo-closer" : null,

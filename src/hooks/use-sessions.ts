@@ -145,7 +145,7 @@ export function useCreateSession() {
       queryClient.invalidateQueries({ queryKey: ["sessions"] });
       queryClient.invalidateQueries({ queryKey: ["session-stats"] });
       queryClient.invalidateQueries({ queryKey: ["upcoming-sessions"] });
-      toast.success("Session creee avec succes");
+      toast.success("Session creee avec succès");
     },
     onError: () => {
       toast.error("Erreur lors de la creation de la session");
@@ -188,10 +188,10 @@ export function useUpdateSession() {
       queryClient.invalidateQueries({ queryKey: ["session"] });
       queryClient.invalidateQueries({ queryKey: ["session-stats"] });
       queryClient.invalidateQueries({ queryKey: ["upcoming-sessions"] });
-      toast.success("Session mise a jour");
+      toast.success("Session mise à jour");
     },
     onError: () => {
-      toast.error("Erreur lors de la mise a jour de la session");
+      toast.error("Erreur lors de la mise à jour de la session");
     },
   });
 }
@@ -251,7 +251,7 @@ export function useCompleteSession() {
       queryClient.invalidateQueries({ queryKey: ["session"] });
       queryClient.invalidateQueries({ queryKey: ["session-stats"] });
       queryClient.invalidateQueries({ queryKey: ["upcoming-sessions"] });
-      toast.success("Session terminee");
+      toast.success("Session terminée");
     },
     onError: () => {
       toast.error("Erreur lors de la completion de la session");

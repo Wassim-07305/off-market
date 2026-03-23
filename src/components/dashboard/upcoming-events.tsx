@@ -36,7 +36,7 @@ interface UpcomingEventsProps {
 
 export function UpcomingEvents({
   events,
-  title = "Prochains evenements",
+  title = "Prochains événements",
   maxDisplay = 5,
   className,
   isLoading,
@@ -93,7 +93,7 @@ export function UpcomingEvents({
         <div className="py-8 text-center">
           <Calendar className="w-8 h-8 text-muted-foreground/20 mx-auto mb-2" />
           <p className="text-xs text-muted-foreground">
-            Aucun evenement a venir
+            Aucun événement à venir
           </p>
         </div>
       ) : (

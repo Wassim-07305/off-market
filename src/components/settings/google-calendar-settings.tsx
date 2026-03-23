@@ -18,7 +18,7 @@ export function GoogleCalendarSettings() {
     const params = new URLSearchParams(window.location.search);
     const googleParam = params.get("google");
     if (googleParam === "success") {
-      toast.success("Google Agenda connecte avec succes");
+      toast.success("Google Agenda connecte avec succès");
       window.history.replaceState({}, "", window.location.pathname);
       googleStatus.refetch();
     } else if (googleParam === "error") {
@@ -67,7 +67,7 @@ export function GoogleCalendarSettings() {
       ) : (
         <div className="flex items-center justify-between">
           <p className="text-sm text-muted-foreground">
-            Connecte ton agenda Google pour voir tes evenements dans la page
+            Connecte ton agenda Google pour voir tes événements dans la page
             Appels.
           </p>
           <a

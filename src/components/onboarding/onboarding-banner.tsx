@@ -14,7 +14,7 @@ const PLATFORM_TOUR: WalkthroughStep[] = [
     target: "[data-tour='dashboard']",
     title: "Ton tableau de bord",
     content:
-      "Retrouve ici un apercu de ta progression, tes stats et ton activite.",
+      "Retrouve ici un aperçu de ta progression, tes stats et ton activité.",
     placement: "bottom",
   },
   {

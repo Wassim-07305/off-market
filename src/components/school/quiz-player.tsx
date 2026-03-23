@@ -257,7 +257,7 @@ export function QuizPlayer({ lessonId, config, onComplete }: QuizPlayerProps) {
           </div>
 
           <p className="text-sm font-medium text-foreground mb-1">
-            {results.correct}/{results.total} reponses correctes
+            {results.correct}/{results.total} réponses correctes
           </p>
           <div
             className={cn(
@@ -285,7 +285,7 @@ export function QuizPlayer({ lessonId, config, onComplete }: QuizPlayerProps) {
         {config.show_correct_answers && (
           <div className="p-5 space-y-3">
             <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
-              Detail des reponses
+              Detail des réponses
             </h4>
             {questions.map((q, i) => {
               const answer = results.answers[i];
@@ -476,7 +476,7 @@ export function QuizPlayer({ lessonId, config, onComplete }: QuizPlayerProps) {
             value={String(answers.get(currentQuestion.id) ?? "")}
             onChange={(e) => selectAnswer(currentQuestion.id, e.target.value)}
             rows={4}
-            placeholder="Votre reponse..."
+            placeholder="Votre réponse..."
             className="w-full px-3 py-2 bg-surface border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none"
           />
         )}

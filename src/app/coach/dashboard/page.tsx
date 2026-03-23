@@ -96,7 +96,7 @@ export default function CoachDashboardPage() {
           {getGreeting()}, {firstName}
         </h1>
         <p className="text-sm text-muted-foreground mt-0.5">
-          Voici un apercu de tes eleves et de ton activite
+          Voici un aperçu de tes élèves et de ton activité
         </p>
       </motion.div>
 
@@ -131,7 +131,7 @@ export default function CoachDashboardPage() {
               }
             />
             <StatCard
-              title="Sessions a venir"
+              title="Sessions à venir"
               value={stats.upcomingSessions}
               icon={CalendarCheck}
             />

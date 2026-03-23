@@ -87,7 +87,7 @@ export function useCreateMiroBoard() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["miro-boards"] });
-      toast.success("Tableau cree");
+      toast.success("Tableau créé");
     },
     onError: () => {
       toast.error("Erreur lors de la creation du tableau");

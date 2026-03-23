@@ -314,7 +314,7 @@ export const COMPETITION_TYPE_CONFIG: Record<
   CompetitionType,
   { label: string; icon: string }
 > = {
-  team_vs_team: { label: "Equipe vs Equipe", icon: "Users" },
+  team_vs_team: { label: "Équipe vs Équipe", icon: "Users" },
   free_for_all: { label: "Tous contre tous", icon: "Swords" },
 };
 

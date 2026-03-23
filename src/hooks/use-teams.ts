@@ -146,10 +146,10 @@ export function useCreateTeam() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["teams"] });
       qc.invalidateQueries({ queryKey: ["my-team"] });
-      toast.success("Equipe creee avec succes !");
+      toast.success("Équipe creee avec succès !");
     },
     onError: () => {
-      toast.error("Erreur lors de la creation de l'equipe");
+      toast.error("Erreur lors de la creation de l'équipe");
     },
   });
 }
@@ -172,10 +172,10 @@ export function useJoinTeam() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["teams"] });
       qc.invalidateQueries({ queryKey: ["my-team"] });
-      toast.success("Tu as rejoint l'equipe !");
+      toast.success("Tu as rejoint l'équipe !");
     },
     onError: () => {
-      toast.error("Impossible de rejoindre l'equipe");
+      toast.error("Impossible de rejoindre l'équipe");
     },
   });
 }
@@ -200,10 +200,10 @@ export function useLeaveTeam() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["teams"] });
       qc.invalidateQueries({ queryKey: ["my-team"] });
-      toast.success("Tu as quitte l'equipe");
+      toast.success("Tu as quitte l'équipe");
     },
     onError: () => {
-      toast.error("Impossible de quitter l'equipe");
+      toast.error("Impossible de quitter l'équipe");
     },
   });
 }

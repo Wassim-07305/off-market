@@ -92,7 +92,7 @@ export default function SchoolAdminPage() {
               c.id === course.id ? { ...c, status: course.status } : c,
             ),
           );
-          toast.error("Erreur lors de la mise a jour");
+          toast.error("Erreur lors de la mise à jour");
           setTogglingId(null);
         },
       },
@@ -181,7 +181,7 @@ export default function SchoolAdminPage() {
               Aucune formation
             </h3>
             <p className="text-sm text-muted-foreground mb-6">
-              Commencez par creer votre premiere formation
+              Commencez par creer votre première formation
             </p>
             <button
               onClick={handleCreate}
@@ -267,7 +267,7 @@ export default function SchoolAdminPage() {
                       </span>
                       <span className="flex items-center gap-1">
                         <BookOpen className="h-3.5 w-3.5" />
-                        {lessonCount} lecon{lessonCount > 1 ? "s" : ""}
+                        {lessonCount} leçon{lessonCount > 1 ? "s" : ""}
                       </span>
                     </div>
 
@@ -279,7 +279,7 @@ export default function SchoolAdminPage() {
                         className="w-full h-9 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-all active:scale-[0.98] flex items-center justify-center gap-1.5"
                       >
                         <Layers className="h-3.5 w-3.5" />
-                        Modules &amp; Lecons
+                        Modules &amp; Leçons
                       </Link>
 
                       {/* Secondary actions */}
@@ -367,11 +367,11 @@ export default function SchoolAdminPage() {
               { id: editingCourse.id, ...data },
               {
                 onSuccess: () => {
-                  toast.success("Formation mise a jour !");
+                  toast.success("Formation mise à jour !");
                   setShowCreateDialog(false);
                   setEditingCourse(null);
                 },
-                onError: () => toast.error("Erreur lors de la mise a jour"),
+                onError: () => toast.error("Erreur lors de la mise à jour"),
               },
             );
           } else {

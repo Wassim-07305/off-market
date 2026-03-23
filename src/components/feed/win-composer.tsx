@@ -22,7 +22,7 @@ interface WinComposerProps {
 const WIN_FIELDS = [
   {
     key: "result" as const,
-    label: "Resultat",
+    label: "Résultat",
     placeholder: "Ex: J'ai signe mon premier client a 2000EUR/mois !",
     emoji: "🎯",
   },
@@ -41,7 +41,7 @@ const WIN_FIELDS = [
   },
   {
     key: "lesson" as const,
-    label: "Lecon apprise",
+    label: "Leçon apprise",
     placeholder:
       "Ex: La cle c'etait de qualifier rapidement pour ne pas perdre de temps...",
     emoji: "💡",
@@ -132,7 +132,7 @@ export function WinComposer({
       {/* Actions */}
       <div className="px-4 pb-4 flex items-center justify-between">
         <p className="text-[10px] text-muted-foreground">
-          * Seul le resultat est obligatoire
+          * Seul le résultat est obligatoire
         </p>
         <button
           onClick={handleSubmit}

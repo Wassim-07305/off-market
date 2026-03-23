@@ -126,7 +126,7 @@ export function SetterProspectDrawer({
       },
       {
         onSuccess: () => {
-          toast.success("Prospect mis a jour");
+          toast.success("Prospect mis à jour");
           onClose();
         },
       },

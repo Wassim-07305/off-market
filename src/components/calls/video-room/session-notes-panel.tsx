@@ -57,13 +57,13 @@ export function SessionNotesPanel({
       id: "coaching",
       label: "Coaching",
       content:
-        "## Objectif de la seance\n\n\n## Points discutes\n\n\n## Decisions prises\n\n\n## Prochaines etapes\n\n",
+        "## Objectif de la seance\n\n\n## Points discutes\n\n\n## Decisions prises\n\n\n## Prochaines étapes\n\n",
     },
     {
       id: "decouverte",
       label: "Decouverte",
       content:
-        "## Situation actuelle\n\n\n## Problemes identifies\n\n\n## Objectifs\n\n\n## Solution proposee\n\n",
+        "## Situation actuelle\n\n\n## Problèmes identifies\n\n\n## Objectifs\n\n\n## Solution proposee\n\n",
     },
     {
       id: "suivi",
@@ -192,7 +192,7 @@ export function SessionNotesPanel({
             >
               <span className="text-xs font-medium text-amber-400 flex items-center gap-1.5">
                 <MessageSquareText className="w-3.5 h-3.5" />
-                Reponses pre-appel
+                Réponses pre-appel
                 {clientName && (
                   <span className="text-zinc-500">· {clientName}</span>
                 )}
@@ -230,7 +230,7 @@ export function SessionNotesPanel({
         {!notes.trim() && (
           <div>
             <span className="text-[10px] uppercase text-zinc-500 mb-1.5 block">
-              Modeles
+              Modèles
             </span>
             <div className="flex gap-1.5">
               {templates.map((tpl) => (
@@ -269,7 +269,7 @@ export function SessionNotesPanel({
         <div>
           <label className="text-[10px] uppercase text-zinc-500 mb-1.5 flex items-center gap-1">
             <CheckSquare className="w-3 h-3" />
-            Actions a faire
+            Actions à faire
           </label>
           <div className="space-y-1">
             {actionItems.map((item, i) => (

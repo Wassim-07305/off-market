@@ -55,7 +55,7 @@ export function useGenerateTranscriptFusion() {
       queryClient.invalidateQueries({
         queryKey: ["call-documents", callId],
       });
-      toast.success("Document genere avec succes");
+      toast.success("Document généré avec succès");
     },
     onError: (error: Error) => {
       toast.error(error.message || "Erreur lors de la generation du document");

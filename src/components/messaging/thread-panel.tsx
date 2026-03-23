@@ -66,7 +66,7 @@ export function ThreadPanel({
             Fil de discussion
           </h3>
           <span className="text-xs text-muted-foreground">
-            {replies.length} reponse{replies.length !== 1 ? "s" : ""}
+            {replies.length} réponse{replies.length !== 1 ? "s" : ""}
           </span>
         </div>
         <button

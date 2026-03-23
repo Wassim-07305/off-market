@@ -28,14 +28,14 @@ const SETUP_ITEMS: SetupItem[] = [
   },
   {
     icon: UserPlus,
-    title: "Inviter ton equipe",
+    title: "Inviter ton équipe",
     description: "Coaches, setters et closers",
     badge: "recommended",
     color: "text-blue-400",
   },
   {
     icon: GraduationCap,
-    title: "Creer ta premiere formation",
+    title: "Creer ta première formation",
     description: "Modules et contenus pour tes clients",
     badge: "recommended",
     color: "text-emerald-400",
@@ -43,7 +43,7 @@ const SETUP_ITEMS: SetupItem[] = [
   {
     icon: CreditCard,
     title: "Configurer la facturation",
-    description: "Methodes de paiement et echeanciers",
+    description: "Methodes de paiement et échéanciers",
     badge: "optional",
     color: "text-amber-400",
   },
@@ -66,7 +66,7 @@ export function AdminSetupStep({ onNext }: AdminSetupStepProps) {
           Configurer ta plateforme
         </h2>
         <p className="text-sm text-white/50">
-          Voici les etapes essentielles pour bien demarrer. Tu pourras y revenir
+          Voici les étapes essentielles pour bien démarrer. Tu pourras y revenir
           a tout moment.
         </p>
       </div>

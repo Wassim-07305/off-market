@@ -111,9 +111,9 @@ export function useUpdatePipelineColumn() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["pipeline-columns"] });
-      toast.success("Colonne mise a jour");
+      toast.success("Colonne mise à jour");
     },
-    onError: () => toast.error("Erreur lors de la mise a jour"),
+    onError: () => toast.error("Erreur lors de la mise à jour"),
   });
 }
 
@@ -145,7 +145,7 @@ export function useReorderPipelineColumns() {
 
   return useMutation({
     mutationFn: async (columns: { id: string; position: number }[]) => {
-      // Mise a jour en batch via Promise.all
+      // Mise à jour en batch via Promise.all
       const updates = columns.map(({ id, position }) =>
         supabase.from("pipeline_columns").update({ position }).eq("id", id),
       );
@@ -258,9 +258,9 @@ export function useUpdateSetterLead() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["setter-leads"] });
-      toast.success("Lead mis a jour");
+      toast.success("Lead mis à jour");
     },
-    onError: () => toast.error("Erreur lors de la mise a jour du lead"),
+    onError: () => toast.error("Erreur lors de la mise à jour du lead"),
   });
 }
 

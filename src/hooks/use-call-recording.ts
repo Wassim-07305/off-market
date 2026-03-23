@@ -114,9 +114,9 @@ export function useCallRecording(callId: string | null) {
           setDuration(Math.floor((Date.now() - startTimeRef.current) / 1000));
         }, 1000);
 
-        toast.success("Enregistrement demarre");
+        toast.success("Enregistrement démarré");
       } catch {
-        toast.error("Impossible de demarrer l'enregistrement");
+        toast.error("Impossible de démarrer l'enregistrement");
       }
     },
     [isRecording],
@@ -199,7 +199,7 @@ export function useCallRecording(callId: string | null) {
 
       const url = uploadedUrl ?? null;
       setRecordingUrl(url);
-      toast.success("Enregistrement sauvegarde avec succes");
+      toast.success("Enregistrement sauvegardé avec succès");
 
       return { id: data?.id, url };
     } catch (err) {
@@ -229,7 +229,7 @@ export function useCallRecording(callId: string | null) {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
 
-    toast.success("Telechargement demarre");
+    toast.success("Telechargement démarré");
   }, [recordingBlob, callId]);
 
   const resetRecording = useCallback(() => {

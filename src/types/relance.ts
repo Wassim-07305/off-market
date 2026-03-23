@@ -63,7 +63,7 @@ export interface RelanceLog {
 export const RELANCE_VARIABLES = [
   { key: "{{prenom}}", label: "Prenom du contact", example: "Marie" },
   { key: "{{entreprise}}", label: "Entreprise", example: "Acme SAS" },
-  { key: "{{etape}}", label: "Etape pipeline", example: "Proposition" },
+  { key: "{{étape}}", label: "Étape pipeline", example: "Proposition" },
   { key: "{{valeur}}", label: "Valeur estimee", example: "5 000 EUR" },
   { key: "{{jours_sans_contact}}", label: "Jours sans contact", example: "7" },
 ] as const;

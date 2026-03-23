@@ -70,7 +70,7 @@ export function ContractPreview({ title, content }: ContractPreviewProps) {
       <CardHeader className="flex-row items-center justify-between">
         <CardTitle className="text-base flex items-center gap-2">
           <FileText className="h-4 w-4 text-primary" />
-          Apercu du contrat
+          Aperçu du contrat
         </CardTitle>
         <div className="flex items-center gap-2">
           <Button

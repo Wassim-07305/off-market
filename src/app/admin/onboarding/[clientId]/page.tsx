@@ -95,7 +95,7 @@ export default function ClientOnboardingPage({
               Progression onboarding
             </h2>
             <span className="text-sm text-muted-foreground">
-              Etape {currentStep + 1} / {ONBOARDING_STEPS.length}
+              Étape {currentStep + 1} / {ONBOARDING_STEPS.length}
             </span>
           </div>
 

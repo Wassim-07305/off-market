@@ -41,7 +41,7 @@ export const WIDGET_META: Record<
   recent_clients: { label: "Top eleves", defaultSize: "1x1" },
   upcoming_calls: { label: "Funnel de conversion", defaultSize: "1x1" },
   pipeline_summary: { label: "Objectifs KPI", defaultSize: "1x1" },
-  activity_feed: { label: "Activite recente", defaultSize: "1x1" },
+  activity_feed: { label: "Activité récente", defaultSize: "1x1" },
   goals_progress: { label: "Insights IA", defaultSize: "1x1" },
   gamification: { label: "Gamification", defaultSize: "1x1" },
   ai_insights: { label: "AlexIA", defaultSize: "1x1" },

@@ -171,7 +171,7 @@ export function useCreateCompetition() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["competitions"] });
-      toast.success("Competition creee avec succes !");
+      toast.success("Competition creee avec succès !");
     },
     onError: () => {
       toast.error("Erreur lors de la creation de la competition");

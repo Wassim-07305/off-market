@@ -7,7 +7,7 @@ export type Module =
   | "eleves"
   | "pipeline"
   | "calendrier"
-  | "activite"
+  | "activité"
   | "finances"
   | "users"
   | "notifications"
@@ -44,7 +44,7 @@ const PERMISSIONS: Record<Module, AppRole[]> = {
   eleves: ["admin", "coach"],
   pipeline: ["admin", "setter", "closer"],
   calendrier: ["admin", "coach"],
-  activite: ["admin", "setter", "closer"],
+  activité: ["admin", "setter", "closer"],
   finances: ["admin"],
   users: ["admin"],
   notifications: ["admin", "coach", "client", "prospect", "setter", "closer"],

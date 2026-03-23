@@ -17,7 +17,7 @@ interface WinPostModalProps {
 const WIN_FIELDS = [
   {
     key: "result" as const,
-    label: "Resultat",
+    label: "Résultat",
     placeholder: "Ex: J'ai signe mon premier client a 2000EUR/mois !",
     emoji: "🎯",
     required: true,
@@ -39,7 +39,7 @@ const WIN_FIELDS = [
   },
   {
     key: "lesson" as const,
-    label: "Lecon apprise",
+    label: "Leçon apprise",
     placeholder:
       "Ex: La cle c'etait de qualifier rapidement pour ne pas perdre de temps...",
     emoji: "💡",
@@ -155,7 +155,7 @@ export function WinPostModal({
           {/* Actions */}
           <div className="px-5 pb-5 flex items-center justify-between border-t border-border/50 pt-4">
             <p className="text-[10px] text-muted-foreground">
-              * Seul le resultat est obligatoire
+              * Seul le résultat est obligatoire
             </p>
             <div className="flex gap-2">
               <button

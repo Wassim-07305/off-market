@@ -194,7 +194,7 @@ export function WorkbookEditor({
           </button>
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 text-xs font-medium">
             <Eye className="w-3.5 h-3.5" />
-            Apercu
+            Aperçu
           </span>
         </div>
         {/* Mock preview - we can't render the full player without a DB id, so render fields inline */}
@@ -229,7 +229,7 @@ export function WorkbookEditor({
               className="inline-flex items-center gap-1.5 h-9 px-4 border border-border bg-surface text-foreground rounded-xl text-sm font-medium hover:bg-muted/50 transition-colors"
             >
               <Eye className="w-4 h-4" />
-              Apercu
+              Aperçu
             </button>
           )}
           <button
@@ -645,7 +645,7 @@ function PreviewField({
         )}
         {field.type === "select" && (
           <select disabled className={cn(baseClass, "max-w-[400px]")}>
-            <option>Selectionner...</option>
+            <option>Sélectionner...</option>
             {field.options?.map((o) => (
               <option key={o.value}>{o.label}</option>
             ))}

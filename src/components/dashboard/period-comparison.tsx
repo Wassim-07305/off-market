@@ -80,11 +80,11 @@ function KPICard({ label, icon: Icon, value1, value2, delta }: KPICardProps) {
       </div>
       <div className="flex items-end justify-between">
         <div className="space-y-0.5">
-          <p className="text-[10px] text-muted-foreground">Periode 1</p>
+          <p className="text-[10px] text-muted-foreground">Période 1</p>
           <p className="text-sm font-semibold text-foreground">{value1}</p>
         </div>
         <div className="space-y-0.5 text-right">
-          <p className="text-[10px] text-muted-foreground">Periode 2</p>
+          <p className="text-[10px] text-muted-foreground">Période 2</p>
           <p className="text-sm font-semibold text-foreground">{value2}</p>
         </div>
       </div>
@@ -117,7 +117,7 @@ export function PeriodComparison() {
       <div className="flex items-center gap-2 mb-5">
         <GitCompare className="w-4 h-4 text-muted-foreground" />
         <h3 className="text-[13px] font-semibold text-foreground">
-          Comparaison de periodes
+          Comparaison de périodes
         </h3>
       </div>
 
@@ -125,7 +125,7 @@ export function PeriodComparison() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
         <div className="space-y-1.5">
           <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
-            Periode 1
+            Période 1
           </p>
           <div className="flex items-center gap-2">
             <input
@@ -145,7 +145,7 @@ export function PeriodComparison() {
         </div>
         <div className="space-y-1.5">
           <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
-            Periode 2
+            Période 2
           </p>
           <div className="flex items-center gap-2">
             <input
@@ -199,7 +199,7 @@ export function PeriodComparison() {
             delta={data.deltas.callsCompleted}
           />
           <KPICard
-            label="Lecons terminees"
+            label="Leçons terminées"
             icon={GraduationCap}
             value1={String(data.period1.lessonsCompleted)}
             value2={String(data.period2.lessonsCompleted)}
@@ -208,7 +208,7 @@ export function PeriodComparison() {
         </div>
       ) : (
         <p className="text-sm text-muted-foreground text-center py-8">
-          Selectionnez deux periodes pour comparer
+          Sélectionnez deux périodes pour comparer
         </p>
       )}
     </div>

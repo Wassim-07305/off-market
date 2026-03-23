@@ -195,7 +195,7 @@ export function useChallenges() {
       queryClient.invalidateQueries({ queryKey: ["challenge-participations"] });
     },
     onError: () => {
-      toast.error("Erreur lors de la mise a jour de la progression");
+      toast.error("Erreur lors de la mise à jour de la progression");
     },
   });
 
@@ -227,7 +227,7 @@ export function useChallenges() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["challenges"] });
-      toast.success("Challenge cree !");
+      toast.success("Challenge créé !");
     },
     onError: () => {
       toast.error("Erreur lors de la creation du challenge");
@@ -248,10 +248,10 @@ export function useChallenges() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["challenges"] });
-      toast.success("Challenge mis a jour !");
+      toast.success("Challenge mis à jour !");
     },
     onError: () => {
-      toast.error("Erreur lors de la mise a jour du challenge");
+      toast.error("Erreur lors de la mise à jour du challenge");
     },
   });
 

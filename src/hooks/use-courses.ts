@@ -389,7 +389,7 @@ export function useLessonProgress() {
 
   return useQuery({
     queryKey: ["lesson-progress", user?.id],
-    staleTime: 5 * 60 * 1000, // 5 min — progression mise a jour par mutation
+    staleTime: 5 * 60 * 1000, // 5 min — progression mise à jour par mutation
     queryFn: async () => {
       const { data, error } = await supabase
         .from("lesson_progress")

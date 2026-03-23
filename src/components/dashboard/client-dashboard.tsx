@@ -62,8 +62,8 @@ export function ClientDashboard() {
           {getGreeting()} {firstName} !
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Voici ton espace personnel — ta progression, tes prochaines etapes et
-          ton activite.
+          Voici ton espace personnel — ta progression, tes prochaines étapes et
+          ton activité.
         </p>
       </motion.div>
 
@@ -224,7 +224,7 @@ function TopStatsSection({ prefix }: { prefix: string }) {
             <GraduationCap className="size-4 text-white" />
           </div>
           <span className="text-sm text-muted-foreground font-medium">
-            Formations terminees
+            Formations terminées
           </span>
         </div>
         <div className="text-2xl font-bold text-foreground tracking-tight">
@@ -354,7 +354,7 @@ function NextActionsSection({ prefix }: { prefix: string }) {
             <Sparkles className="size-3.5 text-white" />
           </div>
           <h3 className="text-sm font-semibold text-foreground">
-            Prochaines etapes
+            Prochaines étapes
           </h3>
         </div>
       </div>
@@ -660,7 +660,7 @@ function RecentJournalSection({ prefix }: { prefix: string }) {
             href={`${prefix}/journal`}
             className="text-xs text-[#AF0000] font-medium hover:text-[#DC2626] transition-colors"
           >
-            Ecrire une premiere entree
+            Ecrire une première entree
           </Link>
         </div>
       )}

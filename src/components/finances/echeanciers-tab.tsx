@@ -37,7 +37,7 @@ export function EcheanciersTab() {
         <div className="flex flex-col items-center gap-2">
           <CalendarRange className="w-8 h-8 text-muted-foreground/40" />
           <p className="text-sm text-muted-foreground">
-            Aucun echeancier de paiement
+            Aucun échéancier de paiement
           </p>
         </div>
       </div>

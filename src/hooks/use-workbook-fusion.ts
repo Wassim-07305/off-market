@@ -72,7 +72,7 @@ export function useWorkbookFusion(
       queryClient.invalidateQueries({
         queryKey: ["workbook-fusion", callId, submissionId],
       });
-      toast.success("Fusion workbook + transcription generee avec succes");
+      toast.success("Fusion workbook + transcription generee avec succès");
     },
     onError: (error: Error) => {
       toast.error(error.message || "Erreur lors de la generation de la fusion");

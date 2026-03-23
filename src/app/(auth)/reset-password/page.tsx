@@ -67,7 +67,7 @@ export default function ResetPasswordPage() {
     if (error) {
       toast.error(error.message);
     } else {
-      toast.success("Mot de passe mis a jour avec succes !");
+      toast.success("Mot de passe mis à jour avec succès !");
       router.push("/login");
     }
   };

@@ -297,7 +297,7 @@ BT
 50 35 Td
 (Off-Market - Transcription generee automatiquement - Page ${pageIdx + 1}/${pages.length}) Tj
 0 -10 Td
-(Document genere le ${dateGenerated}) Tj
+(Document généré le ${dateGenerated}) Tj
 ET
 `;
 

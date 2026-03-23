@@ -86,10 +86,10 @@ export function useUpdateBranding() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["branding"] });
-      toast.success("Branding mis a jour");
+      toast.success("Branding mis à jour");
     },
     onError: () => {
-      toast.error("Erreur lors de la mise a jour du branding");
+      toast.error("Erreur lors de la mise à jour du branding");
     },
   });
 }

@@ -35,7 +35,7 @@ function StaffDashboard() {
       <motion.div variants={staggerItem}>
         <h1 className="text-lg font-semibold text-foreground">Dashboard</h1>
         <p className="text-sm text-muted-foreground mt-0.5">
-          Vue d&apos;ensemble de ton activite
+          Vue d&apos;ensemble de ton activité
         </p>
       </motion.div>
 

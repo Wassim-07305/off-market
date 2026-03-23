@@ -42,7 +42,7 @@ export default function SignupPage() {
       toast.error(translateSupabaseError(error.message));
     } else {
       trackEvent("signup");
-      toast.success("Compte cree !");
+      toast.success("Compte créé !");
       window.location.href = "/login";
     }
   };

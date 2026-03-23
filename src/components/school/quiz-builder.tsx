@@ -26,7 +26,7 @@ const QUESTION_TYPE_LABELS: Record<
 > = {
   multiple_choice: { label: "Choix multiple", icon: CheckCircle },
   true_false: { label: "Vrai / Faux", icon: ToggleLeft },
-  open_ended: { label: "Reponse libre", icon: MessageSquare },
+  open_ended: { label: "Réponse libre", icon: MessageSquare },
 };
 
 function generateId() {
@@ -111,7 +111,7 @@ export function QuizBuilder({
       {/* Settings */}
       <div className="bg-surface border border-border rounded-xl p-4 space-y-4">
         <h3 className="text-sm font-semibold text-foreground">
-          Parametres du quiz
+          Paramètres du quiz
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
@@ -135,7 +135,7 @@ export function QuizBuilder({
               className="rounded border-border"
             />
             <span className="text-sm text-foreground">
-              Afficher les reponses correctes
+              Afficher les réponses correctes
             </span>
           </label>
           <label className="flex items-center gap-2 cursor-pointer">
@@ -272,7 +272,7 @@ function QuestionEditor({
         )}
         {question.type === "open_ended" && (
           <div className="text-xs text-muted-foreground italic">
-            La reponse sera evaluee manuellement par le coach.
+            La réponse sera evaluee manuellement par le coach.
           </div>
         )}
 
@@ -285,7 +285,7 @@ function QuestionEditor({
             type="text"
             value={question.explanation ?? ""}
             onChange={(e) => onUpdate({ explanation: e.target.value })}
-            placeholder="Explication affichee apres la reponse..."
+            placeholder="Explication affichee apres la réponse..."
             className="w-full h-9 px-3 bg-surface border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
           />
         </div>
@@ -332,7 +332,7 @@ function MultipleChoiceEditor({
   return (
     <div className="space-y-2">
       <label className="block text-xs font-medium text-muted-foreground">
-        Options (cliquez sur le cercle pour definir la bonne reponse)
+        Options (cliquez sur le cercle pour definir la bonne réponse)
       </label>
       {options.map((option, index) => (
         <div key={index} className="flex items-center gap-2">

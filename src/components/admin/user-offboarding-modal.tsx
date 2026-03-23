@@ -134,7 +134,7 @@ export function UserOffboardingModal({
               onChange={(e) => setReassignCoachId(e.target.value)}
               className="w-full h-10 px-4 bg-muted border border-border rounded-[10px] text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
             >
-              <option value="">Selectionner un coach</option>
+              <option value="">Sélectionner un coach</option>
               {availableCoaches.map((coach) => (
                 <option key={coach.id} value={coach.id}>
                   {coach.full_name}

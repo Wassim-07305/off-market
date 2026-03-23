@@ -54,7 +54,7 @@ const PIPELINE_COLUMNS: ColumnConfig[] = [
   },
   {
     key: "a_venir",
-    label: "Appels a venir",
+    label: "Appels à venir",
     borderColor: "border-t-blue-500",
     badgeColor:
       "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
@@ -103,9 +103,9 @@ const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
 
 /* ─── Helper: classify call into pipeline column ─── */
 function getCallColumn(call: CloserCall): PipelineColumn {
-  if (call.status === "closé") return "close";
+  if (call.status === "close") return "close";
   // non_closé can mean lost
-  if (call.status === "non_closé") {
+  if (call.status === "non_close") {
     // If call is today and not closed, show in today
     try {
       const callDate = parseISO(call.date);
@@ -327,7 +327,7 @@ function CloserCallFormModal({
   const [time, setTime] = useState("10:00");
   const [revenue, setRevenue] = useState("");
   const [notes, setNotes] = useState("");
-  const [status, setStatus] = useState<"closé" | "non_closé">("non_closé");
+  const [status, setStatus] = useState<"close" | "non_close">("non_close");
   const [nombrePaiements, setNombrePaiements] = useState("1");
   const [saving, setSaving] = useState(false);
 
@@ -387,7 +387,7 @@ function CloserCallFormModal({
       setTime("10:00");
       setRevenue("");
       setNotes("");
-      setStatus("non_closé");
+      setStatus("non_close");
       setNombrePaiements("1");
     }
   }, [editCall, open]);
@@ -485,7 +485,7 @@ function CloserCallFormModal({
               onChange={(e) => setCloserId(e.target.value)}
               className={selectClass}
             >
-              <option value="">Selectionner un closer</option>
+              <option value="">Sélectionner un closer</option>
               {closers.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.full_name}
@@ -495,7 +495,7 @@ function CloserCallFormModal({
           </div>
 
           {/* Setter (optional, only shown when status = closé) */}
-          {status === "closé" && (
+          {status === "close" && (
             <div>
               <label className={labelClass}>Setter (source du lead)</label>
               <select
@@ -545,12 +545,12 @@ function CloserCallFormModal({
             <select
               value={status}
               onChange={(e) =>
-                setStatus(e.target.value as "closé" | "non_closé")
+                setStatus(e.target.value as "close" | "non_close")
               }
               className={selectClass}
             >
-              <option value="non_closé">Non close</option>
-              <option value="closé">Close</option>
+              <option value="non_close">Non close</option>
+              <option value="close">Close</option>
             </select>
           </div>
 

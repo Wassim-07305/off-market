@@ -51,7 +51,7 @@ export function generateInvoicePDF(invoice: InvoicePDFData) {
   doc.setTextColor(...PRIMARY_COLOR);
   doc.text("FACTURE", 20, 30);
 
-  // Numero facture
+  // Numéro facture
   doc.setFontSize(12);
   doc.setTextColor(107, 114, 128);
   doc.text(`N° ${invoice.invoice_number}`, 20, 40);

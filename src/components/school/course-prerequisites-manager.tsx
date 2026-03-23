@@ -92,7 +92,7 @@ export function CoursePrerequisitesManager({
                 onChange={(e) => setSelectedCourseId(e.target.value)}
                 className="w-full h-9 pl-3 pr-8 rounded-xl bg-muted/50 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-shadow appearance-none"
               >
-                <option value="">Selectionner une formation...</option>
+                <option value="">Sélectionner une formation...</option>
                 {availableCourses.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.title}
@@ -163,7 +163,7 @@ export function CoursePrerequisitesManager({
 
           {/* Info */}
           <p className="text-[10px] text-muted-foreground leading-relaxed">
-            Les eleves devront terminer toutes les formations prerequises avant
+            Les eleves devront terminér toutes les formations prerequises avant
             de pouvoir acceder a cette formation.
           </p>
         </div>

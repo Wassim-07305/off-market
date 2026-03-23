@@ -61,7 +61,7 @@ export function CallEndedSummary({
           </div>
 
           <div>
-            <h2 className="text-xl font-semibold text-white">Appel termine</h2>
+            <h2 className="text-xl font-semibold text-white">Appel terminé</h2>
             <p className="text-sm text-zinc-500 mt-1">{callTitle}</p>
           </div>
         </div>

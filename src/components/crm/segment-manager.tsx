@@ -181,7 +181,7 @@ function SegmentFormModal({
             <div className="flex items-center gap-1.5">
               <Share2 className="w-3.5 h-3.5 text-muted-foreground group-hover:text-foreground transition-colors" />
               <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
-                Partager avec l&apos;equipe
+                Partager avec l&apos;équipe
               </span>
             </div>
           </label>

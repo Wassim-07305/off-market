@@ -178,7 +178,7 @@ export function UpsellRulesManager() {
             <TrendingUp className="mx-auto h-10 w-10 mb-3 opacity-30" />
             <p>Aucune regle d&apos;upsell configuree.</p>
             <p className="text-sm mt-1">
-              Creez votre premiere regle pour automatiser les offres.
+              Creez votre première regle pour automatiser les offres.
             </p>
           </CardContent>
         </Card>
@@ -311,7 +311,7 @@ export function UpsellRulesManager() {
 
           {triggerType === "milestone_completion" && (
             <div>
-              <label className="text-sm font-medium">Cle de l&apos;etape</label>
+              <label className="text-sm font-medium">Cle de l&apos;étape</label>
               <Input
                 {...form.register("milestone_key")}
                 placeholder="Ex: module_5_completed"

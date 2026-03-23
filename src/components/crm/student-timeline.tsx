@@ -161,7 +161,7 @@ export function StudentTimeline({ studentId }: StudentTimelineProps) {
       <div className="flex flex-col items-center py-10 text-center">
         <Activity className="w-10 h-10 text-muted-foreground/20 mb-3" />
         <p className="text-sm text-muted-foreground">
-          Aucune activite enregistree
+          Aucune activité enregistree
         </p>
       </div>
     );

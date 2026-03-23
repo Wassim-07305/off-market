@@ -37,7 +37,7 @@ const STATUS_CONFIG: Record<
     color: "text-orange-500",
   },
   ended: {
-    label: "Appel termine",
+    label: "Appel terminé",
     icon: "error",
     color: "text-muted-foreground",
   },

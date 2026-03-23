@@ -175,10 +175,10 @@ export function HallOfFameWall({
         >
           <Crown className="w-12 h-12 text-muted-foreground/20 mx-auto mb-3" />
           <h3 className="text-base font-semibold text-foreground mb-1">
-            Aucun resultat
+            Aucun résultat
           </h3>
           <p className="text-sm text-muted-foreground">
-            Modifie les filtres pour afficher des resultats.
+            Modifie les filtres pour afficher des résultats.
           </p>
         </div>
       ) : (

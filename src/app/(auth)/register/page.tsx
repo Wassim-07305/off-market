@@ -86,7 +86,7 @@ function RegisterContent() {
           body: JSON.stringify({ invite_code: code, apply_role: true }),
         }).catch(() => {});
       }
-      toast.success("Compte cree ! Connecte-toi maintenant.");
+      toast.success("Compte créé ! Connecte-toi maintenant.");
       window.location.href = "/login";
     }
   };

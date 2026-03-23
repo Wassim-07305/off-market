@@ -19,7 +19,7 @@ export async function POST() {
   if (error) {
     console.error("Failed to disconnect Google Calendar:", error);
     return NextResponse.json(
-      { error: "Erreur lors de la deconnexion" },
+      { error: "Erreur lors de la déconnexion" },
       { status: 500 },
     );
   }

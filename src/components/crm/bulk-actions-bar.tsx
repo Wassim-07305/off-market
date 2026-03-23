@@ -64,7 +64,7 @@ export function BulkActionsBar({
   const handleSendMessage = () => {
     if (!message.trim()) return;
     // For now, show a toast — real implementation would use messaging system
-    toast.success(`Message envoye a ${selectedCount} eleve(s)`);
+    toast.success(`Message envoye a ${selectedCount} élève(s)`);
     setMessage("");
     setActiveAction(null);
   };
@@ -229,7 +229,7 @@ export function BulkActionsBar({
           <input
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            placeholder={`Message a ${selectedCount} eleve(s)...`}
+            placeholder={`Message a ${selectedCount} élève(s)...`}
             className="flex-1 h-9 px-3 bg-surface border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
             onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
           />

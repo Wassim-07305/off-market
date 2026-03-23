@@ -128,7 +128,7 @@ export function FileUpload({
           <div className="w-full h-40 rounded-xl overflow-hidden bg-muted">
             <Image
               src={currentUrl}
-              alt="Apercu"
+              alt="Aperçu"
               fill
               className="w-full h-full object-cover"
               unoptimized

@@ -319,7 +319,7 @@ export default function OnboardingPage() {
                 Decouvre la plateforme
               </h2>
               <p className="mt-2 text-base text-white/40">
-                Un apercu des outils a ta disposition.
+                Un aperçu des outils a ta disposition.
               </p>
             </div>
             <FeatureTourStep

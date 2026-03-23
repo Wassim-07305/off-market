@@ -229,8 +229,8 @@ export default function CourseViewPage({
     if (completedIds.has(selectedLessonId)) return;
 
     markComplete.mutate(selectedLessonId, {
-      onSuccess: () => toast.success("Lecon terminee !"),
-      onError: () => toast.error("Erreur lors de la mise a jour"),
+      onSuccess: () => toast.success("Leçon terminée !"),
+      onError: () => toast.error("Erreur lors de la mise à jour"),
     });
   }
 
@@ -255,7 +255,7 @@ export default function CourseViewPage({
   if (!course) {
     return (
       <p className="text-center text-muted-foreground py-16">
-        Cours non trouve
+        Cours non trouvé
       </p>
     );
   }
@@ -272,7 +272,7 @@ export default function CourseViewPage({
           Formation verrouillee
         </h2>
         <p className="text-sm text-muted-foreground mb-6">
-          Vous devez terminer les formations suivantes avant d&apos;acceder a ce
+          Vous devez terminér les formations suivantes avant d&apos;acceder a ce
           cours :
         </p>
         <div className="space-y-2 mb-8">
@@ -332,7 +332,7 @@ export default function CourseViewPage({
               {progressPercent}%
             </span>
             <span className="text-[11px] text-muted-foreground">
-              {completedCount}/{totalLessons} terminees
+              {completedCount}/{totalLessons} terminées
             </span>
           </div>
           <div className="h-1 w-full rounded-full bg-zinc-100 overflow-hidden">
@@ -560,7 +560,7 @@ export default function CourseViewPage({
                   {completedIds.has(selectedLesson.id) ? (
                     <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-xl">
                       <CheckCircle className="h-3 w-3" />
-                      Termine
+                      Terminé
                     </span>
                   ) : (
                     <button
@@ -575,7 +575,7 @@ export default function CourseViewPage({
                       )}
                       {markComplete.isPending
                         ? "Enregistrement..."
-                        : "Marquer comme termine"}
+                        : "Marquer comme terminé"}
                     </button>
                   )}
                   <div className="flex items-center gap-1">
@@ -656,7 +656,7 @@ export default function CourseViewPage({
           ) : (
             <div className="flex flex-col items-center justify-center h-80 text-muted-foreground gap-3">
               <PlayCircle className="h-12 w-12 text-muted-foreground/50" />
-              <p className="text-sm">Selectionnez une lecon pour commencer</p>
+              <p className="text-sm">Sélectionnez une leçon pour commencer</p>
             </div>
           )}
         </div>

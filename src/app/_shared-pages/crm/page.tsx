@@ -66,7 +66,7 @@ export default function CRMPage() {
             CRM Setter
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Pipeline de prospection, suivi des leads et bilan d&apos;activite.
+            Pipeline de prospection, suivi des leads et bilan d&apos;activité.
           </p>
         </div>
         <div className="flex items-center gap-3 shrink-0">

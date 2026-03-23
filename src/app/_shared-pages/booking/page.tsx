@@ -103,7 +103,7 @@ export default function BookingAdminPage() {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          {/* Filtre periode */}
+          {/* Filtre période */}
           <div className="flex items-center bg-surface border border-border rounded-lg p-0.5">
             {PERIOD_OPTIONS.map((opt) => (
               <button
@@ -188,7 +188,7 @@ export default function BookingAdminPage() {
               onClick={() => setShowCreateForm(true)}
               className="mt-3 text-sm text-primary hover:underline"
             >
-              Creer votre premiere page
+              Creer votre première page
             </button>
           </div>
         ) : (
@@ -724,7 +724,7 @@ function BookingPageDetailPanel({
         <div className="flex border-b border-border">
           {(
             [
-              { key: "settings", label: "Parametres", icon: Settings },
+              { key: "settings", label: "Paramètres", icon: Settings },
               { key: "availability", label: "Disponibilites", icon: Clock },
               { key: "exceptions", label: "Exceptions", icon: CalendarX },
             ] as const
@@ -1226,7 +1226,7 @@ function ExceptionsTab({ pageId }: { pageId: string }) {
 
   const handleAdd = () => {
     if (!newDate) {
-      toast.error("Selectionnez une date");
+      toast.error("Sélectionnez une date");
       return;
     }
     addMutation.mutate(

@@ -295,7 +295,7 @@ export default function ResourcesPage() {
             </div>
             <div>
               <label className="block text-xs font-medium text-foreground mb-1">
-                Categorie
+                Catégorie
               </label>
               <select
                 value={uploadCategory}
@@ -415,7 +415,7 @@ export default function ResourcesPage() {
           <div className="bg-gradient-to-br from-muted/30 to-muted/10 rounded-2xl p-12 text-center border border-dashed border-border">
             <FolderOpen className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
             <p className="text-sm text-muted-foreground">
-              {search.trim() ? "Aucun resultat" : "Aucune ressource disponible"}
+              {search.trim() ? "Aucun résultat" : "Aucune ressource disponible"}
             </p>
           </div>
         ) : (

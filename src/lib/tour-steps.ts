@@ -17,7 +17,7 @@ const clientSteps: TourStep[] = [
     target: '[data-tour="dashboard"]',
     title: "Votre tableau de bord personnel",
     description:
-      "Retrouvez ici vos KPIs, votre progression et un resume de votre activite. C'est votre point de depart chaque jour.",
+      "Retrouvez ici vos KPIs, votre progression et un résumé de votre activité. C'est votre point de depart chaque jour.",
     position: "right",
   },
   {
@@ -61,7 +61,7 @@ const coachSteps: TourStep[] = [
     target: '[data-tour="dashboard"]',
     title: "Vue d'ensemble de vos clients",
     description:
-      "Visualisez l'activite de vos clients, les alertes importantes et vos prochaines actions en un coup d'oeil.",
+      "Visualisez l'activité de vos clients, les alertes importantes et vos prochaines actions en un coup d'oeil.",
     position: "right",
   },
   {
@@ -105,7 +105,7 @@ const adminSteps: TourStep[] = [
     target: '[data-tour="dashboard"]',
     title: "Vue d'ensemble complete",
     description:
-      "Tableau de bord central avec tous les KPIs : revenus, clients actifs, conversions et activite de l'equipe.",
+      "Tableau de bord central avec tous les KPIs : revenus, clients actifs, conversions et activité de l'équipe.",
     position: "right",
   },
   {
@@ -121,7 +121,7 @@ const adminSteps: TourStep[] = [
     target: '[data-tour="billing"]',
     title: "Suivi financier et facturation",
     description:
-      "Visualisez les revenus, gerez les factures, les echeanciers de paiement et les commissions.",
+      "Visualisez les revenus, gerez les factures, les échéanciers de paiement et les commissions.",
     position: "right",
   },
   {
@@ -129,7 +129,7 @@ const adminSteps: TourStep[] = [
     target: '[data-tour="clients"]',
     title: "Gestion des clients et coaches",
     description:
-      "Gerez votre equipe de coaches, attribuez les clients et suivez les performances individuelles.",
+      "Gerez votre équipe de coaches, attribuez les clients et suivez les performances individuelles.",
     position: "right",
   },
   {
@@ -157,14 +157,14 @@ const salesSteps: TourStep[] = [
     target: '[data-tour="pipeline"]',
     title: "Votre pipeline de vente",
     description:
-      "Suivez vos prospects etape par etape, du premier contact jusqu'a la signature.",
+      "Suivez vos prospects étape par étape, du premier contact jusqu'a la signature.",
     position: "right",
   },
   {
     id: "sales-messaging",
     target: '[data-tour="messaging"]',
-    title: "Messagerie d'equipe",
-    description: "Communiquez avec l'equipe et coordonnez-vous en temps reel.",
+    title: "Messagerie d'équipe",
+    description: "Communiquez avec l'équipe et coordonnez-vous en temps reel.",
     position: "right",
   },
   {

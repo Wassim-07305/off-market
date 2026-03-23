@@ -391,7 +391,7 @@ export default function JournalPage() {
         <motion.div variants={staggerItem}>
           <p className="text-xs font-medium text-muted-foreground mb-2 flex items-center gap-1.5">
             <Sparkles className="w-3.5 h-3.5 text-[#AF0000]" />
-            Demarrer avec un template
+            Démarrer avec un template
           </p>
           <div className="flex gap-2 overflow-x-auto pb-1">
             {(
@@ -602,7 +602,7 @@ export default function JournalPage() {
             <BookOpen className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
             <p className="text-sm text-muted-foreground">
               {search.trim() || filterMood !== "all"
-                ? "Aucun resultat"
+                ? "Aucun résultat"
                 : "Ton journal est vide. Commence a ecrire !"}
             </p>
           </div>

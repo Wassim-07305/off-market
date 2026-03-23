@@ -9,7 +9,7 @@ export type ComparisonPreset = "month" | "week" | "quarter" | "custom";
 export const COMPARISON_PRESETS: { value: ComparisonPreset; label: string }[] =
   [
     { value: "month", label: "Ce mois vs mois dernier" },
-    { value: "week", label: "Cette semaine vs semaine derniere" },
+    { value: "week", label: "Cette semaine vs semaine dernière" },
     { value: "quarter", label: "Ce trimestre vs dernier trimestre" },
     { value: "custom", label: "Personnalise" },
   ];
@@ -269,7 +269,7 @@ export function usePeriodComparison(options: UsePeriodComparisonOptions) {
           format: "number",
         },
         {
-          label: "Formations terminees",
+          label: "Formations terminées",
           key: "lessonsCompleted",
           current: period2.lessonsCompleted,
           previous: period1.lessonsCompleted,

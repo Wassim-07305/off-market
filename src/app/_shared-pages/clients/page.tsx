@@ -174,7 +174,7 @@ export default function ClientsPage() {
             .eq("id", detailId);
         }
       }
-      toast.success(`Tag mis a jour pour ${ids.length} eleve(s)`);
+      toast.success(`Tag mis à jour pour ${ids.length} élève(s)`);
       clearSelection();
       setBulkAction(null);
       queryClient.invalidateQueries({
@@ -182,7 +182,7 @@ export default function ClientsPage() {
         refetchType: "all",
       });
     } catch {
-      toast.error("Erreur lors de la mise a jour");
+      toast.error("Erreur lors de la mise à jour");
     } finally {
       setBulkLoading(false);
     }
@@ -367,7 +367,7 @@ export default function ClientsPage() {
           ) : students.length === 0 ? (
             <div className="p-12 text-center">
               <p className="text-sm text-muted-foreground">
-                {search ? "Aucun resultat" : "Aucun client pour le moment"}
+                {search ? "Aucun résultat" : "Aucun client pour le moment"}
               </p>
             </div>
           ) : (
@@ -398,7 +398,7 @@ export default function ClientsPage() {
                       </th>
                     )}
                     <th className="text-left text-[11px] font-medium text-muted-foreground/70 uppercase tracking-wider px-4 py-2.5 hidden md:table-cell">
-                      Etape
+                      Étape
                     </th>
                     <th className="text-left text-[11px] font-medium text-muted-foreground/70 uppercase tracking-wider px-4 py-2.5 hidden lg:table-cell">
                       Progression

@@ -620,7 +620,7 @@ export function useUpdateContactStage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["pipeline-contacts"] });
-      toast.success("Etape mise a jour");
+      toast.success("Étape mise à jour");
     },
     onError: () => toast.error("Erreur lors du deplacement"),
   });
@@ -730,7 +730,7 @@ export function useUpdateLeadScore() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["pipeline-contacts"] });
     },
-    onError: () => toast.error("Erreur lors de la mise a jour du score"),
+    onError: () => toast.error("Erreur lors de la mise à jour du score"),
   });
 }
 

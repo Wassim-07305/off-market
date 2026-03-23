@@ -467,7 +467,7 @@ function ContactDetailDrawer({
           {/* Stage selector */}
           <div className="space-y-2">
             <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              Etape
+              Étape
             </h3>
             <div className="flex flex-wrap gap-1.5">
               {stages.map((s) => (
@@ -916,7 +916,7 @@ export function CloserPipelineView() {
           <div className="w-full max-w-sm bg-surface border border-border rounded-2xl shadow-xl p-5 space-y-4">
             <h3 className="text-sm font-semibold text-foreground">Modifier un deal close</h3>
             <p className="text-xs text-muted-foreground">
-              <span className="font-medium text-foreground">{confirmModifyContact.full_name}</span> est deja close. Si vous modifiez l'etape, le contrat envoye sera automatiquement supprime. Voulez-vous continuer ?
+              <span className="font-medium text-foreground">{confirmModifyContact.full_name}</span> est deja close. Si vous modifiez l'étape, le contrat envoye sera automatiquement supprime. Voulez-vous continuer ?
             </p>
             <div className="flex gap-2">
               <button
@@ -1091,7 +1091,7 @@ function CloserDetailDrawer({
 
           {/* Closer stage selector */}
           <div className="space-y-2">
-            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Etape</h3>
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Étape</h3>
             <div className="flex flex-wrap gap-1.5">
               {CLOSER_STAGES.map((s) => (
                 <button

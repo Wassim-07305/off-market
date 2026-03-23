@@ -824,12 +824,12 @@ export function EnrichmentPanel({
                   )}
                 </div>
 
-                {/* Categories */}
-                {facebook.categories && (
+                {/* Catégories */}
+                {facebook.catégories && (
                   <div className="flex flex-wrap gap-1">
-                    {(Array.isArray(facebook.categories)
-                      ? (facebook.categories as string[])
-                      : [facebook.categories as string]
+                    {(Array.isArray(facebook.catégories)
+                      ? (facebook.catégories as string[])
+                      : [facebook.catégories as string]
                     ).map((cat, i) => (
                       <span
                         key={i}

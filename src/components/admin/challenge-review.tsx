@@ -133,7 +133,7 @@ export function ChallengeReview({ challengeId }: ChallengeReviewProps) {
           Verification des soumissions
         </h2>
         <p className="text-sm text-muted-foreground mt-1">
-          Verifiez les resultats soumis par les participants et croisez avec les
+          Verifiez les résultats soumis par les participants et croisez avec les
           donnees CRM.
         </p>
       </div>

@@ -88,7 +88,7 @@ function LoginContent() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ invite_code: inviteCode, apply_role: true }),
         });
-        toast.success("Invitation appliquee ! Ton role a ete mis a jour.");
+        toast.success("Invitation appliquee ! Ton role a ete mis à jour.");
       } catch {
         // Non-blocking — role update failed but login succeeded
       }

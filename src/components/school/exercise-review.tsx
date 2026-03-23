@@ -146,7 +146,7 @@ function ReviewCard({
           {/* Student's response */}
           <div>
             <h5 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-              Reponse de l&apos;eleve
+              Réponse de l&apos;eleve
             </h5>
             <div className="bg-muted/30 rounded-lg p-3">
               <p className="text-sm text-foreground whitespace-pre-wrap">
@@ -209,7 +209,7 @@ function ReviewCard({
                 value={feedback}
                 onChange={(e) => setFeedback(e.target.value)}
                 rows={3}
-                placeholder="Feedback pour l'eleve..."
+                placeholder="Feedback pour l'élève..."
                 className="w-full px-3 py-2 bg-muted/50 rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none"
               />
 

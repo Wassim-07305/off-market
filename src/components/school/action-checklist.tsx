@@ -138,7 +138,7 @@ export function ActionChecklist({ lessonId, className }: ActionChecklistProps) {
       });
       queryClient.invalidateQueries({ queryKey: ["lesson-progress"] });
     },
-    onError: () => toast.error("Erreur lors de la mise a jour"),
+    onError: () => toast.error("Erreur lors de la mise à jour"),
   });
 
   if (items.length === 0) return null;

@@ -446,7 +446,7 @@ function AddContactForm({
                 onChange={(e) => setSource(e.target.value)}
                 className="w-full h-10 px-3 bg-muted border border-border rounded-xl text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-red-600/20 focus:border-red-600/30 transition-all"
               >
-                <option value="">Selectionner</option>
+                <option value="">Sélectionner</option>
                 {CONTACT_SOURCES.map((s) => (
                   <option key={s.value} value={s.value}>
                     {s.label}

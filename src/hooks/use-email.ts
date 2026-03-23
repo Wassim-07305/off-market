@@ -27,7 +27,7 @@ export function useSendEmail() {
       return res.json() as Promise<{ success: boolean; id?: string }>;
     },
     onSuccess: () => {
-      toast.success("Email envoye avec succes");
+      toast.success("Email envoyé avec succès");
     },
     onError: (error: Error) => {
       toast.error(error.message || "Erreur lors de l'envoi de l'email");

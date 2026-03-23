@@ -91,7 +91,7 @@ export function useToggleAutoRenew() {
       );
     },
     onError: () => {
-      toast.error("Erreur lors de la mise a jour du renouvellement");
+      toast.error("Erreur lors de la mise à jour du renouvellement");
     },
   });
 }
@@ -232,7 +232,7 @@ export function useManualRenew() {
         queryKey: ["contracts-upcoming-renewals"],
       });
       queryClient.invalidateQueries({ queryKey: ["contracts-expiring"] });
-      toast.success("Contrat renouvele avec succes");
+      toast.success("Contrat renouvele avec succès");
     },
     onError: () => {
       toast.error("Erreur lors du renouvellement du contrat");

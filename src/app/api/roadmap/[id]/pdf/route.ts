@@ -124,7 +124,7 @@ function generateRoadmapPDF(roadmap: RoadmapData): Buffer {
 
   // Progress summary
   contentLines.push(
-    `Progression : ${completed}/${total} jalons termines (${progressPercent}%)`,
+    `Progression : ${completed}/${total} jalons terminés (${progressPercent}%)`,
   );
   contentLines.push("");
 
@@ -151,13 +151,13 @@ function generateRoadmapPDF(roadmap: RoadmapData): Buffer {
     const milestoneTitle = escapePDF(milestone.title);
 
     contentLines.push(
-      `${symbol} Etape ${milestone.order_index + 1} : ${milestoneTitle}`,
+      `${symbol} Étape ${milestone.order_index + 1} : ${milestoneTitle}`,
     );
     contentLines.push(`     Statut : ${escapePDF(statusText)}`);
 
     if (milestone.status === "completed" && milestone.completed_at) {
       contentLines.push(
-        `     Termine le : ${escapePDF(formatDate(milestone.completed_at))}`,
+        `     Terminé le : ${escapePDF(formatDate(milestone.completed_at))}`,
       );
     }
 
@@ -193,7 +193,7 @@ function generateRoadmapPDF(roadmap: RoadmapData): Buffer {
     contentLines.push("--- PROCHAINES ETAPES ---");
     contentLines.push("");
     for (const step of nextSteps.slice(0, 5)) {
-      const prefix = step.status === "in_progress" ? "(en cours)" : "(a venir)";
+      const prefix = step.status === "in_progress" ? "(en cours)" : "(à venir)";
       contentLines.push(`  ${prefix} ${escapePDF(step.title)}`);
     }
     if (nextSteps.length > 5) {
@@ -300,7 +300,7 @@ ET
 BT
 /F1 10 Tf
 ${50 + barWidth + 10} ${barY} Td
-(${progressPercent}% termine) Tj
+(${progressPercent}% terminé) Tj
 ET
 `;
 
@@ -405,7 +405,7 @@ BT
 50 35 Td
 (Off-Market - Roadmap generee automatiquement - Page ${pageIdx + 1}/${pages.length}) Tj
 0 -10 Td
-(Document genere le ${dateGenerated}) Tj
+(Document généré le ${dateGenerated}) Tj
 ET
 `;
 

@@ -97,7 +97,7 @@ export default function CourseBuilderPage() {
         }
       }
 
-      toast.success("Cours cree");
+      toast.success("Cours créé");
       router.push(`${prefix}/school`);
     } catch {
       toast.error("Erreur lors de la sauvegarde");
@@ -228,7 +228,7 @@ export default function CourseBuilderPage() {
                         ),
                       )
                     }
-                    placeholder={`Lecon ${li + 1}`}
+                    placeholder={`Leçon ${li + 1}`}
                     className="flex-1 h-8 px-3 bg-background rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-shadow"
                   />
                   <select
@@ -291,7 +291,7 @@ export default function CourseBuilderPage() {
               className="ml-6 h-7 px-2.5 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center gap-1"
             >
               <Plus className="w-3 h-3" />
-              Lecon
+              Leçon
             </button>
           </div>
         ))}

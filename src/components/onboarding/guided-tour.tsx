@@ -289,7 +289,7 @@ export function GuidedTour({
       )}
       aria-modal="true"
       role="dialog"
-      aria-label={`Tour guide - Etape ${currentStepIndex + 1} sur ${totalSteps}`}
+      aria-label={`Tour guide - Étape ${currentStepIndex + 1} sur ${totalSteps}`}
     >
       {/* Overlay with spotlight cutout using box-shadow */}
       {spotlightStyle ? (
@@ -349,7 +349,7 @@ export function GuidedTour({
                       {currentStep.title}
                     </h3>
                     <span className="text-[11px] text-stone-400 font-medium">
-                      Etape {currentStepIndex + 1}/{totalSteps}
+                      Étape {currentStepIndex + 1}/{totalSteps}
                     </span>
                   </div>
                 </div>

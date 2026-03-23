@@ -23,7 +23,7 @@ Regles :
 - Maximum 8-12 jalons au total
 - Reponds UNIQUEMENT en JSON valide, sans markdown ni commentaires
 
-Format de reponse attendu :
+Format de réponse attendu :
 {
   "title": "Roadmap [prenom] — [objectif principal]",
   "description": "Description courte de la roadmap",
@@ -124,7 +124,7 @@ export async function POST(request: Request) {
       if (callNotes?.summary) {
         userPrompt += `\n## Notes de l'appel\n${callNotes.summary}\n`;
         if (callNotes.next_steps) {
-          userPrompt += `**Prochaines etapes notees** : ${callNotes.next_steps}\n`;
+          userPrompt += `**Prochaines étapes notees** : ${callNotes.next_steps}\n`;
         }
       }
 
@@ -185,7 +185,7 @@ export async function POST(request: Request) {
       if (studentDetail.revenue_objective)
         userPrompt += `- **Objectif CA** : ${studentDetail.revenue_objective} EUR/mois\n`;
       if (studentDetail.pipeline_stage)
-        userPrompt += `- **Etape pipeline** : ${studentDetail.pipeline_stage}\n`;
+        userPrompt += `- **Étape pipeline** : ${studentDetail.pipeline_stage}\n`;
     }
 
     // Call AI
@@ -206,7 +206,7 @@ export async function POST(request: Request) {
       parsed = JSON.parse(jsonMatch[0]);
     } catch {
       return NextResponse.json(
-        { error: "Erreur de parsing de la reponse IA", raw: rawText },
+        { error: "Erreur de parsing de la réponse IA", raw: rawText },
         { status: 500 },
       );
     }
@@ -218,7 +218,7 @@ export async function POST(request: Request) {
       !Array.isArray(parsed.milestones)
     ) {
       return NextResponse.json(
-        { error: "Format de reponse invalide", raw: rawText },
+        { error: "Format de réponse invalide", raw: rawText },
         { status: 500 },
       );
     }

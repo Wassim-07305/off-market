@@ -29,7 +29,7 @@ const leadCaptureSchema = z.object({
   phone: z.string().optional(),
   company: z.string().optional(),
   revenue_range: z.enum(["less_5k", "5k_10k", "10k_20k", "20k_plus"], {
-    message: "Selectionnez votre tranche de revenus",
+    message: "Sélectionnez votre tranche de revenus",
   }),
   goals: z.string().optional(),
 });
@@ -58,7 +58,7 @@ const BENEFITS = [
   },
   {
     icon: Zap,
-    title: "Resultats rapides",
+    title: "Résultats rapides",
     description:
       "Des methodes prouvees pour accelerer votre croissance des le premier mois.",
   },
@@ -138,7 +138,7 @@ export default function LeadMagnetPage() {
 
           <p className="text-center text-lg sm:text-xl text-zinc-400 max-w-2xl mx-auto mt-6 leading-relaxed">
             Rejoignez les entrepreneurs et coaches qui ont transforme leur
-            activite avec notre methode prouvee. Passez de freelance a business
+            activité avec notre methode prouvee. Passez de freelance a business
             structure.
           </p>
 
@@ -173,7 +173,7 @@ export default function LeadMagnetPage() {
               </h2>
               <p className="text-zinc-400 mt-3">
                 Un diagnostic gratuit de votre situation et des recommandations
-                actionnables pour scaler votre activite.
+                actionnables pour scaler votre activité.
               </p>
             </div>
 
@@ -399,7 +399,7 @@ export default function LeadMagnetPage() {
 
                 <p className="text-[11px] text-zinc-600 text-center">
                   En soumettant ce formulaire, vous acceptez d&apos;etre
-                  contacte par notre equipe. Vos donnees sont protegees et ne
+                  contacte par notre équipe. Vos donnees sont protegees et ne
                   seront jamais partagees.
                 </p>
               </form>
@@ -434,7 +434,7 @@ function SuccessView() {
         <div>
           <h1 className="text-3xl sm:text-4xl font-bold">Merci !</h1>
           <p className="text-lg text-zinc-400 mt-3 leading-relaxed">
-            Nous avons bien recu votre demande. Notre equipe vous recontactera
+            Nous avons bien recu votre demande. Notre équipe vous recontactera
             sous <span className="text-white font-semibold">24h</span> pour
             planifier votre diagnostic gratuit.
           </p>
@@ -446,7 +446,7 @@ function SuccessView() {
           </h3>
           <ul className="space-y-2 text-left">
             {[
-              "Analyse de votre profil par notre equipe",
+              "Analyse de votre profil par notre équipe",
               "Preparation de recommandations personnalisees",
               "Appel de decouverte de 30 minutes offert",
             ].map((step, i) => (

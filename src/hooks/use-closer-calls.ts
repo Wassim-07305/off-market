@@ -99,7 +99,7 @@ export interface CloserCall {
   closer_id: string | null;
   setter_id: string | null;
   date: string;
-  status: "closé" | "non_closé";
+  status: "close" | "non_close";
   revenue: number;
   nombre_paiements: number;
   link: string | null;
@@ -150,7 +150,7 @@ export function useCloserCalls() {
       closer_id?: string | null;
       setter_id?: string | null;
       date: string;
-      status?: "closé" | "non_closé";
+      status?: "close" | "non_close";
       revenue?: number;
       nombre_paiements?: number;
       link?: string | null;
@@ -160,7 +160,7 @@ export function useCloserCalls() {
       const payload = {
         ...call,
         closer_id: call.closer_id ?? user?.id,
-        status: call.status ?? "non_closé",
+        status: call.status ?? "non_close",
         revenue: call.revenue ?? 0,
         nombre_paiements: call.nombre_paiements ?? 0,
       };
@@ -174,10 +174,10 @@ export function useCloserCalls() {
     },
     onSuccess: async (rawData) => {
       queryClient.invalidateQueries({ queryKey: ["closer-calls"] });
-      toast.success("Call cree");
+      toast.success("Call créé");
       // Auto-generate commission if closed + setter
       const d = rawData as unknown as CloserCall;
-      if (d?.status === "closé" && d?.setter_id && d?.revenue > 0) {
+      if (d?.status === "close" && d?.setter_id && d?.revenue > 0) {
         await generateCommission(
           supabase,
           d.id,
@@ -205,10 +205,10 @@ export function useCloserCalls() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["closer-calls"] });
-      toast.success("Call mis a jour");
+      toast.success("Call mis à jour");
     },
     onError: () => {
-      toast.error("Erreur lors de la mise a jour");
+      toast.error("Erreur lors de la mise à jour");
     },
   });
 
@@ -233,9 +233,9 @@ export function useCloserCalls() {
 
   const stats: CloserCallStats = useMemo(() => {
     const totalCalls = closerCalls.length;
-    const closedCalls = closerCalls.filter((c) => c.status === "closé").length;
+    const closedCalls = closerCalls.filter((c) => c.status === "close").length;
     const nonClosedCalls = closerCalls.filter(
-      (c) => c.status === "non_closé",
+      (c) => c.status === "non_close",
     ).length;
     // No-show = calls avec status non_closé et revenue 0 (heuristique)
     const noShowCount = 0;
@@ -244,11 +244,11 @@ export function useCloserCalls() {
     const showUpRate =
       totalCalls > 0 ? 100 - Math.round((noShowCount / totalCalls) * 100) : 0;
     const totalCA = closerCalls
-      .filter((c) => c.status === "closé")
+      .filter((c) => c.status === "close")
       .reduce((sum, c) => sum + (c.revenue ?? 0), 0);
     const avgBasket = closedCalls > 0 ? Math.round(totalCA / closedCalls) : 0;
     const totalOffers = closerCalls.filter(
-      (c) => c.revenue > 0 || c.status === "closé",
+      (c) => c.revenue > 0 || c.status === "close",
     ).length;
 
     return {

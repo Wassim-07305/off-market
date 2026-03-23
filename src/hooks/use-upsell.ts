@@ -75,10 +75,10 @@ export function useUpdateUpsellRule() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["upsell-rules"] });
-      toast.success("Regle mise a jour");
+      toast.success("Regle mise à jour");
     },
     onError: () => {
-      toast.error("Erreur lors de la mise a jour");
+      toast.error("Erreur lors de la mise à jour");
     },
   });
 }
@@ -267,7 +267,7 @@ export function useConvertUpsell() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["my-upsell-offers"] });
       queryClient.invalidateQueries({ queryKey: ["upsell-dashboard"] });
-      toast.success("Upsell converti avec succes !");
+      toast.success("Upsell converti avec succès !");
     },
   });
 }
@@ -380,9 +380,9 @@ export function useUpdateUpsell() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["upsell-opportunities"] });
-      toast.success("Opportunite mise a jour");
+      toast.success("Opportunite mise à jour");
     },
-    onError: () => toast.error("Erreur lors de la mise a jour"),
+    onError: () => toast.error("Erreur lors de la mise à jour"),
   });
 }
 

@@ -42,14 +42,14 @@ import { toast } from "sonner";
 
 type FinanceTab =
   | "entrees"
-  | "echeanciers"
+  | "échéanciers"
   | "projections"
   | "factures"
   | "commissions";
 
 const TABS = [
   { value: "entrees", label: "Entrees" },
-  { value: "echeanciers", label: "Echeanciers" },
+  { value: "échéanciers", label: "Échéanciers" },
   { value: "projections", label: "Projections" },
   { value: "factures", label: "Factures" },
   { value: "commissions", label: "Commissions" },
@@ -170,7 +170,7 @@ function EntreesTab() {
         e.date,
       ]),
     );
-    toast.success("Export CSV termine");
+    toast.success("Export CSV terminé");
   }, [entries]);
 
   const handleDelete = useCallback(
@@ -441,7 +441,7 @@ export default function FinancesPage() {
           </span>
         </h1>
         <p className="text-sm text-muted-foreground/70 mt-1">
-          Suivi financier, entrees, echeanciers, factures et commissions.
+          Suivi financier, entrees, échéanciers, factures et commissions.
         </p>
       </motion.div>
 
@@ -501,7 +501,7 @@ export default function FinancesPage() {
         <TabsContent value="entrees" activeValue={activeTab}>
           <EntreesTab />
         </TabsContent>
-        <TabsContent value="echeanciers" activeValue={activeTab}>
+        <TabsContent value="échéanciers" activeValue={activeTab}>
           <EcheanciersTab />
         </TabsContent>
         <TabsContent value="projections" activeValue={activeTab}>

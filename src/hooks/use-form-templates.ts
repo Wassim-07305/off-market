@@ -105,7 +105,7 @@ export function useCreateFormFromTemplate() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["forms"] });
-      toast.success("Formulaire cree depuis le template");
+      toast.success("Formulaire créé depuis le template");
     },
     onError: () => {
       toast.error("Erreur lors de la creation du formulaire");

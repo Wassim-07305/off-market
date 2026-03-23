@@ -67,7 +67,7 @@ export function CoachingInsightsPanel({
                 <p className="text-xs text-zinc-500 mt-0.5">
                   {meta.clientCount} client
                   {meta.clientCount > 1 ? "s" : ""} &middot;{" "}
-                  {meta.daysBack} jours &middot; Genere le{" "}
+                  {meta.daysBack} jours &middot; Généré le{" "}
                   {new Date(meta.generatedAt).toLocaleDateString("fr-FR")}
                 </p>
               )}
@@ -128,7 +128,7 @@ export function CoachingInsightsPanel({
         <div className="p-8 text-center">
           <Brain className="w-12 h-12 text-zinc-700 mx-auto mb-3" />
           <p className="text-sm text-zinc-400 mb-1">
-            Aucun insight genere pour le moment
+            Aucun insight généré pour le moment
           </p>
           <p className="text-xs text-zinc-600">
             Clique sur &quot;Generer les insights&quot; pour lancer l&apos;analyse IA

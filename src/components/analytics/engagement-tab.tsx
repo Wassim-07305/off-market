@@ -73,7 +73,7 @@ export function EngagementTab({ range }: EngagementTabProps) {
   const handleExport = () => {
     exportToCSV(
       "engagement.csv",
-      ["Type d'activite", "Nombre"],
+      ["Type d'activité", "Nombre"],
       data.activityByType.map((a) => [a.label, String(a.count)]),
     );
   };
@@ -180,7 +180,7 @@ export function EngagementTab({ range }: EngagementTabProps) {
             {data.activityByType.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-muted-foreground">
                 <Activity className="w-8 h-8 mb-2 opacity-20" />
-                <p className="text-sm">Aucune activite sur cette periode</p>
+                <p className="text-sm">Aucune activité sur cette période</p>
               </div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
@@ -233,7 +233,7 @@ export function EngagementTab({ range }: EngagementTabProps) {
         style={{ boxShadow: "var(--shadow-card)" }}
       >
         <h3 className="text-[13px] font-semibold text-foreground mb-1">
-          Heatmap d&apos;activite
+          Heatmap d&apos;activité
         </h3>
         <p className="text-xs text-muted-foreground mb-4">
           Activite par jour et heure
@@ -316,7 +316,7 @@ export function EngagementTab({ range }: EngagementTabProps) {
             {data.newClientsInPeriod}
           </p>
           <p className="text-[11px] text-muted-foreground mt-0.5">
-            sur la periode
+            sur la période
           </p>
         </div>
         <div
@@ -352,7 +352,7 @@ export function EngagementTab({ range }: EngagementTabProps) {
             {data.checkinsCount}
           </p>
           <p className="text-[11px] text-muted-foreground mt-0.5">
-            sur la periode
+            sur la période
           </p>
         </div>
       </div>

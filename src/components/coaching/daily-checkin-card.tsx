@@ -274,7 +274,7 @@ function MorningForm({
           type="text"
           value={priority}
           onChange={(e) => setPriority(e.target.value)}
-          placeholder="La chose la plus importante a faire"
+          placeholder="La chose la plus importante à faire"
           className="w-full h-10 px-3 bg-muted border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
         />
       </div>

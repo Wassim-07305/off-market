@@ -89,7 +89,7 @@ export function useToggleWebhook() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id, is_active }),
       });
-      if (!res.ok) throw new Error("Erreur mise a jour");
+      if (!res.ok) throw new Error("Erreur mise à jour");
       return res.json();
     },
     onSuccess: () => {

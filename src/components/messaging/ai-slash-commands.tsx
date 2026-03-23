@@ -51,7 +51,7 @@ const AI_COMMANDS: AiCommand[] = [
   {
     name: "suggest",
     label: "/suggest",
-    description: "Suggerer une reponse basee sur le contexte",
+    description: "Suggerer une réponse basee sur le contexte",
     icon: Lightbulb,
   },
 ];

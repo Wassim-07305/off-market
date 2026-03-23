@@ -226,7 +226,7 @@ function CoachMonitoringPanel() {
         <div className="bg-surface border border-border rounded-xl p-4">
           <div className="flex items-center gap-2 mb-1">
             <AlertTriangle className="w-4 h-4 text-amber-500" />
-            <span className="text-xs text-muted-foreground">Eleves a risque</span>
+            <span className="text-xs text-muted-foreground">Eleves à risque</span>
           </div>
           <p className="text-xl font-bold text-amber-600">{totals.atRisk}</p>
         </div>
@@ -350,7 +350,7 @@ function CoachMonitoringPanel() {
                         <span>Client</span>
                         <span className="text-center">Sante</span>
                         <span className="text-center">Drapeau</span>
-                        <span className="text-center">Etape</span>
+                        <span className="text-center">Étape</span>
                         <span className="text-center">Niche</span>
                       </div>
                       {coach.clients.map((client: { id: string; full_name: string; health_score: number; flag: string; pipeline_stage: string; niche: string | null }) => (

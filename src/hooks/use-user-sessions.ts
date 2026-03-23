@@ -46,7 +46,7 @@ export function useUserSessions() {
       toast.success("Session deconnectee");
     },
     onError: (error: Error) => {
-      toast.error(error.message || "Erreur lors de la deconnexion");
+      toast.error(error.message || "Erreur lors de la déconnexion");
     },
   });
 

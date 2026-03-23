@@ -133,13 +133,13 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({
-      message: `Scores mis a jour pour ${competitions.length} competition(s)`,
+      message: `Scores mis à jour pour ${competitions.length} competition(s)`,
       updated,
     });
   } catch (error) {
     console.error("Competition score update error:", error);
     return NextResponse.json(
-      { error: "Erreur lors de la mise a jour des scores" },
+      { error: "Erreur lors de la mise à jour des scores" },
       { status: 500 },
     );
   }

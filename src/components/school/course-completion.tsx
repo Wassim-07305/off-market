@@ -55,10 +55,10 @@ export function CourseCompletion({ course }: CourseCompletionProps) {
         </div>
         <div>
           <p className="text-sm font-semibold text-foreground">
-            Formation terminee !
+            Formation terminée !
           </p>
           <p className="text-xs text-muted-foreground">
-            {progress.completedLessons}/{progress.totalLessons} lecons
+            {progress.completedLessons}/{progress.totalLessons} leçons
             completees
             {quizAvg != null && ` · Moyenne quiz : ${quizAvg}%`}
           </p>

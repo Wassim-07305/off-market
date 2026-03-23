@@ -149,12 +149,12 @@ function generateJournalPDF(
   // Build content lines
   const contentLines: string[] = [];
 
-  contentLines.push(`Periode : du ${safeDateFrom} au ${safeDateTo}`);
+  contentLines.push(`Période : du ${safeDateFrom} au ${safeDateTo}`);
   contentLines.push(`Nombre d'entrees : ${entries.length}`);
   contentLines.push("");
 
   if (entries.length === 0) {
-    contentLines.push("Aucune entree pour cette periode.");
+    contentLines.push("Aucune entree pour cette période.");
   }
 
   for (const entry of entries) {
@@ -378,7 +378,7 @@ BT
 50 35 Td
 (Off-Market - Journal de Coaching - Page ${pageIdx + 1}/${pages.length}) Tj
 0 -10 Td
-(Document genere le ${dateGenerated}) Tj
+(Document généré le ${dateGenerated}) Tj
 ET
 `;
 

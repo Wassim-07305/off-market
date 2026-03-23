@@ -100,7 +100,7 @@ export function SetterBilan() {
 
   function handleSubmit() {
     if (!date) {
-      toast.error("Selectionnez une date");
+      toast.error("Sélectionnez une date");
       return;
     }
     createActivity.mutate(
@@ -159,7 +159,7 @@ export function SetterBilan() {
       {/* Add activity form */}
       <div className="rounded-xl border border-border bg-surface p-5">
         <h3 className="text-base font-semibold text-foreground mb-4">
-          Ajouter une activite
+          Ajouter une activité
         </h3>
         <div className="space-y-4">
           <Input
@@ -228,7 +228,7 @@ export function SetterBilan() {
       <div className="rounded-xl border border-border bg-surface overflow-hidden">
         <div className="px-5 py-3 border-b border-border">
           <h3 className="text-base font-semibold text-foreground">
-            Historique d'activite
+            Historique d'activité
           </h3>
         </div>
         <div className="overflow-x-auto">
@@ -302,7 +302,7 @@ export function SetterBilan() {
                     colSpan={6}
                     className="px-4 py-12 text-center text-muted-foreground"
                   >
-                    Aucune activite enregistree.
+                    Aucune activité enregistree.
                   </td>
                 </tr>
               )}

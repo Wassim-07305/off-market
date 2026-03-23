@@ -224,7 +224,7 @@ export default function EditFormPage({
         })),
       });
 
-      toast.success("Formulaire mis a jour");
+      toast.success("Formulaire mis à jour");
       router.push(`${prefix}/forms/${formId}`);
     } catch {
       toast.error("Erreur lors de la sauvegarde");
@@ -265,7 +265,7 @@ export default function EditFormPage({
           <Type className="w-7 h-7 text-muted-foreground/30" />
         </div>
         <p className="text-sm font-medium text-foreground mb-1">
-          Formulaire non trouve
+          Formulaire non trouvé
         </p>
         <p className="text-xs text-muted-foreground mb-4">
           Ce formulaire n&apos;existe pas ou a ete supprime
@@ -332,7 +332,7 @@ export default function EditFormPage({
             className="h-9 px-4 rounded-[10px] border border-border text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all flex items-center gap-2"
           >
             <Eye className="w-4 h-4" />
-            Apercu
+            Aperçu
           </button>
           <button
             onClick={handleSave}
@@ -678,7 +678,7 @@ function FieldMiniPreview({ field }: { field: BuilderField }) {
     return (
       <div className="h-16 px-3 pt-2 bg-muted/50 border border-border/50 rounded-lg">
         <span className="text-xs text-muted-foreground/40">
-          {field.placeholder || "Reponse longue..."}
+          {field.placeholder || "Réponse longue..."}
         </span>
       </div>
     );
@@ -716,7 +716,7 @@ function FieldMiniPreview({ field }: { field: BuilderField }) {
     return (
       <div className="h-9 px-3 bg-muted/50 border border-border/50 rounded-lg flex items-center justify-between">
         <span className="text-xs text-muted-foreground/40">
-          Selectionner...
+          Sélectionner...
         </span>
         <ChevronDown className="w-3.5 h-3.5 text-muted-foreground/40" />
       </div>
@@ -1210,7 +1210,7 @@ function FormPreview({
             {currentIndex + 1} / {questionFields.length}
           </span>
           <span className="text-[10px] font-medium text-primary bg-primary/10 px-2.5 py-1 rounded-full">
-            Apercu
+            Aperçu
           </span>
         </div>
       </div>
@@ -1282,7 +1282,7 @@ function FormPreview({
             }}
             className="group flex items-center gap-3 rounded-2xl bg-gradient-to-r from-primary to-red-500 px-8 py-4 text-base font-semibold text-white shadow-xl shadow-red-500/25 transition-all duration-200 hover:scale-105 hover:shadow-2xl hover:shadow-red-500/40"
           >
-            {isLast ? "Fermer l'apercu" : "Suivant"}
+            {isLast ? "Fermer l'aperçu" : "Suivant"}
             {isLast ? (
               <Check className="w-5 h-5" />
             ) : (

@@ -51,7 +51,7 @@ function ReportModal({
 
   const handleSubmit = async () => {
     if (!reason) {
-      toast.error("Veuillez selectionner une raison");
+      toast.error("Veuillez sélectionner une raison");
       return;
     }
     try {
@@ -115,7 +115,7 @@ function ReportModal({
           <textarea
             value={details}
             onChange={(e) => setDetails(e.target.value)}
-            placeholder="Decrivez le probleme..."
+            placeholder="Decrivez le problème..."
             rows={3}
             className="w-full px-4 py-3 bg-muted border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
           />

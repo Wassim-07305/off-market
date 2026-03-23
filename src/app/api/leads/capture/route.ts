@@ -5,7 +5,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 const captureSchema = z.object({
   full_name: z.string().min(2, "Le nom est requis").max(200, "Nom trop long"),
   email: z.string().email("Email invalide").max(320, "Email trop long"),
-  phone: z.string().max(30, "Numero trop long").optional().default(""),
+  phone: z.string().max(30, "Numéro trop long").optional().default(""),
   company: z
     .string()
     .max(200, "Nom d'entreprise trop long")

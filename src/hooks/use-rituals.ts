@@ -152,7 +152,7 @@ export function useCreateRitual() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["rituals"] });
-      toast.success("Rituel cree avec succes");
+      toast.success("Rituel créé avec succès");
     },
     onError: () => {
       toast.error("Erreur lors de la creation du rituel");
@@ -175,10 +175,10 @@ export function useUpdateRitual() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["rituals"] });
-      toast.success("Rituel mis a jour");
+      toast.success("Rituel mis à jour");
     },
     onError: () => {
-      toast.error("Erreur lors de la mise a jour du rituel");
+      toast.error("Erreur lors de la mise à jour du rituel");
     },
   });
 }

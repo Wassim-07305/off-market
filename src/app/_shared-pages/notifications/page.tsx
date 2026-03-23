@@ -346,7 +346,7 @@ export default function NotificationsPage() {
               : readFilter === "read"
                 ? "Aucune notification lue"
                 : activeCategory !== "all"
-                  ? `Aucune notification dans ${CATEGORIES.find((c) => c.value === activeCategory)?.label ?? "cette categorie"}`
+                  ? `Aucune notification dans ${CATEGORIES.find((c) => c.value === activeCategory)?.label ?? "cette catégorie"}`
                   : "Aucune notification"}
           </p>
           <p className="text-xs text-muted-foreground">

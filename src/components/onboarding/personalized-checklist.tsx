@@ -326,7 +326,7 @@ export function PersonalizedChecklist() {
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <Trophy className="w-4 h-4 text-amber-500" />
             <span>
-              Termine toutes les étapes pour débloquer le badge{" "}
+              Terminé toutes les étapes pour débloquer le badge{" "}
               <span className="font-medium text-foreground">Newcomer</span> !
             </span>
           </div>

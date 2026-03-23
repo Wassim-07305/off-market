@@ -368,7 +368,7 @@ function CoachCard({
           {atRiskClients > 0 && (
             <span className="ml-auto text-xs text-red-600 font-medium flex items-center gap-1">
               <AlertTriangle className="w-3 h-3" />
-              {atRiskClients} a risque
+              {atRiskClients} à risque
             </span>
           )}
         </div>

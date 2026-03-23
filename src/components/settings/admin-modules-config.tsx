@@ -107,14 +107,14 @@ const DEFAULT_MODULES: ModuleConfig[] = [
   {
     key: "forms",
     label: "Formulaires",
-    description: "Form builder et reponses",
+    description: "Form builder et réponses",
     icon: ClipboardList,
     enabled: true,
   },
   {
     key: "finances",
     label: "Finances",
-    description: "Revenus, couts et echeanciers",
+    description: "Revenus, couts et échéanciers",
     icon: Wallet,
     enabled: true,
   },
@@ -187,7 +187,7 @@ const DEFAULT_GAMIFICATION: GamificationConfig = {
 const XP_LABELS: Record<keyof GamificationConfig, string> = {
   xp_message_sent: "Message envoye",
   xp_checkin_completed: "Check-in complete",
-  xp_module_completed: "Module termine",
+  xp_module_completed: "Module terminé",
   xp_call_attended: "Appel effectue",
   xp_form_submitted: "Formulaire soumis",
   xp_streak_bonus: "Bonus streak (par jour)",
@@ -322,7 +322,7 @@ export function AdminModulesConfig() {
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <Input
-            label="Jours d'inactivite"
+            label="Jours d'inactivité"
             type="number"
             min={1}
             max={90}

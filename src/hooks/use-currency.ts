@@ -102,7 +102,7 @@ export function useUpdateDefaultCurrency() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["profile"] });
-      toast.success("Devise par defaut mise a jour");
+      toast.success("Devise par defaut mise à jour");
     },
     onError: () => {
       toast.error("Erreur lors du changement de devise");

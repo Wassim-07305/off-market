@@ -134,7 +134,7 @@ export function useCoachingGoals(clientId?: string) {
       queryClient.invalidateQueries({ queryKey: ["coaching-goals"] });
     },
     onError: () => {
-      toast.error("Erreur lors de la mise a jour du jalon");
+      toast.error("Erreur lors de la mise à jour du jalon");
     },
   });
 

@@ -8,9 +8,9 @@ Tu generes des briefings pre-session concis et actionables pour les coaches.
 Format de sortie en Markdown :
 
 ## Statut actuel
-- Drapeau, score engagement, tag, etape pipeline
+- Drapeau, score engagement, tag, étape pipeline
 
-## Problemes identifies
+## Problèmes identifies
 - Issues cles extraites des conversations et appels recents
 
 ## Axes de focus pour la prochaine session
@@ -20,8 +20,8 @@ Format de sortie en Markdown :
 - Suivi des action items des sessions precedentes
 
 ## Progression des objectifs
-- Resume de la progression sur les objectifs actifs
-- Objectifs en retard ou a risque
+- Résumé de la progression sur les objectifs actifs
+- Objectifs en retard ou à risque
 
 ## Signaux d'alerte
 - Points d'attention (desengagement, retard paiement, objectif en retard, etc.)
@@ -76,7 +76,7 @@ interface EnrichmentFacebook {
   about?: string;
   followers?: number;
   likes?: number;
-  categories?: string[];
+  catégories?: string[];
   email?: string;
   phone?: string;
   website?: string;
@@ -160,8 +160,8 @@ function formatEnrichmentContext(data: EnrichmentData): string {
     if (fb.followers != null || fb.likes != null) {
       lines.push(`- ${fb.followers ?? 0} abonnes, ${fb.likes ?? 0} likes`);
     }
-    if (fb.categories && fb.categories.length > 0) {
-      lines.push(`- Categories: ${fb.categories.join(", ")}`);
+    if (fb.catégories && fb.catégories.length > 0) {
+      lines.push(`- Catégories: ${fb.catégories.join(", ")}`);
     }
     if (fb.about) lines.push(`- A propos: ${fb.about.slice(0, 300)}`);
     if (fb.website) lines.push(`- Site: ${fb.website}`);
@@ -365,7 +365,7 @@ export async function POST(request: Request) {
     userPrompt += `- **Nom** : ${profile.full_name}\n`;
     userPrompt += `- **Email** : ${profile.email}\n`;
     userPrompt += `- **Inscription** : ${profile.created_at?.split("T")[0] ?? "?"}\n`;
-    userPrompt += `- **Derniere activite** : ${profile.last_active_at ?? "Inconnue"}\n`;
+    userPrompt += `- **Dernière activité** : ${profile.last_active_at ?? "Inconnue"}\n`;
 
     // Student details
     if (details) {
@@ -374,7 +374,7 @@ export async function POST(request: Request) {
       userPrompt += `- **Tag** : ${details.tag ?? "standard"}\n`;
       userPrompt += `- **Score sante** : ${details.health_score ?? 0}/100\n`;
       userPrompt += `- **Score engagement** : ${details.engagement_score ?? 0}/100\n`;
-      userPrompt += `- **Etape** : ${details.pipeline_stage ?? "onboarding"}\n`;
+      userPrompt += `- **Étape** : ${details.pipeline_stage ?? "onboarding"}\n`;
       userPrompt += `- **Programme** : ${details.program ?? "Non defini"}\n`;
       userPrompt += `- **Objectifs** : ${details.goals ?? "Non definis"}\n`;
       userPrompt += `- **Obstacles** : ${details.obstacles ?? "Non definis"}\n`;
@@ -407,7 +407,7 @@ export async function POST(request: Request) {
         userPrompt += `- ${call.date} : ${call.title} (${call.call_type}, ${call.status}, ${duration})\n`;
         if (note?.summary) userPrompt += `  Resume : ${note.summary}\n`;
         if (note?.next_steps)
-          userPrompt += `  Prochaines etapes : ${note.next_steps}\n`;
+          userPrompt += `  Prochaines étapes : ${note.next_steps}\n`;
         if (note?.action_items && Array.isArray(note.action_items)) {
           const items = note.action_items as Array<{
             title: string;

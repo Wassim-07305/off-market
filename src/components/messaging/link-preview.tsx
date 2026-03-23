@@ -151,7 +151,7 @@ export function LinkPreview({ url }: LinkPreviewProps) {
       <div className="mt-2 flex items-center gap-2 px-3 py-2 rounded-lg bg-muted/30 border border-border/30 max-w-sm">
         <Loader2 className="w-3.5 h-3.5 animate-spin text-muted-foreground" />
         <span className="text-xs text-muted-foreground">
-          Apercu en cours...
+          Aperçu en cours...
         </span>
       </div>
     );

@@ -103,7 +103,7 @@ export function useCreateRole() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["custom-roles"] });
-      toast.success("Role cree avec succes");
+      toast.success("Role créé avec succès");
     },
     onError: (error: Error) => {
       toast.error(error.message || "Erreur lors de la creation du role");
@@ -133,10 +133,10 @@ export function useUpdateRole() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["custom-roles"] });
-      toast.success("Role mis a jour");
+      toast.success("Role mis à jour");
     },
     onError: (error: Error) => {
-      toast.error(error.message || "Erreur lors de la mise a jour");
+      toast.error(error.message || "Erreur lors de la mise à jour");
     },
   });
 }

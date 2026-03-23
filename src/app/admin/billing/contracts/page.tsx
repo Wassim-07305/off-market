@@ -336,7 +336,7 @@ function CreateContractModal({
           {templates.length > 0 && (
             <div>
               <label className="block text-sm font-medium text-foreground mb-1.5">
-                Modele (optionnel)
+                Modèle (optionnel)
               </label>
               <div className="grid grid-cols-2 gap-2">
                 {templates.map((t) => (
@@ -366,7 +366,7 @@ function CreateContractModal({
               onChange={(e) => setClientId(e.target.value)}
               className="w-full h-10 px-3 bg-surface border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
             >
-              <option value="">Selectionner un client</option>
+              <option value="">Sélectionner un client</option>
               {clients.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.full_name} ({c.email})
@@ -393,7 +393,7 @@ function CreateContractModal({
           {selectedTemplate && selectedTemplate.variables.length > 0 && (
             <div className="space-y-3">
               <p className="text-sm font-medium text-foreground">
-                Variables du modele
+                Variables du modèle
               </p>
               {selectedTemplate.variables.map((v) => (
                 <div key={v.key}>

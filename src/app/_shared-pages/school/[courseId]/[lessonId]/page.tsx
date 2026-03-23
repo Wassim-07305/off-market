@@ -186,7 +186,7 @@ export default function LessonPage({
     if (percent >= 80) {
       setAutoCompleted(true);
       markComplete.mutate(lessonId, {
-        onSuccess: () => toast.success("Lecon completee automatiquement !"),
+        onSuccess: () => toast.success("Leçon completee automatiquement !"),
       });
     }
   }, [autoCompleted, isCompleted, lessonId, markComplete]);
@@ -194,12 +194,12 @@ export default function LessonPage({
   const handleMarkComplete = () => {
     markComplete.mutate(lessonId, {
       onSuccess: () => {
-        toast.success("Lecon terminee !");
+        toast.success("Leçon terminée !");
         if (nextLesson) {
           router.push(`${prefix}/school/${courseId}/${nextLesson.id}`);
         }
       },
-      onError: () => toast.error("Erreur lors de la mise a jour"),
+      onError: () => toast.error("Erreur lors de la mise à jour"),
     });
   };
 
@@ -221,7 +221,7 @@ export default function LessonPage({
   if (!lesson) {
     return (
       <p className="text-center text-muted-foreground py-16">
-        Lecon non trouvee
+        Leçon non trouvée
       </p>
     );
   }
@@ -269,10 +269,10 @@ export default function LessonPage({
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <Lock className="w-12 h-12 text-muted-foreground/30 mb-4" />
           <h2 className="text-lg font-display font-semibold text-foreground mb-1">
-            Lecon verrouillee
+            Leçon verrouillee
           </h2>
           <p className="text-sm text-muted-foreground max-w-md">
-            Vous devez terminer la lecon precedente avant d&apos;acceder a
+            Vous devez terminér la leçon precedente avant d&apos;acceder a
             celle-ci.
           </p>
           {prevLesson && (
@@ -281,7 +281,7 @@ export default function LessonPage({
               className="mt-4 h-9 px-4 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-all inline-flex items-center gap-2"
             >
               <ChevronLeft className="w-4 h-4" />
-              Lecon precedente
+              Leçon precedente
             </Link>
           )}
         </div>
@@ -301,7 +301,7 @@ export default function LessonPage({
         </Link>
         {allLessons.length > 0 && (
           <span className="text-xs text-muted-foreground font-mono">
-            {completedCount}/{allLessons.length} terminees
+            {completedCount}/{allLessons.length} terminées
           </span>
         )}
       </div>
@@ -324,7 +324,7 @@ export default function LessonPage({
           {isCompleted && (
             <span className="shrink-0 flex items-center gap-1.5 text-xs font-medium text-success bg-success/10 px-2.5 py-1 rounded-full">
               <CheckCircle className="w-3.5 h-3.5" />
-              Terminee
+              Terminée
             </span>
           )}
         </div>
@@ -435,7 +435,7 @@ export default function LessonPage({
                   setAutoCompleted(true);
                   markComplete.mutate(lessonId, {
                     onSuccess: () =>
-                      toast.success("Lecon completee automatiquement !"),
+                      toast.success("Leçon completee automatiquement !"),
                   });
                 }
               }}
@@ -463,7 +463,7 @@ export default function LessonPage({
               onComplete={(passed) => {
                 if (passed) {
                   markComplete.mutate(lesson.id);
-                  toast.success("Quiz reussi ! Lecon marquee comme completee.");
+                  toast.success("Quiz reussi ! Leçon marquee comme completee.");
                 }
               }}
             />
@@ -476,7 +476,7 @@ export default function LessonPage({
             instructions={content?.instructions}
             onComplete={() => {
               markComplete.mutate(lesson.id);
-              toast.success("Exercice soumis ! Lecon marquee comme completee.");
+              toast.success("Exercice soumis ! Leçon marquee comme completee.");
             }}
           />
         )}
@@ -566,7 +566,7 @@ export default function LessonPage({
           ) : (
             <CheckCircle className="w-4 h-4" />
           )}
-          {isCompleted ? "Deja terminee" : "Marquer comme termine"}
+          {isCompleted ? "Deja terminée" : "Marquer comme terminé"}
         </button>
 
         {nextLesson ? (

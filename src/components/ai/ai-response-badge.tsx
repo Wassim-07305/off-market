@@ -8,7 +8,7 @@ interface AiResponseBadgeProps {
 }
 
 /**
- * Badge "Genere par IA" affiche sous les messages generes par l'IA.
+ * Badge "Généré par IA" affiche sous les messages generes par l'IA.
  * Style subtil, petit texte gris avec icone Sparkles.
  */
 export function AiResponseBadge({ className }: AiResponseBadgeProps) {
@@ -21,7 +21,7 @@ export function AiResponseBadge({ className }: AiResponseBadgeProps) {
       )}
     >
       <Sparkles className="w-2.5 h-2.5" />
-      Genere par IA
+      Généré par IA
     </span>
   );
 }

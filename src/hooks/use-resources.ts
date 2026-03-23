@@ -124,7 +124,7 @@ export function useUpdateResource() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["resources"] });
     },
-    onError: () => toast.error("Erreur lors de la mise a jour"),
+    onError: () => toast.error("Erreur lors de la mise à jour"),
   });
 }
 

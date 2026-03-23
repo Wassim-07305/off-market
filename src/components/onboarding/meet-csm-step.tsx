@@ -53,7 +53,7 @@ export function MeetCsmStep({
           Ton coach sera bientot assigne
         </h3>
         <p className="text-white/50 max-w-md mb-8">
-          L&apos;equipe Off Market te contactera sous 24h pour te presenter ton
+          L&apos;équipe Off Market te contactera sous 24h pour te presenter ton
           coach personnalise.
         </p>
         <button

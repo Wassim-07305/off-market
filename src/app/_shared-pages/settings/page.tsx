@@ -95,7 +95,7 @@ const NOTIFICATION_TOGGLES = [
   {
     key: "notification_digest",
     label: "Digest email",
-    description: "Resume periodique par email",
+    description: "Résumé périodique par email",
   },
 ] as const;
 
@@ -146,7 +146,7 @@ export default function SettingsPage() {
     const params = new URLSearchParams(window.location.search);
     const googleParam = params.get("google");
     if (googleParam === "success") {
-      toast.success("Google Agenda connecte avec succes");
+      toast.success("Google Agenda connecte avec succès");
       window.history.replaceState({}, "", window.location.pathname);
       googleStatus.refetch();
     } else if (googleParam === "error") {
@@ -228,7 +228,7 @@ export default function SettingsPage() {
 
       setAvatarUrl(newUrl);
       queryClient.invalidateQueries({ queryKey: ["profile"] });
-      toast.success("Photo de profil mise a jour");
+      toast.success("Photo de profil mise à jour");
     } catch (err) {
       console.error("[avatar upload]", err);
       toast.error("Erreur lors de l'upload de la photo");
@@ -256,7 +256,7 @@ export default function SettingsPage() {
         toast.error("Erreur lors de la sauvegarde");
       } else {
         queryClient.invalidateQueries({ queryKey: ["profile"] });
-        toast.success("Profil mis a jour");
+        toast.success("Profil mis à jour");
       }
     } catch {
       toast.error("Erreur reseau lors de la sauvegarde");
@@ -296,7 +296,7 @@ export default function SettingsPage() {
         password: newPassword,
       });
       if (error) throw error;
-      toast.success("Mot de passe mis a jour");
+      toast.success("Mot de passe mis à jour");
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
@@ -310,21 +310,21 @@ export default function SettingsPage() {
   const handleToggleNotification = (key: string, value: boolean) => {
     updatePreferences.mutate(
       { [key]: value },
-      { onError: () => toast.error("Erreur lors de la mise a jour") },
+      { onError: () => toast.error("Erreur lors de la mise à jour") },
     );
   };
 
   const handleDigestChange = (value: string) => {
     updatePreferences.mutate(
       { email_digest: value as "none" | "daily" | "weekly" },
-      { onError: () => toast.error("Erreur lors de la mise a jour") },
+      { onError: () => toast.error("Erreur lors de la mise à jour") },
     );
   };
 
   const handleMarketingToggle = (value: boolean) => {
     updatePreferences.mutate(
       { email_marketing: value },
-      { onError: () => toast.error("Erreur lors de la mise a jour") },
+      { onError: () => toast.error("Erreur lors de la mise à jour") },
     );
   };
 
@@ -568,7 +568,7 @@ export default function SettingsPage() {
                     </p>
                     <p className="text-xs text-muted-foreground">
                       {push.permission === "denied"
-                        ? "Bloquees dans les parametres du navigateur"
+                        ? "Bloquees dans les paramètres du navigateur"
                         : "Recois des alertes meme quand le site est ferme"}
                     </p>
                   </div>
@@ -672,7 +672,7 @@ export default function SettingsPage() {
             <div className="size-7 rounded-lg bg-gradient-to-br from-zinc-600 to-zinc-700 flex items-center justify-center">
               <Lock className="w-3.5 h-3.5 text-white" />
             </div>
-            <h2 className="text-sm font-semibold text-foreground">Securite</h2>
+            <h2 className="text-sm font-semibold text-foreground">Sécurité</h2>
           </div>
 
           <div className="space-y-3">
@@ -760,7 +760,7 @@ export default function SettingsPage() {
               ) : (
                 <Lock className="w-3.5 h-3.5" />
               )}
-              {changingPassword ? "Mise a jour..." : "Changer le mot de passe"}
+              {changingPassword ? "Mise à jour..." : "Changer le mot de passe"}
             </button>
           </div>
         </div>
@@ -807,7 +807,7 @@ export default function SettingsPage() {
           ) : (
             <div className="flex items-center justify-between">
               <p className="text-sm text-muted-foreground">
-                Connecte ton agenda Google pour voir tes evenements dans la page
+                Connecte ton agenda Google pour voir tes événements dans la page
                 Appels.
               </p>
               <a

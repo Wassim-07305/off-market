@@ -31,7 +31,7 @@ const TYPES = [
   { value: "success", label: "Succes", icon: CheckCircle2, color: "text-emerald-500 bg-emerald-500/10" },
   { value: "warning", label: "Attention", icon: AlertTriangle, color: "text-amber-500 bg-amber-500/10" },
   { value: "urgent", label: "Urgent", icon: Zap, color: "text-red-500 bg-red-500/10" },
-  { value: "update", label: "Mise a jour", icon: Sparkles, color: "text-purple-500 bg-purple-500/10" },
+  { value: "update", label: "Mise à jour", icon: Sparkles, color: "text-purple-500 bg-purple-500/10" },
 ] as const;
 
 const ROLES = [
@@ -143,7 +143,7 @@ export default function AdminAnnouncementsPage() {
               Annonces
             </h1>
             <p className="text-sm text-muted-foreground mt-1">
-              Communiquez avec vos equipes et clients
+              Communiquez avec vos équipes et clients
             </p>
           </div>
           <button

@@ -195,7 +195,7 @@ export function VideoResponseRecorder({
         <div className="flex items-center gap-2">
           <Video className="w-4 h-4 text-primary" />
           <span className="text-sm font-semibold text-foreground">
-            Reponse video
+            Réponse vidéo
           </span>
         </div>
         <button
@@ -321,7 +321,7 @@ export function VideoResponseRecorder({
             style={{ backgroundColor: "#DC2626" }}
           >
             <Video className="w-4 h-4" />
-            Demarrer l&apos;enregistrement
+            Démarrer l&apos;enregistrement
           </button>
         )}
 

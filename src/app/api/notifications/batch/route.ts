@@ -52,7 +52,7 @@ export async function POST(request: Request) {
     if (!preferences || preferences.length === 0) {
       return NextResponse.json({
         processed: 0,
-        message: "Aucun utilisateur avec cette frequence de batch",
+        message: "Aucun utilisateur avec cette fréquence de batch",
       });
     }
 

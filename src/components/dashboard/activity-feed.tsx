@@ -33,8 +33,8 @@ const activityIcons: Record<string, LucideIcon> = {
 
 const activityLabels: Record<string, string> = {
   module_started: "a commence un module",
-  module_completed: "a termine un module",
-  lesson_completed: "a termine une lecon",
+  module_completed: "a terminé un module",
+  lesson_completed: "a terminé une leçon",
   form_submitted: "a soumis un formulaire",
   message_sent: "a envoye un message",
   login: "s'est connecte",
@@ -89,7 +89,7 @@ export function ActivityFeed() {
     return (
       <div className="bg-surface border border-border rounded-lg p-4">
         <h3 className="text-[10px] uppercase tracking-wider text-muted-foreground mb-3">
-          Activite recente
+          Activité récente
         </h3>
         <div className="space-y-3">
           {Array.from({ length: 5 }).map((_, i) => (
@@ -109,13 +109,13 @@ export function ActivityFeed() {
   return (
     <div className="bg-surface border border-border rounded-lg p-4">
       <h3 className="text-[10px] uppercase tracking-wider text-muted-foreground mb-3">
-        Activite recente
+        Activité récente
       </h3>
       <div className="relative max-h-96 overflow-y-auto">
         <div className="space-y-1">
           {!activities || activities.length === 0 ? (
             <p className="text-xs text-muted-foreground text-center py-8">
-              Aucune activite recente
+              Aucune activité recente
             </p>
           ) : (
             activities.map((activity) => {

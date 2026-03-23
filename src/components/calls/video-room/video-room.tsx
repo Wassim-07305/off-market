@@ -691,7 +691,7 @@ export function VideoRoom({ callId }: VideoRoomProps) {
           <div className="flex items-center justify-between px-4 py-3 border-b border-white/5">
             <h3 className="text-sm font-semibold text-white flex items-center gap-2">
               <span className="text-amber-400">&#9997;</span>
-              Reponses pre-appel
+              Réponses pre-appel
             </h3>
             <button
               onClick={() => setShowPreCallResponses(false)}
@@ -719,7 +719,7 @@ export function VideoRoom({ callId }: VideoRoomProps) {
               </h3>
             </div>
             <p className="text-sm text-zinc-400 mb-6">
-              Etes-vous sur de vouloir raccrocher ? L&apos;appel sera termine
+              Etes-vous sur de vouloir raccrocher ? L&apos;appel sera terminé
               pour tous les participants.
             </p>
             <div className="flex gap-3">

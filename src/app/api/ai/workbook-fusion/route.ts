@@ -5,17 +5,17 @@ import { createClient } from "@/lib/supabase/server";
 const SYSTEM_PROMPT = `Tu es un assistant specialise dans la synthese de documents de coaching pour la plateforme Off-Market.
 
 Tu recois :
-1. Les reponses d'un workbook rempli par un client (questions/reponses structurees)
+1. Les réponses d'un workbook rempli par un client (questions/réponses structurees)
 2. La transcription d'un appel de coaching associe
 
 Tu dois fusionner ces deux sources en un document structure et coherent en francais, au format Markdown, avec les sections suivantes :
 
 1. **Profil client** — Synthese du positionnement, objectifs et situation actuelle du client (base sur le workbook)
-2. **Points abordes en appel** — Resume des sujets discutes pendant l'appel
-3. **Analyse croisee** — Mise en perspective des reponses du workbook avec ce qui a ete dit en appel (coherences, ecarts, nuances)
+2. **Points abordes en appel** — Résumé des sujets discutes pendant l'appel
+3. **Analyse croisee** — Mise en perspective des réponses du workbook avec ce qui a ete dit en appel (coherences, ecarts, nuances)
 4. **Diagnostic** — Problematiques identifiees et forces du client
 5. **Plan d'action recommande** — Actions concretes a mettre en place, avec priorites
-6. **Suivi** — Indicateurs a surveiller et prochaines etapes
+6. **Suivi** — Indicateurs a surveiller et prochaines étapes
 
 Regles :
 - Sois factuel et base-toi uniquement sur les donnees fournies
@@ -23,7 +23,7 @@ Regles :
 - Sois concis mais complet
 - Tutoie le client dans le document
 - Si des informations manquent, ne les invente pas
-- Mets en evidence les liens entre les reponses du workbook et les echanges de l'appel`;
+- Mets en evidence les liens entre les réponses du workbook et les echanges de l'appel`;
 
 export async function POST(request: Request) {
   const supabase = await createClient();

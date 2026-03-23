@@ -40,7 +40,7 @@ export const CRM_FIELDS = [
   { key: "phone", label: "Telephone", required: false },
   { key: "company", label: "Entreprise", required: false },
   { key: "source", label: "Source", required: false },
-  { key: "stage", label: "Etape pipeline", required: false },
+  { key: "stage", label: "Étape pipeline", required: false },
   { key: "estimated_value", label: "Valeur estimee", required: false },
   { key: "notes", label: "Notes", required: false },
   { key: "tags", label: "Tags (separes par virgule)", required: false },
@@ -83,9 +83,9 @@ const COLUMN_ALIASES: Record<CrmFieldKey, string[]> = {
     "tel.",
     "mobile",
     "portable",
-    "numero",
+    "numéro",
     "phone number",
-    "numero de telephone",
+    "numéro de telephone",
   ],
   company: [
     "company",
@@ -99,7 +99,7 @@ const COLUMN_ALIASES: Record<CrmFieldKey, string[]> = {
     "nom entreprise",
   ],
   source: ["source", "origine", "canal", "channel", "provenance"],
-  stage: ["stage", "etape", "statut", "status", "pipeline", "phase"],
+  stage: ["stage", "étape", "statut", "status", "pipeline", "phase"],
   estimated_value: [
     "estimated_value",
     "valeur",
@@ -123,7 +123,7 @@ const COLUMN_ALIASES: Record<CrmFieldKey, string[]> = {
     "description",
     "remarques",
   ],
-  tags: ["tags", "tag", "etiquettes", "labels", "categories"],
+  tags: ["tags", "tag", "etiquettes", "labels", "catégories"],
   linkedin_url: [
     "linkedin_url",
     "linkedin",
@@ -601,11 +601,11 @@ export function useImportContacts() {
       queryClient.invalidateQueries({ queryKey: ["pipeline-contacts"] });
       if (result.errors.length === 0) {
         toast.success(
-          `${result.imported} contact${result.imported !== 1 ? "s" : ""} importe${result.imported !== 1 ? "s" : ""}${result.updated > 0 ? `, ${result.updated} mis a jour` : ""}${result.skipped > 0 ? `, ${result.skipped} ignore${result.skipped !== 1 ? "s" : ""}` : ""}`,
+          `${result.imported} contact${result.imported !== 1 ? "s" : ""} importe${result.imported !== 1 ? "s" : ""}${result.updated > 0 ? `, ${result.updated} mis à jour` : ""}${result.skipped > 0 ? `, ${result.skipped} ignore${result.skipped !== 1 ? "s" : ""}` : ""}`,
         );
       } else {
         toast.warning(
-          `Import termine avec ${result.errors.length} erreur${result.errors.length !== 1 ? "s" : ""}`,
+          `Import terminé avec ${result.errors.length} erreur${result.errors.length !== 1 ? "s" : ""}`,
         );
       }
     },
@@ -643,7 +643,7 @@ export function downloadCsvTemplate() {
     "Telephone",
     "Entreprise",
     "Source",
-    "Etape",
+    "Étape",
     "Valeur estimee",
     "Notes",
     "Tags",

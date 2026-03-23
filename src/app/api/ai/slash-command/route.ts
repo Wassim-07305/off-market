@@ -81,7 +81,7 @@ export async function POST(request: Request) {
         .join("\n");
 
       const aiResult = await callOpenRouter({
-        system: `Tu es un assistant IA. Fais un resume concis et structure en francais de la conversation suivante. Utilise des bullet points. Pas d'emojis. Identifie les points cles, decisions prises et actions a suivre.`,
+        system: `Tu es un assistant IA. Fais un résumé concis et structure en francais de la conversation suivante. Utilise des bullet points. Pas d'emojis. Identifie les points cles, decisions prises et actions a suivre.`,
         messages: [
           {
             role: "user",
@@ -139,7 +139,7 @@ export async function POST(request: Request) {
 
       if (!messages || messages.length === 0) {
         return NextResponse.json({
-          result: "Pas assez de contexte pour suggerer une reponse.",
+          result: "Pas assez de contexte pour suggerer une réponse.",
           command,
         });
       }
@@ -154,11 +154,11 @@ export async function POST(request: Request) {
         .join("\n");
 
       const aiResult = await callOpenRouter({
-        system: `Tu es l'assistant IA de la plateforme Off Market (coaching business). Tu aides ${profile?.full_name ?? "le coach"} a repondre dans une conversation. Genere une reponse naturelle, professionnelle, en francais, adaptee au contexte. Pas d'emojis. Tutoie. Sois direct et utile.`,
+        system: `Tu es l'assistant IA de la plateforme Off Market (coaching business). Tu aides ${profile?.full_name ?? "le coach"} a repondre dans une conversation. Genere une réponse naturelle, professionnelle, en francais, adaptee au contexte. Pas d'emojis. Tutoie. Sois direct et utile.`,
         messages: [
           {
             role: "user",
-            content: `Voici les derniers messages de la conversation. Suggere une reponse appropriee :\n\n${messagesText}`,
+            content: `Voici les derniers messages de la conversation. Suggere une réponse appropriee :\n\n${messagesText}`,
           },
         ],
         maxTokens: 512,

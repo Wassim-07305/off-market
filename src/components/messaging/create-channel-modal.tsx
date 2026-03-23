@@ -132,7 +132,7 @@ export function CreateChannelModal({
       open={open}
       onClose={handleClose}
       title="Creer un canal"
-      description="Creez un canal pour discuter avec votre equipe"
+      description="Creez un canal pour discuter avec votre équipe"
       size="lg"
     >
       <div className="space-y-5">

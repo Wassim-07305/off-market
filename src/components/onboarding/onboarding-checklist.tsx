@@ -139,7 +139,7 @@ export function OnboardingChecklist() {
         <div className="mt-3">
           <div className="flex items-center justify-between text-[11px] text-muted-foreground mb-1.5">
             <span>
-              {completedSteps.size}/{CHECKLIST_ITEMS.length} etapes
+              {completedSteps.size}/{CHECKLIST_ITEMS.length} étapes
             </span>
             <span className="font-mono">{progress}%</span>
           </div>
@@ -229,7 +229,7 @@ export function OnboardingChecklist() {
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <Trophy className="w-4 h-4 text-amber-500" />
           <span>
-            Termine toutes les etapes pour debloquer le badge{" "}
+            Terminé toutes les étapes pour debloquer le badge{" "}
             <span className="font-medium text-foreground">Newcomer</span> !
           </span>
         </div>

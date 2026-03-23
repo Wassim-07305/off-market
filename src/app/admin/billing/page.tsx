@@ -172,7 +172,7 @@ export default function BillingOverviewPage() {
                 onClick: () => {
                   exportToCSV(
                     invoices.map((inv) => ({
-                      numero: inv.invoice_number,
+                      numéro: inv.invoice_number,
                       client: inv.client?.full_name ?? "",
                       total: inv.total,
                       statut: inv.status,
@@ -184,7 +184,7 @@ export default function BillingOverviewPage() {
                         : "",
                     })),
                     [
-                      { key: "numero", label: "Numero" },
+                      { key: "numéro", label: "Numéro" },
                       { key: "client", label: "Client" },
                       { key: "total", label: "Total (EUR)" },
                       { key: "statut", label: "Statut" },
@@ -736,7 +736,7 @@ function CommissionRulesConfig() {
             onChange={(e) => setNewSetterId(e.target.value)}
             className="w-full h-9 px-3 bg-surface border border-border rounded-lg text-sm"
           >
-            <option value="">Selectionner un setter</option>
+            <option value="">Sélectionner un setter</option>
             {availableSetters.map((s) => (
               <option key={s.id} value={s.id}>
                 {s.full_name}

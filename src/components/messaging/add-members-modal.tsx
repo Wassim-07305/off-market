@@ -121,7 +121,7 @@ export function AddMembersModal({
             </div>
           ) : filtered.length === 0 ? (
             <p className="text-sm text-muted-foreground text-center py-8">
-              Aucun resultat
+              Aucun résultat
             </p>
           ) : (
             filtered.map((profile) => {

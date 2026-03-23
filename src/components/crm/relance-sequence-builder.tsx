@@ -112,7 +112,7 @@ function StepEditorModal({
     <Modal
       open={open}
       onClose={onClose}
-      title={step?.id ? "Modifier l'etape" : "Nouvelle etape"}
+      title={step?.id ? "Modifier l'étape" : "Nouvelle étape"}
       size="lg"
     >
       <div className="flex flex-col gap-4">
@@ -127,7 +127,7 @@ function StepEditorModal({
             className="w-20"
           />
           <span className="text-sm text-muted-foreground">
-            jour{delayDays !== 1 ? "s" : ""} apres l'etape precedente
+            jour{delayDays !== 1 ? "s" : ""} apres l'étape precedente
           </span>
         </div>
 
@@ -210,13 +210,13 @@ function StepEditorModal({
         {content && (
           <div className="rounded-xl border border-dashed border-border bg-muted/20 p-3">
             <p className="text-xs font-medium text-muted-foreground mb-1">
-              Apercu
+              Aperçu
             </p>
             <p className="text-sm text-foreground whitespace-pre-wrap">
               {content
                 .replace(/\{\{prenom\}\}/g, "Marie")
                 .replace(/\{\{entreprise\}\}/g, "Acme SAS")
-                .replace(/\{\{etape\}\}/g, "Proposition")
+                .replace(/\{\{étape\}\}/g, "Proposition")
                 .replace(/\{\{valeur\}\}/g, "5 000 EUR")
                 .replace(/\{\{jours_sans_contact\}\}/g, "7")}
             </p>
@@ -234,7 +234,7 @@ function StepEditorModal({
             disabled={!content.trim()}
             icon={<Save className="h-4 w-4" />}
           >
-            {step?.id ? "Mettre a jour" : "Ajouter l'etape"}
+            {step?.id ? "Mettre a jour" : "Ajouter l'étape"}
           </Button>
         </div>
       </div>
@@ -459,7 +459,7 @@ export function RelanceSequenceBuilder({
             </h2>
             <p className="text-sm text-muted-foreground">
               {isEditMode
-                ? "Gerez les etapes et parametres de cette sequence"
+                ? "Gerez les étapes et paramètres de cette sequence"
                 : "Configurez votre sequence de relance automatique"}
             </p>
           </div>
@@ -496,7 +496,7 @@ export function RelanceSequenceBuilder({
             onChange={(e) => setName(e.target.value)}
           />
           <Select
-            label="Etape cible du pipeline"
+            label="Étape cible du pipeline"
             options={PIPELINE_STAGES.map((s) => ({
               value: s.value,
               label: s.label,
@@ -534,10 +534,10 @@ export function RelanceSequenceBuilder({
       <div className="rounded-2xl border border-border bg-surface p-4 sm:p-6 shadow-sm">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-sm font-semibold text-foreground">
-            Etapes de la sequence
+            Étapes de la sequence
           </h3>
           <Badge variant="secondary">
-            {displaySteps.length} etape{displaySteps.length !== 1 ? "s" : ""}
+            {displaySteps.length} étape{displaySteps.length !== 1 ? "s" : ""}
           </Badge>
         </div>
 
@@ -558,7 +558,7 @@ export function RelanceSequenceBuilder({
                   Inscription du contact
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  La sequence demarre automatiquement
+                  La sequence démarré automatiquement
                 </p>
               </div>
             </div>
@@ -567,7 +567,7 @@ export function RelanceSequenceBuilder({
               <div key={step.id} className="relative">
                 {/* Add step button before */}
                 <div className="flex justify-center py-1">
-                  <Tooltip content="Inserer une etape ici">
+                  <Tooltip content="Inserer une étape ici">
                     <button
                       type="button"
                       onClick={() => {
@@ -638,7 +638,7 @@ export function RelanceSequenceBuilder({
                           {channelLabel(step.channel as RelanceChannel)}
                         </Badge>
                         <span className="text-xs text-muted-foreground">
-                          Etape {idx + 1}
+                          Étape {idx + 1}
                         </span>
                       </div>
 
@@ -734,7 +734,7 @@ export function RelanceSequenceBuilder({
                 }}
                 icon={<Plus className="h-3.5 w-3.5" />}
               >
-                Ajouter une etape
+                Ajouter une étape
               </Button>
             </div>
 
@@ -748,10 +748,10 @@ export function RelanceSequenceBuilder({
                 </div>
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">
-                    Sequence terminee
+                    Sequence terminée
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    Le contact est marque comme "relance terminee"
+                    Le contact est marque comme "relance terminée"
                   </p>
                 </div>
               </div>
@@ -766,10 +766,10 @@ export function RelanceSequenceBuilder({
               <Mail className="h-5 w-5 text-muted-foreground" />
             </div>
             <p className="text-sm font-medium text-foreground mb-1">
-              Aucune etape configuree
+              Aucune étape configuree
             </p>
             <p className="text-xs text-muted-foreground mb-4 max-w-xs">
-              Ajoutez des etapes pour definir le rythme et le contenu de vos
+              Ajoutez des étapes pour definir le rythme et le contenu de vos
               relances automatiques.
             </p>
             <Button
@@ -781,7 +781,7 @@ export function RelanceSequenceBuilder({
               }}
               icon={<Plus className="h-3.5 w-3.5" />}
             >
-              Premiere etape
+              Première étape
             </Button>
           </div>
         )}
@@ -822,11 +822,11 @@ export function RelanceSequenceBuilder({
       <Modal
         open={!!deleteConfirm}
         onClose={() => setDeleteConfirm(null)}
-        title="Supprimer cette etape ?"
+        title="Supprimer cette étape ?"
         size="sm"
       >
         <p className="text-sm text-muted-foreground mb-4">
-          Cette action est irreversible. L'etape sera supprimee de la sequence.
+          Cette action est irreversible. L'étape sera supprimee de la sequence.
         </p>
         <div className="flex justify-end gap-2">
           <Button variant="secondary" onClick={() => setDeleteConfirm(null)}>

@@ -412,7 +412,7 @@ export function TemplateManagerModal({
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-sm font-medium text-foreground mb-1">
-                Categorie
+                Catégorie
               </label>
               <select
                 value={formCategory}
@@ -453,7 +453,7 @@ export function TemplateManagerModal({
               <Share2 className="w-4 h-4 text-muted-foreground" />
               <div>
                 <p className="text-sm font-medium text-foreground">
-                  Partager avec l&apos;equipe
+                  Partager avec l&apos;équipe
                 </p>
                 <p className="text-xs text-muted-foreground">
                   Visible par tous les membres

@@ -38,7 +38,7 @@ export function AddClientModal({ open, onClose }: AddClientModalProps) {
         return;
       }
 
-      toast.success(`Client "${fullName}" cree avec succes`);
+      toast.success(`Client "${fullName}" créé avec succès`);
       queryClient.invalidateQueries({
         queryKey: ["students"],
         refetchType: "all",

@@ -124,7 +124,7 @@ export function useGenerateContract() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["contracts"] });
-      toast.success("Contrat genere avec succes");
+      toast.success("Contrat généré avec succès");
     },
     onError: () => {
       toast.error("Erreur lors de la generation du contrat");

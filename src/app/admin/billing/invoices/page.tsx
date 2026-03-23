@@ -134,14 +134,14 @@ export default function InvoicesPage() {
                     title: "Rapport Factures",
                     subtitle: `${invoices.length} facture(s) — Total: ${formatCurrency(totalRevenue)}`,
                     columns: [
-                      { key: "numero", label: "Numero" },
+                      { key: "numéro", label: "Numéro" },
                       { key: "client", label: "Client" },
                       { key: "total", label: "Total (EUR)" },
                       { key: "statut", label: "Statut" },
                       { key: "echeance", label: "Echeance" },
                     ],
                     rows: invoices.map((inv) => ({
-                      numero: inv.invoice_number,
+                      numéro: inv.invoice_number,
                       client: inv.client?.full_name ?? "",
                       total: formatCurrency(Number(inv.total)),
                       statut: INVOICE_STATUS_LABELS[inv.status] ?? inv.status,
@@ -158,7 +158,7 @@ export default function InvoicesPage() {
                 onClick: () => {
                   exportToCSV(
                     invoices.map((inv) => ({
-                      numero: inv.invoice_number,
+                      numéro: inv.invoice_number,
                       client: inv.client?.full_name ?? "",
                       montant_ht: inv.amount,
                       tva: inv.tax,
@@ -172,7 +172,7 @@ export default function InvoicesPage() {
                         : "",
                     })),
                     [
-                      { key: "numero", label: "Numero" },
+                      { key: "numéro", label: "Numéro" },
                       { key: "client", label: "Client" },
                       { key: "montant_ht", label: "Montant HT" },
                       { key: "tva", label: "TVA" },
@@ -287,7 +287,7 @@ export default function InvoicesPage() {
               <thead>
                 <tr className="border-b border-border">
                   <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3">
-                    Numero
+                    Numéro
                   </th>
                   <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3">
                     Client
@@ -585,7 +585,7 @@ function CreateInvoiceModal({
                 onChange={(e) => setClientId(e.target.value)}
                 className="w-full h-10 px-3 bg-surface border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
               >
-                <option value="">Selectionner un client</option>
+                <option value="">Sélectionner un client</option>
                 {clients.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.full_name}

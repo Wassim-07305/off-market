@@ -1593,7 +1593,7 @@ export function EmojiPicker({ onSelect, onClose }: EmojiPickerProps) {
     for (const item of allEmojis) {
       if (seen.has(item.emoji)) continue;
 
-      // Cherche dans le nom de categorie
+      // Cherche dans le nom de catégorie
       const matchCategory = item.category.toLowerCase().includes(query);
 
       // Cherche dans les mots-cles

@@ -244,7 +244,7 @@ export function MilestoneCard({
                   className="h-8 px-3 rounded-lg border border-blue-200 bg-blue-50 text-blue-700 text-xs font-medium hover:bg-blue-100 disabled:opacity-50 flex items-center gap-1.5"
                 >
                   <PlayCircle className="w-3.5 h-3.5" />
-                  Demarrer
+                  Démarrer
                 </button>
               )}
               {milestone.status !== "skipped" && (

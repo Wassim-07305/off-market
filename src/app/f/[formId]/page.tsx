@@ -202,7 +202,7 @@ function PublicFormContent({ formId }: { formId: string }) {
       <div className={cn(wrapperClass, "flex items-center justify-center")}>
         <div className="text-center">
           <p className={cn("text-xl font-semibold mb-2", textPrimary)}>
-            Formulaire non trouve
+            Formulaire non trouvé
           </p>
           <p className={cn("text-sm", textSecondary)}>
             Ce lien n&apos;est pas valide ou le formulaire a ete supprime.
@@ -220,7 +220,7 @@ function PublicFormContent({ formId }: { formId: string }) {
             Formulaire ferme
           </p>
           <p className={cn("text-sm", textSecondary)}>
-            Ce formulaire n&apos;accepte plus de reponses.
+            Ce formulaire n&apos;accepte plus de réponses.
           </p>
         </div>
       </div>
@@ -269,7 +269,7 @@ function PublicFormContent({ formId }: { formId: string }) {
           </h1>
           <p className={cn("text-lg", textSecondary)}>
             {form.thank_you_message ||
-              "Ta reponse a ete enregistree avec succes."}
+              "Ta réponse a ete enregistree avec succès."}
           </p>
         </motion.div>
       </div>
@@ -526,7 +526,7 @@ function FormFieldInput({
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder={field.placeholder ?? "Ecris ta reponse ici..."}
+        placeholder={field.placeholder ?? "Ecris ta réponse ici..."}
         className={inputClass}
       />
     );
@@ -541,7 +541,7 @@ function FormFieldInput({
           }}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          placeholder={field.placeholder ?? "Ecris ta reponse ici..."}
+          placeholder={field.placeholder ?? "Ecris ta réponse ici..."}
           rows={5}
           className={cn(inputClass, "resize-none")}
         />
@@ -735,7 +735,7 @@ function FormFieldInput({
           <span className="text-base">
             {value
               ? (options.find((o) => o.value === value)?.label ?? value)
-              : "Selectionner..."}
+              : "Sélectionner..."}
           </span>
           <ChevronDown
             className={cn(
@@ -992,7 +992,7 @@ function FormFieldInput({
       type="text"
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      placeholder="Reponse..."
+      placeholder="Réponse..."
       className={inputClass}
     />
   );

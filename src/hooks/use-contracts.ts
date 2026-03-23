@@ -360,7 +360,7 @@ export function useContractRenewal() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["contracts"] });
       queryClient.invalidateQueries({ queryKey: ["contracts-expiring"] });
-      toast.success("Contrat renouvele avec succes");
+      toast.success("Contrat renouvele avec succès");
     },
     onError: () => {
       toast.error("Erreur lors du renouvellement du contrat");

@@ -205,7 +205,7 @@ export default function FormBuilderPage() {
         });
       }
 
-      toast.success("Formulaire cree avec succes");
+      toast.success("Formulaire créé avec succès");
       router.push(`${prefix}/forms`);
     } catch {
       toast.error("Erreur lors de la sauvegarde");
@@ -245,7 +245,7 @@ export default function FormBuilderPage() {
             className="h-9 px-4 rounded-[10px] border border-border text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all flex items-center gap-2"
           >
             <Eye className="w-4 h-4" />
-            Apercu
+            Aperçu
           </button>
           <button
             onClick={handleSave}
@@ -587,7 +587,7 @@ function FieldMiniPreview({ field }: { field: BuilderField }) {
     return (
       <div className="h-9 px-3 bg-muted/50 border border-border/50 rounded-lg flex items-center">
         <span className="text-xs text-muted-foreground/40">
-          {field.placeholder || "Saisir une reponse..."}
+          {field.placeholder || "Saisir une réponse..."}
         </span>
       </div>
     );
@@ -596,7 +596,7 @@ function FieldMiniPreview({ field }: { field: BuilderField }) {
     return (
       <div className="h-16 px-3 pt-2 bg-muted/50 border border-border/50 rounded-lg">
         <span className="text-xs text-muted-foreground/40">
-          {field.placeholder || "Saisir une reponse longue..."}
+          {field.placeholder || "Saisir une réponse longue..."}
         </span>
       </div>
     );
@@ -634,7 +634,7 @@ function FieldMiniPreview({ field }: { field: BuilderField }) {
     return (
       <div className="h-9 px-3 bg-muted/50 border border-border/50 rounded-lg flex items-center justify-between">
         <span className="text-xs text-muted-foreground/40">
-          Selectionner...
+          Sélectionner...
         </span>
         <ChevronDown className="w-3.5 h-3.5 text-muted-foreground/40" />
       </div>
@@ -1063,7 +1063,7 @@ function FormPreview({
           Retour a l&apos;editeur
         </button>
         <span className="text-xs font-medium text-primary bg-primary/5 px-3 py-1.5 rounded-full">
-          Mode apercu
+          Mode aperçu
         </span>
       </div>
 

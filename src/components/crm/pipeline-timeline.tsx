@@ -221,7 +221,7 @@ export function PipelineTimeline() {
                             {event.type === "updated" && (
                               <>
                                 <ArrowRight className="w-3 h-3" />
-                                Etape mise a jour
+                                Étape mise à jour
                               </>
                             )}
                             {event.type === "interaction" && (

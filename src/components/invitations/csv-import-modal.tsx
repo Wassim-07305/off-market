@@ -122,7 +122,7 @@ export function CsvImportModal({ open, onClose }: CsvImportModalProps) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "modele-invitations.csv";
+    a.download = "modèle-invitations.csv";
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -145,7 +145,7 @@ export function CsvImportModal({ open, onClose }: CsvImportModalProps) {
                   "Importez un fichier CSV avec les invitations"}
                 {step === "preview" &&
                   `${parsedRows.length} ligne(s) trouvee(s) dans ${fileName}`}
-                {step === "done" && "Import termine"}
+                {step === "done" && "Import terminé"}
               </p>
             </div>
           </div>
@@ -166,7 +166,7 @@ export function CsvImportModal({ open, onClose }: CsvImportModalProps) {
             >
               <FileText className="w-10 h-10 text-muted-foreground/40 mx-auto mb-3" />
               <p className="text-sm font-medium text-foreground mb-1">
-                Cliquer pour selectionner un fichier CSV
+                Cliquer pour sélectionner un fichier CSV
               </p>
               <p className="text-xs text-muted-foreground">
                 Format: Nom, Email, Role (admin, coach, setter, closer, client)
@@ -185,7 +185,7 @@ export function CsvImportModal({ open, onClose }: CsvImportModalProps) {
               className="w-full h-10 rounded-[10px] border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center justify-center gap-2"
             >
               <Download className="w-4 h-4" />
-              Telecharger le modele CSV
+              Telecharger le modèle CSV
             </button>
           </div>
         )}
@@ -329,10 +329,10 @@ export function CsvImportModal({ open, onClose }: CsvImportModalProps) {
             </div>
             <div>
               <p className="text-sm font-semibold text-foreground">
-                Import termine !
+                Import terminé !
               </p>
               <p className="text-xs text-muted-foreground mt-1">
-                {validRows.length} invitation(s) creee(s) avec succes
+                {validRows.length} invitation(s) creee(s) avec succès
               </p>
             </div>
             <button

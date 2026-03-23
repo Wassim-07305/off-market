@@ -37,7 +37,7 @@ import {
 const STEPS = [
   { key: "upload", label: "Fichier" },
   { key: "mapping", label: "Colonnes" },
-  { key: "preview", label: "Apercu" },
+  { key: "preview", label: "Aperçu" },
   { key: "import", label: "Import" },
 ] as const;
 
@@ -167,7 +167,7 @@ function UploadStep({
               {columnCount !== 1 ? "s" : ""}
             </p>
             <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1.5 font-medium">
-              Fichier charge avec succes
+              Fichier charge avec succès
             </p>
           </div>
         ) : (
@@ -490,7 +490,7 @@ function PreviewStep({
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="block text-xs font-medium text-foreground mb-1">
-              Etape par defaut
+              Étape par defaut
             </label>
             <select
               value={options.defaultStage}
@@ -597,7 +597,7 @@ function ImportStep({
       <div className="space-y-2">
         <div className="flex items-center justify-between text-sm">
           <span className="text-foreground font-medium">
-            {progress.done ? "Import termine" : "Import en cours..."}
+            {progress.done ? "Import terminé" : "Import en cours..."}
           </span>
           <span className="text-muted-foreground font-mono tabular-nums">
             {pct}%

@@ -231,7 +231,7 @@ export async function POST(request: Request) {
           client_id: c.id,
           type: "inactive_7d",
           title: "Client inactif depuis 7 jours",
-          body: `Derniere connexion : ${c.last_seen_at ? new Date(c.last_seen_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }) : "inconnue"}.`,
+          body: `Dernière connexion : ${c.last_seen_at ? new Date(c.last_seen_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }) : "inconnue"}.`,
           metadata: { last_seen_at: c.last_seen_at },
           created_at: nowISO,
         }));

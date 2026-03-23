@@ -61,7 +61,7 @@ const COACH_FEATURES: CoachFeature[] = [
     title: "Check-ins",
     description: "Suis les check-ins hebdomadaires de tes clients.",
     aiExplanation:
-      "Les check-ins te donnent un apercu de la semaine de chaque client : victoires, blocages, prochaines actions. Tu restes informe sans avoir a demander.",
+      "Les check-ins te donnent un aperçu de la semaine de chaque client : victoires, blocages, prochaines actions. Tu restes informe sans avoir a demander.",
     color: "text-rose-400",
   },
 ];

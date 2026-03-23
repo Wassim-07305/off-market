@@ -135,7 +135,7 @@ export const JOURNAL_TEMPLATES: Record<
   goals: {
     label: "Objectifs",
     icon: "🎯",
-    description: "Planifie tes prochaines etapes",
+    description: "Planifie tes prochaines étapes",
     prompts: [
       "Mon objectif principal pour demain...",
       "Les actions concretes que je vais prendre...",
@@ -258,7 +258,7 @@ export const ALERT_TYPE_CONFIG: Record<
   revenue_drop: { label: "Baisse de CA", icon: "📉" },
   inactive_7d: { label: "Inactif 7j", icon: "⏰" },
   inactive_14d: { label: "Inactif 14j", icon: "🚨" },
-  goal_at_risk: { label: "Objectif a risque", icon: "🎯" },
+  goal_at_risk: { label: "Objectif à risque", icon: "🎯" },
   low_mood: { label: "Moral bas", icon: "😔" },
   payment_overdue: { label: "Paiement en retard", icon: "💳" },
 };

@@ -133,6 +133,6 @@ export async function POST(request: Request) {
     mode: "manual",
     html: fullHtml,
     fileName: `contrat-${contact.full_name.replace(/\s+/g, "-").toLowerCase()}-${dateStr.replace(/\s+/g, "-")}.html`,
-    message: "Contrat genere — telechargez et envoyez au prospect",
+    message: "Contrat généré — telechargez et envoyez au prospect",
   });
 }

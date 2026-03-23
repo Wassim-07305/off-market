@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { useReplays, useReplayCategories } from "@/hooks/use-replays";
+import { useReplays, useReplayCatégories } from "@/hooks/use-replays";
 import { cn } from "@/lib/utils";
 import {
   Play,
@@ -105,14 +105,14 @@ export function ReplayLibrary() {
     category: selectedCategory,
     search,
   });
-  const { data: categories } = useReplayCategories();
+  const { data: catégories } = useReplayCatégories();
 
   const activeReplay = useMemo(
     () => replays?.find((r) => r.id === activeVideoId) ?? null,
     [replays, activeVideoId],
   );
 
-  const allCategories = ["all", ...(categories ?? [])];
+  const allCatégories = ["all", ...(catégories ?? [])];
 
   const CATEGORY_LABELS: Record<string, string> = {
     all: "Tous",
@@ -131,7 +131,7 @@ export function ReplayLibrary() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         {/* Category tabs */}
         <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-          {allCategories.map((cat) => (
+          {allCatégories.map((cat) => (
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}

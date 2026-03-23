@@ -127,7 +127,7 @@ export function useEnrichContact() {
       queryClient.invalidateQueries({ queryKey: ["rate-limit-status"] });
 
       const label = ENRICHMENT_LABELS[variables.type];
-      toast.success(`Enrichissement ${label} termine`);
+      toast.success(`Enrichissement ${label} terminé`);
     },
     onError: (err: Error) => {
       toast.error(`Enrichissement echoue: ${err.message}`);

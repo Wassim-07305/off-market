@@ -90,7 +90,7 @@ export function rateLimit(
   };
 }
 
-/** Rate limit presets for different API route categories */
+/** Rate limit presets for different API route catégories */
 export const RATE_LIMIT_PRESETS = {
   /** General API routes: 60 req/min */
   api: { limit: 60, windowSeconds: 60 } satisfies RateLimitConfig,

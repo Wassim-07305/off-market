@@ -127,7 +127,7 @@ export function useCreateContent() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["social-content"] });
-      toast.success("Contenu cree avec succes");
+      toast.success("Contenu créé avec succès");
     },
     onError: () => toast.error("Erreur lors de la creation du contenu"),
   });
@@ -157,9 +157,9 @@ export function useUpdateContent() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["social-content"] });
-      toast.success("Contenu mis a jour");
+      toast.success("Contenu mis à jour");
     },
-    onError: () => toast.error("Erreur lors de la mise a jour"),
+    onError: () => toast.error("Erreur lors de la mise à jour"),
   });
 }
 

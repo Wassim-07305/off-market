@@ -35,8 +35,8 @@ const activityIcons: Record<string, LucideIcon> = {
 
 const activityLabels: Record<string, string> = {
   module_started: "a commence un module",
-  module_completed: "a termine un module",
-  lesson_completed: "a termine une lecon",
+  module_completed: "a terminé un module",
+  lesson_completed: "a terminé une leçon",
   form_submitted: "a soumis un formulaire",
   message_sent: "a envoye un message",
   login: "s'est connecte",
@@ -59,7 +59,7 @@ const activityDotColors: Record<string, string> = {
 const FILTER_OPTIONS: { value: string; label: string }[] = [
   { value: "all", label: "Toutes" },
   { value: "module_started", label: "Modules" },
-  { value: "lesson_completed", label: "Lecons" },
+  { value: "lesson_completed", label: "Leçons" },
   { value: "form_submitted", label: "Formulaires" },
   { value: "message_sent", label: "Messages" },
   { value: "call_scheduled", label: "Appels" },
@@ -112,7 +112,7 @@ export function CoachActivityFeed() {
         style={{ boxShadow: "var(--shadow-card)" }}
       >
         <h3 className="text-[13px] font-semibold text-foreground mb-4">
-          Activite recente
+          Activité récente
         </h3>
         <div className="space-y-4">
           {Array.from({ length: 5 }).map((_, i) => (
@@ -137,7 +137,7 @@ export function CoachActivityFeed() {
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-[13px] font-semibold text-foreground">
-          Activite recente
+          Activité récente
         </h3>
 
         {/* Type filter */}
@@ -184,7 +184,7 @@ export function CoachActivityFeed() {
           {displayedActivities.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
               <Activity className="w-8 h-8 mb-2 opacity-20" />
-              <p className="text-sm">Aucune activite recente</p>
+              <p className="text-sm">Aucune activité recente</p>
             </div>
           ) : (
             displayedActivities.map((activity) => {

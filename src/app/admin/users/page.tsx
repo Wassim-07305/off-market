@@ -296,7 +296,7 @@ export default function UsersPage() {
                     Inscription
                   </th>
                   <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3 hidden lg:table-cell">
-                    Derniere connexion
+                    Dernière connexion
                   </th>
                   <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3">
                     Statut

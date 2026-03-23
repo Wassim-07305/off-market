@@ -207,7 +207,7 @@ export function CoachMetrics() {
         {!hasEngagementData ? (
           <div className="h-40 flex flex-col items-center justify-center text-muted-foreground">
             <BarChart3 className="w-8 h-8 mb-2 opacity-20" />
-            <p className="text-sm">Aucune activite</p>
+            <p className="text-sm">Aucune activité</p>
           </div>
         ) : (
           <div className="h-44">
@@ -246,7 +246,7 @@ export function CoachMetrics() {
                     padding: "8px 12px",
                   }}
                   formatter={(value) => [
-                    `${Number(value)} activite${Number(value) !== 1 ? "s" : ""}`,
+                    `${Number(value)} activité${Number(value) !== 1 ? "s" : ""}`,
                     "Engagement",
                   ]}
                   labelFormatter={(label) => `${label}`}

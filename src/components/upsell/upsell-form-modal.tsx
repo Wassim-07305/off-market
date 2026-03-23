@@ -89,7 +89,7 @@ export function UpsellFormModal({ open, onClose }: UpsellFormModalProps) {
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    if (!studentId) newErrors.studentId = "Selectionnez un eleve";
+    if (!studentId) newErrors.studentId = "Sélectionnez un élève";
     if (!offerName.trim()) newErrors.offerName = "Le nom de l'offre est requis";
     if (!amount || Number(amount) <= 0)
       newErrors.amount = "Le montant doit etre superieur a 0";
@@ -169,7 +169,7 @@ export function UpsellFormModal({ open, onClose }: UpsellFormModalProps) {
                 errors.studentId && "ring-2 ring-destructive/30",
               )}
             >
-              <option value="">Selectionner un eleve...</option>
+              <option value="">Sélectionner un élève...</option>
               {students.map((s) => (
                 <option key={s.id} value={s.id}>
                   {s.profile?.full_name ?? s.profile_id}
@@ -268,7 +268,7 @@ export function UpsellFormModal({ open, onClose }: UpsellFormModalProps) {
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               rows={3}
-              placeholder="Message a envoyer a l'eleve lors de la proposition..."
+              placeholder="Message a envoyer a l'élève lors de la proposition..."
               className="w-full px-4 py-3 bg-muted/50 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none transition-shadow"
             />
           </div>
@@ -280,7 +280,7 @@ export function UpsellFormModal({ open, onClose }: UpsellFormModalProps) {
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={2}
-              placeholder="Notes visibles uniquement par l'equipe..."
+              placeholder="Notes visibles uniquement par l'équipe..."
               className="w-full px-4 py-3 bg-muted/50 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none transition-shadow"
             />
           </div>

@@ -277,7 +277,7 @@ export default function SchoolPage() {
                       <div className="absolute right-2.5 top-2.5">
                         <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2.5 py-1 rounded-sm bg-success/10 text-success">
                           <CheckCircle className="w-3 h-3" />
-                          Termine
+                          Terminé
                         </span>
                       </div>
                     )}
@@ -327,7 +327,7 @@ export default function SchoolPage() {
                     {isLocked && unlock && (
                       <div className="mt-2 p-2 rounded-lg bg-amber-50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30">
                         <p className="text-[10px] text-amber-700 dark:text-amber-400 font-medium">
-                          Terminez d&apos;abord :
+                          Terminéz d&apos;abord :
                         </p>
                         <ul className="mt-1 space-y-0.5">
                           {unlock.missingPrereqs.map((pid) => (
@@ -351,7 +351,7 @@ export default function SchoolPage() {
                       </span>
                       <span className="flex items-center gap-1">
                         <BookOpen className="w-3 h-3" />
-                        {course.stats.totalLessons} lecons
+                        {course.stats.totalLessons} leçons
                       </span>
                     </div>
 
@@ -361,7 +361,7 @@ export default function SchoolPage() {
                         <div className="mb-1.5 flex items-center justify-between text-[11px]">
                           <span className="text-muted-foreground">
                             {course.stats.completedLessons}/
-                            {course.stats.totalLessons} lecons
+                            {course.stats.totalLessons} leçons
                           </span>
                           <span className="font-bold font-mono text-foreground">
                             {course.stats.percent}%

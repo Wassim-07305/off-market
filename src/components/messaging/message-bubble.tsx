@@ -255,7 +255,7 @@ export function MessageBubble({
           >
             <MessageSquare className="w-3 h-3" />
             <span className="group-hover/thread:underline">
-              {message.reply_count} reponse
+              {message.reply_count} réponse
               {message.reply_count !== 1 ? "s" : ""}
             </span>
           </button>

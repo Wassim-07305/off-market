@@ -33,12 +33,12 @@ import { formatRelativeDate } from "@/lib/utils";
 
 const WEBHOOK_EVENTS = [
   { value: "client.created", label: "Client cree" },
-  { value: "client.updated", label: "Client mis a jour" },
+  { value: "client.updated", label: "Client mis à jour" },
   { value: "lead.created", label: "Lead cree" },
-  { value: "lead.updated", label: "Lead mis a jour" },
+  { value: "lead.updated", label: "Lead mis à jour" },
   { value: "lead.status_changed", label: "Lead statut change" },
   { value: "call.scheduled", label: "Appel planifie" },
-  { value: "call.completed", label: "Appel termine" },
+  { value: "call.completed", label: "Appel terminé" },
   { value: "invoice.created", label: "Facture creee" },
   { value: "invoice.paid", label: "Facture payee" },
   { value: "form.submitted", label: "Formulaire soumis" },
@@ -300,7 +300,7 @@ export function ApiSettings() {
         </div>
 
         <p className="text-xs text-muted-foreground">
-          Recois des notifications HTTP POST en temps reel quand des evenements
+          Recois des notifications HTTP POST en temps reel quand des événements
           se produisent. Signatures HMAC-SHA256 via header{" "}
           <code className="bg-muted px-1 rounded">X-Webhook-Signature</code>.
         </p>

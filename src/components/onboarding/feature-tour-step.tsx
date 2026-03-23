@@ -35,9 +35,9 @@ const CLIENT_FEATURES: FeatureItem[] = [
     icon: LayoutDashboard,
     title: "Tableau de bord",
     description:
-      "Visualise tes KPIs, ta progression et ton activite en un coup d'oeil.",
+      "Visualise tes KPIs, ta progression et ton activité en un coup d'oeil.",
     aiExplanation:
-      "Le dashboard centralise toutes tes metriques : revenus, objectifs, streak, et activite. Tu verras tes progres chaque jour.",
+      "Le dashboard centralise toutes tes metriques : revenus, objectifs, streak, et activité. Tu verras tes progres chaque jour.",
     color: "text-blue-400",
   },
   {
@@ -88,7 +88,7 @@ const PROSPECT_FEATURES: FeatureItem[] = [
     icon: LayoutDashboard,
     title: "Tableau de bord",
     description:
-      "Decouvre ton espace personnel avec un apercu de la plateforme.",
+      "Decouvre ton espace personnel avec un aperçu de la plateforme.",
     aiExplanation:
       "Le dashboard te donne une vue d'ensemble. En devenant client, tu auras acces a toutes les metriques et KPIs.",
     color: "text-blue-400",
@@ -99,7 +99,7 @@ const PROSPECT_FEATURES: FeatureItem[] = [
     description:
       "Decouvre le catalogue de formations disponibles pour les clients.",
     aiExplanation:
-      "Tu peux voir les formations disponibles. L'acces complet aux modules et lecons est reserve aux clients actifs.",
+      "Tu peux voir les formations disponibles. L'acces complet aux modules et leçons est reserve aux clients actifs.",
     color: "text-purple-400",
     prospectLocked: true,
   },
@@ -108,7 +108,7 @@ const PROSPECT_FEATURES: FeatureItem[] = [
     title: "Feed & Communaute",
     description: "Decouvre les echanges et victoires des membres du programme.",
     aiExplanation:
-      "Le feed te permet de voir l'activite de la communaute. Tu peux consulter les posts et t'inspirer des succes des autres.",
+      "Le feed te permet de voir l'activité de la communaute. Tu peux consulter les posts et t'inspirer des succes des autres.",
     color: "text-amber-400",
   },
   {

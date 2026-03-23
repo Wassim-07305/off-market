@@ -156,7 +156,7 @@ function WeeklyContributionGrid({
         ))}
       </div>
       <p className="text-[10px] text-muted-foreground mt-2">
-        {totalCount} actions sur la periode
+        {totalCount} actions sur la période
       </p>
 
       {tooltip && (
@@ -303,7 +303,7 @@ export function AnalyticsActivityHeatmap() {
             </div>
             <div>
               <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                Pic d&apos;activite
+                Pic d&apos;activité
               </p>
               <p className="text-lg font-display font-bold text-foreground">
                 {DAY_LABELS_FULL[data.peakDay]}{" "}

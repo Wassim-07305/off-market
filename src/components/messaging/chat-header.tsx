@@ -207,11 +207,11 @@ export function ChatHeader({
             </button>
           )}
 
-          {/* Parametres / Membres */}
+          {/* Paramètres / Membres */}
           <button
             onClick={onOpenMembers}
             className="w-8 h-8 rounded-xl flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-all duration-200"
-            title="Parametres"
+            title="Paramètres"
           >
             <Settings className="w-4 h-4" />
           </button>
@@ -230,7 +230,7 @@ export function ChatHeader({
           />
           {searchQuery && searchResultCount !== undefined && (
             <span className="text-xs text-muted-foreground shrink-0 font-medium">
-              {searchResultCount} resultat{searchResultCount !== 1 ? "s" : ""}
+              {searchResultCount} résultat{searchResultCount !== 1 ? "s" : ""}
             </span>
           )}
           <button

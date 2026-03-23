@@ -192,10 +192,10 @@ export function AnalyticsPeriodComparison() {
           <GitCompare className="w-4 h-4 text-muted-foreground" />
           <div>
             <h3 className="text-[13px] font-semibold text-foreground">
-              Comparaison de periodes
+              Comparaison de périodes
             </h3>
             <p className="text-[11px] text-muted-foreground mt-0.5">
-              Comparez les metriques entre deux periodes
+              Comparez les metriques entre deux périodes
             </p>
           </div>
         </div>
@@ -226,7 +226,7 @@ export function AnalyticsPeriodComparison() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
           <div className="space-y-1.5">
             <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
-              Periode precedente
+              Période precedente
             </p>
             <div className="flex items-center gap-2">
               <input
@@ -246,7 +246,7 @@ export function AnalyticsPeriodComparison() {
           </div>
           <div className="space-y-1.5">
             <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
-              Periode actuelle
+              Période actuelle
             </p>
             <div className="flex items-center gap-2">
               <input
@@ -285,7 +285,7 @@ export function AnalyticsPeriodComparison() {
         </div>
       ) : (
         <p className="text-sm text-muted-foreground text-center py-8">
-          Selectionnez deux periodes pour comparer
+          Sélectionnez deux périodes pour comparer
         </p>
       )}
     </div>

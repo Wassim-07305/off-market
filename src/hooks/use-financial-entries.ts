@@ -136,7 +136,7 @@ export function useCreateEntry() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["financial-entries"] });
       queryClient.invalidateQueries({ queryKey: ["financial-kpis"] });
-      toast.success("Entree ajoutee avec succes");
+      toast.success("Entree ajoutee avec succès");
     },
     onError: () => {
       toast.error("Erreur lors de l'ajout de l'entree");
@@ -163,10 +163,10 @@ export function useUpdateEntry() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["financial-entries"] });
       queryClient.invalidateQueries({ queryKey: ["financial-kpis"] });
-      toast.success("Entree mise a jour");
+      toast.success("Entree mise à jour");
     },
     onError: () => {
-      toast.error("Erreur lors de la mise a jour");
+      toast.error("Erreur lors de la mise à jour");
     },
   });
 }
@@ -213,7 +213,7 @@ export function useTogglePaid() {
       queryClient.invalidateQueries({ queryKey: ["financial-kpis"] });
     },
     onError: () => {
-      toast.error("Erreur lors de la mise a jour du statut");
+      toast.error("Erreur lors de la mise à jour du statut");
     },
   });
 }

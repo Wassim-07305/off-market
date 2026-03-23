@@ -152,7 +152,7 @@ export function CoachStudentsOverview() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
           <input
             type="text"
-            placeholder="Rechercher un eleve..."
+            placeholder="Rechercher un élève..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-9 pr-3 py-2 text-[13px] bg-muted/50 border border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
@@ -214,7 +214,7 @@ export function CoachStudentsOverview() {
         {filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
             <Users className="w-8 h-8 mb-2 opacity-20" />
-            <p className="text-sm">Aucun eleve trouve</p>
+            <p className="text-sm">Aucun élève trouve</p>
           </div>
         ) : (
           filtered.map((student) => {

@@ -130,7 +130,7 @@ export function CallControls({
           active={!!showPreCallResponses}
           activeIcon={ClipboardList}
           inactiveIcon={ClipboardList}
-          label="Reponses pre-appel"
+          label="Réponses pre-appel"
           highlightWhenActive
         />
       )}

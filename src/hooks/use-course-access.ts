@@ -128,7 +128,7 @@ export function useCourseAccess(courseId: string | null): CourseAccessResult {
         ? failedPrereqs
             .map(
               (p) =>
-                `Vous devez terminer le cours ${p.course} (${p.required}% requis, ${p.current}% actuel)`,
+                `Vous devez terminér le cours ${p.course} (${p.required}% requis, ${p.current}% actuel)`,
             )
             .join(". ")
         : undefined;

@@ -42,7 +42,7 @@ import { CreateCompetitionModal } from "@/components/gamification/create-competi
 import { useLeaderboardPrivacy } from "@/hooks/use-leaderboard-privacy";
 import type { Competition } from "@/types/gamification";
 
-type MainTab = "classement" | "competitions" | "equipes";
+type MainTab = "classement" | "competitions" | "équipes";
 
 const PODIUM_CONFIG = [
   {
@@ -77,7 +77,7 @@ const PERIOD_TABS: { value: LeaderboardPeriod; label: string }[] = [
 const MAIN_TABS: { value: MainTab; label: string; icon: typeof Trophy }[] = [
   { value: "classement", label: "Classement", icon: Crown },
   { value: "competitions", label: "Competitions", icon: Trophy },
-  { value: "equipes", label: "Equipes", icon: Users },
+  { value: "équipes", label: "Équipes", icon: Users },
 ];
 
 function RankChangeIndicator({ change }: { change: number | undefined }) {
@@ -552,7 +552,7 @@ function CompetitionsTab() {
             Aucune competition
           </p>
           <p className="text-sm text-muted-foreground">
-            Les competitions entre equipes apparaitront ici. Restez a l'affut !
+            Les competitions entre équipes apparaitront ici. Restez a l'affut !
           </p>
         </motion.div>
       ) : (
@@ -603,7 +603,7 @@ function CompetitionsTab() {
           {completedComps.length > 0 && (
             <div className="space-y-3">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-                Terminees
+                Terminées
               </h3>
               <div className="grid gap-4 sm:grid-cols-2">
                 {completedComps.map((comp: Competition) => (
@@ -645,7 +645,7 @@ function TeamsTab() {
             <span className="text-2xl">{myTeam.avatar_emoji ?? "🔥"}</span>
             <div>
               <p className="text-sm font-semibold text-foreground">
-                Ton equipe
+                Ton équipe
               </p>
               <p className="text-base font-bold text-foreground">
                 {myTeam.name}
@@ -672,10 +672,10 @@ function TeamsTab() {
         >
           <Users className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
           <p className="text-base font-medium text-foreground mb-1">
-            Aucune equipe
+            Aucune équipe
           </p>
           <p className="text-sm text-muted-foreground">
-            Les equipes seront creees par les administrateurs pour les
+            Les équipes seront creees par les administrateurs pour les
             competitions.
           </p>
         </motion.div>
@@ -710,8 +710,8 @@ export default function ClientLeaderboardPage() {
           {mainTab === "classement"
             ? "Ton rang parmi les autres freelances"
             : mainTab === "competitions"
-              ? "Competitions en cours et a venir"
-              : "Decouvre et rejoins les equipes"}
+              ? "Competitions en cours et à venir"
+              : "Decouvre et rejoins les équipes"}
         </p>
       </motion.div>
 
@@ -744,7 +744,7 @@ export default function ClientLeaderboardPage() {
       {/* Tab content */}
       {mainTab === "classement" && <IndividualLeaderboard />}
       {mainTab === "competitions" && <CompetitionsTab />}
-      {mainTab === "equipes" && <TeamsTab />}
+      {mainTab === "équipes" && <TeamsTab />}
     </motion.div>
   );
 }

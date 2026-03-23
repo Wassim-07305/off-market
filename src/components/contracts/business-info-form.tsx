@@ -148,7 +148,7 @@ export function BusinessInfoForm({
               {...form.register("legal_form")}
               className="w-full mt-1 rounded-xl border border-border px-3 py-2 text-sm bg-surface"
             >
-              <option value="">Selectionnez...</option>
+              <option value="">Sélectionnez...</option>
               {LEGAL_FORMS.map((f) => (
                 <option key={f} value={f}>
                   {f}

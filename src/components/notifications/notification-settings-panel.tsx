@@ -27,11 +27,11 @@ const BATCH_OPTIONS: { value: BatchFrequency; label: string; desc: string }[] =
     {
       value: "hourly",
       label: "Toutes les heures",
-      desc: "Les notifications sont regroupees en un resume horaire",
+      desc: "Les notifications sont regroupees en un résumé horaire",
     },
     {
       value: "daily",
-      label: "Resume quotidien",
+      label: "Résumé quotidien",
       desc: "Un seul resume par jour avec toutes les notifications",
     },
   ];
@@ -114,7 +114,7 @@ export function NotificationSettingsPanel({
               Heures silencieuses
             </h3>
             <p className="text-xs text-muted-foreground">
-              Aucune notification pendant cette periode
+              Aucune notification pendant cette période
             </p>
           </div>
         </div>
@@ -167,7 +167,7 @@ export function NotificationSettingsPanel({
           </div>
           <div>
             <h3 className="text-sm font-semibold text-foreground">
-              Frequence de notification
+              Fréquence de notification
             </h3>
             <p className="text-xs text-muted-foreground">
               Comment regrouper vos notifications
@@ -283,10 +283,10 @@ export function NotificationSettingsPanel({
             </div>
             <div>
               <p className="text-sm font-medium text-foreground">
-                Resume par email
+                Résumé par email
               </p>
               <p className="text-xs text-muted-foreground">
-                Recevoir un email avec le resume de vos notifications
+                Recevoir un email avec le résumé de vos notifications
               </p>
             </div>
           </div>

@@ -76,7 +76,7 @@ export function MessageTestStep({ onNext }: MessageTestStepProps) {
 
       if (error) throw error;
 
-      toast.success("Message envoye avec succes !");
+      toast.success("Message envoyé avec succès !");
       setSent(true);
     } catch {
       toast.error("Erreur lors de l'envoi. Tu peux reessayer ou passer.");

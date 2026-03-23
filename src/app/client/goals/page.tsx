@@ -148,7 +148,7 @@ export default function GoalsPage() {
             {completed.length}
           </p>
           <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
-            Termines
+            Terminés
           </p>
         </div>
         <div
@@ -801,7 +801,7 @@ function GoalCard({
                   className="h-8 px-3 rounded-xl text-xs font-medium text-emerald-600 hover:bg-emerald-500/10 transition-colors flex items-center gap-1.5"
                 >
                   <CheckCircle className="w-3.5 h-3.5" />
-                  Terminer
+                  Terminér
                 </button>
                 <button
                   onClick={(e) => {

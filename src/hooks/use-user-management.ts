@@ -65,7 +65,7 @@ export function useUserManagement() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["all-users"] });
       queryClient.invalidateQueries({ queryKey: ["students"] });
-      toast.success("Role mis a jour");
+      toast.success("Role mis à jour");
     },
     onError: (error: Error) => {
       toast.error(error.message || "Erreur lors du changement de role");
@@ -179,7 +179,7 @@ export function useUserManagement() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["all-users"] });
       queryClient.invalidateQueries({ queryKey: ["students"] });
-      toast.success("Offboarding effectue avec succes");
+      toast.success("Offboarding effectue avec succès");
     },
     onError: (error: Error) => {
       toast.error(error.message || "Erreur lors de l'offboarding");

@@ -254,7 +254,7 @@ export function NotificationPanel() {
               </p>
               <p className="text-xs text-muted-foreground mt-1 text-center">
                 Tu recevras des notifications pour les messages, cours et
-                evenements importants.
+                événements importants.
               </p>
             </div>
           ) : (

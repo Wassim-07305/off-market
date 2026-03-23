@@ -48,7 +48,7 @@ export function useRedeemReward() {
       return data as string;
     },
     onSuccess: () => {
-      toast.success("Recompense echangee avec succes !");
+      toast.success("Récompense echangee avec succès !");
       queryClient.invalidateQueries({ queryKey: ["rewards"] });
       queryClient.invalidateQueries({ queryKey: ["my-redemptions"] });
       queryClient.invalidateQueries({ queryKey: ["xp"] });
@@ -57,9 +57,9 @@ export function useRedeemReward() {
     onError: (error: Error) => {
       const msg = error.message;
       if (msg.includes("XP insuffisant")) {
-        toast.error("XP insuffisant pour cette recompense");
+        toast.error("XP insuffisant pour cette récompense");
       } else if (msg.includes("Rupture de stock")) {
-        toast.error("Cette recompense est en rupture de stock");
+        toast.error("Cette récompense est en rupture de stock");
       } else {
         toast.error("Erreur lors de l'echange");
       }
@@ -169,7 +169,7 @@ export function useManageRewards() {
       return data as Reward;
     },
     onSuccess: () => {
-      toast.success("Recompense creee");
+      toast.success("Récompense creee");
       queryClient.invalidateQueries({ queryKey: ["admin-rewards"] });
       queryClient.invalidateQueries({ queryKey: ["rewards"] });
     },
@@ -188,11 +188,11 @@ export function useManageRewards() {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Recompense mise a jour");
+      toast.success("Récompense mise à jour");
       queryClient.invalidateQueries({ queryKey: ["admin-rewards"] });
       queryClient.invalidateQueries({ queryKey: ["rewards"] });
     },
-    onError: () => toast.error("Erreur lors de la mise a jour"),
+    onError: () => toast.error("Erreur lors de la mise à jour"),
   });
 
   const toggleActive = useMutation({
@@ -213,7 +213,7 @@ export function useManageRewards() {
       queryClient.invalidateQueries({ queryKey: ["admin-rewards"] });
       queryClient.invalidateQueries({ queryKey: ["rewards"] });
     },
-    onError: () => toast.error("Erreur lors de la mise a jour"),
+    onError: () => toast.error("Erreur lors de la mise à jour"),
   });
 
   return {
@@ -260,11 +260,11 @@ export function usePendingRedemptions() {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Recompense marquee comme remplie");
+      toast.success("Récompense marquee comme remplie");
       queryClient.invalidateQueries({ queryKey: ["pending-redemptions"] });
       queryClient.invalidateQueries({ queryKey: ["my-redemptions"] });
     },
-    onError: () => toast.error("Erreur lors de la mise a jour"),
+    onError: () => toast.error("Erreur lors de la mise à jour"),
   });
 
   const cancelRedemption = useMutation({

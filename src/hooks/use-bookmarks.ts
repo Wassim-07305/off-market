@@ -81,7 +81,7 @@ export function useBookmarks() {
       }
     },
     onError: () => {
-      toast.error("Erreur lors de la mise a jour du favori");
+      toast.error("Erreur lors de la mise à jour du favori");
     },
   });
 

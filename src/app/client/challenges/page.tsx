@@ -158,7 +158,7 @@ export default function ClientChallengesPage() {
             <motion.div variants={fadeInUp} transition={defaultTransition}>
               <h2 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
                 <CheckCircle className="w-4 h-4 text-emerald-500" />
-                Termines ({completedChallenges.length})
+                Terminés ({completedChallenges.length})
               </h2>
               <div className="space-y-2">
                 {completedChallenges.map((participation) => {

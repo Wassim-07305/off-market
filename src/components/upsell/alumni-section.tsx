@@ -129,7 +129,7 @@ export function AlumniSection() {
           <EmptyState
             icon={<GraduationCap className="w-6 h-6" />}
             title="Aucun alumni"
-            description="Les eleves qui terminent le programme apparaitront ici."
+            description="Les eleves qui terminént le programme apparaitront ici."
           />
         ) : (
           <div className="space-y-2">

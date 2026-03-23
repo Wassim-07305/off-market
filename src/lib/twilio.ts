@@ -26,7 +26,7 @@ export async function sendSms(
   }
 
   try {
-    // Normalise le numero (ajoute + si absent)
+    // Normalise le numéro (ajoute + si absent)
     const normalizedTo = to.startsWith("+") ? to : `+${to}`;
 
     const message = await client.messages.create({

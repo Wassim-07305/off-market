@@ -52,7 +52,7 @@ export function EventDetailModal({
   const canDelete = isCustomEvent && (isAdmin || isCoach);
 
   const handleDelete = async () => {
-    if (!window.confirm("Supprimer cet evenement ?")) return;
+    if (!window.confirm("Supprimer cet événement ?")) return;
     const eventId =
       (event.metadata?.event_id as string) ?? event.id.replace("event-", "");
     await deleteEvent.mutateAsync(eventId);

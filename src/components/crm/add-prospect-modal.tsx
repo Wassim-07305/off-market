@@ -90,7 +90,7 @@ export function AddProspectModal({ open, onClose }: AddProspectModalProps) {
               <p className="text-sm">
                 {prospects?.length === 0
                   ? "Aucun prospect disponible"
-                  : "Aucun resultat"}
+                  : "Aucun résultat"}
               </p>
               <p className="text-xs mt-1 text-muted-foreground/60">
                 {prospects?.length === 0

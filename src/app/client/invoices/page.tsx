@@ -51,7 +51,7 @@ export default function ClientInvoicesPage() {
     const invoiceNumber = searchParams.get("invoice");
     if (payment === "success") {
       toast.success(
-        `Paiement de la facture ${invoiceNumber ?? ""} effectue avec succes !`,
+        `Paiement de la facture ${invoiceNumber ?? ""} effectue avec succès !`,
       );
       window.history.replaceState({}, "", "/client/invoices");
     } else if (payment === "cancelled") {

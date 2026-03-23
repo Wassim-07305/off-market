@@ -336,7 +336,7 @@ export function useReassignClient() {
         .eq("profile_id", clientId);
     },
     onSuccess: () => {
-      toast.success("Client reassigne avec succes");
+      toast.success("Client reassigne avec succès");
       queryClient.invalidateQueries({ queryKey: ["csm-coaches-stats"] });
       queryClient.invalidateQueries({ queryKey: ["coach-assignments"] });
       queryClient.invalidateQueries({ queryKey: ["unassigned-clients"] });
@@ -398,7 +398,7 @@ export function useBulkAssign() {
     },
     onSuccess: (_data, variables) => {
       toast.success(
-        `${variables.clientIds.length} client${variables.clientIds.length > 1 ? "s" : ""} assigne${variables.clientIds.length > 1 ? "s" : ""} avec succes`,
+        `${variables.clientIds.length} client${variables.clientIds.length > 1 ? "s" : ""} assigne${variables.clientIds.length > 1 ? "s" : ""} avec succès`,
       );
       queryClient.invalidateQueries({ queryKey: ["csm-coaches-stats"] });
       queryClient.invalidateQueries({ queryKey: ["coach-assignments"] });
@@ -434,7 +434,7 @@ export function useUpdateCoachSpecialties() {
       queryClient.invalidateQueries({ queryKey: ["csm-coaches-stats"] });
     },
     onError: () => {
-      toast.error("Erreur lors de la mise a jour des specialites");
+      toast.error("Erreur lors de la mise à jour des specialites");
     },
   });
 }

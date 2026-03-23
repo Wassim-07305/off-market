@@ -26,7 +26,7 @@ export async function DELETE(
     .single();
 
   if (!doc || doc.coach_id !== user.id) {
-    return NextResponse.json({ error: "Document non trouve" }, { status: 404 });
+    return NextResponse.json({ error: "Document non trouvé" }, { status: 404 });
   }
 
   // Cascade deletes chunks automatically

@@ -170,7 +170,7 @@ export function AdminRewards() {
                       {profile?.full_name ?? "Utilisateur"}
                     </p>
                     <p className="text-xs text-muted-foreground truncate">
-                      {reward?.title ?? "Recompense"} •{" "}
+                      {reward?.title ?? "Récompense"} •{" "}
                       <span className="font-medium text-[#AF0000]">
                         {redemption.xp_spent} XP
                       </span>
@@ -220,7 +220,7 @@ export function AdminRewards() {
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
             <Coins className="w-4 h-4 text-[#AF0000]" />
-            Catalogue des recompenses ({rewards.length})
+            Catalogue des récompenses ({rewards.length})
           </h2>
           <button
             onClick={openCreate}
@@ -244,7 +244,7 @@ export function AdminRewards() {
           <div className="bg-gradient-to-br from-muted/30 to-muted/10 border border-dashed border-border rounded-2xl p-8 text-center">
             <Coins className="w-8 h-8 text-muted-foreground/40 mx-auto mb-2" />
             <p className="text-sm text-muted-foreground">
-              Aucune recompense creee
+              Aucune récompense creee
             </p>
           </div>
         ) : (
@@ -366,7 +366,7 @@ export function AdminRewards() {
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-medium text-foreground truncate">
                       {profile?.full_name ?? "Utilisateur"} —{" "}
-                      {reward?.title ?? "Recompense"}
+                      {reward?.title ?? "Récompense"}
                     </p>
                     <p className="text-[10px] text-muted-foreground">
                       {new Date(redemption.redeemed_at).toLocaleDateString(
@@ -407,7 +407,7 @@ export function AdminRewards() {
           >
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold text-foreground">
-                {editingId ? "Modifier la recompense" : "Nouvelle recompense"}
+                {editingId ? "Modifier la récompense" : "Nouvelle récompense"}
               </h3>
               <button
                 onClick={() => setShowForm(false)}
@@ -442,7 +442,7 @@ export function AdminRewards() {
                     setForm((f) => ({ ...f, description: e.target.value }))
                   }
                   rows={2}
-                  placeholder="Description de la recompense..."
+                  placeholder="Description de la récompense..."
                   className="w-full px-4 py-2.5 bg-muted border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20 resize-none"
                 />
               </div>

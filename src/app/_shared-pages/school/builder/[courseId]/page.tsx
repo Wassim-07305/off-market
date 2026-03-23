@@ -32,7 +32,7 @@ export default function EditCoursePage({
   if (!course) {
     return (
       <p className="text-center text-muted-foreground py-16">
-        Cours non trouve
+        Cours non trouvé
       </p>
     );
   }
