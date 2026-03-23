@@ -85,16 +85,17 @@ export function usePushNotifications() {
 
       const sub = subscription.toJSON();
 
-      // Store subscription in database
+      // Store subscription in database (keys is a jsonb column)
       const { error } = await supabase
         .from("push_subscriptions" as never)
         .upsert(
           {
             user_id: user.id,
             endpoint: sub.endpoint,
-            p256dh: sub.keys?.p256dh ?? "",
-            auth: sub.keys?.auth ?? "",
-            user_agent: navigator.userAgent,
+            keys: {
+              p256dh: sub.keys?.p256dh ?? "",
+              auth: sub.keys?.auth ?? "",
+            },
           } as never,
           { onConflict: "user_id,endpoint" as never },
         );

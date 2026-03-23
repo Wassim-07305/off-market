@@ -81,6 +81,7 @@ function WindowErrorListeners() {
     const isNoise = (msg: string, filename?: string): boolean => {
       // Browser extensions injecting code
       if (msg.includes("Invalid or unexpected token")) return true;
+      if (msg.includes("Unexpected EOF")) return true;
       if (msg.includes("appendChild")) return true;
       // Chrome extensions / third-party scripts
       if (filename?.includes("chrome-extension://")) return true;

@@ -1,0 +1,3 @@
+-- The push_subscriptions table uses a 'keys' jsonb column (not separate p256dh/auth columns)
+-- This migration documents the actual schema in production.
+-- No changes needed - the table already has: id, user_id, endpoint, keys (jsonb), created_at

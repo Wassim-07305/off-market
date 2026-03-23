@@ -101,12 +101,18 @@ export async function POST(request: Request) {
 
   for (const sub of subscriptions) {
     try {
+      // keys is stored as jsonb: { p256dh, auth }
+      const keys = sub.keys as { p256dh?: string; auth?: string } | null;
+      if (!keys?.p256dh || !keys?.auth) {
+        console.warn("[push] Missing keys for subscription:", sub.id);
+        continue;
+      }
       await webpush.sendNotification(
         {
           endpoint: sub.endpoint,
           keys: {
-            p256dh: sub.p256dh,
-            auth: sub.auth,
+            p256dh: keys.p256dh,
+            auth: keys.auth,
           },
         },
         payload,
