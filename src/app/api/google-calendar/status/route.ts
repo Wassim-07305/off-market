@@ -13,13 +13,12 @@ export async function GET() {
 
   const { data } = await supabase
     .from("google_calendar_tokens")
-    .select("google_email, is_active")
+    .select("access_token")
     .eq("user_id", user.id)
-    .eq("is_active", true)
     .single();
 
   return NextResponse.json({
     connected: !!data,
-    google_email: data?.google_email ?? null,
+    google_email: null,
   });
 }
