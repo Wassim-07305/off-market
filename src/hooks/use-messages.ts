@@ -195,7 +195,7 @@ export function useMessages(channelId: string | null) {
             .select("profile_id" as never)
             .eq("channel_id" as never, channelId as never)
             .neq("profile_id" as never, user.id as never);
-          const recipientIds = (members ?? []).map((m: { profile_id: string }) => m.profile_id);
+          const recipientIds = ((members ?? []) as unknown as { profile_id: string }[]).map((m) => m.profile_id);
           if (recipientIds.length > 0) {
             const senderName = user.user_metadata?.full_name ?? "Quelqu'un";
             const preview = variables.content.length > 80

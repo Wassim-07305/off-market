@@ -624,7 +624,7 @@ export default function CourseViewPage({
               {/* Quiz/Exercise stats (staff only) */}
               {isStaff && selectedLesson.content_type === "quiz" && (
                 <div className="mt-4">
-                  <QuizExerciseStats lessonId={selectedLesson.id} />
+                  <QuizExerciseStats lessonId={selectedLesson.id} contentType={selectedLesson.content_type} />
                 </div>
               )}
 

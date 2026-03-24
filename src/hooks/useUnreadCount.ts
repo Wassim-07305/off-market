@@ -1,14 +1,13 @@
-import { useChannels } from "@/hooks/useChannels";
+import { useChannels } from "@/hooks/use-channels";
 
 /**
  * Hook pour obtenir le nombre total de messages non lus
  */
 export function useUnreadCount() {
-  const { data: channels } = useChannels();
+  const { channels } = useChannels();
 
   const totalUnread =
-    channels?.reduce((sum, channel) => sum + (channel.unread_count ?? 0), 0) ??
-    0;
+    channels.reduce((sum: number, channel) => sum + (channel.unreadCount ?? 0), 0);
 
   return totalUnread;
 }
