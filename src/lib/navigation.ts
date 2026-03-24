@@ -93,7 +93,6 @@ export const adminNavigation: NavItem[] = [
     icon: CalendarCheck,
   },
   { name: "Appels Closing", href: "/admin/closer-calls", icon: PhoneCall },
-  { name: "Facturation", href: "/admin/billing", icon: CreditCard },
 
   // ── Administration ──
   {
@@ -146,11 +145,24 @@ export const coachNavigation: NavItem[] = [
 
 /** Sales (Setter + Closer) */
 export const salesNavigation: NavItem[] = [
-  { name: "Dashboard", href: "/sales/dashboard", icon: LayoutDashboard },
+  // ── Ventes ──
+  {
+    name: "Dashboard",
+    href: "/sales/dashboard",
+    icon: LayoutDashboard,
+    section: "Ventes",
+  },
   { name: "Pipeline", href: "/sales/pipeline", icon: Kanban },
   { name: "Commissions", href: "/sales/commissions", icon: Receipt },
-  { name: "Messagerie", href: "/sales/messaging", icon: MessageSquare },
   { name: "Appels", href: "/sales/calls", icon: Phone },
+
+  // ── Communication ──
+  {
+    name: "Messagerie",
+    href: "/sales/messaging",
+    icon: MessageSquare,
+    section: "Communication",
+  },
   { name: "Ressources", href: "/sales/resources", icon: FolderOpen },
 ];
 

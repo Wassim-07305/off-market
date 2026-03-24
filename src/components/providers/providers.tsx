@@ -10,6 +10,7 @@ import { useState } from "react";
 import { AuthProvider } from "@/hooks/use-auth";
 import { WalkthroughProvider } from "@/components/onboarding/walkthrough-provider";
 import { BrandingProvider } from "@/components/providers/branding-provider";
+import { logError } from "@/lib/error-logger";
 import { IncomingCallToast } from "@/components/calls/video-room/incoming-call-toast";
 import { RgpdConsentBanner } from "@/components/shared/rgpd-consent-banner";
 import { GamificationProvider } from "@/components/providers/gamification-provider";
@@ -40,6 +41,18 @@ export function Providers({
             refetchOnReconnect: false,
             retry: 1, // Retry once on failure (covers aborted requests)
             placeholderData: keepPreviousData, // Show cached data immediately — no skeleton flash on return navigation
+          },
+          mutations: {
+            onError: (error: Error) => {
+              logError({
+                message: error.message || "Mutation error",
+                stack: error.stack,
+                source: "manual",
+                severity: "error",
+                page: typeof window !== "undefined" ? window.location.pathname : undefined,
+                metadata: { source: "react-query-mutation" },
+              });
+            },
           },
         },
       }),

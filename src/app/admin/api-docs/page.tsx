@@ -279,9 +279,9 @@ export default function ApiDocsPage() {
           </p>
           <CodeBlock>{`curl -H "Authorization: Bearer om_live_votre_cle_api" \\
   ${BASE_URL}/api/v1/clients`}</CodeBlock>
-          <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 text-amber-200 text-xs">
+          <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 text-amber-100 text-xs">
             <p className="font-semibold mb-1">Scopes disponibles</p>
-            <ul className="list-disc list-inside space-y-1 text-amber-200/80">
+            <ul className="list-disc list-inside space-y-1 text-amber-100/90">
               <li><code className="font-mono">read</code> — Lecture des donnees (GET)</li>
               <li><code className="font-mono">write</code> — Creation et modification (POST, PUT, PATCH)</li>
               <li><code className="font-mono">admin</code> — Acces complet (inclut read + write)</li>

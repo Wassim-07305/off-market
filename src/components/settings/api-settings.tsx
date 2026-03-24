@@ -147,7 +147,7 @@ export function ApiSettings() {
           <div className="border border-border rounded-xl p-4 space-y-3">
             {generatedKey ? (
               <div className="space-y-2">
-                <p className="text-xs font-medium text-warning flex items-center gap-1.5">
+                <p className="text-xs font-medium text-amber-400 flex items-center gap-1.5">
                   <AlertCircle className="w-3.5 h-3.5" />
                   Copie cette cle maintenant — elle ne sera plus affichee
                 </p>
@@ -310,7 +310,7 @@ export function ApiSettings() {
           <div className="border border-border rounded-xl p-4 space-y-3">
             {generatedSecret ? (
               <div className="space-y-2">
-                <p className="text-xs font-medium text-warning flex items-center gap-1.5">
+                <p className="text-xs font-medium text-amber-400 flex items-center gap-1.5">
                   <AlertCircle className="w-3.5 h-3.5" />
                   Secret de signature — a conserver pour verifier les webhooks
                 </p>

@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { toast } from "sonner";
 
+
 export interface BrandingSettings {
   id: string;
   app_name: string;
