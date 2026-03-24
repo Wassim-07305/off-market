@@ -1,3 +1,4 @@
+import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export interface ServerErrorLogEntry {
@@ -7,6 +8,38 @@ export interface ServerErrorLogEntry {
   source: "api-error" | "manual";
   severity: "warning" | "error" | "critical";
   metadata?: Record<string, unknown>;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type RouteHandler = (...args: any[]) => Promise<Response>;
+
+/**
+ * Wraps an API route handler to automatically log uncaught errors.
+ * Usage: export const GET = withErrorLogging("/api/foo", handler);
+ */
+export function withErrorLogging<T extends RouteHandler>(route: string, handler: T): T {
+  return (async (...args: Parameters<T>) => {
+    try {
+      return await handler(...args);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      const stack = err instanceof Error ? err.stack : undefined;
+      const request = args[0] as Request;
+      console.error(`[${route}] Unhandled error:`, message);
+      await logServerError({
+        message: `[${route}] ${message}`.slice(0, 2000),
+        stack,
+        route,
+        source: "api-error",
+        severity: "critical",
+        metadata: { method: request?.method, url: request?.url },
+      });
+      return NextResponse.json(
+        { error: "Erreur interne du serveur" },
+        { status: 500 },
+      );
+    }
+  }) as T;
 }
 
 // Dedup: avoid logging the same error multiple times in quick succession

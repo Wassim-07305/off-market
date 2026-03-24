@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { withErrorLogging } from "@/lib/error-logger-server";
 
 /**
  * Cron endpoint pour la generation automatique de factures.
@@ -9,7 +10,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
  * Vercel Cron : GET /api/cron/generate-invoices
  * Header: Authorization: Bearer <CRON_SECRET>
  */
-export async function GET(request: NextRequest) {
+async function handler(request: NextRequest) {
   try {
     // ── Auth ──────────────────────────────────────
     const authHeader = request.headers.get("authorization");
@@ -232,3 +233,5 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+
+export const GET = withErrorLogging("/api/cron/generate-invoices", handler);

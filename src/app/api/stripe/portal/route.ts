@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { stripe } from "@/lib/stripe";
+import { withErrorLogging } from "@/lib/error-logger-server";
 
-export async function POST() {
+async function handler() {
   try {
     if (!stripe) {
       return NextResponse.json(
@@ -60,3 +61,5 @@ export async function POST() {
     );
   }
 }
+
+export const POST = withErrorLogging("/api/stripe/portal", handler);

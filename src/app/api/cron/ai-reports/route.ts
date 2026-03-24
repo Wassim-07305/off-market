@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { withErrorLogging } from "@/lib/error-logger-server";
 
 const AI_REPORT_URL =
   process.env.NEXT_PUBLIC_APP_URL ?? "https://off-market-amber.vercel.app";
@@ -8,7 +9,7 @@ const AI_REPORT_URL =
  * Vercel Cron envoie un GET avec le header Authorization: Bearer <CRON_SECRET>.
  * Ce handler delegue au POST /api/ai/periodic-report qui contient toute la logique.
  */
-export async function GET(request: NextRequest) {
+async function handler(request: NextRequest) {
   try {
     const authHeader = request.headers.get("authorization");
     const cronSecret = process.env.CRON_SECRET;
@@ -74,3 +75,5 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+
+export const GET = withErrorLogging("/api/cron/ai-reports", handler);

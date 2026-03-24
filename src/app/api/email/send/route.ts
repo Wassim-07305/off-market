@@ -2,8 +2,9 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { sendEmail } from "@/lib/email";
 import { resolveTemplate, type TemplateName } from "@/lib/email-templates";
+import { withErrorLogging } from "@/lib/error-logger-server";
 
-export async function POST(request: Request) {
+async function handler(request: Request) {
   try {
     // ─── Auth check ──────────────────────────────────────────────
     const supabase = await createClient();
@@ -65,3 +66,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
+
+export const POST = withErrorLogging("/api/email/send", handler);

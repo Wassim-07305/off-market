@@ -1,9 +1,10 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { stripe } from "@/lib/stripe";
+import { withErrorLogging } from "@/lib/error-logger-server";
 import type { Invoice, InvoiceLineItem } from "@/types/billing";
 
-export async function POST(request: NextRequest) {
+async function handler(request: NextRequest) {
   try {
     if (!stripe) {
       return NextResponse.json(
@@ -111,3 +112,5 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+export const POST = withErrorLogging("/api/stripe/checkout", handler);

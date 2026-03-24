@@ -2,9 +2,10 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { notifyNewClient } from "@/lib/slack";
+import { withErrorLogging } from "@/lib/error-logger-server";
 import { headers } from "next/headers";
 
-export async function POST(request: Request) {
+async function handler(request: Request) {
   try {
     // ─── CSRF / Origin check ─────────────────────────────────
     const headersList = await headers();
@@ -192,3 +193,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
+
+export const POST = withErrorLogging("/api/invitations/accept", handler);

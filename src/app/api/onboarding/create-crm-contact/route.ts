@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { withErrorLogging } from "@/lib/error-logger-server";
 
-export async function POST() {
+async function handler() {
   const supabase = await createClient();
   const {
     data: { user },
@@ -78,3 +79,5 @@ export async function POST() {
     return NextResponse.json({ error: "Internal error" }, { status: 500 });
   }
 }
+
+export const POST = withErrorLogging("/api/onboarding/create-crm-contact", handler);

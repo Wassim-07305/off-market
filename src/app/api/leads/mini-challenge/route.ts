@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendEmail } from "@/lib/email";
+import { withErrorLogging } from "@/lib/error-logger-server";
 
 const schema = z.object({
   full_name: z.string().min(2).max(200),
@@ -36,7 +37,7 @@ function buildMagicLinkEmail(name: string, link: string): string {
 </html>`;
 }
 
-export async function POST(request: Request) {
+async function postHandler(request: Request) {
   try {
     const body = await request.json();
     const parsed = schema.safeParse(body);
@@ -171,3 +172,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
   }
 }
+
+export const POST = withErrorLogging("/api/leads/mini-challenge", postHandler);

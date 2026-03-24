@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { withErrorLogging } from "@/lib/error-logger-server";
 
 const captureSchema = z.object({
   full_name: z.string().min(2, "Le nom est requis").max(200, "Nom trop long"),
@@ -53,7 +54,7 @@ function calculateQualificationScore(
   return Math.min(score, 100);
 }
 
-export async function POST(request: Request) {
+async function postHandler(request: Request) {
   try {
     const body = await request.json();
     const parsed = captureSchema.safeParse(body);
@@ -134,3 +135,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
   }
 }
+
+export const POST = withErrorLogging("/api/leads/capture", postHandler);

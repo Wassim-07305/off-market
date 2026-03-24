@@ -2,6 +2,8 @@
 
 import {
   keepPreviousData,
+  QueryCache,
+  MutationCache,
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query";
@@ -33,6 +35,40 @@ export function Providers({
   const [queryClient] = useState(
     () =>
       new QueryClient({
+        queryCache: new QueryCache({
+          onError: (error, query) => {
+            // Only log query errors that are not retried (final failure)
+            if (query.state.fetchFailureCount > 1) return;
+            logError({
+              message: error.message || "Query error",
+              stack: error instanceof Error ? error.stack : undefined,
+              source: "api-error",
+              severity: "error",
+              page: typeof window !== "undefined" ? window.location.pathname : undefined,
+              metadata: {
+                source: "react-query",
+                queryKey: JSON.stringify(query.queryKey).slice(0, 200),
+              },
+            });
+          },
+        }),
+        mutationCache: new MutationCache({
+          onError: (error, _variables, _context, mutation) => {
+            logError({
+              message: error.message || "Mutation error",
+              stack: error instanceof Error ? error.stack : undefined,
+              source: "manual",
+              severity: "error",
+              page: typeof window !== "undefined" ? window.location.pathname : undefined,
+              metadata: {
+                source: "react-query-mutation",
+                mutationKey: mutation.options.mutationKey
+                  ? JSON.stringify(mutation.options.mutationKey).slice(0, 200)
+                  : undefined,
+              },
+            });
+          },
+        }),
         defaultOptions: {
           queries: {
             staleTime: 5 * 60 * 1000, // 5 minutes — data stays fresh
@@ -41,18 +77,6 @@ export function Providers({
             refetchOnReconnect: false,
             retry: 1, // Retry once on failure (covers aborted requests)
             placeholderData: keepPreviousData, // Show cached data immediately — no skeleton flash on return navigation
-          },
-          mutations: {
-            onError: (error: Error) => {
-              logError({
-                message: error.message || "Mutation error",
-                stack: error.stack,
-                source: "manual",
-                severity: "error",
-                page: typeof window !== "undefined" ? window.location.pathname : undefined,
-                metadata: { source: "react-query-mutation" },
-              });
-            },
           },
         },
       }),

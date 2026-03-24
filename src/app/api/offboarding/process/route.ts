@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { withErrorLogging } from "@/lib/error-logger-server";
 
-export async function POST(request: Request) {
+async function handler(request: Request) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -171,3 +172,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
+
+export const POST = withErrorLogging("/api/offboarding/process", handler);

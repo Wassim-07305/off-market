@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { withErrorLogging } from "@/lib/error-logger-server";
 
 /**
  * Cron endpoint pour publier les messages programmes.
@@ -15,7 +16,7 @@ function getAdminSupabase() {
   );
 }
 
-export async function GET(request: NextRequest) {
+async function handler(request: NextRequest) {
   try {
     const authHeader = request.headers.get("authorization");
     const cronSecret = process.env.CRON_SECRET;
@@ -78,3 +79,5 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Erreur interne" }, { status: 500 });
   }
 }
+
+export const GET = withErrorLogging("/api/cron/scheduled-messages", handler);

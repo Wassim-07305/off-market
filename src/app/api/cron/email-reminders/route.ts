@@ -5,6 +5,7 @@ import {
   callReminderEmail,
   paymentReminderEmail,
 } from "@/lib/email-templates";
+import { withErrorLogging } from "@/lib/error-logger-server";
 
 /**
  * Cron endpoint pour les rappels email automatiques.
@@ -13,7 +14,7 @@ import {
  *
  * Vercel Cron : GET avec Authorization: Bearer <CRON_SECRET>
  */
-export async function GET(request: NextRequest) {
+async function handler(request: NextRequest) {
   try {
     const authHeader = request.headers.get("authorization");
     const cronSecret = process.env.CRON_SECRET;
@@ -186,3 +187,5 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+
+export const GET = withErrorLogging("/api/cron/email-reminders", handler);

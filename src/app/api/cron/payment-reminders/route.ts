@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendEmail } from "@/lib/email";
+import { withErrorLogging } from "@/lib/error-logger-server";
 
 /**
  * Cron endpoint pour les relances de paiement.
@@ -41,7 +42,7 @@ const REMINDER_LEVELS: ReminderLevel[] = [
   },
 ];
 
-export async function GET(request: NextRequest) {
+async function handler(request: NextRequest) {
   try {
     // ── Auth ──────────────────────────────────────
     const authHeader = request.headers.get("authorization");
@@ -195,6 +196,8 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+
+export const GET = withErrorLogging("/api/cron/payment-reminders", handler);
 
 // ── Email HTML builder ──────────────────────────────
 

@@ -2,12 +2,13 @@ import { NextResponse, type NextRequest } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { notifyInvoicePaid } from "@/lib/slack";
+import { withErrorLogging } from "@/lib/error-logger-server";
 import type Stripe from "stripe";
 
 // Disable Next.js body parsing — Stripe needs the raw body for signature verification
 export const runtime = "nodejs";
 
-export async function POST(request: NextRequest) {
+async function handler(request: NextRequest) {
   try {
     if (!stripe) {
       return NextResponse.json(
@@ -130,3 +131,5 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+export const POST = withErrorLogging("/api/stripe/webhooks", handler);
