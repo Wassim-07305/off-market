@@ -109,6 +109,15 @@ const DIGEST_OPTIONS = [
   { value: "weekly", label: "Hebdomadaire" },
 ] as const;
 
+type SettingsTab = "general" | "notifications" | "security" | "admin";
+
+const TABS: { value: SettingsTab; label: string; icon: typeof User; adminOnly?: boolean }[] = [
+  { value: "general", label: "General", icon: User },
+  { value: "notifications", label: "Notifications", icon: Bell },
+  { value: "security", label: "Securite", icon: Shield },
+  { value: "admin", label: "Administration", icon: Palette, adminOnly: true },
+];
+
 export default function SettingsPage() {
   const { profile, user, signOut, isAdmin } = useAuth();
   const supabase = useSupabase();
@@ -127,6 +136,9 @@ export default function SettingsPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const googleStatus = useGoogleCalendarStatus();
   const disconnectGoogle = useDisconnectGoogleCalendar();
+
+  // Tab state
+  const [settingsTab, setSettingsTab] = useState<SettingsTab>("general");
 
   // Password change state
   const [currentPassword, setCurrentPassword] = useState("");
@@ -394,298 +406,753 @@ export default function SettingsPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Profile */}
-        <div className="bg-surface rounded-2xl border border-border p-6 space-y-4 transition-all duration-200 hover:shadow-md hover:shadow-zinc-200/50">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="size-7 rounded-lg bg-gradient-to-br from-[#AF0000] to-[#DC2626] flex items-center justify-center">
-              <User className="w-3.5 h-3.5 text-white" />
-            </div>
-            <h2 className="text-sm font-semibold text-foreground">Profil</h2>
-          </div>
-
-          {/* Avatar with upload */}
-          <div className="flex items-center gap-4 mb-4">
-            <div className="relative group">
-              {avatarUrl ? (
-                <Image
-                  src={avatarUrl}
-                  alt={fullName}
-                  width={64}
-                  height={64}
-                  className="w-16 h-16 rounded-full object-cover ring-2 ring-[#AF0000]/10 ring-offset-2"
-                />
-              ) : (
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#AF0000] to-[#DC2626] flex items-center justify-center text-xl text-white font-semibold ring-2 ring-[#AF0000]/10 ring-offset-2">
-                  {initials}
-                </div>
+      {/* Tab bar */}
+      <div className="flex gap-1 p-1 rounded-xl bg-muted/50 w-fit">
+        {TABS.filter((tab) => !tab.adminOnly || isAdmin).map((tab) => {
+          const Icon = tab.icon;
+          return (
+            <button
+              key={tab.value}
+              onClick={() => setSettingsTab(tab.value)}
+              className={cn(
+                "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all",
+                settingsTab === tab.value
+                  ? "bg-surface shadow-sm text-foreground"
+                  : "text-muted-foreground hover:text-foreground",
               )}
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={uploading}
-                className="absolute inset-0 rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer"
-              >
-                {uploading ? (
-                  <Loader2 className="w-5 h-5 text-white animate-spin" />
+            >
+              <Icon className="w-4 h-4" />
+              {tab.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* ── General tab ── */}
+      {settingsTab === "general" && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Profile */}
+          <div className="bg-surface rounded-2xl border border-border p-6 space-y-4 transition-all duration-200 hover:shadow-md hover:shadow-zinc-200/50">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="size-7 rounded-lg bg-gradient-to-br from-[#AF0000] to-[#DC2626] flex items-center justify-center">
+                <User className="w-3.5 h-3.5 text-white" />
+              </div>
+              <h2 className="text-sm font-semibold text-foreground">Profil</h2>
+            </div>
+
+            {/* Avatar with upload */}
+            <div className="flex items-center gap-4 mb-4">
+              <div className="relative group">
+                {avatarUrl ? (
+                  <Image
+                    src={avatarUrl}
+                    alt={fullName}
+                    width={64}
+                    height={64}
+                    className="w-16 h-16 rounded-full object-cover ring-2 ring-[#AF0000]/10 ring-offset-2"
+                  />
                 ) : (
-                  <Camera className="w-5 h-5 text-white" />
-                )}
-              </button>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleAvatarUpload}
-                className="hidden"
-              />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-foreground">
-                {profile?.email}
-              </p>
-              <p className="text-xs text-muted-foreground capitalize">
-                {profile?.role}
-              </p>
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                className="text-xs text-[#AF0000] hover:text-[#DC2626] transition-colors mt-1 font-medium"
-              >
-                Changer la photo
-              </button>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-1.5">
-                Nom complet
-              </label>
-              <input
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                className="w-full h-10 px-4 bg-muted/50 border-0 rounded-xl text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-1.5">
-                Telephone
-              </label>
-              <input
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="+33 6 00 00 00 00"
-                className="w-full h-10 px-4 bg-muted/50 border-0 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-1.5">
-              Bio
-            </label>
-            <textarea
-              value={bio}
-              onChange={(e) => setBio(e.target.value)}
-              rows={3}
-              placeholder="Quelques mots sur toi..."
-              className="w-full px-4 py-3 bg-muted/50 border-0 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20 resize-none"
-            />
-          </div>
-
-          <button
-            type="button"
-            onClick={handleSave}
-            disabled={saving}
-            className="h-10 px-4 rounded-xl bg-gradient-to-r from-[#AF0000] to-[#DC2626] text-white text-sm font-medium hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-50 shadow-sm shadow-[#AF0000]/20 flex items-center gap-2"
-          >
-            <Save className="w-4 h-4" />
-            {saving ? "Sauvegarde..." : "Sauvegarder"}
-          </button>
-        </div>
-
-        {/* Notifications */}
-        <div className="bg-surface rounded-2xl border border-border p-6 space-y-4 transition-all duration-200 hover:shadow-md hover:shadow-zinc-200/50">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="size-7 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
-              <Bell className="w-3.5 h-3.5 text-white" />
-            </div>
-            <h2 className="text-sm font-semibold text-foreground">
-              Notifications
-            </h2>
-          </div>
-          <p className="text-xs text-muted-foreground">
-            Choisis les notifications que tu souhaites recevoir.
-          </p>
-
-          <div className="space-y-1">
-            {NOTIFICATION_TOGGLES.map((item) => {
-              const checked = preferences
-                ? (preferences[item.key as keyof typeof preferences] as boolean)
-                : true;
-              return (
-                <div
-                  key={item.key}
-                  className="flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-muted/50 transition-colors"
-                >
-                  <div>
-                    <p className="text-sm font-medium text-foreground">
-                      {item.label}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {item.description}
-                    </p>
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#AF0000] to-[#DC2626] flex items-center justify-center text-xl text-white font-semibold ring-2 ring-[#AF0000]/10 ring-offset-2">
+                    {initials}
                   </div>
+                )}
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                  className="absolute inset-0 rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer"
+                >
+                  {uploading ? (
+                    <Loader2 className="w-5 h-5 text-white animate-spin" />
+                  ) : (
+                    <Camera className="w-5 h-5 text-white" />
+                  )}
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleAvatarUpload}
+                  className="hidden"
+                />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-foreground">
+                  {profile?.email}
+                </p>
+                <p className="text-xs text-muted-foreground capitalize">
+                  {profile?.role}
+                </p>
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="text-xs text-[#AF0000] hover:text-[#DC2626] transition-colors mt-1 font-medium"
+                >
+                  Changer la photo
+                </button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-1.5">
+                  Nom complet
+                </label>
+                <input
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  className="w-full h-10 px-4 bg-muted/50 border-0 rounded-xl text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-1.5">
+                  Telephone
+                </label>
+                <input
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+33 6 00 00 00 00"
+                  className="w-full h-10 px-4 bg-muted/50 border-0 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-1.5">
+                Bio
+              </label>
+              <textarea
+                value={bio}
+                onChange={(e) => setBio(e.target.value)}
+                rows={3}
+                placeholder="Quelques mots sur toi..."
+                className="w-full px-4 py-3 bg-muted/50 border-0 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20 resize-none"
+              />
+            </div>
+
+            <button
+              type="button"
+              onClick={handleSave}
+              disabled={saving}
+              className="h-10 px-4 rounded-xl bg-gradient-to-r from-[#AF0000] to-[#DC2626] text-white text-sm font-medium hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-50 shadow-sm shadow-[#AF0000]/20 flex items-center gap-2"
+            >
+              <Save className="w-4 h-4" />
+              {saving ? "Sauvegarde..." : "Sauvegarder"}
+            </button>
+          </div>
+
+          {/* Appearance */}
+          <div className="space-y-6">
+            <div className="bg-surface rounded-2xl border border-border p-6 space-y-4 transition-all duration-200 hover:shadow-md hover:shadow-zinc-200/50">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="size-7 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center">
+                  <Palette className="w-3.5 h-3.5 text-white" />
+                </div>
+                <h2 className="text-sm font-semibold text-foreground">Apparence</h2>
+              </div>
+
+              <div className="flex gap-3">
+                {themes.map((t) => (
                   <button
-                    type="button"
-                    role="switch"
-                    aria-checked={checked}
-                    onClick={() => handleToggleNotification(item.key, !checked)}
+                    key={t.value}
+                    onClick={() => setTheme(t.value)}
                     className={cn(
-                      "relative w-10 h-6 rounded-full transition-colors shrink-0 cursor-pointer",
-                      checked ? "bg-[#AF0000]" : "bg-muted-foreground/30",
+                      "flex-1 h-20 rounded-2xl border-2 flex flex-col items-center justify-center gap-1.5 transition-all",
+                      theme === t.value
+                        ? "border-[#AF0000] bg-[#AF0000]/5 shadow-sm shadow-[#AF0000]/10"
+                        : "border-border hover:border-[#AF0000]/30 hover:bg-muted/30",
                     )}
                   >
-                    <span
-                      className={cn(
-                        "absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-surface transition-transform shadow-sm",
-                        checked && "translate-x-4",
-                      )}
-                    />
+                    <t.icon className="w-5 h-5 text-foreground" />
+                    <span className="text-xs font-medium text-foreground">
+                      {t.label}
+                    </span>
                   </button>
-                </div>
-              );
-            })}
-          </div>
+                ))}
+              </div>
+            </div>
 
-          {/* Push notifications */}
-          {push.isSupported && (
-            <div className="border-t border-border pt-4">
-              <label className="flex items-center justify-between cursor-pointer">
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#AF0000]/10 to-[#DC2626]/10 flex items-center justify-center">
-                    <BellRing className="w-4 h-4 text-[#AF0000]" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-foreground">
-                      Notifications push
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {push.permission === "denied"
-                        ? "Bloquees dans les paramètres du navigateur"
-                        : "Recois des alertes meme quand le site est ferme"}
-                    </p>
-                  </div>
+            {/* Leaderboard anonymous toggle */}
+            <div className="bg-surface rounded-2xl border border-border p-6 space-y-4 transition-all duration-200 hover:shadow-md hover:shadow-zinc-200/50">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="size-7 rounded-lg bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center">
+                  <Trophy className="w-3.5 h-3.5 text-white" />
+                </div>
+                <h2 className="text-sm font-semibold text-foreground">Classement</h2>
+              </div>
+              <div className="flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-muted/50 transition-colors">
+                <div>
+                  <p className="text-sm font-medium text-foreground">Mode anonyme</p>
+                  <p className="text-xs text-muted-foreground">
+                    Cache ton nom dans le classement public
+                  </p>
                 </div>
                 <button
+                  type="button"
                   role="switch"
-                  aria-checked={push.isSubscribed}
-                  onClick={push.toggle}
-                  disabled={push.isLoading || push.permission === "denied"}
+                  aria-checked={leaderboardAnonymous}
+                  onClick={() => setLeaderboardAnonymous(!leaderboardAnonymous)}
                   className={cn(
-                    "relative w-10 h-6 rounded-full transition-colors shrink-0",
-                    push.isSubscribed
-                      ? "bg-[#AF0000]"
-                      : "bg-muted-foreground/30",
-                    (push.isLoading || push.permission === "denied") &&
-                      "opacity-50 cursor-not-allowed",
+                    "relative w-10 h-6 rounded-full transition-colors shrink-0 cursor-pointer",
+                    leaderboardAnonymous ? "bg-[#AF0000]" : "bg-muted-foreground/30",
                   )}
                 >
                   <span
                     className={cn(
                       "absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-surface transition-transform shadow-sm",
-                      push.isSubscribed && "translate-x-4",
+                      leaderboardAnonymous && "translate-x-4",
                     )}
                   />
                 </button>
-              </label>
+              </div>
             </div>
-          )}
 
-          {/* Test notification button */}
-          {push.isSubscribed && (
-            <div className="border-t border-border pt-4">
+            {/* Google Agenda */}
+            <div className="bg-surface rounded-2xl border border-border p-6 space-y-4 transition-all duration-200 hover:shadow-md hover:shadow-zinc-200/50">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="size-7 rounded-lg bg-gradient-to-br from-sky-500 to-sky-600 flex items-center justify-center">
+                  <Calendar className="w-3.5 h-3.5 text-white" />
+                </div>
+                <h2 className="text-sm font-semibold text-foreground">
+                  Google Agenda
+                </h2>
+              </div>
+
+              {googleStatus.data?.connected ? (
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+                      <Calendar className="w-4 h-4 text-emerald-500" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-foreground">
+                        Connecte
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {googleStatus.data.google_email}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => disconnectGoogle.mutate()}
+                    disabled={disconnectGoogle.isPending}
+                    className="h-9 px-4 rounded-xl border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center gap-2"
+                  >
+                    {disconnectGoogle.isPending ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <Unlink className="w-3.5 h-3.5" />
+                    )}
+                    Deconnecter
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center justify-between">
+                  <p className="text-sm text-muted-foreground">
+                    Connecte ton agenda Google pour voir tes événements dans la page
+                    Appels.
+                  </p>
+                  <a
+                    href="/api/google-calendar/connect"
+                    className="h-9 px-4 rounded-xl bg-gradient-to-r from-[#AF0000] to-[#DC2626] text-white text-sm font-medium hover:opacity-90 transition-all active:scale-[0.98] shadow-sm shadow-[#AF0000]/20 flex items-center gap-2 shrink-0"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    Connecter
+                  </a>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Notifications tab ── */}
+      {settingsTab === "notifications" && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Notification toggles */}
+          <div className="bg-surface rounded-2xl border border-border p-6 space-y-4 transition-all duration-200 hover:shadow-md hover:shadow-zinc-200/50">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="size-7 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                <Bell className="w-3.5 h-3.5 text-white" />
+              </div>
+              <h2 className="text-sm font-semibold text-foreground">
+                Notifications
+              </h2>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Choisis les notifications que tu souhaites recevoir.
+            </p>
+
+            <div className="space-y-1">
+              {NOTIFICATION_TOGGLES.map((item) => {
+                const checked = preferences
+                  ? (preferences[item.key as keyof typeof preferences] as boolean)
+                  : true;
+                return (
+                  <div
+                    key={item.key}
+                    className="flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-muted/50 transition-colors"
+                  >
+                    <div>
+                      <p className="text-sm font-medium text-foreground">
+                        {item.label}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {item.description}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={checked}
+                      onClick={() => handleToggleNotification(item.key, !checked)}
+                      className={cn(
+                        "relative w-10 h-6 rounded-full transition-colors shrink-0 cursor-pointer",
+                        checked ? "bg-[#AF0000]" : "bg-muted-foreground/30",
+                      )}
+                    >
+                      <span
+                        className={cn(
+                          "absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-surface transition-transform shadow-sm",
+                          checked && "translate-x-4",
+                        )}
+                      />
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            {/* Push notifications */}
+            {push.isSupported && (
+              <div className="bg-surface rounded-2xl border border-border p-6 space-y-4 transition-all duration-200 hover:shadow-md hover:shadow-zinc-200/50">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="size-7 rounded-lg bg-gradient-to-br from-[#AF0000]/80 to-[#DC2626] flex items-center justify-center">
+                    <BellRing className="w-3.5 h-3.5 text-white" />
+                  </div>
+                  <h2 className="text-sm font-semibold text-foreground">
+                    Notifications push
+                  </h2>
+                </div>
+
+                <label className="flex items-center justify-between cursor-pointer">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#AF0000]/10 to-[#DC2626]/10 flex items-center justify-center">
+                      <BellRing className="w-4 h-4 text-[#AF0000]" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-foreground">
+                        Notifications push
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {push.permission === "denied"
+                          ? "Bloquees dans les paramètres du navigateur"
+                          : "Recois des alertes meme quand le site est ferme"}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    role="switch"
+                    aria-checked={push.isSubscribed}
+                    onClick={push.toggle}
+                    disabled={push.isLoading || push.permission === "denied"}
+                    className={cn(
+                      "relative w-10 h-6 rounded-full transition-colors shrink-0",
+                      push.isSubscribed
+                        ? "bg-[#AF0000]"
+                        : "bg-muted-foreground/30",
+                      (push.isLoading || push.permission === "denied") &&
+                        "opacity-50 cursor-not-allowed",
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        "absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-surface transition-transform shadow-sm",
+                        push.isSubscribed && "translate-x-4",
+                      )}
+                    />
+                  </button>
+                </label>
+
+                {/* Test notification button */}
+                {push.isSubscribed && (
+                  <div className="border-t border-border pt-4">
+                    <button
+                      onClick={() => {
+                        toast.success("Notification de test dans 5 secondes...");
+                        setTimeout(() => {
+                          navigator.serviceWorker.ready.then((reg) => {
+                            reg.showNotification("Off Market", {
+                              body: "Ceci est une notification de test !",
+                              icon: "/logo.png",
+                              badge: "/logo.png",
+                              tag: "test",
+                            } as NotificationOptions);
+                          });
+                        }, 5000);
+                      }}
+                      className="h-9 px-4 rounded-xl border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center gap-2"
+                    >
+                      <Bell className="w-3.5 h-3.5" />
+                      Tester la notification
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* AI Consent */}
+            <div className="bg-surface rounded-2xl border border-border p-6 space-y-4 transition-all duration-200 hover:shadow-md hover:shadow-zinc-200/50">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="size-7 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center">
+                  <Bot className="w-3.5 h-3.5 text-white" />
+                </div>
+                <h2 className="text-sm font-semibold text-foreground">
+                  Intelligence artificielle
+                </h2>
+              </div>
+              <div className="flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-muted/50 transition-colors">
+                <div>
+                  <p className="text-sm font-medium text-foreground">Consentement IA</p>
+                  <p className="text-xs text-muted-foreground">
+                    Autoriser l&apos;utilisation de l&apos;IA pour les suggestions et analyses
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={aiConsent.hasConsent}
+                  onClick={() => aiConsent.hasConsent ? aiConsent.revoke() : aiConsent.accept(["chat_analysis", "risk_scoring", "report_generation", "content_suggestions"])}
+                  className={cn(
+                    "relative w-10 h-6 rounded-full transition-colors shrink-0 cursor-pointer",
+                    aiConsent.hasConsent ? "bg-[#AF0000]" : "bg-muted-foreground/30",
+                  )}
+                >
+                  <span
+                    className={cn(
+                      "absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-surface transition-transform shadow-sm",
+                      aiConsent.hasConsent && "translate-x-4",
+                    )}
+                  />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Security tab ── */}
+      {settingsTab === "security" && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Password change */}
+          <div className="bg-surface rounded-2xl border border-border p-6 space-y-4 transition-all duration-200 hover:shadow-md hover:shadow-zinc-200/50">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="size-7 rounded-lg bg-gradient-to-br from-zinc-600 to-zinc-700 flex items-center justify-center">
+                <Lock className="w-3.5 h-3.5 text-white" />
+              </div>
+              <h2 className="text-sm font-semibold text-foreground">Sécurité</h2>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-1.5">
+                  Mot de passe actuel
+                </label>
+                <div className="relative">
+                  <input
+                    type={showCurrentPwd ? "text" : "password"}
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full h-10 px-4 pr-10 bg-muted/50 border-0 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowCurrentPwd(!showCurrentPwd)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {showCurrentPwd ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-1.5">
+                    Nouveau mot de passe
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showNewPwd ? "text" : "password"}
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      placeholder="Min. 8 caracteres"
+                      className="w-full h-10 px-4 pr-10 bg-muted/50 border-0 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowNewPwd(!showNewPwd)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {showNewPwd ? (
+                        <EyeOff className="w-4 h-4" />
+                      ) : (
+                        <Eye className="w-4 h-4" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-1.5">
+                    Confirmer
+                  </label>
+                  <input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Confirmer le mot de passe"
+                    className="w-full h-10 px-4 bg-muted/50 border-0 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20"
+                  />
+                </div>
+              </div>
+
+              {newPassword &&
+                confirmPassword &&
+                newPassword !== confirmPassword && (
+                  <p className="text-xs text-error">
+                    Les mots de passe ne correspondent pas
+                  </p>
+                )}
+
               <button
-                onClick={() => {
-                  toast.success("Notification de test dans 5 secondes...");
-                  setTimeout(() => {
-                    navigator.serviceWorker.ready.then((reg) => {
-                      reg.showNotification("Off Market", {
-                        body: "Ceci est une notification de test !",
-                        icon: "/logo.png",
-                        badge: "/logo.png",
-                        tag: "test",
-                      } as NotificationOptions);
-                    });
-                  }, 5000);
-                }}
+                onClick={handleChangePassword}
+                disabled={changingPassword || !currentPassword || !newPassword || !confirmPassword}
+                className="h-9 px-4 rounded-xl bg-foreground text-background text-sm font-medium hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-2"
+              >
+                {changingPassword ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <Lock className="w-3.5 h-3.5" />
+                )}
+                {changingPassword ? "Mise à jour..." : "Changer le mot de passe"}
+              </button>
+            </div>
+          </div>
+
+          {/* 2FA */}
+          <div className="bg-surface rounded-2xl border border-border p-6 space-y-4 transition-all duration-200 hover:shadow-md hover:shadow-zinc-200/50">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="size-7 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center">
+                <ShieldCheck className="w-3.5 h-3.5 text-white" />
+              </div>
+              <h2 className="text-sm font-semibold text-foreground">
+                Authentification a deux facteurs (2FA)
+              </h2>
+            </div>
+
+            {twoFA.isEnabled ? (
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+                    <ShieldCheck className="w-4 h-4 text-emerald-500" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-foreground">2FA active</p>
+                    <p className="text-xs text-muted-foreground">
+                      Ton compte est protege par l&apos;authentification TOTP
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => twoFA.disable()}
+                  className="h-9 px-4 rounded-xl border border-border text-sm text-muted-foreground hover:text-error hover:border-error/30 transition-colors"
+                >
+                  Desactiver
+                </button>
+              </div>
+            ) : twoFA.enrolling ? (
+              <div className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  Scanne ce QR code avec ton application d&apos;authentification (Google Authenticator, Authy, etc.)
+                </p>
+                {twoFA.qrCode && (
+                  <div className="flex justify-center">
+                    <img src={twoFA.qrCode} alt="QR Code 2FA" className="w-48 h-48 rounded-xl border border-border" />
+                  </div>
+                )}
+                {twoFA.secret && (
+                  <div className="text-center">
+                    <p className="text-[11px] text-muted-foreground mb-1">Ou entre ce code manuellement :</p>
+                    <code className="text-xs font-mono bg-muted px-3 py-1.5 rounded-lg select-all">{twoFA.secret}</code>
+                  </div>
+                )}
+                <div className="flex items-center gap-3">
+                  <input
+                    type="text"
+                    value={totpCode}
+                    onChange={(e) => setTotpCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                    placeholder="Code a 6 chiffres"
+                    className="flex-1 h-10 px-4 bg-muted/50 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 text-center font-mono tracking-widest"
+                    maxLength={6}
+                  />
+                  <button
+                    onClick={async () => {
+                      setVerifying2FA(true);
+                      try {
+                        await twoFA.verifyEnroll(totpCode);
+                        setTotpCode("");
+                        toast.success("2FA activee avec succes");
+                      } catch {
+                        toast.error("Code invalide");
+                      } finally {
+                        setVerifying2FA(false);
+                      }
+                    }}
+                    disabled={totpCode.length !== 6 || verifying2FA}
+                    className="h-10 px-4 rounded-xl bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-700 transition-all disabled:opacity-50 flex items-center gap-2"
+                  >
+                    {verifying2FA ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ShieldCheck className="w-3.5 h-3.5" />}
+                    Verifier
+                  </button>
+                </div>
+                <button
+                  onClick={() => twoFA.cancelEnroll()}
+                  className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Annuler
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-muted-foreground">
+                  Ajoute une couche de securite supplementaire avec un code TOTP.
+                </p>
+                <button
+                  onClick={() => twoFA.startEnroll()}
+                  disabled={twoFA.loading}
+                  className="h-9 px-4 rounded-xl bg-gradient-to-r from-[#AF0000] to-[#DC2626] text-white text-sm font-medium hover:opacity-90 transition-all active:scale-[0.98] shadow-sm shadow-[#AF0000]/20 flex items-center gap-2 shrink-0"
+                >
+                  {twoFA.loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Smartphone className="w-3.5 h-3.5" />}
+                  Activer la 2FA
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Active Sessions */}
+          <ActiveSessions />
+
+          {/* Danger zone */}
+          <div className="bg-surface rounded-2xl border border-border border-l-[3px] border-l-error p-6 space-y-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Shield className="w-4 h-4 text-error" />
+              <h2 className="text-sm font-semibold text-error">Zone dangereuse</h2>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Ces actions sont irreversibles. Sois prudent.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={handleExportData}
+                disabled={exporting}
                 className="h-9 px-4 rounded-xl border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center gap-2"
               >
-                <Bell className="w-3.5 h-3.5" />
-                Tester la notification
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
-      {/* End profil+notif grid */}
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Appearance */}
-        <div className="bg-surface rounded-2xl border border-border p-6 space-y-4 transition-all duration-200 hover:shadow-md hover:shadow-zinc-200/50">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="size-7 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center">
-              <Palette className="w-3.5 h-3.5 text-white" />
-            </div>
-            <h2 className="text-sm font-semibold text-foreground">Apparence</h2>
-          </div>
-
-          <div className="flex gap-3">
-            {themes.map((t) => (
-              <button
-                key={t.value}
-                onClick={() => setTheme(t.value)}
-                className={cn(
-                  "flex-1 h-20 rounded-2xl border-2 flex flex-col items-center justify-center gap-1.5 transition-all",
-                  theme === t.value
-                    ? "border-[#AF0000] bg-[#AF0000]/5 shadow-sm shadow-[#AF0000]/10"
-                    : "border-border hover:border-[#AF0000]/30 hover:bg-muted/30",
+                {exporting ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <Download className="w-3.5 h-3.5" />
                 )}
-              >
-                <t.icon className="w-5 h-5 text-foreground" />
-                <span className="text-xs font-medium text-foreground">
-                  {t.label}
-                </span>
+                {exporting ? "Export..." : "Exporter mes donnees"}
               </button>
-            ))}
+              <button
+                onClick={() => setShowDeleteConfirm(true)}
+                className="h-9 px-4 rounded-xl border border-error/30 text-sm text-error hover:bg-error/5 transition-colors flex items-center gap-2"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                Supprimer mon compte
+              </button>
+            </div>
+
+            {/* Delete confirmation modal */}
+            {showDeleteConfirm && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+                <div className="bg-surface border border-border rounded-2xl p-6 max-w-sm w-full mx-4 space-y-4 shadow-xl">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-error/10 flex items-center justify-center">
+                      <AlertTriangle className="w-5 h-5 text-error" />
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-medium text-foreground">
+                        Supprimer le compte
+                      </h3>
+                      <p className="text-xs text-muted-foreground">
+                        Cette action est irreversible
+                      </p>
+                    </div>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Toutes tes donnees seront definitivement supprimees. Es-tu sur ?
+                  </p>
+                  <div className="flex gap-3 justify-end">
+                    <button
+                      onClick={() => setShowDeleteConfirm(false)}
+                      className="h-9 px-4 rounded-xl border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                    >
+                      Annuler
+                    </button>
+                    <button
+                      onClick={handleDeleteAccount}
+                      disabled={deleting}
+                      className="h-9 px-4 rounded-xl bg-error text-white text-sm font-medium hover:bg-error/90 transition-colors flex items-center gap-2"
+                    >
+                      {deleting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                      {deleting ? "Suppression..." : "Confirmer"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
-        {/* Custom Roles (admin only) */}
-        {isAdmin && (
+      )}
+
+      {/* ── Admin tab ── */}
+      {settingsTab === "admin" && isAdmin && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Integrations */}
+          <IntegrationSettings />
+
+          {/* Branding */}
           <div className="bg-surface rounded-2xl border border-border p-6">
-            <RoleManager />
+            <BrandingSettings />
           </div>
-        )}
 
-        {/* Integrations (admin only) */}
-        {isAdmin && <IntegrationSettings />}
-
-        {/* Admin Branding (admin only) */}
-        {isAdmin && (
+          {/* Admin Branding */}
           <div className="bg-surface rounded-2xl border border-border p-6">
             <AdminBrandingSettings />
           </div>
-        )}
 
-        {/* Admin Modules Config (admin only) */}
-        {isAdmin && (
+          {/* Admin Modules Config */}
           <div className="bg-surface rounded-2xl border border-border p-6">
             <AdminModulesConfig />
           </div>
-        )}
 
-        {/* Audit Log link (admin only) */}
-        {isAdmin && (
+          {/* Custom Roles */}
+          <div className="bg-surface rounded-2xl border border-border p-6">
+            <RoleManager />
+          </div>
+
+          {/* API Settings */}
+          <div className="bg-surface rounded-2xl border border-border p-6">
+            <ApiSettings />
+          </div>
+
+          {/* Audit Log link */}
           <Link
             href="/admin/audit-log"
             className="flex items-center justify-between bg-surface rounded-2xl border border-border p-6 transition-all duration-200 hover:shadow-md hover:shadow-zinc-200/50 group"
@@ -703,337 +1170,8 @@ export default function SettingsPage() {
             </div>
             <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
           </Link>
-        )}
-
-        {/* Security */}
-        <div className="bg-surface rounded-2xl border border-border p-6 space-y-4 transition-all duration-200 hover:shadow-md hover:shadow-zinc-200/50">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="size-7 rounded-lg bg-gradient-to-br from-zinc-600 to-zinc-700 flex items-center justify-center">
-              <Lock className="w-3.5 h-3.5 text-white" />
-            </div>
-            <h2 className="text-sm font-semibold text-foreground">Sécurité</h2>
-          </div>
-
-          <div className="space-y-3">
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-1.5">
-                Mot de passe actuel
-              </label>
-              <div className="relative">
-                <input
-                  type={showCurrentPwd ? "text" : "password"}
-                  value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full h-10 px-4 pr-10 bg-muted/50 border-0 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowCurrentPwd(!showCurrentPwd)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {showCurrentPwd ? (
-                    <EyeOff className="w-4 h-4" />
-                  ) : (
-                    <Eye className="w-4 h-4" />
-                  )}
-                </button>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-1.5">
-                  Nouveau mot de passe
-                </label>
-                <div className="relative">
-                  <input
-                    type={showNewPwd ? "text" : "password"}
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    placeholder="Min. 8 caracteres"
-                    className="w-full h-10 px-4 pr-10 bg-muted/50 border-0 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowNewPwd(!showNewPwd)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {showNewPwd ? (
-                      <EyeOff className="w-4 h-4" />
-                    ) : (
-                      <Eye className="w-4 h-4" />
-                    )}
-                  </button>
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-1.5">
-                  Confirmer
-                </label>
-                <input
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Confirmer le mot de passe"
-                  className="w-full h-10 px-4 bg-muted/50 border-0 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20"
-                />
-              </div>
-            </div>
-
-            {newPassword &&
-              confirmPassword &&
-              newPassword !== confirmPassword && (
-                <p className="text-xs text-error">
-                  Les mots de passe ne correspondent pas
-                </p>
-              )}
-
-            <button
-              onClick={handleChangePassword}
-              disabled={changingPassword || !currentPassword || !newPassword || !confirmPassword}
-              className="h-9 px-4 rounded-xl bg-foreground text-background text-sm font-medium hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-2"
-            >
-              {changingPassword ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              ) : (
-                <Lock className="w-3.5 h-3.5" />
-              )}
-              {changingPassword ? "Mise à jour..." : "Changer le mot de passe"}
-            </button>
-          </div>
         </div>
-
-        {/* 2FA */}
-        <div className="bg-surface rounded-2xl border border-border p-6 space-y-4 transition-all duration-200 hover:shadow-md hover:shadow-zinc-200/50">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="size-7 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center">
-              <ShieldCheck className="w-3.5 h-3.5 text-white" />
-            </div>
-            <h2 className="text-sm font-semibold text-foreground">
-              Authentification a deux facteurs (2FA)
-            </h2>
-          </div>
-
-          {twoFA.isEnabled ? (
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                  <ShieldCheck className="w-4 h-4 text-emerald-500" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-foreground">2FA active</p>
-                  <p className="text-xs text-muted-foreground">
-                    Ton compte est protege par l&apos;authentification TOTP
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={() => twoFA.disable()}
-                className="h-9 px-4 rounded-xl border border-border text-sm text-muted-foreground hover:text-error hover:border-error/30 transition-colors"
-              >
-                Desactiver
-              </button>
-            </div>
-          ) : twoFA.enrolling ? (
-            <div className="space-y-4">
-              <p className="text-sm text-muted-foreground">
-                Scanne ce QR code avec ton application d&apos;authentification (Google Authenticator, Authy, etc.)
-              </p>
-              {twoFA.qrCode && (
-                <div className="flex justify-center">
-                  <img src={twoFA.qrCode} alt="QR Code 2FA" className="w-48 h-48 rounded-xl border border-border" />
-                </div>
-              )}
-              {twoFA.secret && (
-                <div className="text-center">
-                  <p className="text-[11px] text-muted-foreground mb-1">Ou entre ce code manuellement :</p>
-                  <code className="text-xs font-mono bg-muted px-3 py-1.5 rounded-lg select-all">{twoFA.secret}</code>
-                </div>
-              )}
-              <div className="flex items-center gap-3">
-                <input
-                  type="text"
-                  value={totpCode}
-                  onChange={(e) => setTotpCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                  placeholder="Code a 6 chiffres"
-                  className="flex-1 h-10 px-4 bg-muted/50 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 text-center font-mono tracking-widest"
-                  maxLength={6}
-                />
-                <button
-                  onClick={async () => {
-                    setVerifying2FA(true);
-                    try {
-                      await twoFA.verifyEnroll(totpCode);
-                      setTotpCode("");
-                      toast.success("2FA activee avec succes");
-                    } catch {
-                      toast.error("Code invalide");
-                    } finally {
-                      setVerifying2FA(false);
-                    }
-                  }}
-                  disabled={totpCode.length !== 6 || verifying2FA}
-                  className="h-10 px-4 rounded-xl bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-700 transition-all disabled:opacity-50 flex items-center gap-2"
-                >
-                  {verifying2FA ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ShieldCheck className="w-3.5 h-3.5" />}
-                  Verifier
-                </button>
-              </div>
-              <button
-                onClick={() => twoFA.cancelEnroll()}
-                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Annuler
-              </button>
-            </div>
-          ) : (
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-muted-foreground">
-                Ajoute une couche de securite supplementaire avec un code TOTP.
-              </p>
-              <button
-                onClick={() => twoFA.startEnroll()}
-                disabled={twoFA.loading}
-                className="h-9 px-4 rounded-xl bg-gradient-to-r from-[#AF0000] to-[#DC2626] text-white text-sm font-medium hover:opacity-90 transition-all active:scale-[0.98] shadow-sm shadow-[#AF0000]/20 flex items-center gap-2 shrink-0"
-              >
-                {twoFA.loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Smartphone className="w-3.5 h-3.5" />}
-                Activer la 2FA
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Google Agenda */}
-        <div className="bg-surface rounded-2xl border border-border p-6 space-y-4 transition-all duration-200 hover:shadow-md hover:shadow-zinc-200/50">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="size-7 rounded-lg bg-gradient-to-br from-sky-500 to-sky-600 flex items-center justify-center">
-              <Calendar className="w-3.5 h-3.5 text-white" />
-            </div>
-            <h2 className="text-sm font-semibold text-foreground">
-              Google Agenda
-            </h2>
-          </div>
-
-          {googleStatus.data?.connected ? (
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                  <Calendar className="w-4 h-4 text-emerald-500" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-foreground">
-                    Connecte
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {googleStatus.data.google_email}
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={() => disconnectGoogle.mutate()}
-                disabled={disconnectGoogle.isPending}
-                className="h-9 px-4 rounded-xl border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center gap-2"
-              >
-                {disconnectGoogle.isPending ? (
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                ) : (
-                  <Unlink className="w-3.5 h-3.5" />
-                )}
-                Deconnecter
-              </button>
-            </div>
-          ) : (
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-muted-foreground">
-                Connecte ton agenda Google pour voir tes événements dans la page
-                Appels.
-              </p>
-              <a
-                href="/api/google-calendar/connect"
-                className="h-9 px-4 rounded-xl bg-gradient-to-r from-[#AF0000] to-[#DC2626] text-white text-sm font-medium hover:opacity-90 transition-all active:scale-[0.98] shadow-sm shadow-[#AF0000]/20 flex items-center gap-2 shrink-0"
-              >
-                <ExternalLink className="w-3.5 h-3.5" />
-                Connecter
-              </a>
-            </div>
-          )}
-        </div>
-        {/* Active Sessions */}
-        <ActiveSessions />
-      </div>
-
-      {/* Danger zone */}
-      <div className="bg-surface rounded-2xl border border-border border-l-[3px] border-l-error p-6 space-y-4">
-        <div className="flex items-center gap-2 mb-2">
-          <Shield className="w-4 h-4 text-error" />
-          <h2 className="text-sm font-semibold text-error">Zone dangereuse</h2>
-        </div>
-        <p className="text-sm text-muted-foreground">
-          Ces actions sont irreversibles. Sois prudent.
-        </p>
-        <div className="flex gap-3">
-          <button
-            onClick={handleExportData}
-            disabled={exporting}
-            className="h-9 px-4 rounded-xl border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center gap-2"
-          >
-            {exporting ? (
-              <Loader2 className="w-3.5 h-3.5 animate-spin" />
-            ) : (
-              <Download className="w-3.5 h-3.5" />
-            )}
-            {exporting ? "Export..." : "Exporter mes donnees"}
-          </button>
-          <button
-            onClick={() => setShowDeleteConfirm(true)}
-            className="h-9 px-4 rounded-xl border border-error/30 text-sm text-error hover:bg-error/5 transition-colors flex items-center gap-2"
-          >
-            <Trash2 className="w-3.5 h-3.5" />
-            Supprimer mon compte
-          </button>
-        </div>
-
-        {/* Delete confirmation modal */}
-        {showDeleteConfirm && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-            <div className="bg-surface border border-border rounded-2xl p-6 max-w-sm w-full mx-4 space-y-4 shadow-xl">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-error/10 flex items-center justify-center">
-                  <AlertTriangle className="w-5 h-5 text-error" />
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium text-foreground">
-                    Supprimer le compte
-                  </h3>
-                  <p className="text-xs text-muted-foreground">
-                    Cette action est irreversible
-                  </p>
-                </div>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Toutes tes donnees seront definitivement supprimees. Es-tu sur ?
-              </p>
-              <div className="flex gap-3 justify-end">
-                <button
-                  onClick={() => setShowDeleteConfirm(false)}
-                  className="h-9 px-4 rounded-xl border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-                >
-                  Annuler
-                </button>
-                <button
-                  onClick={handleDeleteAccount}
-                  disabled={deleting}
-                  className="h-9 px-4 rounded-xl bg-error text-white text-sm font-medium hover:bg-error/90 transition-colors flex items-center gap-2"
-                >
-                  {deleting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-                  {deleting ? "Suppression..." : "Confirmer"}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
+      )}
     </motion.div>
   );
 }
