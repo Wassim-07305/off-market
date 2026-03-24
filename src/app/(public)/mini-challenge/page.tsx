@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useSubmitLead } from "@/hooks/use-lead-magnet";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import {
   Rocket,
@@ -81,8 +82,25 @@ const LOCKED_SECTIONS = [
 
 export default function MiniChallengePage() {
   const [submitted, setSubmitted] = useState(false);
-  const submitLead = useSubmitLead();
   const router = useRouter();
+
+  const signupMutation = useMutation({
+    mutationFn: async (data: SignupForm) => {
+      const res = await fetch("/api/leads/mini-challenge", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || "Erreur lors de l'inscription");
+      }
+      return res.json();
+    },
+    onError: (err: Error) => {
+      toast.error(err.message);
+    },
+  });
 
   const {
     register,
@@ -94,11 +112,7 @@ export default function MiniChallengePage() {
 
   const onSubmit = async (data: SignupForm) => {
     try {
-      await submitLead.mutateAsync({
-        ...data,
-        revenue_range: "less_5k",
-        goals: "Mini-challenge 5 jours",
-      });
+      await signupMutation.mutateAsync(data);
       setSubmitted(true);
     } catch {
       // handled by mutation
@@ -119,8 +133,8 @@ export default function MiniChallengePage() {
           <div>
             <h1 className="text-3xl font-bold">Tu es inscrit !</h1>
             <p className="text-lg text-zinc-400 mt-3 leading-relaxed">
-              Ton acces au mini-challenge de 5 jours est active.
-              Consulte ta boite mail pour recevoir tes identifiants.
+              Un lien de connexion vient d&apos;etre envoye a ton adresse email.
+              Clique dessus pour acceder directement au challenge.
             </p>
           </div>
 
@@ -130,8 +144,8 @@ export default function MiniChallengePage() {
             </h3>
             <ul className="space-y-2 text-left">
               {[
-                "Connecte-toi avec tes identifiants",
-                "Accede au Jour 1 du challenge",
+                "Ouvre ta boite mail et clique sur le lien de connexion",
+                "Tu es redirige vers le Jour 1 du challenge",
                 "Complete les 5 jours pour debloquer ton diagnostic",
               ].map((step, i) => (
                 <li key={i} className="flex items-start gap-2.5 text-sm">
@@ -373,10 +387,10 @@ export default function MiniChallengePage() {
 
                 <button
                   type="submit"
-                  disabled={isSubmitting || submitLead.isPending}
+                  disabled={isSubmitting || signupMutation.isPending}
                   className="w-full py-3 px-6 bg-red-600 hover:bg-red-700 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-all flex items-center justify-center gap-2 text-sm shadow-lg shadow-red-600/20"
                 >
-                  {isSubmitting || submitLead.isPending ? (
+                  {isSubmitting || signupMutation.isPending ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
                       Inscription...
@@ -389,9 +403,9 @@ export default function MiniChallengePage() {
                   )}
                 </button>
 
-                {submitLead.isError && (
+                {signupMutation.isError && (
                   <p className="text-xs text-red-400 text-center">
-                    Une erreur est survenue. Veuillez reessayer.
+                    {signupMutation.error?.message || "Une erreur est survenue. Veuillez reessayer."}
                   </p>
                 )}
 
