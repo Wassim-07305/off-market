@@ -177,7 +177,7 @@ export default function ErrorLogsPage() {
 
   const unresolvedCount = errors.filter((e) => !e.resolved).length;
 
-  const exportMarkdown = () => {
+  const exportMarkdown = async () => {
     const unresolved = errors.filter((e) => !e.resolved);
     if (unresolved.length === 0) {
       toast.success("Aucune erreur non resolue a exporter");
@@ -264,14 +264,20 @@ export default function ErrorLogsPage() {
       }
     }
 
-    const blob = new Blob([md], { type: "text/markdown" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `error-report-${new Date().toISOString().split("T")[0]}.md`;
-    a.click();
-    URL.revokeObjectURL(url);
-    toast.success(`${deduped.length} erreur(s) unique(s) exportee(s)`);
+    try {
+      await navigator.clipboard.writeText(md);
+      toast.success(`${deduped.length} erreur(s) unique(s) copiee(s) dans le presse-papier`);
+    } catch {
+      // Fallback: download si clipboard non disponible
+      const blob = new Blob([md], { type: "text/markdown" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `error-report-${new Date().toISOString().split("T")[0]}.md`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success(`${deduped.length} erreur(s) unique(s) exportee(s)`);
+    }
   };
 
   return (
@@ -294,7 +300,7 @@ export default function ErrorLogsPage() {
             className="h-9 px-3 rounded-lg border border-border text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all flex items-center gap-1.5"
           >
             <FileDown className="w-3.5 h-3.5" />
-            Exporter .md
+            Copier .md
           </button>
           <button
             onClick={() => refetch()}
