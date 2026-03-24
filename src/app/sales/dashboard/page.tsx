@@ -44,6 +44,7 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { ExportDropdown } from "@/components/shared/export-dropdown";
 import { exportToCSV, exportToPDF } from "@/lib/export";
+import { SalesLeaderboard } from "@/components/crm/sales-leaderboard";
 
 function formatEUR(amount: number) {
   return new Intl.NumberFormat("fr-FR", {
@@ -601,6 +602,9 @@ export default function SalesDashboardPage() {
           icon={TrendingUp}
         />
       </motion.div>
+
+      {/* Sales team leaderboard */}
+      <SalesLeaderboard />
     </motion.div>
   );
 }
