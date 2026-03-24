@@ -74,7 +74,7 @@ export function useUpdateBranding() {
         .from("branding_settings")
         .select("id")
         .limit(1)
-        .single()) as { data: { id: string } | null; error: unknown };
+        .maybeSingle()) as { data: { id: string } | null; error: unknown };
 
       if (!existing) throw new Error("Branding settings not found");
 

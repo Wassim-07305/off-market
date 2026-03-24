@@ -156,28 +156,28 @@ function WindowErrorListeners() {
       try {
         const response = await originalFetch.apply(this, args);
 
-        // Log server errors (5xx) on API routes
-        if (response.status >= 500) {
-          const url = typeof args[0] === "string" ? args[0] : (args[0] as Request)?.url ?? "";
-          if (url.includes("/api/")) {
-            let body: string | null = null;
-            try {
-              const clone = response.clone();
-              body = await clone.text();
-            } catch { /* ignore */ }
+        // Log server errors (5xx on /api/*, 4xx+ on supabase)
+        const url = typeof args[0] === "string" ? args[0] : (args[0] as Request)?.url ?? "";
+        const isApi = url.includes("/api/");
+        const isSupabase = url.includes("supabase.co/rest/");
+        if ((response.status >= 500 && isApi) || (response.status >= 400 && isSupabase)) {
+          let body: string | null = null;
+          try {
+            const clone = response.clone();
+            body = await clone.text();
+          } catch { /* ignore */ }
 
-            logError({
-              message: `API Error ${response.status}: ${url}`,
-              source: "api-error",
-              severity: response.status >= 500 ? "critical" : "error",
-              metadata: {
-                status: response.status,
-                statusText: response.statusText,
-                url,
-                responseBody: body?.slice(0, 500),
-              },
-            });
-          }
+          logError({
+            message: `${isSupabase ? "Supabase" : "API"} Error ${response.status}: ${url.split("?")[0]}`,
+            source: "api-error",
+            severity: response.status >= 500 ? "critical" : "error",
+            metadata: {
+              status: response.status,
+              statusText: response.statusText,
+              url: url.split("?")[0],
+              responseBody: body?.slice(0, 500),
+            },
+          });
         }
 
         return response;
@@ -186,13 +186,13 @@ function WindowErrorListeners() {
         if (err instanceof Error && err.name === "AbortError") throw err;
 
         const url = typeof args[0] === "string" ? args[0] : (args[0] as Request)?.url ?? "";
-        if (url.includes("/api/")) {
+        if (url.includes("/api/") || url.includes("supabase.co")) {
           logError({
-            message: `Fetch failed: ${url} — ${err instanceof Error ? err.message : String(err)}`,
+            message: `Fetch failed: ${url.split("?")[0]} — ${err instanceof Error ? err.message : String(err)}`,
             stack: err instanceof Error ? err.stack ?? null : null,
             source: "api-error",
             severity: "error",
-            metadata: { url },
+            metadata: { url: url.split("?")[0] },
           });
         }
 
