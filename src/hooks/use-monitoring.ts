@@ -69,11 +69,11 @@ export function useUsageMetrics() {
       const diffToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
       const weekStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - diffToMonday).toISOString();
 
-      // Active users (last 24h)
+      // Active users (last 24h) — last_seen_at is updated by usePresence hook
       const { count: activeUsers24h } = await supabase
         .from("profiles")
         .select("id", { count: "exact", head: true })
-        .gte("last_sign_in_at", yesterday);
+        .gte("last_seen_at", yesterday);
 
       // Messages today
       const { count: messagesToday } = await supabase
