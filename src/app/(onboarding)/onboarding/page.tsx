@@ -30,6 +30,7 @@ import { CompletionStep } from "@/components/onboarding/completion-step";
 import { AdminSetupStep } from "@/components/onboarding/admin-setup-step";
 import { CoachToolsStep } from "@/components/onboarding/coach-tools-step";
 import { SalesToolsStep } from "@/components/onboarding/sales-tools-step";
+import { OfferSelectionStep } from "@/components/onboarding/offer-selection-step";
 
 // ─── Animated background ─────────────────────────────────────────
 function AnimatedBackground() {
@@ -53,6 +54,7 @@ const STEP_LABELS: Record<string, Record<string, string>> = {
   admin: {
     welcome_video: "Accueil",
     admin_setup: "Configuration",
+    offer_selection: "Offre",
     completion: "Termine !",
   },
   coach: {
@@ -92,7 +94,7 @@ const STEP_LABELS: Record<string, Record<string, string>> = {
 
 // ─── Completed items per role (for CompletionStep) ────────────────
 const COMPLETED_ITEMS: Record<string, string[]> = {
-  admin: ["Video d'accueil regardee", "Plateforme configuree"],
+  admin: ["Video d'accueil regardee", "Plateforme configuree", "Offre selectionnee"],
   coach: [
     "Video d'accueil regardee",
     "Profil complete",
@@ -352,6 +354,13 @@ export default function OnboardingPage() {
           <SalesToolsStep
             onNext={() => handleStepComplete("sales_tools")}
             variant={role === "closer" ? "closer" : "setter"}
+          />
+        );
+
+      case "offer_selection":
+        return (
+          <OfferSelectionStep
+            onNext={() => handleStepComplete("offer_selection")}
           />
         );
 

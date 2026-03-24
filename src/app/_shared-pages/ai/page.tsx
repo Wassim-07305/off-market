@@ -20,10 +20,14 @@ import {
   BookOpen,
   Settings,
   Brain,
+  FileText,
 } from "lucide-react";
 import { AlexiaKnowledgePanel } from "@/components/ai/alexia-knowledge-panel";
 import { AlexiaConfigPanel } from "@/components/ai/alexia-config-panel";
 import { AlexiaMemoryPanel } from "@/components/ai/alexia-memory-panel";
+import { AiReportsPanel } from "@/components/ai/ai-reports-panel";
+import { CoachingInsightsPanel } from "@/components/ai/coaching-insights-panel";
+import { FAQDashboard } from "@/components/ai/faq-dashboard";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
 import { useAiConsent } from "@/hooks/use-ai-consent";
@@ -86,7 +90,7 @@ interface ChatMessage {
   content: string;
 }
 
-type AITab = "chat" | "config";
+type AITab = "chat" | "config" | "reports" | "insights" | "faq";
 
 export default function AIPage() {
   const { user, isStaff, profile } = useAuth();
@@ -238,6 +242,9 @@ export default function AIPage() {
     staffOnly?: boolean;
   }[] = [
     { id: "chat", label: "Chat", icon: MessageSquare },
+    { id: "reports", label: "Rapports", icon: FileText, staffOnly: true },
+    { id: "insights", label: "Insights", icon: Brain, staffOnly: true },
+    { id: "faq", label: "FAQ", icon: BookOpen, staffOnly: true },
     { id: "config", label: "Configuration", icon: Settings, staffOnly: true },
   ];
 
@@ -277,7 +284,13 @@ export default function AIPage() {
       )}
 
       {/* Tab content */}
-      {activeTab === "config" && isStaff ? (
+      {activeTab === "reports" && isStaff ? (
+        <AiReportsPanel />
+      ) : activeTab === "insights" && isStaff ? (
+        <CoachingInsightsPanel />
+      ) : activeTab === "faq" && isStaff ? (
+        <FAQDashboard />
+      ) : activeTab === "config" && isStaff ? (
         <div
           className="grid grid-cols-1 lg:grid-cols-3 gap-4 overflow-y-auto pb-8 max-h-none lg:max-h-[calc(100vh-10rem)]"
         >

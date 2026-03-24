@@ -54,6 +54,7 @@ import { IntegrationSettings } from "@/components/settings/integration-settings"
 import { AdminBrandingSettings } from "@/components/settings/admin-branding-settings";
 import { AdminModulesConfig } from "@/components/settings/admin-modules-config";
 import { ActiveSessions } from "@/components/settings/active-sessions";
+import { NotificationSettingsPanel } from "@/components/notifications/notification-settings-panel";
 
 const NOTIFICATION_TOGGLES = [
   {
@@ -838,6 +839,9 @@ export default function SettingsPage() {
                 </button>
               </div>
             </div>
+
+            {/* Advanced notification preferences */}
+            <NotificationSettingsPanel />
           </div>
         </div>
       )}

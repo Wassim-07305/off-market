@@ -17,6 +17,7 @@ import { OnboardingBanner } from "@/components/onboarding/onboarding-banner";
 import { OnboardingChecklist } from "@/components/onboarding/onboarding-checklist";
 import { StreakWidget } from "@/components/dashboard/streak-widget";
 import { ProgressWidget } from "@/components/dashboard/progress-widget";
+import { MiniLeaderboard } from "@/components/dashboard/MiniLeaderboard";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 import { cn } from "@/lib/utils";
 import {
@@ -115,6 +116,11 @@ export function ClientDashboard() {
       >
         <BadgesSection />
         <CommunitySection prefix={prefix} />
+      </motion.div>
+
+      {/* Leaderboard */}
+      <motion.div variants={staggerItem}>
+        <MiniLeaderboard />
       </motion.div>
     </motion.div>
   );

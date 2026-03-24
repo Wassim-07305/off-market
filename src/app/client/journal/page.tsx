@@ -37,6 +37,8 @@ import {
 import { JournalPromptCard } from "@/components/journal/journal-prompt-card";
 import { JournalAttachments } from "@/components/journal/journal-attachments";
 import { ShareToggleInline } from "@/components/journal/share-toggle";
+import { RitualTracker } from "@/components/journal/ritual-tracker";
+import { MediaUpload } from "@/components/journal/media-upload";
 
 type FilterMood = "all" | Mood;
 
@@ -378,6 +380,13 @@ export default function JournalPage() {
           </p>
         </div>
       </motion.div>
+
+      {/* Ritual Tracker */}
+      {!showComposer && !editingEntry && (
+        <motion.div variants={staggerItem}>
+          <RitualTracker />
+        </motion.div>
+      )}
 
       {/* Daily Prompt Card */}
       {!showComposer && !editingEntry && (
@@ -961,6 +970,21 @@ function JournalComposer({
 
       {/* Attachments */}
       <JournalAttachments attachments={attachments} onChange={setAttachments} />
+
+      {/* Media Upload */}
+      <MediaUpload
+        mediaUrls={attachments.filter((a) => a.type === "image").map((a) => a.url)}
+        onChange={(urls) => {
+          const nonImageAttachments = attachments.filter((a) => a.type !== "image");
+          const imageAttachments: JournalAttachment[] = urls.map((url) => ({
+            url,
+            name: url.split("/").pop() ?? "image",
+            type: "image",
+            size: 0,
+          }));
+          setAttachments([...nonImageAttachments, ...imageAttachments]);
+        }}
+      />
 
       {/* Mood */}
       <div className="flex items-center gap-3">

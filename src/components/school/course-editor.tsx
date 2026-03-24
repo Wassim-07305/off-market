@@ -54,6 +54,8 @@ import {
   Loader2,
 } from "lucide-react";
 import { QuizBuilder } from "./quiz-builder";
+import { DripSettings } from "./drip-settings";
+import { LessonChecklistBuilder } from "./lesson-checklist";
 import type { QuizConfig } from "@/types/quiz";
 import Link from "next/link";
 
@@ -1099,6 +1101,14 @@ function LessonEditorPanel({
           )}
         </div>
       )}
+
+      {/* Lesson Checklist Builder */}
+      <div
+        className="bg-surface rounded-2xl border border-border p-6"
+        style={{ boxShadow: "var(--shadow-card)" }}
+      >
+        <LessonChecklistBuilder lessonId={lesson.id} />
+      </div>
     </div>
   );
 }
@@ -1109,13 +1119,16 @@ function LessonEditorPanel({
 
 function ModuleEditorPanel({
   module: mod,
+  allModules,
   onSave,
   isPending,
 }: {
   module: Module;
+  allModules: Module[];
   onSave: (updates: { title: string; description: string | null }) => void;
   isPending: boolean;
 }) {
+  const supabase = useSupabase();
   const [title, setTitle] = useState(mod.title);
   const [description, setDescription] = useState(mod.description ?? "");
 
@@ -1184,6 +1197,28 @@ function ModuleEditorPanel({
             Enregistrer
           </button>
         </div>
+      </div>
+
+      {/* Drip / Unlock Settings */}
+      <div
+        className="bg-surface rounded-2xl border border-border p-6"
+        style={{ boxShadow: "var(--shadow-card)" }}
+      >
+        <DripSettings
+          module={mod}
+          allModules={allModules}
+          onSave={async (updates) => {
+            const { error } = await supabase
+              .from("modules")
+              .update(updates as never)
+              .eq("id", mod.id);
+            if (error) {
+              toast.error("Erreur lors de la sauvegarde du deblocage");
+            } else {
+              toast.success("Deblocage mis a jour");
+            }
+          }}
+        />
       </div>
     </div>
   );
@@ -1492,6 +1527,7 @@ export function CourseEditor({ course, routePrefix }: CourseEditorProps) {
           <ModuleEditorPanel
             key={selectedModule.id}
             module={selectedModule}
+            allModules={modules}
             isPending={mutations.updateModule.isPending}
             onSave={(updates) => {
               mutations.updateModule.mutate(

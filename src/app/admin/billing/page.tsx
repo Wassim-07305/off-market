@@ -48,6 +48,8 @@ import { PageTransition } from "@/components/ui/page-transition";
 import { HeroMetric } from "@/components/dashboard/hero-metric";
 import { PaymentScheduleView } from "@/components/billing/payment-schedule-view";
 import { RelanceSequencesView } from "@/components/crm/relance-sequences-view";
+import { UpsellRulesManager } from "@/components/admin/upsell-rules-manager";
+import { UpsellDashboard } from "@/components/upsell/upsell-dashboard";
 
 function formatEUR(amount: number) {
   return new Intl.NumberFormat("fr-FR", {
@@ -500,6 +502,16 @@ export default function BillingOverviewPage() {
         {/* Relance sequences (automated follow-ups) */}
         <motion.div variants={fadeInUp} transition={defaultTransition}>
           <RelanceSequencesView />
+        </motion.div>
+
+        {/* Upsell dashboard */}
+        <motion.div variants={fadeInUp} transition={defaultTransition}>
+          <UpsellDashboard />
+        </motion.div>
+
+        {/* Upsell rules configuration */}
+        <motion.div variants={fadeInUp} transition={defaultTransition}>
+          <UpsellRulesManager />
         </motion.div>
       </motion.div>
     </PageTransition>

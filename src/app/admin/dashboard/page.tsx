@@ -20,6 +20,8 @@ import { ActivityHeatmap } from "@/components/dashboard/activity-heatmap";
 import { PeriodComparison } from "@/components/dashboard/period-comparison";
 import { LTVRanking } from "@/components/dashboard/ltv-ranking";
 import { AiPeriodicReport } from "@/components/dashboard/ai-periodic-report";
+import { AdminObjective } from "@/components/dashboard/admin-objective";
+import { LeadsChart } from "@/components/dashboard/LeadsChart";
 import Link from "next/link";
 import { ExportDropdown } from "@/components/shared/export-dropdown";
 import { formatCurrency, cn } from "@/lib/utils";
@@ -677,6 +679,17 @@ export default function AdminDashboardPage() {
       >
         <KpiGoalsWidget />
         <ConversionFunnel />
+      </motion.div>
+
+      {/* ─── Objectif mensuel + Leads chart ─── */}
+      <motion.div
+        variants={staggerItem}
+        className="grid grid-cols-1 lg:grid-cols-3 gap-4"
+      >
+        <AdminObjective />
+        <div className="lg:col-span-2">
+          <LeadsChart />
+        </div>
       </motion.div>
 
       {/* ─── Bottom: Activity feed + Coach leaderboard ─── */}

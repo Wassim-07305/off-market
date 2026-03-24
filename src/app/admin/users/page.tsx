@@ -14,6 +14,7 @@ import {
   ChevronDown,
   CheckSquare,
   UserX,
+  Upload,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getInitials, formatDate } from "@/lib/utils";
@@ -24,6 +25,8 @@ import { ROLE_OPTIONS } from "@/types/invitations";
 import type { Profile } from "@/types/database";
 import { motion } from "framer-motion";
 import { fadeInUp, defaultTransition } from "@/lib/animations";
+import { CSVImportModal } from "@/components/shared/CSVImportModal";
+import type { CSVColumn } from "@/components/shared/CSVImportModal";
 
 type UserFilter = "all" | "active" | "archived";
 
@@ -37,6 +40,7 @@ export default function UsersPage() {
   >(null);
   const [editingRoleId, setEditingRoleId] = useState<string | null>(null);
   const [showOffboardingWizard, setShowOffboardingWizard] = useState(false);
+  const [showCsvImport, setShowCsvImport] = useState(false);
 
   const { users, isLoading, error: usersError, changeUserRole, archiveUser, restoreUser } =
     useUserManagement();
@@ -142,13 +146,22 @@ export default function UsersPage() {
             </p>
           </div>
         </div>
-        <button
-          onClick={() => setShowOffboardingWizard(true)}
-          className="h-10 px-4 rounded-xl bg-[#DC2626] text-white text-sm font-medium hover:bg-[#DC2626]/90 transition-all active:scale-[0.98] flex items-center gap-2"
-        >
-          <UserX className="w-4 h-4" />
-          Offboarding
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowCsvImport(true)}
+            className="h-10 px-4 rounded-xl border border-border text-sm font-medium text-foreground hover:bg-muted transition-all active:scale-[0.98] flex items-center gap-2"
+          >
+            <Upload className="w-4 h-4" />
+            Importer CSV
+          </button>
+          <button
+            onClick={() => setShowOffboardingWizard(true)}
+            className="h-10 px-4 rounded-xl bg-[#DC2626] text-white text-sm font-medium hover:bg-[#DC2626]/90 transition-all active:scale-[0.98] flex items-center gap-2"
+          >
+            <UserX className="w-4 h-4" />
+            Offboarding
+          </button>
+        </div>
       </div>
 
       {/* Filters */}
@@ -471,6 +484,30 @@ export default function UsersPage() {
         open={showOffboardingWizard}
         onClose={() => setShowOffboardingWizard(false)}
         users={users}
+      />
+
+      {/* CSV import modal */}
+      <CSVImportModal
+        open={showCsvImport}
+        onClose={() => setShowCsvImport(false)}
+        title="Importer des utilisateurs"
+        description="Importez des utilisateurs depuis un fichier CSV"
+        columns={[
+          { key: "full_name", label: "Nom complet", required: true },
+          { key: "email", label: "Email", required: true },
+          { key: "role", label: "Role" },
+          { key: "phone", label: "Telephone" },
+        ]}
+        onImport={async (rows) => {
+          const res = await fetch("/api/admin/users/import", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ users: rows }),
+          });
+          const data = await res.json();
+          return { success: data.success ?? 0, errors: data.errors ?? 0 };
+        }}
+        templateFilename="users-import-template"
       />
     </motion.div>
   );

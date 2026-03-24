@@ -8,7 +8,7 @@ import type { OnboardingStep } from "@/types/billing";
 
 // ─── Step keys per role ──────────────────────────────────────────
 export const ROLE_ONBOARDING_STEPS = {
-  admin: ["welcome_video", "admin_setup", "completion"] as const,
+  admin: ["welcome_video", "admin_setup", "offer_selection", "completion"] as const,
   coach: [
     "welcome_video",
     "about_you",
@@ -44,6 +44,7 @@ export const ALL_STEP_KEYS = [
   "admin_setup",
   "coach_tools",
   "sales_tools",
+  "offer_selection",
   "completion",
 ] as const;
 

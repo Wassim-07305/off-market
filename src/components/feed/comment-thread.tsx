@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useComments } from "@/hooks/use-feed";
 import { useAuth } from "@/hooks/use-auth";
 import { ReportButton } from "@/components/feed/report-modal";
+import { MentionInput } from "@/components/feed/mention-input";
 import type { FeedComment } from "@/types/feed";
 import {
   Send,
@@ -310,15 +311,11 @@ export function CommentThread({ postId }: { postId: string }) {
       <div className="flex items-start gap-2 pt-2">
         <div className="flex-1">
           <div className="flex gap-2">
-            <input
-              type="text"
+            <MentionInput
               value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              onKeyDown={(e) =>
-                e.key === "Enter" && !e.shiftKey && handleSubmitTopLevel()
-              }
-              placeholder="Ecrire un commentaire..."
-              className="flex-1 h-9 px-3 bg-muted/50 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-shadow"
+              onChange={setNewComment}
+              onSubmit={handleSubmitTopLevel}
+              placeholder="Ecrire un commentaire... (@mention)"
             />
             <button
               onClick={handleSubmitTopLevel}

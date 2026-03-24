@@ -21,6 +21,8 @@ import { AssignmentSubmission } from "@/components/school/assignment-submission"
 import { ExerciseReview } from "@/components/school/exercise-review";
 import { QuizExerciseStats } from "@/components/school/quiz-exercise-stats";
 import { EmbedViewer } from "@/components/school/embed-viewer";
+import { LessonChecklist } from "@/components/school/lesson-checklist";
+import { LessonComments } from "@/components/school/lesson-comments";
 import { useAuth } from "@/hooks/use-auth";
 import { useLessonTimer, formatTimeSpent } from "@/hooks/use-lesson-timer";
 import {
@@ -539,6 +541,14 @@ export default function LessonPage({
             </div>
           </div>
         )}
+      </div>
+
+      {/* Lesson Checklist */}
+      <LessonChecklist lessonId={lessonId} />
+
+      {/* Lesson Comments */}
+      <div className="bg-surface rounded-2xl p-6" style={{ boxShadow: "var(--shadow-card)" }}>
+        <LessonComments lessonId={lessonId} />
       </div>
 
       {/* Navigation */}

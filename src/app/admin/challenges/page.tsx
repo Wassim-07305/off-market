@@ -24,6 +24,7 @@ import {
   Calendar,
 } from "lucide-react";
 import { CreateChallengeModal } from "@/components/gamification/create-challenge-modal";
+import { ChallengeReview } from "@/components/admin/challenge-review";
 import {
   CHALLENGE_TYPE_CONFIG,
   type Challenge,
@@ -325,6 +326,11 @@ export default function AdminChallengesPage() {
           ))}
         </motion.div>
       )}
+
+      {/* Submissions review */}
+      <motion.div variants={fadeInUp} transition={defaultTransition}>
+        <ChallengeReview />
+      </motion.div>
 
       {/* Create Challenge Modal */}
       <CreateChallengeModal

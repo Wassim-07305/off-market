@@ -4,6 +4,7 @@ import { useCallback, useMemo, useState } from "react";
 import { useMessagingStore } from "@/stores/messaging-store";
 import { useBookmarks } from "@/hooks/use-bookmarks";
 import { ChatHeader } from "./chat-header";
+import { MessageSearch } from "./message-search";
 import { MessageList } from "./message-list";
 import { ChatInput } from "./chat-input";
 import { TypingIndicator } from "./typing-indicator";
@@ -322,6 +323,23 @@ export function ChatPanel({
           onMute={onMute}
           onArchive={onArchive}
         />
+
+        {showSearchPanel && (
+          <MessageSearch
+            messages={messages}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            onClose={() => {
+              setShowSearchPanel(false);
+              setSearchQuery("");
+            }}
+            onJumpToMessage={(messageId) => {
+              document
+                .getElementById(`msg-${messageId}`)
+                ?.scrollIntoView({ behavior: "smooth", block: "center" });
+            }}
+          />
+        )}
 
         <PinnedMessagesBar
           pinnedMessages={pinnedMessages}

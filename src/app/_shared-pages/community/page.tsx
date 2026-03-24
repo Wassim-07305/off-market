@@ -20,7 +20,9 @@ import {
   SlidersHorizontal,
   ArrowUpDown,
   MessageSquare,
+  Plus,
 } from "lucide-react";
+import { CreateCommunityModal } from "@/components/community/create-community-modal";
 
 const ROLE_LABELS: Record<string, { label: string; color: string }> = {
   admin: { label: "Admin", color: "text-red-600 bg-red-500/10" },
@@ -42,6 +44,7 @@ export default function CommunityPage() {
   const [sortBy, setSortBy] = useState<SortBy>("level");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [roleFilter, setRoleFilter] = useState<string>("all");
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
   // Available roles for filtering
   const roles = useMemo(() => {
@@ -100,13 +103,22 @@ export default function CommunityPage() {
       className="max-w-4xl mx-auto space-y-6"
     >
       {/* Header */}
-      <motion.div variants={staggerItem}>
-        <h1 className="text-2xl font-display font-bold text-foreground tracking-tight">
-          Communaute
-        </h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          {members.length} membres dans la communaute
-        </p>
+      <motion.div variants={staggerItem} className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-display font-bold text-foreground tracking-tight">
+            Communaute
+          </h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            {members.length} membres dans la communaute
+          </p>
+        </div>
+        <button
+          onClick={() => setShowCreateModal(true)}
+          className="h-9 px-4 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-colors flex items-center gap-1.5"
+        >
+          <Plus className="w-4 h-4" />
+          Nouveau groupe
+        </button>
       </motion.div>
 
       {/* Search and controls */}
@@ -251,6 +263,11 @@ export default function CommunityPage() {
           ))}
         </motion.div>
       )}
+
+      <CreateCommunityModal
+        open={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+      />
     </motion.div>
   );
 }

@@ -3,6 +3,7 @@
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { TrendingUp, TrendingDown } from "lucide-react";
+import { AnimatedNumber } from "@/components/shared/AnimatedNumber";
 
 interface StatCardProps {
   title: string;
@@ -53,7 +54,11 @@ export function StatCard({
       </div>
 
       <div className="relative text-[28px] font-bold text-foreground tracking-tight leading-none">
-        {value}
+        {typeof value === "number" ? (
+          <AnimatedNumber value={value} />
+        ) : (
+          value
+        )}
       </div>
 
       {change !== undefined && (

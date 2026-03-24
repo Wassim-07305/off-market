@@ -9,6 +9,8 @@ import { CoachMetrics } from "@/components/dashboard/coach-metrics";
 import { RiskAnalysisPanel } from "@/components/dashboard/risk-analysis-panel";
 import { AiPeriodicReport } from "@/components/dashboard/ai-periodic-report";
 import { CoachAlertsPanel } from "@/components/crm/coach-alerts-panel";
+import { CoachUnreadMessages } from "@/components/dashboard/coach-unread-messages";
+import { CoachWeeklySummary } from "@/components/dashboard/coach-weekly-summary";
 import { useStudents, getStudentDetail } from "@/hooks/use-students";
 import { useCoachAlerts } from "@/hooks/use-coach-alerts";
 import { useSessions } from "@/hooks/use-sessions";
@@ -224,6 +226,8 @@ export default function CoachDashboardPage() {
             )}
           </div>
 
+          <CoachWeeklySummary />
+          <CoachUnreadMessages />
           <AiPeriodicReport />
           <RiskAnalysisPanel />
           <CoachActivityFeed />

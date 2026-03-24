@@ -11,7 +11,9 @@ import { useMiniChallenge } from "@/hooks/use-mini-challenge";
 import { useAuth } from "@/hooks/use-auth";
 import { CHALLENGE_TYPE_CONFIG } from "@/types/gamification";
 import type { ChallengeType, Challenge } from "@/types/gamification";
-import { Flame, Calendar, Users, CheckCircle, Clock, Lock, ArrowRight } from "lucide-react";
+import { Flame, Calendar, Users, CheckCircle, Clock, Lock, ArrowRight, BarChart3 } from "lucide-react";
+import { ChallengeLeaderboard } from "@/components/gamification/challenge-leaderboard";
+import { ChallengeSubmission } from "@/components/gamification/challenge-submission";
 
 function daysLeft(endDate: string) {
   const diff = new Date(endDate).getTime() - Date.now();
@@ -153,6 +155,28 @@ export default function ClientChallengesPage() {
                   );
                 })}
               </div>
+            </motion.div>
+          )}
+
+          {/* Submit entry + Leaderboard for active challenges */}
+          {myChallenges.length > 0 && (
+            <motion.div variants={fadeInUp} transition={defaultTransition} className="space-y-4">
+              {myChallenges.map((participation) => {
+                const challenge = participation.challenge;
+                if (!challenge) return null;
+                return (
+                  <div key={`actions-${participation.id}`} className="space-y-4">
+                    <ChallengeSubmission
+                      challengeId={challenge.id}
+                      challengeTitle={challenge.title}
+                    />
+                    <ChallengeLeaderboard
+                      challengeId={challenge.id}
+                      challengeTitle={challenge.title}
+                    />
+                  </div>
+                );
+              })}
             </motion.div>
           )}
 

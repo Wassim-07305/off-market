@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import { cn, formatCurrency } from "@/lib/utils";
 import { Users, Megaphone, GraduationCap, TrendingUp, AlertTriangle, Heart, Calendar, ChevronDown, ChevronRight, Search, PhoneCall } from "lucide-react";
 import dynamic from "next/dynamic";
+import { PipelineTimeline } from "@/components/crm/pipeline-timeline";
 import { useQuery } from "@tanstack/react-query";
 import { useSupabase } from "@/hooks/use-supabase";
 import { motion } from "framer-motion";
@@ -29,12 +30,13 @@ const CloserPipelinePage = dynamic(
   { ssr: false, loading: DynamicLoader },
 );
 
-type CrmMode = "pipeline" | "closer-pipeline" | "coaches";
+type CrmMode = "pipeline" | "closer-pipeline" | "coaches" | "timeline";
 
 const MODES: { key: CrmMode; label: string; icon: typeof Users }[] = [
   { key: "coaches", label: "Suivi Coaches", icon: GraduationCap },
   { key: "pipeline", label: "Pipeline Setter", icon: Megaphone },
   { key: "closer-pipeline", label: "Pipeline Closer", icon: PhoneCall },
+  { key: "timeline", label: "Timeline", icon: TrendingUp },
 ];
 
 // ─── Coach Monitoring Panel ──────────────────────────────────
@@ -413,6 +415,8 @@ export default function AdminCrmPage() {
         <CoachMonitoringPanel />
       ) : mode === "closer-pipeline" ? (
         <CloserPipelinePage />
+      ) : mode === "timeline" ? (
+        <PipelineTimeline />
       ) : (
         <SetterPipelinePage />
       )}

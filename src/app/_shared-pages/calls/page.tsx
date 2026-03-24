@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { DropdownMenu, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { SmsReminderButton } from "@/components/calls/sms-reminder-button";
+import { CallMetrics } from "@/components/calls/call-metrics";
 import { format, parseISO, isToday } from "date-fns";
 import { fr } from "date-fns/locale";
 import { toast } from "sonner";
@@ -779,6 +780,11 @@ export default function CallsPage() {
             className="h-9 pl-9 pr-4 w-full sm:w-64 rounded-xl bg-muted/50 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 border border-border transition-shadow"
           />
         </div>
+      </motion.div>
+
+      {/* Metriques d'appels */}
+      <motion.div variants={staggerItem}>
+        <CallMetrics />
       </motion.div>
 
       {/* Filtres statut */}

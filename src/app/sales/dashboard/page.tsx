@@ -45,6 +45,9 @@ import Link from "next/link";
 import { ExportDropdown } from "@/components/shared/export-dropdown";
 import { exportToCSV, exportToPDF } from "@/lib/export";
 import { SalesLeaderboard } from "@/components/crm/sales-leaderboard";
+import { SalesConversionMetrics } from "@/components/dashboard/sales-conversion-metrics";
+import { SalesPipeline } from "@/components/dashboard/sales-pipeline";
+import { SetterActivityChart } from "@/components/dashboard/SetterActivityChart";
 
 function formatEUR(amount: number) {
   return new Intl.NumberFormat("fr-FR", {
@@ -601,6 +604,20 @@ export default function SalesDashboardPage() {
           value={formatEUR(mrr * 12)}
           icon={TrendingUp}
         />
+      </motion.div>
+
+      {/* Pipeline + Conversion metrics */}
+      <motion.div
+        variants={staggerItem}
+        className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+      >
+        <SalesPipeline />
+        <SalesConversionMetrics />
+      </motion.div>
+
+      {/* Setter activity chart */}
+      <motion.div variants={staggerItem}>
+        <SetterActivityChart />
       </motion.div>
 
       {/* Sales team leaderboard */}
