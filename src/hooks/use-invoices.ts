@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
 import { toast } from "sonner";
+import { logAudit } from "@/lib/audit";
 import type {
   Invoice,
   InvoiceStatus,
@@ -86,6 +87,7 @@ export function useInvoices(options: UseInvoicesOptions = {}) {
         .update(updates as never)
         .eq("id", id);
       if (error) throw error;
+      logAudit(supabase, { userId: user?.id ?? null, action: "invoice_updated", entityType: "invoice", entityId: id });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["invoices"] });
@@ -103,6 +105,7 @@ export function useInvoices(options: UseInvoicesOptions = {}) {
         .update({ status: "paid", paid_at: new Date().toISOString() } as never)
         .eq("id", id);
       if (error) throw error;
+      logAudit(supabase, { userId: user?.id ?? null, action: "invoice_status_changed", entityType: "invoice", entityId: id, metadata: { new_status: "paid" } });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["invoices"] });
@@ -120,6 +123,7 @@ export function useInvoices(options: UseInvoicesOptions = {}) {
         .update({ status: "sent" } as never)
         .eq("id", id);
       if (error) throw error;
+      logAudit(supabase, { userId: user?.id ?? null, action: "invoice_status_changed", entityType: "invoice", entityId: id, metadata: { new_status: "sent" } });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["invoices"] });

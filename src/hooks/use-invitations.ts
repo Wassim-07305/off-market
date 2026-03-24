@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
 import { toast } from "sonner";
+import { logAudit } from "@/lib/audit";
 import type { UserInvite } from "@/types/invitations";
 
 export function useInvitations() {
@@ -43,6 +44,7 @@ export function useInvitations() {
         .select()
         .single();
       if (error) throw error;
+      logAudit(supabase, { userId: user?.id ?? null, action: "invitation_sent", entityType: "invitation", entityId: (data as UserInvite).id, metadata: { email: invite.email, role: invite.role } });
       return data as UserInvite;
     },
     onSuccess: async (data) => {

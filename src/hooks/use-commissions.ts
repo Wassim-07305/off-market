@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
 import { toast } from "sonner";
+import { logAudit } from "@/lib/audit";
 import type {
   Commission,
   CommissionRole,
@@ -59,6 +60,7 @@ export function useCommissions(options: UseCommissionsOptions = {}) {
         .select()
         .single();
       if (error) throw error;
+      logAudit(supabase, { userId: user?.id ?? null, action: "commission_created", entityType: "commission", entityId: (data as Commission).id });
       return data as Commission;
     },
     onSuccess: () => {
@@ -76,6 +78,7 @@ export function useCommissions(options: UseCommissionsOptions = {}) {
         .update({ status: "paid", paid_at: new Date().toISOString() } as never)
         .eq("id", id);
       if (error) throw error;
+      logAudit(supabase, { userId: user?.id ?? null, action: "commission_paid", entityType: "commission", entityId: id });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["commissions"] });

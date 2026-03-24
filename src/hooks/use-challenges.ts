@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
 import { toast } from "sonner";
+import { logAudit } from "@/lib/audit";
 import type {
   Challenge,
   ChallengeParticipant,
@@ -223,6 +224,7 @@ export function useChallenges() {
         .select()
         .single();
       if (error) throw error;
+      logAudit(supabase, { userId: user?.id ?? null, action: "challenge_created", entityType: "challenge", entityId: (data as Challenge).id });
       return data as Challenge;
     },
     onSuccess: () => {
@@ -245,6 +247,7 @@ export function useChallenges() {
         .update(updates as never)
         .eq("id", id);
       if (error) throw error;
+      logAudit(supabase, { userId: user?.id ?? null, action: "challenge_updated", entityType: "challenge", entityId: id });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["challenges"] });

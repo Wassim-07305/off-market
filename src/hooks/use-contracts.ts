@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
 import { useAuth } from "./use-auth";
 import { toast } from "sonner";
+import { logAudit } from "@/lib/audit";
 import type {
   Contract,
   ContractTemplate,
@@ -76,6 +77,7 @@ export function useContracts(options: UseContractsOptions = {}) {
         .update(updates as never)
         .eq("id", id);
       if (error) throw error;
+      logAudit(supabase, { userId: user?.id ?? null, action: "contract_updated", entityType: "contract", entityId: id });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["contracts"] });
@@ -92,6 +94,7 @@ export function useContracts(options: UseContractsOptions = {}) {
         .update({ status: "sent", sent_at: new Date().toISOString() } as never)
         .eq("id", id);
       if (error) throw error;
+      logAudit(supabase, { userId: user?.id ?? null, action: "contract_sent", entityType: "contract", entityId: id });
       return id;
     },
     onSuccess: () => {
@@ -129,6 +132,8 @@ export function useContracts(options: UseContractsOptions = {}) {
         .eq("id", id);
       if (error) throw error;
 
+      logAudit(supabase, { userId: user?.id ?? null, action: "contract_signed", entityType: "contract", entityId: id });
+
       // Notify admin that contract was signed → they need to create an invoice
       try {
         await fetch("/api/contracts/on-signed", {
@@ -158,6 +163,7 @@ export function useContracts(options: UseContractsOptions = {}) {
         } as never)
         .eq("id", id);
       if (error) throw error;
+      logAudit(supabase, { userId: user?.id ?? null, action: "contract_cancelled", entityType: "contract", entityId: id });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["contracts"] });
