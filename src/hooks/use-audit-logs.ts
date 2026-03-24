@@ -38,7 +38,7 @@ export function useAuditLogs(options: UseAuditLogsOptions = {}) {
       let q = (supabase as any)
         .from("audit_logs")
         .select(
-          "*, user:profiles!audit_logs_user_id_fkey(id, full_name, email, avatar_url)",
+          "*, user:profiles(id, full_name, email, avatar_url)",
         )
         .order("created_at", { ascending: false })
         .limit(limit);

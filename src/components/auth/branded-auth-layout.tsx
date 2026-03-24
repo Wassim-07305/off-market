@@ -14,9 +14,11 @@ export function BrandedAuthLayout({ children }: BrandedAuthLayoutProps) {
 
   const appName = branding?.app_name ?? "Off Market";
   const logoUrl = branding?.logo_url;
-  const tagline = branding?.tagline;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const raw = branding as any;
+  const tagline = raw?.tagline as string | undefined;
   const primaryColor = branding?.primary_color ?? "#DC2626";
-  const authBgUrl = branding?.auth_background_url;
+  const authBgUrl = raw?.auth_background_url as string | undefined;
   const variants = colorVariants(primaryColor);
 
   if (isLoading) {

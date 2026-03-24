@@ -117,9 +117,7 @@ export function useMonitoringAuditLogs(limit = 20) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data, error } = await (supabase as any)
         .from("audit_logs")
-        .select(
-          "*, user:profiles!audit_logs_user_id_fkey(id, full_name, email, avatar_url)",
-        )
+        .select("*")
         .order("created_at", { ascending: false })
         .limit(limit);
 
