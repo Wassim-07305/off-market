@@ -20,6 +20,7 @@ import {
   Lock,
   Search,
   Settings,
+  BarChart3,
 } from "lucide-react";
 
 type FilterTab = "all" | "in_progress" | "completed" | "not_started";
@@ -154,13 +155,22 @@ export default function SchoolPage() {
             </p>
           </div>
           {isStaff && (
-            <Link
-              href={`${prefix}/school/admin`}
-              className="h-9 px-4 rounded-xl border border-border text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all inline-flex items-center gap-2"
-            >
-              <Settings className="w-4 h-4" />
-              Gerer les formations
-            </Link>
+            <div className="flex items-center gap-2">
+              <Link
+                href={`${prefix}/school/analytics`}
+                className="h-9 px-4 rounded-xl border border-border text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all inline-flex items-center gap-2"
+              >
+                <BarChart3 className="w-4 h-4" />
+                Statistiques
+              </Link>
+              <Link
+                href={`${prefix}/school/admin`}
+                className="h-9 px-4 rounded-xl border border-border text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all inline-flex items-center gap-2"
+              >
+                <Settings className="w-4 h-4" />
+                Gerer
+              </Link>
+            </div>
           )}
         </motion.div>
 
