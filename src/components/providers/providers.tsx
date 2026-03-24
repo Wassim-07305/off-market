@@ -18,8 +18,14 @@ import { RgpdConsentBanner } from "@/components/shared/rgpd-consent-banner";
 import { GamificationProvider } from "@/components/providers/gamification-provider";
 import { ErrorMonitoringProvider } from "@/components/providers/error-monitoring-provider";
 import { LazyMotion, domAnimation } from "framer-motion";
+import { usePresence } from "@/hooks/usePresence";
 import type { User } from "@supabase/supabase-js";
 import type { Profile } from "@/types/database";
+
+function PresenceTracker() {
+  usePresence();
+  return null;
+}
 
 interface ProvidersProps {
   children: React.ReactNode;
@@ -96,6 +102,7 @@ export function Providers({
                 <WalkthroughProvider>
                   {children}
                   <GamificationProvider />
+                  <PresenceTracker />
                   <IncomingCallToast />
                   <RgpdConsentBanner />
                 </WalkthroughProvider>
