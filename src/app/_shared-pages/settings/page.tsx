@@ -51,6 +51,9 @@ import { BrandingSettings } from "@/components/settings/branding-settings";
 import { ApiSettings } from "@/components/settings/api-settings";
 import { RoleManager } from "@/components/settings/role-manager";
 import { IntegrationSettings } from "@/components/settings/integration-settings";
+import { AdminBrandingSettings } from "@/components/settings/admin-branding-settings";
+import { AdminModulesConfig } from "@/components/settings/admin-modules-config";
+import { ActiveSessions } from "@/components/settings/active-sessions";
 
 const NOTIFICATION_TOGGLES = [
   {
@@ -667,6 +670,20 @@ export default function SettingsPage() {
         {/* Integrations (admin only) */}
         {isAdmin && <IntegrationSettings />}
 
+        {/* Admin Branding (admin only) */}
+        {isAdmin && (
+          <div className="bg-surface rounded-2xl border border-border p-6">
+            <AdminBrandingSettings />
+          </div>
+        )}
+
+        {/* Admin Modules Config (admin only) */}
+        {isAdmin && (
+          <div className="bg-surface rounded-2xl border border-border p-6">
+            <AdminModulesConfig />
+          </div>
+        )}
+
         {/* Audit Log link (admin only) */}
         {isAdmin && (
           <Link
@@ -942,6 +959,8 @@ export default function SettingsPage() {
             </div>
           )}
         </div>
+        {/* Active Sessions */}
+        <ActiveSessions />
       </div>
 
       {/* Danger zone */}

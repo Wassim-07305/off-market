@@ -15,6 +15,8 @@ import { useAnnouncements } from "@/hooks/useAnnouncements";
 import { useRoutePrefix } from "@/hooks/use-route-prefix";
 import { OnboardingBanner } from "@/components/onboarding/onboarding-banner";
 import { OnboardingChecklist } from "@/components/onboarding/onboarding-checklist";
+import { StreakWidget } from "@/components/dashboard/streak-widget";
+import { ProgressWidget } from "@/components/dashboard/progress-widget";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 import { cn } from "@/lib/utils";
 import {
@@ -77,6 +79,15 @@ export function ClientDashboard() {
         <TopStatsSection prefix={prefix} />
       </motion.div>
 
+      {/* Streak details + Progress overview */}
+      <motion.div
+        variants={staggerItem}
+        className="grid grid-cols-1 lg:grid-cols-2 gap-4"
+      >
+        <StreakWidget />
+        <ProgressWidgetSection />
+      </motion.div>
+
       {/* Onboarding checklist */}
       <motion.div variants={staggerItem}>
         <OnboardingChecklist />
@@ -106,6 +117,69 @@ export function ClientDashboard() {
         <CommunitySection prefix={prefix} />
       </motion.div>
     </motion.div>
+  );
+}
+
+// ===================================================================
+// PROGRESS WIDGET SECTION (wraps ProgressWidget with live data)
+// ===================================================================
+
+function ProgressWidgetSection() {
+  const { summary, isLoading: xpLoading } = useXp();
+  const { goals, isLoading: goalsLoading } = useCoachingGoals();
+  const { data: courses } = useCourses("published");
+  const { data: lessonProgress } = useLessonProgress();
+
+  const items = useMemo(() => {
+    // Formations progress
+    const totalLessons =
+      courses?.reduce(
+        (acc, c) =>
+          acc +
+          (c.modules?.reduce((a, m) => a + (m.lessons?.length ?? 0), 0) ?? 0),
+        0,
+      ) ?? 0;
+    const completedLessons = lessonProgress
+      ? lessonProgress.filter((p) => p.status === "completed").length
+      : 0;
+
+    const activeGoals = goals.filter((g) => g.status !== "completed");
+    const completedGoals = goals.filter(
+      (g) => g.status === "completed",
+    ).length;
+
+    return [
+      {
+        label: "XP vers prochain niveau",
+        current: summary.totalXp - (summary.level.min_xp ?? 0),
+        target: summary.nextLevel
+          ? summary.nextLevel.min_xp - (summary.level.min_xp ?? 0)
+          : 1,
+        icon: Star,
+        color: "text-amber-500",
+      },
+      {
+        label: "Lecons terminees",
+        current: completedLessons,
+        target: Math.max(totalLessons, 1),
+        icon: GraduationCap,
+        color: "text-emerald-500",
+      },
+      {
+        label: "Objectifs atteints",
+        current: completedGoals,
+        target: Math.max(goals.length, 1),
+        icon: Target,
+        color: "text-amber-500",
+      },
+    ];
+  }, [summary, goals, courses, lessonProgress]);
+
+  return (
+    <ProgressWidget
+      items={items}
+      isLoading={xpLoading || goalsLoading}
+    />
   );
 }
 

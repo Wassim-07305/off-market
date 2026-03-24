@@ -27,6 +27,7 @@ import { cn, formatDate } from "@/lib/utils";
 import { ReportButton } from "@/components/feed/report-modal";
 import { CommentThread } from "@/components/feed/comment-thread";
 import { TrendingSidebar } from "@/components/feed/trending-sidebar";
+import { WinComposer } from "@/components/feed/win-composer";
 import { useAnnouncements } from "@/hooks/useAnnouncements";
 import { Megaphone, Info, AlertTriangle, CheckCircle2, Sparkles, Zap } from "lucide-react";
 
@@ -343,6 +344,7 @@ function PostComposer({
   const [content, setContent] = useState("");
   const [postType, setPostType] = useState<PostType>("general");
   const [expanded, setExpanded] = useState(false);
+  const [showWinComposer, setShowWinComposer] = useState(false);
 
   const handleSubmit = () => {
     if (!content.trim()) return;
@@ -353,51 +355,76 @@ function PostComposer({
   };
 
   return (
-    <div className="bg-surface rounded-2xl border border-border p-4 shadow-sm transition-all duration-200 hover:shadow-md">
-      <textarea
-        value={content}
-        onChange={(e) => {
-          setContent(e.target.value);
-          if (!expanded && e.target.value) setExpanded(true);
-        }}
-        onFocus={() => setExpanded(true)}
-        placeholder="Partagez quelque chose avec la communaute..."
-        rows={expanded ? 4 : 2}
-        className="w-full bg-muted/50 rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20 resize-none transition-shadow"
-      />
+    <div className="space-y-3">
+      <div className="bg-surface rounded-2xl border border-border p-4 shadow-sm transition-all duration-200 hover:shadow-md">
+        <textarea
+          value={content}
+          onChange={(e) => {
+            setContent(e.target.value);
+            if (!expanded && e.target.value) setExpanded(true);
+          }}
+          onFocus={() => setExpanded(true)}
+          placeholder="Partagez quelque chose avec la communaute..."
+          rows={expanded ? 4 : 2}
+          className="w-full bg-muted/50 rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#AF0000]/20 resize-none transition-shadow"
+        />
 
-      {expanded && (
-        <div className="flex items-center justify-between mt-3 pt-3 border-t border-border/50">
-          <div className="flex gap-1">
-            {(
-              Object.entries(POST_TYPE_CONFIG) as [
-                PostType,
-                typeof POST_TYPE_CONFIG.general,
-              ][]
-            ).map(([type, config]) => (
+        {expanded && (
+          <div className="flex items-center justify-between mt-3 pt-3 border-t border-border/50">
+            <div className="flex gap-1">
+              {(
+                Object.entries(POST_TYPE_CONFIG) as [
+                  PostType,
+                  typeof POST_TYPE_CONFIG.general,
+                ][]
+              ).map(([type, config]) => (
+                <button
+                  key={type}
+                  onClick={() => {
+                    if (type === "victory") {
+                      setShowWinComposer(true);
+                    } else {
+                      setShowWinComposer(false);
+                      setPostType(type);
+                    }
+                  }}
+                  className={`px-2.5 py-1 rounded-full text-[11px] font-medium transition-all ${
+                    (type === "victory" && showWinComposer) || (postType === type && !showWinComposer)
+                      ? config.color
+                      : "text-muted-foreground hover:bg-muted"
+                  }`}
+                >
+                  {config.emoji} {config.label}
+                </button>
+              ))}
+            </div>
+            {!showWinComposer && (
               <button
-                key={type}
-                onClick={() => setPostType(type)}
-                className={`px-2.5 py-1 rounded-full text-[11px] font-medium transition-all ${
-                  postType === type
-                    ? config.color
-                    : "text-muted-foreground hover:bg-muted"
-                }`}
+                onClick={handleSubmit}
+                disabled={!content.trim() || isSubmitting}
+                className="h-8 px-4 bg-gradient-to-r from-[#AF0000] to-[#DC2626] text-white rounded-xl text-xs font-medium hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-50 shadow-sm shadow-[#AF0000]/20 flex items-center gap-1"
               >
-                {config.emoji} {config.label}
+                <Send className="w-3 h-3" />
+                {isSubmitting ? "..." : "Publier"}
               </button>
-            ))}
+            )}
           </div>
-          <button
-            onClick={handleSubmit}
-            disabled={!content.trim() || isSubmitting}
-            className="h-8 px-4 bg-gradient-to-r from-[#AF0000] to-[#DC2626] text-white rounded-xl text-xs font-medium hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-50 shadow-sm shadow-[#AF0000]/20 flex items-center gap-1"
-          >
-            <Send className="w-3 h-3" />
-            {isSubmitting ? "..." : "Publier"}
-          </button>
-        </div>
-      )}
+        )}
+      </div>
+
+      <AnimatePresence>
+        {showWinComposer && (
+          <WinComposer
+            onSubmit={(content, _meta) => {
+              onSubmit(content, "victory");
+              setShowWinComposer(false);
+              setExpanded(false);
+            }}
+            isSubmitting={isSubmitting}
+            onCancel={() => setShowWinComposer(false)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

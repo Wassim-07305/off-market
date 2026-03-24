@@ -8,6 +8,7 @@ import { CoachActivityFeed } from "@/components/dashboard/coach-activity-feed";
 import { CoachMetrics } from "@/components/dashboard/coach-metrics";
 import { RiskAnalysisPanel } from "@/components/dashboard/risk-analysis-panel";
 import { AiPeriodicReport } from "@/components/dashboard/ai-periodic-report";
+import { CoachAlertsPanel } from "@/components/crm/coach-alerts-panel";
 import { useStudents, getStudentDetail } from "@/hooks/use-students";
 import { useCoachAlerts } from "@/hooks/use-coach-alerts";
 import { useSessions } from "@/hooks/use-sessions";
@@ -17,17 +18,12 @@ import {
   AlertTriangle,
   CalendarCheck,
   HeartPulse,
-  CheckCircle,
-  X,
   Megaphone,
 } from "lucide-react";
-import { useResolveAlert } from "@/hooks/use-coach-alerts";
 import { useAnnouncements } from "@/hooks/useAnnouncements";
 import { motion } from "framer-motion";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 import { cn } from "@/lib/utils";
-import { ALERT_SEVERITY_CONFIG, ALERT_TYPE_CONFIG } from "@/types/coaching";
-import type { AlertSeverity, AlertType } from "@/types/coaching";
 
 function getGreeting(): string {
   const hour = new Date().getHours();
@@ -39,18 +35,7 @@ function getGreeting(): string {
 export default function CoachDashboardPage() {
   const { profile } = useAuth();
   const { students, isLoading: studentsLoading } = useStudents({ limit: 200 });
-  const { data: alertsRaw = [], isLoading: alertsLoading } = useCoachAlerts();
-  const resolveAlert = useResolveAlert();
-
-  // Cast to coaching.ts CoachAlert shape (both types coexist)
-  const alerts = alertsRaw as unknown as Array<{
-    id: string;
-    alert_type: string;
-    severity: string;
-    title: string;
-    description: string | null;
-    client: { id: string; full_name: string; avatar_url: string | null } | null;
-  }>;
+  const { isLoading: alertsLoading } = useCoachAlerts();
   const { data: sessionsData, isLoading: sessionsLoading } = useSessions();
   const { data: announcements } = useAnnouncements();
   const upcoming = useMemo(() => {
@@ -146,74 +131,9 @@ export default function CoachDashboardPage() {
 
 
       {/* Alerts section */}
-      {!alertsLoading && alerts.length > 0 && (
-        <motion.div variants={staggerItem} className="space-y-2">
-          <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
-            Alertes ({alerts.length})
-          </h2>
-          <div className="space-y-2 max-h-[240px] overflow-y-auto">
-            {alerts.slice(0, 8).map((alert) => {
-              const severityConfig =
-                ALERT_SEVERITY_CONFIG[alert.severity as AlertSeverity];
-              const typeConfig =
-                ALERT_TYPE_CONFIG[alert.alert_type as AlertType];
-
-              return (
-                <div
-                  key={alert.id}
-                  className="flex items-start gap-3 p-3 bg-surface border border-border rounded-[14px] group transition-shadow duration-200 hover:shadow-md"
-                >
-                  <span className="text-base shrink-0 mt-0.5">
-                    {typeConfig?.icon ?? "\u26a0\ufe0f"}
-                  </span>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <p className="text-sm font-medium text-foreground truncate">
-                        {alert.title}
-                      </p>
-                      <span
-                        className={cn(
-                          "inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium shrink-0",
-                          severityConfig?.color ??
-                            "bg-zinc-100 text-muted-foreground",
-                        )}
-                      >
-                        {severityConfig?.label ?? alert.severity}
-                      </span>
-                    </div>
-                    {alert.description && (
-                      <p className="text-xs text-muted-foreground mt-0.5 truncate">
-                        {alert.description}
-                      </p>
-                    )}
-                    {alert.client && (
-                      <p className="text-[11px] text-muted-foreground font-mono mt-1">
-                        {alert.client.full_name}
-                      </p>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-1 shrink-0">
-                    <button
-                      onClick={() => resolveAlert.mutate(alert.id)}
-                      className="size-7 rounded-lg hover:bg-emerald-50 flex items-center justify-center transition-colors opacity-0 group-hover:opacity-100"
-                      title="Resoudre"
-                    >
-                      <CheckCircle className="size-3.5 text-emerald-600" />
-                    </button>
-                    <button
-                      onClick={() => resolveAlert.mutate(alert.id)}
-                      className="size-7 rounded-lg hover:bg-zinc-100 flex items-center justify-center transition-colors opacity-0 group-hover:opacity-100"
-                      title="Ignorer"
-                    >
-                      <X className="size-3.5 text-muted-foreground" />
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </motion.div>
-      )}
+      <motion.div variants={staggerItem}>
+        <CoachAlertsPanel />
+      </motion.div>
 
       {/* 2-column layout */}
       <motion.div

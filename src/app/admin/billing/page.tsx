@@ -46,6 +46,8 @@ import {
 } from "@/hooks/use-commission-rules";
 import { PageTransition } from "@/components/ui/page-transition";
 import { HeroMetric } from "@/components/dashboard/hero-metric";
+import { PaymentScheduleView } from "@/components/billing/payment-schedule-view";
+import { RelanceSequencesView } from "@/components/crm/relance-sequences-view";
 
 function formatEUR(amount: number) {
   return new Intl.NumberFormat("fr-FR", {
@@ -262,6 +264,11 @@ export default function BillingOverviewPage() {
         {/* Cash flow chart */}
         <motion.div variants={fadeInUp} transition={defaultTransition}>
           <CashFlowChart />
+        </motion.div>
+
+        {/* Payment schedules (echeanciers) */}
+        <motion.div variants={fadeInUp} transition={defaultTransition}>
+          <PaymentScheduleView />
         </motion.div>
 
         {/* Two columns: Recent contracts + Recent invoices */}
@@ -489,6 +496,11 @@ export default function BillingOverviewPage() {
             )}
           </motion.div>
         )}
+
+        {/* Relance sequences (automated follow-ups) */}
+        <motion.div variants={fadeInUp} transition={defaultTransition}>
+          <RelanceSequencesView />
+        </motion.div>
       </motion.div>
     </PageTransition>
   );
