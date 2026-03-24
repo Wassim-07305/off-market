@@ -14,6 +14,9 @@ import {
 } from "@/hooks/use-students";
 import { useAuth } from "@/hooks/use-auth";
 import { useClientBriefing } from "@/hooks/use-client-briefing";
+import { useCoachingGoals } from "@/hooks/use-coaching-goals";
+import { GoalFormModal } from "@/components/coaching/goal-form-modal";
+import type { GoalFormSubmitData } from "@/components/coaching/goal-form-modal";
 import {
   useClientUpsellTriggers,
   useTriggerUpsellCheck,
@@ -59,6 +62,7 @@ import {
   X,
   Sparkles,
   ArrowUpRight,
+  Calendar,
 } from "lucide-react";
 import { toast } from "sonner";
 import ReactMarkdown from "react-markdown";
@@ -69,6 +73,7 @@ type TabType =
   | "timeline"
   | "notes"
   | "tasks"
+  | "goals"
   | "flags"
   | "upsell";
 
@@ -99,6 +104,8 @@ export default function StudentDetailPage({
   const triggerCheck = useTriggerUpsellCheck();
   const convertUpsell = useConvertUpsell();
   const dismissUpsell = useDismissUpsell();
+  const { goals: coachingGoals, isLoading: goalsLoading, createGoal } = useCoachingGoals(id);
+  const [goalModalOpen, setGoalModalOpen] = useState(false);
 
   const handleGenerateBriefing = () => {
     setBriefingOpen(true);
@@ -198,6 +205,7 @@ export default function StudentDetailPage({
     { key: "timeline", label: "Timeline", icon: History },
     { key: "notes", label: "Notes", icon: FileText },
     { key: "tasks", label: "Taches", icon: CheckCircle },
+    { key: "goals", label: "Objectifs coaching", icon: Target },
     { key: "upsell", label: "Upsell", icon: ArrowUpRight },
     { key: "flags", label: "Drapeaux", icon: Flag },
   ];
@@ -812,6 +820,150 @@ export default function StudentDetailPage({
                 </div>
               ))
             )}
+          </div>
+        )}
+
+        {activeTab === "goals" && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                <Target className="w-4 h-4 text-primary" />
+                Objectifs de coaching
+              </h3>
+              <button
+                onClick={() => setGoalModalOpen(true)}
+                className="h-9 px-4 bg-primary text-white rounded-[10px] text-sm font-medium hover:bg-primary-hover transition-all flex items-center gap-1.5"
+              >
+                <Plus className="w-4 h-4" />
+                Creer un objectif
+              </button>
+            </div>
+
+            {goalsLoading ? (
+              <div className="space-y-3">
+                {[...Array(2)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="h-20 bg-muted/50 rounded-lg animate-pulse"
+                  />
+                ))}
+              </div>
+            ) : coachingGoals.length === 0 ? (
+              <div className="text-center py-12">
+                <Target className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
+                <p className="text-sm text-muted-foreground">
+                  Aucun objectif de coaching pour ce client
+                </p>
+                <p className="text-xs text-muted-foreground/60 mt-1">
+                  Cliquez sur &quot;Creer un objectif&quot; pour en ajouter un
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {coachingGoals.map((goal) => {
+                  const progress = goal.target_value
+                    ? Math.min(
+                        Math.round(
+                          (Number(goal.current_value) / Number(goal.target_value)) * 100,
+                        ),
+                        100,
+                      )
+                    : null;
+                  const statusLabels: Record<string, { label: string; color: string }> = {
+                    active: { label: "En cours", color: "bg-primary/10 text-primary" },
+                    completed: { label: "Termine", color: "bg-emerald-500/10 text-emerald-600" },
+                    paused: { label: "En pause", color: "bg-amber-500/10 text-amber-600" },
+                    abandoned: { label: "Abandonne", color: "bg-zinc-500/10 text-zinc-500" },
+                  };
+                  const statusConfig = statusLabels[goal.status] ?? statusLabels.active;
+
+                  return (
+                    <div
+                      key={goal.id}
+                      className="p-4 rounded-lg bg-muted/50 border border-border space-y-2"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium text-foreground">
+                            {goal.title}
+                          </p>
+                          {goal.description && (
+                            <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
+                              {goal.description}
+                            </p>
+                          )}
+                        </div>
+                        <span
+                          className={cn(
+                            "text-[11px] font-medium px-2 py-0.5 rounded-full shrink-0",
+                            statusConfig.color,
+                          )}
+                        >
+                          {statusConfig.label}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-3 text-xs text-muted-foreground flex-wrap">
+                        {goal.deadline && (
+                          <span className="flex items-center gap-1">
+                            <Calendar className="w-3 h-3" />
+                            {new Date(goal.deadline).toLocaleDateString("fr-FR", {
+                              day: "numeric",
+                              month: "short",
+                              year: "numeric",
+                            })}
+                          </span>
+                        )}
+                        {progress !== null && (
+                          <span className="flex items-center gap-1">
+                            <TrendingUp className="w-3 h-3" />
+                            {progress}%
+                          </span>
+                        )}
+                        {goal.difficulty != null && (
+                          <span>Difficulte : {goal.difficulty}/5</span>
+                        )}
+                      </div>
+
+                      {progress !== null && (
+                        <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
+                          <div
+                            className={cn(
+                              "h-full rounded-full transition-all",
+                              progress >= 75
+                                ? "bg-emerald-500"
+                                : progress >= 50
+                                  ? "bg-primary"
+                                  : "bg-amber-500",
+                            )}
+                            style={{ width: `${progress}%` }}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            <GoalFormModal
+              open={goalModalOpen}
+              onClose={() => setGoalModalOpen(false)}
+              onSubmit={async (data: GoalFormSubmitData) => {
+                await createGoal.mutateAsync({
+                  client_id: id,
+                  title: data.title,
+                  description: data.description,
+                  target_value: data.target_value,
+                  unit: data.unit,
+                  deadline: data.deadline,
+                  difficulty: data.difficulty,
+                  coach_notes: data.coach_notes,
+                });
+                toast.success("Objectif cree avec succes");
+              }}
+              isSubmitting={createGoal.isPending}
+            />
           </div>
         )}
 

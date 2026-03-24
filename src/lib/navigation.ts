@@ -102,6 +102,7 @@ export const adminNavigation: NavItem[] = [
     icon: Trophy,
     section: "Administration",
   },
+  { name: "Defis", href: "/admin/challenges", icon: Flame },
   { name: "Annonces", href: "/admin/announcements", icon: Megaphone },
   { name: "Miro", href: "/admin/miro", icon: Presentation },
   { name: "Integrations", href: "/admin/integrations", icon: Plug },
