@@ -123,6 +123,7 @@ export async function updateSession(request: NextRequest) {
     pathname === "/mentions-legales" ||
     pathname === "/confidentialite" ||
     pathname.startsWith("/lead-magnet") ||
+    pathname.startsWith("/mini-challenge") ||
     pathname.startsWith("/f/") ||
     pathname.startsWith("/book/") ||
     pathname.startsWith("/profile/") ||

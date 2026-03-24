@@ -7,9 +7,11 @@ import {
   defaultTransition,
 } from "@/lib/animations";
 import { useChallenges } from "@/hooks/use-challenges";
+import { useMiniChallenge } from "@/hooks/use-mini-challenge";
+import { useAuth } from "@/hooks/use-auth";
 import { CHALLENGE_TYPE_CONFIG } from "@/types/gamification";
 import type { ChallengeType, Challenge } from "@/types/gamification";
-import { Flame, Calendar, Users, CheckCircle, Clock } from "lucide-react";
+import { Flame, Calendar, Users, CheckCircle, Clock, Lock, ArrowRight } from "lucide-react";
 
 function daysLeft(endDate: string) {
   const diff = new Date(endDate).getTime() - Date.now();
@@ -27,6 +29,15 @@ export default function ClientChallengesPage() {
     isLoading,
     joinChallenge,
   } = useChallenges();
+  const { profile } = useAuth();
+  const miniChallenge = useMiniChallenge();
+
+  const isProspect = profile?.role === "prospect";
+
+  // If prospect and mini-challenge expired, show expiration gate
+  if (isProspect && miniChallenge.isExpired) {
+    return <MiniChallengeExpiredGate />;
+  }
 
   const myChallenges = participations.filter((p) => !p.completed);
   const completedChallenges = participations.filter((p) => p.completed);
@@ -48,6 +59,25 @@ export default function ClientChallengesPage() {
           Releve les defis pour gagner de l&apos;XP et des badges
         </p>
       </motion.div>
+
+      {/* Mini-challenge countdown banner for prospects */}
+      {isProspect && miniChallenge.isJoined && miniChallenge.daysRemaining !== null && (
+        <motion.div
+          variants={fadeInUp}
+          transition={defaultTransition}
+          className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 flex items-center gap-3"
+        >
+          <Clock className="w-5 h-5 text-amber-400 shrink-0" />
+          <div className="flex-1">
+            <p className="text-sm font-medium text-amber-300">
+              Mini-challenge : {miniChallenge.daysRemaining} jour{miniChallenge.daysRemaining > 1 ? "s" : ""} restant{miniChallenge.daysRemaining > 1 ? "s" : ""}
+            </p>
+            <p className="text-xs text-amber-400/60 mt-0.5">
+              Ton acces au challenge expire dans {miniChallenge.daysRemaining} jour{miniChallenge.daysRemaining > 1 ? "s" : ""}. Profites-en !
+            </p>
+          </div>
+        </motion.div>
+      )}
 
       {isLoading ? (
         <div className="space-y-3">
@@ -192,6 +222,35 @@ export default function ClientChallengesPage() {
         </>
       )}
     </motion.div>
+  );
+}
+
+function MiniChallengeExpiredGate() {
+  return (
+    <div className="flex items-center justify-center min-h-[60vh]">
+      <div className="max-w-md text-center space-y-5 p-8">
+        <div className="w-16 h-16 rounded-full bg-zinc-800/60 border border-zinc-700/40 flex items-center justify-center mx-auto">
+          <Lock className="w-8 h-8 text-zinc-500" />
+        </div>
+        <div>
+          <h2 className="text-xl font-bold text-foreground">
+            Ton mini-challenge est termine
+          </h2>
+          <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
+            Tes 5 jours d&apos;acces gratuit sont ecoules. Rejoins le programme
+            complet pour debloquer tous les defis, la formation, le coaching et
+            la communaute.
+          </p>
+        </div>
+        <a
+          href="/mini-challenge"
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-xl text-sm font-medium hover:bg-primary/90 transition-colors"
+        >
+          Decouvrir le programme
+          <ArrowRight className="w-4 h-4" />
+        </a>
+      </div>
+    </div>
   );
 }
 

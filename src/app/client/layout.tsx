@@ -17,6 +17,7 @@ const PROSPECT_ALLOWED_ROUTES = [
   "/client/invoices",
   "/client/settings",
   "/client/notifications",
+  "/client/challenges",
 ];
 
 /** Custom messages per restricted route */

@@ -28,6 +28,7 @@ import {
   Award,
   FolderOpen,
   FileSignature,
+  Calculator,
   Contact,
   Star,
   Map,
@@ -181,6 +182,7 @@ export const clientNavigation: NavItem[] = [
 
   // ── Outils ──
   { name: "AlexIA", href: "/client/ai", icon: Bot, section: "Outils" },
+  { name: "Calculateur", href: "/client/tools", icon: Calculator },
   { name: "Ressources", href: "/client/resources", icon: FolderOpen },
 ];
 
