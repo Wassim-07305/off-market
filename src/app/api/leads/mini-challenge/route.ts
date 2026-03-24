@@ -1,12 +1,40 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { sendEmail } from "@/lib/email";
 
 const schema = z.object({
   full_name: z.string().min(2).max(200),
   email: z.string().email().max(320),
   phone: z.string().max(30).optional().default(""),
 });
+
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+
+function buildMagicLinkEmail(name: string, link: string): string {
+  return `
+<!DOCTYPE html>
+<html>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0a0a; color: #e4e4e7; padding: 40px 20px;">
+  <div style="max-width: 480px; margin: 0 auto;">
+    <h1 style="font-size: 24px; color: #fff; margin-bottom: 8px;">Bienvenue ${name} !</h1>
+    <p style="color: #a1a1aa; line-height: 1.6;">
+      Ton mini-challenge de 5 jours est pret. Clique sur le bouton ci-dessous pour te connecter et commencer le Jour 1.
+    </p>
+    <div style="margin: 32px 0; text-align: center;">
+      <a href="${link}" style="display: inline-block; background: #dc2626; color: #fff; padding: 14px 32px; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 15px;">
+        Commencer le challenge
+      </a>
+    </div>
+    <p style="color: #71717a; font-size: 13px; line-height: 1.5;">
+      Ce lien est valable 24 heures. Si tu n'as pas demande cet acces, ignore cet email.
+    </p>
+    <hr style="border: none; border-top: 1px solid #27272a; margin: 32px 0;" />
+    <p style="color: #52525b; font-size: 12px;">Off Market — Programme d'accompagnement freelance</p>
+  </div>
+</body>
+</html>`;
+}
 
 export async function POST(request: Request) {
   try {
@@ -30,29 +58,32 @@ export async function POST(request: Request) {
     );
 
     if (existingUser) {
-      // User already exists — just send magic link
-      await admin.auth.admin.generateLink({
+      // User already exists — generate magic link via admin API (no rate limit)
+      const { data: linkData, error: linkError } = await admin.auth.admin.generateLink({
         type: "magiclink",
         email,
         options: {
-          redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/client/challenges`,
+          redirectTo: `${APP_URL}/client/challenges`,
         },
       });
 
-      // Also send the OTP email the user will actually receive
-      // generateLink returns a token but doesn't send the email,
-      // so we use signInWithOtp from a separate client to trigger the email
-      const { error: otpError } = await admin.auth.signInWithOtp({
-        email,
-        options: {
-          shouldCreateUser: false,
-          emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/client/challenges`,
-        },
-      });
-
-      if (otpError) {
-        console.error("Magic link error (existing user):", otpError);
+      if (linkError || !linkData?.properties?.action_link) {
+        console.error("Generate link error (existing):", linkError);
+        return NextResponse.json(
+          { error: "Erreur lors de l'envoi du lien" },
+          { status: 500 },
+        );
       }
+
+      // Send via Resend (bypasses Supabase email rate limits)
+      await sendEmail({
+        to: email,
+        subject: "Ton lien de connexion — Mini-Challenge 5 jours",
+        html: buildMagicLinkEmail(
+          existingUser.user_metadata?.full_name || full_name,
+          linkData.properties.action_link,
+        ),
+      });
 
       return NextResponse.json({ success: true, existing: true }, { status: 200 });
     }
@@ -89,7 +120,7 @@ export async function POST(request: Request) {
         full_name,
         phone: phone || null,
         role: "prospect",
-        onboarding_completed: true, // skip onboarding for mini-challenge
+        onboarding_completed: true,
       })
       .eq("id", newUser.user.id);
 
@@ -111,18 +142,24 @@ export async function POST(request: Request) {
       { onConflict: "email" },
     );
 
-    // 5. Send magic link so the prospect can log in without a password
-    const { error: otpError } = await admin.auth.signInWithOtp({
+    // 5. Generate magic link via admin API (no rate limit) + send via Resend
+    const { data: linkData, error: linkError } = await admin.auth.admin.generateLink({
+      type: "magiclink",
       email,
       options: {
-        shouldCreateUser: false,
-        emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/client/challenges`,
+        redirectTo: `${APP_URL}/client/challenges`,
       },
     });
 
-    if (otpError) {
-      console.error("Magic link send error:", otpError);
-      // Don't fail — user was created, they can use forgot-password as fallback
+    if (linkError || !linkData?.properties?.action_link) {
+      console.error("Generate link error (new user):", linkError);
+      // User created but magic link failed — they can use forgot-password
+    } else {
+      await sendEmail({
+        to: email,
+        subject: "Bienvenue ! Ton Mini-Challenge 5 jours commence",
+        html: buildMagicLinkEmail(full_name, linkData.properties.action_link),
+      });
     }
 
     return NextResponse.json(
