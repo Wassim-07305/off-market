@@ -432,6 +432,8 @@ export function useCreateBooking() {
       start_time: string;
       end_time: string;
       qualification_answers?: Record<string, string>;
+      coach_name?: string;
+      page_title?: string;
     }) => {
       const { data, error } = await supabase
         .from("bookings")
@@ -439,6 +441,24 @@ export function useCreateBooking() {
         .select()
         .single();
       if (error) throw error;
+
+      // Send confirmation email (fire-and-forget)
+      if (booking.prospect_email) {
+        fetch("/api/bookings/confirm", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            prospect_name: booking.prospect_name,
+            prospect_email: booking.prospect_email,
+            date: booking.date,
+            start_time: booking.start_time,
+            end_time: booking.end_time,
+            coach_name: booking.coach_name,
+            page_title: booking.page_title,
+          }),
+        }).catch(() => {});
+      }
+
       return data as Booking;
     },
     onSuccess: () => {

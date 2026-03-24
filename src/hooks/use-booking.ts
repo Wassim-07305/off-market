@@ -313,6 +313,22 @@ export function useBookCall() {
         .select()
         .single();
       if (error) throw error;
+
+      // Send confirmation email to client (fire-and-forget)
+      if (user.email) {
+        fetch("/api/bookings/confirm", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            prospect_name: user.user_metadata?.full_name || user.email,
+            prospect_email: user.email,
+            date: slot.date,
+            start_time: slot.time,
+            coach_name: slot.coach_name,
+          }),
+        }).catch(() => {});
+      }
+
       return data;
     },
     onSuccess: () => {
