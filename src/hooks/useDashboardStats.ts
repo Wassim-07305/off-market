@@ -62,10 +62,10 @@ export function useLeadsChart() {
 
       const { data, error } = await supabase
         .from("leads")
-        .select("created_at, status")
+        .select("created_at, stage")
         .gte("created_at", threeMonthsAgo.toISOString())
         .order("created_at", { ascending: true })
-        .returns<Array<{ created_at: string; status: string }>>();
+        .returns<Array<{ created_at: string; stage: string }>>();
 
       if (error) throw error;
 
@@ -79,7 +79,7 @@ export function useLeadsChart() {
 
         if (!weeklyData[weekKey]) weeklyData[weekKey] = { total: 0, close: 0 };
         weeklyData[weekKey].total++;
-        if (lead.status === "close") weeklyData[weekKey].close++;
+        if (lead.stage === "close") weeklyData[weekKey].close++;
       }
 
       return Object.entries(weeklyData).map(([week, data]) => ({
