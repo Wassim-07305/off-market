@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { logServerError } from "@/lib/error-logger-server";
 
 const B2_CONFIGURED = !!(
   process.env.B2_KEY_ID &&
@@ -58,7 +59,16 @@ export async function POST(request: Request) {
         const url = `/api/storage/proxy?key=${encodeURIComponent(sanitizedPath)}`;
         return NextResponse.json({ url });
       } catch (b2Err) {
-        console.error("[storage/upload] B2 upload failed, falling back to Supabase:", b2Err instanceof Error ? b2Err.message : b2Err);
+        const msg = b2Err instanceof Error ? b2Err.message : String(b2Err);
+        console.error("[storage/upload] B2 upload failed, falling back to Supabase:", msg);
+        logServerError({
+          message: `B2 upload failed: ${msg}`,
+          stack: b2Err instanceof Error ? b2Err.stack : undefined,
+          route: "/api/storage/upload",
+          source: "api-error",
+          severity: "warning",
+          metadata: { path: sanitizedPath, fallback: "supabase" },
+        });
         // Fall through to Supabase Storage fallback
       }
     }
@@ -97,6 +107,13 @@ export async function POST(request: Request) {
           ? String((err as { message: unknown }).message)
           : JSON.stringify(err);
     console.error("[storage/upload] Erreur:", message);
+    logServerError({
+      message: `Storage upload failed: ${message}`,
+      stack: err instanceof Error ? err.stack : undefined,
+      route: "/api/storage/upload",
+      source: "api-error",
+      severity: "error",
+    });
     return NextResponse.json(
       { error: "Erreur lors de l'upload", debug: message },
       { status: 500 },

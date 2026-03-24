@@ -6,11 +6,11 @@ import {
 } from "@aws-sdk/client-s3";
 import { getSignedUrl as awsGetSignedUrl } from "@aws-sdk/s3-request-presigner";
 
-const B2_KEY_ID = process.env.B2_KEY_ID!;
-const B2_APP_KEY = process.env.B2_APP_KEY!;
-const B2_BUCKET_NAME = process.env.B2_BUCKET_NAME!;
-const B2_REGION = process.env.B2_REGION!;
-const B2_ENDPOINT = process.env.B2_ENDPOINT!;
+const B2_KEY_ID = process.env.B2_KEY_ID?.trim() ?? "";
+const B2_APP_KEY = process.env.B2_APP_KEY?.trim() ?? "";
+const B2_BUCKET_NAME = process.env.B2_BUCKET_NAME?.trim() ?? "";
+const B2_REGION = process.env.B2_REGION?.trim() ?? "";
+const B2_ENDPOINT = process.env.B2_ENDPOINT?.trim() ?? "";
 
 let client: S3Client | null = null;
 
