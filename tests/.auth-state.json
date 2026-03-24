@@ -1,0 +1,35 @@
+{
+  "cookies": [
+    {
+      "name": "sb-srhpdgqqiuzdrlqaitdk-auth-token",
+      "value": "base64-eyJhY2Nlc3NfdG9rZW4iOiJleUpoYkdjaU9pSkZVekkxTmlJc0ltdHBaQ0k2SW1OaE5qUXpPR1EzTFRNNU9UQXRORFl5TkMxaE1UUmxMV0kxTlRReU5UUmpOalExTmlJc0luUjVjQ0k2SWtwWFZDSjkuZXlKcGMzTWlPaUpvZEhSd2N6b3ZMM055YUhCa1ozRnhhWFY2WkhKc2NXRnBkR1JyTG5OMWNHRmlZWE5sTG1OdkwyRjFkR2d2ZGpFaUxDSnpkV0lpT2lJM05EZzNOR1l5WVMxak5HTTNMVFE0T0RVdE9UWXpNeTB4TlRnd05UUTFPVFF5TVdRaUxDSmhkV1FpT2lKaGRYUm9aVzUwYVdOaGRHVmtJaXdpWlhod0lqb3hOemMwTWpFNU1EVTBMQ0pwWVhRaU9qRTNOelF5TVRVME5UUXNJbVZ0WVdsc0lqb2lkR1Z6ZEVCMFpYTjBMbU52YlNJc0luQm9iMjVsSWpvaUlpd2lZWEJ3WDIxbGRHRmtZWFJoSWpwN0luQnliM1pwWkdWeUlqb2laVzFoYVd3aUxDSndjbTkyYVdSbGNuTWlPbHNpWlcxaGFXd2lYWDBzSW5WelpYSmZiV1YwWVdSaGRHRWlPbnNpWlcxaGFXd2lPaUowWlhOMFFIUmxjM1F1WTI5dElpd2laVzFoYVd4ZmRtVnlhV1pwWldRaU9uUnlkV1VzSW1aMWJHeGZibUZ0WlNJNkluUmxjM1FpTENKd2FHOXVaVjkyWlhKcFptbGxaQ0k2Wm1Gc2MyVXNJbk4xWWlJNklqYzBPRGMwWmpKaExXTTBZemN0TkRnNE5TMDVOak16TFRFMU9EQTFORFU1TkRJeFpDSjlMQ0p5YjJ4bElqb2lZWFYwYUdWdWRHbGpZWFJsWkNJc0ltRmhiQ0k2SW1GaGJERWlMQ0poYlhJaU9sdDdJbTFsZEdodlpDSTZJbkJoYzNOM2IzSmtJaXdpZEdsdFpYTjBZVzF3SWpveE56YzBNakUxTkRVMGZWMHNJbk5sYzNOcGIyNWZhV1FpT2lKaE9HSTBZakEwWXkxaU16STBMVFE1TW1JdE9UVXlZaTAzTlRneFlqWXhaVFEwWmpJaUxDSnBjMTloYm05dWVXMXZkWE1pT21aaGJITmxmUS5PNFRIa2JmZDRSd1VFSFdyZDgzUDdxU2FadWVaR1RSME80bHBkc2NMTVNqZG9mUkp2a3RnS05VUDhlRFlpc01MS3JOZ2pzR3JkSVNFVVVyLThiQXJsdyIsInRva2VuX3R5cGUiOiJiZWFyZXIiLCJleHBpcmVzX2luIjozNjAwLCJleHBpcmVzX2F0IjoxNzc0MjE5MDU0LCJyZWZyZXNoX3Rva2VuIjoieGpoaXFvdGQ1NGVrIiwidXNlciI6eyJpZCI6Ijc0ODc0ZjJhLWM0YzctNDg4NS05NjMzLTE1ODA1NDU5NDIxZCIsImF1ZCI6ImF1dGhlbnRpY2F0ZWQiLCJyb2xlIjoiYXV0aGVudGljYXRlZCIsImVtYWlsIjoidGVzdEB0ZXN0LmNvbSIsImVtYWlsX2NvbmZpcm1lZF9hdCI6IjIwMjYtMDMtMjFUMjI6Mjc6NDQuODAyNDYyWiIsInBob25lIjoiIiwiY29uZmlybWVkX2F0IjoiMjAyNi0wMy0yMVQyMjoyNzo0NC44MDI0NjJaIiwibGFzdF9zaWduX2luX2F0IjoiMjAyNi0wMy0yMlQyMTozNzozNC40MzA3NTY0NjJaIiwiYXBwX21ldGFkYXRhIjp7InByb3ZpZGVyIjoiZW1haWwiLCJwcm92aWRlcnMiOlsiZW1haWwiXX0sInVzZXJfbWV0YWRhdGEiOnsiZW1haWwiOiJ0ZXN0QHRlc3QuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImZ1bGxfbmFtZSI6InRlc3QiLCJwaG9uZV92ZXJpZmllZCI6ZmFsc2UsInN1YiI6Ijc0ODc0ZjJhLWM0YzctNDg4NS05NjMzLTE1ODA1NDU5NDIxZCJ9LCJpZGVudGl0aWVzIjpbeyJpZGVudGl0eV9pZCI6IjAzODAzZmVkLTUwYWQtNGNmMS04NzJiLTI4Nzg1MGQ2MTE0ZiIsImlkIjoiNzQ4NzRmMmEtYzRjNy00ODg1LTk2MzMtMTU4MDU0NTk0MjFkIiwidXNlcl9pZCI6Ijc0ODc0ZjJhLWM0YzctNDg4NS05NjMzLTE1ODA1NDU5NDIxZCIsImlkZW50aXR5X2RhdGEiOnsiZW1haWwiOiJ0ZXN0QHRlc3QuY29tIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJmdWxsX25hbWUiOiJ0ZXN0IiwicGhvbmVfdmVyaWZpZWQiOmZhbHNlLCJzdWIiOiI3NDg3NGYyYS1jNGM3LTQ4ODUtOTYzMy0xNTgwNTQ1OTQyMWQifSwicHJvdmlkZXIiOiJlbWFpbCIsImxhc3Rfc2lnbl9pbl9hdCI6IjIwMjYtMDMtMjFUMjI6Mjc6NDQuNzg5NDIyWiIsImNyZWF0ZWRfYXQiOiIyMDI2LTAzLTIxVDIyOjI3OjQ0Ljc4OTQ4WiIsInVwZGF0ZWRfYXQiOiIyMDI2LTAzLTIxVDIyOjI3OjQ0Ljc4OTQ4WiIsImVtYWlsIjoidGVzdEB0ZXN0LmNvbSJ9XSwiY3JlYXRlZF9hdCI6IjIwMjYtMDMtMjFUMjI6Mjc6NDQuNjg3MjA3WiIsInVwZGF0ZWRfYXQiOiIyMDI2LTAzLTIyVDIxOjM3OjM0LjQzNjQ2MloiLCJpc19hbm9ueW1vdXMiOmZhbHNlfSwid2Vha19wYXNzd29yZCI6bnVsbH0",
+      "domain": "off-market-amber.vercel.app",
+      "path": "/",
+      "expires": 1808775454.243427,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "off_market_rgpd_consent",
+      "value": "true",
+      "domain": "off-market-amber.vercel.app",
+      "path": "/",
+      "expires": 1805751454,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "om_profile_cache",
+      "value": "eyJyb2xlIjoiYWRtaW4iLCJvbmJvYXJkaW5nX2NvbXBsZXRlZCI6dHJ1ZSwiZXhwIjoxNzc0MjE1NTE1MTA0fQ%3D%3D",
+      "domain": "off-market-amber.vercel.app",
+      "path": "/",
+      "expires": 1774215754.890667,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": []
+}

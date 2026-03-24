@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(grep -l \"streaks\\\\|daily_activity\\\\|rituals\\\\|leaderboard\" c:/Users/ELITEBOOK/off-market/supabase/migrations/*.sql)"
+      "Bash(grep -l \"streaks\\\\|daily_activity\\\\|rituals\\\\|leaderboard\" c:/Users/ELITEBOOK/off-market/supabase/migrations/*.sql)",
+      "mcp__claude_ai_Supabase__execute_sql",
+      "mcp__claude_ai_Supabase__apply_migration"
     ]
   }
 }
