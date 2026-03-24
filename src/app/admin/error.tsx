@@ -20,6 +20,20 @@ export default function AdminError({
       source: "error-boundary",
       severity: "critical",
       metadata: { digest: error.digest, context: "admin-error-boundary" },
+    }).catch(() => {
+      // Fallback: log via API if client-side insert fails
+      fetch("/api/error-log", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: error.message?.slice(0, 2000),
+          stack: error.stack?.slice(0, 5000),
+          source: "error-boundary",
+          severity: "critical",
+          page: window.location.pathname,
+          metadata: { digest: error.digest, context: "admin-error-boundary", fallback: true },
+        }),
+      }).catch(() => { /* last resort: already logged to console */ });
     });
   }, [error]);
 
