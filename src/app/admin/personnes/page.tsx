@@ -8,7 +8,7 @@ import {
   defaultTransition,
 } from "@/lib/animations";
 import { cn } from "@/lib/utils";
-import { Users, UserCog, Send, AlertTriangle, RefreshCw } from "lucide-react";
+import { Users, UserCog, Send, AlertTriangle, RefreshCw, UsersRound } from "lucide-react";
 import dynamic from "next/dynamic";
 import { logError } from "@/lib/error-logger";
 
@@ -48,7 +48,8 @@ class TabErrorBoundary extends Component<
             Erreur de chargement
           </h3>
           <p className="text-sm text-muted-foreground mb-4 max-w-sm">
-            Impossible de charger la section {this.props.name}. Veuillez reessayer.
+            Impossible de charger la section {this.props.name}. Veuillez
+            reessayer.
           </p>
           <button
             onClick={() => this.setState({ hasError: false, error: null })}
@@ -78,16 +79,17 @@ const InvitationsContent = dynamic(
   { ssr: false },
 );
 
-type Tab = "clients" | "équipe" | "invitations";
+const UsersContent = dynamic(() => import("@/app/admin/users/page"), {
+  ssr: false,
+});
+
+type Tab = "tous" | "clients" | "équipe" | "invitations";
 
 export default function PersonnesPage() {
-  const [tab, setTab] = useState<Tab>("clients");
+  const [tab, setTab] = useState<Tab>("tous");
 
   return (
-    <motion.div
-      variants={staggerContainer}
-      className="space-y-6"
-    >
+    <motion.div variants={staggerContainer} className="space-y-6">
       <motion.div variants={fadeInUp} transition={defaultTransition}>
         <h1 className="text-2xl font-display font-bold text-foreground tracking-tight">
           Personnes
@@ -100,6 +102,18 @@ export default function PersonnesPage() {
       {/* Tabs */}
       <motion.div variants={fadeInUp} transition={defaultTransition}>
         <div className="flex gap-1 bg-muted rounded-xl p-1 w-fit">
+          <button
+            onClick={() => setTab("tous")}
+            className={cn(
+              "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all",
+              tab === "tous"
+                ? "bg-surface text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            <UsersRound className="w-4 h-4" />
+            Tous
+          </button>
           <button
             onClick={() => setTab("clients")}
             className={cn(
@@ -141,6 +155,11 @@ export default function PersonnesPage() {
 
       {/* Content */}
       <div>
+        {tab === "tous" && (
+          <TabErrorBoundary name="Tous">
+            <UsersContent />
+          </TabErrorBoundary>
+        )}
         {tab === "clients" && (
           <TabErrorBoundary name="Clients">
             <ClientsContent />

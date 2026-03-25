@@ -32,7 +32,6 @@ import {
   Star,
   Map,
   TrendingUp,
-  UserCog,
   Palette,
   PhoneCall,
   Presentation,
@@ -100,7 +99,6 @@ export const adminNavigation: NavItem[] = [
   { name: "Defis", href: "/admin/challenges", icon: Flame },
   { name: "Annonces", href: "/admin/announcements", icon: Megaphone },
   { name: "Miro", href: "/admin/miro", icon: Presentation },
-  { name: "Utilisateurs", href: "/admin/users", icon: UserCog },
   { name: "Systeme", href: "/admin/system", icon: Activity },
 ];
 
