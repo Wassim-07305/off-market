@@ -128,136 +128,102 @@ export function useOnboarding() {
   const completeOnboarding = useMutation({
     mutationFn: async () => {
       if (!user) throw new Error("Not authenticated");
+      // Seule action critique : marquer l'onboarding comme termine
       const { error } = await supabase
         .from("profiles")
         .update({ onboarding_step: 7, onboarding_completed: true } as never)
         .eq("id", user.id);
       if (error) throw error;
 
-      // Auto-actions for clients only (not prospects — they have no coach assigned)
+      // Toutes les auto-actions en fire-and-forget (non bloquantes)
       const onboardingRole = profile?.role ?? "client";
-      if (onboardingRole !== "prospect") {
-        // Auto-action: create a welcome DM channel with the assigned coach
-        try {
-          const { data: assignment } = await supabase
-            .from("coach_assignments")
-            .select("coach_id")
-            .eq("client_id", user.id)
-            .eq("status", "active")
-            .limit(1)
-            .returns<{ coach_id: string }[]>()
-            .maybeSingle();
+      const userId = user.id;
+      const userName = user.user_metadata?.full_name ?? user.email ?? "Un utilisateur";
 
-          const coachId = (assignment as { coach_id?: string } | null)?.coach_id;
-          if (coachId) {
-            const { data: existingChannels } = await supabase
-              .from("channels")
-              .select("id, channel_members!inner(profile_id)")
-              .eq("type", "dm")
-              .returns<Array<{ id: string; channel_members: Array<{ profile_id: string }> }>>();
-
-            const hasDm = (existingChannels ?? []).some((ch) => {
-              const members = ch.channel_members ?? [];
-              return members.some((m) => m.profile_id === coachId);
-            });
-
-            if (!hasDm) {
+      // Lance tout en parallele sans bloquer la redirection
+      Promise.allSettled([
+        // DM coach (clients uniquement)
+        onboardingRole !== "prospect"
+          ? (async () => {
+              const { data: assignment } = await supabase
+                .from("coach_assignments")
+                .select("coach_id")
+                .eq("client_id", userId)
+                .eq("status", "active")
+                .limit(1)
+                .returns<{ coach_id: string }[]>()
+                .maybeSingle();
+              const coachId = (assignment as { coach_id?: string } | null)?.coach_id;
+              if (!coachId) return;
+              const { data: existingChannels } = await supabase
+                .from("channels")
+                .select("id, channel_members!inner(profile_id)")
+                .eq("type", "dm")
+                .returns<Array<{ id: string; channel_members: Array<{ profile_id: string }> }>>();
+              const hasDm = (existingChannels ?? []).some((ch) =>
+                (ch.channel_members ?? []).some((m) => m.profile_id === coachId),
+              );
+              if (hasDm) return;
               const { data: newChannel } = await supabase
                 .from("channels")
-                .insert({ name: "DM", type: "dm", created_by: user.id } as never)
+                .insert({ name: "DM", type: "dm", created_by: userId } as never)
                 .select("id")
                 .returns<{ id: string }[]>()
                 .single();
-
-              if (newChannel) {
-                await supabase.from("channel_members").insert([
-                  { channel_id: (newChannel as { id: string }).id, profile_id: user.id },
-                  { channel_id: (newChannel as { id: string }).id, profile_id: coachId },
-                ] as never);
-
-                await supabase.from("messages").insert({
-                  channel_id: (newChannel as { id: string }).id,
-                  sender_id: coachId,
-                  content: `Bienvenue ! 🎉 Je suis ton coach attitré. N'hésite pas à me poser toutes tes questions ici.`,
-                  content_type: "text",
-                } as never);
-              }
-            }
+              if (!newChannel) return;
+              const chId = (newChannel as { id: string }).id;
+              await supabase.from("channel_members").insert([
+                { channel_id: chId, profile_id: userId },
+                { channel_id: chId, profile_id: coachId },
+              ] as never);
+              await supabase.from("messages").insert({
+                channel_id: chId,
+                sender_id: coachId,
+                content: `Bienvenue ! 🎉 Je suis ton coach attitré. N'hésite pas à me poser toutes tes questions ici.`,
+                content_type: "text",
+              } as never);
+            })()
+          : Promise.resolve(),
+        // Contrat auto (clients uniquement)
+        onboardingRole !== "prospect"
+          ? fetch("/api/contracts/auto-generate", { method: "POST" }).catch(() => {})
+          : Promise.resolve(),
+        // Badge Newcomer + XP
+        (async () => {
+          const { data: newcomerBadge } = await supabase
+            .from("badges").select("id").eq("name", "Newcomer")
+            .returns<{ id: string }[]>().maybeSingle();
+          if (newcomerBadge) {
+            await supabase.from("user_badges").upsert(
+              { profile_id: userId, badge_id: (newcomerBadge as { id: string }).id, earned_at: new Date().toISOString() } as never,
+              { onConflict: "profile_id,badge_id", ignoreDuplicates: true },
+            );
           }
-        } catch {
-          console.warn("Auto-DM creation skipped");
-        }
-
-        // Auto-action: generate contract for client
-        try {
-          await fetch("/api/contracts/auto-generate", { method: "POST" });
-        } catch {
-          console.warn("Auto-contract generation skipped");
-        }
-      }
-
-      // Auto-action: award Newcomer badge
-      try {
-        const { data: newcomerBadge } = await supabase
-          .from("badges")
-          .select("id")
-          .eq("name", "Newcomer")
-          .returns<{ id: string }[]>()
-          .maybeSingle();
-        if (newcomerBadge) {
-          await supabase.from("user_badges").upsert(
-            { profile_id: user.id, badge_id: (newcomerBadge as { id: string }).id, earned_at: new Date().toISOString() } as never,
-            { onConflict: "profile_id,badge_id", ignoreDuplicates: true },
-          );
-        }
-        // Award onboarding XP
-        try {
           await supabase.rpc("award_xp" as never, {
-            p_profile_id: user.id,
-            p_action: "complete_onboarding",
-            p_metadata: {},
+            p_profile_id: userId, p_action: "complete_onboarding", p_metadata: {},
           } as never);
-        } catch {
-          // XP award is non-critical
-        }
-      } catch {
-        console.warn("Badge/XP award skipped");
-      }
-
-      // Auto-action: add prospect to CRM pipeline
-      if (onboardingRole === "prospect") {
-        try {
-          await fetch("/api/onboarding/create-crm-contact", { method: "POST" });
-        } catch {
-          console.warn("Auto CRM contact creation skipped");
-        }
-      }
-
-      // Auto-action: notify admins of onboarding completion
-      try {
-        const { data: admins } = await supabase
-          .from("profiles")
-          .select("id")
-          .eq("role", "admin")
-          .returns<{ id: string }[]>();
-
-        if (admins?.length) {
-          const userName =
-            user.user_metadata?.full_name ?? user.email ?? "Un utilisateur";
-          await supabase.from("notifications").insert(
-            admins.map((admin) => ({
-              recipient_id: admin.id,
-              type: "system",
-              title: "Onboarding terminé",
-              body: `${userName} a terminé son onboarding.`,
-              data: { link: `/admin/clients` },
-            })) as never,
-          );
-        }
-      } catch {
-        // Non-critical
-        console.warn("Admin notification skipped");
-      }
+        })().catch(() => {}),
+        // CRM contact (prospects uniquement)
+        onboardingRole === "prospect"
+          ? fetch("/api/onboarding/create-crm-contact", { method: "POST" }).catch(() => {})
+          : Promise.resolve(),
+        // Notifs admins
+        (async () => {
+          const { data: admins } = await supabase
+            .from("profiles").select("id").eq("role", "admin")
+            .returns<{ id: string }[]>();
+          if (admins?.length) {
+            await supabase.from("notifications").insert(
+              admins.map((admin) => ({
+                recipient_id: admin.id, type: "system",
+                title: "Onboarding terminé",
+                body: `${userName} a terminé son onboarding.`,
+                data: { link: `/admin/clients` },
+              })) as never,
+            );
+          }
+        })().catch(() => {}),
+      ]).catch(() => {});
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["auth"] });

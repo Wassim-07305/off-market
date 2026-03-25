@@ -94,7 +94,11 @@ const STEP_LABELS: Record<string, Record<string, string>> = {
 
 // ─── Completed items per role (for CompletionStep) ────────────────
 const COMPLETED_ITEMS: Record<string, string[]> = {
-  admin: ["Video d'accueil regardee", "Plateforme configuree", "Offre selectionnee"],
+  admin: [
+    "Video d'accueil regardee",
+    "Plateforme configuree",
+    "Offre selectionnee",
+  ],
   coach: [
     "Video d'accueil regardee",
     "Profil complete",
@@ -241,12 +245,20 @@ export default function OnboardingPage() {
       // Supprime le cache middleware pour forcer un re-fetch du profil
       document.cookie = "om_profile_cache=; path=/; max-age=0; SameSite=Lax";
 
-      // Attendre que la DB soit à jour avant de rediriger
-      // pour éviter que le middleware redirige vers /onboarding
+      // Confetti supplementaire au clic pour feedback immediat
+      const { default: confetti } = await import("canvas-confetti");
+      confetti({
+        particleCount: 150,
+        spread: 100,
+        origin: { y: 0.6 },
+        colors: ["#C41E3A", "#E8374E", "#f43f5e", "#fb7185", "#fbbf24"],
+      });
+
+      // Redirection rapide — le profil est deja mis a jour en DB
       const targetRoute = getDefaultRouteForRole(role);
       setTimeout(() => {
         window.location.replace(targetRoute);
-      }, 1500);
+      }, 500);
     } catch {
       toast.error("Erreur lors de la finalisation");
     }
