@@ -105,11 +105,8 @@ export const adminNavigation: NavItem[] = [
   { name: "Annonces", href: "/admin/announcements", icon: Megaphone },
   { name: "Miro", href: "/admin/miro", icon: Presentation },
   { name: "Integrations", href: "/admin/integrations", icon: Plug },
-  { name: "Monitoring", href: "/admin/monitoring", icon: Activity },
-  { name: "Error Logs", href: "/admin/error-logs", icon: Bug },
-  { name: "Documentation API", href: "/admin/api-docs", icon: BookOpen },
   { name: "Utilisateurs", href: "/admin/users", icon: UserCog },
-  { name: "Audit Log", href: "/admin/audit-log", icon: FileText },
+  { name: "Systeme", href: "/admin/system", icon: Activity },
   { name: "Reglages", href: "/admin/settings", icon: Settings },
 ];
 
