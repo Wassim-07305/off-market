@@ -241,10 +241,13 @@ export default function ClientsPage() {
         <motion.div variants={staggerItem}>
           <HeroMetric
             label="Eleves"
-            value={isLoading ? "..." : String(totalCount)}
+            value={isLoading ? "..." : String(clientCount)}
             change={
-              !isLoading && totalCount > 0
-                ? { value: `${clientCount} client${clientCount !== 1 ? "s" : ""} · ${prospectCount} prospect${prospectCount !== 1 ? "s" : ""}`, positive: true }
+              !isLoading && prospectCount > 0
+                ? {
+                    value: `+ ${prospectCount} prospect${prospectCount !== 1 ? "s" : ""}`,
+                    positive: true,
+                  }
                 : undefined
             }
           />
