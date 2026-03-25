@@ -31,6 +31,7 @@ import { AdminSetupStep } from "@/components/onboarding/admin-setup-step";
 import { CoachToolsStep } from "@/components/onboarding/coach-tools-step";
 import { SalesToolsStep } from "@/components/onboarding/sales-tools-step";
 import { OfferSelectionStep } from "@/components/onboarding/offer-selection-step";
+import { ContractSignStep } from "@/components/onboarding/contract-sign-step";
 
 // ─── Animated background ─────────────────────────────────────────
 function AnimatedBackground() {
@@ -111,6 +112,7 @@ const COMPLETED_ITEMS: Record<string, string[]> = {
     "CSM rencontre",
     "Visite de la plateforme",
     "Premier message envoye",
+    "Contrat signe",
   ],
   prospect: [
     "Video d'accueil regardee",
@@ -349,6 +351,13 @@ export default function OnboardingPage() {
               onNext={() => handleStepComplete("message_test")}
             />
           </div>
+        );
+
+      case "contract_sign":
+        return (
+          <ContractSignStep
+            onComplete={() => handleStepComplete("contract_sign")}
+          />
         );
 
       case "admin_setup":

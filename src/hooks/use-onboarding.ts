@@ -8,7 +8,12 @@ import type { OnboardingStep } from "@/types/billing";
 
 // ─── Step keys per role ──────────────────────────────────────────
 export const ROLE_ONBOARDING_STEPS = {
-  admin: ["welcome_video", "admin_setup", "offer_selection", "completion"] as const,
+  admin: [
+    "welcome_video",
+    "admin_setup",
+    "offer_selection",
+    "completion",
+  ] as const,
   coach: [
     "welcome_video",
     "about_you",
@@ -22,6 +27,7 @@ export const ROLE_ONBOARDING_STEPS = {
     "meet_csm",
     "feature_tour",
     "message_test",
+    "contract_sign",
     "completion",
   ] as const,
   prospect: [
@@ -41,6 +47,7 @@ export const ALL_STEP_KEYS = [
   "meet_csm",
   "feature_tour",
   "message_test",
+  "contract_sign",
   "admin_setup",
   "coach_tools",
   "sales_tools",
@@ -138,7 +145,8 @@ export function useOnboarding() {
       // Toutes les auto-actions en fire-and-forget (non bloquantes)
       const onboardingRole = profile?.role ?? "client";
       const userId = user.id;
-      const userName = user.user_metadata?.full_name ?? user.email ?? "Un utilisateur";
+      const userName =
+        user.user_metadata?.full_name ?? user.email ?? "Un utilisateur";
 
       // Lance tout en parallele sans bloquer la redirection
       Promise.allSettled([
@@ -153,15 +161,23 @@ export function useOnboarding() {
                 .limit(1)
                 .returns<{ coach_id: string }[]>()
                 .maybeSingle();
-              const coachId = (assignment as { coach_id?: string } | null)?.coach_id;
+              const coachId = (assignment as { coach_id?: string } | null)
+                ?.coach_id;
               if (!coachId) return;
               const { data: existingChannels } = await supabase
                 .from("channels")
                 .select("id, channel_members!inner(profile_id)")
                 .eq("type", "dm")
-                .returns<Array<{ id: string; channel_members: Array<{ profile_id: string }> }>>();
+                .returns<
+                  Array<{
+                    id: string;
+                    channel_members: Array<{ profile_id: string }>;
+                  }>
+                >();
               const hasDm = (existingChannels ?? []).some((ch) =>
-                (ch.channel_members ?? []).some((m) => m.profile_id === coachId),
+                (ch.channel_members ?? []).some(
+                  (m) => m.profile_id === coachId,
+                ),
               );
               if (hasDm) return;
               const { data: newChannel } = await supabase
@@ -184,38 +200,55 @@ export function useOnboarding() {
               } as never);
             })()
           : Promise.resolve(),
-        // Contrat auto (clients uniquement)
-        onboardingRole !== "prospect"
-          ? fetch("/api/contracts/auto-generate", { method: "POST" }).catch(() => {})
-          : Promise.resolve(),
+        // Contrat auto : desormais gere dans l'etape contract_sign de l'onboarding
+        Promise.resolve(),
         // Badge Newcomer + XP
         (async () => {
           const { data: newcomerBadge } = await supabase
-            .from("badges").select("id").eq("name", "Newcomer")
-            .returns<{ id: string }[]>().maybeSingle();
+            .from("badges")
+            .select("id")
+            .eq("name", "Newcomer")
+            .returns<{ id: string }[]>()
+            .maybeSingle();
           if (newcomerBadge) {
-            await supabase.from("user_badges").upsert(
-              { profile_id: userId, badge_id: (newcomerBadge as { id: string }).id, earned_at: new Date().toISOString() } as never,
-              { onConflict: "profile_id,badge_id", ignoreDuplicates: true },
-            );
+            await supabase
+              .from("user_badges")
+              .upsert(
+                {
+                  profile_id: userId,
+                  badge_id: (newcomerBadge as { id: string }).id,
+                  earned_at: new Date().toISOString(),
+                } as never,
+                { onConflict: "profile_id,badge_id", ignoreDuplicates: true },
+              );
           }
-          await supabase.rpc("award_xp" as never, {
-            p_profile_id: userId, p_action: "complete_onboarding", p_metadata: {},
-          } as never);
+          await supabase.rpc(
+            "award_xp" as never,
+            {
+              p_profile_id: userId,
+              p_action: "complete_onboarding",
+              p_metadata: {},
+            } as never,
+          );
         })().catch(() => {}),
         // CRM contact (prospects uniquement)
         onboardingRole === "prospect"
-          ? fetch("/api/onboarding/create-crm-contact", { method: "POST" }).catch(() => {})
+          ? fetch("/api/onboarding/create-crm-contact", {
+              method: "POST",
+            }).catch(() => {})
           : Promise.resolve(),
         // Notifs admins
         (async () => {
           const { data: admins } = await supabase
-            .from("profiles").select("id").eq("role", "admin")
+            .from("profiles")
+            .select("id")
+            .eq("role", "admin")
             .returns<{ id: string }[]>();
           if (admins?.length) {
             await supabase.from("notifications").insert(
               admins.map((admin) => ({
-                recipient_id: admin.id, type: "system",
+                recipient_id: admin.id,
+                type: "system",
                 title: "Onboarding terminé",
                 body: `${userName} a terminé son onboarding.`,
                 data: { link: `/admin/clients` },
@@ -312,7 +345,14 @@ export function useOnboardingProgress(userId?: string, role?: string) {
         .from("onboarding_progress")
         .select("*")
         .eq("user_id", targetId)
-        .returns<Array<{ id: string; user_id: string; step: string; completed_at: string | null }>>();
+        .returns<
+          Array<{
+            id: string;
+            user_id: string;
+            step: string;
+            completed_at: string | null;
+          }>
+        >();
       if (error) return []; // Table might not exist
       return (data ?? []) as Array<{
         id: string;
