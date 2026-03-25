@@ -32,6 +32,7 @@ import {
 } from "@/hooks/use-pipeline";
 import { AddProspectModal } from "@/components/crm/add-prospect-modal";
 import { AssignCloserModal } from "@/components/crm/assign-closer-modal";
+import { SetterBilan } from "@/components/crm/setter-bilan";
 import {
   PIPELINE_STAGES,
   SETTER_STAGES,
@@ -1403,9 +1404,10 @@ export default function SalesPipelinePage() {
 // ─── Setter Pipeline View ───────────────────────────────────
 
 export function SetterPipelineView() {
-  const [tab, setTab] = useState<PipelineMode>("manual");
+  const [tab, setTab] = useState<PipelineMode | "bilan">("manual");
+  const pipelineMode: PipelineMode = tab === "bilan" ? "manual" : tab;
   const { contacts, isLoading, createContact, moveContact } =
-    usePipelineContacts(undefined, tab);
+    usePipelineContacts(undefined, pipelineMode);
   const [search, setSearch] = useState("");
   const [showAdd, setShowAdd] = useState(false);
   const [showAddProspect, setShowAddProspect] = useState(false);
@@ -1490,6 +1492,7 @@ export function SetterPipelineView() {
               Gerez vos prospects et opportunites commerciales
             </p>
           </div>
+          {tab !== "bilan" && (
           <button
             onClick={() =>
               tab === "signup" ? setShowAddProspect(true) : setShowAdd(true)
@@ -1499,6 +1502,7 @@ export function SetterPipelineView() {
             <Plus className="w-3.5 h-3.5" />
             {tab === "signup" ? "Prospect" : "Contact"}
           </button>
+          )}
         </div>
       </motion.div>
 
@@ -1527,10 +1531,29 @@ export function SetterPipelineView() {
           >
             Prospects inscrits
           </button>
+          <button
+            onClick={() => { setTab("bilan"); setSelectedContact(null); }}
+            className={cn(
+              "px-4 py-2 text-xs font-medium rounded-lg transition-all",
+              tab === "bilan"
+                ? "bg-surface text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            Bilan
+          </button>
         </div>
       </motion.div>
 
+      {/* Bilan tab — SetterBilan component */}
+      {tab === "bilan" && (
+        <motion.div variants={staggerItem}>
+          <SetterBilan />
+        </motion.div>
+      )}
+
       {/* Pipeline value hero */}
+      {tab !== "bilan" && (
       <motion.div variants={staggerItem}>
         <HeroMetric
           label="Valeur du pipeline"
@@ -1545,13 +1568,17 @@ export function SetterPipelineView() {
           }
         />
       </motion.div>
+      )}
 
       {/* Stats */}
+      {tab !== "bilan" && (
       <motion.div variants={staggerItem}>
         <StatsBar contacts={contacts} stages={SETTER_KANBAN_STAGES} />
       </motion.div>
+      )}
 
       {/* Search */}
+      {tab !== "bilan" && (
       <motion.div variants={staggerItem}>
         <div className="flex items-center justify-between gap-4">
           <div className="relative flex-1 max-w-sm">
@@ -1568,8 +1595,10 @@ export function SetterPipelineView() {
           </span>
         </div>
       </motion.div>
+      )}
 
       {/* Kanban Board — Setter stages (no "client") */}
+      {tab !== "bilan" && (
       <motion.div variants={staggerItem}>
         {isLoading ? (
           <div className="flex gap-4 overflow-x-auto pb-4">
@@ -1608,6 +1637,7 @@ export function SetterPipelineView() {
           </DndContext>
         )}
       </motion.div>
+      )}
 
       {/* Contact detail drawer */}
       <AnimatePresence>
