@@ -64,7 +64,8 @@ export default function ClientsPage() {
     setPage(0);
   }, []);
 
-  const hasActiveFilters = search !== "" || activeTag !== "all" || flagFilter !== "all";
+  const hasActiveFilters =
+    search !== "" || activeTag !== "all" || flagFilter !== "all";
   const supabase = useSupabase();
   const queryClient = useQueryClient();
   const { isAdmin } = useAuth();
@@ -88,7 +89,10 @@ export default function ClientsPage() {
         .select("client_id, coach_id")
         .eq("status", "active");
       const map = new Map<string, string>();
-      for (const a of (assignments ?? []) as { client_id: string; coach_id: string }[]) {
+      for (const a of (assignments ?? []) as {
+        client_id: string;
+        coach_id: string;
+      }[]) {
         map.set(a.client_id, a.coach_id);
       }
       return map;
@@ -115,7 +119,10 @@ export default function ClientsPage() {
     return coachesList?.find((c) => c.id === coachId)?.full_name ?? null;
   };
 
-  const handleAssignCoach = async (clientId: string, coachId: string | null) => {
+  const handleAssignCoach = async (
+    clientId: string,
+    coachId: string | null,
+  ) => {
     if (coachId) {
       // Delete old then insert new (avoids UNIQUE constraint issues)
       await supabase
@@ -216,7 +223,8 @@ export default function ClientsPage() {
     URL.revokeObjectURL(url);
   };
 
-  const activeCount = totalCount;
+  const clientCount = students.filter((s) => s.role === "client").length;
+  const prospectCount = students.filter((s) => s.role === "prospect").length;
 
   // Flag filter is now server-side — displayedStudents = students
   const displayedStudents = students;
@@ -232,8 +240,13 @@ export default function ClientsPage() {
         {/* Hero Metric */}
         <motion.div variants={staggerItem}>
           <HeroMetric
-            label="Clients actifs"
-            value={isLoading ? "..." : String(activeCount)}
+            label="Eleves"
+            value={isLoading ? "..." : String(totalCount)}
+            change={
+              !isLoading && totalCount > 0
+                ? { value: `${clientCount} client${clientCount !== 1 ? "s" : ""} · ${prospectCount} prospect${prospectCount !== 1 ? "s" : ""}`, positive: true }
+                : undefined
+            }
           />
         </motion.div>
 
@@ -247,7 +260,7 @@ export default function ClientsPage() {
               Clients
             </h1>
             <p className="text-sm text-muted-foreground mt-1">
-              {totalCount} client{totalCount !== 1 ? "s" : ""}
+              {totalCount} eleve{totalCount !== 1 ? "s" : ""}
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -323,7 +336,10 @@ export default function ClientsPage() {
             ].map((f) => (
               <button
                 key={f.value}
-                onClick={() => { setFlagFilter(f.value); setPage(0); }}
+                onClick={() => {
+                  setFlagFilter(f.value);
+                  setPage(0);
+                }}
                 className={cn(
                   "h-7 px-2.5 rounded-md text-xs font-medium whitespace-nowrap transition-colors flex items-center gap-1.5",
                   flagFilter === f.value
@@ -331,7 +347,9 @@ export default function ClientsPage() {
                     : "bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground",
                 )}
               >
-                {f.dot && <span className={cn("w-2 h-2 rounded-full", f.dot)} />}
+                {f.dot && (
+                  <span className={cn("w-2 h-2 rounded-full", f.dot)} />
+                )}
                 {f.label}
               </button>
             ))}
@@ -489,10 +507,7 @@ export default function ClientsPage() {
                           })()}
                         </td>
                         {isAdmin && (
-                          <td
-                            className="px-4 py-2.5 hidden md:table-cell"
-                            
-                          >
+                          <td className="px-4 py-2.5 hidden md:table-cell">
                             {(() => {
                               const coachName = getCoachName(student.id);
                               return coachName ? (
@@ -581,7 +596,7 @@ export default function ClientsPage() {
           {totalPages > 1 && (
             <div className="flex items-center justify-between pt-4 px-1">
               <p className="text-xs text-muted-foreground">
-                Page {page + 1} sur {totalPages} ({totalCount} clients)
+                Page {page + 1} sur {totalPages} ({totalCount} eleves)
               </p>
               <div className="flex items-center gap-1">
                 <button
@@ -610,7 +625,9 @@ export default function ClientsPage() {
                   );
                 })}
                 <button
-                  onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+                  onClick={() =>
+                    setPage((p) => Math.min(totalPages - 1, p + 1))
+                  }
                   disabled={page >= totalPages - 1}
                   className="h-8 px-3 rounded-lg border border-border text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted disabled:opacity-30 disabled:pointer-events-none transition-colors"
                 >
@@ -636,8 +653,12 @@ export default function ClientsPage() {
             <StudentSidePanel
               studentId={selectedStudentId}
               onClose={() => setSelectedStudentId(null)}
-              assignedCoachId={isAdmin ? assignmentMap?.get(selectedStudentId) ?? null : undefined}
-              coaches={isAdmin ? coachesList ?? [] : undefined}
+              assignedCoachId={
+                isAdmin
+                  ? (assignmentMap?.get(selectedStudentId) ?? null)
+                  : undefined
+              }
+              coaches={isAdmin ? (coachesList ?? []) : undefined}
               onAssignCoach={isAdmin ? handleAssignCoach : undefined}
             />
           )}
