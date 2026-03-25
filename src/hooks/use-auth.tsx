@@ -43,7 +43,7 @@ interface AuthContextValue {
     fullName: string,
   ) => Promise<{ error: AuthError | null }>;
   signInWithMagicLink: (email: string) => Promise<{ error: AuthError | null }>;
-  signInWithGoogle: () => Promise<{ error: AuthError | null }>;
+
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: AuthError | null }>;
   isAdmin: boolean;
@@ -223,16 +223,6 @@ export function AuthProvider({
     [supabase],
   );
 
-  const signInWithGoogle = useCallback(async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-      },
-    });
-    return { error };
-  }, [supabase]);
-
   const signOut = useCallback(async () => {
     // Clear all React Query caches
     queryClient.clear();
@@ -269,7 +259,6 @@ export function AuthProvider({
     signIn,
     signUp,
     signInWithMagicLink,
-    signInWithGoogle,
     signOut,
     resetPassword,
     isAdmin: role === "admin",

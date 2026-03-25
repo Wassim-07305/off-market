@@ -9,7 +9,6 @@ import { translateSupabaseError } from "@/lib/supabase-errors";
 import { trackEvent } from "@/lib/analytics";
 import { toast } from "sonner";
 import { Loader2, Eye, EyeOff } from "lucide-react";
-import { SSOButtons } from "@/components/auth/sso-buttons";
 
 export default function SignupPage() {
   const [fullName, setFullName] = useState("");
@@ -181,7 +180,10 @@ export default function SignupPage() {
               onChange={(e) => setCguAccepted(e.target.checked)}
               className="mt-0.5 h-4 w-4 rounded border-white/20 bg-white/[0.06] text-primary focus:ring-primary/40 cursor-pointer"
             />
-            <label htmlFor="cgu" className="text-white/50 text-xs cursor-pointer">
+            <label
+              htmlFor="cgu"
+              className="text-white/50 text-xs cursor-pointer"
+            >
               J&apos;accepte les{" "}
               <a
                 href="/cgv"
@@ -216,9 +218,6 @@ export default function SignupPage() {
             Creer mon compte
           </button>
         </form>
-
-        {/* SSO Google & Microsoft */}
-        <SSOButtons />
       </div>
 
       <p className="text-center text-white/30 text-sm mt-6">

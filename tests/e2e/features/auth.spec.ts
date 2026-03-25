@@ -54,14 +54,6 @@ test.describe("Auth — Login", () => {
     checkNoNetworkErrors(tracker);
   });
 
-  test("bouton Google visible", async ({ page }) => {
-    const tracker = setupNetworkErrorTracking(page);
-    // At least the Google SSO button should be present
-    const googleBtn = page.locator("button").filter({ hasText: /Google/i }).first();
-    await expect(googleBtn).toBeVisible({ timeout: 10000 });
-    checkNoNetworkErrors(tracker);
-  });
-
   test("connexion valide redirige vers le dashboard", async ({ page }) => {
     const tracker = setupNetworkErrorTracking(page);
     await page.fill("input[type='email'], input[name='email']", "test@test.com");
@@ -203,11 +195,6 @@ test.describe("Auth — Signup", () => {
     checkNoNetworkErrors(tracker);
   });
 
-  test("boutons SSO Google visibles", async ({ page }) => {
-    const tracker = setupNetworkErrorTracking(page);
-    await expect(page.getByText(/Google/i)).toBeVisible();
-    checkNoNetworkErrors(tracker);
-  });
 });
 
 // ---------------------------------------------------------------------------

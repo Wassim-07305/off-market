@@ -10,11 +10,16 @@ import { colorVariants } from "@/hooks/use-branding";
 import { trackEvent } from "@/lib/analytics";
 import { toast } from "sonner";
 import { Loader2, Eye, EyeOff, ShieldCheck } from "lucide-react";
-import { SSOButtons } from "@/components/auth/sso-buttons";
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div className="animate-fade-in text-center py-12"><Loader2 className="w-8 h-8 text-primary animate-spin mx-auto" /></div>}>
+    <Suspense
+      fallback={
+        <div className="animate-fade-in text-center py-12">
+          <Loader2 className="w-8 h-8 text-primary animate-spin mx-auto" />
+        </div>
+      }
+    >
       <LoginContent />
     </Suspense>
   );
@@ -52,10 +57,13 @@ function LoginContent() {
   useEffect(() => {
     if (searchParams.get("mfa") === "required" && !needs2FA) {
       (async () => {
-        const { data: aalData } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+        const { data: aalData } =
+          await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
         if (aalData?.currentLevel === "aal1" && aalData?.nextLevel === "aal2") {
           const { data: factorsData } = await supabase.auth.mfa.listFactors();
-          const verifiedFactor = factorsData?.totp?.find((f) => f.status === "verified");
+          const verifiedFactor = factorsData?.totp?.find(
+            (f) => f.status === "verified",
+          );
           if (verifiedFactor) {
             setMfaFactorId(verifiedFactor.id);
             setNeeds2FA(true);
@@ -285,7 +293,8 @@ function LoginContent() {
           <div className="flex items-center gap-3 p-3 mb-6 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
             <ShieldCheck className="w-5 h-5 text-emerald-400 shrink-0" />
             <p className="text-sm text-emerald-300">
-              Connecte-toi pour activer ton invitation et mettre a jour ton role.
+              Connecte-toi pour activer ton invitation et mettre a jour ton
+              role.
             </p>
           </div>
         )}
@@ -362,9 +371,6 @@ function LoginContent() {
             Se connecter
           </button>
         </form>
-
-        {/* SSO Google & Microsoft */}
-        <SSOButtons />
       </div>
 
       <p className="text-center text-white/30 text-sm mt-6">
