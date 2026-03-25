@@ -223,8 +223,7 @@ export default function ClientsPage() {
     URL.revokeObjectURL(url);
   };
 
-  const clientCount = students.filter((s) => s.role === "client").length;
-  const prospectCount = students.filter((s) => s.role === "prospect").length;
+  const clientCount = totalCount;
 
   // Flag filter is now server-side — displayedStudents = students
   const displayedStudents = students;
@@ -242,14 +241,6 @@ export default function ClientsPage() {
           <HeroMetric
             label="Eleves"
             value={isLoading ? "..." : String(clientCount)}
-            change={
-              !isLoading && prospectCount > 0
-                ? {
-                    value: `+ ${prospectCount} prospect${prospectCount !== 1 ? "s" : ""}`,
-                    positive: true,
-                  }
-                : undefined
-            }
           />
         </motion.div>
 

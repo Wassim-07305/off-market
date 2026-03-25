@@ -71,7 +71,7 @@ export function useStudents(options: UseStudentsOptions = {}) {
       let query = supabase
         .from("profiles")
         .select("*, student_details!student_details_profile_id_fkey(*)", { count: "exact" })
-        .in("role", ["client", "prospect"])
+        .eq("role", "client")
         .order("created_at", { ascending: false })
         .range(from, to);
 
