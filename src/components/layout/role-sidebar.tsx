@@ -249,6 +249,26 @@ export function RoleSidebar({ variant }: RoleSidebarProps) {
           </div>
         </div>
 
+        {/* Réglages */}
+        <Link
+          href={settingsHref}
+          className={cn(
+            "mt-1 flex w-full items-center rounded-xl px-3 py-2 text-sm transition-all duration-200",
+            pathname === settingsHref || pathname.startsWith(settingsHref + "/")
+              ? "bg-[#AF0000]/15 text-white"
+              : "text-slate-500 hover:bg-white/[0.06] hover:text-slate-300",
+            sidebarCollapsed && "justify-center px-0",
+          )}
+        >
+          <Settings
+            className={cn(
+              "h-[18px] w-[18px] shrink-0",
+              sidebarCollapsed ? "" : "mr-3",
+            )}
+          />
+          <span className={cn(sidebarCollapsed && "hidden")}>Reglages</span>
+        </Link>
+
         {/* Déconnexion */}
         <button
           onClick={signOut}

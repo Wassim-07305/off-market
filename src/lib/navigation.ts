@@ -11,7 +11,6 @@ import {
   UserPlus,
   Rss,
   ClipboardCheck,
-  BookOpen,
   Target,
   Bell,
   Video,
@@ -38,10 +37,7 @@ import {
   PhoneCall,
   Presentation,
   Megaphone,
-  Settings,
-  Plug,
   Activity,
-  Bug,
   type LucideIcon,
 } from "lucide-react";
 
@@ -104,10 +100,8 @@ export const adminNavigation: NavItem[] = [
   { name: "Defis", href: "/admin/challenges", icon: Flame },
   { name: "Annonces", href: "/admin/announcements", icon: Megaphone },
   { name: "Miro", href: "/admin/miro", icon: Presentation },
-  { name: "Integrations", href: "/admin/integrations", icon: Plug },
   { name: "Utilisateurs", href: "/admin/users", icon: UserCog },
   { name: "Systeme", href: "/admin/system", icon: Activity },
-  { name: "Reglages", href: "/admin/settings", icon: Settings },
 ];
 
 /** Coach / CSM */

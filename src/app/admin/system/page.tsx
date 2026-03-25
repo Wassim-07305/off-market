@@ -3,7 +3,14 @@
 import { useState } from "react";
 import dynamic from "next/dynamic";
 import { cn } from "@/lib/utils";
-import { Bug, Activity, BookOpen, ClipboardList, Loader2 } from "lucide-react";
+import {
+  Bug,
+  Activity,
+  BookOpen,
+  ClipboardList,
+  Plug,
+  Loader2,
+} from "lucide-react";
 
 const Loader = () => (
   <div className="flex items-center justify-center py-24">
@@ -24,11 +31,16 @@ const AuditPage = dynamic(
   () => import("@/app/_shared-pages/admin/audit/page"),
   { loading: Loader },
 );
+const IntegrationsPage = dynamic(
+  () => import("@/app/admin/integrations/page"),
+  { loading: Loader },
+);
 
 const TABS = [
   { key: "monitoring", label: "Monitoring", icon: Activity },
   { key: "errors", label: "Error Logs", icon: Bug },
   { key: "audit", label: "Audit Log", icon: ClipboardList },
+  { key: "integrations", label: "Integrations", icon: Plug },
   { key: "api-docs", label: "Documentation API", icon: BookOpen },
 ] as const;
 
@@ -71,6 +83,7 @@ export default function SystemPage() {
       {tab === "monitoring" && <MonitoringPage />}
       {tab === "errors" && <ErrorLogsPage />}
       {tab === "audit" && <AuditPage />}
+      {tab === "integrations" && <IntegrationsPage />}
       {tab === "api-docs" && <ApiDocsPage />}
     </div>
   );
